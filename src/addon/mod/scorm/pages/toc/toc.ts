@@ -32,12 +32,14 @@ export class AddonModScormTocPage {
     selected: number;
     moduleId: number;
     courseId: number;
+    accessInfo: any;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.toc = navParams.get('toc') || [];
         this.attemptToContinue = navParams.get('attemptToContinue');
         this.moduleId = navParams.get('moduleId');
         this.courseId = navParams.get('courseId');
+        this.accessInfo = navParams.get('accessInfo');
 
         const mode = navParams.get('mode');
         this.selected = navParams.get('selected');

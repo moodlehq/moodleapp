@@ -100,6 +100,7 @@
                             <img [src]="sco.image.url" [alt]="sco.image.description" />
                             <a *ngIf="sco.prereq && sco.launch" (click)="open($event, sco.id)"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></a>
                             <span *ngIf="!sco.prereq || !sco.launch"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></span>
+                            <span *ngIf="accessInfo && accessInfo.canviewscores && sco.score_raw">({{ 'addon.mod_scorm.score' | translate }}: {{sco.score_raw}})</span>
                         </p>
                     </div>
                 </ion-item>

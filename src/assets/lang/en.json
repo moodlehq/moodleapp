@@ -868,6 +868,7 @@
     "addon.mod_scorm.organizations": "Organisations",
     "addon.mod_scorm.passed": "Passed",
     "addon.mod_scorm.reviewmode": "Review mode",
+    "addon.mod_scorm.score": "Score",
     "addon.mod_scorm.scormstatusnotdownloaded": "This SCORM package is not downloaded. It will be automatically downloaded when you open it.",
     "addon.mod_scorm.scormstatusoutdated": "This SCORM package has been modified since the last download. It will be automatically downloaded when you open it.",
     "addon.mod_scorm.suspended": "Suspended",
