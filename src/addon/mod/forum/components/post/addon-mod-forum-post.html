@@ -1,22 +1,30 @@
 <ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
     <ion-item text-wrap>
-        <ion-avatar core-user-avatar [user]="post" item-start></ion-avatar>
-        <h2>
-            <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
-            <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
-            <span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text></span>
-        </h2>
-        <p>
-            <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
-            <ion-note float-end padding-left text-end *ngIf="post.modified">
-                {{post.modified | coreDateDayOrTime}}
-                <div *ngIf="trackPosts && !post.postread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
-            </ion-note>
-            {{post.userfullname}}
-        </p>
+        <div class="addon-mod-forum-post-title">
+            <h2 text-wrap>
+                <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
+                <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
+                <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
+            </h2>
+            <ion-badge float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                <core-icon name="fa-circle" color="primary"></core-icon>
+            </ion-badge>
+            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)">
+                <core-icon name="more"></core-icon>
+            </button>
+        </div>
+        <div class="addon-mod-forum-post-info">
+            <ion-avatar core-user-avatar [user]="post" item-start [courseId]="courseId"></ion-avatar>
+            <div class="addon-mod-forum-post-author">
+                <h3>{{post.userfullname}}</h3>
+                <p *ngIf="post.groupname"><ion-icon name="people"></ion-icon> {{ post.groupname }}</p>
+                <p *ngIf="post.modified">{{post.modified | coreFormatDate: "strftimedatetimeshort"}}</p>
+                <p *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+            </div>
+        </div>
     </ion-item>
 </ion-card-header>
-<ion-card-content padding-top>
+<ion-card-content [attr.padding-top]="post.parent == 0 || null">
     <div padding-bottom *ngIf="post.isprivatereply">
         <ion-note>{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
     </div>
@@ -30,22 +38,26 @@
         </ng-container>
     </div>
 </ion-card-content>
-<ion-item text-wrap *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
-    <div item-start>{{ 'core.tag.tags' | translate }}:</div>
-    <core-tag-list [tags]="post.tags"></core-tag-list>
-</ion-item>
-<core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
-<core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
-<ion-item no-padding text-end *ngIf="post.id && post.canreply && !post.isprivatereply" class="addon-forum-reply-button">
-    <button ion-button icon-left clear small (click)="showReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
-        <ion-icon name="undo"></ion-icon> {{ 'addon.mod_forum.reply' | translate }}
-    </button>
-</ion-item>
+<div class="addon-mod-forum-post-more-info">
+    <ion-item text-wrap *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
+        <div item-start>{{ 'core.tag.tags' | translate }}:</div>
+        <core-tag-list [tags]="post.tags"></core-tag-list>
+    </ion-item>
+    <core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
+    <core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
+
+    <ion-item no-padding text-end *ngIf="post.id && post.canreply && !post.isprivatereply" class="addon-forum-reply-button">
+        <button ion-button icon-left clear small (click)="showReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
+            <ion-icon name="undo"></ion-icon> {{ 'addon.mod_forum.reply' | translate }}
+        </button>
+    </ion-item>
+</div>
 <ion-item text-end *ngIf="!post.id && (!replyData.isEditing || replyData.replyingTo != post.parent)">
     <button ion-button icon-left clear small (click)="editReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.parent">
         <ion-icon name="create"></ion-icon> {{ 'addon.mod_forum.edit' | translate }}
     </button>
 </ion-item>
+
 <ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)">
     <ion-item>
         <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
