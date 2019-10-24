@@ -13,12 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreLoginHelperProvider } from './providers/helper';
+import { CoreLoginCronHandler } from './providers/cron-handler';
 import { CoreLoginSitesPageModule } from './pages/sites/sites.module';
 
 // List of providers.
 export const CORE_LOGIN_PROVIDERS = [
-    CoreLoginHelperProvider
+    CoreLoginHelperProvider,
+    CoreLoginCronHandler
 ];
 
 @NgModule({
@@ -29,4 +32,9 @@ export const CORE_LOGIN_PROVIDERS = [
     ],
     providers: CORE_LOGIN_PROVIDERS
 })
-export class CoreLoginModule {}
+export class CoreLoginModule {
+    constructor(cronDelegate: CoreCronDelegate, cronHandler: CoreLoginCronHandler) {
+        // Register handlers.
+        cronDelegate.register(cronHandler);
+    }
+}

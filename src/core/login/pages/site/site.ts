@@ -112,18 +112,21 @@ export class CoreLoginSitePage {
         } else {
             // Not a demo site.
             this.sitesProvider.checkSite(url).then((result) => {
+                return this.sitesProvider.checkRequiredMinimumVersion(result.config).then(() => {
+                    if (result.warning) {
+                        this.domUtils.showErrorModal(result.warning, true, 4000);
+                    }
 
-                if (result.warning) {
-                    this.domUtils.showErrorModal(result.warning, true, 4000);
-                }
-
-                if (this.loginHelper.isSSOLoginNeeded(result.code)) {
-                    // SSO. User needs to authenticate in a browser.
-                    this.loginHelper.confirmAndOpenBrowserForSSOLogin(
-                        result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
-                } else {
-                    this.navCtrl.push('CoreLoginCredentialsPage', { siteUrl: result.siteUrl, siteConfig: result.config });
-                }
+                    if (this.loginHelper.isSSOLoginNeeded(result.code)) {
+                        // SSO. User needs to authenticate in a browser.
+                        this.loginHelper.confirmAndOpenBrowserForSSOLogin(
+                            result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
+                    } else {
+                        this.navCtrl.push('CoreLoginCredentialsPage', { siteUrl: result.siteUrl, siteConfig: result.config });
+                    }
+                }).catch(() => {
+                    // Ignore errors.
+                });
             }, (error) => {
                 this.showLoginIssue(url, error);
             }).finally(() => {

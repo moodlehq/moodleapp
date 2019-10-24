@@ -25,8 +25,8 @@ ion-app.app-root {
             padding-left: 0 !important;
             padding-right: 0 !important;
 
-            > .core-loading-content > *,
-            > .core-loading-content-loading > * {
+            > .core-loading-content > *:not[padding],
+            > .core-loading-content-loading > *:not[padding] {
                 @include safe-area-padding-horizontal(0px, 0px);
             }
         }

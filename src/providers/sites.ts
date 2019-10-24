@@ -19,6 +19,7 @@ import { CoreAppProvider } from './app';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
+import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
@@ -311,7 +312,8 @@ export class CoreSitesProvider {
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
-            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider) {
+            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider,
+            protected domUtils: CoreDomUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
@@ -863,6 +865,87 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Check the required minimum version of the app for a site and shows a download dialog.
+     *
+     * @param  config Config object of the site.
+     * @param siteId ID of the site to check. Current site id will be used otherwise.
+     * @return Resolved with  if meets the requirements, rejected otherwise.
+     */
+    checkRequiredMinimumVersion(config: any, siteId?: string): Promise<void> {
+        if (config && config.tool_mobile_minimumversion) {
+            const requiredVersion = this.convertVersionName(config.tool_mobile_minimumversion),
+                appVersion = this.convertVersionName(CoreConfigConstants.versionname);
+
+            if (requiredVersion > appVersion) {
+                let downloadUrl = '';
+
+                if (this.appProvider.isAndroid() && config.tool_mobile_androidappid) {
+                    downloadUrl = 'market://details?id=' + config.tool_mobile_androidappid;
+                } else if (this.appProvider.isIOS() && config.tool_mobile_iosappid) {
+                    downloadUrl = 'itms-apps://itunes.apple.com/app/id' + config.tool_mobile_iosappid;
+                } else if (config.tool_mobile_setuplink) {
+                    downloadUrl = config.tool_mobile_setuplink;
+                } else if (this.appProvider.isMobile()) {
+                    downloadUrl = 'https://download.moodle.org/mobile/';
+                } else {
+                    downloadUrl = 'https://download.moodle.org/desktop/';
+                }
+
+                siteId = siteId || this.getCurrentSiteId();
+
+                // Do not block interface.
+                this.domUtils.showConfirm(
+                    this.translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                    this.translate.instant('core.updaterequired'),
+                    this.translate.instant('core.download'),
+                    this.translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel')).then(() => {
+
+                    this.utils.openInBrowser(downloadUrl);
+                }).catch(() => {
+                    // Do nothing.
+                });
+
+                if (siteId) {
+                    // Logout if it's the currentSite.
+                    const promise = siteId == this.getCurrentSiteId() ? this.logout() : Promise.resolve();
+
+                    return promise.then(() => {
+                        // Always expire the token.
+                        return this.setSiteLoggedOut(siteId, true);
+                    }).then(() => {
+                        return Promise.reject(null);
+                    });
+                }
+
+                return Promise.reject(null);
+            }
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Convert version name to numbers.
+     *
+     * @param  name Version name (dot separated).
+     * @return Version translated to a comparable number.
+     */
+    protected convertVersionName(name: string): number {
+        let version = 0;
+
+        const parts = name.split('.', 3);
+        parts.forEach((num) => {
+            version = (version * 100) + Number(num);
+        });
+
+        if (parts.length < 3) {
+            version = version * Math.pow(100, 3 - parts.length);
+        }
+
+        return version;
+    }
+
+    /**
      * Login a user to a site from the list of sites.
      *
      * @param siteId ID of the site to load.
@@ -896,12 +979,20 @@ export class CoreSitesProvider {
 
                 return false;
             }, () => {
-                this.login(siteId);
+                return site.getPublicConfig().catch(() => {
+                    return {};
+                }).then((config) => {
+                    return this.checkRequiredMinimumVersion(config).then(() => {
+                        this.login(siteId);
 
-                // Update site info. We don't block the UI.
-                this.updateSiteInfo(siteId);
+                        // Update site info. We don't block the UI.
+                        this.updateSiteInfo(siteId);
 
-                return true;
+                        return true;
+                    }).catch(() => {
+                        return false;
+                    });
+                });
             });
         });
     }

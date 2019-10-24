@@ -6,7 +6,7 @@
     "changepassword": "Change password",
     "changepasswordbutton": "Open the change password page",
     "changepasswordhelp": "If you have problems changing your password, please contact your site administrator. \"Site Administrators\" are the people who manages the Moodle at your school/university/company or learning organisation. If you don't know how to contact them, please contact your teachers/trainers.",
-    "changepassowrdinstructions": "You cannot change your password in the app. Please click the following button to open the site in a web browser to change your password. Take into account you need to close the browser after changing the password as you will not be redirected to the app.",
+    "changepasswordinstructions": "You cannot change your password in the app. Please click the following button to open the site in a web browser to change your password. Take into account you need to close the browser after changing the password as you will not be redirected to the app.",
     "changepasswordlogoutinstructions": "If you prefer to change site or log out, please click the following button:",
     "changepasswordreconnectinstructions": "Click the following button to reconnect to the site. (Take into account that if you didn't change your password successfully, you would return to the previous screen).",
     "confirmdeletesite": "Are you sure you want to delete the site {{sitename}}?",

@@ -82,16 +82,20 @@ export class CoreLoginReconnectPage {
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
 
-            // Check logoURL if user avatar is not set.
-            if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
-                this.site.avatar = false;
+            return site.getPublicConfig().then((config) => {
+                return this.sitesProvider.checkRequiredMinimumVersion(config).then(() => {
+                    // Check logoURL if user avatar is not set.
+                    if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
+                        this.site.avatar = false;
 
-                return site.getPublicConfig().then((config) => {
-                    this.logoUrl = config.logourl || config.compactlogourl;
+                        this.logoUrl = config.logourl || config.compactlogourl;
+                    }
                 }).catch(() => {
-                    // Ignore errors.
+                    this.cancel();
                 });
-            }
+            }).catch(() => {
+                // Ignore errors.
+            });
         }).catch(() => {
             // Shouldn't happen. Just leave the view.
             this.cancel();
