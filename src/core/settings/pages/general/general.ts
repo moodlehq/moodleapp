@@ -48,7 +48,7 @@ export class CoreSettingsGeneralPage {
     colorSchemes = [];
     selectedScheme: string;
 
-    constructor(appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
+    constructor(private appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
             private eventsProvider: CoreEventsProvider, private langProvider: CoreLangProvider,
             private domUtils: CoreDomUtilsProvider, private pushNotificationsProvider: CorePushNotificationsProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, private settingsHelper: CoreSettingsHelper) {
@@ -65,8 +65,9 @@ export class CoreSettingsGeneralPage {
         if (!CoreConfigConstants.forceColorScheme) {
             let defaultColorScheme = 'light';
 
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches ||
-                    window.matchMedia('(prefers-color-scheme: light)').matches) {
+            // Auto is not working on iOS right now until we update Webkit.
+            if (!this.appProvider.isIOS() && (window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                                window.matchMedia('(prefers-color-scheme: light)').matches)) {
                 this.colorSchemes.push('auto');
                 defaultColorScheme = 'auto';
             }
