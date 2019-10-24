@@ -70,6 +70,32 @@ export class CoreUserProvider {
     }
 
     /**
+     * Check if WS to search participants is available in site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's available.
+     * @since 3.8
+     */
+    canSearchParticipants(siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            return this.canSearchParticipantsInSite(site);
+        });
+    }
+
+    /**
+     * Check if WS to search participants is available in site.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Whether it's available.
+     * @since 3.8
+     */
+    canSearchParticipantsInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_enrol_search_users');
+    }
+
+    /**
      * Change the given user profile picture.
      *
      * @param draftItemId New picture draft item id.
@@ -503,6 +529,43 @@ export class CoreUserProvider {
         });
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Search participants in a certain course.
+     *
+     * @param courseId ID of the course.
+     * @param search The string to search.
+     * @param searchAnywhere Whether to find a match anywhere or only at the beginning.
+     * @param page Page to get.
+     * @param limitNumber Number of participants to get.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the participants are retrieved.
+     * @since 3.8
+     */
+    searchParticipants(courseId: number, search: string, searchAnywhere: boolean = true, page: number = 0,
+            perPage: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT, siteId?: string)
+            : Promise<{participants: any[], canLoadMore: boolean}> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+
+            const data = {
+                    courseid: courseId,
+                    search: search,
+                    searchanywhere: searchAnywhere ? 1 : 0,
+                    page: page,
+                    perpage: perPage,
+                }, preSets: any = {
+                    getFromCache: false // Always try to get updated data. If it fails, it will get it from cache.
+                };
+
+            return site.read('core_enrol_search_users', data, preSets).then((users) => {
+                const canLoadMore = users.length >= perPage;
+                this.storeUsers(users, siteId);
+
+                return { participants: users, canLoadMore: canLoadMore };
+            });
+        });
     }
 
     /**

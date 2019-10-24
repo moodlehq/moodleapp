@@ -17,6 +17,7 @@ import { Content } from 'ionic-angular';
 import { CoreUserProvider } from '../../providers/user';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreAppProvider } from '@providers/app';
 
 /**
  * Component that displays the list of course participants.
@@ -36,13 +37,24 @@ export class CoreUserParticipantsComponent implements OnInit {
     canLoadMore = false;
     loadMoreError = false;
     participantsLoaded = false;
+    canSearch = false;
+    showSearchBox = false;
+    disableSearch = false;
+    displaySearchResults = false;
+    searchQuery = '';
 
-    constructor(private userProvider: CoreUserProvider, private domUtils: CoreDomUtilsProvider) { }
+    protected searchPage = 0;
+
+    constructor(private userProvider: CoreUserProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private appProvider: CoreAppProvider) { }
 
     /**
      * View loaded.
      */
     ngOnInit(): void {
+        this.canSearch = this.userProvider.canSearchParticipantsInSite();
+
         // Get first participants.
         this.fetchData(true).then(() => {
             if (!this.participantId && this.splitviewCtrl.isOn() && this.participants.length > 0) {
@@ -54,8 +66,6 @@ export class CoreUserParticipantsComponent implements OnInit {
                 // Ignore errors.
             });
         }).finally(() => {
-            this.participantsLoaded = true;
-
             // Call resize to make infinite loading work, in some cases the content dimensions aren't read.
             this.content && this.content.resize();
         });
@@ -81,6 +91,8 @@ export class CoreUserParticipantsComponent implements OnInit {
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error loading participants');
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
+        }).finally(() => {
+            this.participantsLoaded = true;
         });
     }
 
@@ -91,9 +103,15 @@ export class CoreUserParticipantsComponent implements OnInit {
      * @return Resolved when done.
      */
     loadMoreData(infiniteComplete?: any): Promise<any> {
-        return this.fetchData().finally(() => {
-            infiniteComplete && infiniteComplete();
-        });
+        if (this.displaySearchResults) {
+            return this.search(this.searchQuery, true).finally(() => {
+                infiniteComplete && infiniteComplete();
+            });
+        } else {
+            return this.fetchData().finally(() => {
+                infiniteComplete && infiniteComplete();
+            });
+        }
     }
 
     /**
@@ -111,10 +129,83 @@ export class CoreUserParticipantsComponent implements OnInit {
 
     /**
      * Navigate to a particular user profile.
+     *
      * @param userId User Id where to navigate.
      */
     gotoParticipant(userId: number): void {
         this.participantId = userId;
         this.splitviewCtrl.push('CoreUserProfilePage', {userId: userId, courseId: this.courseId});
+    }
+
+    /**
+     * Show or hide search box.
+     */
+    toggleSearch(): void {
+        this.showSearchBox = !this.showSearchBox;
+
+        if (!this.showSearchBox && this.displaySearchResults) {
+            this.clearSearch();
+        }
+    }
+
+    /**
+     * Clear search.
+     */
+    clearSearch(): void {
+        if (!this.displaySearchResults) {
+            // Nothing to clear.
+            return;
+        }
+
+        this.searchQuery = '';
+        this.displaySearchResults = false;
+        this.participants = [];
+        this.searchPage = 0;
+        this.splitviewCtrl.emptyDetails();
+
+        // Remove search results and display all participants.
+        this.participantsLoaded = false;
+        this.fetchData(true);
+    }
+
+    /**
+     * Start a new search or load more results.
+     *
+     * @param query Text to search for.
+     * @param loadMore Whether it's loading more or doing a new search.
+     * @return Resolved when done.
+     */
+    search(query: string, loadMore?: boolean): Promise<any> {
+        this.appProvider.closeKeyboard();
+
+        this.disableSearch = true;
+        this.participantsLoaded = loadMore;
+        this.loadMoreError = false;
+
+        if (!loadMore) {
+            this.participantsLoaded = false;
+            this.searchQuery = query;
+            this.searchPage = 0;
+            this.participants = [];
+        }
+
+        return this.userProvider.searchParticipants(this.courseId, query, true, this.searchPage).then((result) => {
+
+            this.participants.push(...result.participants);
+            this.canLoadMore = result.canLoadMore;
+            this.searchPage++;
+
+            if (!loadMore && this.participants.length) {
+                this.gotoParticipant(this.participants[0].id);
+            }
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'Error searching users.');
+            this.loadMoreError = true;
+
+        }).finally(() => {
+            this.disableSearch = false;
+            this.participantsLoaded = true;
+            this.displaySearchResults = true;
+        });
     }
 }
