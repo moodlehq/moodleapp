@@ -89,6 +89,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     hasOfflineRatings: boolean;
     protected ratingOfflineObserver: any;
     protected ratingSyncObserver: any;
+    protected changeDiscObserver: any;
 
     constructor(navParams: NavParams,
             network: Network,
@@ -182,6 +183,20 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
                 this.hasOfflineRatings = false;
             }
+        });
+
+        this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data) => {
+            this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
+                if (typeof data.locked != 'undefined') {
+                    this.discussion.locked = data.locked;
+                }
+                if (typeof data.pinned != 'undefined') {
+                    this.discussion.pinned = data.pinned;
+                }
+                if (typeof data.starred != 'undefined') {
+                    this.discussion.starred = data.starred;
+                }
+            });
         });
     }
 
@@ -610,6 +625,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.syncManualObserver && this.syncManualObserver.off();
         this.ratingOfflineObserver && this.ratingOfflineObserver.off();
         this.ratingSyncObserver && this.ratingSyncObserver.off();
+        this.changeDiscObserver && this.changeDiscObserver.off();
     }
 
     /**

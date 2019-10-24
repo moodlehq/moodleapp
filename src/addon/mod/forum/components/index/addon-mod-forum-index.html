@@ -65,7 +65,7 @@
                                 <core-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></core-icon>
                                 <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
                             </h2>
-                            <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event, discussion)">
+                            <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event, discussion)" *ngIf="canPin || discussion.canlock || discussion.canfavourite">
                                 <core-icon name="more"></core-icon>
                             </button>
                         </div>
@@ -74,18 +74,18 @@
                             <div class="addon-mod-forum-discussion-author">
                                 <h3>{{discussion.userfullname}}</h3>
                                 <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
-                                <p>{{discussion.created | coreFormatDate: "strftimedatetimeshort"}}</p>
+                                <p>{{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
                             </div>
                         </div>
                         <ion-row text-center class="addon-mod-forum-discussion-more-info">
-                            <ion-col>
+                            <ion-col text-start>
                                 <ion-note>
                                     <ion-icon name="time"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
                                     <ng-container *ngIf="discussion.timemodified > discussion.created">{{discussion.timemodified | coreTimeAgo}}</ng-container>
                                     <ng-container *ngIf="discussion.timemodified <= discussion.created">{{discussion.created | coreTimeAgo}}</ng-container>
                                 </ion-note>
                             </ion-col>
-                            <ion-col>
+                            <ion-col text-end>
                                 <ion-note>
                                     <ion-icon name="chatboxes"></ion-icon> {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
                                     <ion-badge text-center *ngIf="discussion.numunread" [attr.aria-label]="'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread}">{{ discussion.numunread }}</ion-badge>

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, Injector, ViewChild } from '@angular/core';
-import { Content, ModalController, NavController } from 'ionic-angular';
+import { Content, ModalController, NavController, PopoverController } from 'ionic-angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -27,6 +27,7 @@ import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
 import { AddonModForumPrefetchHandler } from '../../providers/prefetch-handler';
+import { AddonForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 
 /**
  * Component that displays a forum entry page.
@@ -61,6 +62,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected page = 0;
     protected trackPosts = false;
     protected usesGroups = false;
+    protected canPin = false;
     protected syncManualObserver: any; // It will observe the sync manual event.
     protected replyObserver: any;
     protected newDiscObserver: any;
@@ -83,7 +85,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             protected forumSync: AddonModForumSyncProvider,
             protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
             protected prefetchHandler: AddonModForumPrefetchHandler,
-            protected ratingOffline: CoreRatingOfflineProvider) {
+            protected ratingOffline: CoreRatingOfflineProvider,
+            protected popoverCtrl: PopoverController) {
         super(injector);
 
         this.sortingAvailable = this.forumProvider.isDiscussionListSortingAvailable();
@@ -106,8 +109,30 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 this.eventReceived.bind(this, true));
         this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT,
                 this.eventReceived.bind(this, false));
-        this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT,
-                this.eventReceived.bind(this, false));
+        this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data) => {
+            this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
+                // If it's a new discussion in tablet mode, try to open it.
+                if (data.discussionId) {
+                    // Discussion sent to server, search it in the list of discussions.
+                    const discussion = this.discussions.find((disc) => {
+                        return data.discussionId = disc.discussion;
+                    });
+
+                    if (discussion) {
+                        if (typeof data.locked != 'undefined') {
+                            discussion.locked = data.locked;
+                        }
+                        if (typeof data.pinned != 'undefined') {
+                            discussion.pinned = data.pinned;
+                        }
+                        if (typeof data.starred != 'undefined') {
+                            discussion.starred = data.starred;
+                        }
+                    }
+
+                }
+            });
+        });
 
         // Select the current opened discussion.
         this.viewDiscObserver = this.eventsProvider.on(AddonModForumProvider.VIEW_DISCUSSION_EVENT, (data) => {
@@ -211,18 +236,30 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 });
             }
         }).then(() => {
-            return Promise.all([
-                // Check if the activity uses groups.
-                this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
-                    this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
-                }),
-                this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
-                    // Disallow adding discussions if cut-off date is reached and the user has not the capability to override it.
-                    // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
-                    const cutoffDateReached = this.forumHelper.isCutoffDateReached(this.forum) && !accessInfo.cancanoverridecutoff;
-                    this.canAddDiscussion = this.forum.cancreatediscussions && !cutoffDateReached;
-                }),
-            ]);
+            const promises = [];
+            // Check if the activity uses groups.
+            promises.push(this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
+                this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
+            }));
+            promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+                // Disallow adding discussions if cut-off date is reached and the user has not the capability to override it.
+                // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
+                const cutoffDateReached = this.forumHelper.isCutoffDateReached(this.forum) && !accessInfo.cancanoverridecutoff;
+                this.canAddDiscussion = this.forum.cancreatediscussions && !cutoffDateReached;
+            }));
+
+            if (this.forumProvider.isSetPinStateAvailableForSite()) {
+                // Use the canAddDiscussion WS to check if the user can pin discussions.
+                promises.push(this.forumProvider.canAddDiscussionToAll(this.forum.id).then((response) => {
+                    this.canPin = !!response.canpindiscussions;
+                }).catch(() => {
+                    this.canPin = false;
+                }));
+            } else {
+                this.canPin = false;
+            }
+
+            return Promise.all(promises);
         }));
 
         promises.push(this.fetchSortOrderPreference());
@@ -557,6 +594,42 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         modal.present({ev: event});
         this.sortOrderSelectorExpanded = true;
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param e Click Event.
+     */
+    showOptionsMenu(e: Event, discussion: any): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const popover = this.popoverCtrl.create(AddonForumDiscussionOptionsMenuComponent, {
+            discussion: discussion,
+            forumId: this.forum.id,
+            cmId: this.module.id
+        });
+        popover.onDidDismiss((data) => {
+            if (data && data.action) {
+                switch (data.action) {
+                    case 'lock':
+                        discussion.locked = data.value;
+                        break;
+                    case 'pin':
+                        discussion.pinned = data.value;
+                        break;
+                    case 'star':
+                        discussion.starred = data.value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        popover.present({
+            ev: e
+        });
     }
 
     /**
