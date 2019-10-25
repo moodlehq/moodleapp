@@ -27,12 +27,7 @@
     </div>
     <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
     <div no-lines>
-        <ng-container *ngFor="let attachment of post.attachments">
-            <!-- Files already attached to the submission. -->
-            <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
-            <!-- Files stored in offline to be sent later. -->
-            <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
-        </ng-container>
+        <core-files *ngIf="post.attachments && post.attachments.length > 0" [files]="post.attachments" [component]="component" [componentId]="componentId" showInline="true"></core-files>
     </div>
 </ion-card-content>
 <div class="addon-mod-forum-post-more-info">

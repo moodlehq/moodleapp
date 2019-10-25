@@ -134,6 +134,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
                 return this.resourceHelper.getEmbeddedHtml(this.module, this.courseId).then((html) => {
                     this.contentText = html;
+
+                    this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
                 });
             } else {
                 this.mode = 'external';

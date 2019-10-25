@@ -10,12 +10,6 @@
 
 <ng-container *ngIf="isShowOrListMode()">
     <div no-lines>
-        <ng-container *ngFor="let file of files">
-            <!-- Files already attached to the submission. -->
-            <core-file *ngIf="!file.name" [file]="file" [component]="component" [componentId]="componentId" [alwaysDownload]="true"></core-file>
-
-            <!-- Files stored in offline to be sent later. -->
-            <core-local-file *ngIf="file.name" [file]="file"></core-local-file>
-        </ng-container>
+        <core-files [files]="files" [component]="component" [componentId]="componentId" [alwaysDownload]="true"></core-files>
     </div>
 </ng-container>
