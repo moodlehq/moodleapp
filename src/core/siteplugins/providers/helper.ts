@@ -85,7 +85,7 @@ export class CoreSitePluginsHelperProvider {
     protected logger;
     protected courseRestrictHandlers = {};
 
-    constructor(logger: CoreLoggerProvider,
+    constructor(protected loggerProvider: CoreLoggerProvider,
             private sitesProvider: CoreSitesProvider,
             private domUtils: CoreDomUtilsProvider,
             private mainMenuDelegate: CoreMainMenuDelegate,
@@ -119,7 +119,7 @@ export class CoreSitePluginsHelperProvider {
             private blockDelegate: CoreBlockDelegate,
             private filterHelper: CoreFilterHelperProvider) {
 
-        this.logger = logger.getInstance('CoreSitePluginsHelperProvider');
+        this.logger = loggerProvider.getInstance('CoreSitePluginsHelperProvider');
 
         // Fetch the plugins on login.
         eventsProvider.on(CoreEventsProvider.LOGIN, (data) => {
@@ -834,7 +834,8 @@ export class CoreSitePluginsHelperProvider {
         const uniqueName = this.sitePluginsProvider.getHandlerUniqueName(plugin, handlerName),
             modName = (handlerSchema.moodlecomponent || plugin.component).replace('mod_', '');
 
-        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, handlerSchema, initResult));
+        this.moduleDelegate.registerHandler(new CoreSitePluginsModuleHandler(uniqueName, modName, plugin, handlerSchema,
+                initResult, this.sitePluginsProvider, this.loggerProvider));
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.

@@ -45,9 +45,10 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module The module object.
      * @param courseId The course ID.
      * @param sectionId The section ID.
+     * @param forCoursePage Whether the data will be used to render the course page.
      * @return Data to render the module.
      */
-    getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData;
+    getData(module: any, courseId: number, sectionId: number, forCoursePage: boolean): CoreCourseModuleHandlerData;
 
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
@@ -133,9 +134,14 @@ export interface CoreCourseModuleHandlerData {
     buttons?: CoreCourseModuleHandlerButton[];
 
     /**
-     * Whether to display a spinner in the module item.
+     * Whether to display a spinner where the download button is displayed. The module icon, title, etc. will be displayed.
      */
     spinner?: boolean;
+
+    /**
+     * Whether the data is being loaded. If true, it will display a spinner in the whole module, nothing else will be shown.
+     */
+    loading?: boolean;
 
     /**
      * Action to perform when the module is clicked.
@@ -251,10 +257,12 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * @param module The module object.
      * @param courseId The course ID.
      * @param sectionId The section ID.
+     * @param forCoursePage Whether the data will be used to render the course page.
      * @return Data to render the module.
      */
-    getModuleDataFor(modname: string, module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
-        return this.executeFunctionOnEnabled(modname, 'getData', [module, courseId, sectionId]);
+    getModuleDataFor(modname: string, module: any, courseId: number, sectionId: number, forCoursePage?: boolean)
+            : CoreCourseModuleHandlerData {
+        return this.executeFunctionOnEnabled(modname, 'getData', [module, courseId, sectionId, forCoursePage]);
     }
 
     /**

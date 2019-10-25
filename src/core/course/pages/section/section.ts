@@ -259,7 +259,8 @@ export class CoreCourseSectionPage implements OnDestroy {
                 }
 
                 return promise.then((completionStatus) => {
-                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus, this.course.fullname);
+                    this.courseHelper.addHandlerDataForModules(sections, this.course.id, completionStatus, this.course.fullname,
+                            true);
 
                     // Format the name of each section and check if it has content.
                     this.sections = sections.map((section) => {
