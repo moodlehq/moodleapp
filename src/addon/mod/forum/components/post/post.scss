@@ -1,4 +1,7 @@
-ion-app.app-root addon-mod-forum-post {
+ion-app.app-root addon-mod-forum-post .addon-mod_forum-post {
+    background-color: $white;
+    border-bottom: 1px solid $list-md-border-color;
+
     .addon-forum-star {
         color: $core-star-color;
     }
@@ -43,6 +46,10 @@ ion-app.app-root addon-mod-forum-post {
         .addon-mod-forum-post-info .addon-mod-forum-post-author {
             flex-grow: 1;
         }
+    }
+
+    .item .item-inner {
+        border-bottom: 0;
     }
 
     .addon-mod-forum-post-more-info div {

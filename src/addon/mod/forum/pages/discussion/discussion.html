@@ -41,9 +41,9 @@
             <core-icon name="fa-lock"></core-icon> {{ 'addon.mod_forum.discussionlocked' | translate }}
         </ion-card>
 
-        <ion-card *ngIf="discussion" margin-bottom class="highlight">
+        <div *ngIf="discussion" margin-bottom class="highlight">
             <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [defaultSubject]="defaultSubject" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
-        </ion-card>
+        </div>
 
         <ion-card *ngIf="sort != 'nested'">
             <ng-container *ngFor="let post of posts; first as first">
