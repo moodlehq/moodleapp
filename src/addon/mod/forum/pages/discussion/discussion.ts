@@ -131,13 +131,17 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.fetchPosts(true, false, true).then(() => {
-            if (this.postId) {
-                // Scroll to the post.
-                setTimeout(() => {
-                    this.domUtils.scrollToElementBySelector(this.content, '#addon-mod_forum-post-' + this.postId);
-                });
-            }
+        this.sitesProvider.getCurrentSite().getLocalSiteConfig('AddonModForumDiscussionSort', this.sort).then((value) => {
+            this.sort = value;
+        }).finally(() => {
+            this.fetchPosts(true, false, true).then(() => {
+                if (this.postId) {
+                    // Scroll to the post.
+                    setTimeout(() => {
+                        this.domUtils.scrollToElementBySelector(this.content, '#addon-mod_forum-post-' + this.postId);
+                    });
+                }
+            });
         });
     }
 
@@ -513,6 +517,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     changeSort(type: SortType): Promise<any> {
         this.discussionLoaded = false;
         this.sort = type;
+        this.sitesProvider.getCurrentSite().setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
         this.domUtils.scrollToTop(this.content);
 
         return this.fetchPosts();
