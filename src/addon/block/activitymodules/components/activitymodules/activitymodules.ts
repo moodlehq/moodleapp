@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, Injector, Input } from '@angular/core';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
@@ -36,7 +35,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
     protected fetchContentDefaultError = 'Error getting activity modules data.';
 
-    constructor(injector: Injector, protected utils: CoreUtilsProvider, protected courseProvider: CoreCourseProvider,
+    constructor(injector: Injector, protected courseProvider: CoreCourseProvider,
             protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate) {
 
         super(injector, 'AddonBlockActivityModulesComponent');

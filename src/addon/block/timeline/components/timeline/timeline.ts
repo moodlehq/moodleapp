@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, Injector } from '@angular/core';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -50,7 +49,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
 
-    constructor(injector: Injector, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
+    constructor(injector: Injector, private coursesProvider: CoreCoursesProvider,
             private timelineProvider: AddonBlockTimelineProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private coursesHelper: CoreCoursesHelperProvider, private sitesProvider: CoreSitesProvider,
             private timeUtils: CoreTimeUtilsProvider) {

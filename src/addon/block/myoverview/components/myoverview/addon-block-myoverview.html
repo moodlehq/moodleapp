@@ -18,12 +18,13 @@
     <div padding [hidden]="showFilter || !showSelectorFilter" class="safe-padding-horizontal">
         <!-- "Time" selector. -->
         <ion-select text-start [title]="'core.show' | translate" [(ngModel)]="selectedFilter" (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
-            <ion-option value="all">{{ 'addon.block_myoverview.all' | translate }}</ion-option>∫
-            <ion-option value="inprogress" [disabled]="disableInProgress">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
-            <ion-option value="future" [disabled]="disableFuture">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
-            <ion-option value="past" [disabled]="disablePast">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
-            <ion-option value="favourite" *ngIf="showFavourite" [disabled]="disableFavourite">{{ 'addon.block_myoverview.favourites' | translate }}</ion-option>
-            <ion-option value="hidden" *ngIf="showHidden" [disabled]="disableHidden">{{ 'addon.block_myoverview.hiddencourses' | translate }}</ion-option>
+            <ion-option value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">{{ 'addon.block_myoverview.allincludinghidden' | translate }}</ion-option>
+            <ion-option value="all" *ngIf="showFilters.all != 'hidden'">{{ 'addon.block_myoverview.all' | translate }}</ion-option>
+            <ion-option value="inprogress" *ngIf="showFilters.inprogress != 'hidden'" [disabled]="showFilters.inprogress == 'disabled'">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
+            <ion-option value="future" *ngIf="showFilters.future != 'hidden'" [disabled]="showFilters.future == 'disabled'">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
+            <ion-option value="past" *ngIf="showFilters.past != 'hidden'" [disabled]="showFilters.past == 'disabled'">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+            <ion-option value="favourite" *ngIf="showFilters.favourite != 'hidden'" [disabled]="showFilters.favourite == 'disabled'">{{ 'addon.block_myoverview.favourites' | translate }}</ion-option>
+            <ion-option value="hidden" *ngIf="showFilters.hidden != 'hidden'" [disabled]="showFilters.hidden == 'disabled'">{{ 'addon.block_myoverview.hiddencourses' | translate }}</ion-option>
         </ion-select>
     </div>
     <core-empty-box *ngIf="courses[selectedFilter].length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocourses' | translate"></core-empty-box>

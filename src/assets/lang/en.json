@@ -38,6 +38,7 @@
     "addon.block_glossaryrandom.pluginname": "Random glossary entry",
     "addon.block_learningplans.pluginname": "Learning plans",
     "addon.block_myoverview.all": "All (except hidden)",
+    "addon.block_myoverview.allincludinghidden": "All",
     "addon.block_myoverview.favourites": "Starred",
     "addon.block_myoverview.future": "Future",
     "addon.block_myoverview.hiddencourses": "Hidden",
