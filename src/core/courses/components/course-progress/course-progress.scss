@@ -34,7 +34,7 @@ ion-app.app-root core-courses-course-progress {
             }
         }
 
-        .core-course-shortname {
+        .core-course-additional-info {
             margin-bottom: 8px;
         }
 
@@ -113,7 +113,7 @@ ion-app.app-root .core-horizontal-scroll core-courses-course-progress {
 
         .core-course-link {
             @include padding(4px, 0px, 4px, 8px);
-            .core-course-shortname {
+            .core-course-additional-info {
                 font-size: 1.2rem;
             }
 

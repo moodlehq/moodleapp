@@ -73,10 +73,12 @@ export class CoreCoursesHelperProvider {
      *
      * @param course Course returned by core_enrol_get_users_courses.
      * @param courseByField Course returned by core_course_get_courses_by_field.
+     * @param addCategoryName Whether add category name or not.
      */
-    loadCourseExtraInfo(course: any, courseByField: any): void {
+    loadCourseExtraInfo(course: any, courseByField: any, addCategoryName: boolean = false): void {
         if (courseByField) {
             course.displayname = courseByField.displayname;
+            course.categoryname = addCategoryName ? courseByField.categoryname : null;
 
             if (courseByField.overviewfiles && courseByField.overviewfiles[0]) {
                 course.courseImage = courseByField.overviewfiles[0].fileurl;
@@ -94,33 +96,37 @@ export class CoreCoursesHelperProvider {
      * core_course_get_courses_by_field if available.
      *
      * @param courses List of courses.
+     * @param loadCategoryNames Whether load category names or not.
      * @return Promise resolved when done.
      */
-    loadCoursesExtraInfo(courses: any[]): Promise<any> {
-        if (courses[0] && typeof courses[0].overviewfiles != 'undefined' && typeof courses[0].displayname != 'undefined') {
-            // We already have the extra data. Call loadCourseExtraInfo to load the calculated fields.
-            courses.forEach((course) => {
-                this.loadCourseExtraInfo(course, course);
-            });
-
-            return Promise.resolve();
-        }
-
-        if (!courses.length || !this.coursesProvider.isGetCoursesByFieldAvailable()) {
+    loadCoursesExtraInfo(courses: any[], loadCategoryNames: boolean = false): Promise<any> {
+        if (!courses.length ) {
             // No courses or cannot get the data, stop.
             return Promise.resolve();
         }
 
-        const courseIds = courses.map((course) => {
+        const promises = [];
+        let coursesInfo = [];
+
+        let courseInfoAvalaible = false;
+
+        if (this.coursesProvider.isGetCoursesByFieldAvailable() && (loadCategoryNames ||
+                (typeof courses[0].overviewfiles == 'undefined' && typeof courses[0].displayname == 'undefined'))) {
+            const courseIds = courses.map((course) => {
                 return course.id;
             }).join(',');
 
-        // Get the extra data for the courses.
-        return this.coursesProvider.getCoursesByField('ids', courseIds).then((coursesInfo) => {
-            coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
+            courseInfoAvalaible = true;
 
+            // Get the extra data for the courses.
+            promises.push(this.coursesProvider.getCoursesByField('ids', courseIds).then((coursesInfos) => {
+                coursesInfo = this.utils.arrayToObject(coursesInfos, 'id');
+            }));
+        }
+
+        return Promise.all(promises).then(() => {
             courses.forEach((course) => {
-                this.loadCourseExtraInfo(course, coursesInfo[course.id]);
+                this.loadCourseExtraInfo(course, courseInfoAvalaible ? coursesInfo[course.id] : course, loadCategoryNames);
             });
         });
     }
@@ -131,9 +137,11 @@ export class CoreCoursesHelperProvider {
      * @param sort Sort courses after get them. If sort is not defined it won't be sorted.
      * @param slice Slice results to get the X first one. If slice > 0 it will be done after sorting.
      * @param filter Filter using some field.
+     * @param loadCategoryNames Whether load category names or not.
      * @return Courses filled with options.
      */
-    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0, filter?: string): Promise<any[]> {
+    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0, filter?: string, loadCategoryNames: boolean = false):
+            Promise<any[]> {
         return this.coursesProvider.getUserCourses().then((courses) => {
             const promises = [],
                 courseIds = courses.map((course) => {
@@ -150,7 +158,7 @@ export class CoreCoursesHelperProvider {
                 }));
             }
 
-            promises.push(this.loadCoursesExtraInfo(courses));
+            promises.push(this.loadCoursesExtraInfo(courses, loadCategoryNames));
 
             return Promise.all(promises).then(() => {
                 if (courses.length <= 0) {
