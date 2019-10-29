@@ -74,12 +74,45 @@ export class AddonModForumProvider {
 
     /**
      * Get common part of cache key for can add discussion WS calls.
+     * TODO: Use getForumDataCacheKey as a prefix.
      *
      * @param forumId Forum ID.
      * @return Cache key.
      */
     protected getCommonCanAddDiscussionCacheKey(forumId: number): string {
         return this.ROOT_CACHE_KEY + 'canadddiscussion:' + forumId + ':';
+    }
+
+    /**
+     * Get prefix cache key for all forum activity data WS calls.
+     *
+     * @param forumId Forum ID.
+     * @return Cache key.
+     */
+    protected getForumDataPrefixCacheKey(forumId: number): string {
+        return this.ROOT_CACHE_KEY + forumId;
+    }
+
+    /**
+     * Get cache key for discussion post data WS calls.
+     *
+     * @param forumId Forum ID.
+     * @param discussionId Discussion ID.
+     * @param postId Course ID.
+     * @return Cache key.
+     */
+    protected getDiscussionPostDataCacheKey(forumId: number, discussionId: number, postId: number): string {
+        return this.getForumDiscussionDataCacheKey(forumId, discussionId) + ':post:' + postId;
+    }
+
+    /**
+     * Get cache key for forum data WS calls.
+     *
+     * @param courseId Course ID.
+     * @return Cache key.
+     */
+    protected getForumDiscussionDataCacheKey(forumId: number, discussionId: number): string {
+         return this.getForumDataPrefixCacheKey(forumId) + ':discussion:' + discussionId;
     }
 
     /**
@@ -94,6 +127,7 @@ export class AddonModForumProvider {
 
     /**
      * Get cache key for forum access information WS calls.
+     * TODO: Use getForumDataCacheKey as a prefix.
      *
      * @param forumId Forum ID.
      * @return Cache key.
@@ -104,6 +138,7 @@ export class AddonModForumProvider {
 
     /**
      * Get cache key for forum discussion posts WS calls.
+     * TODO: Use getForumDiscussionDataCacheKey instead.
      *
      * @param discussionId Discussion ID.
      * @return Cache key.
@@ -219,6 +254,24 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Delete a post.
+     *
+     * @param postId Post id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     * @since 3.8
+     */
+    deletePost(postId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                postid: postId
+            };
+
+            return site.write('mod_forum_delete_post', params);
+        });
+    }
+
+    /**
      * Extract the starting post of a discussion from a list of posts. The post is removed from the array passed as a parameter.
      *
      * @param posts Posts to search.
@@ -242,6 +295,26 @@ export class AddonModForumProvider {
      */
     isAllParticipantsFixed(): boolean {
         return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
+    }
+
+    /**
+     * Returns whether or not getDiscussionPost WS available or not.
+     *
+     * @return If WS is avalaible.
+     * @since 3.8
+     */
+    isGetDiscussionPostAvailable(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('mod_forum_get_discussion_post');
+    }
+
+    /**
+     * Returns whether or not deletePost WS available or not.
+     *
+     * @return If WS is avalaible.
+     * @since 3.8
+     */
+    isDeletePostAvailable(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('mod_forum_delete_post');
     }
 
     /**
@@ -303,6 +376,35 @@ export class AddonModForumProvider {
             };
 
             return site.read('mod_forum_get_forums_by_courses', params, preSets);
+        });
+    }
+
+    /**
+     * Get a particular discussion post.
+     *
+     * @param forumId Forum ID.
+     * @param discussionId Discussion ID.
+     * @param postId Post ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the post is retrieved.
+     */
+    getDiscussionPost(forumId: number, discussionId: number, postId: number, siteId?: string): Promise<any> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                postid: postId
+            };
+            const preSets = {
+                cacheKey: this.getDiscussionPostDataCacheKey(forumId, discussionId, postId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY
+            };
+
+            return site.read('mod_forum_get_discussion_post', params, preSets).then((response) => {
+                if (response.post) {
+                    return response.post;
+                } else {
+                    return Promise.reject(null);
+                }
+            });
         });
     }
 
@@ -641,7 +743,7 @@ export class AddonModForumProvider {
                     const promises = [];
 
                     response.discussions.forEach((discussion) => {
-                        promises.push(this.invalidateDiscussionPosts(discussion.discussion));
+                        promises.push(this.invalidateDiscussionPosts(discussion.discussion, forum.id));
                     });
 
                     return this.utils.allPromises(promises);
@@ -673,12 +775,19 @@ export class AddonModForumProvider {
      * Invalidates forum discussion posts.
      *
      * @param discussionId Discussion ID.
+     * @param forumId Forum ID. If not set, we can't invalidate individual post information.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateDiscussionPosts(discussionId: number, siteId?: string): Promise<any> {
+    invalidateDiscussionPosts(discussionId: number, forumId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getDiscussionPostsCacheKey(discussionId));
+            const promises = [site.invalidateWsCacheForKey(this.getDiscussionPostsCacheKey(discussionId))];
+
+            if (forumId) {
+                promises.push(site.invalidateWsCacheForKeyStartingWith(this.getForumDiscussionDataCacheKey(forumId, discussionId)));
+            }
+
+            return this.utils.allPromises(promises);
         });
     }
 
@@ -844,7 +953,7 @@ export class AddonModForumProvider {
      * @param discussionId DIscussion id.
      * @param locked True to lock, false to unlock.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resvoled when done.
+     * @return Promise resolved when done.
      * @since 3.7
      */
     setLockState(forumId: number, discussionId: number, locked: boolean, siteId?: string): Promise<any> {
@@ -878,7 +987,7 @@ export class AddonModForumProvider {
      * @param discussionId Discussion id.
      * @param locked True to pin, false to unpin.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resvoled when done.
+     * @return Promise resolved when done.
      * @since 3.7
      */
     setPinState(discussionId: number, pinned: boolean, siteId?: string): Promise<any> {
@@ -898,7 +1007,7 @@ export class AddonModForumProvider {
      * @param discussionId Discussion id.
      * @param starred True to star, false to unstar.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resvoled when done.
+     * @return Promise resolved when done.
      * @since 3.7
      */
     toggleFavouriteState(discussionId: number, starred: boolean, siteId?: string): Promise<any> {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, OnDestroy, ViewChild, NgZone } from '@angular/core';
-import { IonicPage, NavParams, Content } from 'ionic-angular';
+import { IonicPage, NavParams, Content, NavController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -46,8 +46,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
     courseId: number;
     discussionId: number;
-    forum: any;
-    accessInfo: any;
+    forum: any = {};
+    accessInfo: any = {};
     discussion: any;
     posts: any[];
     discussionLoaded = false;
@@ -106,7 +106,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             private forumHelper: AddonModForumHelperProvider,
             private forumSync: AddonModForumSyncProvider,
             private ratingOffline: CoreRatingOfflineProvider,
-            @Optional() private svComponent: CoreSplitViewComponent) {
+            @Optional() private svComponent: CoreSplitViewComponent,
+            protected navCtrl: NavController) {
         this.courseId = navParams.get('courseId');
         this.cmId = navParams.get('cmId');
         this.forumId = navParams.get('forumId');
@@ -190,17 +191,32 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         });
 
         this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data) => {
-            this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
-                if (typeof data.locked != 'undefined') {
-                    this.discussion.locked = data.locked;
-                }
-                if (typeof data.pinned != 'undefined') {
-                    this.discussion.pinned = data.pinned;
-                }
-                if (typeof data.starred != 'undefined') {
-                    this.discussion.starred = data.starred;
-                }
-            });
+            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.cmId) {
+                this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
+                    if (typeof data.locked != 'undefined') {
+                        this.discussion.locked = data.locked;
+                    }
+                    if (typeof data.pinned != 'undefined') {
+                        this.discussion.pinned = data.pinned;
+                    }
+                    if (typeof data.starred != 'undefined') {
+                        this.discussion.starred = data.starred;
+                    }
+
+                    if (typeof data.deleted != 'undefined' && data.deleted) {
+                        if (data.post.parent == 0) {
+                            if (this.svComponent && this.svComponent.isOn()) {
+                                this.svComponent.emptyDetails();
+                            } else {
+                                this.navCtrl.pop();
+                            }
+                        } else {
+                            this.discussionLoaded = false;
+                            this.refreshPosts();
+                        }
+                    }
+                });
+            }
         });
     }
 
@@ -358,8 +374,6 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 return Promise.all(promises);
             }).catch(() => {
                 // Ignore errors.
-                this.forum = {};
-                this.accessInfo = {};
             }).then(() => {
                 this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' +
                     (this.discussion ? this.discussion.subject : '');
@@ -496,7 +510,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
         const promises = [
             this.forumProvider.invalidateForumData(this.courseId),
-            this.forumProvider.invalidateDiscussionPosts(this.discussionId),
+            this.forumProvider.invalidateDiscussionPosts(this.discussionId, this.forumId),
             this.forumProvider.invalidateAccessInformation(this.forumId),
             this.forumProvider.invalidateCanAddDiscussion(this.forumId)
         ];

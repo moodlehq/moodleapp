@@ -326,7 +326,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                     updated = true;
 
                     // Invalidate discussions of updated ratings.
-                    promises.push(this.forumProvider.invalidateDiscussionPosts(result.itemSet.itemSetId, siteId));
+                    promises.push(this.forumProvider.invalidateDiscussionPosts(result.itemSet.itemSetId, undefined, siteId));
                 }
                 if (result.warnings.length) {
                     // Fetch forum to construct the warning message.
@@ -502,7 +502,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
             if (forumId) {
                 promises.push(this.forumProvider.invalidateDiscussionsList(forumId, siteId));
             }
-            promises.push(this.forumProvider.invalidateDiscussionPosts(discussionId, siteId));
+            promises.push(this.forumProvider.invalidateDiscussionPosts(discussionId, forumId, siteId));
 
             return this.utils.allPromises(promises).catch(() => {
                 // Ignore errors.

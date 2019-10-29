@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, Injector, ViewChild } from '@angular/core';
-import { Content, ModalController, NavController, PopoverController } from 'ionic-angular';
+import { Content, ModalController, PopoverController } from 'ionic-angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -75,7 +75,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     constructor(injector: Injector,
             @Optional() protected content: Content,
-            protected navCtrl: NavController,
             protected modalCtrl: ModalController,
             protected groupsProvider: CoreGroupsProvider,
             protected userProvider: CoreUserProvider,
@@ -110,28 +109,36 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT,
                 this.eventReceived.bind(this, false));
         this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data) => {
-            this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
-                // If it's a new discussion in tablet mode, try to open it.
-                if (data.discussionId) {
-                    // Discussion sent to server, search it in the list of discussions.
-                    const discussion = this.discussions.find((disc) => {
-                        return data.discussionId = disc.discussion;
-                    });
+            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module.id) {
+                this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
+                    if (data.discussionId) {
+                        // Discussion changed, search it in the list of discussions.
+                        const discussion = this.discussions.find((disc) => {
+                            return data.discussionId = disc.discussion;
+                        });
 
-                    if (discussion) {
-                        if (typeof data.locked != 'undefined') {
-                            discussion.locked = data.locked;
-                        }
-                        if (typeof data.pinned != 'undefined') {
-                            discussion.pinned = data.pinned;
-                        }
-                        if (typeof data.starred != 'undefined') {
-                            discussion.starred = data.starred;
+                        if (discussion) {
+                            if (typeof data.locked != 'undefined') {
+                                discussion.locked = data.locked;
+                            }
+                            if (typeof data.pinned != 'undefined') {
+                                discussion.pinned = data.pinned;
+                            }
+                            if (typeof data.starred != 'undefined') {
+                                discussion.starred = data.starred;
+                            }
                         }
                     }
 
-                }
-            });
+                    if (typeof data.deleted != 'undefined' && data.deleted) {
+                        if (data.post.parent == 0 && this.splitviewCtrl && this.splitviewCtrl.isOn()) {
+                            // Discussion deleted, clear details page.
+                            this.splitviewCtrl.emptyDetails();
+                        }
+                        this.showLoadingAndRefresh(false);
+                    }
+                });
+            }
         });
 
         // Select the current opened discussion.
