@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, ViewContainerRef } from '@angular/core';
 import { CoreFilterHandler } from './delegate';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
 import { CoreSite } from '@classes/site';
@@ -50,11 +50,12 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
      * @param container The HTML container to handle.
      * @param filter The filter.
      * @param options Options passed to the filters.
+     * @param viewContainerRef The ViewContainerRef where the container is.
      * @param siteId Site ID. If not defined, current site.
      * @return If async, promise resolved when done.
      */
-    handleHtml(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string)
-            : void | Promise<void> {
+    handleHtml(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions,
+            viewContainerRef: ViewContainerRef, siteId?: string): void | Promise<void> {
         // To be overridden.
     }
 

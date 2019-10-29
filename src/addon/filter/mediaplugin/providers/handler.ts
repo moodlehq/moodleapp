@@ -27,6 +27,8 @@ export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
     name = 'AddonFilterMediaPluginHandler';
     filterName = 'mediaplugin';
 
+    protected template = document.createElement('template'); // A template element to convert HTML to element.
+
     constructor(private textUtils: CoreTextUtilsProvider,
             private urlUtils: CoreUrlUtilsProvider) {
         super();
@@ -44,16 +46,15 @@ export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
     filter(text: string, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string)
             : string | Promise<string> {
 
-        const div = document.createElement('div');
-        div.innerHTML = text;
+        this.template.innerHTML = text;
 
-        const videos = Array.from(div.querySelectorAll('video'));
+        const videos = Array.from(this.template.content.querySelectorAll('video'));
 
         videos.forEach((video) => {
             this.treatVideoFilters(video);
         });
 
-        return div.innerHTML;
+        return this.template.innerHTML;
     }
 
     /**

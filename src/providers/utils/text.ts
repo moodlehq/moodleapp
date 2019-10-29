@@ -514,10 +514,9 @@ export class CoreTextUtilsProvider {
             return true;
         }
 
-        const div = document.createElement('div');
-        div.innerHTML = content;
+        this.template.innerHTML = content;
 
-        return div.textContent === '' && div.querySelector('img, object, hr') === null;
+        return this.template.textContent === '' && this.template.content.querySelector('img, object, hr') === null;
     }
 
     /**

@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
+import {
+    Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional, ViewContainerRef
+} from '@angular/core';
 import { Platform, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -90,7 +92,8 @@ export class CoreFormatTextDirective implements OnChanges {
             private eventsProvider: CoreEventsProvider,
             private filterProvider: CoreFilterProvider,
             private filterHelper: CoreFilterHelperProvider,
-            private filterDelegate: CoreFilterDelegate) {
+            private filterDelegate: CoreFilterDelegate,
+            private viewContainerRef: ViewContainerRef) {
 
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
@@ -371,7 +374,8 @@ export class CoreFormatTextDirective implements OnChanges {
 
             if (result.options.filter) {
                 // Let filters hnadle HTML. We do it here because we don't want them to block the render of the text.
-                this.filterDelegate.handleHtml(this.element, result.filters, result.options, [], result.siteId);
+                this.filterDelegate.handleHtml(this.element, result.filters, this.viewContainerRef, result.options, [],
+                        result.siteId);
             }
 
             this.element.classList.remove('core-disable-media-adapt');

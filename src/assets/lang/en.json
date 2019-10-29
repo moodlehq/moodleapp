@@ -1550,6 +1550,7 @@
     "core.group": "Group",
     "core.groupsseparate": "Separate groups",
     "core.groupsvisible": "Visible groups",
+    "core.h5p.play": "Play H5P",
     "core.hasdatatosync": "This {{$a}} has offline data to be synchronised.",
     "core.help": "Help",
     "core.hide": "Hide",
