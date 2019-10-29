@@ -1,24 +1,24 @@
 <div class="addon-mod_forum-post">
     <ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
         <ion-item text-wrap>
-            <div class="addon-mod-forum-post-title">
+            <div class="addon-mod-forum-post-title" *ngIf="displaySubject">
                 <h2 text-wrap>
                     <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
                     <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
                     <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
                 </h2>
-                <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                    <core-icon name="fa-circle" color="primary"></core-icon>
-                </ion-note>
             </div>
             <div class="addon-mod-forum-post-info">
-                <ion-avatar core-user-avatar [user]="post" item-start [courseId]="courseId"></ion-avatar>
+                <ion-avatar *ngIf="post.userfullname" core-user-avatar [user]="post" item-start [courseId]="courseId"></ion-avatar>
                 <div class="addon-mod-forum-post-author">
-                    <h3>{{post.userfullname}}</h3>
+                    <h3 *ngIf="post.userfullname">{{post.userfullname}}</h3>
                     <p *ngIf="post.groupname"><ion-icon name="people"></ion-icon> {{ post.groupname }}</p>
                     <p *ngIf="post.modified">{{post.modified * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
                     <p *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
                 </div>
+                <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                    <core-icon name="fa-circle" color="primary"></core-icon>
+                </ion-note>
             </div>
         </ion-item>
     </ion-card-header>

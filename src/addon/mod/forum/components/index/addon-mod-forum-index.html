@@ -70,9 +70,9 @@
                             </button>
                         </div>
                         <div class="addon-mod-forum-discussion-info">
-                            <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
+                            <ion-avatar *ngIf="discussion.userfullname" core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
                             <div class="addon-mod-forum-discussion-author">
-                                <h3>{{discussion.userfullname}}</h3>
+                                <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
                                 <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
                                 <p>{{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
                             </div>

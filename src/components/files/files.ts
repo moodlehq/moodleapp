@@ -61,7 +61,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
      */
     ngDoCheck(): void {
         if (this.utils.isTrueOrOne(this.showInline)) {
-            // Check if there's any change in the extraData object.
+            // Check if there's any change in the files array.
             const changes = this.differ.diff(this.files);
             if (changes) {
                 this.renderInlineFiles();
@@ -69,6 +69,9 @@ export class CoreFilesComponent implements OnInit, DoCheck {
         }
     }
 
+    /**
+     * Calculate contentText based on fils that can be rendered inline.
+     */
     protected renderInlineFiles(): void {
         this.contentText = this.files.reduce((previous, file) => {
             const text = this.mimetypeUtils.getEmbeddedHtml(file);
