@@ -43,51 +43,52 @@
                 </div>
 
                 <ng-container *ngFor="let discussion of offlineDiscussions">
-                    <ion-item text-wrap (click)="openNewDiscussion(discussion.timecreated)" [attr.no-lines]="discussion.groupname" [class.core-split-item-selected]="discussion.timecreated == -selectedDiscussion">
-                        <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
-                        <h2><core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></h2>
-                        <h3 *ngIf="discussion.userfullname">
-                            <ion-note float-end padding-left><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
-                            {{discussion.userfullname}}
-                        </h3>
-                    </ion-item>
-                    <ion-item *ngIf="discussion.groupname" (click)="openNewDiscussion(discussion.timecreated)" [class.core-split-item-selected]="discussion.timecreated == -selectedDiscussion">
-                        <ion-note text-end>
-                            <ion-icon name="people"></ion-icon> {{ discussion.groupname }}
-                        </ion-note>
+                    <ion-item text-wrap (click)="openNewDiscussion(discussion.timecreated)" [attr.no-lines]="discussion.groupname" [class.core-split-item-selected]="discussion.timecreated == -selectedDiscussion" class="addon-mod-forum-discussion">
+                        <div class="addon-mod-forum-discussion-title">
+                            <h2>
+                                <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
+                            </h2>
+                        </div>
+                        <div class="addon-mod-forum-discussion-info">
+                            <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId" *ngIf="discussion.userfullname"></ion-avatar>
+                            <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
+                            <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
+                            <p><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                        </div>
                     </ion-item>
                 </ng-container>
                 <ng-container *ngFor="let discussion of discussions">
-                    <ion-item text-wrap (click)="openDiscussion(discussion)" no-lines [class.core-split-item-selected]="discussion.discussion == selectedDiscussion">
-                        <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
-                        <h2>
-                            <core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon>
-                            <core-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></core-icon>
-                            <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
-                        </h2>
-                        <h3>
-                            <ion-note float-end padding-left text-end>
-                                <div *ngIf="discussion.numunread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}</div>
-                            </ion-note>
-                            {{discussion.userfullname}}
-                        </h3>
-                        <p>{{discussion.created | coreDateDayOrTime}}</p>
-                    </ion-item>
-                    <ion-item (click)="openDiscussion(discussion)" [class.core-split-item-selected]="discussion.discussion == selectedDiscussion">
-                        <ion-row text-center>
-                            <ion-col *ngIf="discussion.groupname">
+                    <ion-item (click)="openDiscussion(discussion)" [class.core-split-item-selected]="discussion.discussion == selectedDiscussion" class="addon-mod-forum-discussion">
+                        <div class="addon-mod-forum-discussion-title">
+                            <h2 text-wrap>
+                                <core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon>
+                                <core-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></core-icon>
+                                <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
+                            </h2>
+                            <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event, discussion)" *ngIf="canPin || discussion.canlock || discussion.canfavourite">
+                                <core-icon name="more"></core-icon>
+                            </button>
+                        </div>
+                        <div class="addon-mod-forum-discussion-info">
+                            <ion-avatar *ngIf="discussion.userfullname" core-user-avatar [user]="discussion" item-start [courseId]="courseId"></ion-avatar>
+                            <div class="addon-mod-forum-discussion-author">
+                                <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
+                                <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
+                                <p>{{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
+                            </div>
+                        </div>
+                        <ion-row text-center class="addon-mod-forum-discussion-more-info">
+                            <ion-col text-start>
                                 <ion-note>
-                                    <ion-icon name="people"></ion-icon> {{ discussion.groupname }}
+                                    <ion-icon name="time"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
+                                    <ng-container *ngIf="discussion.timemodified > discussion.created">{{discussion.timemodified | coreTimeAgo}}</ng-container>
+                                    <ng-container *ngIf="discussion.timemodified <= discussion.created">{{discussion.created | coreTimeAgo}}</ng-container>
                                 </ion-note>
                             </ion-col>
-                            <ion-col>
+                            <ion-col text-end>
                                 <ion-note>
                                     <ion-icon name="chatboxes"></ion-icon> {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
-                                </ion-note>
-                            </ion-col>
-                            <ion-col *ngIf="discussion.timemodified > discussion.created">
-                                <ion-note>
-                                    <ion-icon name="time"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }} {{discussion.timemodified | coreTimeAgo}}
+                                    <ion-badge text-center *ngIf="discussion.numunread" [attr.aria-label]="'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread}">{{ discussion.numunread }}</ion-badge>
                                 </ion-note>
                             </ion-col>
                         </ion-row>

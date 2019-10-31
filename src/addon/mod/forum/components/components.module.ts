@@ -24,11 +24,13 @@ import { CoreRatingComponentsModule } from '@core/rating/components/components.m
 import { CoreTagComponentsModule } from '@core/tag/components/components.module';
 import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
+import { AddonForumDiscussionOptionsMenuComponent } from './discussion-options-menu/discussion-options-menu';
 
 @NgModule({
     declarations: [
         AddonModForumIndexComponent,
-        AddonModForumPostComponent
+        AddonModForumPostComponent,
+        AddonForumDiscussionOptionsMenuComponent
     ],
     imports: [
         CommonModule,
@@ -45,10 +47,12 @@ import { AddonModForumPostComponent } from './post/post';
     ],
     exports: [
         AddonModForumIndexComponent,
-        AddonModForumPostComponent
+        AddonModForumPostComponent,
+        AddonForumDiscussionOptionsMenuComponent
     ],
     entryComponents: [
-        AddonModForumIndexComponent
+        AddonModForumIndexComponent,
+        AddonForumDiscussionOptionsMenuComponent
     ]
 })
 export class AddonModForumComponentsModule {}

@@ -2,13 +2,7 @@
 <ion-item text-wrap *ngIf="files && files.length && !edit">
     <h2>{{plugin.name}}</h2>
     <div no-lines>
-        <ng-container *ngFor="let file of files">
-            <!-- Files already attached to the submission. -->
-            <core-file *ngIf="!file.name" [file]="file" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-file>
-
-            <!-- Files stored in offline to be sent later. -->
-            <core-local-file *ngIf="file.name" [file]="file"></core-local-file>
-        </ng-container>
+        <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-files>
     </div>
 </ion-item>
 

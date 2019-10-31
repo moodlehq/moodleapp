@@ -1,0 +1,24 @@
+<ion-item text-wrap (click)="setLockState(true)" *ngIf="discussion.canlock && !discussion.locked">
+    <core-icon name="fa-lock" item-start></core-icon>
+    <h2>{{ 'addon.mod_forum.lockdiscussion' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="setLockState(false)" *ngIf="discussion.canlock && discussion.locked">
+    <core-icon name="fa-unlock" item-start></core-icon>
+    <h2>{{ 'addon.mod_forum.unlockdiscussion' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="setPinState(true)" *ngIf="canPin && !discussion.pinned">
+    <core-icon name="fa-map-pin" item-start></core-icon>
+    <h2>{{ 'addon.mod_forum.pindiscussion' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="setPinState(false)" *ngIf="canPin && discussion.pinned">
+    <core-icon name="fa-map-pin" item-start [slash]="true"></core-icon>
+    <h2>{{ 'addon.mod_forum.unpindiscussion' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="toggleFavouriteState(true)" *ngIf="discussion.canfavourite && !discussion.starred">
+    <core-icon name="fa-star" item-start></core-icon>
+    <h2>{{ 'addon.mod_forum.addtofavourites' | translate }}</h2>
+</ion-item>
+<ion-item text-wrap (click)="toggleFavouriteState(false)" *ngIf="discussion.canfavourite && discussion.starred">
+    <core-icon name="fa-star" item-start [slash]="true"></core-icon>
+    <h2>{{ 'addon.mod_forum.removefromfavourites' | translate }}</h2>
+</ion-item>

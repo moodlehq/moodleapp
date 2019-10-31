@@ -53,23 +53,7 @@ export class AddonModResourceHelperProvider {
     getEmbeddedHtml(module: any, courseId: number): Promise<any> {
         return this.courseHelper.downloadModuleWithMainFileIfNeeded(module, courseId, AddonModResourceProvider.COMPONENT,
                 module.id, module.contents).then((result) => {
-            const file = module.contents[0],
-                ext = this.mimetypeUtils.getFileExtension(file.filename),
-                type = this.mimetypeUtils.getExtensionType(ext),
-                mimeType = this.mimetypeUtils.getMimeType(ext);
-
-            if (type == 'image') {
-                return '<img src="' + result.path + '"></img>';
-            }
-
-            if (type == 'audio' || type == 'video') {
-                return '<' + type + ' controls title="' + file.filename + '"" src="' + result.path + '">' +
-                    '<source src="' + result.path + '" type="' + mimeType + '">' +
-                    '</' + type + '>';
-            }
-
-            // Shouldn't reach here, the user should have called CoreMimetypeUtilsProvider#canBeEmbedded.
-            return '';
+            return this.mimetypeUtils.getEmbeddedHtml(module.contents[0], result.path);
         });
     }
 

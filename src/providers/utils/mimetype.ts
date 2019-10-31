@@ -139,6 +139,40 @@ export class CoreMimetypeUtilsProvider {
     }
 
     /**
+     * Set the embed type to display an embedded file and mimetype if not found.
+     *
+     * @param file File object.
+     * @paran path Alternative path that will override fileurl from file object.
+     */
+    getEmbeddedHtml(file: any, path?: string): string {
+        let ext;
+
+        if (file.mimetype) {
+            ext = this.getExtension(file.mimetype);
+        } else {
+            ext = this.getFileExtension(file.filename);
+            file.mimetype = this.getMimeType(ext);
+        }
+
+        if (this.canBeEmbedded(ext)) {
+            file.embedType = this.getExtensionType(ext);
+
+            path = path || file.fileurl;
+
+            if (file.embedType == 'image') {
+                return '<img src="' + path + '">';
+            }
+            if (file.embedType == 'audio' || file.embedType == 'video') {
+                return '<' + file.embedType + ' controls title="' + file.filename + '" src="' + path + '">' +
+                    '<source src="' + path + '" type="' + file.mimetype + '">' +
+                    '</' + file.embedType + '>';
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * Get the URL of the icon of an extension.
      *
      * @param extension Extension.

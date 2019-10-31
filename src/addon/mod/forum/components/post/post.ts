@@ -54,6 +54,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     uniqueId: string;
     advanced = false; // Display all form fields.
     tagsEnabled: boolean;
+    displaySubject = true;
 
     protected syncId: string;
 
@@ -78,6 +79,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parent;
+
+        const reTranslated = this.translate.instant('addon.mod_forum.re');
+        this.displaySubject = this.post.parent == 0 ||
+            (this.post.subject != this.defaultSubject && this.post.subject != 'Re: ' + this.defaultSubject &&
+                this.post.subject != reTranslated + this.defaultSubject);
     }
 
     /**

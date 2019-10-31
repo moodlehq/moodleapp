@@ -35,7 +35,7 @@ export class AddonModForumProvider {
     static NEW_DISCUSSION_EVENT = 'addon_mod_forum_new_discussion';
     static REPLY_DISCUSSION_EVENT = 'addon_mod_forum_reply_discussion';
     static VIEW_DISCUSSION_EVENT = 'addon_mod_forum_view_discussion';
-    static CHANGE_DISCUSSION_EVENT = 'addon_mod_forum_lock_discussion';
+    static CHANGE_DISCUSSION_EVENT = 'addon_mod_forum_change_discussion_status';
     static MARK_READ_EVENT = 'addon_mod_forum_mark_read';
 
     static PREFERENCE_SORTORDER = 'forum_discussionlistsortorder';

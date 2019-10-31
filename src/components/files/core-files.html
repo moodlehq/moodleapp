@@ -1,0 +1,9 @@
+<ng-container *ngIf="showInline && contentText">
+    <core-format-text [text]="contentText" [filter]="false"></core-format-text>
+</ng-container>
+<ng-container *ngFor="let file of files">
+    <!-- Files already attached to the filearea. -->
+    <core-file *ngIf="!file.name && !file.embedType" [file]="file" [component]="component" [componentId]="componentId" [alwaysDownload]="alwaysDownload" [canDownload]="canDownload" [showSize]="showSize" [showTime]="showTime"></core-file>
+    <!-- Files stored in offline to be sent later. -->
+    <core-local-file *ngIf="file.name && !file.embedType" [file]="file"></core-local-file>
+</ng-container>
