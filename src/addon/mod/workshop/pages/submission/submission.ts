@@ -461,7 +461,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
      * Perform the submission delete action.
      */
     deleteSubmission(): void {
-        this.domUtils.showConfirm(this.translate.instant('addon.mod_workshop.submissiondeleteconfirm')).then(() => {
+        this.domUtils.showDeleteConfirm('addon.mod_workshop.submissiondeleteconfirm').then(() => {
             const modal = this.domUtils.showModalLoading('core.deleting', true);
             let success = false;
             this.workshopProvider.deleteSubmission(this.workshopId, this.submissionId, this.courseId).then(() => {

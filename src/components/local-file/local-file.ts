@@ -172,8 +172,8 @@ export class CoreLocalFileComponent implements OnInit {
         e.stopPropagation();
 
         // Ask confirmation.
-        this.domUtils.showConfirm(this.translate.instant('core.confirmdeletefile')).then(() => {
-            const modal = this.domUtils.showModalLoading();
+        this.domUtils.showDeleteConfirm('core.confirmdeletefile').then(() => {
+            const modal = this.domUtils.showModalLoading('core.deleting', true);
 
             return this.fileProvider.removeFile(this.relativePath).then(() => {
                 this.onDelete.emit();

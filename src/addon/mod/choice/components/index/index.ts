@@ -372,7 +372,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * Delete options selected.
      */
     delete(): void {
-        this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
+        this.domUtils.showDeleteConfirm().then(() => {
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.choiceProvider.deleteResponses(this.choice.id, this.choice.name, this.courseId).then(() => {
                 this.domUtils.scrollToTop(this.content);

@@ -324,8 +324,8 @@ export class CoreCommentsViewerPage implements OnDestroy {
         comment.itemid = this.itemId;
         comment.area = this.area;
 
-        this.domUtils.showConfirm(this.translate.instant('core.comments.deletecommentbyon', {$a:
-                { user: comment.fullname || '', time: time } })).then(() => {
+        this.domUtils.showDeleteConfirm('core.comments.deletecommentbyon', {$a:
+                { user: comment.fullname || '', time: time } }).then(() => {
             this.commentsProvider.deleteComment(comment).then(() => {
                 this.showDelete = false;
 
