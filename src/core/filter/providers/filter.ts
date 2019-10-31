@@ -402,7 +402,7 @@ export type CoreFilterFilter = {
  */
 export type CoreFilterGetAvailableInContextResult = {
     filters: CoreFilterFilter[]; // Available filters.
-    warning: CoreWSExternalWarning[]; // List of warnings.
+    warnings: CoreWSExternalWarning[]; // List of warnings.
 };
 
 /**

@@ -369,9 +369,6 @@ $core-question-state-incorrect-color: $red-light !default;
 $core-dd-question-selected-shadow: 2px 2px 4px $gray-dark !default;
 $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
 
-// H5P variables.
-$core-h5p-placeholder-bg-color: $gray-dark !default;
-
 // Mixins
 // -------------------------
 @mixin core-transition($where: all, $time: 500ms) {

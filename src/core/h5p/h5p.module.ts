@@ -14,6 +14,12 @@
 
 import { NgModule } from '@angular/core';
 import { CoreH5PComponentsModule } from './components/components.module';
+import { CoreH5PProvider } from './providers/h5p';
+
+// List of providers (without handlers).
+export const CORE_H5P_PROVIDERS: any[] = [
+    CoreH5PProvider
+];
 
 @NgModule({
     declarations: [],
@@ -21,6 +27,7 @@ import { CoreH5PComponentsModule } from './components/components.module';
         CoreH5PComponentsModule
     ],
     providers: [
+        CoreH5PProvider
     ],
     exports: []
 })
