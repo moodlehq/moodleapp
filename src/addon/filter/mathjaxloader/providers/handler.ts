@@ -1,5 +1,4 @@
-
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +48,6 @@ export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
 
     // List of explicit mappings and known exceptions (moodle => mathjax).
     protected EXPLICIT_MAPPING = {
-            'cz': 'cs',
             'zh-tw': 'zh-hant',
             'zh-cn': 'zh-hans',
         };
@@ -115,7 +113,6 @@ export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
 
             // We cannot get the filter settings, so we cannot know if it can be used as a replacement for the TeX filter.
             // Assume it cannot (default value).
-
             let hasDisplayOrInline = false;
             if (text.match(/\\[\[\(]/) || text.match(/\$\$/)) {
                 // Only parse the text if there are mathjax symbols in it.
@@ -170,7 +167,7 @@ export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
     /**
      * Check if the JS library has been loaded.
      *
-     * @return {boolean} Whether the library has been loaded.
+     * @return Whether the library has been loaded.
      */
     protected jsLoaded(): boolean {
         return this.window.M && this.window.M.filter_mathjaxloader;

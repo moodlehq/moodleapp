@@ -71,7 +71,7 @@ export class CoreFilterHelperProvider {
      */
     getCourseModulesContexts(courseId: number, siteId?: string): Promise<{contextlevel: string, instanceid: number}[]> {
 
-        return this.courseProvider.getSections(courseId, false, true, {omitExpires: true}, siteId).then((sections) => {
+        return this.courseProvider.getSections(courseId, false, true, undefined, siteId).then((sections) => {
             const contexts: {contextlevel: string, instanceid: number}[] = [];
 
             sections.forEach((section) => {
