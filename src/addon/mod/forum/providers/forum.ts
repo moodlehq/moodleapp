@@ -318,6 +318,16 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Returns whether or not updatePost WS available or not.
+     *
+     * @return If WS is avalaible.
+     * @since 3.8
+     */
+    isUpdatePostAvailable(): boolean {
+        return this.sitesProvider.wsAvailableInCurrentSite('mod_forum_update_discussion_post');
+    }
+
+    /**
      * Format discussions, setting groupname if the discussion group is valid.
      *
      * @param cmId Forum cmid.
@@ -385,18 +395,24 @@ export class AddonModForumProvider {
      * @param forumId Forum ID.
      * @param discussionId Discussion ID.
      * @param postId Post ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the post is retrieved.
      */
-    getDiscussionPost(forumId: number, discussionId: number, postId: number, siteId?: string): Promise<any> {
+    getDiscussionPost(forumId: number, discussionId: number, postId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
-                postid: postId
-            };
-            const preSets = {
-                cacheKey: this.getDiscussionPostDataCacheKey(forumId, discussionId, postId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
-            };
+                    postid: postId
+                },
+                preSets: CoreSiteWSPreSets = {
+                    cacheKey: this.getDiscussionPostDataCacheKey(forumId, discussionId, postId),
+                    updateFrequency: CoreSite.FREQUENCY_USUALLY
+                };
+
+            if (ignoreCache) {
+                preSets.getFromCache = false;
+                preSets.emergencyCache = false;
+            }
 
             return site.read('mod_forum_get_discussion_post', params, preSets).then((response) => {
                 if (response.post) {
@@ -1049,5 +1065,30 @@ export class AddonModForumProvider {
         });
 
         this.userProvider.storeUsers(this.utils.objectToArray(users));
+    }
+
+    /**
+     * Update a certain post.
+     *
+     * @param postId ID of the post being edited.
+     * @param subject New post's subject.
+     * @param message New post's message.
+     * @param options Options (subscribe, attachments, ...).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with success boolean when done.
+     */
+    updatePost(postId: number, subject: string, message: string, options?: any, siteId?: string): Promise<boolean> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const params = {
+                postid: postId,
+                subject: subject,
+                message: message,
+                options: this.utils.objectToArrayOfObjects(options, 'name', 'value')
+            };
+
+            return site.write('mod_forum_update_discussion_post', params).then((response) => {
+                return response && response.status;
+            });
+        });
     }
 }

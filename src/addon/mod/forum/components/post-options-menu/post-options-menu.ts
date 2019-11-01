@@ -46,9 +46,9 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
     ngOnInit(): void {
         if (this.forumId) {
             if (this.post.id) {
-                this.forumProvider.getDiscussionPost(this.forumId, this.post.discussion, this.post.id).then((post) => {
+                this.forumProvider.getDiscussionPost(this.forumId, this.post.discussion, this.post.id, true).then((post) => {
                     this.canDelete = post.capabilities.delete && this.forumProvider.isDeletePostAvailable();
-                    this.canEdit = false;
+                    this.canEdit = post.capabilities.edit && this.forumProvider.isUpdatePostAvailable();
                     this.wordCount = post.wordcount;
                 }).catch((error) => {
                     this.domUtils.showErrorModalDefault(error, 'Error getting discussion post.');

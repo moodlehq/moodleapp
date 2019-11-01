@@ -7,6 +7,9 @@
                     <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
                     <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
                 </h2>
+                <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                    <core-icon name="fa-circle" color="primary"></core-icon>
+                </ion-note>
                 <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
                     <core-icon name="more"></core-icon>
                 </button>
@@ -19,12 +22,14 @@
                     <p *ngIf="post.modified">{{post.modified * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
                     <p *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
                 </div>
-                <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                    <core-icon name="fa-circle" color="primary"></core-icon>
-                </ion-note>
-                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="!displaySubject && optionsMenuEnabled">
-                    <core-icon name="more"></core-icon>
-                </button>
+                <ng-container *ngIf="!displaySubject">
+                    <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                        <core-icon name="fa-circle" color="primary"></core-icon>
+                    </ion-note>
+                    <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                        <core-icon name="more"></core-icon>
+                    </button>
+                </ng-container>
             </div>
         </ion-item>
     </ion-card-header>

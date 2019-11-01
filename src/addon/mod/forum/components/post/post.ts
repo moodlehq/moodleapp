@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Content, PopoverController } from 'ionic-angular';
+import { Content, PopoverController, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSyncProvider } from '@providers/sync';
@@ -75,6 +75,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             private tagProvider: CoreTagProvider,
             @Optional() private content: Content,
             protected popoverCtrl: PopoverController,
+            protected modalCtrl: ModalController,
             protected eventsProvider: CoreEventsProvider,
             protected sitesProvider: CoreSitesProvider) {
         this.onPostChange = new EventEmitter<void>();
@@ -93,7 +94,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
                 this.post.subject != reTranslated + this.defaultSubject);
 
         this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
-                    (this.forumProvider.isDeletePostAvailable()));
+                    (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
     }
 
     /**
@@ -179,7 +180,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             if (data && data.action) {
                 switch (data.action) {
                     case 'edit':
-                        // Not implemented.
+                        this.editPost();
                         break;
                     case 'editoffline':
                         this.editOfflineReply();
@@ -197,6 +198,61 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         });
         popover.present({
             ev: e
+        });
+    }
+
+    /**
+     * Shows a form modal to edit an online post.
+     */
+    editPost(): void {
+        const modal = this.modalCtrl.create('AddonModForumEditPostPage', {
+            post: this.post,
+            component: this.component,
+            componentId:  this.componentId,
+            forum: this.forum
+        });
+
+        modal.present();
+        modal.onDidDismiss((data) => {
+            if (typeof data != 'undefined') {
+                // Add some HTML to the message if needed.
+                const message = this.textUtils.formatHtmlLines(data.message);
+                const files = data.files || [];
+                const sendingModal = this.domUtils.showModalLoading('core.sending', true);
+                let promise;
+
+                // Upload attachments first if any.
+                if (files.length) {
+                    promise = this.forumHelper.uploadOrStoreReplyFiles(this.forum.id, this.post.id, files, false);
+                } else {
+                    promise = Promise.resolve();
+                }
+
+                promise.then((attach) => {
+                    const options: any = {};
+
+                    if (attach) {
+                        options.attachmentsid = attach;
+                    }
+
+                    // Try to send it to server.
+                    return this.forumProvider.updatePost(this.post.id, data.subject, message, options);
+                }).then((sent) => {
+                    if (sent && this.forum.id) {
+                        // Data sent to server, delete stored files (if any).
+                        this.forumHelper.deleteReplyStoredFiles(this.forum.id, this.post.id);
+
+                        this.onPostChange.emit();
+                        this.post.subject = data.subject;
+                        this.post.message = message;
+                        this.post.attachments = data.files;
+                    }
+                }).catch((message) => {
+                    this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.couldnotupdate', true);
+                }).finally(() => {
+                    sendingModal.dismiss();
+                });
+            }
         });
     }
 

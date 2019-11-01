@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.mod_forum.yourreply' | translate }}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item>
+            <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
+            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + replyData.id" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+        </ion-item>
+        <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
+            <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
+            <core-icon *ngIf="advanced" name="fa-caret-down" item-start></core-icon>
+            {{ 'addon.mod_forum.advanced' | translate }}
+        </ion-item-divider>
+        <ng-container *ngIf="advanced">
+            <core-attachments *ngIf="forum.id && forum.maxattachments > 0" [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
+        </ng-container>
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <button ion-button block (click)="reply($event)" [disabled]="replyData.subject == '' || replyData.message == null">{{ 'core.savechanges' | translate }}</button>
+                </ion-col>
+                <ion-col>
+                    <button ion-button block color="light" (click)="closeModal()">{{ 'core.cancel' | translate }}</button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-list>
+</ion-content>
