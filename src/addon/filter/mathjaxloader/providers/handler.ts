@@ -162,11 +162,14 @@ export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
      * @param filter The filter.
      * @param options Options passed to the filters.
      * @param viewContainerRef The ViewContainerRef where the container is.
+     * @param component Component.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return If async, promise resolved when done.
      */
     handleHtml(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions,
-            viewContainerRef: ViewContainerRef, siteId?: string): void | Promise<void> {
+            viewContainerRef: ViewContainerRef, component?: string, componentId?: string | number, siteId?: string)
+            : void | Promise<void> {
 
         return this.waitForReady().then(() => {
             this.window.M.filter_mathjaxloader.typeset(container);

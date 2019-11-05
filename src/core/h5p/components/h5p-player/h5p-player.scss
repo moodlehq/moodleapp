@@ -42,13 +42,6 @@ ion-app.app-root core-h5p-player {
             }
         }
 
-        .core-h5p-placeholder-error {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            top: 50%;
-        }
-
         ion-spinner circle {
             stroke: $core-h5p-placeholder-text-color;
         }

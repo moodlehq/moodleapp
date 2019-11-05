@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ElementRef, OnInit, SimpleChange } from '@angular/core';
+import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
+import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PProvider } from '@core/h5p/providers/h5p';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Component to render an H5P package.
@@ -26,23 +31,38 @@ import { CoreH5PProvider } from '@core/h5p/providers/h5p';
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html'
 })
-export class CoreH5PPlayerComponent implements OnInit {
+export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     @Input() src: string; // The URL of the player to display the H5P package.
+    @Input() component?: string; // Component.
+    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
 
     playerSrc: string;
     showPackage = false;
     loading = false;
-    status: string;
+    state: string;
     canDownload: boolean;
     calculating = true;
-    errorMessage: string;
+
+    protected siteId: string;
+    protected siteCanDownload: boolean;
+    protected observer;
+    protected urlParams;
 
     constructor(public elementRef: ElementRef,
             protected sitesProvider: CoreSitesProvider,
             protected urlUtils: CoreUrlUtilsProvider,
             protected utils: CoreUtilsProvider,
             protected textUtils: CoreTextUtilsProvider,
-            protected h5pProvider: CoreH5PProvider) { }
+            protected h5pProvider: CoreH5PProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected appProvider: CoreAppProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected pluginFileDelegate: CorePluginFileDelegate) {
+
+        this.siteId = sitesProvider.getCurrentSiteId();
+        this.siteCanDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
+    }
 
     /**
      * Component being initialized.
@@ -85,37 +105,49 @@ export class CoreH5PPlayerComponent implements OnInit {
     /**
      * Download the package.
      */
-    download(): void {
-        // @TODO: Implement package download.
+    download(e: Event): void {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+
+        if (!this.appProvider.isOnline()) {
+            this.domUtils.showErrorModal('core.networkerrormsg', true);
+
+            return;
+        }
+
+        // Get the file size and ask the user to confirm.
+        this.pluginFileDelegate.getFileSize({fileurl: this.urlParams.url}, this.siteId).then((size) => {
+            return this.domUtils.confirmDownloadSize({ size: size, total: true }).then(() => {
+
+                // User confirmed, add to the queue.
+                return this.filepoolProvider.addToQueueByUrl(this.siteId, this.urlParams.url, this.component, this.componentId);
+            }, () => {
+                // User cancelled.
+            });
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            this.calculateState();
+        });
     }
 
     /**
      * Check if the package can be downloaded.
      */
     protected checkCanDownload(): void {
-        if (this.src && this.h5pProvider.canGetTrustedH5PFileInSite()) {
-            const params = this.urlUtils.extractUrlParams(this.src);
+        this.observer && this.observer.off();
+        this.urlParams = this.urlUtils.extractUrlParams(this.src);
 
-            // @todo: Check if H5P offline is disabled in the site.
+        if (this.src && this.siteCanDownload && this.h5pProvider.canGetTrustedH5PFileInSite()) {
 
-            // Now check if the package can be played.
             this.calculating = true;
 
-            const options = {
-                frame: this.utils.isTrueOrOne(params.frame),
-                export: this.utils.isTrueOrOne(params.export),
-                embed: this.utils.isTrueOrOne(params.embed),
-                copyright: this.utils.isTrueOrOne(params.copyright),
-            };
+            this.calculateState();
 
-            this.h5pProvider.getTrustedH5PFile(params.url, options).then((file) => {
-                this.canDownload = true;
-                this.errorMessage = undefined;
-            }).catch((error) => {
-                this.canDownload = false;
-                this.errorMessage = this.textUtils.getErrorMessageFromError(error);
-            }).finally(() => {
-                this.calculating = false;
+            // Listen for changes in the state.
+            this.filepoolProvider.getFileEventNameByUrl(this.siteId, this.urlParams.url).then((eventName) => {
+                this.observer = this.eventsProvider.on(eventName, () => {
+                    this.calculateState();
+                });
             });
 
             return;
@@ -123,6 +155,29 @@ export class CoreH5PPlayerComponent implements OnInit {
 
         this.calculating = false;
         this.canDownload = false;
-        this.errorMessage = undefined;
+    }
+
+    /**
+     * Calcuñate state of the file.
+     *
+     * @param fileUrl The H5P file URL.
+     */
+    protected calculateState(): void {
+        // Get the status of the file.
+        this.filepoolProvider.getFileStateByUrl(this.siteId, this.urlParams.url).then((state) => {
+            this.canDownload = true;
+            this.state = state;
+        }).catch((error) => {
+            this.canDownload = false;
+        }).finally(() => {
+            this.calculating = false;
+        });
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.observer && this.observer.off();
     }
 }

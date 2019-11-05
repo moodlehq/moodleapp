@@ -17,6 +17,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Service to provide H5P functionalities.
@@ -29,7 +30,8 @@ export class CoreH5PProvider {
     protected logger;
 
     constructor(logger: CoreLoggerProvider,
-            private sitesProvider: CoreSitesProvider) {
+            private sitesProvider: CoreSitesProvider,
+            private textUtils: CoreTextUtilsProvider) {
 
         this.logger = logger.getInstance('CoreFilterProvider');
     }
@@ -69,13 +71,15 @@ export class CoreH5PProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file data.
      */
-    getTrustedH5PFile(url: string, options: CoreH5PGetTrustedFileOptions, ignoreCache?: boolean, siteId?: string)
+    getTrustedH5PFile(url: string, options?: CoreH5PGetTrustedFileOptions, ignoreCache?: boolean, siteId?: string)
             : Promise<CoreWSExternalFile> {
+
+        options = options || {};
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             const data = {
-                    url: url,
+                    url: this.treatH5PUrl(url, site.getURL()),
                     frame: options.frame ? 1 : 0,
                     export: options.export ? 1 : 0,
                     embed: options.embed ? 1 : 0,
@@ -122,6 +126,21 @@ export class CoreH5PProvider {
      */
     protected getTrustedH5PFilePrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'trustedH5PFile:';
+    }
+
+    /**
+     * Treat an H5P url before sending it to WS.
+     *
+     * @param url H5P file URL.
+     * @param siteUrl Site URL.
+     * @return Treated url.
+     */
+    protected treatH5PUrl(url: string, siteUrl: string): string {
+        if (url.indexOf(this.textUtils.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
+            url = url.replace('/webservice/pluginfile', '/pluginfile');
+        }
+
+        return url;
     }
 
     /**

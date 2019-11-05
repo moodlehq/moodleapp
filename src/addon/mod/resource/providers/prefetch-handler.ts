@@ -25,6 +25,7 @@ import { AddonModResourceProvider } from './resource';
 import { AddonModResourceHelperProvider } from './helper';
 import { CoreConstants } from '@core/constants';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch resources.
@@ -43,10 +44,12 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected resourceProvider: AddonModResourceProvider,
             protected resourceHelper: AddonModResourceHelperProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

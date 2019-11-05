@@ -32,6 +32,7 @@ import { AddonModAssignSyncProvider } from './assign-sync';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch assigns.
@@ -51,6 +52,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected assignProvider: AddonModAssignProvider,
             protected textUtils: CoreTextUtilsProvider,
             protected feedbackDelegate: AddonModAssignFeedbackDelegate,
@@ -62,7 +64,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             protected assignHelper: AddonModAssignHelperProvider,
             protected syncProvider: AddonModAssignSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

@@ -29,6 +29,7 @@ import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizSyncProvider } from './quiz-sync';
 import { CoreConstants } from '@core/constants';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch quizzes.
@@ -50,6 +51,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected injector: Injector,
             protected quizProvider: AddonModQuizProvider,
             protected textUtils: CoreTextUtilsProvider,
@@ -57,7 +59,8 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
             protected accessRuleDelegate: AddonModQuizAccessRuleDelegate,
             protected questionHelper: CoreQuestionHelperProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

@@ -375,7 +375,7 @@ export class CoreFormatTextDirective implements OnChanges {
             if (result.options.filter) {
                 // Let filters hnadle HTML. We do it here because we don't want them to block the render of the text.
                 this.filterDelegate.handleHtml(this.element, result.filters, this.viewContainerRef, result.options, [],
-                        result.siteId);
+                        this.component, this.componentId, result.siteId);
             }
 
             this.element.classList.remove('core-disable-media-adapt');

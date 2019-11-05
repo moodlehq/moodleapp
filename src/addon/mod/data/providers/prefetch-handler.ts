@@ -28,6 +28,7 @@ import { AddonModDataProvider, AddonModDataEntry } from './data';
 import { AddonModDataSyncProvider } from './sync';
 import { AddonModDataHelperProvider } from './helper';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch databases.
@@ -47,6 +48,7 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected dataProvider: AddonModDataProvider,
             protected timeUtils: CoreTimeUtilsProvider,
             protected dataHelper: AddonModDataHelperProvider,
@@ -54,7 +56,8 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             protected commentsProvider: CoreCommentsProvider,
             protected syncProvider: AddonModDataSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

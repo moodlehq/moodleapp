@@ -27,6 +27,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModFeedbackSyncProvider } from './sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch feedbacks.
@@ -48,13 +49,15 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected feedbackProvider: AddonModFeedbackProvider,
             protected feedbackHelper: AddonModFeedbackHelperProvider,
             protected timeUtils: CoreTimeUtilsProvider,
             protected groupsProvider: CoreGroupsProvider,
             protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

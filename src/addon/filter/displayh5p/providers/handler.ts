@@ -69,11 +69,14 @@ export class AddonFilterDisplayH5PHandler extends CoreFilterDefaultHandler {
      * @param filter The filter.
      * @param options Options passed to the filters.
      * @param viewContainerRef The ViewContainerRef where the container is.
+     * @param component Component.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return If async, promise resolved when done.
      */
     handleHtml(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions,
-            viewContainerRef: ViewContainerRef, siteId?: string): void | Promise<void> {
+            viewContainerRef: ViewContainerRef, component?: string, componentId?: string | number, siteId?: string)
+            : void | Promise<void> {
 
         const placeholders = <HTMLElement[]> Array.from(container.querySelectorAll('div.core-h5p-tmp-placeholder'));
 
@@ -85,6 +88,8 @@ export class AddonFilterDisplayH5PHandler extends CoreFilterDefaultHandler {
                 componentRef = viewContainerRef.createComponent(factory);
 
             componentRef.instance.src = url;
+            componentRef.instance.component = component;
+            componentRef.instance.componentId = componentId;
 
             // Move the component to its right position.
             placeholder.parentElement.replaceChild(componentRef.instance.elementRef.nativeElement, placeholder);

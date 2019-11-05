@@ -32,6 +32,7 @@ import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 // Delegates
 import { CoreMainMenuDelegate } from '@core/mainmenu/providers/delegate';
@@ -117,7 +118,8 @@ export class CoreSitePluginsHelperProvider {
             private workshopAssessmentStrategyDelegate: AddonWorkshopAssessmentStrategyDelegate,
             private courseProvider: CoreCourseProvider,
             private blockDelegate: CoreBlockDelegate,
-            private filterHelper: CoreFilterHelperProvider) {
+            private filterHelper: CoreFilterHelperProvider,
+            private pluginFileDelegate: CorePluginFileDelegate) {
 
         this.logger = loggerProvider.getInstance('CoreSitePluginsHelperProvider');
 
@@ -841,7 +843,7 @@ export class CoreSitePluginsHelperProvider {
             // Register the prefetch handler.
             this.prefetchDelegate.registerHandler(new CoreSitePluginsModulePrefetchHandler(this.translate, this.appProvider,
                 this.utils, this.courseProvider, this.filepoolProvider, this.sitesProvider, this.domUtils, this.filterHelper,
-                this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
+                this.pluginFileDelegate, this.sitePluginsProvider, plugin.component, uniqueName, modName, handlerSchema));
         }
 
         return uniqueName;

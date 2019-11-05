@@ -1287,6 +1287,7 @@ export class CoreUtilsProvider {
      *
      * @param files List of files to sum its filesize.
      * @return File size and a boolean to indicate if it is the total size or only partial.
+     * @deprecated since 3.8.0. Use CorePluginFileDelegate.getFilesSize instead.
      */
     sumFileSizes(files: any[]): { size: number, total: boolean } {
         const result = {

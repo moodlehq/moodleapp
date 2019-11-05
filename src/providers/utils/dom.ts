@@ -22,6 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
+import { CorePluginFileDelegate } from '../plugin-file-delegate';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreFileProvider } from '@providers/file';
 import { CoreConstants } from '@core/constants';
@@ -62,11 +63,20 @@ export class CoreDomUtilsProvider {
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts = {}; // To prevent duplicated alerts.
 
-    constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
-            private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
-            private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController, private sanitizer: DomSanitizer, private popoverCtrl: PopoverController,
-            private fileProvider: CoreFileProvider) {
+    constructor(private translate: TranslateService,
+            private loadingCtrl: LoadingController,
+            private toastCtrl: ToastController,
+            private alertCtrl: AlertController,
+            private textUtils: CoreTextUtilsProvider,
+            private appProvider: CoreAppProvider,
+            private platform: Platform,
+            private configProvider: CoreConfigProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private modalCtrl: ModalController,
+            private sanitizer: DomSanitizer,
+            private popoverCtrl: PopoverController,
+            private fileProvider: CoreFileProvider,
+            private pluginFileDelegate: CorePluginFileDelegate) {
 
         // Check if debug messages should be displayed.
         configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
@@ -252,7 +262,7 @@ export class CoreDomUtilsProvider {
      * @return List of file urls.
      */
     extractDownloadableFilesFromHtml(html: string): string[] {
-        const urls = [];
+        let urls = [];
         let elements;
 
         const element = this.convertToElement(html);
@@ -274,6 +284,9 @@ export class CoreDomUtilsProvider {
                 }
             }
         }
+
+        // Now get other files from plugin file handlers.
+        urls = urls.concat(this.pluginFileDelegate.getDownloadableFiles(element));
 
         return urls;
     }

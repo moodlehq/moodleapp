@@ -15,6 +15,8 @@
 import { NgModule } from '@angular/core';
 import { CoreH5PComponentsModule } from './components/components.module';
 import { CoreH5PProvider } from './providers/h5p';
+import { CoreH5PPluginFileHandler } from './providers/pluginfile-handler';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 // List of providers (without handlers).
 export const CORE_H5P_PROVIDERS: any[] = [
@@ -27,8 +29,15 @@ export const CORE_H5P_PROVIDERS: any[] = [
         CoreH5PComponentsModule
     ],
     providers: [
-        CoreH5PProvider
+        CoreH5PProvider,
+        CoreH5PPluginFileHandler
     ],
     exports: []
 })
-export class CoreH5PModule { }
+export class CoreH5PModule {
+    constructor(pluginfileDelegate: CorePluginFileDelegate,
+            pluginfileHandler: CoreH5PPluginFileHandler) {
+
+        pluginfileDelegate.registerHandler(pluginfileHandler);
+    }
+}
