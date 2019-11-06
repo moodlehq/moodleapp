@@ -223,10 +223,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             return;
         }
 
-        setTimeout(() => {
-            this.calculateMaxSlides();
-            this.updateSlides();
-        });
+        this.calculateMaxSlides();
+        this.updateSlides();
     }
 
     /**
@@ -352,32 +350,30 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
         this.slideChanged();
 
-        setTimeout(() => {
-            this.calculateTabBarHeight();
-            this.slides.update();
-            this.slides.resize();
+        this.calculateTabBarHeight();
+        this.slides.update();
+        this.slides.resize();
 
-            if (!this.hasSliddenToInitial && this.selected && this.selected >= this.slidesShown) {
-                this.hasSliddenToInitial = true;
-                this.shouldSlideToInitial = true;
-
-                setTimeout(() => {
-                    if (this.shouldSlideToInitial) {
-                        this.slides.slideTo(this.selected, 0);
-                        this.shouldSlideToInitial = false;
-                        this.updateAriaHidden(); // Slide's slideTo() sets aria-hidden to true, update it.
-                    }
-                }, 400);
-
-                return;
-            } else if (this.selected) {
-                this.hasSliddenToInitial = true;
-            }
+        if (!this.hasSliddenToInitial && this.selected && this.selected >= this.slidesShown) {
+            this.hasSliddenToInitial = true;
+            this.shouldSlideToInitial = true;
 
             setTimeout(() => {
-                this.updateAriaHidden(); // Slide's update() sets aria-hidden to true, update it.
+                if (this.shouldSlideToInitial) {
+                    this.slides.slideTo(this.selected, 0);
+                    this.shouldSlideToInitial = false;
+                    this.updateAriaHidden(); // Slide's slideTo() sets aria-hidden to true, update it.
+                }
             }, 400);
-        });
+
+            return;
+        } else if (this.selected) {
+            this.hasSliddenToInitial = true;
+        }
+
+        setTimeout(() => {
+            this.updateAriaHidden(); // Slide's update() sets aria-hidden to true, update it.
+        }, 400);
     }
 
     protected calculateMaxSlides(): void {
