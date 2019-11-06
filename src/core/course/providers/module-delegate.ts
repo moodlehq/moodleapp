@@ -278,7 +278,7 @@ export class CoreCourseModuleDelegate extends CoreDelegate {
      * @return Whether module is disabled.
      */
     isModuleDisabledInSite(modname: string, site?: CoreSite): boolean {
-        const handler = this.getHandler(modname, true);
+        const handler = this.getHandler(modname, false);
 
         if (handler) {
             site = site || this.sitesProvider.getCurrentSite();
