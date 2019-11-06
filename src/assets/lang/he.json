@@ -1467,7 +1467,7 @@
     "core.site": "מערכת",
     "core.sitehome.sitehome": "דף הבית",
     "core.sitehome.sitenews": "חדשות האתר",
-    "core.sitemaintenance": "מערכת Moodle זו מבצעת ברגעים אילו פעולות תחזוקה חשובות ואינה זמינה, אנא נסו שוב בעוד רגע קט.",
+    "core.sitemaintenance": "מערכת Moodle זו מבצעת ברגעים אילו פעולות תחזוקה חשובות ואיננה זמינה כעת, אנא נסו שוב בעוד מספר דקות",
     "core.sizeb": "בתים",
     "core.sizegb": "GB",
     "core.sizekb": "KB",

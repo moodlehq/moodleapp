@@ -1081,6 +1081,8 @@
     "assets.mimetypes.application/vnd.moodle.backup": "Резервна копія Moodle",
     "assets.mimetypes.application/vnd.ms-excel": "Електронна таблиця Excel",
     "assets.mimetypes.application/vnd.ms-powerpoint": "Презентація Powerpoint",
+    "assets.mimetypes.application/vnd.oasis.opendocument.spreadsheet": "Електронна таблиця OpenDocument",
+    "assets.mimetypes.application/vnd.oasis.opendocument.spreadsheet-template": "Шаблон електронної таблиці OpenDocument",
     "assets.mimetypes.application/vnd.openxmlformats-officedocument.presentationml.presentation": "Презентація Powerpoint",
     "assets.mimetypes.application/vnd.openxmlformats-officedocument.presentationml.slideshow": "Слайдшою Powerpoint",
     "assets.mimetypes.application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "Електронна таблиця Excel",

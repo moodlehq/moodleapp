@@ -6,7 +6,6 @@
     "categories": "Course categories",
     "confirmselfenrol": "Are you sure you want to enrol yourself in this course?",
     "courses": "Courses",
-    "mymoodle": "Dashboard",
     "downloadcourses": "Download courses",
     "enrolme": "Enrol me",
     "errorloadcategories": "An error occurred while loading categories.",
@@ -16,9 +15,10 @@
     "errorselfenrol": "An error occurred while self enrolling.",
     "filtermycourses": "Filter my courses",
     "frontpage": "Front page",
+    "hidecourse": "Remove from view",
     "ignore": "Ignore",
-    "hidecourse": "Hide from view",
     "mycourses": "My courses",
+    "mymoodle": "Dashboard",
     "nocourses": "No course information to show.",
     "nocoursesyet": "No courses in this category",
     "nosearchresults": "No results",
@@ -34,6 +34,6 @@
     "searchcoursesadvice": "You can use the search courses button to find courses to access as a  guest or enrol yourself in courses that allow it.",
     "selfenrolment": "Self enrolment",
     "sendpaymentbutton": "Send payment via PayPal",
-    "show": "Show this course",
+    "show": "Restore to view",
     "totalcoursesearchresults": "Total courses: {{$a}}"
 }
