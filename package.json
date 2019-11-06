@@ -1,10 +1,10 @@
 {
-  "name": "moodlemobile",
+  "name": "sdapbelearning",
   "version": "3.7.1",
-  "description": "The official app for Moodle.",
+  "description": "The official app for SDAPB eLearning.",
   "author": {
-    "name": "Moodle Pty Ltd.",
-    "email": "mobile@moodle.com"
+    "name": "St. Dominic Academy of Pulilan, Inc.",
+    "email": "sdapb.edu.ph@gmail.com.com"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
