@@ -447,7 +447,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.calculateSlides();
         }
 
-        if (this.tabsShown) {
+        if (this.tabsShown && scrollElement.scrollHeight > scrollElement.clientHeight + this.tabBarHeight) {
             // Smooth translation.
             this.topTabsElement.style.transform = 'translateY(-' + scroll + 'px)';
             this.originalTabsContainer.style.transform = 'translateY(-' + scroll + 'px)';
