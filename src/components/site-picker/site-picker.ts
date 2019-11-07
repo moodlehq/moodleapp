@@ -51,7 +51,7 @@ export class CoreSitePickerComponent implements OnInit {
             sites.forEach((site: any) => {
                 // Format the site name.
                 promises.push(this.filterProvider.formatText(site.siteName, {clean: true, singleLine: true, filter: false}, [],
-                        site.getId()).catch(() => {
+                        site.id).catch(() => {
                     return site.siteName;
                 }).then((siteName) => {
                     site.fullNameAndSiteName = this.translate.instant('core.fullnameandsitename',

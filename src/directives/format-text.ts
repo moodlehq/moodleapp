@@ -404,7 +404,10 @@ export class CoreFormatTextDirective implements OnChanges {
             // Error getting the site. This probably means that there is no current site and no siteId was supplied.
         }).then((siteInstance: CoreSite) => {
             site = siteInstance;
-            result.siteId = site.getId();
+
+            if (site) {
+                result.siteId = site.getId();
+            }
 
             if (this.contextLevel == 'course' && this.contextInstanceId <= 0) {
                 this.contextInstanceId = site.getSiteHomeId();
@@ -422,14 +425,14 @@ export class CoreFormatTextDirective implements OnChanges {
 
             if (this.filter) {
                 return this.filterHelper.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId,
-                        result.options, site.getId()).then((res) => {
+                        result.options, result.siteId).then((res) => {
 
                     result.filters = res.filters;
 
                     return res.text;
                 });
             } else {
-                return this.filterProvider.formatText(this.text, result.options, [], site.getId());
+                return this.filterProvider.formatText(this.text, result.options, [], result.siteId);
             }
 
         }).then((formatted) => {
