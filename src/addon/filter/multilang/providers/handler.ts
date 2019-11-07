@@ -47,11 +47,6 @@ export class AddonFilterMultilangHandler extends CoreFilterDefaultHandler {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
-            // Don't apply this filter if Moodle is 3.7 or higher and the WS already filtered the content.
-            if (!this.shouldBeApplied(options, site)) {
-                return text;
-            }
-
             return this.langProvider.getCurrentLanguage().then((language) => {
                 // Match the current language.
                 const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;

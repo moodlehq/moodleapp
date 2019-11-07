@@ -15,7 +15,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Component to display a site selector. It will display a select with the list of sites. If the selected site changes,
@@ -35,8 +35,9 @@ export class CoreSitePickerComponent implements OnInit {
     selectedSite: string;
     sites: any[];
 
-    constructor(private translate: TranslateService, private sitesProvider: CoreSitesProvider,
-            private filterHelper: CoreFilterHelperProvider) {
+    constructor(private translate: TranslateService,
+            private sitesProvider: CoreSitesProvider,
+            private filterProvider: CoreFilterProvider) {
         this.siteSelected = new EventEmitter();
     }
 
@@ -49,12 +50,12 @@ export class CoreSitePickerComponent implements OnInit {
 
             sites.forEach((site: any) => {
                 // Format the site name.
-                promises.push(this.filterHelper.getFiltersAndFormatText(site.siteName, 'system', 0,
-                        {clean: true, singleLine: true}, site.getId()).catch(() => {
+                promises.push(this.filterProvider.formatText(site.siteName, {clean: true, singleLine: true, filter: false}, [],
+                        site.getId()).catch(() => {
                     return site.siteName;
-                }).then((formatted) => {
+                }).then((siteName) => {
                     site.fullNameAndSiteName = this.translate.instant('core.fullnameandsitename',
-                        { fullname: site.fullName, sitename: formatted });
+                        { fullname: site.fullName, sitename: siteName });
                 }));
             });
 

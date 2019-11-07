@@ -30,8 +30,9 @@ import { CoreLinkDirective } from '../directives/link';
 import { CoreExternalContentDirective } from '../directives/external-content';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreFilterProvider, CoreFilterFilter, CoreFilterFormatTextOptions } from '@core/filter/providers/filter';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CoreFilterDelegate } from '@core/filter/providers/delegate';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -70,14 +71,27 @@ export class CoreFormatTextDirective implements OnChanges {
     protected showMoreDisplayed: boolean;
     protected loadingChangedListener;
 
-    constructor(element: ElementRef, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
-            private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private platform: Platform,
-            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private loggerProvider: CoreLoggerProvider,
-            private filepoolProvider: CoreFilepoolProvider, private appProvider: CoreAppProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
-            @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
-            private iframeUtils: CoreIframeUtilsProvider, private eventsProvider: CoreEventsProvider,
-            private filterProvider: CoreFilterProvider, private filterHelper: CoreFilterHelperProvider) {
+    constructor(element: ElementRef,
+            private sitesProvider: CoreSitesProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private translate: TranslateService,
+            private platform: Platform,
+            private utils: CoreUtilsProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private loggerProvider: CoreLoggerProvider,
+            private filepoolProvider: CoreFilepoolProvider,
+            private appProvider: CoreAppProvider,
+            private contentLinksHelper: CoreContentLinksHelperProvider,
+            @Optional() private navCtrl: NavController,
+            @Optional() private content: Content, @Optional()
+            private svComponent: CoreSplitViewComponent,
+            private iframeUtils: CoreIframeUtilsProvider,
+            private eventsProvider: CoreEventsProvider,
+            private filterProvider: CoreFilterProvider,
+            private filterHelper: CoreFilterHelperProvider,
+            private filterDelegate: CoreFilterDelegate) {
+
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
         this.afterRender = new EventEmitter();
@@ -323,15 +337,15 @@ export class CoreFormatTextDirective implements OnChanges {
 
         this.text = this.text ? this.text.trim() : '';
 
-        this.formatContents().then((div: HTMLElement) => {
+        this.formatContents().then((result) => {
             // Disable media adapt to correctly calculate the height.
             this.element.classList.add('core-disable-media-adapt');
 
             this.element.innerHTML = ''; // Remove current contents.
-            if (this.maxHeight && div.innerHTML != '') {
+            if (this.maxHeight && result.div.innerHTML != '') {
 
                 // Move the children to the current element to be able to calculate the height.
-                this.domUtils.moveChildren(div, this.element);
+                this.domUtils.moveChildren(result.div, this.element);
 
                 // Calculate the height now.
                 this.calculateHeight();
@@ -349,10 +363,15 @@ export class CoreFormatTextDirective implements OnChanges {
                     });
                 }
             } else {
-                this.domUtils.moveChildren(div, this.element);
+                this.domUtils.moveChildren(result.div, this.element);
 
                 // Add magnifying glasses to images.
                 this.addMagnifyingGlasses();
+            }
+
+            if (result.options.filter) {
+                // Let filters hnadle HTML. We do it here because we don't want them to block the render of the text.
+                this.filterDelegate.handleHtml(this.element, result.filters, result.options, [], result.siteId);
             }
 
             this.element.classList.remove('core-disable-media-adapt');
@@ -365,8 +384,15 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @return Promise resolved with a div element containing the code.
      */
-    protected formatContents(): Promise<HTMLElement> {
+    protected formatContents(): Promise<{div: HTMLElement, filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions,
+            siteId: string}> {
 
+        const result = {
+            div: <HTMLElement> null,
+            filters: <CoreFilterFilter[]> [],
+            options: <CoreFilterFormatTextOptions> {},
+            siteId: this.siteId
+        };
         let site: CoreSite;
 
         // Retrieve the site since it might be needed later.
@@ -374,6 +400,7 @@ export class CoreFormatTextDirective implements OnChanges {
             // Error getting the site. This probably means that there is no current site and no siteId was supplied.
         }).then((siteInstance: CoreSite) => {
             site = siteInstance;
+            result.siteId = site.getId();
 
             if (this.contextLevel == 'course' && this.contextInstanceId <= 0) {
                 this.contextInstanceId = site.getSiteHomeId();
@@ -381,7 +408,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
             this.filter = typeof this.filter == 'undefined' ? !!(this.contextLevel && this.contextInstanceId) : !!this.filter;
 
-            const options = {
+            result.options = {
                 clean: this.utils.isTrueOrOne(this.clean),
                 singleLine: this.utils.isTrueOrOne(this.singleLine),
                 highlight: this.highlight,
@@ -390,10 +417,15 @@ export class CoreFormatTextDirective implements OnChanges {
             };
 
             if (this.filter) {
-                return this.filterHelper.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId, options,
-                        site.getId());
+                return this.filterHelper.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId,
+                        result.options, site.getId()).then((res) => {
+
+                    result.filters = res.filters;
+
+                    return res.text;
+                });
             } else {
-                return this.filterProvider.formatText(this.text, options);
+                return this.filterProvider.formatText(this.text, result.options, [], site.getId());
             }
 
         }).then((formatted) => {
@@ -517,7 +549,9 @@ export class CoreFormatTextDirective implements OnChanges {
             return promise.catch(() => {
                 // Ignore errors. So content gets always shown.
             }).then(() => {
-                return div;
+                result.div = div;
+
+                return result;
             });
         });
     }

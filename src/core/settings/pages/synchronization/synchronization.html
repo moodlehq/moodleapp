@@ -17,7 +17,7 @@
             <p>{{ 'core.settings.sites' | translate }}</p>
         </ion-item-divider>
         <ion-item *ngFor="let site of sites" [class.core-primary-selected-item]="site.id == currentSiteId" text-wrap>
-            <h2><core-format-text [text]="site.siteName" contextLevel="system" [contextInstanceId]="0"></core-format-text></h2>
+            <h2><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></h2>
             <p>{{ site.fullName }}</p>
             <p>{{ site.siteUrl }}</p>
             <button ion-button icon-only clear item-end *ngIf="!isSynchronizing(site.id)" (click)="synchronize(site.id)" [title]="site.siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">

@@ -736,6 +736,36 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Replace text within a portion of a string. Equivalent to PHP's substr_replace.
+     * Credits to http://locutus.io/php/strings/substr_replace/
+     *
+     * @param str The string to treat.
+     * @param replace The value to put inside the string.
+     * @param start The index where to start putting the new string. If negative, it will count from the end of the string.
+     * @param length Length of the portion of string which is to be replaced. If negative, it represents the number of characters
+     *                      from the end of string at which to stop replacing. If not provided, replace until the end of the string.
+     * @return Treated string.
+     */
+    substrReplace(str: string, replace: string, start: number, length?: number): string {
+        length = typeof length != 'undefined' ? length : str.length;
+
+        if (start < 0) {
+            start = start + str.length;
+        }
+
+        if (length < 0) {
+            length = length + str.length - start;
+        }
+
+        return [
+            str.slice(0, start),
+            replace.substr(0, length),
+            replace.slice(length),
+            str.slice(start + length)
+        ].join('');
+    }
+
+    /**
      * Treat the list of disabled features, replacing old nomenclature with the new one.
      *
      * @param features List of disabled features.

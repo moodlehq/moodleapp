@@ -44,6 +44,21 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
     }
 
     /**
+     * Handle HTML. This function is called after "filter", and it will receive an HTMLElement containing the text that was
+     * filtered.
+     *
+     * @param container The HTML container to handle.
+     * @param filter The filter.
+     * @param options Options passed to the filters.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    handleHtml(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string)
+            : void | Promise<void> {
+        // To be overridden.
+    }
+
+    /**
      * Whether or not the handler is enabled on a site level.
      *
      * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.

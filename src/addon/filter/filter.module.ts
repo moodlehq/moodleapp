@@ -20,6 +20,7 @@ import { AddonFilterDataModule } from './data/data.module';
 import { AddonFilterEmailProtectModule } from './emailprotect/emailprotect.module';
 import { AddonFilterEmoticonModule } from './emoticon/emoticon.module';
 import { AddonFilterGlossaryModule } from './glossary/glossary.module';
+import { AddonFilterMathJaxLoaderModule } from './mathjaxloader/mathjaxloader.module';
 import { AddonFilterMediaPluginModule } from './mediaplugin/mediaplugin.module';
 import { AddonFilterMultilangModule } from './multilang/multilang.module';
 import { AddonFilterTexModule } from './tex/tex.module';
@@ -36,6 +37,7 @@ import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
         AddonFilterEmailProtectModule,
         AddonFilterEmoticonModule,
         AddonFilterGlossaryModule,
+        AddonFilterMathJaxLoaderModule,
         AddonFilterMediaPluginModule,
         AddonFilterMultilangModule,
         AddonFilterTexModule,

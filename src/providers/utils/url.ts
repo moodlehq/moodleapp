@@ -45,6 +45,29 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
+     * Add params to a URL.
+     *
+     * @param url URL to add the params to.
+     * @param params Object with the params to add.
+     * @return URL with params.
+     */
+    addParamsToUrl(url: string, params: {[key: string]: any}): string {
+        let separator = url.indexOf('?') != -1 ? '&' : '?';
+
+        for (const key in params) {
+            const value = params[key];
+
+            // Ignore objects.
+            if (typeof value != 'object') {
+                url += separator + key + '=' + value;
+                separator = '&';
+            }
+        }
+
+        return url;
+    }
+
+    /**
      * Given a URL and a text, return an HTML link.
      *
      * @param url URL.

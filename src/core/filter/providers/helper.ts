@@ -71,7 +71,7 @@ export class CoreFilterHelperProvider {
      */
     getCourseModulesContexts(courseId: number, siteId?: string): Promise<{contextlevel: string, instanceid: number}[]> {
 
-        return this.courseProvider.getSections(courseId, false, true, {omitExpires: true}, siteId).then((sections) => {
+        return this.courseProvider.getSections(courseId, false, true, undefined, siteId).then((sections) => {
             const contexts: {contextlevel: string, instanceid: number}[] = [];
 
             sections.forEach((section) => {
@@ -178,10 +178,12 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the formatted text.
      */
     getFiltersAndFormatText(text: string, contextLevel: string, instanceId: number, options?: CoreFilterFormatTextOptions,
-            siteId?: string): Promise<string> {
+            siteId?: string): Promise<{text: string, filters: CoreFilterFilter[]}> {
 
         return this.getFilters(contextLevel, instanceId, options, siteId).then((filters) => {
-            return this.filterProvider.formatText(text, options, filters, siteId);
+            return this.filterProvider.formatText(text, options, filters, siteId).then((text) => {
+                return {text: text, filters: filters};
+            });
         });
     }
 

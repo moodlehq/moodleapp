@@ -139,7 +139,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
 
         if (moduleName) {
             this.filterHelper.getFiltersAndFormatText(moduleName, 'module', this.moduleId,
-                    {clean: true, singleLine: true, shortenLength: 50, courseId: this.completion.courseId}).then((modName) => {
+                    {clean: true, singleLine: true, shortenLength: 50, courseId: this.completion.courseId}).then((result) => {
 
                 let promise;
 
@@ -150,11 +150,11 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
                         (profile) => {
                             return {
                                 overrideuser: profile.fullname,
-                                modname: modName
+                                modname: result.text
                             };
                         });
                 } else {
-                    promise = Promise.resolve(modName);
+                    promise = Promise.resolve(result.text);
                 }
 
                 return promise.then((translateParams) => {

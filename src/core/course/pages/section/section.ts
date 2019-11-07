@@ -264,8 +264,8 @@ export class CoreCourseSectionPage implements OnDestroy {
                     // Format the name of each section and check if it has content.
                     this.sections = sections.map((section) => {
                         this.filterHelper.getFiltersAndFormatText(section.name.trim(), 'course', this.course.id,
-                                {clean: true, singleLine: true}).then((name) => {
-                            section.formattedName = name;
+                                {clean: true, singleLine: true}).then((result) => {
+                            section.formattedName = result.text;
                         });
                         section.hasContent = this.courseHelper.sectionHasContent(section);
 

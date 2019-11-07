@@ -245,8 +245,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
                     const subPromises = [];
                     courses.forEach((course) => {
                         subPromises.push(this.filterHelper.getFiltersAndFormatText(course.fullname, 'course', course.id)
-                                .then((text) => {
-                            course.fullname = text;
+                                .then((result) => {
+                            course.fullname = result.text;
                         }).catch(() => {
                             // Ignore errors.
                         }));
