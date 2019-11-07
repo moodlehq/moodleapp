@@ -43,6 +43,7 @@ export class CoreLoginCredentialsPage {
     pageLoaded = false;
     isBrowserSSO = false;
     isFixedUrlSet = false;
+    showForgottenPassword = true;
 
     protected siteConfig;
     protected eventThrown = false;
@@ -50,9 +51,14 @@ export class CoreLoginCredentialsPage {
     protected siteId: string;
     protected urlToOpen: string;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
+    constructor(private navCtrl: NavController,
+            navParams: NavParams,
+            fb: FormBuilder,
+            private appProvider: CoreAppProvider,
+            private sitesProvider: CoreSitesProvider,
+            private loginHelper: CoreLoginHelperProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private translate: TranslateService,
             private eventsProvider: CoreEventsProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
@@ -149,8 +155,12 @@ export class CoreLoginCredentialsPage {
             this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
-            this.canSignup = this.siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(this.siteConfig);
             this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
+
+            const disabledFeatures = this.loginHelper.getDisabledFeatures(this.siteConfig);
+            this.canSignup = this.siteConfig.registerauth == 'email' &&
+                    !this.loginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
+            this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;

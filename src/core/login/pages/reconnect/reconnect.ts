@@ -36,6 +36,7 @@ export class CoreLoginReconnectPage {
     logoUrl: string;
     identityProviders: any[];
     site: any;
+    showForgottenPassword = true;
 
     protected infoSiteUrl: string;
     protected pageName: string;
@@ -44,9 +45,13 @@ export class CoreLoginReconnectPage {
     protected isLoggedOut: boolean;
     protected siteId: string;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
-        private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-        private domUtils: CoreDomUtilsProvider) {
+    constructor(private navCtrl: NavController,
+            navParams: NavParams,
+            fb: FormBuilder,
+            private appProvider: CoreAppProvider,
+            private sitesProvider: CoreSitesProvider,
+            private loginHelper: CoreLoginHelperProvider,
+            private domUtils: CoreDomUtilsProvider) {
 
         const currentSite = this.sitesProvider.getCurrentSite();
 
@@ -69,6 +74,7 @@ export class CoreLoginReconnectPage {
     ionViewDidLoad(): void {
         if (this.siteConfig) {
             this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
+            this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig);
         }
 
         this.sitesProvider.getSite(this.siteId).then((site) => {
@@ -87,9 +93,10 @@ export class CoreLoginReconnectPage {
                     // Check logoURL if user avatar is not set.
                     if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
                         this.site.avatar = false;
-
                         this.logoUrl = config.logourl || config.compactlogourl;
                     }
+
+                    this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(config);
                 }).catch(() => {
                     this.cancel();
                 });

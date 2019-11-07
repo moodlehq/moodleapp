@@ -50,7 +50,7 @@
         </ion-list>
 
         <!-- Forgotten password button. -->
-        <div padding-top class="core-login-forgotten-password">
+        <div *ngIf="showForgottenPassword" padding-top class="core-login-forgotten-password">
             <button ion-button block text-wrap color="light" (click)="forgottenPassword()">{{ 'core.login.forgotten' | translate }}</button>
         </div>
 

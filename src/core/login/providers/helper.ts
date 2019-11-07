@@ -323,6 +323,21 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Get disabled features from a site public config.
+     *
+     * @param config Site public config.
+     * @return Disabled features.
+     */
+    getDisabledFeatures(config: any): string {
+        const disabledFeatures = config && config.tool_mobile_disabledfeatures;
+        if (!disabledFeatures) {
+            return '';
+        }
+
+        return this.textUtils.treatDisabledFeatures(disabledFeatures);
+    }
+
+    /**
      * Builds an object with error messages for some common errors.
      * Please notice that this function doesn't support all possible error types.
      *
@@ -555,17 +570,27 @@ export class CoreLoginHelperProvider {
      * Given a site public config, check if email signup is disabled.
      *
      * @param config Site public config.
+     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @return Whether email signup is disabled.
      */
-    isEmailSignupDisabled(config: any): boolean {
-        let disabledFeatures = config && config.tool_mobile_disabledfeatures;
-        if (!disabledFeatures) {
-            return false;
+    isEmailSignupDisabled(config?: any, disabledFeatures?: string): boolean {
+        return this.isFeatureDisabled('CoreLoginEmailSignup', config, disabledFeatures);
+    }
+
+    /**
+     * Given a site public config, check if a certian feature is disabled.
+     *
+     * @param feature Feature to check.
+     * @param config Site public config.
+     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
+     * @return Whether email signup is disabled.
+     */
+    isFeatureDisabled(feature: string, config?: any, disabledFeatures?: string): boolean {
+        if (typeof disabledFeatures == 'undefined') {
+            disabledFeatures = this.getDisabledFeatures(config);
         }
 
-        disabledFeatures = this.textUtils.treatDisabledFeatures(disabledFeatures);
-
-        const regEx = new RegExp('(,|^)CoreLoginEmailSignup(,|$)', 'g');
+        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
 
         return !!disabledFeatures.match(regEx);
     }
@@ -581,6 +606,17 @@ export class CoreLoginHelperProvider {
         }
 
         return !!CoreConfigConstants.siteurl;
+    }
+
+    /**
+     * Given a site public config, check if forgotten password is disabled.
+     *
+     * @param config Site public config.
+     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
+     * @return Whether it's disabled.
+     */
+    isForgottenPasswordDisabled(config?: any, disabledFeatures?: string): boolean {
+        return this.isFeatureDisabled('NoDelegate_ForgottenPassword', config, disabledFeatures);
     }
 
     /**
