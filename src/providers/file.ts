@@ -52,6 +52,7 @@ export class CoreFileProvider {
     static FORMATDATAURL = 1;
     static FORMATBINARYSTRING = 2;
     static FORMATARRAYBUFFER = 3;
+    static FORMATJSON = 4;
 
     // Folders.
     static SITESFOLDER = 'sites';
@@ -491,6 +492,7 @@ export class CoreFileProvider {
      *               FORMATDATAURL
      *               FORMATBINARYSTRING
      *               FORMATARRAYBUFFER
+     *               FORMATJSON
      * @return Promise to be resolved when the file is read.
      */
     readFile(path: string, format: number = CoreFileProvider.FORMATTEXT): Promise<any> {
@@ -505,6 +507,16 @@ export class CoreFileProvider {
                 return this.file.readAsBinaryString(this.basePath, path);
             case CoreFileProvider.FORMATARRAYBUFFER:
                 return this.file.readAsArrayBuffer(this.basePath, path);
+            case CoreFileProvider.FORMATJSON:
+                return this.file.readAsText(this.basePath, path).then((text) => {
+                    const parsed = this.textUtils.parseJSON(text, null);
+
+                    if (parsed == null && text != null) {
+                        return Promise.reject('Error parsing JSON file: ' + path);
+                    }
+
+                    return parsed;
+                });
             default:
                 return this.file.readAsText(this.basePath, path);
         }
@@ -519,6 +531,7 @@ export class CoreFileProvider {
      *               FORMATDATAURL
      *               FORMATBINARYSTRING
      *               FORMATARRAYBUFFER
+     *               FORMATJSON
      * @return Promise to be resolved when the file is read.
      */
     readFileData(fileData: any, format: number = CoreFileProvider.FORMATTEXT): Promise<any> {
@@ -531,7 +544,18 @@ export class CoreFileProvider {
             reader.onloadend = (evt): void => {
                 const target = <any> evt.target; // Convert to <any> to be able to use non-standard properties.
                 if (target.result !== undefined || target.result !== null) {
-                    resolve(target.result);
+                    if (format == CoreFileProvider.FORMATJSON) {
+                        // Convert to object.
+                        const parsed = this.textUtils.parseJSON(target.result, null);
+
+                        if (parsed == null) {
+                            reject('Error parsing JSON file.');
+                        }
+
+                        resolve(parsed);
+                    } else {
+                        resolve(target.result);
+                    }
                 } else if (target.error !== undefined || target.error !== null) {
                     reject(target.error);
                 } else {
@@ -729,17 +753,56 @@ export class CoreFileProvider {
     }
 
     /**
+     * Move a dir.
+     *
+     * @param originalPath Path to the dir to move.
+     * @param newPath New path of the dir.
+     * @param destDirExists Set it to true if you know the directory where to put the dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @return Promise resolved when the entry is moved.
+     */
+    moveDir(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
+        return this.moveFileOrDir(originalPath, newPath, true);
+    }
+
+    /**
      * Move a file.
      *
      * @param originalPath Path to the file to move.
      * @param newPath New path of the file.
+     * @param destDirExists Set it to true if you know the directory where to put the file exists. If false, the function will
+     *                      try to create it (slower).
      * @return Promise resolved when the entry is moved.
      */
-    moveFile(originalPath: string, newPath: string): Promise<any> {
+    moveFile(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
+        return this.moveFileOrDir(originalPath, newPath, false);
+    }
+
+    /**
+     * Move a file/dir.
+     *
+     * @param originalPath Path to the file/dir to move.
+     * @param newPath New path of the file/dir.
+     * @param isDir Whether it's a dir or a file.
+     * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @return Promise resolved when the entry is moved.
+     */
+    protected moveFileOrDir(originalPath: string, newPath: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
+        const moveFn = isDir ? this.file.moveDir.bind(this.file) : this.file.moveFile.bind(this.file);
+
         return this.init().then(() => {
             // Remove basePath if it's in the paths.
             originalPath = this.removeStartingSlash(originalPath.replace(this.basePath, ''));
             newPath = this.removeStartingSlash(newPath.replace(this.basePath, ''));
+
+            const newPathFileAndDir = this.getFileAndDirectoryFromPath(newPath);
+
+            if (newPathFileAndDir.directory && !destDirExists) {
+                // Create the target directory if it doesn't exist.
+                return this.createDir(newPathFileAndDir.directory);
+            }
+        }).then(() => {
 
             if (this.isHTMLAPI) {
                 // In Cordova API we need to calculate the longest matching path to make it work.
@@ -763,15 +826,15 @@ export class CoreFileProvider {
                     }
                 }
 
-                return this.file.moveFile(commonPath, originalPath, commonPath, newPath);
+                return moveFn(commonPath, originalPath, commonPath, newPath);
             } else {
-                return this.file.moveFile(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
+                return moveFn(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
                     // The move can fail if the path has encoded characters. Try again if that's the case.
                     const decodedOriginal = decodeURI(originalPath),
                         decodedNew = decodeURI(newPath);
 
                     if (decodedOriginal != originalPath || decodedNew != newPath) {
-                        return this.file.moveFile(this.basePath, decodedOriginal, this.basePath, decodedNew);
+                        return moveFn(this.basePath, decodedOriginal, this.basePath, decodedNew);
                     } else {
                         return Promise.reject(error);
                     }
@@ -781,15 +844,45 @@ export class CoreFileProvider {
     }
 
     /**
+     * Copy a directory.
+     *
+     * @param from Path to the directory to move.
+     * @param to New path of the directory.
+     * @param destDirExists Set it to true if you know the directory where to put the dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @return Promise resolved when the entry is copied.
+     */
+    copyDir(from: string, to: string, destDirExists?: boolean): Promise<any> {
+        return this.copyFileOrDir(from, to, true, destDirExists);
+    }
+
+    /**
      * Copy a file.
      *
      * @param from Path to the file to move.
      * @param to New path of the file.
+     * @param destDirExists Set it to true if you know the directory where to put the file exists. If false, the function will
+     *                      try to create it (slower).
      * @return Promise resolved when the entry is copied.
      */
-    copyFile(from: string, to: string): Promise<any> {
+    copyFile(from: string, to: string, destDirExists?: boolean): Promise<any> {
+        return this.copyFileOrDir(from, to, false, destDirExists);
+    }
+
+    /**
+     * Copy a file or a directory.
+     *
+     * @param from Path to the file/dir to move.
+     * @param to New path of the file/dir.
+     * @param isDir Whether it's a dir or a file.
+     * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @return Promise resolved when the entry is copied.
+     */
+    protected copyFileOrDir(from: string, to: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
         let fromFileAndDir,
             toFileAndDir;
+        const copyFn = isDir ? this.file.copyDir.bind(this.file) : this.file.copyFile.bind(this.file);
 
         return this.init().then(() => {
             // Paths cannot start with "/". Remove basePath if present.
@@ -799,7 +892,7 @@ export class CoreFileProvider {
             fromFileAndDir = this.getFileAndDirectoryFromPath(from);
             toFileAndDir = this.getFileAndDirectoryFromPath(to);
 
-            if (toFileAndDir.directory) {
+            if (toFileAndDir.directory && !destDirExists) {
                 // Create the target directory if it doesn't exist.
                 return this.createDir(toFileAndDir.directory);
             }
@@ -809,15 +902,15 @@ export class CoreFileProvider {
                 const fromDir = this.textUtils.concatenatePaths(this.basePath, fromFileAndDir.directory),
                     toDir = this.textUtils.concatenatePaths(this.basePath, toFileAndDir.directory);
 
-                return this.file.copyFile(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
+                return copyFn(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
             } else {
-                return this.file.copyFile(this.basePath, from, this.basePath, to).catch((error) => {
+                return copyFn(this.basePath, from, this.basePath, to).catch((error) => {
                     // The copy can fail if the path has encoded characters. Try again if that's the case.
                     const decodedFrom = decodeURI(from),
                         decodedTo = decodeURI(to);
 
                     if (from != decodedFrom || to != decodedTo) {
-                        return this.file.copyFile(this.basePath, decodedFrom, this.basePath, decodedTo);
+                        return copyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
                     } else {
                         return Promise.reject(error);
                     }

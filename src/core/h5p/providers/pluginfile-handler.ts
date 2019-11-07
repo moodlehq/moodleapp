@@ -108,14 +108,6 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @return Promise resolved when done.
      */
     treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string): Promise<any> {
-        // Unzip the file.
-        const destFolder = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER,
-                'h5p/' + this.mimeUtils.removeExtension(file.name));
-
-        return this.fileProvider.createDir(destFolder).then(() => {
-            return this.fileProvider.unzipFile(file.toURL(), destFolder);
-        }).then(() => {
-            // @todo: Deploy the package.
-        });
+        return this.h5pProvider.extractH5PFile(fileUrl, file, siteId);
     }
 }

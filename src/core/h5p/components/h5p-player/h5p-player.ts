@@ -148,6 +148,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                 this.observer = this.eventsProvider.on(eventName, () => {
                     this.calculateState();
                 });
+            }).catch(() => {
+                // An error probably means the file cannot be downloaded or we cannot check it (offline).
             });
 
             return;
