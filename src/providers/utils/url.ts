@@ -150,8 +150,11 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        if (accessKey) {
+        const hasSlashParams = !url.match(/[\&?]file=/);
+
+        if (accessKey && hasSlashParams) {
             // We have the user access key, use tokenpluginfile.php.
+            // Do not use it without slash params, the URL doesn't work.
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
 
             return url;
