@@ -949,6 +949,9 @@ export class AddonModScormProvider {
                     // Exit var.
                     sco.exitvar = typeof scoData.exitvar == 'undefined' ? 'cmi.core.exit' : scoData.exitvar;
                     sco.exitvalue = scoData[sco.exitvar];
+
+                    // Copy score.
+                    sco.score_raw = scoData.score_raw;
                 });
 
                 return scos;

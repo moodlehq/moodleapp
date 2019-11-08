@@ -45,6 +45,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     nextSco: any; // Next SCO.
     src: string; // Iframe src.
     errorMessage: string; // Error message.
+    accessInfo: any; // Access information.
 
     protected siteId: string;
     protected mode: string; // Mode to play the SCORM.
@@ -239,6 +240,10 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                             .then((data) => {
                         this.userData = data;
                     }));
+                    // Get access information.
+                    promises.push(this.scormProvider.getAccessInformation(this.scorm.id).then((accessInfo) => {
+                        this.accessInfo = accessInfo;
+                    }));
 
                     return Promise.all(promises);
                 });
@@ -394,7 +399,8 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             mode: this.mode,
             selected: this.currentSco && this.currentSco.id,
             moduleId: this.scorm.coursemodule,
-            courseId: this.scorm.course
+            courseId: this.scorm.course,
+            accessInfo: this.accessInfo
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,
