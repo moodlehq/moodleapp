@@ -1770,6 +1770,7 @@
   "core.redirectingtosite": "local_moodlemobileapp",
   "core.refresh": "moodle",
   "core.remove": "moodle",
+  "core.removefiles": "local_moodlemobileapp",
   "core.required": "moodle",
   "core.requireduserdatamissing": "local_moodlemobileapp",
   "core.resourcedisplayopen": "moodle",

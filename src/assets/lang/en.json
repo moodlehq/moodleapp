@@ -1765,6 +1765,7 @@
     "core.redirectingtosite": "You will be redirected to the site.",
     "core.refresh": "Refresh",
     "core.remove": "Remove",
+    "core.removefiles": "Remove files {{$a}}",
     "core.required": "Required",
     "core.requireduserdatamissing": "This user lacks some required profile data. Please enter the data in your site and try again.<br>{{$a}}",
     "core.resourcedisplayopen": "Open",
