@@ -37,6 +37,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     @Input() initResult: any; // Result of the init WS call of the handler.
     @Input() data: any; // Data to pass to the component.
     @Input() preSets: any; // The preSets for the WS call.
+    @Input() pageTitle: string; // Current page title. It can be used by the "new-content" directives.
     @Output() onContentLoaded?: EventEmitter<boolean>; // Emits an event when the content is loaded.
     @Output() onLoadingContent?: EventEmitter<boolean>; // Emits an event when starts to load the content.
 

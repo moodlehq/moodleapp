@@ -32,6 +32,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
     @Input() module: any; // The module.
     @Input() courseId: number; // Course ID the module belongs to.
+    @Input() pageTitle: string; // Current page title. It can be used by the "new-content" directives.
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
