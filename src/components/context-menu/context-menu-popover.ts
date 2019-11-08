@@ -40,8 +40,8 @@ export class CoreContextMenuPopoverComponent {
     /**
      * Close the popover.
      */
-    closeMenu(): void {
-        this.viewCtrl.dismiss();
+    closeMenu(item?: CoreContextMenuItemComponent): void {
+        this.viewCtrl.dismiss(item);
     }
 
     /**
@@ -61,12 +61,12 @@ export class CoreContextMenuPopoverComponent {
             }
 
             if (item.closeOnClick) {
-                this.closeMenu();
+                this.closeMenu(item);
             }
 
-            item.action.emit(this.closeMenu.bind(this));
-        } else if (item.href && item.closeOnClick) {
-            this.closeMenu();
+            item.action.emit(this.closeMenu.bind(this, item));
+        } else if (item.closeOnClick && (item.href || item.onClosed.observers.length > 0)) {
+            this.closeMenu(item);
         }
 
         return true;

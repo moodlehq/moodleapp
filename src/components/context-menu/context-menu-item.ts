@@ -51,12 +51,14 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() badgeClass?: number; // A class to set in the badge.
     @Input() hidden?: boolean; // Whether the item should be hidden.
     @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
+    @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.
 
     protected hasAction = false;
     protected destroyed = false;
 
     constructor(private ctxtMenu: CoreContextMenuComponent) {
         this.action = new EventEmitter();
+        this.onClosed = new EventEmitter();
     }
 
     /**

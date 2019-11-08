@@ -180,8 +180,12 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
             const popover = this.popoverCtrl.create(CoreContextMenuPopoverComponent,
                 { title: this.title, items: this.items, id: this.uniqueId, showBackdrop: true });
 
-            popover.onDidDismiss(() => {
+            popover.onDidDismiss((item: CoreContextMenuItemComponent) => {
                 this.expanded = false;
+
+                if (item) {
+                    item.onClosed.emit();
+                }
             });
             popover.present({
                 ev: event
