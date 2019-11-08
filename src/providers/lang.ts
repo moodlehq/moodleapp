@@ -315,6 +315,8 @@ export class CoreLangProvider {
             return;
         }
 
+        let currentLangChanged = false;
+
         const list: string[] = strings.split(/(?:\r\n|\r|\n)/);
         list.forEach((entry: string) => {
             const values: string[] = entry.split('|');
@@ -326,6 +328,10 @@ export class CoreLangProvider {
             }
 
             lang = values[2].replace(/_/g, '-'); // Use the app format instead of Moodle format.
+
+            if (lang == this.currentLanguage) {
+                currentLangChanged = true;
+            }
 
             if (!this.customStrings[lang]) {
                 this.customStrings[lang] = {};
@@ -340,6 +346,14 @@ export class CoreLangProvider {
         });
 
         this.customStringsRaw = strings;
+
+        if (currentLangChanged) {
+            // Some lang strings have changed, emit an event to update the pipes.
+            this.translate.onLangChange.emit({
+                lang: this.currentLanguage,
+                translations: this.translate.translations[this.currentLanguage]
+            });
+        }
     }
 
     /**
