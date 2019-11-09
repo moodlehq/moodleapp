@@ -1,0 +1,95 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 7282-13E3
+
+ Directory of C:\Users\kv.01422\Desktop\resources2
+
+01/11/2019  05:59 PM           108,809 splash.png
+               1 File(s)        108,809 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\android
+
+01/11/2019  05:59 PM            60,216 icon.png
+               1 File(s)         60,216 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\android\icon
+
+01/11/2019  05:59 PM             2,510 drawable-hdpi-icon.png
+01/11/2019  05:59 PM             1,330 drawable-ldpi-icon.png
+01/11/2019  05:59 PM             1,627 drawable-mdpi-icon.png
+01/11/2019  05:59 PM             3,380 drawable-xhdpi-icon.png
+01/11/2019  05:59 PM             5,294 drawable-xxhdpi-icon.png
+01/11/2019  05:59 PM             7,317 drawable-xxxhdpi-icon.png
+               6 File(s)         21,458 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\android\splash
+
+01/11/2019  05:59 PM            31,329 drawable-land-hdpi-screen.png
+01/11/2019  05:59 PM            10,622 drawable-land-ldpi-screen.png
+01/11/2019  05:59 PM            17,017 drawable-land-mdpi-screen.png
+01/11/2019  05:59 PM            55,068 drawable-land-xhdpi-screen.png
+01/11/2019  05:59 PM            76,931 drawable-land-xxhdpi-screen.png
+01/11/2019  05:59 PM           103,960 drawable-land-xxxhdpi-screen.png
+01/11/2019  05:59 PM            32,184 drawable-port-hdpi-screen.png
+01/11/2019  05:59 PM            10,708 drawable-port-ldpi-screen.png
+01/11/2019  05:59 PM            17,489 drawable-port-mdpi-screen.png
+01/11/2019  05:59 PM            56,768 drawable-port-xhdpi-screen.png
+01/11/2019  05:59 PM            79,424 drawable-port-xxhdpi-screen.png
+01/11/2019  05:59 PM           105,239 drawable-port-xxxhdpi-screen.png
+              12 File(s)        596,739 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\desktop
+
+01/11/2019  05:59 PM             8,451 Square150x150Logo.png
+01/11/2019  05:59 PM             2,347 Square44x44Logo.png
+01/11/2019  05:59 PM            57,343 StoreLogo.png
+01/11/2019  05:59 PM             8,426 Wide310x150Logo.png
+               4 File(s)         76,567 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\ios
+
+01/11/2019  05:59 PM            57,343 icon.png
+               1 File(s)         57,343 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\ios\icon
+
+01/11/2019  05:59 PM            31,658 icon-1024.png
+01/11/2019  05:59 PM             1,352 icon-40.png
+01/11/2019  05:59 PM             2,654 icon-40@2x.png
+01/11/2019  05:59 PM             4,005 icon-40@3x.png
+01/11/2019  05:59 PM             1,594 icon-50.png
+01/11/2019  05:59 PM             3,323 icon-50@2x.png
+01/11/2019  05:59 PM             1,945 icon-60.png
+01/11/2019  05:59 PM             4,005 icon-60@2x.png
+01/11/2019  05:59 PM             6,336 icon-60@3x.png
+01/11/2019  05:59 PM             2,379 icon-72.png
+01/11/2019  05:59 PM             4,950 icon-72@2x.png
+01/11/2019  05:59 PM             2,492 icon-76.png
+01/11/2019  05:59 PM             5,256 icon-76@2x.png
+01/11/2019  05:59 PM             5,884 icon-83.5@2x.png
+01/11/2019  05:59 PM             1,039 icon-small.png
+01/11/2019  05:59 PM             1,891 icon-small@2x.png
+01/11/2019  05:59 PM             2,845 icon-small@3x.png
+01/11/2019  05:59 PM             1,887 icon.png
+01/11/2019  05:59 PM             3,835 icon@2x.png
+              19 File(s)         89,330 bytes
+
+ Directory of C:\Users\kv.01422\Desktop\resources2\ios\splash
+
+01/11/2019  05:59 PM            49,733 Default-568h@2x~iphone.png
+01/11/2019  05:59 PM            59,727 Default-667h.png
+01/11/2019  05:59 PM           116,865 Default-736h.png
+01/11/2019  05:59 PM           113,084 Default-Landscape-736h.png
+01/11/2019  05:59 PM           117,163 Default-Landscape@2x~ipad.png
+01/11/2019  05:59 PM           137,216 Default-Landscape@~ipadpro.png
+01/11/2019  05:59 PM            48,402 Default-Landscape~ipad.png
+01/11/2019  05:59 PM           117,542 Default-Portrait@2x~ipad.png
+01/11/2019  05:59 PM           138,982 Default-Portrait@~ipadpro.png
+01/11/2019  05:59 PM            48,701 Default-Portrait~ipad.png
+01/11/2019  05:59 PM            42,846 Default@2x~iphone.png
+01/11/2019  05:59 PM           147,781 Default@2x~universal~anyany.png
+01/11/2019  05:59 PM            17,489 Default~iphone.png
+              13 File(s)      1,155,531 bytes
+
+     Total Files Listed:
+              57 File(s)      2,165,993 bytes
+               0 Dir(s)  301,117,784,064 bytes free
