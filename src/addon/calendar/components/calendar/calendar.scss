@@ -10,7 +10,8 @@ $calendar-border-color: $gray !default;
 
 ion-app.app-root page-addon-calendar-list,
 ion-app.app-root page-addon-calendar-day,
-ion-app.app-root addon-calendar-upcoming-events {
+ion-app.app-root addon-calendar-upcoming-events,
+ion-app.app-root addon-calendar-filter-popover {
 
     .item.addon-calendar-event {
         > .icon {
@@ -45,6 +46,26 @@ ion-app.app-root addon-calendar-upcoming-events {
         }
         &.addon-calendar-eventtype-site > .icon {
             background-color: $calendar-event-site-color;
+        }
+    }
+}
+
+ion-app.app-root addon-calendar-filter-popover .item.addon-calendar-event {
+    ion-icon[item-start] + .item-inner {
+        @include margin-horizontal(8px, 0);
+    }
+
+    > .icon {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 20px;
+
+        &.fa {
+            font-size: 16px;
+            &::before {
+                width: 1.8em;
+            }
         }
     }
 }

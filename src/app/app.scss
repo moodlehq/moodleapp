@@ -299,7 +299,7 @@ ion-app.app-root {
 
             @include darkmode {
               background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
-              background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), white));
+              background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), $core-dark-item-bg-color));
               background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
               background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
               background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));

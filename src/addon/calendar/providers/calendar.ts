@@ -50,11 +50,17 @@ export class AddonCalendarProvider {
     static EDIT_EVENT_EVENT = 'addon_calendar_edit_event';
     static DELETED_EVENT_EVENT = 'addon_calendar_deleted_event';
     static UNDELETED_EVENT_EVENT = 'addon_calendar_undeleted_event';
+    static FILTER_CHANGED_EVENT = 'addon_calendar_filter_changed_event';
     static TYPE_CATEGORY = 'category';
     static TYPE_COURSE = 'course';
     static TYPE_GROUP = 'group';
     static TYPE_SITE = 'site';
     static TYPE_USER = 'user';
+    static ALL_TYPES = [ AddonCalendarProvider.TYPE_SITE,
+        AddonCalendarProvider.TYPE_CATEGORY,
+        AddonCalendarProvider.TYPE_COURSE,
+        AddonCalendarProvider.TYPE_GROUP,
+        AddonCalendarProvider.TYPE_USER ];
 
     static CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
     static CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.

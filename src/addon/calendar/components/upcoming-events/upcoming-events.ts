@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, DoCheck, Output, EventEmitter, KeyValueDiffers } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonCalendarProvider, AddonCalendarCalendarEvent } from '../../providers/calendar';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreConstants } from '@core/constants';
@@ -30,9 +30,8 @@ import { CoreConstants } from '@core/constants';
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
 })
-export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, OnDestroy {
-    @Input() courseId: number | string;
-    @Input() categoryId: number | string; // Category ID the course belongs to.
+export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
+    @Input() filter: AddonCalendarFilter; // Filter to apply.
     @Output() onEventClicked = new EventEmitter<number>();
 
     filteredEvents = [];
@@ -49,6 +48,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     protected deletedEvents = []; // Events deleted in offline.
     protected lookAhead: number;
     protected timeFormat: string;
+    protected differ: any; // To detect changes in the data input.
 
     // Observers.
     protected undeleteEventObserver: any;
@@ -57,6 +57,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     constructor(eventsProvider: CoreEventsProvider,
             sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider,
+            differs: KeyValueDiffers,
             private calendarProvider: AddonCalendarProvider,
             private calendarHelper: AddonCalendarHelperProvider,
             private calendarOffline: AddonCalendarOfflineProvider,
@@ -85,6 +86,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
                 }
             }
         }, this.currentSiteId);
+
+        this.differ = differs.find([]).create();
     }
 
     /**
@@ -95,10 +98,12 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     }
 
     /**
-     * Detect changes on input properties.
+     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.courseId || changes.categoryId) {
+    ngDoCheck(): void {
+        // Check if there's any change in the filter object.
+        const changes = this.differ.diff(this.filter);
+        if (changes) {
             this.filterEvents();
         }
     }
@@ -207,19 +212,10 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     }
 
     /**
-     * Filter events to only display events belonging to a certain course.
+     * Filter events based on the filter popover.
      */
-    filterEvents(): void {
-        const courseId = this.courseId ? Number(this.courseId) : undefined,
-            categoryId = this.categoryId ? Number(this.categoryId) : undefined;
-
-        if (!courseId || courseId < 0) {
-            this.filteredEvents = this.events;
-        } else {
-            this.filteredEvents = this.events.filter((event) => {
-                return this.calendarHelper.shouldDisplayEvent(event, courseId, categoryId, this.categories);
-            });
-        }
+    protected filterEvents(): void {
+        this.filteredEvents = this.calendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**
