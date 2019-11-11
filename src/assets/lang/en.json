@@ -409,6 +409,7 @@
     "addon.mod_assign.timemodified": "Last modified",
     "addon.mod_assign.timeremaining": "Time remaining",
     "addon.mod_assign.ungroupedusers": "The setting 'Require group to make submission' is enabled and some users are either not a member of any group, or are a member of more than one group, so are unable to make submissions.",
+    "addon.mod_assign.ungroupedusersoptional": "The setting 'Students submit in groups' is enabled and some users are either not a member of any group, or are a member of more than one group. Please be aware that these students will submit as members of the 'Default group'.",
     "addon.mod_assign.unlimitedattempts": "Unlimited",
     "addon.mod_assign.userswhoneedtosubmit": "Users who need to submit: {{$a}}",
     "addon.mod_assign.userwithid": "User with ID {{id}}",
