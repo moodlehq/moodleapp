@@ -569,21 +569,22 @@ export class CoreCourseHelperProvider {
             if (this.fileHelper.shouldOpenInBrowser(mainFile)) {
                 if (this.appProvider.isOnline()) {
                     // Open in browser.
-                    let fixedUrl = site.fixPluginfileURL(fileUrl).replace('&offline=1', '');
-                    // Remove forcedownload when followed by another param.
-                    fixedUrl = fixedUrl.replace(/forcedownload=\d+&/, '');
-                    // Remove forcedownload when not followed by any param.
-                    fixedUrl = fixedUrl.replace(/[\?|\&]forcedownload=\d+/, '');
+                    return site.checkAndFixPluginfileURL(fileUrl).then((fixedUrl) => {
+                        fixedUrl = fixedUrl.replace('&offline=1', '');
+                        // Remove forcedownload when followed by another param.
+                        fixedUrl = fixedUrl.replace(/forcedownload=\d+&/, '');
+                        // Remove forcedownload when not followed by any param.
+                        fixedUrl = fixedUrl.replace(/[\?|\&]forcedownload=\d+/, '');
 
-                    this.utils.openInBrowser(fixedUrl);
+                        this.utils.openInBrowser(fixedUrl);
 
-                    if (this.fileProvider.isAvailable()) {
-                        // Download the file if needed (file outdated or not downloaded).
-                        // Download will be in background, don't return the promise.
-                        this.downloadModule(module, courseId, component, componentId, files, siteId);
-                    }
+                        if (this.fileProvider.isAvailable()) {
+                            // Download the file if needed (file outdated or not downloaded).
+                            // Download will be in background, don't return the promise.
+                            this.downloadModule(module, courseId, component, componentId, files, siteId);
+                        }
+                    });
 
-                    return;
                 } else {
                     // Not online, get the offline file. It will fail if not found.
                     return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl).then((path) => {
@@ -664,7 +665,8 @@ export class CoreCourseHelperProvider {
             };
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const fixedUrl = site.fixPluginfileURL(fileUrl);
+            return site.checkAndFixPluginfileURL(fileUrl);
+        }).then((fixedUrl) => {
             result.fixedUrl = fixedUrl;
 
             if (this.fileProvider.isAvailable()) {

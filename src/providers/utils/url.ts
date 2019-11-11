@@ -130,9 +130,10 @@ export class CoreUrlUtilsProvider {
      * @param url The url to be fixed.
      * @param token Token to use.
      * @param siteUrl The URL of the site the URL belongs to.
+     * @param accessKey User access key for tokenpluginfile.
      * @return Fixed URL.
      */
-    fixPluginfileURL(url: string, token: string, siteUrl: string): string {
+    fixPluginfileURL(url: string, token: string, siteUrl: string, accessKey?: string): string {
         if (!url) {
             return '';
         }
@@ -140,7 +141,7 @@ export class CoreUrlUtilsProvider {
         url = url.replace(/&amp;/g, '&');
 
         // First check if we need to fix this url or is already fixed.
-        if (url.indexOf('token=') != -1) {
+        if (!accessKey && url.indexOf('token=') != -1) {
             return url;
         }
 
@@ -149,7 +150,17 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        // Check if the URL already has params.
+        const hasSlashParams = !url.match(/[\&?]file=/);
+
+        if (accessKey && hasSlashParams) {
+            // We have the user access key, use tokenpluginfile.php.
+            // Do not use it without slash params, the URL doesn't work.
+            url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
+
+            return url;
+        }
+
+        // No access key, use pluginfile.php. Check if the URL already has params.
         if (url.match(/\?[^=]+=/)) {
             url += '&';
         } else {

@@ -125,7 +125,7 @@ export class AddonModBookProvider {
             promise = this.filepoolProvider.downloadUrl(siteId, indexUrl, false, AddonModBookProvider.COMPONENT, moduleId);
         } else {
             // We return the live URL.
-            return Promise.resolve(this.sitesProvider.getCurrentSite().fixPluginfileURL(indexUrl));
+            return this.sitesProvider.getCurrentSite().checkAndFixPluginfileURL(indexUrl);
         }
 
         return promise.then((url) => {
