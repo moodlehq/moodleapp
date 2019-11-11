@@ -515,6 +515,36 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Get courses matching the given custom field. Only works in online.
+     *
+     * @param  customFieldName Custom field name.
+     * @param  customFieldValue Custom field value.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of courses.
+     * @since 3.8
+     */
+    getEnrolledCoursesByCustomField(customFieldName: string, customFieldValue: string, siteId?: string): Promise<any[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const data = {
+                    classification: 'customfield',
+                    customfieldname: customFieldName,
+                    customfieldvalue: customFieldValue
+                },
+                preSets = {
+                    getFromCache: false
+                };
+
+            return site.read('core_course_get_enrolled_courses_by_timeline_classification', data, preSets).then((courses) => {
+                if (courses.courses) {
+                    return courses.courses;
+                }
+
+                return Promise.reject(null);
+            });
+        });
+    }
+
+    /**
      * Check if get courses by field WS is available in a certain site.
      *
      * @param site Site to check.

@@ -1,8 +1,8 @@
 <ion-item-divider>
     <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
     <!-- Download all courses. -->
-    <div *ngIf="downloadCoursesEnabled && downloadEnabled && courses[selectedFilter] && courses[selectedFilter].length > 1 && !showFilter" class="core-button-spinner" item-end>
-        <button *ngIf="prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
+    <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter" class="core-button-spinner" item-end>
+        <button *ngIf="prefetchCoursesData[selectedFilter] && prefetchCoursesData[selectedFilter].icon && prefetchCoursesData[selectedFilter].icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
             <core-icon [name]="prefetchCoursesData[selectedFilter].icon"></core-icon>
         </button>
         <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">{{prefetchCoursesData[selectedFilter].badge}}</ion-badge>
@@ -23,11 +23,16 @@
             <ion-option value="inprogress" *ngIf="showFilters.inprogress != 'hidden'" [disabled]="showFilters.inprogress == 'disabled'">{{ 'addon.block_myoverview.inprogress' | translate }}</ion-option>
             <ion-option value="future" *ngIf="showFilters.future != 'hidden'" [disabled]="showFilters.future == 'disabled'">{{ 'addon.block_myoverview.future' | translate }}</ion-option>
             <ion-option value="past" *ngIf="showFilters.past != 'hidden'" [disabled]="showFilters.past == 'disabled'">{{ 'addon.block_myoverview.past' | translate }}</ion-option>
+            <ng-container *ngIf="showFilters.custom != 'hidden'">
+                <ng-container *ngFor="let customOption of customFilter; let index = index">
+                    <ion-option value="custom-{{index}}">{{ customOption.name }}</ion-option>
+                </ng-container>
+            </ng-container>
             <ion-option value="favourite" *ngIf="showFilters.favourite != 'hidden'" [disabled]="showFilters.favourite == 'disabled'">{{ 'addon.block_myoverview.favourites' | translate }}</ion-option>
             <ion-option value="hidden" *ngIf="showFilters.hidden != 'hidden'" [disabled]="showFilters.hidden == 'disabled'">{{ 'addon.block_myoverview.hiddencourses' | translate }}</ion-option>
         </ion-select>
     </div>
-    <core-empty-box *ngIf="courses[selectedFilter].length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocourses' | translate"></core-empty-box>
+    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg" [message]="'addon.block_myoverview.nocourses' | translate"></core-empty-box>
 
     <!-- Filter courses. -->
     <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
