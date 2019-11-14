@@ -187,6 +187,7 @@ export class CoreUserParticipantsComponent implements OnInit {
             this.searchQuery = query;
             this.searchPage = 0;
             this.participants = [];
+            this.splitviewCtrl.emptyDetails();
         }
 
         return this.userProvider.searchParticipants(this.courseId, query, true, this.searchPage).then((result) => {
@@ -195,9 +196,6 @@ export class CoreUserParticipantsComponent implements OnInit {
             this.canLoadMore = result.canLoadMore;
             this.searchPage++;
 
-            if (!loadMore && this.participants.length) {
-                this.gotoParticipant(this.participants[0].id);
-            }
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error searching users.');
             this.loadMoreError = true;
