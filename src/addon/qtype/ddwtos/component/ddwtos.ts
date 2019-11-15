@@ -31,6 +31,8 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     protected questionInstance: AddonQtypeDdwtosQuestion;
     protected inputIds: string[] = []; // Ids of the inputs of the question (where the answers will be stored).
     protected destroyed = false;
+    protected textIsRendered = false;
+    protected answerAreRendered = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
         super(loggerProvider, 'AddonQtypeDdwtosComponent', injector);
@@ -86,9 +88,29 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     }
 
     /**
+     * The question answers have been rendered.
+     */
+    answersRendered(): void {
+        this.answerAreRendered = true;
+        if (this.textIsRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
+     * The question text has been rendered.
+     */
+    textRendered(): void {
+        this.textIsRendered = true;
+        if (this.answerAreRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
      * The question has been rendered.
      */
-    questionRendered(): void {
+    protected questionRendered(): void {
         if (!this.destroyed) {
             this.domUtils.waitForImages(this.questionTextEl.nativeElement).then(() => {
                 // Create the instance.
