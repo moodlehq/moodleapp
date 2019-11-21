@@ -933,7 +933,7 @@ export class CoreSitesProvider {
     protected convertVersionName(name: string): number {
         let version = 0;
 
-        const parts = name.split('.', 3);
+        const parts = name.split('-')[0].split('.', 3);
         parts.forEach((num) => {
             version = (version * 100) + Number(num);
         });
