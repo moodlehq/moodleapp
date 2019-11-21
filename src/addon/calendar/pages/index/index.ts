@@ -324,9 +324,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             year: data.year
         };
 
-        if (this.filter.courseId) {
-            params.courseId = this.filter.courseId;
-        }
+        Object.keys(this.filter).forEach((key) => {
+            params[key] = this.filter[key];
+        });
 
         this.navCtrl.push('AddonCalendarDayPage', params);
     }

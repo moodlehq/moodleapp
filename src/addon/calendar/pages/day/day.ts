@@ -108,9 +108,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         const now = new Date();
 
         AddonCalendarProvider.ALL_TYPES.forEach((name) => {
-            this.filter[name] = true;
+            this.filter[name] = navParams.get(name);
+            this.filter[name] = typeof this.filter[name] == 'undefined' ? true : this.filter[name];
         });
-        this.filter['courseId'] = navParams.get('courseId');
+        this.filter.courseId = navParams.get('courseId');
+        this.filter.categoryId = navParams.get('categoryId');
+
+        this.filter.filtered = this.filter.courseId || AddonCalendarProvider.ALL_TYPES.some((name) => !this.filter[name]);
 
         this.year = navParams.get('year') || now.getFullYear();
         this.month = navParams.get('month') || (now.getMonth() + 1);
