@@ -114,7 +114,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     if (data.discussionId) {
                         // Discussion changed, search it in the list of discussions.
                         const discussion = this.discussions.find((disc) => {
-                            return data.discussionId = disc.discussion;
+                            return data.discussionId == disc.discussion;
                         });
 
                         if (discussion) {
