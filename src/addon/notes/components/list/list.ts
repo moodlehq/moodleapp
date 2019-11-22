@@ -14,7 +14,6 @@
 
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Content, ModalController } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -55,8 +54,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
     constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
             sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider, private modalCtrl: ModalController,
             private notesProvider: AddonNotesProvider, private notesSync: AddonNotesSyncProvider,
-            private userProvider: CoreUserProvider, private translate: TranslateService,
-            private notesOffline: AddonNotesOfflineProvider) {
+            private userProvider: CoreUserProvider, private notesOffline: AddonNotesOfflineProvider) {
         // Refresh data if notes are synchronized automatically.
         this.syncObserver = eventsProvider.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
@@ -211,7 +209,7 @@ export class AddonNotesListComponent implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        this.domUtils.showConfirm(this.translate.instant('addon.notes.deleteconfirm')).then(() => {
+        this.domUtils.showDeleteConfirm('addon.notes.deleteconfirm').then(() => {
             this.notesProvider.deleteNote(note, this.courseId).then(() => {
                 this.showDelete = false;
 

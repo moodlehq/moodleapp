@@ -1195,6 +1195,19 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Shortcut for a delete confirmation modal.
+     *
+     * @param translateMessage String key to show in the modal body translated. Default: 'core.areyousure'.
+     * @param translateArgs Arguments to pass to translate if necessary.
+     * @param options More options. See https://ionicframework.com/docs/v3/api/components/alert/AlertController/
+     * @return Promise resolved if the user confirms and rejected with a canceled error if he cancels.
+     */
+    showDeleteConfirm(translateMessage: string = 'core.areyousure', translateArgs: any = {}, options?: any): Promise<any> {
+        return this.showConfirm(this.translate.instant(translateMessage, translateArgs), undefined,
+            this.translate.instant('core.delete'), undefined, options);
+    }
+
+    /**
      * Show a confirm modal.
      *
      * @param message Message to show in the modal body.

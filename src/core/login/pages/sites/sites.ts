@@ -14,7 +14,6 @@
 
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -40,7 +39,6 @@ export class CoreLoginSitesPage {
             private sitesProvider: CoreSitesProvider,
             private loginHelper: CoreLoginHelperProvider,
             logger: CoreLoggerProvider,
-            private translate: TranslateService,
             private pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreLoginSitesPage');
     }
@@ -92,7 +90,7 @@ export class CoreLoginSitesPage {
 
         this.filterProvider.formatText(siteName, {clean: true, singleLine: true, filter: false}, [], site.id).then((siteName) => {
 
-            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: siteName })).then(() => {
+            this.domUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName }).then(() => {
                 this.sitesProvider.deleteSite(site.id).then(() => {
                     this.sites.splice(index, 1);
                     this.showDelete = false;

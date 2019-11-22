@@ -62,7 +62,7 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
             pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
         }
 
-        return this.forumProvider.invalidateDiscussionPosts(pageParams.discussionId, notification.site).catch(() => {
+        return this.forumProvider.invalidateDiscussionPosts(pageParams.discussionId, undefined, notification.site).catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.linkHelper.goInSite(undefined, 'AddonModForumDiscussionPage', pageParams, notification.site);

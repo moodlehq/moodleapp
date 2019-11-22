@@ -113,7 +113,7 @@ export class CoreAttachmentsComponent implements OnInit {
         let promise;
 
         if (askConfirm) {
-            promise = this.domUtils.showConfirm(this.translate.instant('core.confirmdeletefile'));
+            promise = this.domUtils.showDeleteConfirm('core.confirmdeletefile');
         } else {
             promise = Promise.resolve();
         }

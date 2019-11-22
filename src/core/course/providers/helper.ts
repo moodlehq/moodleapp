@@ -407,7 +407,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     confirmAndRemoveFiles(module: any, courseId: number): Promise<any> {
-        return this.domUtils.showConfirm(this.translate.instant('core.course.confirmdeletemodulefiles')).then(() => {
+        return this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles').then(() => {
             return this.prefetchDelegate.removeModuleFiles(module, courseId);
         }).catch((error) => {
             if (error) {

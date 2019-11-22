@@ -645,7 +645,7 @@ export class AddonModDataHelperProvider {
     showDeleteEntryModal(dataId: number, entryId: number, courseId?: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        this.domUtils.showConfirm(this.translate.instant('addon.mod_data.confirmdeleterecord')).then(() => {
+        this.domUtils.showDeleteConfirm('addon.mod_data.confirmdeleterecord').then(() => {
             const modal = this.domUtils.showModalLoading();
 
             return this.getActivityCourseIdIfNotSet(dataId, courseId, siteId).then((courseId) => {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
@@ -48,9 +47,12 @@ export class CoreLocalFileComponent implements OnInit {
     editMode: boolean;
     relativePath: string;
 
-    constructor(private mimeUtils: CoreMimetypeUtilsProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
-            private textUtils: CoreTextUtilsProvider, private fileProvider: CoreFileProvider,
-            private domUtils: CoreDomUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
+    constructor(private mimeUtils: CoreMimetypeUtilsProvider,
+            private utils: CoreUtilsProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private fileProvider: CoreFileProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private timeUtils: CoreTimeUtilsProvider) {
         this.onDelete = new EventEmitter();
         this.onRename = new EventEmitter();
         this.onClick = new EventEmitter();
@@ -172,8 +174,8 @@ export class CoreLocalFileComponent implements OnInit {
         e.stopPropagation();
 
         // Ask confirmation.
-        this.domUtils.showConfirm(this.translate.instant('core.confirmdeletefile')).then(() => {
-            const modal = this.domUtils.showModalLoading();
+        this.domUtils.showDeleteConfirm('core.confirmdeletefile').then(() => {
+            const modal = this.domUtils.showModalLoading('core.deleting', true);
 
             return this.fileProvider.removeFile(this.relativePath).then(() => {
                 this.onDelete.emit();

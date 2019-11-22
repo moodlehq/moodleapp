@@ -7,6 +7,9 @@
                     <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
                     <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
                 </h2>
+                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                    <core-icon name="more"></core-icon>
+                </button>
             </div>
             <div class="addon-mod-forum-post-info">
                 <ion-avatar *ngIf="post.userfullname" core-user-avatar [user]="post" item-start [courseId]="courseId"></ion-avatar>
@@ -19,12 +22,15 @@
                 <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                     <core-icon name="fa-circle" color="primary"></core-icon>
                 </ion-note>
+                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="!displaySubject && optionsMenuEnabled">
+                    <core-icon name="more"></core-icon>
+                </button>
             </div>
         </ion-item>
     </ion-card-header>
     <ion-card-content [attr.padding-top]="post.parent == 0 || null">
         <div padding-bottom *ngIf="post.isprivatereply">
-            <ion-note>{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
+            <ion-note color="danger">{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
         </div>
         <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
         <div no-lines *ngIf="post.attachments && post.attachments.length > 0">
@@ -40,16 +46,11 @@
         <core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
 
         <ion-item no-padding text-end *ngIf="post.id && post.canreply && !post.isprivatereply" class="addon-forum-reply-button">
-            <button ion-button icon-left clear small (click)="showReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
-                <ion-icon name="undo"></ion-icon> {{ 'addon.mod_forum.reply' | translate }}
+            <button ion-button icon-left clear small (click)="showReplyForm()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
+                <core-icon name="fa-reply"></core-icon> {{ 'addon.mod_forum.reply' | translate }}
             </button>
         </ion-item>
     </div>
-    <ion-item text-end *ngIf="!post.id && (!replyData.isEditing || replyData.replyingTo != post.parent)">
-        <button ion-button icon-left clear small (click)="editReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.parent">
-            <ion-icon name="create"></ion-icon> {{ 'addon.mod_forum.edit' | translate }}
-        </button>
-    </ion-item>
 
     <ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)">
         <ion-item>
@@ -79,11 +80,6 @@
                 </ion-col>
                 <ion-col>
                     <button ion-button block color="light" (click)="cancel()">{{ 'core.cancel' | translate }}</button>
-                </ion-col>
-            </ion-row>
-            <ion-row *ngIf="replyData.isEditing">
-                <ion-col>
-                    <button ion-button block color="light" (click)="discard()">{{ 'core.discard' | translate }}</button>
                 </ion-col>
             </ion-row>
         </ion-grid>

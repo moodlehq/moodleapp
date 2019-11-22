@@ -1276,7 +1276,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     deleteConversation(done?: () => void): void {
         const confirmMessage = 'addon.messages.' + (this.isSelf ? 'deleteallselfconfirm' : 'deleteallconfirm');
 
-        this.domUtils.showConfirm(this.translate.instant(confirmMessage)).then(() => {
+        this.domUtils.showDeleteConfirm(confirmMessage).then(() => {
             this.deleteIcon = 'spinner';
 
             return this.messagesProvider.deleteConversation(this.conversation.id).then(() => {
