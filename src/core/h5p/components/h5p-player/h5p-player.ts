@@ -16,6 +16,7 @@ import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChang
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -23,6 +24,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PProvider } from '@core/h5p/providers/h5p';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Component to render an H5P package.
@@ -47,8 +49,10 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     protected siteCanDownload: boolean;
     protected observer;
     protected urlParams;
+    protected logger;
 
-    constructor(public elementRef: ElementRef,
+    constructor(loggerProvider: CoreLoggerProvider,
+            public elementRef: ElementRef,
             protected sitesProvider: CoreSitesProvider,
             protected urlUtils: CoreUrlUtilsProvider,
             protected utils: CoreUtilsProvider,
@@ -60,6 +64,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             protected domUtils: CoreDomUtilsProvider,
             protected pluginFileDelegate: CorePluginFileDelegate) {
 
+        this.logger = loggerProvider.getInstance('CoreH5PPlayerComponent');
         this.siteId = sitesProvider.getCurrentSiteId();
         this.siteCanDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
     }
@@ -92,11 +97,30 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         this.loading = true;
 
-        // @TODO: Check if package is downloaded and use the local player if so.
+        let promise;
 
-        // Get auto-login URL so the user is automatically authenticated.
-        this.sitesProvider.getCurrentSite().getAutoLoginUrl(this.src, false).then((url) => {
-            this.playerSrc = url;
+        if (this.canDownload && (this.state == CoreConstants.DOWNLOADED || this.state == CoreConstants.OUTDATED)) {
+            // Package is downloaded, use the local URL.
+            promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url).catch((error) => {
+                // It seems there was something wrong when creating the index file. Delete the package?
+                this.logger.error('Error loading downloaded index:', error, this.src);
+            });
+        } else {
+            promise = Promise.resolve();
+        }
+
+        promise.then((url) => {
+            if (url) {
+                // Local package.
+                this.playerSrc = url;
+            } else {
+                // Get auto-login URL so the user is automatically authenticated.
+                return this.sitesProvider.getCurrentSite().getAutoLoginUrl(this.src, false).then((url) => {
+                    // Add the preventredirect param so the user can authenticate.
+                    this.playerSrc = this.urlUtils.addParamsToUrl(url, {preventredirect: false});
+                });
+            }
+        }).finally(() => {
             this.loading = false;
             this.showPackage = true;
         });

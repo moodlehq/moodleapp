@@ -1239,4 +1239,19 @@ export class CoreFileProvider {
     isFileInAppFolder(path: string): boolean {
         return path.indexOf(this.basePath) != -1;
     }
+
+    /**
+     * Get the full path to the www folder at runtime.
+     *
+     * @return Path.
+     */
+    getWWWPath(): string {
+        const position = window.location.href.indexOf('index.html');
+
+        if (position != -1) {
+            return window.location.href.substr(0, position);
+        }
+
+        return window.location.href;
+    }
 }
