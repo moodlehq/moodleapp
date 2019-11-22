@@ -49,9 +49,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to add the params to.
      * @param params Object with the params to add.
+     * @param anchor Anchor text if needed.
      * @return URL with params.
      */
-    addParamsToUrl(url: string, params: {[key: string]: any}): string {
+    addParamsToUrl(url: string, params?: {[key: string]: any}, anchor?: string): string {
         let separator = url.indexOf('?') != -1 ? '&' : '?';
 
         for (const key in params) {
@@ -62,6 +63,10 @@ export class CoreUrlUtilsProvider {
                 url += separator + key + '=' + value;
                 separator = '&';
             }
+        }
+
+        if (anchor) {
+            url += '#' + anchor;
         }
 
         return url;

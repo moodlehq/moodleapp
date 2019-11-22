@@ -417,9 +417,9 @@ export class AddonModForumProvider {
             return site.read('mod_forum_get_discussion_post', params, preSets).then((response) => {
                 if (response.post) {
                     return response.post;
-                } else {
-                    return Promise.reject(null);
                 }
+
+                return Promise.reject(null);
             });
         });
     }

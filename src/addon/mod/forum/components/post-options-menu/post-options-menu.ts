@@ -15,6 +15,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
 import { AddonModForumProvider } from '../../providers/forum';
 
 /**
@@ -31,11 +33,13 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
     canEdit = false;
     canDelete = false;
     loaded = false;
+    url: string;
 
     constructor(navParams: NavParams,
             protected viewCtrl: ViewController,
             protected domUtils: CoreDomUtilsProvider,
-            protected forumProvider: AddonModForumProvider) {
+            protected forumProvider: AddonModForumProvider,
+            protected sitesProvider: CoreSitesProvider) {
         this.post = navParams.get('post');
         this.forumId = navParams.get('forumId');
     }
@@ -46,6 +50,9 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
     ngOnInit(): void {
         if (this.forumId) {
             if (this.post.id) {
+                const site: CoreSite = this.sitesProvider.getCurrentSite();
+                this.url = site.createSiteUrl('/mod/forum/discuss.php', {d: this.post.discussion}, 'p' + this.post.id);
+
                 this.forumProvider.getDiscussionPost(this.forumId, this.post.discussion, this.post.id, true).then((post) => {
                     this.canDelete = post.capabilities.delete && this.forumProvider.isDeletePostAvailable();
                     this.canEdit = post.capabilities.edit && this.forumProvider.isUpdatePostAvailable();
