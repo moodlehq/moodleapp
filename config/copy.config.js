@@ -41,4 +41,8 @@ module.exports = {
     src: ['{{ROOT}}/node_modules/mathjax/localization/**/*'],
     dest: '{{WWW}}/lib/mathjax/localization'
   },
+  copyH5P: {
+    src: ['{{ROOT}}/src/core/h5p/assets/**/*'],
+    dest: '{{WWW}}/h5p/'
+  },
 };
