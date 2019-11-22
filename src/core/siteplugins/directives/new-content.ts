@@ -93,7 +93,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                 }
 
                 this.navCtrl.push('CoreSitePluginsPluginPage', {
-                    title: this.title,
+                    title: this.title || (this.parentContent && this.parentContent.pageTitle),
                     component: this.component || (this.parentContent && this.parentContent.component),
                     method: this.method || (this.parentContent && this.parentContent.method),
                     args: args,
