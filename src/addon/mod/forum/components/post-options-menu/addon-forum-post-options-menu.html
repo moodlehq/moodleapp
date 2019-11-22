@@ -11,7 +11,8 @@
     <ion-item text-wrap (click)="dismiss()" *ngIf="wordCount">
         <h2>{{ 'core.numwords' | translate: {'$a': wordCount} }}</h2>
     </ion-item>
-    <ion-item text-wrap (click)="dismiss()" *ngIf="!canEdit && !canDelete && !wordCount">
-        <h2>{{ 'core.nooptionavailable' | translate }}</h2>
-    </ion-item>
+    <a ion-item text-wrap [href]="url" *ngIf="url" core-link capture="false">
+        <ion-icon name="open" item-start></ion-icon>
+        <h2>{{ 'core.openinbrowser' | translate }}</h2>
+    </a>
 </core-loading>

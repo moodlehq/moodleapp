@@ -146,24 +146,25 @@ export class CoreMimetypeUtilsProvider {
      */
     getEmbeddedHtml(file: any, path?: string): string {
         let ext;
+        const filename = file.filename || file.name;
 
         if (file.mimetype) {
             ext = this.getExtension(file.mimetype);
         } else {
-            ext = this.getFileExtension(file.filename);
+            ext = this.getFileExtension(filename);
             file.mimetype = this.getMimeType(ext);
         }
 
         if (this.canBeEmbedded(ext)) {
             file.embedType = this.getExtensionType(ext);
 
-            path = path || file.fileurl;
+            path = path || file.fileurl || (file.toURL && file.toURL());
 
             if (file.embedType == 'image') {
                 return '<img src="' + path + '">';
             }
             if (file.embedType == 'audio' || file.embedType == 'video') {
-                return '<' + file.embedType + ' controls title="' + file.filename + '" src="' + path + '">' +
+                return '<' + file.embedType + ' controls title="' + filename + '" src="' + path + '">' +
                     '<source src="' + path + '" type="' + file.mimetype + '">' +
                     '</' + file.embedType + '>';
             }

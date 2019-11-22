@@ -1310,6 +1310,18 @@ export class CoreSite {
     }
 
     /**
+     * Returns a url to link an specific page on the site.
+     *
+     * @param path Path of the url to go to.
+     * @param params Object with the params to add.
+     * @param anchor Anchor text if needed.
+     * @return URL with params.
+     */
+    createSiteUrl(path: string, params?: {[key: string]: any}, anchor?: string): string {
+        return this.urlUtils.addParamsToUrl(this.siteUrl + path, params, anchor);
+    }
+
+    /**
      * Check if the local_mobile plugin is installed in the Moodle site.
      *
      * @param retrying True if we're retrying the check.

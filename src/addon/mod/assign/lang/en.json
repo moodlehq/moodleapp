@@ -71,7 +71,6 @@
     "numwords": "{{$a}} words",
     "outof": "{{$a.current}} out of {{$a.total}}",
     "overdue": "<font color=\"red\">Assignment is overdue by: {{$a}}</font>",
-    "savechanges": "Save changes",
     "submissioneditable": "Student can edit this submission",
     "submissionnoteditable": "Student cannot edit this submission",
     "submissionnotsupported": "This submission is not supported by the app and may not contain all the information.",

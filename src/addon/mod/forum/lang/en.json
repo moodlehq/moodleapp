@@ -8,6 +8,7 @@
     "cannotadddiscussionall": "You do not have permission to add a new discussion topic for all participants.",
     "cannotcreatediscussion": "Could not create new discussion",
     "couldnotadd": "Could not add your post due to an unknown error",
+    "couldnotupdate": "Could not update your post due to an unknown error",
     "cutoffdatereached": "The cut-off date for posting to this forum is reached so you can no longer post to it.",
     "delete": "Delete",
     "deletedpost": "The post has been deleted",
@@ -60,5 +61,6 @@
     "unlockdiscussion": "Unlock this discussion",
     "unpindiscussion": "Unpin this discussion",
     "unread": "Unread",
-    "unreadpostsnumber": "{{$a}} unread posts"
+    "unreadpostsnumber": "{{$a}} unread posts",
+    "yourreply": "Your reply"
 }

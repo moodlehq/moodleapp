@@ -51,9 +51,11 @@
                         </div>
                         <div class="addon-mod-forum-discussion-info">
                             <ion-avatar core-user-avatar [user]="discussion" item-start [courseId]="courseId" *ngIf="discussion.userfullname"></ion-avatar>
-                            <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
-                            <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
-                            <p><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                            <div class="addon-mod-forum-discussion-author">
+                                <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
+                                <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
+                                <p><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                            </div>
                         </div>
                     </ion-item>
                 </ng-container>
