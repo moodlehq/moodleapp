@@ -19,7 +19,6 @@ import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component
 import {
     AddonBlockRecentlyAccessedItemsProvider, AddonBlockRecentlyAccessedItemsItem
 } from '../../providers/recentlyaccesseditems';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 
 /**
@@ -35,7 +34,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
 
     constructor(injector: Injector, @Optional() private navCtrl: NavController,
-            private sitesProvider: CoreSitesProvider, private textUtils: CoreTextUtilsProvider,
+            private sitesProvider: CoreSitesProvider,
             private recentItemsProvider: AddonBlockRecentlyAccessedItemsProvider,
             private contentLinksHelper: CoreContentLinksHelperProvider) {
 

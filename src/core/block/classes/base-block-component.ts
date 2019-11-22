@@ -15,6 +15,8 @@
 import { Injector, OnInit, Input } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Template class to easily create components for blocks.
@@ -31,10 +33,14 @@ export class CoreBlockBaseComponent implements OnInit {
     protected fetchContentDefaultError: string; // Default error to show when loading contents.
 
     protected domUtils: CoreDomUtilsProvider;
+    protected textUtils: CoreTextUtilsProvider;
+    protected utils: CoreUtilsProvider;
     protected logger;
 
     constructor(injector: Injector, loggerName: string = 'AddonBlockComponent') {
         this.domUtils = injector.get(CoreDomUtilsProvider);
+        this.utils = injector.get(CoreUtilsProvider);
+        this.textUtils = injector.get(CoreTextUtilsProvider);
         const loggerProvider = injector.get(CoreLoggerProvider);
         this.logger = loggerProvider.getInstance(loggerName);
     }
@@ -43,6 +49,16 @@ export class CoreBlockBaseComponent implements OnInit {
      */
     ngOnInit(): void {
         this.loaded = false;
+        if (this.block.configs && this.block.configs.length > 0) {
+            this.block.configs.map((config) => {
+                config.value = this.textUtils.parseJSON(config.value);
+
+                return config;
+            });
+
+            this.block.configs = this.utils.arrayToObject(this.block.configs, 'name');
+        }
+
         this.loadContent();
     }
 

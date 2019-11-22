@@ -15,7 +15,6 @@
 import { Component, OnInit, Input, OnDestroy, ViewChild, Injector, OnChanges, SimpleChange } from '@angular/core';
 import { Searchbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -39,6 +38,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     courses = {
         filter: '',
         all: [],
+        allincludinghidden: [],
         past: [],
         inprogress: [],
         future: [],
@@ -51,24 +51,27 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     filteredCourses: any[];
     prefetchCoursesData = {
         all: {},
+        allincludinghidden: {},
         inprogress: {},
         past: {},
         future: {},
         favourite: {},
         hidden: {}
     };
+    showFilters = { // Options are show, disabled, hidden.
+        all: 'show',
+        allincludinghidden: 'show',
+        past: 'show',
+        inprogress: 'show',
+        future: 'show',
+        favourite: 'show',
+        hidden: 'show'
+    };
     showFilter = false;
-    showFavourite = false;
-    showHidden = false;
     showSelectorFilter = false;
     showSortFilter = false;
     downloadCourseEnabled: boolean;
     downloadCoursesEnabled: boolean;
-    disableInProgress = false;
-    disablePast = false;
-    disableFuture = false;
-    disableFavourite = false;
-    disableHidden = false;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
@@ -79,7 +82,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     constructor(injector: Injector, private coursesProvider: CoreCoursesProvider,
             private courseCompletionProvider: AddonCourseCompletionProvider, private eventsProvider: CoreEventsProvider,
-            private courseHelper: CoreCourseHelperProvider, private utils: CoreUtilsProvider,
+            private courseHelper: CoreCourseHelperProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider,
             private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider) {
 
@@ -173,18 +176,49 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.initCourseFilters(courses);
 
-            this.courses.filter = '';
-            this.showFilter = false;
-            this.disableInProgress = this.courses.inprogress.length === 0;
-            this.disablePast = this.courses.past.length === 0;
-            this.disableFuture = this.courses.future.length === 0;
+            const config = this.block.configs;
+
             this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
                    typeof courses[0].enddate != 'undefined');
-            this.showHidden = this.showSelectorFilter && typeof courses[0].hidden != 'undefined';
-            this.disableHidden = this.courses.hidden.length === 0;
-            this.showFavourite = this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined';
-            this.disableFavourite = this.courses.favourite.length === 0;
-            if (!this.showSelectorFilter || (this.selectedFilter === 'inprogress' && this.disableInProgress)) {
+
+            this.courses.filter = '';
+            this.showFilter = false;
+
+            this.showFilters.all = this.getShowFilterValue(!config || config.displaygroupingall.value == '1',
+                    this.courses.all.length === 0);
+            // Do not show allincludinghiddenif config it's not present (before 3.8).
+            this.showFilters.allincludinghidden =
+                this.getShowFilterValue(config && config.displaygroupingallincludinghidden.value == '1',
+                    this.courses.allincludinghidden.length === 0);
+
+            this.showFilters.inprogress = this.getShowFilterValue(!config || config.displaygroupinginprogress.value == '1',
+                this.courses.inprogress.length === 0);
+            this.showFilters.past = this.getShowFilterValue(!config || config.displaygroupingpast.value == '1',
+                this.courses.past.length === 0);
+            this.showFilters.future = this.getShowFilterValue(!config || config.displaygroupingfuture.value == '1',
+                this.courses.future.length === 0);
+
+            this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
+                   typeof courses[0].enddate != 'undefined');
+
+            this.showFilters.hidden = this.getShowFilterValue(
+                this.showSelectorFilter && typeof courses[0].hidden != 'undefined' &&
+                    (!config || config.displaygroupinghidden.value == '1'),
+                this.courses.hidden.length === 0);
+
+            this.showFilters.favourite = this.getShowFilterValue(
+                this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined' &&
+                    (!config || config.displaygroupingstarred.value == '1'),
+                this.courses.favourite.length === 0);
+
+            if (this.showSelectorFilter) {
+                // Check if any selector is shown and not disabled.
+                this.showSelectorFilter = Object.keys(this.showFilters).some((key) => {
+                    return this.showFilters[key] == 'show';
+                });
+            }
+
+            if (!this.showSelectorFilter || (this.selectedFilter === 'inprogress' && this.showFilters.inprogress == 'disabled')) {
                 // No selector, or the default option is disabled, show all.
                 this.selectedFilter = 'all';
             }
@@ -192,6 +226,17 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.initPrefetchCoursesIcons();
         });
+    }
+
+    /**
+     * Helper function to help with filter values.
+     *
+     * @param  showCondition     If true, filter will be shown.
+     * @param  disabledCondition If true, and showCondition is also met, it will be shown as disabled.
+     * @return                   show / disabled / hidden value.
+     */
+    protected getShowFilterValue(showCondition: boolean, disabledCondition: boolean): string {
+        return showCondition ? (disabledCondition ? 'disabled' : 'show') : 'hidden';
     }
 
     /**
@@ -283,6 +328,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         }
 
         this.courses.all = [];
+        this.courses.allincludinghidden = [];
         this.courses.past = [];
         this.courses.inprogress = [];
         this.courses.future = [];
@@ -291,6 +337,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         const today = this.timeUtils.timestamp();
         courses.forEach((course) => {
+            this.courses.allincludinghidden.push(course);
             if (course.hidden) {
                 this.courses.hidden.push(course);
             } else  {
