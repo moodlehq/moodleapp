@@ -99,6 +99,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         let promise;
 
+        this.addResizerScript();
+
         if (this.canDownload && (this.state == CoreConstants.DOWNLOADED || this.state == CoreConstants.OUTDATED)) {
             // Package is downloaded, use the local URL.
             promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url).catch((error) => {
@@ -152,6 +154,17 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             this.calculateState();
         });
+    }
+
+    /**
+     * Add the resizer script if it hasn't been added already.
+     */
+    protected addResizerScript(): void {
+        const script = document.createElement('script');
+        script.id = 'core-h5p-resizer-script';
+        script.type = 'text/javascript';
+        script.src = this.h5pProvider.getResizerScriptUrl();
+        document.head.appendChild(script);
     }
 
     /**

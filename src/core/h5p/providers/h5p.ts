@@ -522,20 +522,22 @@ export class CoreH5PProvider {
                 let html = '<html><head><title>' + content.title + '</title>' +
                         '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 
-                // @todo: Load the embed.js to allow communication with the parent window.
-                // $PAGE->requires->js(new moodle_url('/h5p/js/embed.js'));
-
                 // Include the required CSS.
                 result.cssRequires.forEach((cssUrl) => {
                     html += '<link rel="stylesheet" type="text/css" href="' + cssUrl + '">';
                 });
 
                 // Add the settings.
-                html += '<script type="text/javascript">var H5PIntegration = ' + JSON.stringify(result.settings) + '</script>';
+                html += '<script type="text/javascript">var H5PIntegration = ' +
+                        JSON.stringify(result.settings).replace(/\//g, '\\/') + '</script>';
 
                 html += '</head><body>';
 
                 // Include the required JS at the beginning of the body, like Moodle web does.
+                // Load the embed.js to allow communication with the parent window.
+                html += '<script type="text/javascript" src="' +
+                        this.textUtils.concatenatePaths(this.getCoreH5PPath(), 'moodle/js/embed.js') + '"></script>';
+
                 result.jsRequires.forEach((jsUrl) => {
                     html += '<script type="text/javascript" src="' + jsUrl + '"></script>';
                 });
@@ -1664,8 +1666,16 @@ export class CoreH5PProvider {
      * @return The HTML code with the resize script.
      */
     protected getResizeCode(): string {
-        // @todo return '<script src="' +  + '"></script>';
-        return '';
+        return '<script src="' + this.getResizerScriptUrl() + '"></script>';
+    }
+
+    /**
+     * Get the URL to the resizer script.
+     *
+     * @return URL.
+     */
+    getResizerScriptUrl(): string {
+        return this.textUtils.concatenatePaths(this.getCoreH5PPath(), 'js/h5p-resizer.js');
     }
 
     /**

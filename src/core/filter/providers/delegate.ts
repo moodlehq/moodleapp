@@ -188,6 +188,7 @@ export class CoreFilterDelegate extends CoreDelegate {
                 }
 
                 promise = promise.then(() => {
+
                     return Promise.resolve(this.executeFunctionOnEnabled(filter.filter, 'handleHtml',
                             [container, filter, options, viewContainerRef, component, componentId, siteId])).catch((error) => {
                         this.logger.error('Error handling HTML' + filter.filter, error);

@@ -385,7 +385,7 @@ export class CoreDomUtilsProvider {
      * @return Formatted size. If size is not valid, returns an empty string.
      */
     formatPixelsSize(size: any): string {
-        if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1)) {
+        if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1 || size == 'auto' || size == 'initial')) {
             // It seems to be a valid size.
             return size;
         }
