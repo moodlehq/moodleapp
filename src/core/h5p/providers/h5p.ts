@@ -25,6 +25,7 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PUtilsProvider } from './utils';
+import { FileEntry } from '@ionic-native/file';
 
 /**
  * Service to provide H5P functionalities.
@@ -277,6 +278,11 @@ export class CoreH5PProvider {
                     },
                     {
                         name: 'hash',
+                        type: 'TEXT',
+                        notNull: true
+                    },
+                    {
+                        name: 'foldername',
                         type: 'TEXT',
                         notNull: true
                     }
@@ -566,7 +572,8 @@ export class CoreH5PProvider {
                 db.deleteRecords(this.CONTENT_TABLE),
                 db.deleteRecords(this.LIBRARIES_TABLE),
                 db.deleteRecords(this.LIBRARY_DEPENDENCIES_TABLE),
-                db.deleteRecords(this.CONTENTS_LIBRARIES_TABLE)
+                db.deleteRecords(this.CONTENTS_LIBRARIES_TABLE),
+                db.deleteRecords(this.LIBRARIES_CACHEDASSETS_TABLE)
             ]);
         });
     }
@@ -575,15 +582,13 @@ export class CoreH5PProvider {
      * Delete cached assets from DB and filesystem.
      *
      * @param libraryId Library identifier.
-     * @param folderName Name of the folder of the H5P package.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    protected deleteCachedAssets(libraryId: number, folderName: string, siteId?: string): Promise<any> {
+    protected deleteCachedAssets(libraryId: number, siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            const db = site.getDb(),
-                cachedAssetsFolder = this.getCachedAssetsFolderPath(folderName, site.getId());
+            const db = site.getDb();
 
             // Get all the hashes that use this library.
             return db.getRecords(this.LIBRARIES_CACHEDASSETS_TABLE, {libraryid: libraryId}).then((entries) => {
@@ -594,6 +599,8 @@ export class CoreH5PProvider {
                 entries.forEach((entry) => {
                     hashes.push(entry.hash);
 
+                    const cachedAssetsFolder = this.getCachedAssetsFolderPath(entry.foldername, site.getId());
+
                     ['js', 'css'].forEach((type) => {
                         const path = this.textUtils.concatenatePaths(cachedAssetsFolder, entry.hash + '.' + type);
 
@@ -602,11 +609,6 @@ export class CoreH5PProvider {
                         }));
                     });
                 });
-
-                // Also, delete the index.html file.
-                promises.push(this.fileProvider.removeFile(this.getContentIndexPath(folderName, site.getId())).catch(() => {
-                    // Ignore errors.
-                }));
 
                 return Promise.all(promises).then(() => {
                     return db.deleteRecordsList(this.LIBRARIES_CACHEDASSETS_TABLE, 'hash', hashes);
@@ -634,6 +636,45 @@ export class CoreH5PProvider {
         promises.push(this.deleteLibraryUsage(id, siteId));
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Delete content indexes from filesystem.
+     *
+     * @param libraryId Library identifier.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    protected deleteContentIndexesForLibrary(libraryId: number, siteId?: string): Promise<any> {
+
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const db = site.getDb();
+
+            // Get the folder names of all the packages that use this library.
+            const query = 'SELECT DISTINCT hc.foldername ' +
+                        'FROM ' + this.CONTENTS_LIBRARIES_TABLE + ' hcl ' +
+                        'JOIN ' + this.CONTENT_TABLE + ' hc ON hcl.h5pid = hc.id ' +
+                        'WHERE hcl.libraryid = ?',
+                queryArgs = [];
+
+            queryArgs.push(libraryId);
+
+            return db.execute(query, queryArgs).then((result) => {
+                const promises = [];
+
+                for (let i = 0; i < result.rows.length; i++) {
+                    const entry = result.rows.item(i);
+
+                    // Delete the index.html file.
+                    promises.push(this.fileProvider.removeFile(this.getContentIndexPath(entry.foldername, site.getId()))
+                            .catch(() => {
+                        // Ignore errors.
+                    }));
+                }
+
+                return Promise.all(promises);
+            });
+        });
     }
 
     /**
@@ -1797,6 +1838,27 @@ export class CoreH5PProvider {
     }
 
     /**
+     * Performs actions required when a library has been installed.
+     *
+     * @param libraryId ID of library that was installed.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
+     */
+    protected libraryInstalled(libraryId: number, siteId: string): Promise<any> {
+        const promises = [];
+
+        // Remove all indexes of contents that use this library.
+        promises.push(this.deleteContentIndexesForLibrary(libraryId, siteId));
+
+        if (this.aggregateAssets) {
+            // Remove cached assets that use this library.
+            promises.push(this.deleteCachedAssets(libraryId, siteId));
+        }
+
+        return this.utils.allPromises(promises);
+    }
+
+    /**
      * Writes library data as string on the form {machineName} {majorVersion}.{minorVersion}.
      *
      * @param libraryData Library data.
@@ -2198,9 +2260,8 @@ export class CoreH5PProvider {
                             });
                         });
                     }).then(() => {
-                        // Remove cached assets that use this library.
-                        if (this.aggregateAssets && typeof libraryData.libraryId != 'undefined') {
-                            return this.deleteCachedAssets(libraryData.libraryId, folderName, siteId);
+                        if (typeof libraryData.libraryId != 'undefined') {
+                            return this.libraryInstalled(libraryData.libraryId, siteId);
                         }
                     });
                 }));

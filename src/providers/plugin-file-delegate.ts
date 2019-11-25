@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from './logger';
 import { CoreWSExternalFile } from '@providers/ws';
+import { FileEntry } from '@ionic-native/file';
 
 /**
  * Interface that all plugin file handlers must implement.

@@ -21,6 +21,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PProvider } from './h5p';
 import { CoreWSExternalFile } from '@providers/ws';
+import { FileEntry } from '@ionic-native/file';
 
 /**
  * Handler to treat H5P files.

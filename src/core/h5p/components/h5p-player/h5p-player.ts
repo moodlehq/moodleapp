@@ -15,6 +15,7 @@
 import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -62,7 +63,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             protected eventsProvider: CoreEventsProvider,
             protected appProvider: CoreAppProvider,
             protected domUtils: CoreDomUtilsProvider,
-            protected pluginFileDelegate: CorePluginFileDelegate) {
+            protected pluginFileDelegate: CorePluginFileDelegate,
+            protected fileProvider: CoreFileProvider) {
 
         this.logger = loggerProvider.getInstance('CoreH5PPlayerComponent');
         this.siteId = sitesProvider.getCurrentSiteId();
@@ -103,8 +105,19 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.canDownload && (this.state == CoreConstants.DOWNLOADED || this.state == CoreConstants.OUTDATED)) {
             // Package is downloaded, use the local URL.
-            promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url).catch((error) => {
-                // It seems there was something wrong when creating the index file. Delete the package?
+            promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.siteId).catch(() => {
+
+                // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
+                return this.filepoolProvider.getInternalUrlByUrl(this.siteId, this.urlParams.url).then((path) => {
+                    return this.fileProvider.getFile(path);
+                }).then((file) => {
+                    return this.h5pProvider.extractH5PFile(this.urlParams.url, file, this.siteId);
+                }).then(() => {
+                    // File treated. Try to get the index file URL again.
+                    return this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.siteId);
+                });
+            }).catch((error) => {
+                // Still failing. Delete the H5P package?
                 this.logger.error('Error loading downloaded index:', error, this.src);
             });
         } else {
