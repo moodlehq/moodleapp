@@ -58,6 +58,16 @@ export interface CorePluginFileHandler {
     canDownloadFile?(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile>;
 
     /**
+     * React to a file being deleted.
+     *
+     * @param fileUrl The file URL used to download the file.
+     * @param path The path of the deleted file.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    fileDeleted?(fileUrl: string, path: string, siteId?: string): Promise<any>;
+
+    /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
      * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
      *
@@ -137,6 +147,24 @@ export class CorePluginFileDelegate {
         }
 
         return Promise.resolve(file);
+    }
+
+    /**
+     * React to a file being deleted.
+     *
+     * @param fileUrl The file URL used to download the file.
+     * @param path The path of the deleted file.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<any> {
+        const handler = this.getHandlerForFile({fileurl: fileUrl});
+
+        if (handler && handler.fileDeleted) {
+            return handler.fileDeleted(fileUrl, path, siteId);
+        }
+
+        return Promise.resolve();
     }
 
     /**
@@ -310,7 +338,7 @@ export class CorePluginFileDelegate {
     treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string): Promise<any> {
         const handler = this.getHandlerForFile({fileurl: fileUrl});
 
-        if (handler && handler.getFileSize) {
+        if (handler && handler.treatDownloadedFile) {
             return handler.treatDownloadedFile(fileUrl, file, siteId);
         }
 

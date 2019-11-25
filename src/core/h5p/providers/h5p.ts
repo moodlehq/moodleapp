@@ -618,6 +618,27 @@ export class CoreH5PProvider {
     }
 
     /**
+     * Delete all package content data.
+     *
+     * @param fileUrl File URL.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    deleteContentByUrl(fileUrl: string, siteId?: string): Promise<any> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        return this.getContentDataByUrl(fileUrl, siteId).then((data) => {
+            const promises = [];
+
+            promises.push(this.deleteContentData(data.id, siteId));
+
+            promises.push(this.deleteContentFolder(data.foldername, siteId));
+
+            return this.utils.allPromises(promises);
+        });
+    }
+
+    /**
      * Delete content data from DB.
      *
      * @param id Content ID.
@@ -636,6 +657,17 @@ export class CoreH5PProvider {
         promises.push(this.deleteLibraryUsage(id, siteId));
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Deletes a content folder from the file system.
+     *
+     * @param folderName Folder name of the content.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    deleteContentFolder(folderName: string, siteId?: string): Promise<any> {
+        return this.fileProvider.removeDir(this.getContentFolderPath(folderName, siteId));
     }
 
     /**
@@ -1160,9 +1192,13 @@ export class CoreH5PProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const db = site.getDb();
 
+            // Try to use the folder name, it should be more reliable than the URL.
             return this.getContentFolderNameByUrl(fileUrl, site.getId()).then((folderName) => {
 
                 return db.getRecord(this.CONTENT_TABLE, {foldername: folderName});
+            }, () => {
+                // Cannot get folder name, the h5p file was probably deleted. Just use the URL.
+                return db.getRecord(this.CONTENT_TABLE, {fileurl: fileUrl});
             });
         });
     }

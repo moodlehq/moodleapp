@@ -49,6 +49,19 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
     }
 
     /**
+     * React to a file being deleted.
+     *
+     * @param fileUrl The file URL used to download the file.
+     * @param path The path of the deleted file.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<any> {
+        // If an h5p file is deleted, remove the contents folder.
+        return this.h5pProvider.deleteContentByUrl(fileUrl, siteId);
+    }
+
+    /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
      * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
      *

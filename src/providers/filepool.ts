@@ -2646,7 +2646,22 @@ export class CoreFilepoolProvider {
     protected removeFileById(siteId: string, fileId: string): Promise<any> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             // Get the path to the file first since it relies on the file object stored in the pool.
-            return Promise.resolve(this.getFilePath(siteId, fileId)).then((path) => {
+            // Don't use getFilePath to prevent performing 2 DB requests.
+            let path = this.getFilepoolFolderPath(siteId) + '/' + fileId,
+                fileUrl;
+
+            return this.hasFileInPool(siteId, fileId).then((entry) => {
+                fileUrl = entry.url;
+
+                if (entry.extension) {
+                    path += '.' + entry.extension;
+                }
+
+                return path;
+            }).catch(() => {
+                // If file not found, use the path without extension.
+                return path;
+            }).then((path) => {
                 const promises = [];
 
                 // Remove entry from filepool store.
@@ -2668,6 +2683,10 @@ export class CoreFilepoolProvider {
 
                 return Promise.all(promises).then(() => {
                     this.notifyFileDeleted(siteId, fileId);
+
+                    return this.pluginFileDelegate.fileDeleted(fileUrl, path, siteId).catch((error) => {
+                        // Ignore errors.
+                    });
                 });
             });
         });
