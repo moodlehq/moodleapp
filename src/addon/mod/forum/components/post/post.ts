@@ -291,8 +291,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         } else {
             // The post being replied has changed but the data will be kept.
             this.replyData.replyingTo = this.post.id;
-            this.replyData.subject = this.defaultReplySubject;
-            this.originalData.subject = this.defaultReplySubject;
+
+            if (this.replyData.subject == this.originalData.subject) {
+                // Update subject only if it hadn't been modified
+                this.replyData.subject = this.defaultReplySubject;
+                this.originalData.subject = this.defaultReplySubject;
+            }
+
             this.messageControl.setValue(this.replyData.message);
         }
 
