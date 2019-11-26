@@ -100,7 +100,7 @@ export class CoreH5PProvider {
                         notNull: true
                     },
                     {
-                        name: 'displayoptions',
+                        name: 'displayoptions', // Not used right now, but we keep the field to be consistent with Moodle web.
                         type: 'INTEGER'
                     },
                     {
@@ -494,10 +494,7 @@ export class CoreH5PProvider {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
-            const disable = typeof content.disable != 'undefined' && content.disable != null ?
-                    content.disable : CoreH5PProvider.DISABLE_NONE,
-                displayOptions = this.getDisplayOptionsForView(disable, id),
-                contentId = this.getContentId(id),
+            const contentId = this.getContentId(id),
                 basePath = this.fileProvider.getBasePathInstant(),
                 contentUrl = this.textUtils.concatenatePaths(basePath, this.getContentFolderPath(content.folderName, site.getId()));
 
@@ -506,10 +503,10 @@ export class CoreH5PProvider {
                 library: this.libraryToString(content.library),
                 fullScreen: content.library.fullscreen,
                 exportUrl: '', // We'll never display the download button, so we don't need the exportUrl.
-                embedCode: this.getEmbedCode(site.getURL(), h5pUrl, displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED]),
+                embedCode: this.getEmbedCode(site.getURL(), h5pUrl, true),
                 resizeCode: this.getResizeCode(),
                 title: content.slug,
-                displayOptions: displayOptions,
+                displayOptions: {},
                 url: this.getEmbedUrl(site.getURL(), h5pUrl),
                 contentUrl: contentUrl,
                 metadata: content.metadata,
@@ -536,6 +533,10 @@ export class CoreH5PProvider {
                 // Add the settings.
                 html += '<script type="text/javascript">var H5PIntegration = ' +
                         JSON.stringify(result.settings).replace(/\//g, '\\/') + '</script>';
+
+                // Add our own script to handle the display options.
+                html += '<script type="text/javascript" src="' +
+                        this.textUtils.concatenatePaths(this.getCoreH5PPath(), 'moodle/js/displayoptions.js') + '"></script>';
 
                 html += '</head><body>';
 
@@ -1218,17 +1219,26 @@ export class CoreH5PProvider {
      * Get the content index file.
      *
      * @param fileUrl URL of the H5P package.
+     * @param urlParams URL params.
      * @param siteId The site ID. If not defined, current site.
      * @return Promise resolved with the file URL if exists, rejected otherwise.
      */
-    getContentIndexFileUrl(fileUrl: string, siteId?: string): Promise<string> {
+    getContentIndexFileUrl(fileUrl: string, urlParams?: {[name: string]: string}, siteId?: string): Promise<string> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.getContentFolderNameByUrl(fileUrl, siteId).then((folderName) => {
             return this.fileProvider.getFile(this.getContentIndexPath(folderName, siteId));
         }).then((file) => {
             return file.toURL();
+        }).then((url) => {
+            // Add display options to the URL.
+            return this.getContentDataByUrl(fileUrl, siteId).then((data) => {
+                const options = this.validateDisplayOptions(this.getDisplayOptionsFromUrlParams(urlParams), data.id);
+
+                return this.urlUtils.addParamsToUrl(url, options, undefined, true);
+            });
         });
+
     }
 
     /**
@@ -1486,25 +1496,31 @@ export class CoreH5PProvider {
      * @return Display options as object.
      */
     getDisplayOptionsForView(disable: number, id: number): CoreH5PDisplayOptions {
-        const displayOptions = this.getDisplayOptionsAsObject(disable);
+        return this.validateDisplayOptions(this.getDisplayOptionsAsObject(disable), id);
+    }
 
-        if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_FRAME, true) == false) {
-            displayOptions[CoreH5PProvider.DISPLAY_OPTION_FRAME] = false;
-        } else {
-            displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD] = this.setDisplayOptionOverrides(
-                    CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD, CoreH5PPermission.DOWNLOAD_H5P, id,
-                    displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD]);
+    /**
+     * Get display options from a URL params.
+     *
+     * @param params URL params.
+     * @return Display options as object.
+     */
+    getDisplayOptionsFromUrlParams(params: {[name: string]: string}): CoreH5PDisplayOptions {
+        const displayOptions: CoreH5PDisplayOptions = {};
 
-            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = this.setDisplayOptionOverrides(
-                    CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PPermission.EMBED_H5P, id,
-                    displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED]);
-
-            if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT, true) == false) {
-                displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT] = false;
-            }
+        if (!params) {
+            return displayOptions;
         }
 
-        displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPY] = this.hasPermission(CoreH5PPermission.COPY_H5P, id);
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD] =
+                this.utils.isTrueOrOne(params[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD]);
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] =
+                this.utils.isTrueOrOne(params[CoreH5PProvider.DISPLAY_OPTION_EMBED]);
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT] =
+                this.utils.isTrueOrOne(params[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT]);
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_FRAME] = displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD] ||
+                displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] || displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT];
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_ABOUT] = !!this.getOption(CoreH5PProvider.DISPLAY_OPTION_ABOUT, true);
 
         return displayOptions;
     }
@@ -1734,7 +1750,7 @@ export class CoreH5PProvider {
      */
     getOption(name: string, defaultValue: any = false): any {
         // For now, all them are disabled by default, so only will be rendered when defined in the displayoptions DB field.
-        return 2; // CONTROLLED_BY_AUTHOR_DEFAULT_OFF.
+        return CoreH5PDisplayOptionBehaviour.CONTROLLED_BY_AUTHOR_DEFAULT_OFF; // CONTROLLED_BY_AUTHOR_DEFAULT_OFF.
     }
 
     /**
@@ -1845,7 +1861,8 @@ export class CoreH5PProvider {
      * @return Whether the user has permission to execute an action.
      */
     hasPermission(permission: number, id: number): boolean {
-        return true;
+        // H5P capabilities have not been introduced.
+        return null;
     }
 
     /**
@@ -1967,7 +1984,7 @@ export class CoreH5PProvider {
                     params: contentData.jsoncontent,
                     // The embedtype will be always set to 'iframe' to prevent conflicts with JS and CSS.
                     embedType: 'iframe',
-                    disable: contentData.displayoptions,
+                    disable: null,
                     folderName: contentData.foldername,
                     title: libData.title,
                     slug: this.h5pUtils.slugify(libData.title) + '-' + contentData.id,
@@ -2193,7 +2210,7 @@ export class CoreH5PProvider {
 
             const data: any = {
                 jsoncontent: content.params,
-                displayoptions: content.disable,
+                displayoptions: null,
                 mainlibraryid: content.library.libraryId,
                 timemodified: Date.now(),
                 filtered: null,
@@ -2563,6 +2580,40 @@ export class CoreH5PProvider {
             return db.updateRecords(this.CONTENT_TABLE, data, {id: id});
         });
     }
+
+    /**
+     * Validate display options, updating them if needed.
+     *
+     * @param displayOptions The display options to validate.
+     * @param id Package ID.
+     */
+    validateDisplayOptions(displayOptions: CoreH5PDisplayOptions, id: number): CoreH5PDisplayOptions {
+
+        // Never allow downloading in the app.
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD] = false;
+
+        // Embed - force setting it if always on or always off. In web, this is done when storing in DB.
+        const embed = this.getOption(CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
+        if (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW || embed == CoreH5PDisplayOptionBehaviour.NEVER_SHOW) {
+            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
+        }
+
+        if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_FRAME, true) == false) {
+            displayOptions[CoreH5PProvider.DISPLAY_OPTION_FRAME] = false;
+        } else {
+            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = this.setDisplayOptionOverrides(
+                    CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PPermission.EMBED_H5P, id,
+                    displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED]);
+
+            if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT, true) == false) {
+                displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT] = false;
+            }
+        }
+
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPY] = this.hasPermission(CoreH5PPermission.COPY_H5P, id);
+
+        return displayOptions;
+    }
 }
 
 /**
@@ -2633,7 +2684,7 @@ export type CoreH5PContentDBData = {
     id: number; // The id of the content.
     jsoncontent: string; // The content in json format.
     mainlibraryid: number; // The library we first instantiate for this node.
-    displayoptions: number; // H5P Button display options.
+    displayoptions: number; // H5P Button display options. Not used right now.
     foldername: string; // Name of the folder that contains the contents.
     fileurl: string; // The online URL of the H5P package.
     filtered: string; // Filtered version of json_content.

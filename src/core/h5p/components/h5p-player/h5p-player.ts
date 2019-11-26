@@ -105,7 +105,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.canDownload && (this.state == CoreConstants.DOWNLOADED || this.state == CoreConstants.OUTDATED)) {
             // Package is downloaded, use the local URL.
-            promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.siteId).catch(() => {
+            promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.urlParams, this.siteId).catch(() => {
 
                 // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
                 return this.filepoolProvider.getInternalUrlByUrl(this.siteId, this.urlParams.url).then((path) => {
@@ -114,7 +114,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                     return this.h5pProvider.extractH5PFile(this.urlParams.url, file, this.siteId);
                 }).then(() => {
                     // File treated. Try to get the index file URL again.
-                    return this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.siteId);
+                    return this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.urlParams, this.siteId);
                 });
             }).catch((error) => {
                 // Still failing. Delete the H5P package?
