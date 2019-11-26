@@ -106,7 +106,10 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
      * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.coursesHelper.getUserCoursesWithOptions('timemodified', 0, 'isfavourite').then((courses) => {
+        const showCategories = this.block.configs && this.block.configs.displaycategories &&
+            this.block.configs.displaycategories.value == '1';
+
+        return this.coursesHelper.getUserCoursesWithOptions('timemodified', 0, 'isfavourite', showCategories).then((courses) => {
             this.courses = courses;
 
             this.initPrefetchCoursesIcons();

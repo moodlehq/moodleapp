@@ -167,7 +167,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.coursesHelper.getUserCoursesWithOptions(this.sort).then((courses) => {
+        const config = this.block.configs;
+
+        const showCategories = config && config.displaycategories && config.displaycategories.value == '1';
+
+        return this.coursesHelper.getUserCoursesWithOptions(this.sort, null, null, showCategories).then((courses) => {
             this.courseIds = courses.map((course) => {
                     return course.id;
                 });
@@ -175,8 +179,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.showSortFilter = courses.length > 0 && typeof courses[0].lastaccess != 'undefined';
 
             this.initCourseFilters(courses);
-
-            const config = this.block.configs;
 
             this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
                    typeof courses[0].enddate != 'undefined');

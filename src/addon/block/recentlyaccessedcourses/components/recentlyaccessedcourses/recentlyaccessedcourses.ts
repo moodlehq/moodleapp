@@ -106,7 +106,10 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.coursesHelper.getUserCoursesWithOptions('lastaccess', 10).then((courses) => {
+        const showCategories = this.block.configs && this.block.configs.displaycategories &&
+            this.block.configs.displaycategories.value == '1';
+
+        return this.coursesHelper.getUserCoursesWithOptions('lastaccess', 10, null, showCategories).then((courses) => {
             this.courses = courses;
 
             this.initPrefetchCoursesIcons();
