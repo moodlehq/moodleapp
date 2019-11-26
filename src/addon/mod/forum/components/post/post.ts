@@ -48,13 +48,14 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     @Input() trackPosts: boolean; // True if post is being tracked.
     @Input() forum: any; // The forum the post belongs to. Required for attachments and offline posts.
     @Input() accessInfo: any; // Forum access information.
-    @Input() defaultSubject: string; // Default subject to set to new posts.
+    @Input() parentSubject?: string; // Subject of parent post.
     @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
     @Output() onPostChange: EventEmitter<void>; // Event emitted when a reply is posted or modified.
 
     messageControl = new FormControl();
 
     uniqueId: string;
+    defaultReplySubject: string;
     advanced = false; // Display all form fields.
     tagsEnabled: boolean;
     displaySubject = true;
@@ -89,9 +90,17 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parent;
 
         const reTranslated = this.translate.instant('addon.mod_forum.re');
-        this.displaySubject = this.post.parent == 0 ||
-            (this.post.subject != this.defaultSubject && this.post.subject != 'Re: ' + this.defaultSubject &&
-                this.post.subject != reTranslated + this.defaultSubject);
+        this.displaySubject = !this.parentSubject || (
+            this.post.subject != this.parentSubject &&
+            this.post.subject != `Re: ${this.parentSubject}` &&
+            this.post.subject != `${reTranslated} ${this.parentSubject}`
+        );
+        this.defaultReplySubject = (
+                this.post.subject.startsWith('Re: ') ||
+                this.post.subject.startsWith(reTranslated)
+            )
+                ? this.post.subject
+                : `${reTranslated} ${this.post.subject}`;
 
         this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
                     (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
@@ -145,7 +154,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
         this.replyData.replyingTo = replyingTo || 0;
         this.replyData.isEditing = !!isEditing;
-        this.replyData.subject = subject || this.defaultSubject || '';
+        this.replyData.subject = subject || this.defaultReplySubject || '';
         this.replyData.message = message || null;
         this.replyData.files = files || [];
         this.replyData.isprivatereply = !!isPrivate;
@@ -282,6 +291,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         } else {
             // The post being replied has changed but the data will be kept.
             this.replyData.replyingTo = this.post.id;
+            this.replyData.subject = this.defaultReplySubject;
+            this.originalData.subject = this.defaultReplySubject;
             this.messageControl.setValue(this.replyData.message);
         }
 

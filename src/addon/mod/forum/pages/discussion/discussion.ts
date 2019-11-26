@@ -51,7 +51,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     discussion: any;
     posts: any[];
     discussionLoaded = false;
-    defaultSubject: string;
+    postSubjects: { [id: string]: string };
     isOnline: boolean;
     isSplitViewOn: boolean;
     postHasOffline: boolean;
@@ -375,10 +375,6 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             }).catch(() => {
                 // Ignore errors.
             }).then(() => {
-                this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' +
-                    (this.discussion ? this.discussion.subject : '');
-                this.replyData.subject = this.defaultSubject;
-
                 const startingPost = this.forumProvider.extractStartingPost(posts);
                 if (startingPost) {
                     // Update discussion data from first post.
@@ -388,9 +384,6 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     return Promise.reject('Invalid forum discussion.');
                 }
 
-                this.defaultSubject = this.translate.instant('addon.mod_forum.re') + ' ' + this.discussion.subject;
-                this.replyData.subject = this.defaultSubject;
-
                 if (this.discussion.userfullname && this.discussion.parent == 0 && this.forum.type == 'single') {
                     // Hide author for first post and type single.
                     this.discussion.userfullname = null;
@@ -398,6 +391,11 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 this.posts = posts;
                 this.ratingInfo = ratingInfo;
+                this.postSubjects = this.posts.reduce((postSubjects, post) => {
+                    postSubjects[post.id] = post.subject;
+
+                    return postSubjects;
+                }, { [this.discussion.id]: this.discussion.subject });
             });
         }).then(() => {
             if (this.forumProvider.isSetPinStateAvailableForSite()) {
