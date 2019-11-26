@@ -138,6 +138,13 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         }).finally(() => {
             this.loading = false;
             this.showPackage = true;
+
+            if (this.canDownload && (this.state == CoreConstants.OUTDATED || this.state == CoreConstants.NOT_DOWNLOADED)) {
+                // Download the package in background if the size is low.
+                this.downloadInBg().catch((error) => {
+                    this.logger.error('Error downloading H5P in background', error);
+                });
+            }
         });
     }
 
@@ -167,6 +174,28 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             this.calculateState();
         });
+    }
+
+    /**
+     * Download the H5P in background if the size is low.
+     *
+     * @return Promise resolved when done.
+     */
+    protected downloadInBg(): Promise<any> {
+        if (this.urlParams && this.src && this.siteCanDownload && this.h5pProvider.canGetTrustedH5PFileInSite() &&
+                this.appProvider.isOnline()) {
+
+            // Get the file size.
+            return this.pluginFileDelegate.getFileSize({fileurl: this.urlParams.url}, this.siteId).then((size) => {
+
+                if (this.filepoolProvider.shouldDownload(size)) {
+                    // Download the file in background.
+                    this.filepoolProvider.addToQueueByUrl(this.siteId, this.urlParams.url, this.component, this.componentId);
+                }
+            });
+        }
+
+        return Promise.resolve();
     }
 
     /**

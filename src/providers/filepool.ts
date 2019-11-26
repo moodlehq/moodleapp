@@ -772,7 +772,7 @@ export class CoreFilepoolProvider {
                         return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, undefined,
                                 0, options, revision, true);
                     }
-                } else if (size <= this.DOWNLOAD_THRESHOLD || (isWifi && size <= this.WIFI_DOWNLOAD_THRESHOLD)) {
+                } else if (this.shouldDownload(size)) {
                     return this.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified, undefined, undefined, 0,
                             options, revision, true);
                 }
@@ -2777,6 +2777,16 @@ export class CoreFilepoolProvider {
                 });
             });
         });
+    }
+
+    /**
+     * Check if a file should be downloaded based on its size.
+     *
+     * @param size File size.
+     * @return Whether file should be downloaded.
+     */
+    shouldDownload(size: number): boolean {
+        return size <= this.DOWNLOAD_THRESHOLD || (this.appProvider.isWifi() && size <= this.WIFI_DOWNLOAD_THRESHOLD);
     }
 
     /**
