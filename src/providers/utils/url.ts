@@ -234,6 +234,58 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
+     * Returns the Youtube Embed Video URL or null if not found.
+     *
+     * @param  url URL
+     * @return Youtube Embed Video URL or null if not found.
+     */
+    getYoutubeEmbedUrl(url: string): string {
+        if (!url) {
+            return;
+        }
+
+        let videoId;
+        const params: any = {};
+
+        url = this.textUtils.decodeHTML(url);
+
+        // Get the video ID.
+        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+
+        if (match && match[2].length === 11) {
+            videoId = match[2];
+        }
+
+        // No videoId, do not continue.
+        if (!videoId) {
+            return;
+        }
+
+        // Now get the playlist (if any).
+        match = url.match(/[?&]list=([^#\&\?]+)/);
+
+        if (match && match[1]) {
+            params.list = match[1];
+        }
+
+        // Now get the start time (if any).
+        match = url.match(/[?&]start=(\d+)/);
+
+        if (match && match[1]) {
+            params.start = parseInt(match[1], 10);
+        } else {
+            // No start param, but it could have a time param.
+            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
+            if (match) {
+                params.start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) + (match[2] ? parseInt(match[2], 10) * 60 : 0) +
+                        (match[3] ? parseInt(match[3], 10) : 0);
+            }
+        }
+
+        return this.addParamsToUrl('https://www.youtube.com/embed/' + videoId, params);
+    }
+
+    /**
      * Given a URL, returns what's after the last '/' without params.
      * Example:
      * http://mysite.com/a/course.html?id=1 -> course.html
