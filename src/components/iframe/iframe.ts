@@ -19,6 +19,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
@@ -39,9 +40,13 @@ export class CoreIframeComponent implements OnInit, OnChanges {
     protected logger;
     protected IFRAME_TIMEOUT = 15000;
 
-    constructor(logger: CoreLoggerProvider, private iframeUtils: CoreIframeUtilsProvider, private domUtils: CoreDomUtilsProvider,
-            private sanitizer: DomSanitizer, private navCtrl: NavController,
-            @Optional() private svComponent: CoreSplitViewComponent) {
+    constructor(logger: CoreLoggerProvider,
+            protected iframeUtils: CoreIframeUtilsProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected sanitizer: DomSanitizer,
+            protected navCtrl: NavController,
+            protected urlUtils: CoreUrlUtilsProvider,
+            @Optional() protected svComponent: CoreSplitViewComponent) {
 
         this.logger = logger.getInstance('CoreIframe');
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -84,7 +89,8 @@ export class CoreIframeComponent implements OnInit, OnChanges {
      */
     ngOnChanges(changes: {[name: string]: SimpleChange }): void {
         if (changes.src) {
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(changes.src.currentValue);
+            const youtubeUrl = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue);
+            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(youtubeUrl || changes.src.currentValue);
         }
     }
 }
