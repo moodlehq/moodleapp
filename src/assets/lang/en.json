@@ -1611,7 +1611,7 @@
     "core.login.invalidaccount": "Please check your login details or ask your site administrator to check the site configuration.",
     "core.login.invaliddate": "Invalid date",
     "core.login.invalidemail": "Invalid email address",
-    "core.login.invalidmoodleversion": "Invalid Moodle version. The minimum version required is 3.1.",
+    "core.login.invalidmoodleversion": "<p>Invalid Moodle site version. The Moodle app only supports Moodle systems 3.1 onwards.</p>\n<p>You can contact your site administrators and ask them to update their Moodle system.</p>\n<p>\"Site Administrators\" are the people who manages the Moodle at your school/university/company or learning organisation. If you don't know how to contact them, please contact your teachers/trainers.</p>",
     "core.login.invalidsite": "The site URL is invalid.",
     "core.login.invalidtime": "Invalid time",
     "core.login.invalidurl": "Invalid URL specified",
