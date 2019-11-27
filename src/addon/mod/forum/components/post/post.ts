@@ -90,17 +90,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parent;
 
         const reTranslated = this.translate.instant('addon.mod_forum.re');
-        this.displaySubject = !this.parentSubject || (
-            this.post.subject != this.parentSubject &&
-            this.post.subject != `Re: ${this.parentSubject}` &&
-            this.post.subject != `${reTranslated} ${this.parentSubject}`
-        );
-        this.defaultReplySubject = (
-                this.post.subject.startsWith('Re: ') ||
-                this.post.subject.startsWith(reTranslated)
-            )
-                ? this.post.subject
-                : `${reTranslated} ${this.post.subject}`;
+        this.displaySubject = !this.parentSubject ||
+            (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
+                this.post.subject != `${reTranslated} ${this.parentSubject}`);
+        this.defaultReplySubject = (this.post.subject.startsWith('Re: ') || this.post.subject.startsWith(reTranslated))
+            ? this.post.subject : `${reTranslated} ${this.post.subject}`;
 
         this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
                     (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
