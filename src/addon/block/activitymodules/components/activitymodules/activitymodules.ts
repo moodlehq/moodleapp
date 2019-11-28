@@ -18,6 +18,7 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
 import { CoreConstants } from '@core/constants';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component to render an "activity modules" block.
@@ -36,7 +37,8 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     protected fetchContentDefaultError = 'Error getting activity modules data.';
 
     constructor(injector: Injector, protected courseProvider: CoreCourseProvider,
-            protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate) {
+            protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate,
+            protected sitesProvider: CoreSitesProvider) {
 
         super(injector, 'AddonBlockActivityModulesComponent');
     }
@@ -63,8 +65,11 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.courseProvider.getSections(this.instanceId, false, true).then((sections) => {
+        const courseId = this.contextLevel === 'course'
+            ? this.instanceId
+            : this.sitesProvider.getCurrentSiteHomeId();
 
+        return this.courseProvider.getSections(courseId, false, true).then((sections) => {
             this.entries = [];
 
             const archetypes = {},
