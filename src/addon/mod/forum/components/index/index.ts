@@ -127,6 +127,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                             if (typeof data.starred != 'undefined') {
                                 discussion.starred = data.starred;
                             }
+
+                            this.showLoadingAndFetch(false);
                         }
                     }
 
