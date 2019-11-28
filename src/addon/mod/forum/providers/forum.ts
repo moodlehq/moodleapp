@@ -599,7 +599,8 @@ export class AddonModForumProvider {
      * @param forceCache True to always get the value from cache. false otherwise.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with an object with:
-     *         - discussions: List of discussions.
+     *         - discussions: List of discussions. Note that for every discussion in the list discussion.id is the main post ID but
+     *             discussion ID is discussion.discussion.
      *         - canLoadMore: True if there may be more discussions to load.
      */
     getDiscussions(forumId: number, sortOrder?: number, page: number = 0, forceCache?: boolean, siteId?: string): Promise<any> {
