@@ -83,13 +83,11 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
         // Refresh comments count if event received.
         this.commentsCountObserver = eventsProvider.on(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, (data) => {
             // Verify these comments need to be updated.
-            if (this.undefinedOrEqual(data, 'contextLevel') && this.undefinedOrEqual(data, 'instanceId') &&
-                    this.undefinedOrEqual(data, 'component') && this.undefinedOrEqual(data, 'itemId') &&
-                    this.undefinedOrEqual(data, 'area') && !this.countError) {
-                if (!this.commentsCount.endsWith('+')) {
-                    // Parse and unparse string.
-                    this.commentsCount = parseInt(this.commentsCount, 10) + data.countChange + '';
-                }
+            if (!this.commentsCount.endsWith('+') && this.undefinedOrEqual(data, 'contextLevel') &&
+                    this.undefinedOrEqual(data, 'instanceId') && this.undefinedOrEqual(data, 'component') &&
+                    this.undefinedOrEqual(data, 'itemId') && this.undefinedOrEqual(data, 'area') && !this.countError) {
+                // Parse and unparse string.
+                this.commentsCount = parseInt(this.commentsCount, 10) + data.countChange + '';
             }
         }, sitesProvider.getCurrentSiteId());
     }

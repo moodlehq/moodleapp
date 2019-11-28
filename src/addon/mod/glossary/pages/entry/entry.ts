@@ -81,8 +81,8 @@ export class AddonModGlossaryEntryPage {
         if (this.glossary && this.glossary.allowcomments && this.entry && this.entry.id > 0 && this.commentsEnabled &&
                 this.comments) {
             // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
-                this.comments.doRefresh().catch(() => {
-                    // Ignore errors.
+            this.comments.doRefresh().catch(() => {
+                // Ignore errors.
             });
         }
 
