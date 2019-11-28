@@ -13,6 +13,18 @@
 // limitations under the License.
 
 /**
+ * Context levels enumeration.
+ */
+export const enum ContextLevel {
+    System = 'system',
+    User = 'user',
+    Category = 'category',
+    Course = 'course',
+    ActivityModule = 'module',
+    Block = 'block',
+}
+
+/**
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
