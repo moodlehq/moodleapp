@@ -26,6 +26,7 @@ import { CoreCommentsOfflineProvider } from './offline';
 export class CoreCommentsProvider {
 
     static REFRESH_COMMENTS_EVENT = 'core_comments_refresh_comments';
+    static COMMENTS_COUNT_CHANGED_EVENT = 'core_comments_count_changed';
 
     protected ROOT_CACHE_KEY = 'mmComments:';
     static pageSize = 1; // At least it will be one.
@@ -162,15 +163,18 @@ export class CoreCommentsProvider {
      *
      * @param comment Comment object to delete.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that comments
-     *         have been deleted, the resolve param can contain errors for comments not deleted.
+     * @return Promise resolved when deleted (with true if deleted in online, false otherwise), rejected otherwise. Promise resolved
+     *         doesn't mean that comments have been deleted, the resolve param can contain errors for comments not deleted.
      */
-    deleteComment(comment: any, siteId?: string): Promise<void> {
+    deleteComment(comment: any, siteId?: string): Promise<boolean> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
+        // Offline comment, just delete it.
         if (!comment.id) {
             return this.commentsOffline.removeComment(comment.contextlevel, comment.instanceid, comment.component, comment.itemid,
-                    comment.area, siteId);
+                    comment.area, siteId).then(() => {
+                return false;
+            });
         }
 
         // Convenience function to store the action to be synchronized later.
