@@ -314,6 +314,27 @@ export class CoreH5PUtilsProvider {
     }
 
     /**
+     * Parses library data from a string on the form {machineName} {majorVersion}.{minorVersion}.
+     *
+     * @param libraryString On the form {machineName} {majorVersion}.{minorVersion}
+     * @return Object with keys machineName, majorVersion and minorVersion. Null if string is not parsable.
+     */
+    libraryFromString(libraryString: string): {machineName: string, majorVersion: number, minorVersion: number} {
+
+        const matches = libraryString.match(/^([\w0-9\-\.]{1,255})[\-\ ]([0-9]{1,5})\.([0-9]{1,5})$/i);
+
+        if (matches && matches.length >= 4) {
+            return {
+                machineName: matches[1],
+                majorVersion: Number(matches[2]),
+                minorVersion: Number(matches[3])
+            };
+        }
+
+        return null;
+    }
+
+    /**
      * Convert list of library parameter values to csv.
      *
      * @param libraryData Library data as found in library.json files.

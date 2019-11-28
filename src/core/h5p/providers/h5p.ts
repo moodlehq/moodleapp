@@ -25,6 +25,8 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PUtilsProvider } from './utils';
+import { CoreH5PContentValidator } from '../classes/content-validator';
+import { TranslateService } from '@ngx-translate/core';
 import { FileEntry } from '@ionic-native/file';
 
 /**
@@ -304,7 +306,8 @@ export class CoreH5PProvider {
             private h5pUtils: CoreH5PUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider,
             private utils: CoreUtilsProvider,
-            private urlUtils: CoreUrlUtilsProvider) {
+            private urlUtils: CoreUrlUtilsProvider,
+            private translate: TranslateService) {
 
         this.logger = logger.getInstance('CoreH5PProvider');
 
@@ -415,6 +418,7 @@ export class CoreH5PProvider {
      * @return Promise resolved with all of the files content in one string.
      */
     protected concatenateFiles(assets: CoreH5PDependencyAsset[], type: string): Promise<string> {
+        const basePath = this.fileProvider.getBasePathInstant();
         let content = '',
             promise = Promise.resolve(); // Use a chain of promises so the order is kept.
 
@@ -433,39 +437,42 @@ export class CoreH5PProvider {
 
                     if (matches && matches.length) {
                         matches.forEach((match) => {
-                            let url = match.replace(/(url\([\'"]?|[\'"]?\)$)/i, '');
+                            let url = match.replace(/(url\(['"]?|['"]?\)$)/ig, '');
 
                             if (treated[url] || url.match(/^(data:|([a-z0-9]+:)?\/)/i)) {
                                 return; // Not relative or already treated, skip.
                             }
 
+                            const pathSplit = assetPath.split('/');
                             treated[url] = url;
 
                             /* Find "../" in the URL. If it exists, we have to remove "../" and switch the last folder in the
-                               filepath for the first folder in the url.
-                               For instance:
-                               Path: /H5P.Question-1.4/styles/
-                               Url: ../images/plus-one.svg
-                               We want this: H5P.Question-1.4/images/ITEMID/minus-one.svg. */
+                               filepath for the first folder in the url. */
                             if (url.match(/^\.\.\//)) {
-                                const pathSplit = assetPath.split('/'),
-                                    urlSplit = url.split('/').filter((i) => {
+                                const urlSplit = url.split('/').filter((i) => {
                                         return i; // Remove empty values.
                                     });
 
-                                // Remove the first element: ../.
-                                urlSplit.unshift();
+                                // Remove the file name from the asset path.
+                                pathSplit.pop();
+
+                                // Remove the first element from the file URL: ../ .
+                                urlSplit.shift();
 
                                 // Put the url's first folder into the asset path.
                                 pathSplit[pathSplit.length - 1] = urlSplit[0];
                                 urlSplit.shift();
 
                                 // Create the new URL and replace it in the file contents.
-                                url = '/' + pathSplit.join('/') + '/' + urlSplit.join('/');
+                                url = pathSplit.join('/') + '/' + urlSplit.join('/');
 
-                                fileContent = fileContent.replace(new RegExp(this.textUtils.escapeForRegex(match), 'g'),
-                                        'url("' + url + '")');
+                            } else {
+                                pathSplit[pathSplit.length - 1] = url; // Put the whole path to the end of the asset path.
+                                url = pathSplit.join('/');
                             }
+
+                            fileContent = fileContent.replace(new RegExp(this.textUtils.escapeForRegex(match), 'g'),
+                                        'url("' + this.textUtils.concatenatePaths(basePath, url) + '")');
                         });
                     }
 
@@ -510,11 +517,11 @@ export class CoreH5PProvider {
                 url: this.getEmbedUrl(site.getURL(), h5pUrl),
                 contentUrl: contentUrl,
                 metadata: content.metadata,
-                contentUserData: {
-                    0: {
+                contentUserData: [
+                    {
                         state: '{}'
                     }
-                }
+                ]
             };
 
             // Get the core H5P assets, needed by the H5P classes to render the H5P content.
@@ -859,8 +866,7 @@ export class CoreH5PProvider {
             return Promise.resolve(null);
         }
 
-        const dependencies = {}, // In web, dependencies are built by the validator.
-            params = {
+        const params = {
                 library: this.libraryToString(content.library),
                 params: this.textUtils.parseJSON(content.params, false)
             };
@@ -869,90 +875,65 @@ export class CoreH5PProvider {
             return null;
         }
 
-        // Get the main library data.
-        return this.loadLibrary(content.library.name, content.library.majorVersion, content.library.minorVersion, siteId)
-                .then((library) => {
+        const validator = new CoreH5PContentValidator(this, this.h5pUtils, this.textUtils, this.utils, this.translate, siteId);
 
-            library.semantics = this.textUtils.parseJSON(library.semantics, '');
+        // Validate the main library and its dependencies.
+        return validator.validateLibrary(params, {options: [params.library]}).then(() => {
 
-            const depKey = 'preloaded-' + library.machineName;
-            let nextWeight;
+            // Handle addons.
+            return this.loadAddons(siteId);
+        }).then((addons) => {
+            // Validate addons. Use a chain of promises to calculate the weight properly.
+            let promise = Promise.resolve();
 
-            if (!dependencies[depKey]) {
-                dependencies[depKey] = {
-                    library: library,
-                    type: 'preloaded'
-                };
-            }
+            addons.forEach((addon) => {
+                const addTo = addon.addTo;
 
-            // Get the whole library dependency tree.
-            return this.findLibraryDependencies(dependencies, library, 1, false, siteId).then((weight) => {
-                nextWeight = weight;
-                dependencies[depKey].weight = nextWeight++;
+                if (addTo && addTo.content && addTo.content.types && addTo.content.types.length) {
+                    for (let i = 0; i < addTo.content.types.length; i++) {
+                        const type = addTo.content.types[i];
 
-                // Handle addons.
-                return this.loadAddons(siteId);
-            }).then((addons) => {
-                // Get the dependencies of all the addons. Use a chain of promises to calculate the weight properly.
-                let promise = Promise.resolve();
+                        if (type && type.text && type.text.regex &&
+                                this.h5pUtils.textAddonMatches(params.params, type.text.regex)) {
 
-                addons.forEach((addon) => {
-                    const addTo = this.textUtils.parseJSON(addon.addTo, null);
+                            promise = promise.then(() => {
+                                return validator.addon(addon);
+                            });
 
-                    if (addTo && addTo.content && addTo.content.types && addTo.content.types.length) {
-                        for (let i = 0; i < addTo.content.types.length; i++) {
-                            const type = addTo.content.types[i];
-
-                            if (type && type.text && type.text.regex &&
-                                    this.h5pUtils.textAddonMatches(params.params, type.text.regex)) {
-
-                                const addonDepKey = 'preloaded-' + addon.machineName;
-                                dependencies[addonDepKey] = {
-                                    library: addon,
-                                    type: 'preloaded'
-                                };
-
-                                promise = promise.then(() => {
-                                    return this.findLibraryDependencies(dependencies, addon, nextWeight).then((weight) => {
-                                        nextWeight = weight;
-                                        dependencies[addonDepKey].weight = nextWeight++;
-                                    });
-                                });
-
-                                break;
-                            }
+                            // An addon shall only be added once.
+                            break;
                         }
                     }
-                });
-
-                return promise;
-            }).then(() => {
-                // Update content dependencies.
-                content.dependencies = dependencies;
-
-                const paramsStr = JSON.stringify(params.params);
-
-                // Sometimes the parameters are filtered before content has been created
-                if (content.id) {
-                    // Update library usage.
-                    return this.deleteLibraryUsage(content.id, siteId).catch(() => {
-                        // Ignore errors.
-                    }).then(() => {
-                        return this.saveLibraryUsage(content.id, content.dependencies, siteId);
-                    }).then(() => {
-                        if (!content.slug) {
-                            content.slug = this.h5pUtils.slugify(content.title);
-                        }
-
-                        // Cache.
-                        return this.updateContentFields(content.id, {filtered: paramsStr}, siteId).then(() => {
-                            return paramsStr;
-                        });
-                    });
                 }
-
-                return paramsStr;
             });
+
+            return promise;
+        }).then(() => {
+            // Update content dependencies.
+            content.dependencies = validator.getDependencies();
+
+            const paramsStr = JSON.stringify(params.params);
+
+            // Sometimes the parameters are filtered before content has been created
+            if (content.id) {
+                // Update library usage.
+                return this.deleteLibraryUsage(content.id, siteId).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    return this.saveLibraryUsage(content.id, content.dependencies, siteId);
+                }).then(() => {
+                    if (!content.slug) {
+                        content.slug = this.h5pUtils.slugify(content.title);
+                    }
+
+                    // Cache.
+                    return this.updateContentFields(content.id, {filtered: paramsStr}, siteId).then(() => {
+                        return paramsStr;
+                    });
+                });
+            }
+
+            return paramsStr;
         }).catch(() => {
             return null;
         });
@@ -990,12 +971,13 @@ export class CoreH5PProvider {
             }
 
             library[property].forEach((dependency: CoreH5PLibraryBasicData) => {
-                const dependencyKey = type + '-' + dependency.machineName;
-                if (dependencies[dependencyKey]) {
-                    return; // Skip, already have this.
-                }
 
                 promise = promise.then(() => {
+                    const dependencyKey = type + '-' + dependency.machineName;
+                    if (dependencies[dependencyKey]) {
+                        return; // Skip, already have this.
+                    }
+
                     // Get the dependency library data and its subdependencies.
                     return this.loadLibrary(dependency.machineName, dependency.majorVersion, dependency.minorVersion, siteId)
                         .then((dependencyLibrary) => {
@@ -1424,7 +1406,7 @@ export class CoreH5PProvider {
                 // Aggregate and store assets.
                 return this.cacheAssets(files, cachedAssetsHash, folderName, siteId).then(() => {
                     // Keep track of which libraries have been cached in case they are updated.
-                    return this.saveCachedAssets(cachedAssetsHash, dependencies, siteId);
+                    return this.saveCachedAssets(cachedAssetsHash, dependencies, folderName, siteId);
                 }).then(() => {
                     return files;
                 });
@@ -1652,12 +1634,12 @@ export class CoreH5PProvider {
             }
 
             return db.getRecords(this.LIBRARIES_TABLE, conditions);
-        }).then((libraries) => {
+        }).then((libraries): any => {
             if (!libraries.length) {
                 return Promise.reject(null);
             }
 
-            return libraries[0];
+            return this.parseLibDBData(libraries[0]);
         });
     }
 
@@ -1681,7 +1663,9 @@ export class CoreH5PProvider {
      */
     protected getLibraryById(id: number, siteId?: string): Promise<CoreH5PLibraryDBData> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getRecord(this.LIBRARIES_TABLE, {id: id});
+            return db.getRecord(this.LIBRARIES_TABLE, {id: id}).then((library) => {
+                return this.parseLibDBData(library);
+            });
         });
     }
 
@@ -1946,7 +1930,7 @@ export class CoreH5PProvider {
                 const addons = [];
 
                 for (let i = 0; i < result.rows.length; i++) {
-                    addons.push(result.rows.item(i));
+                    addons.push(this.parseLibAddonData(result.rows.item(i)));
                 }
 
                 return addons;
@@ -1963,6 +1947,8 @@ export class CoreH5PProvider {
      * @return Promise resolved with the content data.
      */
     protected loadContentData(id?: number, fileUrl?: string, siteId?: string): Promise<CoreH5PContentData> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
         let promise: Promise<CoreH5PContentDBData>;
 
         if (id) {
@@ -1978,31 +1964,35 @@ export class CoreH5PProvider {
             // Load the main library data.
             return this.getLibraryById(contentData.mainlibraryid, siteId).then((libData) => {
 
-                // Map the values to the names used by the H5P core (it's the same Moodle web does).
-                return {
-                    id: contentData.id,
-                    params: contentData.jsoncontent,
-                    // The embedtype will be always set to 'iframe' to prevent conflicts with JS and CSS.
-                    embedType: 'iframe',
-                    disable: null,
-                    folderName: contentData.foldername,
-                    title: libData.title,
-                    slug: this.h5pUtils.slugify(libData.title) + '-' + contentData.id,
-                    filtered: contentData.filtered,
-                    libraryMajorVersion: libData.majorversion,
-                    libraryMinorVersion: libData.minorversion,
-                    metadata: {
-                        license: 'U' // Stop "invalid selected option in select" for old content without license chosen.
-                    },
-                    library: {
-                        id: libData.id,
-                        name: libData.machinename,
-                        majorVersion: libData.majorversion,
-                        minorVersion: libData.minorversion,
-                        embedTypes: libData.embedtypes,
-                        fullscreen: libData.fullscreen
-                    }
-                };
+                // Validate metadata.
+                const validator = new CoreH5PContentValidator(this, this.h5pUtils, this.textUtils, this.utils, this.translate,
+                            siteId);
+
+                // Validate empty metadata, like Moodle web does.
+                return validator.validateMetadata({}).then((metadata) => {
+                    // Map the values to the names used by the H5P core (it's the same Moodle web does).
+                    return {
+                        id: contentData.id,
+                        params: contentData.jsoncontent,
+                        embedType: 'iframe', // Always use iframe.
+                        disable: null,
+                        folderName: contentData.foldername,
+                        title: libData.title,
+                        slug: this.h5pUtils.slugify(libData.title) + '-' + contentData.id,
+                        filtered: contentData.filtered,
+                        libraryMajorVersion: libData.majorversion,
+                        libraryMinorVersion: libData.minorversion,
+                        metadata: metadata,
+                        library: {
+                            id: libData.id,
+                            name: libData.machinename,
+                            majorVersion: libData.majorversion,
+                            minorVersion: libData.minorversion,
+                            embedTypes: libData.embedtypes,
+                            fullscreen: libData.fullscreen
+                        }
+                    };
+                });
             });
         });
     }
@@ -2114,6 +2104,31 @@ export class CoreH5PProvider {
     }
 
     /**
+     * Parse library addon data.
+     *
+     * @param library Library addon data.
+     * @return Parsed library.
+     */
+    parseLibAddonData(library: any): CoreH5PLibraryAddonData {
+        library.addto = this.textUtils.parseJSON(library.addto, null);
+
+        return library;
+    }
+
+    /**
+     * Parse library DB data.
+     *
+     * @param library Library DB data.
+     * @return Parsed library.
+     */
+    parseLibDBData(library: any): CoreH5PLibraryDBData {
+        library.semantics = this.textUtils.parseJSON(library.semantics, null);
+        library.addto = this.textUtils.parseJSON(library.addto, null);
+
+        return library;
+    }
+
+    /**
      * Process libraries from an H5P library, getting the required data to save them.
      * This code was copied from the isValidPackage function in Moodle's H5PValidator.
      * This function won't validate most things because it should've been done by the server already.
@@ -2172,12 +2187,13 @@ export class CoreH5PProvider {
      * know which cache file to delete when a library is updated.
      *
      * @param key Hash key for the given libraries.
-     * @param libraries List of dependencies used to create the key
+     * @param libraries List of dependencies used to create the key.
+     * @param folderName The name of the folder that contains the H5P.
      * @param siteId The site ID.
      * @return Promise resolved when done.
      */
     protected saveCachedAssets(hash: string, dependencies: {[machineName: string]: CoreH5PContentDependencyData},
-            siteId?: string): Promise<any> {
+            folderName: string, siteId?: string): Promise<any> {
 
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             const promises = [];
@@ -2185,7 +2201,8 @@ export class CoreH5PProvider {
             for (const key in dependencies) {
                 const data = {
                         hash: key,
-                        libraryid: dependencies[key].libraryId
+                        libraryid: dependencies[key].libraryId,
+                        foldername: folderName
                     };
 
                 promises.push(db.insertRecord(this.LIBRARIES_CACHEDASSETS_TABLE, data));
@@ -2279,7 +2296,7 @@ export class CoreH5PProvider {
             for (const libString in librariesJsonData) {
                 const libraryData = librariesJsonData[libString];
 
-                // Find local library identifier
+                // Find local library identifier.
                 promises.push(this.getLibraryByData(libraryData).catch(() => {
                     // Not found.
                 }).then((dbData) => {
@@ -2422,7 +2439,7 @@ export class CoreH5PProvider {
                     preloadedjs: preloadedJS,
                     preloadedcss: preloadedCSS,
                     droplibrarycss: dropLibraryCSS,
-                    semantics: libraryData.semantics,
+                    semantics: typeof libraryData.semantics != 'undefined' ? JSON.stringify(libraryData.semantics) : null,
                     addto: typeof libraryData.addTo != 'undefined' ? JSON.stringify(libraryData.addTo) : null,
                 };
 
@@ -2497,8 +2514,8 @@ export class CoreH5PProvider {
             for (const key in librariesInUse) {
                 const dependency = librariesInUse[key];
 
-                if (dependency.library.dropLibraryCss) {
-                    const split = dependency.library.dropLibraryCss.split(', ');
+                if ((<CoreH5PLibraryData> dependency.library).dropLibraryCss) {
+                    const split = (<CoreH5PLibraryData> dependency.library).dropLibraryCss.split(', ');
 
                     split.forEach((css) => {
                         dropLibraryCssList[css] = css;
@@ -2739,7 +2756,7 @@ export type CoreH5PContentDependencyData = {
  * Data for each content dependency in the dependency tree.
  */
 export type CoreH5PContentDepsTreeDependency = {
-    library: CoreH5PLibraryData; // Library data.
+    library: CoreH5PLibraryData | CoreH5PLibraryAddonData; // Library data.
     type: string; // Dependency type.
     weight?: number; // An integer determining the order of the libraries when they are loaded.
 };
@@ -2786,7 +2803,7 @@ export type CoreH5PLibraryAddonData = {
     patchVersion: number; // Patch version.
     preloadedJs?: string; // Comma separated list of scripts to load.
     preloadedCss?: string; // Comma separated list of stylesheets to load.
-    addTo?: string; // Plugin configuration data.
+    addTo?: any; // Plugin configuration data.
 };
 
 /**
@@ -2805,8 +2822,8 @@ export type CoreH5PLibraryDBData = {
     preloadedjs?: string; // Comma separated list of scripts to load.
     preloadedcss?: string; // Comma separated list of stylesheets to load.
     droplibrarycss?: string; // List of libraries that should not have CSS included if this library is used. Comma separated list.
-    semantics?: string; // The semantics definition in json format.
-    addto?: string; // Plugin configuration data.
+    semantics?: any; // The semantics definition.
+    addto?: any; // Plugin configuration data.
 };
 
 /**

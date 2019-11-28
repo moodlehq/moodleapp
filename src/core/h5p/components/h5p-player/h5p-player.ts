@@ -129,8 +129,12 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                 // Local package.
                 this.playerSrc = url;
             } else {
+                // Never allow downloading in the app. This will only work if the user is allowed to change the params.
+                const src = this.src && this.src.replace(CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD + '=1',
+                        CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD + '=0');
+
                 // Get auto-login URL so the user is automatically authenticated.
-                return this.sitesProvider.getCurrentSite().getAutoLoginUrl(this.src, false).then((url) => {
+                return this.sitesProvider.getCurrentSite().getAutoLoginUrl(src, false).then((url) => {
                     // Add the preventredirect param so the user can authenticate.
                     this.playerSrc = this.urlUtils.addParamsToUrl(url, {preventredirect: false});
                 });

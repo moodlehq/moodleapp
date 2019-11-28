@@ -135,17 +135,19 @@ export class CoreUtilsProvider {
 
     /**
      * Converts an array of objects to an object, using a property of each entry as the key.
+     * It can also be used to convert an array of strings to an object where the keys are the elements of the array.
      * E.g. [{id: 10, name: 'A'}, {id: 11, name: 'B'}] => {10: {id: 10, name: 'A'}, 11: {id: 11, name: 'B'}}
      *
      * @param array The array to convert.
-     * @param propertyName The name of the property to use as the key.
+     * @param propertyName The name of the property to use as the key. If not provided, the whole item will be used.
      * @param result Object where to put the properties. If not defined, a new object will be created.
      * @return The object.
      */
-    arrayToObject(array: any[], propertyName: string, result?: any): any {
+    arrayToObject(array: any[], propertyName?: string, result?: any): any {
         result = result || {};
         array.forEach((entry) => {
-            result[entry[propertyName]] = entry;
+            const key = propertyName ? entry[propertyName] : entry;
+            result[key] = entry;
         });
 
         return result;
