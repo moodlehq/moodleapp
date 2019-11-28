@@ -1,8 +1,8 @@
 {
-    "all": "All (except hidden)",
+    "all": "All (except removed from view)",
     "favourites": "Starred",
     "future": "Future",
-    "hiddencourses": "Hidden",
+    "hiddencourses": "Removed from view",
     "inprogress": "In progress",
     "lastaccessed": "Last accessed",
     "morecourses": "More courses",

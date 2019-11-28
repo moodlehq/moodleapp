@@ -656,6 +656,7 @@
     "addon.mod_quiz.attemptquiznow": "開始作答",
     "addon.mod_quiz.attemptstate": "作答狀態",
     "addon.mod_quiz.cannotsubmitquizdueto": "此測驗嘗試無法提交, 原因如下:",
+    "addon.mod_quiz.clearchoice": "清除我的選擇",
     "addon.mod_quiz.comment": "評論",
     "addon.mod_quiz.completedon": "完成於",
     "addon.mod_quiz.confirmclose": "一旦您提交答案，您將無法再更改您這次作答的答案。",
