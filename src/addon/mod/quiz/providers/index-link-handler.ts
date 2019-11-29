@@ -25,6 +25,6 @@ export class AddonModQuizIndexLinkHandler extends CoreContentLinksModuleIndexHan
     name = 'AddonModQuizIndexLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider, protected quizProvider: AddonModQuizProvider) {
-        super(courseHelper, 'AddonModQuiz', 'quiz');
+        super(courseHelper, 'AddonModQuiz', 'quiz', 'q');
     }
 }

@@ -26,7 +26,7 @@ export class AddonModImscpLinkHandler extends CoreContentLinksModuleIndexHandler
 
     constructor(courseHelper: CoreCourseHelperProvider,
             protected imscpProvider: AddonModImscpProvider) {
-        super(courseHelper, 'AddonModImscp', 'imscp');
+        super(courseHelper, 'AddonModImscp', 'imscp', 'i');
     }
 
     /**

@@ -26,7 +26,7 @@ export class AddonModResourceLinkHandler extends CoreContentLinksModuleIndexHand
 
     constructor(courseHelper: CoreCourseHelperProvider,
             protected resourceProvider: AddonModResourceProvider) {
-        super(courseHelper, 'AddonModResource', 'resource');
+        super(courseHelper, 'AddonModResource', 'resource', 'r');
     }
 
     /**

@@ -26,7 +26,7 @@ export class AddonModPageLinkHandler extends CoreContentLinksModuleIndexHandler 
 
     constructor(courseHelper: CoreCourseHelperProvider,
             protected pageProvider: AddonModPageProvider) {
-        super(courseHelper, 'AddonModPage', 'page');
+        super(courseHelper, 'AddonModPage', 'page', 'p');
     }
 
     /**

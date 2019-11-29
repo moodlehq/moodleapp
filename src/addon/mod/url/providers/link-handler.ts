@@ -25,6 +25,6 @@ export class AddonModUrlLinkHandler extends CoreContentLinksModuleIndexHandler {
     useModNameToGetModule = true;
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'AddonModUrl', 'url');
+        super(courseHelper, 'AddonModUrl', 'url', 'u');
     }
 }

@@ -26,7 +26,7 @@ export class AddonModWorkshopLinkHandler extends CoreContentLinksModuleIndexHand
 
     constructor(courseHelper: CoreCourseHelperProvider,
             protected workshopProvider: AddonModWorkshopProvider) {
-        super(courseHelper, AddonModWorkshopProvider.COMPONENT, 'workshop');
+        super(courseHelper, AddonModWorkshopProvider.COMPONENT, 'workshop', 'w');
     }
 
     /**

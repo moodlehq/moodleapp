@@ -26,7 +26,7 @@ export class AddonModBookLinkHandler extends CoreContentLinksModuleIndexHandler 
 
     constructor(courseHelper: CoreCourseHelperProvider,
             protected bookProvider: AddonModBookProvider) {
-        super(courseHelper, 'AddonModBook', 'book');
+        super(courseHelper, 'AddonModBook', 'book', 'b');
     }
 
     /**

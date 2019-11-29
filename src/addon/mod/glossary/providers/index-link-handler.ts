@@ -25,6 +25,6 @@ export class AddonModGlossaryIndexLinkHandler extends CoreContentLinksModuleInde
     name = 'AddonModGlossaryIndexLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider, protected glossaryProvider: AddonModGlossaryProvider) {
-        super(courseHelper, 'AddonModGlossary', 'glossary');
+        super(courseHelper, 'AddonModGlossary', 'glossary', 'g');
     }
 }

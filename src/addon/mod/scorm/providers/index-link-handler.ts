@@ -24,6 +24,6 @@ export class AddonModScormIndexLinkHandler extends CoreContentLinksModuleIndexHa
     name = 'AddonModScormIndexLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'AddonModScorm', 'scorm');
+        super(courseHelper, 'AddonModScorm', 'scorm', 'a');
     }
 }
