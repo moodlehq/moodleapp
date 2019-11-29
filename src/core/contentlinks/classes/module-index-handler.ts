@@ -15,6 +15,8 @@
 import { CoreContentLinksAction } from '../providers/delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Handler to handle URLs pointing to the index of a module.
@@ -33,13 +35,31 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param courseHelper The CoreCourseHelperProvider instance.
      * @param addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
      * @param modName Name of the module (assign, book, ...).
+     * @param instanceIdParam Param name for instance ID gathering. Only if set.
      */
-    constructor(protected courseHelper: CoreCourseHelperProvider, public addon: string, public modName: string) {
+    constructor(protected courseHelper: CoreCourseHelperProvider, public addon: string, public modName: string,
+            protected instanceIdParam?: string) {
         super();
 
+        const pattern = instanceIdParam ?
+            '\/mod\/' + modName + '\/view\.php.*([\&\?](' + instanceIdParam + '|id)=\\d+)' :
+            '\/mod\/' + modName + '\/view\.php.*([\&\?]id=\\d+)';
+
         // Match the view.php URL with an id param.
-        this.pattern = new RegExp('\/mod\/' + modName + '\/view\.php.*([\&\?]id=\\d+)');
+        this.pattern = new RegExp(pattern);
         this.featureName = 'CoreCourseModuleDelegate_' + addon;
+    }
+
+    /**
+     * Get the mod params necessary to open an activity.
+     *
+     * @param  url The URL to treat.
+     * @param  params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param  courseId Course ID related to the URL. Optional but recommended.
+     * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
+     */
+    getModParams(url: string, params: any, courseId?: number): any {
+        return undefined;
     }
 
     /**
@@ -55,11 +75,23 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         courseId = courseId || params.courseid || params.cid;
+        const modParams = this.getModParams(url, params, courseId);
+
+        if (this.instanceIdParam && typeof params[this.instanceIdParam] != 'undefined') {
+            const instanceId = parseInt(params[this.instanceIdParam], 10);
+
+            return [{
+                action: (siteId, navCtrl?): void => {
+                    this.courseHelper.navigateToModuleByInstance(instanceId, this.modName, siteId, courseId, undefined,
+                        this.useModNameToGetModule, modParams, navCtrl);
+                }
+            }];
+        }
 
         return [{
             action: (siteId, navCtrl?): void => {
                 this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
-                    this.useModNameToGetModule ? this.modName : undefined, undefined, navCtrl);
+                    this.useModNameToGetModule ? this.modName : undefined, modParams, navCtrl);
             }
         }];
     }

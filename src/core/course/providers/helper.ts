@@ -1115,6 +1115,37 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Navigate to a module using instance ID and module name.
+     *
+     * @param instanceId Activity instance ID.
+     * @param modName Module name of the activity.
+     * @param siteId Site ID. If not defined, current site.
+     * @param courseId Course ID. If not defined we'll try to retrieve it from the site.
+     * @param sectionId Section the module belongs to. If not defined we'll try to retrieve it from the site.
+     * @param useModNameToGetModule If true, the app will retrieve all modules of this type with a single WS call. This reduces the
+     *                number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     * @param modParams Params to pass to the module
+     * @param navCtrl NavController for adding new pages to the current history. Optional for legacy support, but
+     *                generates a warning if omitted.
+     * @return Promise resolved when done.
+     */
+    navigateToModuleByInstance(instanceId: number, modName: string, siteId?: string, courseId?: number, sectionId?: number,
+            useModNameToGetModule: boolean = false, modParams?: any, navCtrl?: NavController): Promise<void> {
+
+        const modal = this.domUtils.showModalLoading();
+
+        return this.courseProvider.getModuleBasicInfoByInstance(instanceId, modName, siteId).then((module) => {
+            this.navigateToModule(parseInt(module.id, 10), siteId, module.course, sectionId,
+                useModNameToGetModule ? modName : undefined, modParams, navCtrl);
+        }).catch((error) => {
+            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+        }).finally(() => {
+            // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
+            modal.dismiss();
+        });
+    }
+
+    /**
      * Navigate to a module.
      *
      * @param moduleId Module's ID.
