@@ -58,7 +58,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param  courseId Course ID related to the URL. Optional but recommended.
      * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
      */
-    getModParams(url: string, params: any, courseId?: number): any {
+    getPageParams(url: string, params: any, courseId?: number): any {
         return undefined;
     }
 
@@ -75,7 +75,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         courseId = courseId || params.courseid || params.cid;
-        const modParams = this.getModParams(url, params, courseId);
+        const pageParams = this.getPageParams(url, params, courseId);
 
         if (this.instanceIdParam && typeof params[this.instanceIdParam] != 'undefined') {
             const instanceId = parseInt(params[this.instanceIdParam], 10);
@@ -83,7 +83,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
             return [{
                 action: (siteId, navCtrl?): void => {
                     this.courseHelper.navigateToModuleByInstance(instanceId, this.modName, siteId, courseId, undefined,
-                        this.useModNameToGetModule, modParams, navCtrl);
+                        this.useModNameToGetModule, pageParams, navCtrl);
                 }
             }];
         }
@@ -91,7 +91,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
         return [{
             action: (siteId, navCtrl?): void => {
                 this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
-                    this.useModNameToGetModule ? this.modName : undefined, modParams, navCtrl);
+                    this.useModNameToGetModule ? this.modName : undefined, pageParams, navCtrl);
             }
         }];
     }

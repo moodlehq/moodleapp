@@ -1197,13 +1197,6 @@ export class CoreCourseHelperProvider {
             // Get the module.
             return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
         }).then((module) => {
-            const params = {
-                course: { id: courseId },
-                module: module,
-                sectionId: sectionId,
-                modParams: modParams
-            };
-
             module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
 
             if (navCtrl && module.handlerData && module.handlerData.action) {
@@ -1211,10 +1204,17 @@ export class CoreCourseHelperProvider {
                 // Otherwise, we will redirect below.
                 modal.dismiss();
 
-                return module.handlerData.action(new Event('click'), navCtrl, module, courseId);
+                return module.handlerData.action(new Event('click'), navCtrl, module, courseId, undefined, modParams);
             }
 
             this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
+
+            const params = {
+                course: { id: courseId },
+                module: module,
+                sectionId: sectionId,
+                modParams: modParams
+            };
 
             if (courseId == site.getSiteHomeId()) {
                 // Check if site home is available.
