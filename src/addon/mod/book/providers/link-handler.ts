@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
+import { AddonModBookProvider } from './book';
 
 /**
  * Handler to treat links to book.
@@ -24,7 +25,8 @@ import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 export class AddonModBookLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModBookLinkHandler';
 
-    constructor(courseHelper: CoreCourseHelperProvider) {
+    constructor(courseHelper: CoreCourseHelperProvider,
+            protected bookProvider: AddonModBookProvider) {
         super(courseHelper, 'AddonModBook', 'book');
     }
 
@@ -49,5 +51,18 @@ export class AddonModBookLinkHandler extends CoreContentLinksModuleIndexHandler 
                     this.useModNameToGetModule ? this.modName : undefined, modParams, navCtrl);
             }
         }];
+    }
+
+    /**
+     * Check if the handler is enabled for a certain site (site + user) and a URL.
+     *
+     * @param siteId The site ID.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Whether the handler is enabled for the URL and site.
+     */
+    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
+        return this.bookProvider.isPluginEnabled();
     }
 }

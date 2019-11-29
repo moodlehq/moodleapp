@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { AddonModForumProvider } from './forum';
 import { CoreContentLinksAction } from '@core/contentlinks/providers/delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -27,26 +26,12 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 export class AddonModForumIndexLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModForumIndexLinkHandler';
 
-    constructor(courseHelper: CoreCourseHelperProvider, protected forumProvider: AddonModForumProvider,
+    constructor(courseHelper: CoreCourseHelperProvider,
             private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider) {
         super(courseHelper, 'AddonModForum', 'forum');
 
         // Match the view.php URL with an id param.
         this.pattern = new RegExp('\/mod\/forum\/view\.php.*([\&\?](f|id)=\\d+)');
-    }
-
-    /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     * If not defined, defaults to true.
-     *
-     * @param siteId The site ID.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Whether the handler is enabled for the URL and site.
-     */
-    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
-        return true;
     }
 
     /**
