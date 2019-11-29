@@ -45,6 +45,12 @@ export class AddonModForumDiscussionLinkHandler extends CoreContentLinksHandlerB
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         data = data || {};
 
+        if (!data.instance) {
+            // Without the forumId discussions cannot be loaded (from link).
+
+            return [];
+        }
+
         return [{
             action: (siteId, navCtrl?): void => {
                 const pageParams: any = {
