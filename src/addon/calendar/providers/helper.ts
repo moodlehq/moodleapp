@@ -144,7 +144,7 @@ export class AddonCalendarHelperProvider {
             courseId = e.course ? e.course.id : e.courseid;
 
         if (categoryId > 0) {
-            e.contextLevel = 'category';
+            e.contextLevel = 'coursecat';
             e.contextInstanceId = categoryId;
         } else if (courseId > 0) {
             e.contextLevel = 'course';

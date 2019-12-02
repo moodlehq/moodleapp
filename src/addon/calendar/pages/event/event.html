@@ -60,7 +60,7 @@
                 </ion-item>
                 <a ion-item text-wrap *ngIf="categoryPath">
                     <h2>{{ 'core.category' | translate}}</h2>
-                    <p><core-format-text [text]="categoryPath" contextLevel="category" [contextInstanceId]="event.category.id"></core-format-text></p>
+                    <p><core-format-text [text]="categoryPath" contextLevel="coursecat" [contextInstanceId]="event.category.id"></core-format-text></p>
                 </a>
                 <ion-item text-wrap *ngIf="event.description">
                     <h2>{{ 'core.description' | translate}}</h2>

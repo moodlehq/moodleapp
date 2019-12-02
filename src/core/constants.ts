@@ -18,7 +18,7 @@
 export const enum ContextLevel {
     SYSTEM = 'system',
     USER = 'user',
-    COURSECAT = 'category',
+    COURSECAT = 'coursecat',
     COURSE = 'course',
     MODULE = 'module',
     BLOCK = 'block',
