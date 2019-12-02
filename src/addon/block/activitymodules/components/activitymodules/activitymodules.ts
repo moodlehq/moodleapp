@@ -131,7 +131,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      */
     protected getCourseId(): number {
         switch (this.contextLevel) {
-            case ContextLevel.Course:
+            case ContextLevel.COURSE:
                 return this.instanceId;
             default:
                 return this.sitesProvider.getCurrentSiteHomeId();

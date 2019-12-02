@@ -16,12 +16,12 @@
  * Context levels enumeration.
  */
 export const enum ContextLevel {
-    System = 'system',
-    User = 'user',
-    Category = 'category',
-    Course = 'course',
-    ActivityModule = 'module',
-    Block = 'block',
+    SYSTEM = 'system',
+    USER = 'user',
+    COURSECAT = 'category',
+    COURSE = 'course',
+    MODULE = 'module',
+    BLOCK = 'block',
 }
 
 /**
