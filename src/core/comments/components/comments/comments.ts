@@ -44,9 +44,12 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
 
     protected updateSiteObserver;
     protected refreshCommentsObserver;
+    protected commentsCountObserver;
 
-    constructor(private navCtrl: NavController, private commentsProvider: CoreCommentsProvider,
-            sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
+    constructor(private navCtrl: NavController,
+            private commentsProvider: CoreCommentsProvider,
+            sitesProvider: CoreSitesProvider,
+            eventsProvider: CoreEventsProvider,
             @Optional() private svComponent: CoreSplitViewComponent) {
 
         this.onLoading = new EventEmitter<boolean>();
@@ -74,6 +77,17 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
                 this.doRefresh().catch(() => {
                     // Ignore errors.
                 });
+            }
+        }, sitesProvider.getCurrentSiteId());
+
+        // Refresh comments count if event received.
+        this.commentsCountObserver = eventsProvider.on(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, (data) => {
+            // Verify these comments need to be updated.
+            if (!this.commentsCount.endsWith('+') && this.undefinedOrEqual(data, 'contextLevel') &&
+                    this.undefinedOrEqual(data, 'instanceId') && this.undefinedOrEqual(data, 'component') &&
+                    this.undefinedOrEqual(data, 'itemId') && this.undefinedOrEqual(data, 'area') && !this.countError) {
+                // Parse and unparse string.
+                this.commentsCount = parseInt(this.commentsCount, 10) + data.countChange + '';
             }
         }, sitesProvider.getCurrentSiteId());
     }
@@ -167,6 +181,7 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.updateSiteObserver && this.updateSiteObserver.off();
         this.refreshCommentsObserver && this.refreshCommentsObserver.off();
+        this.commentsCountObserver && this.commentsCountObserver.off();
     }
 
     /**

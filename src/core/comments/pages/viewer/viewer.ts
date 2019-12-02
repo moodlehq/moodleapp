@@ -63,11 +63,18 @@ export class CoreCommentsViewerPage implements OnDestroy {
     protected syncObserver: any;
     protected currentUser: any;
 
-    constructor(navParams: NavParams, private sitesProvider: CoreSitesProvider, private userProvider: CoreUserProvider,
-             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private modalCtrl: ModalController,
-             private commentsProvider: CoreCommentsProvider, private offlineComments: CoreCommentsOfflineProvider,
-             eventsProvider: CoreEventsProvider, private commentsSync: CoreCommentsSyncProvider,
-             private textUtils: CoreTextUtilsProvider, private timeUtils: CoreTimeUtilsProvider) {
+    constructor(navParams: NavParams,
+            protected sitesProvider: CoreSitesProvider,
+            protected userProvider: CoreUserProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService,
+            protected modalCtrl: ModalController,
+            protected commentsProvider: CoreCommentsProvider,
+            protected offlineComments: CoreCommentsOfflineProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected commentsSync: CoreCommentsSyncProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected timeUtils: CoreTimeUtilsProvider) {
 
         this.contextLevel = navParams.get('contextLevel');
         this.instanceId = navParams.get('instanceId');
@@ -127,31 +134,8 @@ export class CoreCommentsViewerPage implements OnDestroy {
         return promise.catch(() => {
             // Ignore errors.
         }).then(() => {
-            return this.offlineComments.getComment(this.contextLevel, this.instanceId, this.componentName, this.itemId,
-                    this.area).then((offlineComment) => {
-                this.offlineComment = offlineComment;
-
-                if (offlineComment && !this.currentUser) {
-                    return this.userProvider.getProfile(this.currentUserId, undefined, true).then((user) => {
-                        this.currentUser = user;
-                        this.offlineComment.profileimageurl = user.profileimageurl;
-                        this.offlineComment.fullname = user.fullname;
-                        this.offlineComment.userid = user.id;
-                    }).catch(() => {
-                        // Ignore errors.
-                    });
-                } else if (offlineComment) {
-                    this.offlineComment.profileimageurl = this.currentUser.profileimageurl;
-                    this.offlineComment.fullname = this.currentUser.fullname;
-                    this.offlineComment.userid = this.currentUser.id;
-                }
-
-                return this.offlineComments.getDeletedComments(this.contextLevel, this.instanceId, this.componentName, this.itemId,
-                    this.area);
-            });
-        }).then((deletedComments) => {
-            this.hasOffline = !!this.offlineComment || deletedComments.length > 0;
-
+            return this.loadOfflineData();
+        }).then(() => {
             // Get comments data.
             return this.commentsProvider.getComments(this.contextLevel, this.instanceId, this.componentName, this.itemId,
                     this.area, this.page).then((response) => {
@@ -165,29 +149,9 @@ export class CoreCommentsViewerPage implements OnDestroy {
                     this.canLoadMore = response.comments.length > 0 && response.comments.length >= CoreCommentsProvider.pageSize;
                 }
 
-                return Promise.all(comments.map((comment) => {
-                    // Get the user profile image.
-                    return this.userProvider.getProfile(comment.userid, undefined, true).then((user) => {
-                        comment.profileimageurl = user.profileimageurl;
-
-                        return comment;
-                    }).catch(() => {
-                        // Ignore errors.
-                        return comment;
-                    });
-                }));
+                return Promise.all(comments.map((comment) => this.loadCommentProfile(comment)));
             }).then((comments) => {
                 this.comments = this.comments.concat(comments);
-
-                deletedComments && deletedComments.forEach((deletedComment) => {
-                    const comment = this.comments.find((comment) => {
-                        return comment.id == deletedComment.commentid;
-                    });
-
-                    if (comment) {
-                        comment.deleted = deletedComment.deleted;
-                    }
-                });
 
                 this.canDeleteComments = this.addDeleteCommentsAvailable && (this.hasOffline || this.comments.some((comment) => {
                     return !!comment.delete;
@@ -231,11 +195,11 @@ export class CoreCommentsViewerPage implements OnDestroy {
      * @return Resolved when done.
      */
     refreshComments(showErrors: boolean, refresher?: any): Promise<any> {
+        this.commentsLoaded = false;
         this.refreshIcon = 'spinner';
         this.syncIcon = 'spinner';
 
-        return this.commentsProvider.invalidateCommentsData(this.contextLevel, this.instanceId, this.componentName,
-                this.itemId, this.area).finally(() => {
+        return this.invalidateComments().finally(() => {
             this.page = 0;
             this.comments = [];
 
@@ -297,10 +261,25 @@ export class CoreCommentsViewerPage implements OnDestroy {
         const modal = this.modalCtrl.create('CoreCommentsAddPage', params);
         modal.onDidDismiss((data) => {
             if (data && data.comments) {
-                this.comments = data.comments.concat(this.comments);
-                this.canDeleteComments = this.addDeleteCommentsAvailable;
+                this.invalidateComments();
+
+                return Promise.all(data.comments.map((comment) => this.loadCommentProfile(comment))).then((addedComments) => {
+                    // Add the comment to the top.
+                    this.comments = addedComments.concat(this.comments);
+                    this.canDeleteComments = this.addDeleteCommentsAvailable;
+
+                    this.eventsProvider.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                            contextLevel: this.contextLevel,
+                            instanceId: this.instanceId,
+                            component: this.componentName,
+                            itemId: this.itemId,
+                            area: this.area,
+                            countChange: addedComments.length,
+                        }, this.sitesProvider.getCurrentSiteId());
+                });
             } else if (data && !data.comments) {
-                this.fetchComments(false);
+                // Comments added in offline mode.
+                return this.loadOfflineData();
             }
         });
         modal.present();
@@ -310,26 +289,45 @@ export class CoreCommentsViewerPage implements OnDestroy {
      * Delete a comment.
      *
      * @param e Click event.
-     * @param comment Comment to delete.
+     * @param deleteComment Comment to delete.
      */
-    deleteComment(e: Event, comment: any): void {
+    deleteComment(e: Event, deleteComment: any): void {
         e.preventDefault();
         e.stopPropagation();
 
-        const time = this.timeUtils.userDate((comment.lastmodified || comment.timecreated) * 1000, 'core.strftimerecentfull');
+        const time = this.timeUtils.userDate((deleteComment.lastmodified || deleteComment.timecreated) * 1000,
+            'core.strftimerecentfull');
 
-        comment.contextlevel = this.contextLevel;
-        comment.instanceid = this.instanceId;
-        comment.component = this.componentName;
-        comment.itemid = this.itemId;
-        comment.area = this.area;
+        deleteComment.contextlevel = this.contextLevel;
+        deleteComment.instanceid = this.instanceId;
+        deleteComment.component = this.componentName;
+        deleteComment.itemid = this.itemId;
+        deleteComment.area = this.area;
 
         this.domUtils.showDeleteConfirm('core.comments.deletecommentbyon', {$a:
-                { user: comment.fullname || '', time: time } }).then(() => {
-            this.commentsProvider.deleteComment(comment).then(() => {
+                { user: deleteComment.fullname || '', time: time } }).then(() => {
+            this.commentsProvider.deleteComment(deleteComment).then((deletedOnline) => {
                 this.showDelete = false;
 
-                this.refreshComments(true);
+                if (deletedOnline) {
+                    const index = this.comments.findIndex((comment) => comment.id == deleteComment.id);
+                    if (index >= 0) {
+                        this.comments.splice(index, 1);
+                    }
+                } else {
+                    this.loadOfflineData();
+                }
+
+                this.eventsProvider.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                        contextLevel: this.contextLevel,
+                        instanceId: this.instanceId,
+                        component: this.componentName,
+                        itemId: this.itemId,
+                        area: this.area,
+                        countChange: -1,
+                    }, this.sitesProvider.getCurrentSiteId());
+
+                this.invalidateComments();
 
                 this.domUtils.showToast('core.comments.eventcommentdeleted', true, 3000);
             }).catch((error) => {
@@ -337,6 +335,91 @@ export class CoreCommentsViewerPage implements OnDestroy {
             });
         }).catch(() => {
             // User cancelled, nothing to do.
+        });
+    }
+
+    /**
+     * Invalidate comments.
+     *
+     * @return Resolved when done.
+     */
+    protected invalidateComments(): Promise<void> {
+        return this.commentsProvider.invalidateCommentsData(this.contextLevel, this.instanceId, this.componentName, this.itemId,
+                    this.area);
+    }
+
+    /**
+     * Loads the profile info onto the comment object.
+     *
+     * @param  comment Comment object.
+     * @return Promise resolved with modified comment when done.
+     */
+    protected loadCommentProfile(comment: any): Promise<any> {
+        // Get the user profile image.
+        return this.userProvider.getProfile(comment.userid, undefined, true).then((user) => {
+            comment.profileimageurl = user.profileimageurl;
+            comment.fullname = user.fullname;
+            comment.userid = user.id;
+
+            return comment;
+        }).catch(() => {
+            // Ignore errors.
+            return comment;
+        });
+    }
+
+    /**
+     * Load offline comments.
+     *
+     * @return Promise resolved when done.
+     */
+    protected loadOfflineData(): Promise<void> {
+        const promises = [];
+        let hasDeletedComments = false;
+
+        // Load the only offline comment allowed if any.
+        promises.push(this.offlineComments.getComment(this.contextLevel, this.instanceId, this.componentName, this.itemId,
+                this.area).then((offlineComment) => {
+
+            if (offlineComment && !this.currentUser) {
+                offlineComment.userid = this.currentUserId;
+
+                this.loadCommentProfile(offlineComment).then((comment) => {
+                    // Save this fields for further requests.
+                    if (comment.fullname) {
+                        this.currentUser = {};
+                        this.currentUser.profileimageurl = comment.profileimageurl;
+                        this.currentUser.fullname = comment.fullname;
+                        this.currentUser.userid = comment.userid;
+                    }
+                });
+            } else if (offlineComment) {
+                offlineComment.profileimageurl = this.currentUser.profileimageurl;
+                offlineComment.fullname = this.currentUser.fullname;
+                offlineComment.userid = this.currentUser.id;
+            }
+
+            this.offlineComment = offlineComment;
+        }));
+
+        // Load deleted comments offline.
+        promises.push(this.offlineComments.getDeletedComments(this.contextLevel, this.instanceId, this.componentName, this.itemId,
+                this.area).then((deletedComments) => {
+            hasDeletedComments = deletedComments && deletedComments.length > 0;
+
+            hasDeletedComments && deletedComments.forEach((deletedComment) => {
+                const comment = this.comments.find((comment) => {
+                    return comment.id == deletedComment.commentid;
+                });
+
+                if (comment) {
+                    comment.deleted = deletedComment.deleted;
+                }
+            });
+        }));
+
+        return Promise.all(promises).then(() => {
+            this.hasOffline = !!this.offlineComment || hasDeletedComments;
         });
     }
 

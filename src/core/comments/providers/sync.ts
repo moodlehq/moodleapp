@@ -159,6 +159,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
             const errors = [],
                 promises = [],
                 deleteCommentIds = [];
+            let countChange = 0;
 
             comments.forEach((comment) => {
                 if (comment.commentid) {
@@ -166,6 +167,8 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
                 } else {
                     promises.push(this.commentsProvider.addCommentOnline(comment.content, contextLevel, instanceId, component,
                         itemId, area, siteId).then((response) => {
+                            countChange++;
+
                             return this.commentsOffline.removeComment(contextLevel, instanceId, component, itemId, area, siteId);
                     }));
                 }
@@ -174,6 +177,8 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
             if (deleteCommentIds.length > 0) {
                 promises.push(this.commentsProvider.deleteCommentsOnline(deleteCommentIds, contextLevel, instanceId, component,
                     itemId, area, siteId).then((response) => {
+                        countChange--;
+
                         return this.commentsOffline.removeDeletedComments(contextLevel, instanceId, component, itemId, area,
                             siteId);
                     }));
@@ -181,6 +186,15 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider {
 
             // Send the comments.
             return Promise.all(promises).then(() => {
+                this.eventsProvider.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                        contextLevel: contextLevel,
+                        instanceId: instanceId,
+                        component: component,
+                        itemId: itemId,
+                        area: area,
+                        countChange: countChange,
+                    }, this.sitesProvider.getCurrentSiteId());
+
                 // Fetch the comments from server to be sure they're up to date.
                 return this.commentsProvider.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId)
                         .then(() => {

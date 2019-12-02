@@ -20,6 +20,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModGlossaryProvider } from './glossary';
 import { AddonModGlossarySyncProvider } from './sync';
@@ -43,8 +44,9 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
-            private glossaryProvider: AddonModGlossaryProvider,
-            private syncProvider: AddonModGlossarySyncProvider) {
+            protected glossaryProvider: AddonModGlossaryProvider,
+            protected commentsProvider: CoreCommentsProvider,
+            protected syncProvider: AddonModGlossarySyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
     }
@@ -160,14 +162,20 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             // Fetch all entries to get information from.
             promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter,
                     [glossary.id, 'ALL'], false, false, siteId).then((entries) => {
-                const promises = [];
-                const avatars = {}; // List of user avatars, preventing duplicates.
+                const promises = [],
+                    commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite(),
+                    avatars = {}; // List of user avatars, preventing duplicates.
 
                 entries.forEach((entry) => {
                     // Don't fetch individual entries, it's too many WS calls.
 
                     if (entry.userpictureurl) {
                         avatars[entry.userpictureurl] = true;
+                    }
+
+                    if (glossary.allowcomments && commentsEnabled) {
+                        promises.push(this.commentsProvider.getComments('module', glossary.coursemodule, 'mod_glossary', entry.id,
+                            'glossary_entry', 0, siteId));
                     }
                 });
 
