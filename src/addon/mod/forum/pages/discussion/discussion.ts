@@ -191,8 +191,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         });
 
         this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data) => {
-            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.cmId) {
-                this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
+            if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
+                this.forumProvider.invalidateDiscussionsList(this.forumId).finally(() => {
                     if (typeof data.locked != 'undefined') {
                         this.discussion.locked = data.locked;
                     }
@@ -350,7 +350,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 const promises = [];
 
-                promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+                promises.push(this.forumProvider.getAccessInformation(this.forumId).then((accessInfo) => {
                     this.accessInfo = accessInfo;
 
                     // Disallow replying if cut-off date is reached and the user has not the capability to override it.
@@ -364,11 +364,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 // Fetch the discussion if not passed as parameter.
                 if (!this.discussion) {
-                    promises.push(this.forumHelper.getDiscussionById(forum.id, this.discussionId).then((discussion) => {
-                        this.discussion = discussion;
-                    }).catch(() => {
-                        // Ignore errors.
-                    }));
+                    promises.push(this.loadDiscussion(this.forumId, this.discussionId));
                 }
 
                 return Promise.all(promises);
@@ -432,6 +428,27 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                 });
             }
         });
+    }
+
+    /**
+     * Convenience function to load discussion.
+     *
+     * @param  forumId Forum ID.
+     * @param  discussionId Discussion ID.
+     * @return Promise resolved when done.
+     */
+    protected loadDiscussion(forumId: number, discussionId: number): Promise<void> {
+        // Fetch the discussion if not passed as parameter.
+        if (!this.discussion && forumId) {
+            return this.forumHelper.getDiscussionById(forumId, discussionId).then((discussion) => {
+                this.discussion = discussion;
+                this.discussionId = this.discussion.discussion;
+            }).catch(() => {
+                // Ignore errors.
+            });
+        }
+
+        return Promise.resolve();
     }
 
     /**

@@ -24,6 +24,6 @@ export class AddonModWikiIndexLinkHandler extends CoreContentLinksModuleIndexHan
     name = 'AddonModWikiIndexLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'AddonModWiki', 'wiki');
+        super(courseHelper, 'AddonModWiki', 'wiki', 'wid');
     }
 }

@@ -304,7 +304,7 @@ export class AddonModImscpProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    isPluginEnabled(siteId?: string): Promise<any> {
+    isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.canDownloadFiles();
         });

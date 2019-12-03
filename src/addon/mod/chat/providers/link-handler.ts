@@ -24,6 +24,6 @@ export class AddonModChatLinkHandler extends CoreContentLinksModuleIndexHandler 
     name = 'AddonModChatLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'AddonModChat', 'chat');
+        super(courseHelper, 'AddonModChat', 'chat', 'c');
     }
 }

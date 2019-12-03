@@ -24,6 +24,6 @@ export class AddonModLtiLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModLtiLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'AddonModLti', 'lti');
+        super(courseHelper, 'AddonModLti', 'lti', 'l');
     }
 }

@@ -24,6 +24,6 @@ export class AddonModFolderLinkHandler extends CoreContentLinksModuleIndexHandle
     name = 'AddonModFolderLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, 'AddonModFolder', 'folder');
+        super(courseHelper, 'AddonModFolder', 'folder', 'f');
     }
 }
