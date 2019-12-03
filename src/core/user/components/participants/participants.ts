@@ -165,7 +165,12 @@ export class CoreUserParticipantsComponent implements OnInit {
 
         // Remove search results and display all participants.
         this.participantsLoaded = false;
-        this.fetchData(true);
+        this.fetchData(true).then(() => {
+            if (this.splitviewCtrl.isOn() && this.participants.length > 0) {
+                // Take first and load it.
+                this.gotoParticipant(this.participants[0].id);
+            }
+        });
     }
 
     /**
@@ -195,6 +200,11 @@ export class CoreUserParticipantsComponent implements OnInit {
             this.participants.push(...result.participants);
             this.canLoadMore = result.canLoadMore;
             this.searchPage++;
+
+            if (!loadMore && this.splitviewCtrl.isOn() && this.participants.length > 0) {
+                // Take first and load it.
+                this.gotoParticipant(this.participants[0].id);
+            }
 
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error searching users.');
