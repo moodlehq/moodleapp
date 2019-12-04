@@ -904,6 +904,10 @@ export class CoreUtilsProvider {
             options.enableViewPortScale = 'yes'; // Enable zoom on iOS.
         }
 
+        if (!options.allowInlineMediaPlayback) {
+            options.allowInlineMediaPlayback = 'yes'; // Allow playing inline videos in iOS.
+        }
+
         if (!options.location && this.platform.is('ios') && url.indexOf('file://') === 0) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
