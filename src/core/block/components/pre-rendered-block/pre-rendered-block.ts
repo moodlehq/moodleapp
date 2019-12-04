@@ -24,6 +24,8 @@ import { CoreBlockBaseComponent } from '../../classes/base-block-component';
 })
 export class CoreBlockPreRenderedComponent  extends CoreBlockBaseComponent implements OnInit {
 
+    courseId: number;
+
     constructor(injector: Injector) {
         super(injector, 'CoreBlockPreRenderedComponent');
     }
@@ -33,6 +35,8 @@ export class CoreBlockPreRenderedComponent  extends CoreBlockBaseComponent imple
      */
     ngOnInit(): void {
         super.ngOnInit();
+
+        this.courseId = this.contextLevel == 'course' ? this.instanceId : undefined;
 
         this.fetchContentDefaultError = 'Error getting ' + this.block.contents.title + ' data.';
     }

@@ -65,6 +65,29 @@ export class CoreFilterHelperProvider {
     }
 
     /**
+     * Get the contexts of all blocks in a course.
+     *
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the contexts.
+     */
+    getBlocksContexts(courseId: number, siteId?: string): Promise<{contextlevel: string, instanceid: number}[]> {
+
+        return this.courseProvider.getCourseBlocks(courseId, siteId).then((blocks) => {
+            const contexts: {contextlevel: string, instanceid: number}[] = [];
+
+            blocks.forEach((block) => {
+                contexts.push({
+                    contextlevel: 'block',
+                    instanceid: block.instanceid
+                });
+            });
+
+            return contexts;
+        });
+    }
+
+    /**
      * Get some filters from memory cache. If not in cache, get them and store them in cache.
      *
      * @param contextLevel The context level.
@@ -199,6 +222,11 @@ export class CoreFilterHelperProvider {
                         } else if (contextLevel == 'course') {
                             // If enrolled, get all enrolled courses filters with a single call to decrease number of WS calls.
                             const getFilters = this.getCourseContexts.bind(this, instanceId, siteId);
+
+                            return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
+                        } else if (contextLevel == 'block' && options.courseId && this.courseProvider.canGetCourseBlocks(site)) {
+                            // Get all the course blocks filters with a single call to decrease number of WS calls.
+                            const getFilters = this.getBlocksContexts.bind(this, options.courseId, siteId);
 
                             return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
                         }
