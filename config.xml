@@ -79,6 +79,18 @@
         <icon background="@color/background" density="xhdpi" foreground="resources/android/icon/xhdpi-foreground.png" src="resources/android/icon/drawable-xhdpi-icon.png" />
         <icon background="@color/background" density="xxhdpi" foreground="resources/android/icon/xxhdpi-foreground.png" src="resources/android/icon/drawable-xxhdpi-icon.png" />
         <icon background="@color/background" density="xxxhdpi" foreground="resources/android/icon/xxxhdpi-foreground.png" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
+
+        <!--
+            This should be added by the file-opener2 plugin, but it's not working at the moment. This can be removed
+            once the following issue is resolved and the plugin is updated to include the fix:
+            https://github.com/pwlin/cordova-plugin-file-opener2/issues/246
+        -->
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <provider android:authorities="${applicationId}.opener.provider" android:exported="false" android:grantUriPermissions="true" android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
+                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
+            </provider>
+        </config-file>
+
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
@@ -148,7 +160,7 @@
     </plugin>
     <plugin name="cordova-plugin-device" spec="^2.0.3" />
     <plugin name="cordova-plugin-file" spec="^6.0.2" />
-    <plugin name="cordova-plugin-file-opener2" spec="2.0.19" />
+    <plugin name="cordova-plugin-file-opener2" spec="2.2.1" />
     <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
     <plugin name="cordova-plugin-geolocation" spec="^4.0.2">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="We need your location so you can attach it as part of your submissions." />

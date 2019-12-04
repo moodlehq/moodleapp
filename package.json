@@ -92,7 +92,7 @@
     "cordova-plugin-customurlscheme": "^4.4.0",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-file": "^6.0.2",
-    "cordova-plugin-file-opener2": "2.0.19",
+    "cordova-plugin-file-opener2": "^2.2.1",
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-geolocation": "^4.0.2",
     "cordova-plugin-globalization": "^1.11.0",
