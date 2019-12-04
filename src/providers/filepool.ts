@@ -1411,15 +1411,18 @@ export class CoreFilepoolProvider {
      * @return The file ID.
      */
     protected getFileIdByUrl(fileUrl: string): string {
-        let url = this.removeRevisionFromUrl(fileUrl),
+        let url = fileUrl,
             filename;
-
-        // Decode URL.
-        url = this.textUtils.decodeHTML(this.textUtils.decodeURIComponent(url));
 
         // If site supports it, since 3.8 we use tokenpluginfile instead of pluginfile.
         // For compatibility with files already downloaded, we need to use pluginfile to calculate the file ID.
         url = url.replace(/\/tokenpluginfile\.php\/[^\/]+\//, '/webservice/pluginfile.php/');
+
+        // Remove the revision number from the URL so updates on the file aren't detected as a different file.
+        url = this.removeRevisionFromUrl(url);
+
+        // Decode URL.
+        url = this.textUtils.decodeHTML(this.textUtils.decodeURIComponent(url));
 
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             // Remove attributes that do not matter.
