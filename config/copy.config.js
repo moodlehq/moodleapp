@@ -13,8 +13,28 @@ module.exports = {
     src: ['{{ROOT}}/src/config.json'],
     dest: '{{WWW}}/'
   },
-  copyMathJax: {
-    src: ['{{ROOT}}/node_modules/mathjax/**/*'],
+  copyMathJaxMain: {
+    src: ['{{ROOT}}/node_modules/mathjax/*.js'],
     dest: '{{WWW}}/lib/mathjax'
+  },
+  copyMathJaxConfig: {
+    src: ['{{ROOT}}/node_modules/mathjax/config/**/*'],
+    dest: '{{WWW}}/lib/mathjax/config'
+  },
+  copyMathJaxExtensions: {
+    src: ['{{ROOT}}/node_modules/mathjax/extensions/**/*'],
+    dest: '{{WWW}}/lib/mathjax/extensions'
+  },
+  copyMathJaxFonts: {
+    src: ['{{ROOT}}/node_modules/mathjax/fonts/**/*'],
+    dest: '{{WWW}}/lib/mathjax/fonts'
+  },
+  copyMathJaxJax: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax'
+  },
+  copyMathJaxLocalization: {
+    src: ['{{ROOT}}/node_modules/mathjax/localization/**/*'],
+    dest: '{{WWW}}/lib/mathjax/localization'
   },
 };
