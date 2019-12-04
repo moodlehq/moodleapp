@@ -26,6 +26,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PProvider } from '@core/h5p/providers/h5p';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreConstants } from '@core/constants';
+import { CoreSite } from '@classes/site';
 
 /**
  * Component to render an H5P package.
@@ -46,6 +47,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     canDownload: boolean;
     calculating = true;
 
+    protected site: CoreSite;
     protected siteId: string;
     protected siteCanDownload: boolean;
     protected observer;
@@ -67,7 +69,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             protected fileProvider: CoreFileProvider) {
 
         this.logger = loggerProvider.getInstance('CoreH5PPlayerComponent');
-        this.siteId = sitesProvider.getCurrentSiteId();
+        this.site = sitesProvider.getCurrentSite();
+        this.siteId = this.site.getId();
         this.siteCanDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
     }
 
@@ -82,7 +85,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        // If it's already playing and the src changes, don't change the player src, the user could lose data.
+        // If it's already playing there's no need to check if it can be downloaded.
         if (changes.src && !this.showPackage) {
             this.checkCanDownload();
         }
@@ -220,7 +223,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         this.observer && this.observer.off();
         this.urlParams = this.urlUtils.extractUrlParams(this.src);
 
-        if (this.src && this.siteCanDownload && this.h5pProvider.canGetTrustedH5PFileInSite()) {
+        if (this.src && this.siteCanDownload && this.h5pProvider.canGetTrustedH5PFileInSite() && this.site.containsUrl(this.src)) {
 
             this.calculating = true;
 
