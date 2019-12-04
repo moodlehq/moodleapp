@@ -113,12 +113,14 @@ export class CoreCourseProvider {
     /**
      * Check if the get course blocks WS is available in current site.
      *
+     * @param site Site to check. If not defined, current site.
      * @return Whether it's available.
      * @since 3.7
      */
-    canGetCourseBlocks(): boolean {
-        return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7') &&
-            this.sitesProvider.wsAvailableInCurrentSite('core_block_get_course_blocks');
+    canGetCourseBlocks(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isVersionGreaterEqualThan('3.7') && site.wsAvailable('core_block_get_course_blocks');
     }
 
     /**
