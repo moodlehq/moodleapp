@@ -16,8 +16,9 @@ import { Component, OnInit, Injector, Input } from '@angular/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
-import { CoreConstants } from '@core/constants';
+import { CoreConstants, ContextLevel } from '@core/constants';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component to render an "activity modules" block.
@@ -28,7 +29,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent implements OnInit {
     @Input() block: any; // The block to render.
-    @Input() contextLevel: string; // The context where the block will be used.
+    @Input() contextLevel: ContextLevel; // The context where the block will be used.
     @Input() instanceId: number; // The instance ID associated with the context level.
 
     entries: any[] = [];
@@ -36,7 +37,8 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     protected fetchContentDefaultError = 'Error getting activity modules data.';
 
     constructor(injector: Injector, protected courseProvider: CoreCourseProvider,
-            protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate) {
+            protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate,
+            protected sitesProvider: CoreSitesProvider) {
 
         super(injector, 'AddonBlockActivityModulesComponent');
     }
@@ -63,8 +65,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.courseProvider.getSections(this.instanceId, false, true).then((sections) => {
-
+        return this.courseProvider.getSections(this.getCourseId(), false, true).then((sections) => {
             this.entries = [];
 
             const archetypes = {},
@@ -121,5 +122,19 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 });
             }
         });
+    }
+
+    /**
+     * Obtain the appropiate course id for the block.
+     *
+     * @return Course id.
+     */
+    protected getCourseId(): number {
+        switch (this.contextLevel) {
+            case ContextLevel.COURSE:
+                return this.instanceId;
+            default:
+                return this.sitesProvider.getCurrentSiteHomeId();
+        }
     }
 }
