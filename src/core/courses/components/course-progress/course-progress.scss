@@ -21,6 +21,7 @@ ion-app.app-root core-courses-course-progress {
             position: relative;
             background-position: center;
             background-size: cover;
+            @include core-transition(all, 50ms);
 
             &.core-course-color-img {
                 background: white;

@@ -1,5 +1,5 @@
-<ion-card [attr.course-color]="course.id % 10">
-    <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage">
+<ion-card [attr.course-color]="course.color ? null : course.colorNumber">
+    <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage" [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
     </div>
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0" [class.core-course-more-than-title]="(course.progress != null && course.progress >= 0)">

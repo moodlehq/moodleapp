@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from './courses';
 import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,11 +27,12 @@ import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-
 @Injectable()
 export class CoreCoursesHelperProvider {
 
-    constructor(private coursesProvider: CoreCoursesProvider,
-            private utils: CoreUtilsProvider,
-            private courseCompletionProvider: AddonCourseCompletionProvider,
-            private translate: TranslateService,
-            private popoverCtrl: PopoverController) { }
+    constructor(protected coursesProvider: CoreCoursesProvider,
+            protected utils: CoreUtilsProvider,
+            protected courseCompletionProvider: AddonCourseCompletionProvider,
+            protected translate: TranslateService,
+            protected popoverCtrl: PopoverController,
+            protected sitesProvider: CoreSitesProvider) { }
 
     /**
      * Get the courses to display the course picker popover. If a courseId is specified, it will also return its categoryId.
@@ -105,10 +107,22 @@ export class CoreCoursesHelperProvider {
             return Promise.resolve();
         }
 
-        const promises = [];
-        let coursesInfo = [];
+        let coursesInfo = [],
+            courseInfoAvailable = false;
 
-        let courseInfoAvalaible = false;
+        const site = this.sitesProvider.getCurrentSite(),
+            promises = [],
+            colors = [];
+
+        if (site.isVersionGreaterEqualThan('3.8')) {
+            promises.push(site.getConfig().then((configs) => {
+                for (let x = 0; x < 10; x++) {
+                    colors[x] = configs['core_admin_coursecolor' + (x + 1)] || null;
+                }
+            }).catch(() => {
+                // Ignore errors.
+            }));
+        }
 
         if (this.coursesProvider.isGetCoursesByFieldAvailable() && (loadCategoryNames ||
                 (typeof courses[0].overviewfiles == 'undefined' && typeof courses[0].displayname == 'undefined'))) {
@@ -116,7 +130,7 @@ export class CoreCoursesHelperProvider {
                 return course.id;
             }).join(',');
 
-            courseInfoAvalaible = true;
+            courseInfoAvailable = true;
 
             // Get the extra data for the courses.
             promises.push(this.coursesProvider.getCoursesByField('ids', courseIds).then((coursesInfos) => {
@@ -126,7 +140,11 @@ export class CoreCoursesHelperProvider {
 
         return Promise.all(promises).then(() => {
             courses.forEach((course) => {
-                this.loadCourseExtraInfo(course, courseInfoAvalaible ? coursesInfo[course.id] : course, loadCategoryNames);
+                this.loadCourseExtraInfo(course, courseInfoAvailable ? coursesInfo[course.id] : course, loadCategoryNames);
+                if (!course.courseImage) {
+                    course.colorNumber = course.id % 10;
+                    course.color = colors.length && colors[course.colorNumber];
+                }
             });
         });
     }
