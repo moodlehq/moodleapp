@@ -134,8 +134,6 @@ export class CoreCommentsViewerPage implements OnDestroy {
         return promise.catch(() => {
             // Ignore errors.
         }).then(() => {
-            return this.loadOfflineData();
-        }).then(() => {
             // Get comments data.
             return this.commentsProvider.getComments(this.contextLevel, this.instanceId, this.componentName, this.itemId,
                     this.area, this.page).then((response) => {
@@ -157,6 +155,8 @@ export class CoreCommentsViewerPage implements OnDestroy {
                     return !!comment.delete;
                 }));
             });
+        }).then(() => {
+            return this.loadOfflineData();
         }).catch((error) => {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             if (error && this.componentName == 'assignsubmission_comments') {
@@ -313,19 +313,19 @@ export class CoreCommentsViewerPage implements OnDestroy {
                     const index = this.comments.findIndex((comment) => comment.id == deleteComment.id);
                     if (index >= 0) {
                         this.comments.splice(index, 1);
+
+                        this.eventsProvider.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                            contextLevel: this.contextLevel,
+                            instanceId: this.instanceId,
+                            component: this.componentName,
+                            itemId: this.itemId,
+                            area: this.area,
+                            countChange: -1,
+                        }, this.sitesProvider.getCurrentSiteId());
                     }
                 } else {
                     this.loadOfflineData();
                 }
-
-                this.eventsProvider.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
-                        contextLevel: this.contextLevel,
-                        instanceId: this.instanceId,
-                        component: this.componentName,
-                        itemId: this.itemId,
-                        area: this.area,
-                        countChange: -1,
-                    }, this.sitesProvider.getCurrentSiteId());
 
                 this.invalidateComments();
 

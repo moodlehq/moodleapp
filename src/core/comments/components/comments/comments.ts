@@ -86,8 +86,11 @@ export class CoreCommentsCommentsComponent implements OnChanges, OnDestroy {
             if (!this.commentsCount.endsWith('+') && this.undefinedOrEqual(data, 'contextLevel') &&
                     this.undefinedOrEqual(data, 'instanceId') && this.undefinedOrEqual(data, 'component') &&
                     this.undefinedOrEqual(data, 'itemId') && this.undefinedOrEqual(data, 'area') && !this.countError) {
+                let newNumber = parseInt(this.commentsCount, 10) + data.countChange;
+                newNumber = newNumber >= 0 ? newNumber : 0;
+
                 // Parse and unparse string.
-                this.commentsCount = parseInt(this.commentsCount, 10) + data.countChange + '';
+                this.commentsCount = newNumber + '';
             }
         }, sitesProvider.getCurrentSiteId());
     }
