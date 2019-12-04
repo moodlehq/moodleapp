@@ -143,7 +143,7 @@ export class CoreCoursesHelperProvider {
                 this.loadCourseExtraInfo(course, courseInfoAvailable ? coursesInfo[course.id] : course, loadCategoryNames);
                 if (!course.courseImage) {
                     course.colorNumber = course.id % 10;
-                    course.color = colors[course.colorNumber];
+                    course.color = colors.length && colors[course.colorNumber];
                 }
             });
         });
