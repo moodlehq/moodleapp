@@ -99,42 +99,7 @@ export class CoreCoursesProvider {
 
             if (courseIds.length == 1) {
                 // Only 1 course, check if it belongs to the user courses. If so, use all user courses.
-                return this.getUserCourses(true, siteId).then((courses) => {
-                    const courseId = courseIds[0];
-                    let useAllCourses = false;
-
-                    if (courseId == siteHomeId) {
-                        // It's site home, use all courses.
-                        useAllCourses = true;
-                    } else {
-                        for (let i = 0; i < courses.length; i++) {
-                            if (courses[i].id == courseId) {
-                                useAllCourses = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (useAllCourses) {
-                        // User is enrolled, retrieve all the courses.
-                        courseIds = courses.map((course) => {
-                            return course.id;
-                        });
-
-                        // Always add the site home ID.
-                        courseIds.push(siteHomeId);
-
-                        // Sort the course IDs.
-                        courseIds.sort((a, b) => {
-                           return b - a;
-                        });
-                    }
-
-                    return courseIds;
-                }).catch(() => {
-                    // Ignore errors.
-                    return courseIds;
-                });
+                return this.getCourseIdsIfEnrolled(courseIds[0], siteId);
             } else {
                 if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
                     courseIds.push(siteHomeId);
@@ -147,6 +112,56 @@ export class CoreCoursesProvider {
 
                 return courseIds;
             }
+        });
+    }
+
+    /**
+     * Given a course ID, if user is enrolled in the course it will return the IDs of all enrolled courses and site home.
+     * Return only the course ID otherwise.
+     *
+     * @param courseIds Course IDs.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with the list of course IDs.
+     */
+    getCourseIdsIfEnrolled(courseId: number, siteId?: string): Promise<number[]> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            const siteHomeId = site.getSiteHomeId();
+
+            // Check if user is enrolled in the course.
+            return this.getUserCourses(true, siteId).then((courses) => {
+                let useAllCourses = false;
+
+                if (courseId == siteHomeId) {
+                    // It's site home, use all courses.
+                    useAllCourses = true;
+                } else {
+                    useAllCourses = !!courses.find((course) => {
+                        return course.id == courseId;
+                    });
+                }
+
+                if (useAllCourses) {
+                    // User is enrolled, return all the courses.
+                    const courseIds = courses.map((course) => {
+                        return course.id;
+                    });
+
+                    // Always add the site home ID.
+                    courseIds.push(siteHomeId);
+
+                    // Sort the course IDs.
+                    courseIds.sort((a, b) => {
+                       return b - a;
+                    });
+
+                    return courseIds;
+                }
+
+                return [courseId];
+            }).catch(() => {
+                // Ignore errors.
+                return [courseId];
+            });
         });
     }
 
