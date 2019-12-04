@@ -154,7 +154,7 @@
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {},
       "cordova-plugin-customurlscheme": {
-        "URL_SCHEME": "moodlemobile"
+        "URL_SCHEME": "cs4rmobile"
       },
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
