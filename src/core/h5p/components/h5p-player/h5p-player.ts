@@ -25,6 +25,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PProvider } from '@core/h5p/providers/h5p';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 
@@ -66,7 +67,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             protected appProvider: CoreAppProvider,
             protected domUtils: CoreDomUtilsProvider,
             protected pluginFileDelegate: CorePluginFileDelegate,
-            protected fileProvider: CoreFileProvider) {
+            protected fileProvider: CoreFileProvider,
+            protected fileHelper: CoreFileHelperProvider) {
 
         this.logger = loggerProvider.getInstance('CoreH5PPlayerComponent');
         this.site = sitesProvider.getCurrentSite();
@@ -106,7 +108,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         this.addResizerScript();
 
-        if (this.canDownload && (this.state == CoreConstants.DOWNLOADED || this.state == CoreConstants.OUTDATED)) {
+        if (this.canDownload && this.fileHelper.isStateDownloaded(this.state)) {
             // Package is downloaded, use the local URL.
             promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.urlParams, this.siteId).catch(() => {
 

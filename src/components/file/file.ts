@@ -169,7 +169,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         }
 
         if (!this.appProvider.isOnline() && (!openAfterDownload || (openAfterDownload &&
-                !(this.state === CoreConstants.DOWNLOADED || this.state === CoreConstants.OUTDATED)))) {
+                !this.fileHelper.isStateDownloaded(this.state)))) {
             this.domUtils.showErrorModal('core.networkerrormsg', true);
 
             return;

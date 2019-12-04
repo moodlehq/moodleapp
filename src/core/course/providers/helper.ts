@@ -1089,7 +1089,7 @@ export class CoreCourseHelperProvider {
 
         // Get the time it was downloaded (if it was downloaded).
         promises.push(this.filepoolProvider.getPackageData(siteId, component, module.id).then((data) => {
-            if (data && data.downloadTime && (data.status == CoreConstants.OUTDATED || data.status == CoreConstants.DOWNLOADED)) {
+            if (data && data.downloadTime && this.fileHelper.isStateDownloaded(data.status)) {
                 const now = this.timeUtils.timestamp();
                 moduleInfo.downloadTime = data.downloadTime;
                 if (now - data.downloadTime < 7 * 86400) {
