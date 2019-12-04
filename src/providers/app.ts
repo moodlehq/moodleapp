@@ -101,7 +101,9 @@ export class CoreAppProvider {
         }, 100);
 
         // Export the app provider so Behat tests can change the forceOffline flag.
-        (<any> window).appProvider = this;
+        if (CoreAppProvider.isAutomated()) {
+            (<any> window).appProvider = this;
+        }
     }
 
     /**
@@ -157,6 +159,15 @@ export class CoreAppProvider {
     getRootNavController(): NavController {
         // Function getRootNav is deprecated. Get the first root nav, there should always be one.
         return this.appCtrl.getRootNavs()[0];
+    }
+
+    /**
+     * Returns whether the user agent is controlled by automation. I.e. Behat testing.
+     *
+     * @return {boolean} True if the user agent is controlled by automation, false otherwise.
+     */
+    static isAutomated(): boolean {
+        return !!navigator.webdriver;
     }
 
     /**

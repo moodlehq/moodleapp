@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { Globalization } from '@ionic-native/globalization';
 import { Platform, Config } from 'ionic-angular';
+import { CoreAppProvider } from '@providers/app';
 import { CoreConfigProvider } from './config';
 import { CoreConfigConstants } from '../configconstants';
 
@@ -39,6 +40,13 @@ export class CoreLangProvider {
         translate.use(this.defaultLanguage);
 
         platform.ready().then(() => {
+            if (CoreAppProvider.isAutomated()) {
+                // Force current language to English when Behat is running.
+                this.changeCurrentLanguage('en');
+
+                return;
+            }
+
             this.getCurrentLanguage().then((language) => {
                 this.changeCurrentLanguage(language);
             });
