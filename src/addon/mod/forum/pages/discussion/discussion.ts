@@ -33,6 +33,8 @@ import { AddonModForumSyncProvider } from '../../providers/sync';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
+type Post = any & { children?: Post[]; };
+
 /**
  * Page that displays a forum discussion.
  */
@@ -387,7 +389,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 this.posts = posts;
                 this.ratingInfo = ratingInfo;
-                this.postSubjects = this.posts.reduce((postSubjects, post) => {
+                this.postSubjects = this.getAllPosts().reduce((postSubjects, post) => {
                     postSubjects[post.id] = post.subject;
 
                     return postSubjects;
@@ -668,4 +670,31 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     ngOnDestroy(): void {
         this.onlineObserver && this.onlineObserver.unsubscribe();
     }
+
+    /**
+     * Get all the posts contained in the discussion.
+     *
+     * @return Array containing all the posts of the discussion.
+     */
+    protected getAllPosts(): Post[] {
+        return [].concat(...this.posts.map(this.flattenPostHierarchy.bind(this)));
+    }
+
+    /**
+     * Flatten a post's hierarchy into an array.
+     *
+     * @param parent Parent post.
+     * @return Array containing all the posts within the hierarchy (including the parent).
+     */
+    protected flattenPostHierarchy(parent: Post): Post[] {
+        const posts = [parent];
+        const children = parent.children || [];
+
+        for (const child of children) {
+            posts.push(...this.flattenPostHierarchy(child));
+        }
+
+        return posts;
+    }
+
 }
