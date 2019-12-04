@@ -181,8 +181,8 @@
   },
   "main": "desktop/electron.js",
   "build": {
-    "appId": "com.moodle.moodledesktop",
-    "productName": "Moodle Desktop",
+    "appId": "com.cs4r.cs4rmobile",
+    "productName": "CODESKILLS4ROBOTICS Desktop",
     "files": [
       "desktop/electron.js",
       "www/**/*",
@@ -203,9 +203,9 @@
     },
     "protocols": [
       {
-        "name": "Moodle Mobile URL",
+        "name": "CODESKILLS4ROBOTICS Mobile URL",
         "schemes": [
-          "moodlemobile"
+          "cs4rmobile"
         ],
         "role": "Viewer"
       }
