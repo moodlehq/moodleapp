@@ -49,15 +49,6 @@ export interface CorePluginFileHandler {
     getComponentRevisionReplace?(args: string[]): string;
 
     /**
-     * Check whether a file can be downloaded. If so, return the file to download.
-     *
-     * @param file The file data.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
-     */
-    canDownloadFile?(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile>;
-
-    /**
      * React to a file being deleted.
      *
      * @param fileUrl The file URL used to download the file.
@@ -68,13 +59,22 @@ export interface CorePluginFileHandler {
     fileDeleted?(fileUrl: string, path: string, siteId?: string): Promise<any>;
 
     /**
+     * Check whether a file can be downloaded. If so, return the file to download.
+     *
+     * @param file The file data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the file to use. Rejected if cannot download.
+     */
+    getDownloadableFile?(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile>;
+
+    /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
      * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
      * @return {string[]} List of URLs.
      */
-    getDownloadableFiles?(container: HTMLElement): string[];
+    getDownloadableFilesFromHTML?(container: HTMLElement): string[];
 
     /**
      * Get a file size.
@@ -117,39 +117,6 @@ export class CorePluginFileDelegate {
     }
 
     /**
-     * Check whether a file can be downloaded. If so, return the file to download.
-     *
-     * @param file The file data.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
-     */
-    canDownloadFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
-        const handler = this.getHandlerForFile(file);
-
-        return this.canHandlerDownloadFile(file, handler, siteId);
-    }
-
-    /**
-     * Check whether a file can be downloaded. If so, return the file to download.
-     *
-     * @param file The file data.
-     * @param handler The handler to use.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
-     */
-    protected canHandlerDownloadFile(file: CoreWSExternalFile, handler: CorePluginFileHandler, siteId?: string)
-            : Promise<CoreWSExternalFile> {
-
-        if (handler && handler.canDownloadFile) {
-            return handler.canDownloadFile(file, siteId).then((newFile) => {
-                return newFile || file;
-            });
-        }
-
-        return Promise.resolve(file);
-    }
-
-    /**
      * React to a file being deleted.
      *
      * @param fileUrl The file URL used to download the file.
@@ -165,6 +132,39 @@ export class CorePluginFileDelegate {
         }
 
         return Promise.resolve();
+    }
+
+    /**
+     * Check whether a file can be downloaded. If so, return the file to download.
+     *
+     * @param file The file data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the file to use. Rejected if cannot download.
+     */
+    getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+        const handler = this.getHandlerForFile(file);
+
+        return this.getHandlerDownloadableFile(file, handler, siteId);
+    }
+
+    /**
+     * Check whether a file can be downloaded. If so, return the file to download.
+     *
+     * @param file The file data.
+     * @param handler The handler to use.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the file to use. Rejected if cannot download.
+     */
+    protected getHandlerDownloadableFile(file: CoreWSExternalFile, handler: CorePluginFileHandler, siteId?: string)
+            : Promise<CoreWSExternalFile> {
+
+        if (handler && handler.getDownloadableFile) {
+            return handler.getDownloadableFile(file, siteId).then((newFile) => {
+                return newFile || file;
+            });
+        }
+
+        return Promise.resolve(file);
     }
 
     /**
@@ -201,14 +201,14 @@ export class CorePluginFileDelegate {
      * @param container Container where to get the URLs from.
      * @return List of URLs.
      */
-    getDownloadableFiles(container: HTMLElement): string[] {
+    getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         let files = [];
 
         for (const component in this.handlers) {
             const handler = this.handlers[component];
 
-            if (handler && handler.getDownloadableFiles) {
-                files = files.concat(handler.getDownloadableFiles(container));
+            if (handler && handler.getDownloadableFilesFromHTML) {
+                files = files.concat(handler.getDownloadableFilesFromHTML(container));
             }
         }
 
@@ -256,8 +256,8 @@ export class CorePluginFileDelegate {
         const handler = this.getHandlerForFile(file);
 
         // First of all check if file can be downloaded.
-        return this.canHandlerDownloadFile(file, handler, siteId).then((canDownload) => {
-            if (!canDownload) {
+        return this.getHandlerDownloadableFile(file, handler, siteId).then((file) => {
+            if (!file) {
                 return 0;
             }
 

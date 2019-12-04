@@ -762,7 +762,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is moved.
      */
     moveDir(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
-        return this.moveFileOrDir(originalPath, newPath, true);
+        return this.moveFileOrDir(originalPath, newPath, true, destDirExists);
     }
 
     /**
@@ -775,7 +775,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is moved.
      */
     moveFile(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
-        return this.moveFileOrDir(originalPath, newPath, false);
+        return this.moveFileOrDir(originalPath, newPath, false, destDirExists);
     }
 
     /**
@@ -991,11 +991,26 @@ export class CoreFileProvider {
      * @param destFolder Path to the destination folder. If not defined, a new folder will be created with the
      *                   same location and name as the ZIP file (without extension).
      * @param onProgress Function to call on progress.
+     * @param recreateDir Delete the dest directory before unzipping. Defaults to true.
      * @return Promise resolved when the file is unzipped.
      */
-    unzipFile(path: string, destFolder?: string, onProgress?: Function): Promise<any> {
+    unzipFile(path: string, destFolder?: string, onProgress?: Function, recreateDir: boolean = true): Promise<any> {
         // Get the source file.
-        return this.getFile(path).then((fileEntry) => {
+        let fileEntry: FileEntry;
+
+        return this.getFile(path).then((fe) => {
+            fileEntry = fe;
+
+            if (destFolder && recreateDir) {
+                // Make sure the dest dir doesn't exist already.
+                return this.removeDir(destFolder).catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    // Now create the dir, otherwise if any of the ancestor dirs doesn't exist the unzip would fail.
+                    return this.createDir(destFolder);
+                });
+            }
+        }).then(() => {
             // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
             destFolder = this.addBasePathIfNeeded(destFolder || this.mimeUtils.removeExtension(path));
 

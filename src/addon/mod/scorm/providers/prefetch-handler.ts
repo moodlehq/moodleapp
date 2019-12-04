@@ -173,11 +173,6 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                         undefined, this.downloadProgress.bind(this, true, onProgress));
             }
         }).then(() => {
-            // Remove the destination folder to prevent having old unused files.
-            return this.fileProvider.removeDir(dirPath).catch(() => {
-                // Ignore errors, it might have failed because the folder doesn't exist.
-            });
-        }).then(() => {
             // Get the ZIP file path.
             return this.filepoolProvider.getFilePathByUrl(siteId, packageUrl);
         }).then((zipPath) => {

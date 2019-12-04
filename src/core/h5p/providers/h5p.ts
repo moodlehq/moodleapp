@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -81,6 +80,10 @@ export class CoreH5PProvider {
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreH5PProvider',
         version: 1,
+        canBeCleared: [
+            this.CONTENT_TABLE, this.LIBRARIES_TABLE, this.LIBRARY_DEPENDENCIES_TABLE, this.CONTENTS_LIBRARIES_TABLE,
+            this.LIBRARIES_CACHEDASSETS_TABLE
+        ],
         tables: [
             {
                 name: this.CONTENT_TABLE,
@@ -100,10 +103,6 @@ export class CoreH5PProvider {
                         name: 'mainlibraryid',
                         type: 'INTEGER',
                         notNull: true
-                    },
-                    {
-                        name: 'displayoptions', // Not used right now, but we keep the field to be consistent with Moodle web.
-                        type: 'INTEGER'
                     },
                     {
                         name: 'foldername',
@@ -293,12 +292,11 @@ export class CoreH5PProvider {
         ]
     };
 
-    protected ROOT_CACHE_KEY = 'mmH5P:';
+    protected ROOT_CACHE_KEY = 'CoreH5P:';
 
     protected logger;
 
     constructor(logger: CoreLoggerProvider,
-            eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider,
             private textUtils: CoreTextUtilsProvider,
             private fileProvider: CoreFileProvider,
@@ -312,12 +310,6 @@ export class CoreH5PProvider {
         this.logger = logger.getInstance('CoreH5PProvider');
 
         this.sitesProvider.registerSiteSchema(this.siteSchema);
-
-        eventsProvider.on(CoreEventsProvider.SITE_STORAGE_DELETED, (data) => {
-            this.deleteAllData(data.siteId).catch((error) => {
-                this.logger.error('Error deleting all H5P data from site.', error);
-            });
-        });
     }
 
     /**
@@ -569,24 +561,6 @@ export class CoreH5PProvider {
     }
 
     /**
-     * Delete all the H5P data from the DB of a certain site.
-     *
-     * @param siteId Site ID.
-     * @return Promise resolved when done.
-     */
-    protected deleteAllData(siteId: string): Promise<any> {
-        return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return Promise.all([
-                db.deleteRecords(this.CONTENT_TABLE),
-                db.deleteRecords(this.LIBRARIES_TABLE),
-                db.deleteRecords(this.LIBRARY_DEPENDENCIES_TABLE),
-                db.deleteRecords(this.CONTENTS_LIBRARIES_TABLE),
-                db.deleteRecords(this.LIBRARIES_CACHEDASSETS_TABLE)
-            ]);
-        });
-    }
-
-    /**
      * Delete cached assets from DB and filesystem.
      *
      * @param libraryId Library identifier.
@@ -784,14 +758,8 @@ export class CoreH5PProvider {
         const folderName = this.mimeUtils.removeExtension(file.name),
             destFolder = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
 
-        // Make sure the dest dir doesn't exist already.
-        return this.fileProvider.removeDir(destFolder).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            return this.fileProvider.createDir(destFolder);
-        }).then(() => {
-            return this.fileProvider.unzipFile(file.toURL(), destFolder);
-        }).then(() => {
+        // Unzip the file.
+        return this.fileProvider.unzipFile(file.toURL(), destFolder).then(() => {
             // Read the contents of the unzipped dir.
             return this.fileProvider.getDirectoryContents(destFolder);
         }).then((contents) => {
@@ -831,17 +799,17 @@ export class CoreH5PProvider {
                         });
                     });
                 }).then(() => {
-                    // Remove tmp folder.
-                    return this.fileProvider.removeDir(destFolder).catch(() => {
-                        // Ignore errors, it will be deleted eventually.
-                    });
-                }).then(() => {
                     // Create the content player.
 
                     return this.loadContentData(content.id, undefined, siteId).then((contentData) => {
                         const embedType = this.h5pUtils.determineEmbedType(contentData.embedType, contentData.library.embedTypes);
 
                         return this.createContentIndex(content.id, fileUrl, contentData, embedType, siteId);
+                    });
+                }).finally(() => {
+                    // Remove tmp folder.
+                    return this.fileProvider.removeDir(destFolder).catch(() => {
+                        // Ignore errors, it will be deleted eventually.
                     });
                 });
             });
@@ -1000,6 +968,40 @@ export class CoreH5PProvider {
         return promise.then(() => {
             return nextWeight;
         });
+    }
+
+    /**
+     * Validate and fix display options, updating them if needed.
+     *
+     * @param displayOptions The display options to validate.
+     * @param id Package ID.
+     */
+    fixDisplayOptions(displayOptions: CoreH5PDisplayOptions, id: number): CoreH5PDisplayOptions {
+
+        // Never allow downloading in the app.
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD] = false;
+
+        // Embed - force setting it if always on or always off. In web, this is done when storing in DB.
+        const embed = this.getOption(CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
+        if (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW || embed == CoreH5PDisplayOptionBehaviour.NEVER_SHOW) {
+            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
+        }
+
+        if (!this.getOption(CoreH5PProvider.DISPLAY_OPTION_FRAME, true)) {
+            displayOptions[CoreH5PProvider.DISPLAY_OPTION_FRAME] = false;
+        } else {
+            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = this.setDisplayOptionOverrides(
+                    CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PPermission.EMBED_H5P, id,
+                    displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED]);
+
+            if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT, true) == false) {
+                displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT] = false;
+            }
+        }
+
+        displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPY] = this.hasPermission(CoreH5PPermission.COPY_H5P, id);
+
+        return displayOptions;
     }
 
     /**
@@ -1215,7 +1217,7 @@ export class CoreH5PProvider {
         }).then((url) => {
             // Add display options to the URL.
             return this.getContentDataByUrl(fileUrl, siteId).then((data) => {
-                const options = this.validateDisplayOptions(this.getDisplayOptionsFromUrlParams(urlParams), data.id);
+                const options = this.fixDisplayOptions(this.getDisplayOptionsFromUrlParams(urlParams), data.id);
 
                 return this.urlUtils.addParamsToUrl(url, options, undefined, true);
             });
@@ -1478,7 +1480,7 @@ export class CoreH5PProvider {
      * @return Display options as object.
      */
     getDisplayOptionsForView(disable: number, id: number): CoreH5PDisplayOptions {
-        return this.validateDisplayOptions(this.getDisplayOptionsAsObject(disable), id);
+        return this.fixDisplayOptions(this.getDisplayOptionsAsObject(disable), id);
     }
 
     /**
@@ -1733,8 +1735,8 @@ export class CoreH5PProvider {
      * @return Return the value for this display option.
      */
     getOption(name: string, defaultValue: any = false): any {
-        // For now, all them are disabled by default, so only will be rendered when defined in the displayoptions DB field.
-        return CoreH5PDisplayOptionBehaviour.CONTROLLED_BY_AUTHOR_DEFAULT_OFF; // CONTROLLED_BY_AUTHOR_DEFAULT_OFF.
+        // For now, all them are disabled by default, so only will be rendered when defined in the display options.
+        return CoreH5PDisplayOptionBehaviour.CONTROLLED_BY_AUTHOR_DEFAULT_OFF;
     }
 
     /**
@@ -1776,7 +1778,7 @@ export class CoreH5PProvider {
      *
      * @param url The file URL.
      * @param options Options.
-     * @param ignoreCache Whether to ignore cache..
+     * @param ignoreCache Whether to ignore cache.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file data.
      */
@@ -2135,7 +2137,6 @@ export class CoreH5PProvider {
      *
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
-     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
     protected processH5PFiles(destFolder: string, entries: (DirectoryEntry | FileEntry)[])
@@ -2227,7 +2228,6 @@ export class CoreH5PProvider {
 
             const data: any = {
                 jsoncontent: content.params,
-                displayoptions: null,
                 mainlibraryid: content.library.libraryId,
                 timemodified: Date.now(),
                 filtered: null,
@@ -2597,40 +2597,6 @@ export class CoreH5PProvider {
             return db.updateRecords(this.CONTENT_TABLE, data, {id: id});
         });
     }
-
-    /**
-     * Validate display options, updating them if needed.
-     *
-     * @param displayOptions The display options to validate.
-     * @param id Package ID.
-     */
-    validateDisplayOptions(displayOptions: CoreH5PDisplayOptions, id: number): CoreH5PDisplayOptions {
-
-        // Never allow downloading in the app.
-        displayOptions[CoreH5PProvider.DISPLAY_OPTION_DOWNLOAD] = false;
-
-        // Embed - force setting it if always on or always off. In web, this is done when storing in DB.
-        const embed = this.getOption(CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
-        if (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW || embed == CoreH5PDisplayOptionBehaviour.NEVER_SHOW) {
-            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
-        }
-
-        if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_FRAME, true) == false) {
-            displayOptions[CoreH5PProvider.DISPLAY_OPTION_FRAME] = false;
-        } else {
-            displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED] = this.setDisplayOptionOverrides(
-                    CoreH5PProvider.DISPLAY_OPTION_EMBED, CoreH5PPermission.EMBED_H5P, id,
-                    displayOptions[CoreH5PProvider.DISPLAY_OPTION_EMBED]);
-
-            if (this.getOption(CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT, true) == false) {
-                displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPYRIGHT] = false;
-            }
-        }
-
-        displayOptions[CoreH5PProvider.DISPLAY_OPTION_COPY] = this.hasPermission(CoreH5PPermission.COPY_H5P, id);
-
-        return displayOptions;
-    }
 }
 
 /**
@@ -2701,7 +2667,6 @@ export type CoreH5PContentDBData = {
     id: number; // The id of the content.
     jsoncontent: string; // The content in json format.
     mainlibraryid: number; // The library we first instantiate for this node.
-    displayoptions: number; // H5P Button display options. Not used right now.
     foldername: string; // Name of the folder that contains the contents.
     fileurl: string; // The online URL of the H5P package.
     filtered: string; // Filtered version of json_content.

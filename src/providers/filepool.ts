@@ -1339,7 +1339,7 @@ export class CoreFilepoolProvider {
      */
     protected fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSExternalFile> {
 
-        return this.pluginFileDelegate.canDownloadFile({fileurl: fileUrl, timemodified: timemodified}).then((file) => {
+        return this.pluginFileDelegate.getDownloadableFile({fileurl: fileUrl, timemodified: timemodified}).then((file) => {
 
             return this.sitesProvider.getSite(siteId).then((site) => {
                 return site.checkAndFixPluginfileURL(file.fileurl);

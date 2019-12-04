@@ -148,7 +148,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
             if (this.canDownload && (this.state == CoreConstants.OUTDATED || this.state == CoreConstants.NOT_DOWNLOADED)) {
                 // Download the package in background if the size is low.
-                this.downloadInBg().catch((error) => {
+                this.attemptDownloadInBg().catch((error) => {
                     this.logger.error('Error downloading H5P in background', error);
                 });
             }
@@ -188,7 +188,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @return Promise resolved when done.
      */
-    protected downloadInBg(): Promise<any> {
+    protected attemptDownloadInBg(): Promise<any> {
         if (this.urlParams && this.src && this.siteCanDownload && this.h5pProvider.canGetTrustedH5PFileInSite() &&
                 this.appProvider.isOnline()) {
 
@@ -225,8 +225,6 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.src && this.siteCanDownload && this.h5pProvider.canGetTrustedH5PFileInSite() && this.site.containsUrl(this.src)) {
 
-            this.calculating = true;
-
             this.calculateState();
 
             // Listen for changes in the state.
@@ -238,19 +236,21 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                 // An error probably means the file cannot be downloaded or we cannot check it (offline).
             });
 
-            return;
+        } else {
+            this.calculating = false;
+            this.canDownload = false;
         }
 
-        this.calculating = false;
-        this.canDownload = false;
     }
 
     /**
-     * Calcuñate state of the file.
+     * Calculate state of the file.
      *
      * @param fileUrl The H5P file URL.
      */
     protected calculateState(): void {
+        this.calculating = true;
+
         // Get the status of the file.
         this.filepoolProvider.getFileStateByUrl(this.siteId, this.urlParams.url).then((state) => {
             this.canDownload = true;

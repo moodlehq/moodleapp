@@ -38,17 +38,6 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
             protected h5pProvider: CoreH5PProvider) { }
 
     /**
-     * Check whether a file can be downloaded. If so, return the file to download.
-     *
-     * @param file The file data.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
-     */
-    canDownloadFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
-        return this.h5pProvider.getTrustedH5PFile(file.fileurl, {}, false, siteId);
-    }
-
-    /**
      * React to a file being deleted.
      *
      * @param fileUrl The file URL used to download the file.
@@ -62,13 +51,24 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
     }
 
     /**
+     * Check whether a file can be downloaded. If so, return the file to download.
+     *
+     * @param file The file data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the file to use. Rejected if cannot download.
+     */
+    getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+        return this.h5pProvider.getTrustedH5PFile(file.fileurl, {}, false, siteId);
+    }
+
+    /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
      * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
      * @return {string[]} List of URLs.
      */
-    getDownloadableFiles(container: HTMLElement): string[] {
+    getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         const iframes = <HTMLIFrameElement[]> Array.from(container.querySelectorAll('iframe.h5p-iframe'));
         const urls = [];
 

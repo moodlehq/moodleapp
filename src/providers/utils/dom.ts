@@ -286,7 +286,7 @@ export class CoreDomUtilsProvider {
         }
 
         // Now get other files from plugin file handlers.
-        urls = urls.concat(this.pluginFileDelegate.getDownloadableFiles(element));
+        urls = urls.concat(this.pluginFileDelegate.getDownloadableFilesFromHTML(element));
 
         return urls;
     }
