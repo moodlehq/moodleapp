@@ -14,24 +14,24 @@ module.exports = {
     dest: '{{WWW}}/'
   },
   copyMathJaxMain: {
-    src: ['{{ROOT}}/node_modules/mathjax/*.js'],
+    src: ['{{ROOT}}/node_modules/mathjax/MathJax.js'],
     dest: '{{WWW}}/lib/mathjax'
-  },
-  copyMathJaxConfig: {
-    src: ['{{ROOT}}/node_modules/mathjax/config/**/*'],
-    dest: '{{WWW}}/lib/mathjax/config'
   },
   copyMathJaxExtensions: {
     src: ['{{ROOT}}/node_modules/mathjax/extensions/**/*'],
     dest: '{{WWW}}/lib/mathjax/extensions'
   },
-  copyMathJaxFonts: {
-    src: ['{{ROOT}}/node_modules/mathjax/fonts/**/*'],
-    dest: '{{WWW}}/lib/mathjax/fonts'
+  copyMathJaxElement: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/element/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/element'
   },
-  copyMathJaxJax: {
-    src: ['{{ROOT}}/node_modules/mathjax/jax/**/*'],
-    dest: '{{WWW}}/lib/mathjax/jax'
+  copyMathJaxInput: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/input/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/input'
+  },
+  copyMathJaxOutput: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/output/SVG/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/output/SVG'
   },
   copyMathJaxLocalization: {
     src: ['{{ROOT}}/node_modules/mathjax/localization/**/*'],
