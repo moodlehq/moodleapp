@@ -29,9 +29,13 @@ module.exports = {
     src: ['{{ROOT}}/node_modules/mathjax/jax/input/**/*'],
     dest: '{{WWW}}/lib/mathjax/jax/input'
   },
-  copyMathJaxOutput: {
+  copyMathJaxSVGOutput: {
     src: ['{{ROOT}}/node_modules/mathjax/jax/output/SVG/**/*'],
     dest: '{{WWW}}/lib/mathjax/jax/output/SVG'
+  },
+  copyMathJaxPreviewHTMLOutput: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/output/PreviewHTML/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/output/PreviewHTML'
   },
   copyMathJaxLocalization: {
     src: ['{{ROOT}}/node_modules/mathjax/localization/**/*'],
