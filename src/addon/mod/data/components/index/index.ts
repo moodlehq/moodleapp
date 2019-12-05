@@ -124,7 +124,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.selectedGroup = this.group || 0;
 
         this.loadContent(false, true).then(() => {
-            if (!this.data) {
+            if (!this.data || !this.data.id) {
                 return;
             }
 

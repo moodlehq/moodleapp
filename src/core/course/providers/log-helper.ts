@@ -185,14 +185,17 @@ export class CoreCourseLogHelperProvider {
      */
     protected logOnline(ws: string, data: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.write(ws, data).then((response) => {
+            // Clone to have an unmodified data object.
+            const wsData = Object.assign({}, data);
+
+            return site.write(ws, wsData).then((response) => {
                 if (!response.status) {
                     return Promise.reject(this.utils.createFakeWSError(''));
                 }
 
                 // Remove all the logs performed.
                 // TODO: Remove this lines when time is accepted in logs.
-                return this.deleteWSLogs(ws, data);
+                return this.deleteWSLogs(ws, data, siteId);
             });
         });
     }
@@ -335,8 +338,19 @@ export class CoreCourseLogHelperProvider {
      */
     protected syncLogs(logs: any[], siteId: string): Promise<any> {
         return Promise.all(logs.map((log) => {
-            return this.logOnline(log.ws, this.textUtils.parseJSON(log.data), siteId).then(() => {
-                return this.deleteWSLogsByComponent(log.component, log.componentid, log.ws);
+            const data = this.textUtils.parseJSON(log.data);
+
+            return this.logOnline(log.ws, data, siteId).catch((error) => {
+                const promise = this.utils.isWebServiceError(error) ? this.deleteWSLogs(log.ws, data, siteId) : Promise.resolve();
+
+                return promise.catch(() => {
+                    // Ignore errors.
+                }).then(() => {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                });
+            }).then(() => {
+                return this.deleteWSLogsByComponent(log.component, log.componentid, log.ws, siteId);
             });
         }));
     }
