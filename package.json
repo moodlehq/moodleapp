@@ -37,7 +37,7 @@
     "postionic:build": "npx gulp copy-component-templates",
     "desktop.pack": "npx electron-builder --dir",
     "desktop.dist": "npx electron-builder -p never",
-    "windows.store": "npx electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store -a .\\resources\\desktop -m .\\desktop\\assets\\windows\\AppXManifest.xml --package-version 0.0.0.0 --package-name MoodleDesktop"
+    "windows.store": "npx electron-windows-store --input-directory .\\desktop\\dist\\win-unpacked --output-directory .\\desktop\\store -a .\\resources\\desktop -m .\\desktop\\assets\\windows\\AppXManifest.xml --package-version 0.0.0.0 --package-name CS4RDesktop"
   },
   "dependencies": {
     "@angular/animations": "5.2.10",

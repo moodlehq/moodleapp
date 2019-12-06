@@ -17,11 +17,11 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.moodle.moodlemobile</string>
+	<string>com.cs4r.cs4rmobile</string>
 	<key>PROJECT_ID</key>
-	<string>moodlemobile-push</string>
+	<string>cs4rmobile-push</string>
 	<key>STORAGE_BUCKET</key>
-	<string>moodlemobile-push.appspot.com</string>
+	<string>cs4rmobile-push.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -35,6 +35,6 @@
 	<key>GOOGLE_APP_ID</key>
 	<string>1:694767596569:ios:a4cdad4d168c9d1a</string>
 	<key>DATABASE_URL</key>
-	<string>https://moodlemobile-push.firebaseio.com</string>
+	<string>https://cs4rmobile-push.firebaseio.com</string>
 </dict>
 </plist>
