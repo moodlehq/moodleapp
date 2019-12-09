@@ -419,7 +419,8 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                                         return;
                                     }
                                     answerPage.answerdata.answers.forEach((answer) => {
-                                        files.push(...this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(answer[0]));
+                                        files.push(...this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(
+                                                answer[0]));
                                     });
                                 });
 

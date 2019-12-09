@@ -438,7 +438,7 @@ export class CoreCourseHelperProvider {
             sizePromise = this.prefetchDelegate.getDownloadSize(section.modules, courseId);
 
             // Check if the section has embedded files in the description.
-            haveEmbeddedFiles = this.domUtils.extractDownloadableFilesFromHtml(section.summary).length > 0;
+            haveEmbeddedFiles = this.filepoolProvider.extractDownloadableFilesFromHtml(section.summary).length > 0;
         } else {
             const promises = [],
                 results = {
@@ -454,7 +454,7 @@ export class CoreCourseHelperProvider {
                     }));
 
                     // Check if the section has embedded files in the description.
-                    if (!haveEmbeddedFiles && this.domUtils.extractDownloadableFilesFromHtml(s.summary).length > 0) {
+                    if (!haveEmbeddedFiles && this.filepoolProvider.extractDownloadableFilesFromHtml(s.summary).length > 0) {
                         haveEmbeddedFiles = true;
                     }
                 }
@@ -1449,7 +1449,7 @@ export class CoreCourseHelperProvider {
         }));
 
         // Download the files in the section description.
-        const introFiles = this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(section.summary),
+        const introFiles = this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(section.summary),
             siteId = this.sitesProvider.getCurrentSiteId();
 
         promises.push(this.filepoolProvider.addFilesToQueue(siteId, introFiles, CoreCourseProvider.COMPONENT, courseId)

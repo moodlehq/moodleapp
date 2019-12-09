@@ -195,12 +195,12 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
             } else if (instance.intro) {
-                return this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);
+                return this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);
             }
         }
 
         if (module.description) {
-            return this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
+            return this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
         }
 
         return [];

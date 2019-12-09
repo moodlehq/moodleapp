@@ -96,7 +96,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             if (getInlineFiles && post.messageinlinefiles && post.messageinlinefiles.length) {
                 files = files.concat(post.messageinlinefiles);
             } else if (post.message && !getInlineFiles) {
-                files = files.concat(this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
+                files = files.concat(this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
             }
         });
 

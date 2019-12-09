@@ -22,7 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
-import { CorePluginFileDelegate } from '../plugin-file-delegate';
+import { CoreLoggerProvider } from '../logger';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreFileProvider } from '@providers/file';
 import { CoreConstants } from '@core/constants';
@@ -62,6 +62,7 @@ export class CoreDomUtilsProvider {
     protected lastInstanceId = 0;
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts = {}; // To prevent duplicated alerts.
+    protected logger;
 
     constructor(private translate: TranslateService,
             private loadingCtrl: LoadingController,
@@ -76,7 +77,9 @@ export class CoreDomUtilsProvider {
             private sanitizer: DomSanitizer,
             private popoverCtrl: PopoverController,
             private fileProvider: CoreFileProvider,
-            private pluginFileDelegate: CorePluginFileDelegate) {
+            loggerProvider: CoreLoggerProvider) {
+
+        this.logger = loggerProvider.getInstance('CoreDomUtilsProvider');
 
         // Check if debug messages should be displayed.
         configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
@@ -260,9 +263,13 @@ export class CoreDomUtilsProvider {
      *
      * @param html HTML code.
      * @return List of file urls.
+     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtml instead.
      */
     extractDownloadableFilesFromHtml(html: string): string[] {
-        let urls = [];
+        this.logger.error('The function extractDownloadableFilesFromHtml has been moved to CoreFilepoolProvider.' +
+                ' Please use that function instead of this one.');
+
+        const urls = [];
         let elements;
 
         const element = this.convertToElement(html);
@@ -285,9 +292,6 @@ export class CoreDomUtilsProvider {
             }
         }
 
-        // Now get other files from plugin file handlers.
-        urls = urls.concat(this.pluginFileDelegate.getDownloadableFilesFromHTML(element));
-
         return urls;
     }
 
@@ -296,6 +300,7 @@ export class CoreDomUtilsProvider {
      *
      * @param html HTML code.
      * @return List of fake file objects with file URLs.
+     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects instead.
      */
     extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): any[] {
         const urls = this.extractDownloadableFilesFromHtml(html);

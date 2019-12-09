@@ -126,7 +126,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
                                 files = files.concat(feedback.feedbackinlinefiles);
                             } else if (feedback.feedbacktext && !getInlineFiles) {
                                 files = files.concat(
-                                    this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(feedback.feedbacktext));
+                                    this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(feedback.feedbacktext));
                             }
                     }));
                 }

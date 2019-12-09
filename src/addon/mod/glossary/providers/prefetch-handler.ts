@@ -93,7 +93,7 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             if (getInlineFiles && entry.definitioninlinefiles && entry.definitioninlinefiles.length) {
                 files = files.concat(entry.definitioninlinefiles);
             } else if (entry.definition && !getInlineFiles) {
-                files = files.concat(this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
+                files = files.concat(this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
             }
         });
 

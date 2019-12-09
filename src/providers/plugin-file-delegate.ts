@@ -13,18 +13,17 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
+import { CoreSitesProvider } from './sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { FileEntry } from '@ionic-native/file';
+import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 
 /**
  * Interface that all plugin file handlers must implement.
  */
-export interface CorePluginFileHandler {
-    /**
-     * A name to identify the handler.
-     */
-    name: string;
+export interface CorePluginFileHandler extends CoreDelegateHandler {
 
     /**
      * The "component" of the handler. It should match the "component" of pluginfile URLs.
@@ -69,7 +68,7 @@ export interface CorePluginFileHandler {
 
     /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
-     * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
+     * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
      * @return {string[]} List of URLs.
@@ -108,12 +107,13 @@ export interface CorePluginFileHandler {
  * Delegate to register pluginfile information handlers.
  */
 @Injectable()
-export class CorePluginFileDelegate {
-    protected logger;
-    protected handlers: { [s: string]: CorePluginFileHandler } = {};
+export class CorePluginFileDelegate extends CoreDelegate {
+    protected handlerNameProperty = 'component';
 
-    constructor(logger: CoreLoggerProvider) {
-        this.logger = logger.getInstance('CorePluginFileDelegate');
+    constructor(loggerProvider: CoreLoggerProvider,
+            sitesProvider: CoreSitesProvider,
+            eventsProvider: CoreEventsProvider) {
+        super('CorePluginFileDelegate', loggerProvider, sitesProvider, eventsProvider);
     }
 
     /**
@@ -168,18 +168,6 @@ export class CorePluginFileDelegate {
     }
 
     /**
-     * Get the handler for a certain pluginfile url.
-     *
-     * @param component Component of the plugin.
-     * @return Handler. Undefined if no handler found for the plugin.
-     */
-    protected getPluginHandler(component: string): CorePluginFileHandler {
-        if (typeof this.handlers[component] != 'undefined') {
-            return this.handlers[component];
-        }
-    }
-
-    /**
      * Get the RegExp of the component and filearea described in the URL.
      *
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
@@ -187,7 +175,7 @@ export class CorePluginFileDelegate {
      */
     getComponentRevisionRegExp(args: string[]): RegExp {
         // Get handler based on component (args[1]).
-        const handler = this.getPluginHandler(args[1]);
+        const handler = <CorePluginFileHandler> this.getHandler(args[1], true);
 
         if (handler && handler.getComponentRevisionRegExp) {
             return handler.getComponentRevisionRegExp(args);
@@ -196,7 +184,7 @@ export class CorePluginFileDelegate {
 
     /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
-     * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
+     * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
      * @return List of URLs.
@@ -204,8 +192,8 @@ export class CorePluginFileDelegate {
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         let files = [];
 
-        for (const component in this.handlers) {
-            const handler = this.handlers[component];
+        for (const component in this.enabledHandlers) {
+            const handler = <CorePluginFileHandler> this.enabledHandlers[component];
 
             if (handler && handler.getDownloadableFilesFromHTML) {
                 files = files.concat(handler.getDownloadableFilesFromHTML(container));
@@ -278,32 +266,13 @@ export class CorePluginFileDelegate {
      * @return Handler.
      */
     protected getHandlerForFile(file: CoreWSExternalFile): CorePluginFileHandler {
-        for (const component in this.handlers) {
-            const handler = this.handlers[component];
+        for (const component in this.enabledHandlers) {
+            const handler = <CorePluginFileHandler> this.enabledHandlers[component];
 
             if (handler && handler.shouldHandleFile && handler.shouldHandleFile(file)) {
                 return handler;
             }
         }
-    }
-
-    /**
-     * Register a handler.
-     *
-     * @param handler The handler to register.
-     * @return True if registered successfully, false otherwise.
-     */
-    registerHandler(handler: CorePluginFileHandler): boolean {
-        if (typeof this.handlers[handler.component || handler.name] !== 'undefined') {
-            this.logger.log(`Handler '${handler.component}' already registered`);
-
-            return false;
-        }
-
-        this.logger.log(`Registered handler '${handler.component}'`);
-        this.handlers[handler.component || handler.name] = handler;
-
-        return true;
     }
 
     /**
@@ -315,7 +284,7 @@ export class CorePluginFileDelegate {
      */
     removeRevisionFromUrl(url: string, args: string[]): string {
         // Get handler based on component (args[1]).
-        const handler = this.getPluginHandler(args[1]);
+        const handler = <CorePluginFileHandler> this.getHandler(args[1], true);
 
         if (handler && handler.getComponentRevisionRegExp && handler.getComponentRevisionReplace) {
             const revisionRegex = handler.getComponentRevisionRegExp(args);

@@ -63,7 +63,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
 
     /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
-     * CoreDomUtilsProvider.extractDownloadableFilesFromHtml.
+     * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
      * @return {string[]} List of URLs.
@@ -101,6 +101,15 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
 
             return Promise.reject(error);
         });
+    }
+
+    /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @return Whether or not the handler is enabled on a site level.
+     */
+    isEnabled(): boolean | Promise<boolean> {
+        return this.h5pProvider.canGetTrustedH5PFileInSite();
     }
 
     /**

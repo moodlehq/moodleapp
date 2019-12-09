@@ -47,4 +47,13 @@ export class AddonModResourcePluginFileHandler implements CorePluginFileHandler 
         // Component + Filearea + Revision
         return '/mod_resource/content/0/';
     }
+
+    /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @return Whether or not the handler is enabled on a site level.
+     */
+    isEnabled(): boolean | Promise<boolean> {
+        return true;
+    }
 }

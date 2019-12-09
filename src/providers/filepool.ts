@@ -1240,6 +1240,59 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Extract the downloadable URLs from an HTML code.
+     *
+     * @param html HTML code.
+     * @return List of file urls.
+     */
+    extractDownloadableFilesFromHtml(html: string): string[] {
+        let urls = [],
+            elements;
+
+        const element = this.domUtils.convertToElement(html);
+        elements = element.querySelectorAll('a, img, audio, video, source, track');
+
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            let url = element.tagName === 'A' ? element.href : element.src;
+
+            if (url && this.urlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+                urls.push(url);
+            }
+
+            // Treat video poster.
+            if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
+                url = element.getAttribute('poster');
+                if (url && this.urlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+                    urls.push(url);
+                }
+            }
+        }
+
+        // Now get other files from plugin file handlers.
+        urls = urls.concat(this.pluginFileDelegate.getDownloadableFilesFromHTML(element));
+
+        return urls;
+    }
+
+    /**
+     * Extract the downloadable URLs from an HTML code and returns them in fake file objects.
+     *
+     * @param html HTML code.
+     * @return List of fake file objects with file URLs.
+     */
+    extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): any[] {
+        const urls = this.extractDownloadableFilesFromHtml(html);
+
+        // Convert them to fake file objects.
+        return urls.map((url) => {
+            return {
+                fileurl: url
+            };
+        });
+    }
+
+    /**
      * Fill Missing Extension In the File Object if needed.
      * This is to migrate from old versions.
      *
