@@ -143,9 +143,12 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID of the modules.
      * @param completionStatus List of completion status.
      * @param courseName Course name. Recommended if completionStatus is supplied.
+     * @param forCoursePage Whether the data will be used to render the course page.
      * @return Whether the sections have content.
      */
-    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any, courseName?: string): boolean {
+    addHandlerDataForModules(sections: any[], courseId: number, completionStatus?: any, courseName?: string,
+            forCoursePage?: boolean): boolean {
+
         let hasContent = false;
 
         sections.forEach((section) => {
@@ -156,7 +159,8 @@ export class CoreCourseHelperProvider {
             hasContent = true;
 
             section.modules.forEach((module) => {
-                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id);
+                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id,
+                        forCoursePage);
 
                 if (module.completiondata && module.completion > 0) {
                     module.completiondata.courseId = courseId;
@@ -1197,7 +1201,7 @@ export class CoreCourseHelperProvider {
             // Get the module.
             return this.courseProvider.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
         }).then((module) => {
-            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
+            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId, false);
 
             if (navCtrl && module.handlerData && module.handlerData.action) {
                 // If the link handler for this module passed through navCtrl, we can use the module's handler to navigate cleanly.
@@ -1246,7 +1250,7 @@ export class CoreCourseHelperProvider {
      */
     openModule(navCtrl: NavController, module: any, courseId: number, sectionId?: number, modParams?: any): boolean {
         if (!module.handlerData) {
-            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId);
+            module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, sectionId, false);
         }
 
         if (module.handlerData && module.handlerData.action) {

@@ -69,7 +69,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         future: 'show',
         favourite: 'show',
         hidden: 'show',
-        custom: 'hidden', // True or false to show or hide.
+        custom: 'hidden',
     };
     showFilter = false;
     showSelectorFilter = false;

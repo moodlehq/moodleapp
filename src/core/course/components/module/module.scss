@@ -87,6 +87,16 @@ ion-app.app-root core-course-module {
         }
     }
 
+    .core-module-loading {
+        width: 100%;
+        text-align: center;
+        padding-top: 10px;
+        clear: both;
+        @include darkmode() {
+            color: $core-dark-text-color;
+        }
+    }
+
     @include darkmode() {
         .item.core-course-module-handler {
             background: $core-dark-item-bg-color;

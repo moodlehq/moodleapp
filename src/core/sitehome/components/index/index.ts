@@ -134,7 +134,8 @@ export class CoreSiteHomeIndexComponent implements OnInit {
             this.section = config.numsections ? sections.find((section) => section.section == 1) : false;
             if (this.section) {
                 this.section.hasContent = this.courseHelper.sectionHasContent(this.section);
-                this.hasContent = this.courseHelper.addHandlerDataForModules([this.section], this.siteHomeId) || this.hasContent;
+                this.hasContent = this.courseHelper.addHandlerDataForModules([this.section], this.siteHomeId, undefined,
+                        undefined, true) || this.hasContent;
             }
 
             // Add log in Moodle.

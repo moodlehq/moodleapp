@@ -82,7 +82,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
 
             if (this.mainMenuBlock) {
                 this.mainMenuBlock.hasContent = this.courseHelper.sectionHasContent(this.mainMenuBlock);
-                this.courseHelper.addHandlerDataForModules([this.mainMenuBlock], this.siteHomeId);
+                this.courseHelper.addHandlerDataForModules([this.mainMenuBlock], this.siteHomeId, undefined, undefined, true);
 
                 // Check if Site Home displays announcements. If so, remove it from the main menu block.
                 const currentSite = this.sitesProvider.getCurrentSite(),
