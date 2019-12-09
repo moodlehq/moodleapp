@@ -47,4 +47,13 @@ export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
         // Component + Filearea + Revision
         return '/mod_scorm/content/0/';
     }
+
+    /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @return Whether or not the handler is enabled on a site level.
+     */
+    isEnabled(): boolean | Promise<boolean> {
+        return true;
+    }
 }

@@ -359,6 +359,7 @@
 "h261": {"type":"video/h261"},
 "h263": {"type":"video/h263"},
 "h264": {"type":"video/h264"},
+"h5p": {"type":"application/zip","icon":"archive","string":"archive","groups":["archive"]},
 "hal": {"type":"application/vnd.hal+xml"},
 "hbci": {"type":"application/vnd.hbci"},
 "hdf": {"type":"application/x-hdf"},

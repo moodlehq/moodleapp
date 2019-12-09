@@ -27,6 +27,7 @@ import { CoreConstants } from '../../constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 
 /**
  * Progress of downloading a list of modules.
@@ -258,10 +259,15 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         }
     } = {};
 
-    constructor(loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private courseProvider: CoreCourseProvider, private filepoolProvider: CoreFilepoolProvider,
-            private timeUtils: CoreTimeUtilsProvider, private fileProvider: CoreFileProvider,
-            protected eventsProvider: CoreEventsProvider) {
+    constructor(loggerProvider: CoreLoggerProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected utils: CoreUtilsProvider,
+            protected courseProvider: CoreCourseProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected fileProvider: CoreFileProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected fileHelper: CoreFileHelperProvider) {
         super('CoreCourseModulePrefetchDelegate', loggerProvider, sitesProvider, eventsProvider);
 
         this.sitesProvider.registerSiteSchema(this.siteSchema);
@@ -881,7 +887,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
             const packageId = this.filepoolProvider.getPackageId(handler.component, module.id),
                 status = this.statusCache.getValue(packageId, 'status');
 
-            if (typeof status != 'undefined' && status != CoreConstants.DOWNLOADED && status != CoreConstants.OUTDATED) {
+            if (typeof status != 'undefined' && !this.fileHelper.isStateDownloaded(status)) {
                 // Module isn't downloaded, just return the status.
                 return Promise.resolve({
                     status: status
@@ -927,7 +933,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         return this.sitesProvider.getSite(siteId).then((site) => {
             // Get the status and download time of the module.
             return this.getModuleStatusAndDownloadTime(module, courseId).then((data) => {
-                if (data.status != CoreConstants.DOWNLOADED && data.status != CoreConstants.OUTDATED) {
+                if (!this.fileHelper.isStateDownloaded(data.status)) {
                     // Not downloaded, no updates.
                     return {};
                 }

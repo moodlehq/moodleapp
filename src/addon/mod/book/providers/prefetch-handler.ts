@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModBookProvider } from './book';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch books.
@@ -42,9 +43,11 @@ export class AddonModBookPrefetchHandler extends CoreCourseResourcePrefetchHandl
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected bookProvider: AddonModBookProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

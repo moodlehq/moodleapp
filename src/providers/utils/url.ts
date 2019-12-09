@@ -50,13 +50,19 @@ export class CoreUrlUtilsProvider {
      * @param url URL to add the params to.
      * @param params Object with the params to add.
      * @param anchor Anchor text if needed.
+     * @param boolToNumber Whether to convert bools to 1 or 0.
      * @return URL with params.
      */
-    addParamsToUrl(url: string, params?: {[key: string]: any}, anchor?: string): string {
+    addParamsToUrl(url: string, params?: {[key: string]: any}, anchor?: string, boolToNumber?: boolean): string {
         let separator = url.indexOf('?') != -1 ? '&' : '?';
 
         for (const key in params) {
-            const value = params[key];
+            let value = params[key];
+
+            if (boolToNumber && typeof value == 'boolean') {
+                // Convert booleans to 1 or 0.
+                value = value ? 1 : 0;
+            }
 
             // Ignore objects.
             if (typeof value != 'object') {

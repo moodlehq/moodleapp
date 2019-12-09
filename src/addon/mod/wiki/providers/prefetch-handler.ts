@@ -29,6 +29,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModWikiProvider } from './wiki';
 import { AddonModWikiSyncProvider } from './wiki-sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch wikis.
@@ -48,6 +49,7 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected wikiProvider: AddonModWikiProvider,
             protected userProvider: CoreUserProvider,
             protected textUtils: CoreTextUtilsProvider,
@@ -56,7 +58,8 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             protected gradesHelper: CoreGradesHelperProvider,
             protected syncProvider: AddonModWikiSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
@@ -96,7 +99,7 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             siteId = this.sitesProvider.getCurrentSiteId();
 
         promises.push(this.getFiles(module, courseId, single, siteId).then((files) => {
-            return this.utils.sumFileSizes(files);
+            return this.pluginFileDelegate.getFilesSize(files);
         }));
 
         promises.push(this.getAllPages(module, courseId, false, true, siteId).then((pages) => {

@@ -237,14 +237,16 @@ export class CoreDelegate {
      * @return True when registered, false if already registered.
      */
     registerHandler(handler: CoreDelegateHandler): boolean {
-        if (typeof this.handlers[handler[this.handlerNameProperty]] !== 'undefined') {
+        const key = handler[this.handlerNameProperty] || handler.name;
+
+        if (typeof this.handlers[key] !== 'undefined') {
             this.logger.log(`Handler '${handler[this.handlerNameProperty]}' already registered`);
 
             return false;
         }
 
         this.logger.log(`Registered handler '${handler[this.handlerNameProperty]}'`);
-        this.handlers[handler[this.handlerNameProperty]] = handler;
+        this.handlers[key] = handler;
 
         return true;
     }
@@ -282,10 +284,12 @@ export class CoreDelegate {
         }).then((enabled: boolean) => {
             // Check that site hasn't changed since the check started.
             if (this.sitesProvider.getCurrentSiteId() === siteId) {
+                const key = handler[this.handlerNameProperty] || handler.name;
+
                 if (enabled) {
-                    this.enabledHandlers[handler[this.handlerNameProperty]] = handler;
+                    this.enabledHandlers[key] = handler;
                 } else {
-                    delete this.enabledHandlers[handler[this.handlerNameProperty]];
+                    delete this.enabledHandlers[key];
                 }
             }
         }).finally(() => {

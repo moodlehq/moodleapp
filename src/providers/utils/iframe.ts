@@ -319,58 +319,86 @@ export class CoreIframeUtilsProvider {
             while (el && el.tagName !== 'A') {
                 el = el.parentElement;
             }
-            if (!el || el.tagName !== 'A') {
-                return;
-            }
-            const link = <HTMLAnchorElement> el;
 
-            const scheme = this.urlUtils.getUrlScheme(link.href);
-            if (!link.href || (scheme && scheme == 'javascript')) {
-                // Links with no URL and Javascript links are ignored.
+            const link = <CoreIframeHTMLAnchorElement> el;
+            if (!link || link.treated) {
                 return;
             }
 
-            if (scheme && scheme != 'file' && scheme != 'filesystem') {
-                // Scheme suggests it's an external resource.
-                event.preventDefault();
+            // Add click listener to the link, this way if the iframe has added a listener to the link it will be executed first.
+            link.treated = true;
+            link.addEventListener('click', this.linkClicked.bind(this, element, link));
+        }, {
+            capture: true // Use capture to fix this listener not called if the element clicked is too deep in the DOM.
+        });
+    }
 
-                const frameSrc = element.src || element.data,
-                    frameScheme = this.urlUtils.getUrlScheme(frameSrc);
+    /**
+     * A link inside a frame was clicked.
+     *
+     * @param element Frame element.
+     * @param link Link clicked.
+     * @param event Click event.
+     */
+    protected linkClicked(element: HTMLFrameElement | HTMLObjectElement, link: HTMLAnchorElement, event: Event): void {
+        if (event.defaultPrevented) {
+            // Event already prevented by some other code.
+            return;
+        }
 
-                // If the frame is not local, check the target to identify how to treat the link.
-                if (frameScheme && frameScheme != 'file' && frameScheme != 'filesystem' &&
-                        (!link.target || link.target == '_self')) {
-                    // Load the link inside the frame itself.
-                    if (element.tagName.toLowerCase() == 'object') {
-                        element.setAttribute('data', link.href);
-                    } else {
-                        element.setAttribute('src', link.href);
-                    }
+        const scheme = this.urlUtils.getUrlScheme(link.href);
+        if (!link.href || (scheme && scheme == 'javascript')) {
+            // Links with no URL and Javascript links are ignored.
+            return;
+        }
 
-                    return;
-                }
+        if (scheme && scheme != 'file' && scheme != 'filesystem') {
+            // Scheme suggests it's an external resource.
+            event.preventDefault();
 
-                // The frame is local or the link needs to be opened in a new window. Open in browser.
-                if (!this.sitesProvider.isLoggedIn()) {
-                    this.utils.openInBrowser(link.href);
-                } else {
-                    this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(link.href);
-                }
-            } else if (link.target == '_parent' || link.target == '_top' || link.target == '_blank') {
-                // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
-                event.preventDefault();
-                this.utils.openFile(link.href).catch((error) => {
-                    this.domUtils.showErrorModal(error);
-                });
-            } else if (this.platform.is('ios') && (!link.target || link.target == '_self')) {
-                // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
-                event.preventDefault();
+            const frameSrc = (<HTMLFrameElement> element).src || (<HTMLObjectElement> element).data,
+                frameScheme = this.urlUtils.getUrlScheme(frameSrc);
+
+            // If the frame is not local, check the target to identify how to treat the link.
+            if (frameScheme && frameScheme != 'file' && frameScheme != 'filesystem' &&
+                    (!link.target || link.target == '_self')) {
+                // Load the link inside the frame itself.
                 if (element.tagName.toLowerCase() == 'object') {
                     element.setAttribute('data', link.href);
                 } else {
                     element.setAttribute('src', link.href);
                 }
+
+                return;
             }
-        });
+
+            // The frame is local or the link needs to be opened in a new window. Open in browser.
+            if (!this.sitesProvider.isLoggedIn()) {
+                this.utils.openInBrowser(link.href);
+            } else {
+                this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(link.href);
+            }
+        } else if (link.target == '_parent' || link.target == '_top' || link.target == '_blank') {
+            // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
+            event.preventDefault();
+            this.utils.openFile(link.href).catch((error) => {
+                this.domUtils.showErrorModal(error);
+            });
+        } else if (this.platform.is('ios') && (!link.target || link.target == '_self')) {
+            // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
+            event.preventDefault();
+            if (element.tagName.toLowerCase() == 'object') {
+                element.setAttribute('data', link.href);
+            } else {
+                element.setAttribute('src', link.href);
+            }
+        }
     }
 }
+
+/**
+ * Subtype of HTMLAnchorElement, with some calculated data.
+ */
+type CoreIframeHTMLAnchorElement = HTMLAnchorElement & {
+    treated?: boolean; // Whether the element has been treated already.
+};

@@ -26,6 +26,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { AddonModScormProvider } from './scorm';
 import { AddonModScormSyncProvider } from './scorm-sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Progress event used when downloading a SCORM.
@@ -67,12 +68,14 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected fileProvider: CoreFileProvider,
             protected textUtils: CoreTextUtilsProvider,
             protected scormProvider: AddonModScormProvider,
             protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
@@ -169,11 +172,6 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                 return this.filepoolProvider.downloadUrl(siteId, packageUrl, true, this.component, scorm.coursemodule,
                         undefined, this.downloadProgress.bind(this, true, onProgress));
             }
-        }).then(() => {
-            // Remove the destination folder to prevent having old unused files.
-            return this.fileProvider.removeDir(dirPath).catch(() => {
-                // Ignore errors, it might have failed because the folder doesn't exist.
-            });
         }).then(() => {
             // Get the ZIP file path.
             return this.filepoolProvider.getFilePathByUrl(siteId, packageUrl);

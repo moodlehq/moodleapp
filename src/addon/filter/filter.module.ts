@@ -17,6 +17,7 @@ import { AddonFilterActivityNamesModule } from './activitynames/activitynames.mo
 import { AddonFilterAlgebraModule } from './algebra/algebra.module';
 import { AddonFilterCensorModule } from './censor/censor.module';
 import { AddonFilterDataModule } from './data/data.module';
+import { AddonFilterDisplayH5PModule } from './displayh5p/displayh5p.module';
 import { AddonFilterEmailProtectModule } from './emailprotect/emailprotect.module';
 import { AddonFilterEmoticonModule } from './emoticon/emoticon.module';
 import { AddonFilterGlossaryModule } from './glossary/glossary.module';
@@ -34,6 +35,7 @@ import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
         AddonFilterAlgebraModule,
         AddonFilterCensorModule,
         AddonFilterDataModule,
+        AddonFilterDisplayH5PModule,
         AddonFilterEmailProtectModule,
         AddonFilterEmoticonModule,
         AddonFilterGlossaryModule,

@@ -27,6 +27,7 @@ import { AddonModWorkshopProvider } from './workshop';
 import { AddonModWorkshopSyncProvider } from './sync';
 import { AddonModWorkshopHelperProvider } from './helper';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch workshops.
@@ -47,13 +48,15 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
             private workshopProvider: AddonModWorkshopProvider,
             private workshopHelper: AddonModWorkshopHelperProvider,
             private syncProvider: AddonModWorkshopSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

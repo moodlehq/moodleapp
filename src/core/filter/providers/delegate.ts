@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, ViewContainerRef } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
@@ -48,10 +48,14 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
      * @param container The HTML container to handle.
      * @param filter The filter.
      * @param options Options passed to the filters.
+     * @param viewContainerRef The ViewContainerRef where the container is.
+     * @param component Component.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return If async, promise resolved when done.
      */
-    handleHtml?(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string)
+    handleHtml?(container: HTMLElement, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions,
+            viewContainerRef: ViewContainerRef, component?: string, componentId?: string | number, siteId?: string)
             : void | Promise<void>;
 
     /**
@@ -156,13 +160,16 @@ export class CoreFilterDelegate extends CoreDelegate {
      *
      * @param container The HTML container to handle.
      * @param filters Filters to apply.
+     * @param viewContainerRef The ViewContainerRef where the container is.
      * @param options Options passed to the filters.
      * @param skipFilters Names of filters that shouldn't be applied.
+     * @param component Component.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    handleHtml(container: HTMLElement, filters: CoreFilterFilter[], options?: any, skipFilters?: string[], siteId?: string)
-            : Promise<any> {
+    handleHtml(container: HTMLElement, filters: CoreFilterFilter[], viewContainerRef?: ViewContainerRef, options?: any,
+            skipFilters?: string[], component?: string, componentId?: string | number, siteId?: string): Promise<any> {
 
         // Wait for filters to be initialized.
         return this.handlersInitPromise.then(() => {
@@ -181,8 +188,9 @@ export class CoreFilterDelegate extends CoreDelegate {
                 }
 
                 promise = promise.then(() => {
+
                     return Promise.resolve(this.executeFunctionOnEnabled(filter.filter, 'handleHtml',
-                            [container, filter, options, siteId])).catch((error) => {
+                            [container, filter, options, viewContainerRef, component, componentId, siteId])).catch((error) => {
                         this.logger.error('Error handling HTML' + filter.filter, error);
                     });
                 });

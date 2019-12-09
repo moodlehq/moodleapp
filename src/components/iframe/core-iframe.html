@@ -1,4 +1,4 @@
-<div [class.core-loading-container]="loading">
+<div [class.core-loading-container]="loading" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}">
     <iframe #iframe [hidden]="loading" class="core-iframe" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"></iframe>
     <span class="core-loading-spinner">
         <ion-spinner *ngIf="loading"></ion-spinner>

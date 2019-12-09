@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModLtiProvider } from './lti';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch LTIs. LTIs cannot be prefetched, but the handler will be used to invalidate some data on course PTR.
@@ -41,9 +42,11 @@ export class AddonModLtiPrefetchHandler extends CoreCourseActivityPrefetchHandle
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected ltiProvider: AddonModLtiProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

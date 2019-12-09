@@ -22,6 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
+import { CoreLoggerProvider } from '../logger';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreFileProvider } from '@providers/file';
 import { CoreConstants } from '@core/constants';
@@ -61,12 +62,24 @@ export class CoreDomUtilsProvider {
     protected lastInstanceId = 0;
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts = {}; // To prevent duplicated alerts.
+    protected logger;
 
-    constructor(private translate: TranslateService, private loadingCtrl: LoadingController, private toastCtrl: ToastController,
-            private alertCtrl: AlertController, private textUtils: CoreTextUtilsProvider, private appProvider: CoreAppProvider,
-            private platform: Platform, private configProvider: CoreConfigProvider, private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController, private sanitizer: DomSanitizer, private popoverCtrl: PopoverController,
-            private fileProvider: CoreFileProvider) {
+    constructor(private translate: TranslateService,
+            private loadingCtrl: LoadingController,
+            private toastCtrl: ToastController,
+            private alertCtrl: AlertController,
+            private textUtils: CoreTextUtilsProvider,
+            private appProvider: CoreAppProvider,
+            private platform: Platform,
+            private configProvider: CoreConfigProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private modalCtrl: ModalController,
+            private sanitizer: DomSanitizer,
+            private popoverCtrl: PopoverController,
+            private fileProvider: CoreFileProvider,
+            loggerProvider: CoreLoggerProvider) {
+
+        this.logger = loggerProvider.getInstance('CoreDomUtilsProvider');
 
         // Check if debug messages should be displayed.
         configProvider.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
@@ -250,8 +263,12 @@ export class CoreDomUtilsProvider {
      *
      * @param html HTML code.
      * @return List of file urls.
+     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtml instead.
      */
     extractDownloadableFilesFromHtml(html: string): string[] {
+        this.logger.error('The function extractDownloadableFilesFromHtml has been moved to CoreFilepoolProvider.' +
+                ' Please use that function instead of this one.');
+
         const urls = [];
         let elements;
 
@@ -283,6 +300,7 @@ export class CoreDomUtilsProvider {
      *
      * @param html HTML code.
      * @return List of fake file objects with file URLs.
+     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects instead.
      */
     extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): any[] {
         const urls = this.extractDownloadableFilesFromHtml(html);
@@ -372,7 +390,7 @@ export class CoreDomUtilsProvider {
      * @return Formatted size. If size is not valid, returns an empty string.
      */
     formatPixelsSize(size: any): string {
-        if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1)) {
+        if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1 || size == 'auto' || size == 'initial')) {
             // It seems to be a valid size.
             return size;
         }

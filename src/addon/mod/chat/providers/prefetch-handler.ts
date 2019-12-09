@@ -25,6 +25,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChatProvider, AddonModChatChat } from './chat';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch chats.
@@ -43,11 +44,13 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             private groupsProvider: CoreGroupsProvider,
             private userProvider: CoreUserProvider,
             private chatProvider: AddonModChatProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

@@ -26,6 +26,7 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumSyncProvider } from './sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch forums.
@@ -45,12 +46,14 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             private userProvider: CoreUserProvider,
             private groupsProvider: CoreGroupsProvider,
             private forumProvider: AddonModForumProvider,
             private syncProvider: AddonModForumSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
@@ -93,7 +96,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             if (getInlineFiles && post.messageinlinefiles && post.messageinlinefiles.length) {
                 files = files.concat(post.messageinlinefiles);
             } else if (post.message && !getInlineFiles) {
-                files = files.concat(this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
+                files = files.concat(this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
             }
         });
 

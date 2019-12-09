@@ -21,6 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '../providers/course';
 import { CoreCourseModulePrefetchHandler } from '../providers/module-prefetch-delegate';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Base prefetch handler to be registered in CoreCourseModulePrefetchDelegate. Prefetch handlers should inherit either
@@ -67,7 +68,8 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             protected filepoolProvider: CoreFilepoolProvider,
             protected sitesProvider: CoreSitesProvider,
             protected domUtils: CoreDomUtilsProvider,
-            protected filterHelper: CoreFilterHelperProvider) { }
+            protected filterHelper: CoreFilterHelperProvider,
+            protected pluginFileDelegate: CorePluginFileDelegate) { }
 
     /**
      * Add an ongoing download to the downloadPromises list. When the promise finishes it will be removed.
@@ -137,7 +139,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     getDownloadSize(module: any, courseId: number, single?: boolean): Promise<{ size: number, total: boolean }> {
         return this.getFiles(module, courseId).then((files) => {
-            return this.utils.sumFileSizes(files);
+            return this.pluginFileDelegate.getFilesSize(files);
         }).catch(() => {
             return { size: -1, total: false };
         });
@@ -193,12 +195,12 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
             } else if (instance.intro) {
-                return this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);
+                return this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);
             }
         }
 
         if (module.description) {
-            return this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
+            return this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
         }
 
         return [];

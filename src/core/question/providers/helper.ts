@@ -516,7 +516,7 @@ export class CoreQuestionHelperProvider {
      */
     prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string, usageId?: number)
             : Promise<any> {
-        const urls = this.domUtils.extractDownloadableFilesFromHtml(question.html);
+        const urls = this.filepoolProvider.extractDownloadableFilesFromHtml(question.html);
 
         if (!component) {
             component = CoreQuestionProvider.COMPONENT;

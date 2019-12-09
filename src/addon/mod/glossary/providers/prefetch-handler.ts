@@ -25,6 +25,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { AddonModGlossaryProvider } from './glossary';
 import { AddonModGlossarySyncProvider } from './sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch forums.
@@ -44,11 +45,13 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected glossaryProvider: AddonModGlossaryProvider,
             protected commentsProvider: CoreCommentsProvider,
             protected syncProvider: AddonModGlossarySyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
@@ -90,7 +93,7 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             if (getInlineFiles && entry.definitioninlinefiles && entry.definitioninlinefiles.length) {
                 files = files.concat(entry.definitioninlinefiles);
             } else if (entry.definition && !getInlineFiles) {
-                files = files.concat(this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
+                files = files.concat(this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
             }
         });
 

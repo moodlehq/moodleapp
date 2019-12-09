@@ -24,6 +24,7 @@ import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/reso
 import { AddonModPageProvider } from './page';
 import { AddonModPageHelperProvider } from './helper';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch pages.
@@ -43,10 +44,12 @@ export class AddonModPagePrefetchHandler extends CoreCourseResourcePrefetchHandl
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected pageProvider: AddonModPageProvider,
             protected pageHelper: AddonModPageHelperProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

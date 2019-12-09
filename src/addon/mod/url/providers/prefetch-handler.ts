@@ -23,6 +23,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModUrlProvider } from './url';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch URLs. URLs cannot be prefetched, but the handler will be used to invalidate some data on course PTR.
@@ -40,9 +41,11 @@ export class AddonModUrlPrefetchHandler extends CoreCourseResourcePrefetchHandle
             filepoolProvider: CoreFilepoolProvider,
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
-            filterHelper: CoreFilterHelperProvider) {
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

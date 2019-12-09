@@ -25,6 +25,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChoiceSyncProvider } from './sync';
 import { AddonModChoiceProvider } from './choice';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch choices.
@@ -46,11 +47,13 @@ export class AddonModChoicePrefetchHandler extends CoreCourseActivityPrefetchHan
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected choiceProvider: AddonModChoiceProvider,
             protected userProvider: CoreUserProvider,
             protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**

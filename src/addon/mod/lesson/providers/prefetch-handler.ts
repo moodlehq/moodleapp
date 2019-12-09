@@ -26,6 +26,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { AddonModLessonProvider } from './lesson';
 import { AddonModLessonSyncProvider } from './lesson-sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch lessons.
@@ -48,12 +49,14 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             protected modalCtrl: ModalController,
             protected groupsProvider: CoreGroupsProvider,
             protected lessonProvider: AddonModLessonProvider,
             protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
@@ -108,7 +111,9 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             let files = lesson.mediafiles || [];
             files = files.concat(this.getIntroFilesFromInstance(module, lesson));
 
-            result = this.utils.sumFileSizes(files);
+            return this.pluginFileDelegate.getFilesSize(files);
+        }).then((res) => {
+            result = res;
 
             // Get the pages to calculate the size.
             return this.lessonProvider.getPages(lesson.id, password, false, false, siteId);
@@ -414,7 +419,8 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                                         return;
                                     }
                                     answerPage.answerdata.answers.forEach((answer) => {
-                                        files.push(...this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(answer[0]));
+                                        files.push(...this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(
+                                                answer[0]));
                                     });
                                 });
 
