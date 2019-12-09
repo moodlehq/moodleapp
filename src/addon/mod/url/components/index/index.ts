@@ -120,10 +120,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             } else {
                 mod = this.module;
 
-                if (!mod.contents || !mod.contents.length) {
-                    // Try to load module contents, it's needed to get the URL with parameters.
-                    return this.courseProvider.loadModuleContents(mod, this.courseId, undefined, false, false, undefined, 'url');
-                }
+                // Try to load module contents, it's needed to get the URL with parameters.
+                return this.courseProvider.loadModuleContents(mod, this.courseId, undefined, false, refresh, undefined, 'url');
             }
         }).then(() => {
             // Always use the URL from the module because it already includes the parameters.
