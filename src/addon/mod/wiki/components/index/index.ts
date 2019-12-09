@@ -99,14 +99,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 return;
             }
 
-            if (this.isMainPage) {
+            if (!this.pageId) {
                 this.wikiProvider.logView(this.wiki.id, this.wiki.name).then(() => {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }).catch((error) => {
                     // Ignore errors.
                 });
             } else {
-                this.wikiProvider.logPageView(this.pageId, this.wiki.id, this.wiki.name).catch(() => {
+                this.wikiProvider.logPageView(this.pageId, this.wiki.id, this.wiki.name).catch((error) => {
                     // Ignore errors.
                 });
             }
@@ -280,9 +280,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                             this.currentPage = data.pageId;
 
                             this.showLoadingAndFetch(true, false).then(() => {
-                                this.wikiProvider.logPageView(this.currentPage, this.wiki.id, this.wiki.name).catch(() => {
-                                    // Ignore errors.
-                                });
+                                if (this.currentPage) {
+                                    this.wikiProvider.logPageView(this.currentPage, this.wiki.id, this.wiki.name).catch(() => {
+                                        // Ignore errors.
+                                    });
+                                }
                             });
 
                             // Stop listening for new page events.

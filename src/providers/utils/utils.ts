@@ -1252,7 +1252,7 @@ export class CoreUtilsProvider {
      * @return Sorted object.
      */
     sortProperties(obj: object): object {
-        if (typeof obj == 'object' && !Array.isArray(obj)) {
+        if (obj != null && typeof obj == 'object' && !Array.isArray(obj)) {
             // It's an object, sort it.
             return Object.keys(obj).sort().reduce((accumulator, key) => {
                 // Always call sort with the value. If it isn't an object, the original value will be returned.
