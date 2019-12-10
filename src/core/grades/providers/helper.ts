@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, ReadingStrategy } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
@@ -198,22 +198,50 @@ export class CoreGradesHelperProvider {
      * @param grades Grades to get the data for.
      * @return Promise always resolved. Resolve param is the formatted grades.
      */
-    getGradesCourseData(grades: any): Promise<any> {
-        // Using cache for performance reasons.
-        return this.coursesProvider.getUserCourses(true).then((courses) => {
-            const indexedCourses = {};
-            courses.forEach((course) => {
-                indexedCourses[course.id] = course;
-            });
+    async getGradesCourseData(grades: any[]): Promise<any> {
+        // Obtain courses from cache to prevent network requests.
+        const courses = await this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.OnlyCache);
 
-            grades.forEach((grade) => {
-                if (typeof indexedCourses[grade.courseid] != 'undefined') {
-                    grade.courseFullName = indexedCourses[grade.courseid].fullname;
-                }
-            });
+        const coursesMap = this.utils.arrayToObject(courses, 'id');
+        const coursesWereMissing = this.addCourseData(grades, coursesMap);
 
-            return grades;
-        });
+        // If any course wasn't found, make a network request.
+        if (coursesWereMissing) {
+            const coursesPromise = this.coursesProvider.isGetCoursesByFieldAvailable()
+                ? this.coursesProvider.getCoursesByField('ids', grades.map((grade) => grade.courseid))
+                : this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.PreferNetwork);
+
+            const courses = await coursesPromise;
+
+            const coursesMap = this.utils.arrayToObject(courses, 'id');
+
+            this.addCourseData(grades, coursesMap);
+        }
+
+        return grades.filter((grade) => grade.courseFullName !== undefined);
+    }
+
+    /**
+     * Adds course data to grades.
+     *
+     * @param grades Array of grades to populate.
+     * @param courses HashMap of courses to read data from.
+     * @return Boolean indicating if some courses were not found.
+     */
+    protected addCourseData(grades: any[], courses: any): boolean {
+        let someCoursesAreMissing = false;
+
+        for (const grade of grades) {
+            if (!(grade.courseid in courses)) {
+                someCoursesAreMissing = true;
+
+                continue;
+            }
+
+            grade.courseFullName = courses[grade.courseid].fullname;
+        }
+
+        return someCoursesAreMissing;
     }
 
     /**

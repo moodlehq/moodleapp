@@ -26,7 +26,7 @@ import { CoreUtilsProvider } from './utils/utils';
 import { CoreWSProvider } from './ws';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 import { WP_PROVIDER } from '@app/app.module';
@@ -156,6 +156,12 @@ export interface CoreSiteSchema {
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
+}
+
+export const enum ReadingStrategy {
+    OnlyCache,
+    PreferCache,
+    PreferNetwork,
 }
 
 /*
@@ -1730,4 +1736,28 @@ export class CoreSitesProvider {
 
         return reset;
     }
+
+    /**
+     * Returns presets for a given reading strategy.
+     *
+     * @param strategy Reading strategy.
+     * @return PreSets options object.
+     */
+    getReadingStrategyPreSets(strategy: ReadingStrategy): CoreSiteWSPreSets {
+        switch (strategy) {
+            case ReadingStrategy.PreferCache:
+                return {
+                    omitExpires: true,
+                };
+            case ReadingStrategy.OnlyCache:
+                return {
+                    omitExpires: true,
+                    forceOffline: true,
+                };
+            case ReadingStrategy.PreferNetwork:
+            default:
+                return {};
+        }
+    }
+
 }

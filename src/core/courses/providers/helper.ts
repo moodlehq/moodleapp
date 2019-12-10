@@ -107,7 +107,7 @@ export class CoreCoursesHelperProvider {
             return Promise.resolve();
         }
 
-        let coursesInfo = [],
+        let coursesInfo = {},
             courseInfoAvailable = false;
 
         const site = this.sitesProvider.getCurrentSite(),
