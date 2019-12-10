@@ -212,6 +212,7 @@ export class CoreSite {
         3.6: 2018120300,
         3.7: 2019052000
     };
+    static MINIMUM_MOODLE_VERSION = 3.1;
 
     // Possible cache update frequencies.
     protected UPDATE_FREQUENCIES = [
@@ -657,7 +658,8 @@ export class CoreSite {
         const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             if (preSets.forceOffline) {
                 // Don't call the WS, just fail.
-                return Promise.reject(this.wsProvider.createFakeWSError('core.cannotconnect', true));
+                return Promise.reject(this.wsProvider.createFakeWSError('core.cannotconnect', true,
+                    {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
             }
 
             // Call the WS.
