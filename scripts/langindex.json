@@ -502,6 +502,7 @@
   "addon.mod_data.foundrecords": "data",
   "addon.mod_data.gettinglocation": "local_moodlemobileapp",
   "addon.mod_data.latlongboth": "data",
+  "addon.mod_data.locationpermissiondenied": "local_moodlemobileapp",
   "addon.mod_data.menuchoose": "data",
   "addon.mod_data.modulenameplural": "data",
   "addon.mod_data.more": "data",
