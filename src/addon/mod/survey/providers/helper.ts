@@ -110,7 +110,7 @@ export class AddonModSurveyHelperProvider {
 
                     return;
                 }
-            } else if (q1.multi && q1.multi.length === 0) {
+            } else if (q1.multiArray && q1.multiArray.length === 0) {
                 // It's a single question.
                 q1.name = 'q' + q1.id;
                 q1.num = num++;
