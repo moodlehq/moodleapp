@@ -371,7 +371,7 @@ export class CoreSitesProvider {
                     } else if (this.textUtils.getErrorMessageFromError(secondError)) {
                         return Promise.reject(secondError);
                     } else {
-                        return this.translate.instant('core.cannotconnect');
+                        return this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION});
                     }
                 });
             });
@@ -463,7 +463,8 @@ export class CoreSitesProvider {
                                         error.error = this.translate.instant('core.login.sitehasredirect');
                                     } else {
                                         // We can't be sure if there is a redirect or not. Display cannot connect error.
-                                        error.error = this.translate.instant('core.cannotconnect');
+                                        error.error = this.translate.instant('core.cannotconnect',
+                                            {$a: CoreSite.MINIMUM_MOODLE_VERSION});
                                     }
 
                                     return Promise.reject(error);
@@ -508,7 +509,7 @@ export class CoreSitesProvider {
         return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
                 .catch(() => {
             // Default error messages are kinda bad, return our own message.
-            return Promise.reject({error: this.translate.instant('core.cannotconnect')});
+            return Promise.reject({error: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION})});
         }).then((data: any) => {
 
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
@@ -550,7 +551,7 @@ export class CoreSitesProvider {
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
-                return Promise.reject(this.translate.instant('core.cannotconnect'));
+                return Promise.reject(this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
             } else {
                 if (typeof data.token != 'undefined') {
                     return { token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken };
@@ -582,7 +583,7 @@ export class CoreSitesProvider {
                 }
             }
         }, () => {
-            return Promise.reject(this.translate.instant('core.cannotconnect'));
+            return Promise.reject(this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
         });
     }
 
@@ -676,7 +677,8 @@ export class CoreSitesProvider {
      */
     protected treatInvalidAppVersion(result: number, siteUrl: string, siteId?: string): Promise<any> {
         let errorCode,
-            errorKey;
+            errorKey,
+            translateParams;
 
         switch (result) {
             case this.MOODLE_APP:
@@ -690,6 +692,7 @@ export class CoreSitesProvider {
             default:
                 errorCode = 'invalidmoodleversion';
                 errorKey = 'core.login.invalidmoodleversion';
+                translateParams = {$a: CoreSite.MINIMUM_MOODLE_VERSION};
         }
 
         let promise;
@@ -702,7 +705,7 @@ export class CoreSitesProvider {
 
         return promise.then(() => {
            return Promise.reject({
-                error: this.translate.instant(errorKey),
+                error: this.translate.instant(errorKey, translateParams),
                 errorcode: errorCode,
                 loggedout: true
             });
@@ -757,7 +760,7 @@ export class CoreSitesProvider {
         }
 
         const version31 = 2016052300,
-            release31 = '3.1';
+            release31 = CoreSite.MINIMUM_MOODLE_VERSION;
 
         // Try to validate by version.
         if (info.version) {

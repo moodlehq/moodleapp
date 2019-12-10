@@ -315,11 +315,12 @@ export class CoreWSProvider {
      *
      * @param message The message to include in the error.
      * @param needsTranslate If the message needs to be translated.
+     * @param translateParams Translation params, if needed.
      * @return Fake WS error.
      */
-    createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
+    createFakeWSError(message: string, needsTranslate?: boolean, translateParams?: {}): CoreWSError {
         if (needsTranslate) {
-            message = this.translate.instant(message);
+            message = this.translate.instant(message, translateParams);
         }
 
         return {
