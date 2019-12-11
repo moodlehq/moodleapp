@@ -1923,8 +1923,8 @@ export class CoreSite {
      * @return Promise resolved with boolean: whether it works or not.
      */
     checkTokenPluginFile(url: string): Promise<boolean> {
-        if (!this.infos || !this.infos.userprivateaccesskey) {
-            // No access key, cannot use tokenpluginfile.
+        if (!this.urlUtils.canUseTokenPluginFile(url, this.siteUrl, this.infos && this.infos.userprivateaccesskey)) {
+            // Cannot use tokenpluginfile.
             return Promise.resolve(false);
         } else if (typeof this.tokenPluginFileWorks != 'undefined') {
             // Already checked.
@@ -1935,9 +1935,6 @@ export class CoreSite {
         } else if (!this.appProvider.isOnline()) {
             // Not online, cannot check it. Assume it's working, but don't save the result.
             return Promise.resolve(true);
-        } else if (!this.urlUtils.isPluginFileUrl(url)) {
-            // Not a pluginfile URL, ignore it.
-            return Promise.resolve(false);
         }
 
         url = this.fixPluginfileURL(url);
