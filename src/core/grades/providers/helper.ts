@@ -200,15 +200,22 @@ export class CoreGradesHelperProvider {
      */
     async getGradesCourseData(grades: any[]): Promise<any> {
         // Obtain courses from cache to prevent network requests.
-        const courses = await this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.OnlyCache);
+        let coursesWereMissing;
 
-        const coursesMap = this.utils.arrayToObject(courses, 'id');
-        const coursesWereMissing = this.addCourseData(grades, coursesMap);
+        try {
+            const courses = await this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.OnlyCache);
+
+            const coursesMap = this.utils.arrayToObject(courses, 'id');
+
+            coursesWereMissing = this.addCourseData(grades, coursesMap);
+        } catch (error) {
+            coursesWereMissing = true;
+        }
 
         // If any course wasn't found, make a network request.
         if (coursesWereMissing) {
             const coursesPromise = this.coursesProvider.isGetCoursesByFieldAvailable()
-                ? this.coursesProvider.getCoursesByField('ids', grades.map((grade) => grade.courseid))
+                ? this.coursesProvider.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
                 : this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.PreferNetwork);
 
             const courses = await coursesPromise;
