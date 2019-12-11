@@ -117,7 +117,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
             this.form.controls['f_' + this.field.id + '_0'].setValue(result.coords.latitude);
             this.form.controls['f_' + this.field.id + '_1'].setValue(result.coords.longitude);
         }).catch((error) => {
-            if (this.isPositionError(error) && error.code === error.PERMISSION_DENIED) {
+            if (this.isPermissionDeniedError(error)) {
                 this.domUtils.showErrorModal('addon.mod_data.locationpermissiondenied', true);
 
                 return;
@@ -129,7 +129,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
         });
     }
 
-    protected isPositionError(error?: any): error is PositionError {
-        return error && 'code' in error && 'PERMISSION_DENIED' in error;
+    protected isPermissionDeniedError(error?: any): boolean {
+        return error && 'code' in error && 'PERMISSION_DENIED' in error && error.code === error.PERMISSION_DENIED;
     }
 }
