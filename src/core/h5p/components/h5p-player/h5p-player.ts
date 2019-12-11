@@ -269,17 +269,11 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Send hello to the H5P iframe.
-     *
-     * @param iframe The iframe.
+     * H5P iframe has been loaded.
      */
-    sendHello(iframe?: HTMLIFrameElement): void {
-        const ready = {
-            context: 'h5p',
-            action: 'ready'
-        };
-
-        iframe.contentWindow.postMessage(ready, '*');
+    iframeLoaded(): void {
+        // Send a resize event to the window so H5P package recalculates the size.
+        window.dispatchEvent(new Event('resize'));
     }
 
     /**
