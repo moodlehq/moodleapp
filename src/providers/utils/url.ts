@@ -90,6 +90,22 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
+     * Check whether we can use tokenpluginfile.php endpoint for a certain URL.
+     *
+     * @param url URL to check.
+     * @param siteUrl The URL of the site the URL belongs to.
+     * @param accessKey User access key for tokenpluginfile.
+     * @return Whether tokenpluginfile.php can be used.
+     */
+    canUseTokenPluginFile(url: string, siteUrl: string, accessKey?: string): boolean {
+        // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
+        // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
+        return accessKey && !url.match(/[\&?]file=/) && (
+                url.indexOf(this.textUtils.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
+                url.indexOf(this.textUtils.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
+    }
+
+    /**
      * Extracts the parameters from a URL and stores them in an object.
      *
      * @param url URL to treat.
@@ -151,8 +167,10 @@ export class CoreUrlUtilsProvider {
 
         url = url.replace(/&amp;/g, '&');
 
+        const canUseTokenPluginFile = accessKey && this.canUseTokenPluginFile(url, siteUrl, accessKey);
+
         // First check if we need to fix this url or is already fixed.
-        if (!accessKey && url.indexOf('token=') != -1) {
+        if (!canUseTokenPluginFile && url.indexOf('token=') != -1) {
             return url;
         }
 
@@ -161,11 +179,8 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        const hasSlashParams = !url.match(/[\&?]file=/);
-
-        if (accessKey && hasSlashParams) {
-            // We have the user access key, use tokenpluginfile.php.
-            // Do not use it without slash params, the URL doesn't work.
+        if (canUseTokenPluginFile) {
+            // Use tokenpluginfile.php.
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
 
             return url;
