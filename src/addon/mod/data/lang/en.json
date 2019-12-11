@@ -22,6 +22,7 @@
     "foundrecords": "Found records: {{$a.num}}/{{$a.max}} (<a href=\"{{$a.reseturl}}\">Reset filters</a>)",
     "gettinglocation": "Getting location",
     "latlongboth": "Both latitude and longitude are required.",
+    "locationpermissiondenied": "Permission to access your location has been denied.",
     "menuchoose": "Choose...",
     "modulenameplural": "Databases",
     "more": "More",

@@ -501,6 +501,7 @@
     "addon.mod_data.foundrecords": "Found records: {{$a.num}}/{{$a.max}} (<a href=\"{{$a.reseturl}}\">Reset filters</a>)",
     "addon.mod_data.gettinglocation": "Getting location",
     "addon.mod_data.latlongboth": "Both latitude and longitude are required.",
+    "addon.mod_data.locationpermissiondenied": "Permission to access your location has been denied.",
     "addon.mod_data.menuchoose": "Choose...",
     "addon.mod_data.modulenameplural": "Databases",
     "addon.mod_data.more": "More",
