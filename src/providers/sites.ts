@@ -158,7 +158,7 @@ export interface CoreSiteSchema {
     migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
 }
 
-export const enum ReadingStrategy {
+export const enum CoreSitesReadingStrategy {
     OnlyCache,
     PreferCache,
     PreferNetwork,
@@ -1743,18 +1743,18 @@ export class CoreSitesProvider {
      * @param strategy Reading strategy.
      * @return PreSets options object.
      */
-    getReadingStrategyPreSets(strategy: ReadingStrategy): CoreSiteWSPreSets {
+    getReadingStrategyPreSets(strategy: CoreSitesReadingStrategy): CoreSiteWSPreSets {
         switch (strategy) {
-            case ReadingStrategy.PreferCache:
+            case CoreSitesReadingStrategy.PreferCache:
                 return {
                     omitExpires: true,
                 };
-            case ReadingStrategy.OnlyCache:
+            case CoreSitesReadingStrategy.OnlyCache:
                 return {
                     omitExpires: true,
                     forceOffline: true,
                 };
-            case ReadingStrategy.PreferNetwork:
+            case CoreSitesReadingStrategy.PreferNetwork:
             default:
                 return {};
         }

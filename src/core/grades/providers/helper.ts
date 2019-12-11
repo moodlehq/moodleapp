@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider, ReadingStrategy } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
@@ -203,7 +203,7 @@ export class CoreGradesHelperProvider {
         let coursesWereMissing;
 
         try {
-            const courses = await this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.OnlyCache);
+            const courses = await this.coursesProvider.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.OnlyCache);
 
             const coursesMap = this.utils.arrayToObject(courses, 'id');
 
@@ -216,7 +216,7 @@ export class CoreGradesHelperProvider {
         if (coursesWereMissing) {
             const coursesPromise = this.coursesProvider.isGetCoursesByFieldAvailable()
                 ? this.coursesProvider.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
-                : this.coursesProvider.getUserCourses(undefined, undefined, ReadingStrategy.PreferNetwork);
+                : this.coursesProvider.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PreferNetwork);
 
             const courses = await coursesPromise;
 
