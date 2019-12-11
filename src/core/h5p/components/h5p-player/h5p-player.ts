@@ -106,8 +106,6 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         let promise;
 
-        this.addResizerScript();
-
         if (this.canDownload && this.fileHelper.isStateDownloaded(this.state)) {
             // Package is downloaded, use the local URL.
             promise = this.h5pProvider.getContentIndexFileUrl(this.urlParams.url, this.urlParams, this.siteId).catch(() => {
@@ -145,6 +143,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                 });
             }
         }).finally(() => {
+            this.addResizerScript();
             this.loading = false;
             this.showPackage = true;
 
@@ -211,6 +210,11 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * Add the resizer script if it hasn't been added already.
      */
     protected addResizerScript(): void {
+        if (document.head.querySelector('#core-h5p-resizer-script') != null) {
+            // Script already added, don't add it again.
+            return;
+        }
+
         const script = document.createElement('script');
         script.id = 'core-h5p-resizer-script';
         script.type = 'text/javascript';
@@ -262,6 +266,20 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         }).finally(() => {
             this.calculating = false;
         });
+    }
+
+    /**
+     * Send hello to the H5P iframe.
+     *
+     * @param iframe The iframe.
+     */
+    sendHello(iframe?: HTMLIFrameElement): void {
+        const ready = {
+            context: 'h5p',
+            action: 'ready'
+        };
+
+        iframe.contentWindow.postMessage(ready, '*');
     }
 
     /**

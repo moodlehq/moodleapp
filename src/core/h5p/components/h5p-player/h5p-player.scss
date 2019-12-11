@@ -10,7 +10,7 @@ ion-app.app-root core-h5p-player {
         background: url('../assets/img/icons/h5p.svg') center top 25px / 100px auto no-repeat $core-h5p-placeholder-bg-color;
         color: $core-h5p-placeholder-text-color;
 
-        .icon {
+        .icon:not([color="success"]) {
             color: $core-h5p-placeholder-text-color;
         }
 

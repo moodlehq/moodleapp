@@ -164,7 +164,7 @@ export class CoreAppProvider {
     /**
      * Returns whether the user agent is controlled by automation. I.e. Behat testing.
      *
-     * @return {boolean} True if the user agent is controlled by automation, false otherwise.
+     * @return True if the user agent is controlled by automation, false otherwise.
      */
     static isAutomated(): boolean {
         return !!navigator.webdriver;

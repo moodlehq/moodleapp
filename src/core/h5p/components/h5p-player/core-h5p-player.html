@@ -9,5 +9,5 @@
         <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="calculating" [canTrustDownload]="true" (action)="download()"></core-download-refresh>
     </div>
 </div>
-<core-iframe *ngIf="showPackage" [src]="playerSrc" iframeHeight="auto"></core-iframe>
+<core-iframe *ngIf="showPackage" [src]="playerSrc" iframeHeight="auto" [allowFullscreen]="true" (loaded)="sendHello($event)"></core-iframe>
 <script *ngIf="resizeScript && showPackage" type="text/javascript" [src]="resizeScript"></script>

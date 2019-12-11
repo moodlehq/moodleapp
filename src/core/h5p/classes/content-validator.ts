@@ -681,8 +681,8 @@ export class CoreH5PContentValidator {
      * Processes an HTML tag.
      *
      * @param m An array with various meaning depending on the value of store.
-     *   If store is TRUE then the array contains the allowed tags.
-     *   If store is FALSE then the array has one element, the HTML tag to process.
+     *          If store is TRUE then the array contains the allowed tags.
+     *          If store is FALSE then the array has one element, the HTML tag to process.
      * @param store Whether to store m.
      * @return string If the element isn't allowed, an empty string. Otherwise, the cleaned up version of the HTML element.
      */

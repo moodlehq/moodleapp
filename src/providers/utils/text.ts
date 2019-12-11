@@ -78,8 +78,8 @@ export class CoreTextUtilsProvider {
     /**
      * Add ending slash from a path or URL.
      *
-     * @param {string} text Text to treat.
-     * @return {string} Treated text.
+     * @param text Text to treat.
+     * @return Treated text.
      */
     addEndingSlash(text: string): string {
         if (!text) {
@@ -742,7 +742,7 @@ export class CoreTextUtilsProvider {
      * @param replace The value to put inside the string.
      * @param start The index where to start putting the new string. If negative, it will count from the end of the string.
      * @param length Length of the portion of string which is to be replaced. If negative, it represents the number of characters
-     *                      from the end of string at which to stop replacing. If not provided, replace until the end of the string.
+     *               from the end of string at which to stop replacing. If not provided, replace until the end of the string.
      * @return Treated string.
      */
     substrReplace(str: string, replace: string, start: number, length?: number): string {

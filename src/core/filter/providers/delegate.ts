@@ -236,7 +236,7 @@ export class CoreFilterDelegate extends CoreDelegate {
      * @param filter Filter to check.
      * @param options Options passed to the filters.
      * @param site Site. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true: whether the filter should be applied.
+     * @return Promise resolved with true: whether the filter should be applied.
      */
     shouldBeApplied(filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions, site?: CoreSite): Promise<boolean> {
         // Wait for filters to be initialized.
