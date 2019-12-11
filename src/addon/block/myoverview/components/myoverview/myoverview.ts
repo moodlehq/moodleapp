@@ -327,7 +327,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Set selected courses filter.
      *
-     * @param {string} filter Filter name to set.
+     * @param filter Filter name to set.
      */
     protected setCourseFilter(filter: string): void {
         this.selectedFilter = filter;

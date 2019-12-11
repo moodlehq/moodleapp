@@ -71,7 +71,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
-     * @return {string[]} List of URLs.
+     * @return List of URLs.
      */
     getDownloadableFilesFromHTML?(container: HTMLElement): string[];
 

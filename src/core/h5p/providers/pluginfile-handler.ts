@@ -66,7 +66,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
-     * @return {string[]} List of URLs.
+     * @return List of URLs.
      */
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         const iframes = <HTMLIFrameElement[]> Array.from(container.querySelectorAll('iframe.h5p-iframe'));

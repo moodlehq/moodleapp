@@ -1903,7 +1903,7 @@ export class CoreSite {
      * Get a certain cache expiration delay.
      *
      * @param updateFrequency The update frequency of the entry.
-     * @return {number} Expiration delay.
+     * @return Expiration delay.
      */
     getExpirationDelay(updateFrequency?: number): number {
         let expirationDelay = this.UPDATE_FREQUENCIES[updateFrequency] || this.UPDATE_FREQUENCIES[CoreSite.FREQUENCY_USUALLY];

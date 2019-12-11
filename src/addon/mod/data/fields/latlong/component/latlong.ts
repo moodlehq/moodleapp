@@ -101,7 +101,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     /**
      * Get user location.
      *
-     * @param {Event} $event The event.
+     * @param $event The event.
      */
     getLocation(event: Event): void {
         event.preventDefault();

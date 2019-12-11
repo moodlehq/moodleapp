@@ -1127,7 +1127,7 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID. If not defined we'll try to retrieve it from the site.
      * @param sectionId Section the module belongs to. If not defined we'll try to retrieve it from the site.
      * @param useModNameToGetModule If true, the app will retrieve all modules of this type with a single WS call. This reduces the
-     *                number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     *                              number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @param modParams Params to pass to the module
      * @param navCtrl NavController for adding new pages to the current history. Optional for legacy support, but
      *                generates a warning if omitted.

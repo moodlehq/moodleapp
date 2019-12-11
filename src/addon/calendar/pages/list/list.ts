@@ -437,8 +437,6 @@ export class AddonCalendarListPage implements OnDestroy {
         });
     }
 
-    /**
-     */
     protected filterEvents(): void {
         this.filteredEvents = this.calendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
