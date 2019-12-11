@@ -222,12 +222,11 @@ export class AddonModResourceModuleHandler implements CoreCourseModuleHandler {
                     }
                 }
 
-                if (resourceData.icon == '') {
-                    resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName, module.modicon);
-                }
                 resourceData.extra += extra.join(' ');
-            } else {
-                // No files, just set the icon.
+            }
+
+            // No previously set, just set the icon.
+            if (resourceData.icon == '') {
                 resourceData.icon = this.courseProvider.getModuleIconSrc(this.modName, module.modicon);
             }
 
