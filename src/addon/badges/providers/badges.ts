@@ -91,6 +91,12 @@ export class AddonBadgesProvider {
                     // In 3.7, competencies was renamed to alignment. Rename the property in 3.6 too.
                     response.badges.forEach((badge) => {
                         badge.alignment = badge.alignment || badge.competencies;
+
+                        // Check that the alignment is valid, they were broken in 3.7.
+                        if (badge.alignment && badge.alignment[0] && typeof badge.alignment[0].targetname == 'undefined') {
+                            // If any badge lacks targetname it means they are affected by the Moodle bug, don't display them.
+                            delete badge.alignment;
+                        }
                     });
 
                     return response.badges;
@@ -175,20 +181,20 @@ export type AddonBadgesUserBadge = {
     alignment?: { // @since 3.7. Calculated by the app for 3.6 sites. Badge alignments.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
-        targetName?: string; // Target name.
-        targetUrl?: string; // Target URL.
-        targetDescription?: string; // Target description.
-        targetFramework?: string; // Target framework.
-        targetCode?: string; // Target code.
+        targetname?: string; // Target name.
+        targeturl?: string; // Target URL.
+        targetdescription?: string; // Target description.
+        targetframework?: string; // Target framework.
+        targetcode?: string; // Target code.
     }[];
     competencies?: { // @deprecated from 3.7. @since 3.6. In 3.7 it was renamed to alignment.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
-        targetName?: string; // Target name.
-        targetUrl?: string; // Target URL.
-        targetDescription?: string; // Target description.
-        targetFramework?: string; // Target framework.
-        targetCode?: string; // Target code.
+        targetname?: string; // Target name.
+        targeturl?: string; // Target URL.
+        targetdescription?: string; // Target description.
+        targetframework?: string; // Target framework.
+        targetcode?: string; // Target code.
     }[];
     relatedbadges?: { // @since 3.6. Related badges.
         id: number; // Badge id.

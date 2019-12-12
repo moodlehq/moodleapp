@@ -156,7 +156,7 @@
                 <h2>{{ 'addon.badges.relatedbages' | translate}}</h2>
             </ion-item-divider>
             <ion-item text-wrap *ngFor="let relatedBadge of badge.relatedbadges">
-                <h2><{{ relatedBadge.name }}</h2>
+                <h2>{{ relatedBadge.name }}</h2>
             </ion-item>
             <ion-item text-wrap *ngIf="badge.relatedbadges.length == 0">
                 <h2>{{ 'addon.badges.norelated' | translate}}</h2>
