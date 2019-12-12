@@ -62,6 +62,19 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
     }
 
     /**
+     * Check if a plugin has no data.
+     *
+     * @param assign The assignment.
+     * @param plugin The plugin object.
+     * @return Whether the plugin is empty.
+     */
+    isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
+        const files = this.assignProvider.getSubmissionPluginAttachments(plugin);
+
+        return files.length === 0;
+    }
+
+    /**
      * Should clear temporary data for a cancelled submission.
      *
      * @param assign The assignment.

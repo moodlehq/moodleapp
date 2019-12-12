@@ -45,6 +45,17 @@ export class AddonModAssignBaseSubmissionHandler implements AddonModAssignSubmis
     }
 
     /**
+     * Check if a plugin has no data.
+     *
+     * @param assign The assignment.
+     * @param plugin The plugin object.
+     * @return Whether the plugin is empty.
+     */
+    isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
+        return true;
+    }
+
+    /**
      * Should clear temporary data for a cancelled submission.
      *
      * @param assign The assignment.

@@ -55,6 +55,20 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
     }
 
     /**
+     * Check if a plugin has no data.
+     *
+     * @param assign The assignment.
+     * @param plugin The plugin object.
+     * @return Whether the plugin is empty.
+     */
+    isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
+        const text = this.assignProvider.getSubmissionPluginText(plugin, true),
+            files = this.assignProvider.getSubmissionPluginAttachments(plugin);
+
+        return text.length === 0 && files.length === 0;
+    }
+
+    /**
      * This function will be called when the user wants to create a new submission based on the previous one.
      * It should add to pluginData the data to send to server based in the data in plugin (previous attempt).
      *

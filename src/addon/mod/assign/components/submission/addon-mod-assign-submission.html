@@ -73,7 +73,7 @@
                         <a ion-button block text-wrap color="primary" *ngIf="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" (click)="goToEdit()">{{ 'addon.mod_assign.addsubmission' | translate }}</a>
                         <!-- If reopened, show addfromprevious and addnewattempt. -->
                         <ng-container *ngIf="!hasOffline && userSubmission && userSubmission.status == statusReopened">
-                            <a ion-button block text-wrap color="primary" (click)="copyPrevious()">{{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}</a>
+                            <a *ngIf="!isPreviousAttemptEmpty" ion-button block text-wrap color="primary" (click)="copyPrevious()">{{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}</a>
                             <a ion-button block text-wrap color="primary" (click)="goToEdit()">{{ 'addon.mod_assign.addnewattempt' | translate }}</a>
                         </ng-container>
                         <!-- Else show editsubmission. -->
