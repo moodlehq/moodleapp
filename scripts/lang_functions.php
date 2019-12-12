@@ -58,6 +58,7 @@ function build_languages($languages, $keys, $added_langs = []) {
 }
 
 function get_langindex_keys() {
+    $local = 0;
     // Process the index file, just once.
     $keys = file_get_contents('langindex.json');
     $keys = (array) json_decode($keys);
@@ -67,6 +68,7 @@ function get_langindex_keys() {
         if ($value == 'local_moodlemobileapp') {
             $map->file = $value;
             $map->string = $key;
+            $local++;
         } else {
             $exp = explode('/', $value, 2);
             $map->file = $exp[0];
@@ -87,7 +89,7 @@ function get_langindex_keys() {
     }
 
     $total = count($keys);
-    echo "Total strings to translate $total\n";
+    echo "Total strings to translate $total ($local local)\n";
 
     return $keys;
 }
@@ -232,6 +234,10 @@ function build_lang($lang, $keys) {
             // Prevent double.
             $text = str_replace(array('{{{', '}}}'), array('{{', '}}'), $text);
         } else {
+            // @TODO: Remove that line when core.cannotconnect and core.login.invalidmoodleversion are completelly changed to use $a
+            if (($key == 'core.cannotconnect' || $key == 'core.login.invalidmoodleversion') && strpos($text, '2.4') != false) {
+                $text = str_replace('2.4', '{{$a}}', $text);
+            }
             $local++;
         }
 
@@ -244,7 +250,11 @@ function build_lang($lang, $keys) {
 
     $success = count($translations);
     $percentage = floor($success/$total * 100);
-    echo "\t\t$success of $total -> $percentage% ($local local)\n";
+    $bar = progressbar($percentage);
+    if (strlen($lang) <= 2 && !$parent) {
+        echo "\t";
+    }
+    echo "\t\t$success of $total -> $percentage% $bar ($local local)\n";
 
     if ($lang == 'en') {
         generate_local_moodlemobileapp($keys, $translations);
@@ -252,6 +262,11 @@ function build_lang($lang, $keys) {
     }
 
     return true;
+}
+
+function progressbar($percentage) {
+    $done = $percentage/10;
+    return "\t".str_repeat('=', $done) . str_repeat('-', 10-$done);
 }
 
 function detect_lang($lang, $keys) {
@@ -271,12 +286,14 @@ function detect_lang($lang, $keys) {
         return false;
     }
 
-    echo "Checking $lang";
+    $title = $lang;
     if ($parent != "" && $parent != $lang) {
-        echo " ($parent)";
+        $title .= " ($parent)";
     }
     $langname = $string['thislanguage'];
-    echo " ".$langname." -D";
+    $title .= " ".$langname." -D";
+
+
 
     // Add the translation to the array.
     foreach ($keys as $key => $value) {
@@ -300,7 +317,10 @@ function detect_lang($lang, $keys) {
     }
 
     $percentage = floor($success/$total * 100);
-    echo "\t\t$success of $total -> $percentage% ($local local)";
+    $bar = progressbar($percentage);
+
+    echo "Checking ".$title.str_repeat("\t", 7 - floor(mb_strlen($title, 'UTF-8')/8));
+    echo "\t$success of $total -> $percentage% $bar ($local local)";
     if (($percentage > 75 && $local > 50) || ($percentage > 50 && $local > 75)) {
         echo " \t DETECTED\n";
         return true;

@@ -18,14 +18,14 @@
             <h2 stacked text-wrap>{{ phases[workshop.phase].title }}</h2>
         </a>
         <ng-container *ngIf="phases && phases[workshop.phase] && phases[workshop.phase].tasks && phases[workshop.phase].tasks.length">
-            <a ion-item text-wrap *ngFor="let task of phases[workshop.phase].tasks" (click)="runTask(task)" detail-none>
+            <a ion-item text-wrap *ngFor="let task of phases[workshop.phase].tasks" [class.item-dimmed]="task.code == 'submit' && !showSubmit" (click)="runTask(task)" detail-none>
                 <ion-icon item-start name="radio-button-off" *ngIf="task.completed == null"></ion-icon>
                 <ion-icon item-start name="close-circle" color="danger" *ngIf="task.completed == ''"></ion-icon>
                 <ion-icon item-start name="information-circle" color="info" *ngIf="task.completed == 'info'"></ion-icon>
                 <ion-icon item-start name="checkmark-circle" color="success" *ngIf="task.completed == '1'"></ion-icon>
 
                 <h2>{{task.title}}</h2>
-                <p *ngIf="task.details">{{ task.details }}</p>
+                <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 <ion-icon item-end *ngIf="task.link && task.code != 'submit'" name="open"></ion-icon>
             </a>
         </ng-container>
@@ -94,7 +94,7 @@
 
         <!-- Show only on current phase -->
         <ng-container *ngIf="workshop.phase == workshopPhases.PHASE_SUBMISSION">
-            <ion-item text-wrap *ngIf="canSubmit && ((access.creatingsubmissionallowed && !submission) || (access.modifyingsubmissionallowed && submission))">
+            <ion-item text-wrap *ngIf="showSubmit">
                 <button ion-button icon-start block *ngIf="access.creatingsubmissionallowed && !submission" (click)="gotoSubmit()">
                     <ion-icon name="add"></ion-icon>
                     {{ 'addon.mod_workshop.createsubmission' | translate }}
