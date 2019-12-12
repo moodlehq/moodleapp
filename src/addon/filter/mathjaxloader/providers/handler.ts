@@ -51,11 +51,7 @@ export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
                 "[a11y]/accessibility-menu.js"
             ],
             jax: ["input/TeX","input/MathML","output/SVG"],
-            menuSettings: {
-                zoom: "Double-Click",
-                mpContext: true,
-                mpMouse: true
-            },
+            showMathMenu: false,
             errorSettings: { message: ["!"] },
             skipStartupTypeset: true,
             messageStyle: "none"
