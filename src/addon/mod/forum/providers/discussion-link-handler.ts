@@ -45,11 +45,8 @@ export class AddonModForumDiscussionLinkHandler extends CoreContentLinksHandlerB
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         data = data || {};
 
-        if (!data.instance) {
-            // Without the forumId discussions cannot be loaded (from link).
-
-            return [];
-        }
+        // On 3.6 downwards, it will open the discussion but without knowing the lock status of the discussion.
+        // However canreply will be false.
 
         return [{
             action: (siteId, navCtrl?): void => {
