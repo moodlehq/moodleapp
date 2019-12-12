@@ -27,10 +27,12 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 export class AddonModWorkshopPhaseInfoPage {
     phases: any;
     workshopPhase: number;
+    showSubmit: boolean;
 
     constructor(params: NavParams, private viewCtrl: ViewController, private utils: CoreUtilsProvider) {
         this.phases = params.get('phases');
         this.workshopPhase = params.get('workshopPhase');
+        this.showSubmit = params.get('showSubmit');
         const externalUrl = params.get('externalUrl');
 
         // Treat phases.
