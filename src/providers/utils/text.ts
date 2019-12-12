@@ -516,7 +516,7 @@ export class CoreTextUtilsProvider {
 
         this.template.innerHTML = content;
 
-        return this.template.textContent === '' && this.template.content.querySelector('img, object, hr') === null;
+        return this.template.content.textContent == '' && this.template.content.querySelector('img, object, hr') === null;
     }
 
     /**
