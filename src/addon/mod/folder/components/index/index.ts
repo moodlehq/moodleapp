@@ -34,7 +34,6 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     component = AddonModFolderProvider.COMPONENT;
     canGetFolder: boolean;
     contents: any;
-    moduleContents: any;
 
     constructor(injector: Injector, private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private folderHelper: AddonModFolderHelperProvider) {
@@ -51,7 +50,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         if (this.path) {
             // Subfolder. Use module param.
-            this.showModuleData(this.module);
+            this.showModuleData(this.module, this.module.contents);
             this.loaded = true;
             this.refreshIcon = 'refresh';
         } else {
@@ -81,16 +80,16 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
      * Convenience function to set scope data using module.
      * @param module Module to show.
      */
-    protected showModuleData(module: any): void {
+    protected showModuleData(module: any, folderContents: any): void {
         this.description = module.intro || module.description;
 
         this.dataRetrieved.emit(module);
 
         if (this.path) {
             // Subfolder.
-            this.contents = this.moduleContents;
+            this.contents = folderContents;
         } else {
-            this.contents = this.folderHelper.formatContents(this.moduleContents);
+            this.contents = this.folderHelper.formatContents(folderContents);
         }
     }
 
@@ -101,12 +100,13 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
      * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
-        let promise;
+        let promise,
+            folderContents = this.module.contents;
 
         if (this.canGetFolder) {
             promise = this.folderProvider.getFolder(this.courseId, this.module.id).then((folder) => {
                 return this.courseProvider.loadModuleContents(this.module, this.courseId).then(() => {
-                    this.moduleContents = this.module.contents;
+                    folderContents = this.module.contents;
 
                     return folder;
                 });
@@ -118,14 +118,14 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
                     folder.contents = this.module.contents;
                 }
                 this.module = folder;
-                this.moduleContents = folder.contents;
+                folderContents = folder.contents;
 
                 return folder;
             });
         }
 
         return promise.then((folder) => {
-            this.showModuleData(folder);
+            this.showModuleData(folder, folderContents);
         }).finally(() => {
             this.fillContextMenu(refresh);
         });
