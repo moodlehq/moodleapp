@@ -232,6 +232,10 @@ function build_lang($lang, $keys) {
             // Prevent double.
             $text = str_replace(array('{{{', '}}}'), array('{{', '}}'), $text);
         } else {
+            // @TODO: Remove that line when core.cannotconnect and core.login.invalidmoodleversion are completelly changed to use $a
+            if (($key == 'core.cannotconnect' || $key == 'core.login.invalidmoodleversion') && strpos($text, '2.4') != false) {
+                $text = str_replace('2.4', '{{$a}}', $text);
+            }
             $local++;
         }
 
