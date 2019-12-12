@@ -336,6 +336,8 @@ export class CoreSitePluginsProvider {
      */
     invalidateCallWS(method: string, data: any, preSets?: CoreSiteWSPreSets, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
+            preSets = preSets || {};
+
             return site.invalidateWsCacheForKey(preSets.cacheKey || this.getCallWSCacheKey(method, data));
         });
     }
