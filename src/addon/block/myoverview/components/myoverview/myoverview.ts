@@ -83,6 +83,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected updateSiteObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting my overview data.';
+    protected showSortByShortName = false;
 
     constructor(injector: Injector,
             protected coursesProvider: CoreCoursesProvider,
@@ -181,6 +182,18 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const showCategories = config && config.displaycategories && config.displaycategories.value == '1';
 
         return this.coursesHelper.getUserCoursesWithOptions(this.sort, null, null, showCategories).then((courses) => {
+            // Check to show sort by short name only if the text is visible.
+            if (courses.length > 0) {
+                const sampleCourse = courses[0];
+                this.showSortByShortName = sampleCourse.displayname && sampleCourse.shortname &&
+                    sampleCourse.fullname != sampleCourse.displayname;
+            }
+
+            // Rollback to sort by full name if user is sorting by short name then Moodle web change the config.
+            if (!this.showSortByShortName && this.sort === 'shortname') {
+                this.switchSort('fullname');
+            }
+
             this.courseIds = courses.map((course) => {
                     return course.id;
                 });
@@ -395,7 +408,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.courses.allincludinghidden = courses;
 
         if (this.showSortFilter) {
-                if (this.sort == 'lastaccess') {
+            if (this.sort == 'lastaccess') {
                 courses.sort((a, b) => {
                     return b.lastaccess - a.lastaccess;
                 });
@@ -403,6 +416,14 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 courses.sort((a, b) => {
                     const compareA = a.fullname.toLowerCase(),
                         compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            } else if (this.sort == 'shortname') {
+                courses.sort((a, b) => {
+                    const compareA = a.shortname.toLowerCase(),
+                        compareB = b.shortname.toLowerCase();
+                    compareA.localeCompare();
 
                     return compareA.localeCompare(compareB);
                 });
