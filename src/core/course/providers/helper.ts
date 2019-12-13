@@ -919,7 +919,7 @@ export class CoreCourseHelperProvider {
             const totalOffline = offlineCompletions.length;
             let loaded = 0;
 
-            offlineCompletions = this.utils.arrayToObject(offlineCompletions, 'cmid');
+            const offlineCompletionsMap = this.utils.arrayToObject(offlineCompletions, 'cmid');
 
             // Load the offline data in the modules.
             for (let i = 0; i < sections.length; i++) {
@@ -931,7 +931,7 @@ export class CoreCourseHelperProvider {
 
                 for (let j = 0; j < section.modules.length; j++) {
                     const module = section.modules[j],
-                        offlineCompletion = offlineCompletions[module.id];
+                        offlineCompletion = offlineCompletionsMap[module.id];
 
                     if (offlineCompletion && typeof module.completiondata != 'undefined' &&
                             offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {

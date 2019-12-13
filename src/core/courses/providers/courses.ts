@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 
 /**
@@ -774,18 +774,21 @@ export class CoreCoursesProvider {
      * @param siteId Site to get the courses from. If not defined, use current site.
      * @return Promise resolved with the courses.
      */
-    getUserCourses(preferCache?: boolean, siteId?: string): Promise<any[]> {
+    getUserCourses(preferCache?: boolean, siteId?: string, strategy?: CoreSitesReadingStrategy): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             const userId = site.getUserId(),
                 data: any = {
                     userid: userId
                 },
+                strategyPreSets = strategy
+                    ? this.sitesProvider.getReadingStrategyPreSets(strategy)
+                    : { omitExpires: !!preferCache },
                 preSets = {
                     cacheKey: this.getUserCoursesCacheKey(),
                     getCacheUsingCacheKey: true,
-                    omitExpires: !!preferCache,
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
+                    updateFrequency: CoreSite.FREQUENCY_RARELY,
+                    ...strategyPreSets,
                 };
 
             if (site.isVersionGreaterEqualThan('3.7')) {
