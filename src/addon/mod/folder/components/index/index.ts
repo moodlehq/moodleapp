@@ -105,7 +105,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         if (this.canGetFolder) {
             promise = this.folderProvider.getFolder(this.courseId, this.module.id).then((folder) => {
-                return this.courseProvider.loadModuleContents(this.module, this.courseId).then(() => {
+                return this.courseProvider.loadModuleContents(this.module, this.courseId, undefined, false, refresh).then(() => {
                     folderContents = this.module.contents;
 
                     return folder;
