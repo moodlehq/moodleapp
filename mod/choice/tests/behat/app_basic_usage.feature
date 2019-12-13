@@ -25,7 +25,7 @@ Feature: Test basic usage in app
       | choice   | Choice name | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 
 
   @3.8.0 @OK
-  Scenario: Student sends their single choice, views results and sync.
+  Scenario: Student sends their single choice and views results.
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
@@ -42,14 +42,11 @@ Feature: Test basic usage in app
     And I should see "Option 2: 1"
     And I should see "Option 3: 0"
     And I should not see "Remove my choice"
-    And I pause
     And I press "arrow back" in the app
     And I press "Test single choice name" in the app
     And I should see "Option 1: 0"
     And I should see "Option 2: 1"
     And I should see "Option 3: 0"
-    And I 
-    And I pause
 
     @3.8.0 @OK
     Scenario: Student sends, changes and remove their multi choice
@@ -103,5 +100,4 @@ Feature: Test basic usage in app
     And I follow "View 1 responses"
     And I press "Download in text format"
     And I close the browser tab opened by the app
-
 
