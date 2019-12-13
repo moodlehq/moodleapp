@@ -17,7 +17,7 @@
                     <ion-item text-wrap *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''" [class.core-danger-item]="item.isEmpty || item.hasError">
                         <ion-label *ngIf="item.name" [core-mark-required]="item.required" stacked>
                             <span *ngIf="feedback.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.name" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.name" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [wsNotFiltered]="true"></core-format-text>
                             <span *ngIf="item.postfix" class="addon-mod_feedback-postfix">{{item.postfix}}</span>
                         </ion-label>
                         <div item-content class="addon-mod_feedback-form-content" *ngIf="item.template">

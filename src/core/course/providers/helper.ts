@@ -661,7 +661,6 @@ export class CoreCourseHelperProvider {
 
         const mainFile = files[0],
             fileUrl = this.fileHelper.getFileUrl(mainFile),
-            timemodified = this.fileHelper.getFileTimemodified(mainFile),
             result = {
                 fixedUrl: undefined,
                 path: undefined,
@@ -678,48 +677,23 @@ export class CoreCourseHelperProvider {
                 return this.filepoolProvider.getPackageStatus(siteId, component, componentId).then((status) => {
                     result.status = status;
 
-                    const isWifi = this.appProvider.isWifi(),
-                        isOnline = this.appProvider.isOnline();
-
                     if (status === CoreConstants.DOWNLOADED) {
                         // Get the local file URL.
                         return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl).catch((error) => {
-                            // File not found, mark the module as not downloaded and reject.
+                            // File not found, mark the module as not downloaded and try again.
                             return this.filepoolProvider.storePackageStatus(siteId, CoreConstants.NOT_DOWNLOADED, component,
                                     componentId).then(() => {
 
-                                return Promise.reject(error);
+                                return this.downloadModuleWithMainFile(module, courseId, fixedUrl, files, status, component,
+                                        componentId, siteId);
                             });
                         });
                     } else if (status === CoreConstants.DOWNLOADING && !this.appProvider.isDesktop()) {
                         // Return the online URL.
                         return fixedUrl;
                     } else {
-                        if (!isOnline && status === CoreConstants.NOT_DOWNLOADED) {
-                            // Not downloaded and we're offline, reject.
-                            return Promise.reject(this.translate.instant('core.networkerrormsg'));
-                        }
-
-                        return this.filepoolProvider.shouldDownloadBeforeOpen(fixedUrl, mainFile.filesize).then(() => {
-                            // Download and then return the local URL.
-                            return this.downloadModule(module, courseId, component, componentId, files, siteId).then(() => {
-                                return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
-                            });
-                        }, () => {
-                            // Start the download if in wifi, but return the URL right away so the file is opened.
-                            if (isWifi) {
-                                this.downloadModule(module, courseId, component, componentId, files, siteId);
-                            }
-
-                            if (!this.fileHelper.isStateDownloaded(status) || isOnline) {
-                                // Not downloaded or online, return the online URL.
-                                return fixedUrl;
-                            } else {
-                                // Outdated but offline, so we return the local URL. Use getUrlByUrl so it's added to the queue.
-                                return this.filepoolProvider.getUrlByUrl(siteId, fileUrl, component, componentId, timemodified,
-                                        false, false, mainFile);
-                            }
-                        });
+                        return this.downloadModuleWithMainFile(module, courseId, fixedUrl, files, status, component, componentId,
+                                siteId);
                     }
                 }).then((path) => {
                     result.path = path;
@@ -731,6 +705,55 @@ export class CoreCourseHelperProvider {
                 result.path = fixedUrl;
 
                 return result;
+            }
+        });
+    }
+
+    /**
+     * Convenience function to download a module that has a main file and return the local file's path and other info.
+     * This is meant for modules like mod_resource.
+     *
+     * @param module The module to download.
+     * @param courseId The course ID of the module.
+     * @param fixedUrl Main file's fixed URL.
+     * @param files List of files of the module.
+     * @param status The package status.
+     * @param component The component to link the files to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @param siteId The site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    protected downloadModuleWithMainFile(module: any, courseId: number, fixedUrl: string, files: any[], status: string,
+            component?: string, componentId?: string | number, siteId?: string): Promise<string> {
+
+        const isOnline = this.appProvider.isOnline();
+        const mainFile = files[0];
+        const fileUrl = this.fileHelper.getFileUrl(mainFile);
+        const timemodified = this.fileHelper.getFileTimemodified(mainFile);
+
+        if (!isOnline && status === CoreConstants.NOT_DOWNLOADED) {
+            // Not downloaded and we're offline, reject.
+            return Promise.reject(this.translate.instant('core.networkerrormsg'));
+        }
+
+        return this.filepoolProvider.shouldDownloadBeforeOpen(fixedUrl, mainFile.filesize).then(() => {
+            // Download and then return the local URL.
+            return this.downloadModule(module, courseId, component, componentId, files, siteId).then(() => {
+                return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+            });
+        }, () => {
+            // Start the download if in wifi, but return the URL right away so the file is opened.
+            if (this.appProvider.isWifi()) {
+                this.downloadModule(module, courseId, component, componentId, files, siteId);
+            }
+
+            if (!this.fileHelper.isStateDownloaded(status) || isOnline) {
+                // Not downloaded or online, return the online URL.
+                return fixedUrl;
+            } else {
+                // Outdated but offline, so we return the local URL. Use getUrlByUrl so it's added to the queue.
+                return this.filepoolProvider.getUrlByUrl(siteId, fileUrl, component, componentId, timemodified,
+                        false, false, mainFile);
             }
         });
     }

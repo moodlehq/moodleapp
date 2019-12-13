@@ -180,18 +180,19 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 if (this.platform.is('android')) {
                     // In Android we ignore the keyboard height because it is not part of the web view.
                     height = this.domUtils.getContentHeight(this.content) - this.getSurroundingHeight(this.element);
-                } else if (this.platform.is('ios') && this.kbHeight > 0) {
-                    // Keyboard open in iOS.
-                    // In this case, the header disappears or is scrollable, so we need to adjust the calculations.
+                } else if (this.platform.is('ios') && this.kbHeight > 0 && this.platform.version().major < 12) {
+                    // Keyboard open in iOS 11 or previous. The window height changes when the keyboard is open.
                     height = window.innerHeight - this.getSurroundingHeight(this.element);
 
                     if (this.element.getBoundingClientRect().top < 40) {
                         // In iOS sometimes the editor is placed below the status bar. Move the scroll a bit so it doesn't happen.
                         window.scrollTo(window.scrollX, window.scrollY - 40);
                     }
+
                 } else {
                     // Header is fixed, use the content to calculate the editor height.
                     height = this.domUtils.getContentHeight(this.content) - this.kbHeight - this.getSurroundingHeight(this.element);
+
                 }
 
                 if (height > this.minHeight) {
@@ -549,12 +550,14 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     }
 
     /**
-     * Hide the toolbar.
+     * Hide the toolbar in phone mode.
      */
     hideToolbar($event: any): void {
         this.stopBubble($event);
 
-        this.toolbarHidden = true;
+        if (this.isPhone) {
+            this.toolbarHidden = true;
+        }
     }
 
     /**

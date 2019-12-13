@@ -5,7 +5,7 @@
     <core-loading [hideUntil]="loaded" class="core-loading-center">
         <ion-item *ngIf="showMyEntriesToggle">
             <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
-            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">></ion-toggle>
+            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)"></ion-toggle>
         </ion-item>
         <core-empty-box *ngIf="entries && entries.length == 0" icon="fa-newspaper-o" [message]="'addon.blog.noentriesyet' | translate"></core-empty-box>
         <ng-container *ngFor="let entry of entries">

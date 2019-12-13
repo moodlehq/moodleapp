@@ -120,6 +120,25 @@ export class AddonModAssignProvider {
     }
 
     /**
+     * Fix some submission status params.
+     *
+     * @param site Site to use.
+     * @param userId User Id (empty for current user).
+     * @param groupId Group Id (empty for all participants).
+     * @param isBlind If blind marking is enabled or not.
+     * @return Object with fixed params.
+     */
+    protected fixSubmissionStatusParams(site: CoreSite, userId?: number, groupId?: number, isBlind?: boolean)
+            : {userId: number, groupId: number, isBlind: boolean} {
+
+        return {
+            isBlind: !userId ? false : !!isBlind,
+            groupId: site.isVersionGreaterEqualThan('3.5') ? groupId || 0 : 0,
+            userId: userId || site.getUserId(),
+        };
+    }
+
+    /**
      * Get an assignment by course module ID.
      *
      * @param courseId Course ID the assignment belongs to.
@@ -502,24 +521,23 @@ export class AddonModAssignProvider {
     getSubmissionStatus(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, filter: boolean = true,
             ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignGetSubmissionStatusResult> {
 
-        userId = userId || 0;
-
         return this.sitesProvider.getSite(siteId).then((site) => {
-            groupId = site.isVersionGreaterEqualThan('3.5') ? groupId || 0 : 0;
+            const fixedParams = this.fixSubmissionStatusParams(site, userId, groupId, isBlind);
 
             const params = {
                     assignid: assignId,
-                    userid: userId
+                    userid: fixedParams.userId
                 },
                 preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubmissionStatusCacheKey(assignId, userId, groupId, isBlind),
+                    cacheKey: this.getSubmissionStatusCacheKey(assignId, fixedParams.userId, fixedParams.groupId,
+                            fixedParams.isBlind),
                     getCacheUsingCacheKey: true, // We use the cache key to take isBlind into account.
                     filter: filter,
                     rewriteurls: filter
                 };
 
-            if (groupId) {
-                params['groupid'] = groupId;
+            if (fixedParams.groupId) {
+                params['groupid'] = fixedParams.groupId;
             }
 
             if (ignoreCache) {
@@ -578,11 +596,6 @@ export class AddonModAssignProvider {
      * @return Cache key.
      */
     protected getSubmissionStatusCacheKey(assignId: number, userId: number, groupId?: number, isBlind?: boolean): string {
-        if (!userId) {
-            isBlind = false;
-            userId = this.sitesProvider.getCurrentSiteUserId();
-        }
-
         return this.getSubmissionsCacheKey(assignId) + ':' + userId + ':' + (isBlind ? 1 : 0) + ':' + groupId;
     }
 
@@ -809,7 +822,10 @@ export class AddonModAssignProvider {
     invalidateSubmissionStatusData(assignId: number, userId?: number, groupId?: number, isBlind?: boolean, siteId?: string):
             Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.invalidateWsCacheForKey(this.getSubmissionStatusCacheKey(assignId, userId, groupId, isBlind));
+            const fixedParams = this.fixSubmissionStatusParams(site, userId, groupId, isBlind);
+
+            return site.invalidateWsCacheForKey(this.getSubmissionStatusCacheKey(assignId, fixedParams.userId,
+                    fixedParams.groupId, fixedParams.isBlind));
         });
     }
 
