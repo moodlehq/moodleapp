@@ -7,7 +7,7 @@ ion-app.app-root core-rich-text-editor {
     display: flex;
     flex-direction: column;
     @include darkmode() {
-        background-color: $black;
+        background-color: $gray-darker;
     }
 
     .core-rte-editor, .core-textarea {
@@ -17,7 +17,7 @@ ion-app.app-root core-rich-text-editor {
         resize: none;
         background-color: $white;
         @include darkmode() {
-            background-color: $black;
+            background-color: $gray-darker;
             color: $white;
         }
     }

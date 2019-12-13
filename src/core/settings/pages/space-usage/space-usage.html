@@ -12,8 +12,8 @@
             <h2 text-wrap><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></h2>
             <p text-wrap>{{ site.fullName }}</p>
             <div item-end>
-                <p>{{ site.spaceUsage | coreBytesToSize }}</p>
-                <p>{{ 'core.settings.entriesincache' | translate: { $a: site.cacheEntries } }}</p>
+                <p *ngIf="site.spaceUsage != null" text-end>{{ site.spaceUsage | coreBytesToSize }}</p>
+                <p *ngIf="site.cacheEntries != null" text-end>{{ 'core.settings.entriesincache' | translate: { $a: site.cacheEntries } }}</p>
             </div>
             <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteStorage(site)" [hidden]="!site.spaceUsage > '0' && !site.cacheEntries > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
                 <ion-icon name="trash"></ion-icon>

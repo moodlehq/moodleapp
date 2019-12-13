@@ -202,9 +202,11 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 });
             }).then(() => {
                 if (courseId) {
-                    // Data has been sent to server, update survey data.
-                    return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
-                        return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                    return this.surveyProvider.invalidateSurveyData(courseId, siteId).then(() => {
+                        // Data has been sent to server, update survey data.
+                        return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
+                            return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                        });
                     }).catch(() => {
                         // Ignore errors.
                     });

@@ -278,14 +278,9 @@ export class AddonModForumProvider {
      * @return Starting post or undefined if not found.
      */
     extractStartingPost(posts: any[]): any {
-        // Check the last post first, since they'll usually be ordered by create time.
-        for (let i = posts.length - 1; i >= 0; i--) {
-            if (posts[i].parent == 0) {
-                return posts.splice(i, 1).pop(); // Remove it from the array.
-            }
-        }
+        const index = posts.findIndex((post) => post.parent == 0);
 
-        return undefined;
+        return index >= 0 ? posts.splice(index, 1).pop() : undefined;
     }
 
     /**

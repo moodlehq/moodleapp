@@ -51,7 +51,7 @@ export class AddonModForumDiscussionLinkHandler extends CoreContentLinksHandlerB
         return [{
             action: (siteId, navCtrl?): void => {
                 const pageParams: any = {
-                    courseId: courseId || parseInt(params.courseid, 10) || parseInt(params.cid, 10),
+                    courseId: courseId || parseInt(params.courseid, 10) || parseInt(params.cid, 10) || undefined,
                     discussionId: parseInt(params.d, 10),
                     cmId: data.cmid && parseInt(data.cmid, 10),
                     forumId: data.instance && parseInt(data.instance, 10)
