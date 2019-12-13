@@ -326,10 +326,17 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         }).then(() => {
             let posts = offlineReplies.concat(onlinePosts);
 
+            const startingPost = this.forumProvider.extractStartingPost(posts);
+            if (startingPost) {
+                // Update discussion data from first post.
+                this.discussion = Object.assign(this.discussion || {}, startingPost);
+            }
+
             // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
             if (this.sort == 'nested') {
                 // Sort first by creation date to make format tree work.
                 this.forumProvider.sortDiscussionPosts(posts, 'ASC');
+
                 posts = this.utils.formatTree(posts, 'parent', 'id', this.discussion.id);
             } else {
                 // Set default reply subject.
@@ -364,7 +371,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     }
                 }));
 
-                // Fetch the discussion if not passed as parameter.
+                // The discussion object was not passed as parameter and there is no starting post. Should not happen.
                 if (!this.discussion) {
                     promises.push(this.loadDiscussion(this.forumId, this.discussionId));
                 }
@@ -373,12 +380,9 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             }).catch(() => {
                 // Ignore errors.
             }).then(() => {
-                const startingPost = this.forumProvider.extractStartingPost(posts);
-                if (startingPost) {
-                    // Update discussion data from first post.
-                    this.discussion = Object.assign(this.discussion || {}, startingPost);
-                } else if (!this.discussion) {
-                    // The discussion object was not passed as parameter and there is no starting post.
+
+                if (!this.discussion) {
+                    // The discussion object was not passed as parameter and there is no starting post. Should not happen.
                     return Promise.reject('Invalid forum discussion.');
                 }
 
