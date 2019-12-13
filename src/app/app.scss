@@ -367,6 +367,9 @@ ion-app.app-root {
     color: $black;
     border-radius: 5px;
     background: rgba(255, 255, 255, .5);
+    @include darkmode() {
+      background-color: rgba(0, 0, 0, .5);
+    }
     text-align: center;
 
     width: 32px;
@@ -376,6 +379,8 @@ ion-app.app-root {
     font-size: 24px;
     ion-icon {
       font-size: 24px;
+
+
     }
   }
 
