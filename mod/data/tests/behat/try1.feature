@@ -20,8 +20,8 @@ Feature: Trying options moodle mobile
     | data     | Web links | Useful links | C1     | data1    |
     
   Scenario: Teacher create an event
-    Given I enter the app
-    When I log in as "teacher1"
+    When I enter the app
+    And I log in as "teacher1"
     And I press "calendar" in the app
     And I press "close" in the app
     And I set the field "name" to "Holidays!"
@@ -32,15 +32,15 @@ Feature: Trying options moodle mobile
     And I press "Save" in the app
 
   Scenario: Student change his moodle language
-    Given I enter the app
-    When I log in as "student1"
+    When I enter the app
+    And I log in as "student1"
     And I press "more" near "Timeline" in the app
     And I press "App settings" in the app
     And I press "General" in the app
     And I press "Language" in the app
     And I press "Español" in the app
     And I pause
-    And I press "Text size" near "Español" in the app
+    And I press "Text size" in the app
     And I pause
  
 
