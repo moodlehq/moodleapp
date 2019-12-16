@@ -106,6 +106,22 @@ export class AddonModScormProvider {
         'b': 'browsed',
         'n': 'notattempted'
     };
+    protected static STATUS_TO_ICON = {
+        assetc: 'fa-file-archive-o',
+        asset: 'fa-file-archive-o',
+        browsed: 'fa-book',
+        completed: 'fa-check-square-o',
+        failed: 'fa-times',
+        incomplete: 'fa-pencil-square-o',
+        minus: 'fa-minus',
+        notattempted: 'fa-square-o',
+        passed: 'fa-check',
+        plus: 'fa-plus',
+        popdown: 'fa-window-close-o',
+        popup: 'fa-window-restore',
+        suspend: 'fa-pause',
+        wait: 'fa-clock-o',
+    };
 
     protected ROOT_CACHE_KEY = 'mmaModScorm:';
     protected logger;
@@ -1048,39 +1064,56 @@ export class AddonModScormProvider {
      * @param incomplete Whether the SCORM is incomplete.
      * @return Image URL and description.
      */
-    getScoStatusIcon(sco: any, incomplete?: boolean): {url: string, description: string} {
+    getScoStatusIcon(sco: any, incomplete?: boolean): {icon: string, description: string} {
         let imageName = '',
             descName = '',
-            status;
+            suspendedStr = '';
 
-        if (sco.scormtype == 'sco') {
-            // Not an asset, calculate image using status.
-            status = sco.status;
-            if (this.VALID_STATUSES.indexOf(status) < 0) {
-                // Status empty or not valid, use 'notattempted'.
-                status = 'notattempted';
-            }
+        const status = sco.status;
 
-            if (!incomplete) {
-                // Check if SCO is completed or not. If SCORM is incomplete there's no need to check SCO.
-                incomplete = this.isStatusIncomplete(status);
-            }
+        if (sco.isvisible) {
+            if (this.VALID_STATUSES.indexOf(status) >= 0) {
+                if (sco.scormtype == 'sco') {
+                    imageName = status;
+                    descName = status;
+                } else {
+                    imageName = 'asset';
+                    descName = 'assetlaunched';
+                }
 
-            if (incomplete && sco.exitvalue == 'suspend') {
-                imageName = 'suspend';
-                descName = 'suspended';
+                if (!incomplete) {
+                    // Check if SCO is completed or not. If SCORM is incomplete there's no need to check SCO.
+                    incomplete = this.isStatusIncomplete(status);
+                }
+
+                if (incomplete && sco.exitvalue == 'suspend') {
+                    imageName = 'suspend';
+                    suspendedStr = ' - ' + this.translate.instant('addon.mod_scorm.suspended');
+                }
             } else {
-                imageName = sco.status;
-                descName = sco.status;
+                incomplete = true;
+
+                if (sco.scormtype == 'sco') {
+                    // Status empty or not valid, use 'notattempted'.
+                    imageName = 'notattempted';
+                } else {
+                    imageName = 'asset';
+                }
+                descName = imageName;
             }
-        } else {
-            imageName = 'asset';
-            descName = (!sco.status || sco.status == 'notattempted') ? 'asset' : 'assetlaunched';
         }
 
+        if (imageName == '') {
+            imageName = 'notattempted';
+            descName = 'notattempted';
+            suspendedStr = '';
+        }
+
+        sco.incomplete = incomplete;
+
         return {
-            url: 'assets/img/scorm/' + imageName + '.gif',
-            description: this.translate.instant('addon.mod_scorm.' + descName)
+            icon: AddonModScormProvider.STATUS_TO_ICON[imageName],
+            description: this.translate.instant('addon.mod_scorm.' + descName) + suspendedStr
         };
     }
 
