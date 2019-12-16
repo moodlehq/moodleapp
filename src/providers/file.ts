@@ -1017,7 +1017,7 @@ export class CoreFileProvider {
             return this.zip.unzip(fileEntry.toURL(), destFolder, onProgress);
         }).then((result) => {
             if (result == -1) {
-                return Promise.reject(null);
+                return Promise.reject('Unzip failed.');
             }
         });
     }

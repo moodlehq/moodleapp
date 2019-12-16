@@ -88,7 +88,7 @@ export class ZipMock extends Zip {
             const destParent = destination.substring(0, source.lastIndexOf('/')),
                 destFolderName = destination.substr(source.lastIndexOf('/') + 1);
 
-            return this.file.createDir(destParent, destFolderName, false);
+            return this.file.createDir(destParent, destFolderName, true);
         }).then(() => {
 
             const promises = [],
