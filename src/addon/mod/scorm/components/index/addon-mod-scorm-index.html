@@ -51,8 +51,8 @@
                     <h3>{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.number}}</h3>
                     <p item-content *ngIf="attempt.grade != -1">{{ attempt.grade }}</p>
                     <p item-content *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</p>
-                    <p item-content *ngIf="scorm.maxattempt == 0 || attempt.number <= scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptnote' | translate }}</p>
-                    <p item-content *ngIf="scorm.maxattempt != 0 && attempt.number > scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptovermax' | translate }}</p>
+                    <p *ngIf="scorm.maxattempt == 0 || attempt.number <= scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptnote' | translate }}</p>
+                    <p *ngIf="scorm.maxattempt != 0 && attempt.number > scorm.maxattempt">{{ 'addon.mod_scorm.offlineattemptovermax' | translate }}</p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="scorm.displayattemptstatus && scorm.gradeMethodReadable">
                     <h3>{{ 'addon.mod_scorm.grademethod' | translate }}</h3>
