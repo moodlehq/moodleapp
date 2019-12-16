@@ -14,11 +14,8 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { CoreFileProvider } from '@providers/file';
 import { CoreFileSessionProvider } from '@providers/file-session';
-import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreWSProvider } from '@providers/ws';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import {
@@ -39,11 +36,10 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
     name = 'AddonModAssignSubmissionFileHandler';
     type = 'file';
 
-    constructor(private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider,
-        private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
+    constructor(private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
         private assignHelper: AddonModAssignHelperProvider, private fileSessionProvider: CoreFileSessionProvider,
-        private fileUploaderProvider: CoreFileUploaderProvider, private filepoolProvider: CoreFilepoolProvider,
-        private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider) { }
+        private fileUploaderProvider: CoreFileUploaderProvider, private fileHelper: CoreFileHelperProvider,
+        private utils: CoreUtilsProvider) { }
 
     /**
      * Whether the plugin can be edited in offline for existing submissions. In general, this should return false if the
@@ -157,24 +153,9 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      * @return The size (or promise resolved with size).
      */
     getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): number | Promise<number> {
-        const files = this.assignProvider.getSubmissionPluginAttachments(plugin),
-            promises = [];
-        let totalSize = 0;
+        const files = this.assignProvider.getSubmissionPluginAttachments(plugin);
 
-        files.forEach((file) => {
-            promises.push(this.wsProvider.getRemoteFileSize(file.fileurl).then((size) => {
-                if (size == -1) {
-                    // Couldn't determine the size, reject.
-                    return Promise.reject(null);
-                }
-
-                totalSize += size;
-            }));
-        });
-
-        return Promise.all(promises).then(() => {
-            return totalSize;
-        });
+        return this.fileHelper.getTotalFilesSize(files);
     }
 
     /**
@@ -188,45 +169,11 @@ export class AddonModAssignSubmissionFileHandler implements AddonModAssignSubmis
      */
     getSizeForEdit(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
             plugin: AddonModAssignPlugin, inputData: any): number | Promise<number> {
-        const siteId = this.sitesProvider.getCurrentSiteId();
-
         // Check if there's any change.
         if (this.hasDataChanged(assign, submission, plugin, inputData)) {
-            const files = this.fileSessionProvider.getFiles(AddonModAssignProvider.COMPONENT, assign.id),
-                promises = [];
-            let totalSize = 0;
+            const files = this.fileSessionProvider.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
-            files.forEach((file) => {
-                if (file.filename && !file.name) {
-                    // It's a remote file. First check if we have the file downloaded since it's more reliable.
-                    promises.push(this.filepoolProvider.getFilePathByUrl(siteId, file.fileurl).then((path) => {
-                        return this.fileProvider.getFile(path).then((fileEntry) => {
-                            return this.fileProvider.getFileObjectFromFileEntry(fileEntry);
-                        }).then((file) => {
-                            totalSize += file.size;
-                        });
-                    }).catch(() => {
-                        // Error getting the file, maybe it's not downloaded. Get remote size.
-                        return this.wsProvider.getRemoteFileSize(file.fileurl).then((size) => {
-                            if (size == -1) {
-                                // Couldn't determine the size, reject.
-                                return Promise.reject(null);
-                            }
-
-                            totalSize += size;
-                        });
-                    }));
-                } else if (file.name) {
-                    // It's a local file, get its size.
-                    promises.push(this.fileProvider.getFileObjectFromFileEntry(file).then((file) => {
-                        totalSize += file.size;
-                    }));
-                }
-            });
-
-            return Promise.all(promises).then(() => {
-                return totalSize;
-            });
+            return this.fileHelper.getTotalFilesSize(files);
         } else {
             // Nothing has changed, we won't upload any file.
             return 0;
