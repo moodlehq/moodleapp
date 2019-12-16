@@ -124,18 +124,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.selectedGroup = this.group || 0;
 
         this.loadContent(false, true).then(() => {
-            if (!this.data || !this.data.id) {
-                return;
-            }
-
-            this.dataProvider.logView(this.data.id, this.data.name).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
-            }).catch(() => {
-                // Ignore errors.
-            });
+            return this.logView(true);
         });
-
-        // Setup search modal.
     }
 
     /**
@@ -362,7 +352,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.loaded = false;
         this.search.page = page;
 
-        return this.fetchEntriesData().catch((message) => {
+        return this.fetchEntriesData().then(() => {
+            // Log activity view for coherence with Moodle web.
+            return this.logView();
+        }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
         }).finally(() => {
             this.loaded = true;
@@ -392,7 +385,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.selectedGroup = groupId;
         this.search.page = 0;
 
-        return this.fetchEntriesData().catch((message) => {
+        return this.fetchEntriesData().then(() => {
+            // Log activity view for coherence with Moodle web.
+            return this.logView();
+        }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
 
             return Promise.reject(null);
@@ -452,6 +448,26 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;
+    }
+
+    /**
+     * Log viewing the activity.
+     *
+     * @param checkCompletion Whether to check completion.
+     * @return Promise resolved when done.
+     */
+    protected logView(checkCompletion?: boolean): Promise<any> {
+        if (!this.data || !this.data.id) {
+            return Promise.resolve();
+        }
+
+        return this.dataProvider.logView(this.data.id, this.data.name).then(() => {
+            if (checkCompletion) {
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
+            }
+        }).catch(() => {
+            // Ignore errors, the user could be offline.
+        });
     }
 
     /**

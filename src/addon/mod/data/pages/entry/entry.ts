@@ -96,7 +96,9 @@ export class AddonModDataEntryPage implements OnDestroy {
      */
     ionViewDidLoad(): void {
         this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
-        this.fetchEntryData();
+        this.fetchEntryData().then(() => {
+            this.logView();
+        });
 
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = this.eventsProvider.on(AddonModDataSyncProvider.AUTO_SYNCED, (data) => {
@@ -199,7 +201,9 @@ export class AddonModDataEntryPage implements OnDestroy {
         this.entry = null;
         this.entryLoaded = false;
 
-        return this.fetchEntryData();
+        return this.fetchEntryData().then(() => {
+            this.logView();
+        });
     }
 
     /**
@@ -258,7 +262,9 @@ export class AddonModDataEntryPage implements OnDestroy {
         this.entryId = null;
         this.entryLoaded = false;
 
-        return this.fetchEntryData();
+        return this.fetchEntryData().then(() => {
+            this.logView();
+        });
     }
 
     /**
@@ -361,6 +367,21 @@ export class AddonModDataEntryPage implements OnDestroy {
      */
     ratingUpdated(): void {
         this.dataProvider.invalidateEntryData(this.data.id, this.entryId);
+    }
+
+    /**
+     * Log viewing the activity.
+     *
+     * @return Promise resolved when done.
+     */
+    protected logView(): Promise<any> {
+        if (!this.data || !this.data.id) {
+            return Promise.resolve();
+        }
+
+        return this.dataProvider.logView(this.data.id, this.data.name).catch(() => {
+            // Ignore errors, the user could be offline.
+        });
     }
 
     /**
