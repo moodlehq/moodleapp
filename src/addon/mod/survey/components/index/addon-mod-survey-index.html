@@ -39,8 +39,8 @@
             <div *ngIf="question.multiArray && question.multiArray.length" [attr.padding-top]="index == 1">
                 <h3 padding-horizontal>{{ question.text }}</h3>
                 <ion-grid no-padding>
-                    <ion-row no-padding align-items-center class="hidden-phone">
-                        <ion-col col-7>
+                    <ion-row no-padding nowrap align-items-center class="hidden-phone">
+                        <ion-col col-6>
                             <div padding>{{ 'addon.mod_survey.responses' | translate }}</div>
                         </ion-col>
                         <ion-col text-center *ngFor="let option of question.optionsArray">
@@ -56,7 +56,7 @@
             <!-- Subquestion -->
             <ion-grid no-padding *ngIf="question.parent !== 0" text-wrap [class.even]="isEven">
                 <ion-row no-padding nowrap align-items-center radio-group [(ngModel)]="answers[question.name]" [required]="question.required">
-                    <ion-col col-7>
+                    <ion-col col-6>
                         <ion-label padding-horizontal [core-mark-required]="question.required" id="addon-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</ion-label>
                     </ion-col>
 
@@ -77,13 +77,13 @@
             <ng-container *ngIf="(!question.multiArray || question.multiArray.length == 0) && question.parent === 0">
                 <ion-grid no-padding text-wrap *ngIf="question.type > 0" [class.even]="isEven">
                     <ion-row no-padding align-items-center>
-                        <ion-col col-7>
+                        <ion-col col-6>
                             <ion-label [core-mark-required]="question.required" padding-horizontal id="addon-mod_survey-{{question.name}}"><strong>{{question.num}}.</strong> {{ question.text }}</ion-label>
                         </ion-col>
-                        <ion-col col-5>
+                        <ion-col col-6>
                             <ion-select padding [(ngModel)]="answers[question.name]" [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [required]="question.required">
-                            <ion-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value">{{option}}</ion-option>
-                        </ion-select>
+                                <ion-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value">{{option}}</ion-option>
+                            </ion-select>
                         </ion-col>
                     </ion-row>
                 </ion-grid>
