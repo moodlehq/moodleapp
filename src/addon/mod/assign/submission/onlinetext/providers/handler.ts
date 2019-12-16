@@ -62,10 +62,10 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @return Whether the plugin is empty.
      */
     isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
-        const text = this.assignProvider.getSubmissionPluginText(plugin, true),
-            files = this.assignProvider.getSubmissionPluginAttachments(plugin);
+        const text = this.assignProvider.getSubmissionPluginText(plugin, true);
 
-        return text.length === 0 && files.length === 0;
+        // If the text is empty, we can ignore files because they won't be visible anyways.
+        return text.trim().length === 0;
     }
 
     /**
