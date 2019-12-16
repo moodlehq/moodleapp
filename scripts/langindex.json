@@ -1393,6 +1393,7 @@
   "core.course.confirmdeletemodulefiles": "local_moodlemobileapp",
   "core.course.confirmdownload": "local_moodlemobileapp",
   "core.course.confirmdownloadunknownsize": "local_moodlemobileapp",
+  "core.course.confirmdownloadzerosize": "local_moodlemobileapp",
   "core.course.confirmlimiteddownload": "local_moodlemobileapp",
   "core.course.confirmpartialdownloadsize": "local_moodlemobileapp",
   "core.course.contents": "local_moodlemobileapp",
