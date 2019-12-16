@@ -182,6 +182,21 @@ export class AddonModAssignHelperProvider {
     }
 
     /**
+     * Check if a submission has no content.
+     *
+     * @param assign Assignment object.
+     * @param submission Submission to inspect.
+     * @return Whether the submission is empty.
+     */
+    isSubmissionEmpty(assign: AddonModAssignAssign, submission?: AddonModAssignSubmission): boolean {
+        if (!submission) {
+            return true;
+        }
+
+        return !!submission.plugins.find((plugin) => this.submissionDelegate.isPluginEmpty(assign, plugin));
+    }
+
+    /**
      * List the participants for a single assignment, with some summary info about their submissions.
      *
      * @param assign Assignment object.

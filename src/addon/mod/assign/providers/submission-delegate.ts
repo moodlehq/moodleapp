@@ -44,6 +44,15 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
             plugin: AddonModAssignPlugin): boolean | Promise<boolean>;
 
     /**
+     * Check if a plugin has no data.
+     *
+     * @param assign The assignment.
+     * @param plugin The plugin object.
+     * @return Whether the plugin is empty.
+     */
+    isEmpty?(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean;
+
+    /**
      * Should clear temporary data for a cancelled submission.
      *
      * @param assign The assignment.
@@ -366,6 +375,17 @@ export class AddonModAssignSubmissionDelegate extends CoreDelegate {
      */
     isPluginSupportedForEdit(pluginType: string): Promise<boolean> {
         return Promise.resolve(this.executeFunctionOnEnabled(pluginType, 'isEnabledForEdit'));
+    }
+
+    /**
+     * Check if a plugin has no data.
+     *
+     * @param assign The assignment.
+     * @param plugin The plugin object.
+     * @return Whether the plugin is empty.
+     */
+    isPluginEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
+        return this.executeFunctionOnEnabled(plugin.type, 'isEmpty', [assign, plugin]);
     }
 
     /**

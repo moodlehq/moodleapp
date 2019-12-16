@@ -103,6 +103,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected siteId: string; // Current site ID.
     protected currentUserId: number; // Current user ID.
     protected previousAttempt: AddonModAssignSubmissionPreviousAttempt; // The previous attempt.
+    protected isPreviousAttemptEmpty: boolean; // Whether the previous attempt contains an empty submission.
     protected submissionStatusAvailable: boolean; // Whether we were able to retrieve the submission status.
     protected originalGrades: any = {}; // Object with the original grade data, to check for changes.
     protected isDestroyed: boolean; // Whether the component has been destroyed.
@@ -373,6 +374,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         let isBlind = !!this.blindId;
 
         this.previousAttempt = undefined;
+        this.isPreviousAttemptEmpty = true;
 
         if (!this.submitId) {
             this.submitId = this.currentUserId;
@@ -428,6 +430,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     return a.attemptnumber - b.attemptnumber;
                 });
                 this.previousAttempt = previousAttempts[previousAttempts.length - 1];
+                this.isPreviousAttemptEmpty = this.assignHelper.isSubmissionEmpty(this.assign, this.previousAttempt.submission);
             }
 
             // Treat last attempt.
