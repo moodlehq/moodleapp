@@ -37,10 +37,13 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         icon: '',
         badge: ''
     };
+    downloadCourseEnabled: boolean;
+    downloadCoursesEnabled: boolean;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
     protected coursesObserver;
+    protected updateSiteObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
@@ -57,6 +60,17 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * Component being initialized.
      */
     ngOnInit(): void {
+
+        // Refresh the enabled flags if enabled.
+        this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
+            this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
+
+        }, this.sitesProvider.getCurrentSiteId());
 
         this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
             this.refreshContent();
@@ -154,5 +168,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver && this.coursesObserver.off();
+        this.updateSiteObserver && this.updateSiteObserver.off();
     }
 }
