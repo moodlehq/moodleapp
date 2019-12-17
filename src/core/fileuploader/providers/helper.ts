@@ -128,10 +128,12 @@ export class CoreFileUploaderHelperProvider {
      * @param defaultExt Defaut extension to use if the file doesn't have any.
      * @return Promise resolved with the copied file.
      */
-    protected copyToTmpFolder(path: string, shouldDelete: boolean, maxSize?: number, defaultExt?: string): Promise<any> {
-        let fileName = this.fileProvider.getFileAndDirectoryFromPath(path).name,
-            promise,
-            fileTooLarge;
+    protected copyToTmpFolder(path: string, shouldDelete: boolean, maxSize?: number, defaultExt?: string,
+            options?: CoreFileUploaderOptions): Promise<any> {
+
+        const fileName = (options && options.fileName) || this.fileProvider.getFileAndDirectoryFromPath(path).name;
+        let promise;
+        let fileTooLarge;
 
         // Check that size isn't too large.
         if (typeof maxSize != 'undefined' && maxSize != -1) {
@@ -154,9 +156,6 @@ export class CoreFileUploaderHelperProvider {
             }
 
             // File isn't too large.
-            // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
-            fileName = fileName.replace(/(\.[^\.]*)\?[^\.]*$/, '$1');
-
             // Get a unique name in the folder to prevent overriding another file.
             return this.fileProvider.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName, defaultExt);
         }).then((newName) => {
@@ -468,11 +467,13 @@ export class CoreFileUploaderHelperProvider {
                 path = 'file://' + path;
             }
 
+            const options = this.fileUploaderProvider.getMediaUploadOptions(media);
+
             if (upload) {
-                return this.uploadFile(path, maxSize, true, this.fileUploaderProvider.getMediaUploadOptions(media));
+                return this.uploadFile(path, maxSize, true, options);
             } else {
                 // Copy or move the file to our temporary folder.
-                return this.copyToTmpFolder(path, true, maxSize);
+                return this.copyToTmpFolder(path, true, maxSize, undefined, options);
             }
         }, (error) => {
             const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
@@ -552,11 +553,13 @@ export class CoreFileUploaderHelperProvider {
                 return Promise.reject(error);
             }
 
+            const options = this.fileUploaderProvider.getCameraUploadOptions(path, fromAlbum);
+
             if (upload) {
-                return this.uploadFile(path, maxSize, true, this.fileUploaderProvider.getCameraUploadOptions(path, fromAlbum));
+                return this.uploadFile(path, maxSize, true, options);
             } else {
                 // Copy or move the file to our temporary folder.
-                return this.copyToTmpFolder(path, !fromAlbum, maxSize, 'jpg');
+                return this.copyToTmpFolder(path, !fromAlbum, maxSize, 'jpg', options);
             }
         }, (error) => {
             const defaultError = fromAlbum ? 'core.fileuploader.errorgettingimagealbum' : 'core.fileuploader.errorcapturingimage';
