@@ -8,6 +8,7 @@
     "confirmdeletemodulefiles": "Are you sure you want to delete these files?",
     "confirmdownload": "You are about to download {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "confirmdownloadunknownsize": "It was not possible to calculate the size of the download.{{availableSpace}} Are you sure you want to continue?",
+    "confirmdownloadzerosize": "You are about to start downloading.{{availableSpace}} Are you sure you want to continue?",
     "confirmpartialdownloadsize": "You are about to download <strong>at least</strong> {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "confirmlimiteddownload": "You are not currently connected to Wi-Fi. ",
     "contents": "Contents",

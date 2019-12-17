@@ -18,6 +18,7 @@ import { CoreAppProvider } from './app';
 import { CoreFileProvider } from './file';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
+import { CoreWSProvider } from './ws';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 
@@ -29,7 +30,7 @@ export class CoreFileHelperProvider {
 
     constructor(private fileProvider: CoreFileProvider, private filepoolProvider: CoreFilepoolProvider,
             private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
-            private utils: CoreUtilsProvider) { }
+            private utils: CoreUtilsProvider, private wsProvider: CoreWSProvider) { }
 
     /**
      * Convenience function to open a file, downloading it if needed.
@@ -273,4 +274,64 @@ export class CoreFileHelperProvider {
 
         return false;
     }
+
+    /**
+     * Calculate the total size of the given files.
+     *
+     * @param files The files to check.
+     * @return Total files size.
+     */
+    async getTotalFilesSize(files: any[]): Promise<number> {
+        let totalSize = 0;
+
+        for (const file of files) {
+            totalSize += await this.getFileSize(file);
+        }
+
+        return totalSize;
+    }
+
+    /**
+     * Calculate the file size.
+     *
+     * @param file The file to check.
+     * @return File size.
+     */
+    async getFileSize(file: any): Promise<number> {
+        if (file.filesize) {
+            return file.filesize;
+        }
+
+        // If it's a remote file. First check if we have the file downloaded since it's more reliable.
+        if (file.filename && !file.name) {
+            try {
+                const siteId = this.sitesProvider.getCurrentSiteId();
+
+                const path = await this.filepoolProvider.getFilePathByUrl(siteId, file.fileurl);
+                const fileEntry = await this.fileProvider.getFile(path);
+                const fileObject = await this.fileProvider.getFileObjectFromFileEntry(fileEntry);
+
+                return fileObject.size;
+            } catch (error) {
+                // Error getting the file, maybe it's not downloaded. Get remote size.
+                const size = await this.wsProvider.getRemoteFileSize(file.fileurl);
+
+                if (size === -1) {
+                    throw new Error('Couldn\'t determine file size: ' + file.fileurl);
+                }
+
+                return size;
+            }
+        }
+
+        // If it's a local file, get its size.
+        if (file.name) {
+            const fileObject = await this.fileProvider.getFileObjectFromFileEntry(file);
+
+            return fileObject.size;
+        }
+
+        throw new Error('Couldn\'t determine file size: ' + file.fileurl);
+    }
+
 }

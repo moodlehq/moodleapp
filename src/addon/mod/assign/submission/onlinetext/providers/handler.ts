@@ -16,7 +16,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreWSProvider } from '@providers/ws';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import {
     AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
@@ -34,9 +34,10 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
     name = 'AddonModAssignSubmissionOnlineTextHandler';
     type = 'onlinetext';
 
-    constructor(private translate: TranslateService, private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider,
-        private textUtils: CoreTextUtilsProvider, private assignProvider: AddonModAssignProvider,
-        private assignOfflineProvider: AddonModAssignOfflineProvider, private assignHelper: AddonModAssignHelperProvider) { }
+    constructor(private translate: TranslateService, private sitesProvider: CoreSitesProvider,
+        private fileHelper: CoreFileHelperProvider,  private textUtils: CoreTextUtilsProvider,
+        private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
+        private assignHelper: AddonModAssignHelperProvider) { }
 
     /**
      * Whether the plugin can be edited in offline for existing submissions. In general, this should return false if the
@@ -138,30 +139,13 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
      * @param plugin The plugin object.
      * @return The size (or promise resolved with size).
      */
-    getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): number | Promise<number> {
+    async getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number> {
         const text = this.assignProvider.getSubmissionPluginText(plugin, true),
-            files = this.assignProvider.getSubmissionPluginAttachments(plugin),
-            promises = [];
-        let totalSize = text.length;
+            files = this.assignProvider.getSubmissionPluginAttachments(plugin);
 
-        if (!files.length) {
-            return totalSize;
-        }
+        const filesSize = await this.fileHelper.getTotalFilesSize(files);
 
-        files.forEach((file) => {
-            promises.push(this.wsProvider.getRemoteFileSize(file.fileurl).then((size) => {
-                if (size == -1) {
-                    // Couldn't determine the size, reject.
-                    return Promise.reject(null);
-                }
-
-                totalSize += size;
-            }));
-        });
-
-        return Promise.all(promises).then(() => {
-            return totalSize;
-        });
+        return text.length + filesSize;
     }
 
     /**

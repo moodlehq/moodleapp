@@ -200,7 +200,7 @@ export class CoreDomUtilsProvider {
                     { size: readableSize, availableSpace: availableSpace }));
             } else if (alwaysConfirm || size.size >= wifiThreshold ||
                 (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
-                message = message || 'core.course.confirmdownload';
+                message = message || (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload');
 
                 return this.showConfirm(wifiPrefix + this.translate.instant(message,
                     { size: readableSize, availableSpace: availableSpace }));
