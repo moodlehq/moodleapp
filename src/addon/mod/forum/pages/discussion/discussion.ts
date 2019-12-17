@@ -22,6 +22,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRatingProvider, CoreRatingInfo } from '@core/rating/providers/rating';
 import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
@@ -57,7 +58,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     isOnline: boolean;
     isSplitViewOn: boolean;
     postHasOffline: boolean;
-    sort: SortType = 'flat-oldest';
+    sort: SortType = 'nested';
     trackPosts: boolean;
     replyData = {
         replyingTo: 0,
@@ -96,19 +97,20 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     constructor(navParams: NavParams,
             network: Network,
             zone: NgZone,
-            private appProvider: CoreAppProvider,
-            private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider,
-            private domUtils: CoreDomUtilsProvider,
-            private utils: CoreUtilsProvider,
-            private translate: TranslateService,
-            private uploaderProvider: CoreFileUploaderProvider,
-            private forumProvider: AddonModForumProvider,
-            private forumOffline: AddonModForumOfflineProvider,
-            private forumHelper: AddonModForumHelperProvider,
-            private forumSync: AddonModForumSyncProvider,
-            private ratingOffline: CoreRatingOfflineProvider,
-            @Optional() private svComponent: CoreSplitViewComponent,
+            protected appProvider: CoreAppProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected utils: CoreUtilsProvider,
+            protected translate: TranslateService,
+            protected uploaderProvider: CoreFileUploaderProvider,
+            protected forumProvider: AddonModForumProvider,
+            protected forumOffline: AddonModForumOfflineProvider,
+            protected forumHelper: AddonModForumHelperProvider,
+            protected forumSync: AddonModForumSyncProvider,
+            protected ratingOffline: CoreRatingOfflineProvider,
+            protected userProvider: CoreUserProvider,
+            @Optional() protected svComponent: CoreSplitViewComponent,
             protected navCtrl: NavController) {
         this.courseId = navParams.get('courseId');
         this.cmId = navParams.get('cmId');
@@ -134,7 +136,29 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.sitesProvider.getCurrentSite().getLocalSiteConfig('AddonModForumDiscussionSort', this.sort).then((value) => {
+        this.sitesProvider.getCurrentSite().getLocalSiteConfig('AddonModForumDiscussionSort').catch(() => {
+            this.userProvider.getUserPreference('forum_displaymode').catch(() => {
+                // Ignore errors.
+            }).then((value) => {
+                const sortValue = value && parseInt(value, 10);
+
+                switch (sortValue) {
+                    case 1:
+                        this.sort = 'flat-oldest';
+                        break;
+                    case -1:
+                        this.sort = 'flat-newest';
+                        break;
+                    case 3:
+                        this.sort = 'nested';
+                        break;
+                    case 2: // Threaded not implemented.
+                    default:
+                        // Not set, use default sort.
+                        // @TODO add fallback to $CFG->forum_displaymode.
+                }
+            });
+        }).then((value) => {
             this.sort = value;
         }).finally(() => {
             this.fetchPosts(true, false, true).then(() => {

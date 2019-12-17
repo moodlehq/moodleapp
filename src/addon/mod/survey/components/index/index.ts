@@ -163,13 +163,10 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
      * @return If answers are valid
      */
     isValidResponse(): boolean {
-        for (const x in this.answers) {
-            if (this.answers[x] === -1) {
-                return false;
-            }
-        }
-
-        return true;
+        return !this.questions.some((question) => {
+            return question.required && question.name &&
+                (question.type === 0 ? this.answers[question.name] == '' : parseInt(this.answers[question.name], 10) === -1);
+        });
     }
 
     /**

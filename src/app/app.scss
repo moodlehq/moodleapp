@@ -500,7 +500,7 @@ ion-app.app-root {
   @include darkmode() {
     ion-select.core-button-select,
     .core-button-select {
-      background-color: $core-dark-item-divider-bg-color;
+      background-color: $core-dark-item-bg-color;
 
 
       &.select-md,
@@ -509,7 +509,7 @@ ion-app.app-root {
       &.button-ios,
       &.select-wp,
       &.button-wp {
-        background: $core-dark-item-divider-bg-color;
+        background: $core-dark-item-bg-color;
       }
     }
   }

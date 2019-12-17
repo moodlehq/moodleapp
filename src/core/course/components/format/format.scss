@@ -64,6 +64,10 @@ ion-app.app-root core-course-format {
         @include padding(null, 0, null, null);
     }
 
+    .core-button-selector-row {
+        @include safe-area-padding-start($content-padding !important, $content-padding);
+    }
+
     .core-course-section-nav-buttons {
         .button-inner core-format-text {
             white-space: nowrap;

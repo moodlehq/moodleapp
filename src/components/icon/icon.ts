@@ -82,6 +82,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
         !this.ariaLabel && this.newElement.setAttribute('aria-hidden', 'true');
         !this.ariaLabel && this.newElement.setAttribute('role', 'presentation');
         this.ariaLabel && this.newElement.setAttribute('aria-label', this.ariaLabel);
+        this.ariaLabel && this.newElement.setAttribute('title', this.ariaLabel);
 
         const attrs = this.element.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {

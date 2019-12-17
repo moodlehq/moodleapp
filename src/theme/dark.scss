@@ -3,8 +3,8 @@ $core-dark-text-secondary-color: $gray-light !default;
 $core-dark-link-color: $blue-light !default;
 
 $core-dark-item-bg-color: $gray-darker !default;
-$core-dark-item-divider-bg-color: $black !default;
-$core-dark-background-color: $gray-dark !default;
+$core-dark-item-divider-bg-color: $gray-dark !default;
+$core-dark-background-color: $black !default;
 
 // Login.
 $core-dark-login-page-background-color: radial-gradient(white, $gray-dark) !default;
@@ -31,7 +31,8 @@ ion-app.app-root .ion-page {
     .item,
     .item-select,
     ion-card,
-    .card-header {
+    .card-header,
+    .card-content {
         color: $core-dark-text-color;
         background-color: $core-dark-item-bg-color;
 
