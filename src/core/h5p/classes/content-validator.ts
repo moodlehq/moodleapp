@@ -503,7 +503,7 @@ export class CoreH5PContentValidator {
                     continue;
                 }
 
-                // Find semantics for name=$key
+                // Find semantics for name=key.
                 let found = false,
                     fn = null,
                     field = null;
@@ -729,7 +729,7 @@ export class CoreH5PContentValidator {
         }
 
         if (slash != '') {
-            return '</$elem>';
+            return '</' + elem + '>';
         }
 
         // Is there a closing XHTML slash at the end of the attributes?
@@ -871,8 +871,8 @@ export class CoreH5PContentValidator {
      * Processes an HTML attribute value and strips dangerous protocols from URLs.
      *
      * @param str The string with the attribute value.
-     * @param decode Whether to decode entities in the $string.
-     * @return Cleaned up and HTML-escaped version of $string.
+     * @param decode Whether to decode entities in the str.
+     * @return Cleaned up and HTML-escaped version of str.
      */
     filterXssBadProtocol(str: string, decode: boolean = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).

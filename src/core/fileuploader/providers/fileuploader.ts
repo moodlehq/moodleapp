@@ -150,20 +150,25 @@ export class CoreFileUploaderProvider {
      * @return Options.
      */
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
-        const extension = this.mimeUtils.getExtension(uri),
-            mimetype = this.mimeUtils.getMimeType(extension),
-            isIOS = this.platform.is('ios'),
-            options: CoreFileUploaderOptions = {
+        const extension = this.mimeUtils.guessExtensionFromUrl(uri);
+        const mimetype = this.mimeUtils.getMimeType(extension);
+        const isIOS = this.platform.is('ios');
+        const options: CoreFileUploaderOptions = {
                 deleteAfterUpload: !isFromAlbum,
                 mimeType: mimetype
             };
+        const fileName = this.fileProvider.getFileAndDirectoryFromPath(uri).name;
 
         if (isIOS && (mimetype == 'image/jpeg' || mimetype == 'image/png')) {
             // In iOS, the pictures can have repeated names, even if they come from the album.
-            options.fileName = 'image_' + this.timeUtils.readableTimestamp() + '.' + extension;
+            // Add a timestamp to the filename to make it unique.
+            const split = fileName.split('.');
+            split[0] += '_' + this.timeUtils.readableTimestamp();
+
+            options.fileName = split.join('.');
         } else {
             // Use the same name that the file already has.
-            options.fileName = this.fileProvider.getFileAndDirectoryFromPath(uri).name;
+            options.fileName = fileName;
         }
 
         if (isFromAlbum) {
