@@ -2,6 +2,10 @@ ion-app.app-root addon-mod-forum-post .addon-mod_forum-post {
     background-color: $white;
     border-bottom: 1px solid $list-md-border-color;
 
+    @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+    }
+
     .addon-forum-star {
         color: $core-star-color;
     }
