@@ -29,6 +29,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { AddonModAssignProvider, AddonModAssignAssign } from './assign';
 import { AddonModAssignOfflineProvider } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
+import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 
 /**
  * Data returned by an assign sync.
@@ -55,13 +56,22 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
     protected componentTranslate: string;
 
-    constructor(loggerProvider: CoreLoggerProvider, sitesProvider: CoreSitesProvider, appProvider: CoreAppProvider,
-            syncProvider: CoreSyncProvider, textUtils: CoreTextUtilsProvider, translate: TranslateService,
-            private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
-            private assignProvider: AddonModAssignProvider, private assignOfflineProvider: AddonModAssignOfflineProvider,
-            private utils: CoreUtilsProvider, private submissionDelegate: AddonModAssignSubmissionDelegate,
-            private gradesHelper: CoreGradesHelperProvider, timeUtils: CoreTimeUtilsProvider,
-            private logHelper: CoreCourseLogHelperProvider) {
+    constructor(loggerProvider: CoreLoggerProvider,
+            sitesProvider: CoreSitesProvider,
+            appProvider: CoreAppProvider,
+            syncProvider: CoreSyncProvider,
+            textUtils: CoreTextUtilsProvider,
+            translate: TranslateService,
+            timeUtils: CoreTimeUtilsProvider,
+            protected courseProvider: CoreCourseProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected assignProvider: AddonModAssignProvider,
+            protected assignOfflineProvider: AddonModAssignOfflineProvider,
+            protected utils: CoreUtilsProvider,
+            protected submissionDelegate: AddonModAssignSubmissionDelegate,
+            protected feedbackDelegate: AddonModAssignFeedbackDelegate,
+            protected gradesHelper: CoreGradesHelperProvider,
+            protected logHelper: CoreCourseLogHelperProvider) {
 
         super('AddonModAssignSyncProvider', loggerProvider, sitesProvider, appProvider, syncProvider, textUtils, translate,
                 timeUtils);
@@ -403,9 +413,19 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 return this.assignProvider.submitGradingFormOnline(assign.id, userId, offlineData.grade, offlineData.attemptnumber,
                         offlineData.addattempt, offlineData.workflowstate, offlineData.applytoall, offlineData.outcomes,
                         offlineData.plugindata, siteId).then(() => {
+                    // Grades sent.
+                    // Discard grades drafts.
+                    const promises = [];
+                    if (status.feedback && status.feedback.plugins) {
+                        status.feedback.plugins.forEach((plugin) => {
+                            promises.push(this.feedbackDelegate.discardPluginFeedbackData(assign.id, userId, plugin, siteId));
+                        });
+                    }
 
-                    // Grades sent, update cached data. No need to block the user for this.
-                    this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
+                    // Update cached data.
+                    promises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId));
+
+                    return Promise.all(promises);
                 }).catch((error) => {
                     if (error && this.utils.isWebServiceError(error)) {
                         // The WebService has thrown an error, this means it cannot be submitted. Discard the offline data.
