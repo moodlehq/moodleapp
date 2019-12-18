@@ -33,9 +33,9 @@ export class AddonModWorkshopProvider {
     static PHASE_ASSESSMENT = 30;
     static PHASE_EVALUATION = 40;
     static PHASE_CLOSED = 50;
-    static EXAMPLES_VOLUNTARY: 0;
-    static EXAMPLES_BEFORE_SUBMISSION: 1;
-    static EXAMPLES_BEFORE_ASSESSMENT: 2;
+    static EXAMPLES_VOLUNTARY = 0;
+    static EXAMPLES_BEFORE_SUBMISSION = 1;
+    static EXAMPLES_BEFORE_ASSESSMENT = 2;
     static SUBMISSION_TYPE_DISABLED = 0;
     static SUBMISSION_TYPE_AVAILABLE = 1;
     static SUBMISSION_TYPE_REQUIRED = 2;
