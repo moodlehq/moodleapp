@@ -286,6 +286,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                 let entriesHTML = this.dataHelper.getTemplate(this.data, 'listtemplateheader', this.fieldsArray);
 
+                console.error(entriesHTML);
                 // Get first entry from the whole list.
                 if (!this.search.searching || !this.firstEntry) {
                     this.firstEntry = this.entries[0].id;
@@ -305,7 +306,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 });
                 entriesHTML += this.dataHelper.getTemplate(this.data, 'listtemplatefooter', this.fieldsArray);
 
-                this.entriesRendered = entriesHTML;
+                this.entriesRendered = this.domUtils.fixHtml(entriesHTML);
+                console.error(entriesHTML);
 
                 // Pass the input data to the component.
                 this.jsData = {
