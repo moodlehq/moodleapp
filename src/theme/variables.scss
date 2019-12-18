@@ -474,6 +474,7 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
 }
 
 @mixin safe-area-position($top: null, $end: null, $bottom: null, $start: null) {
+  @include position-horizontal($start, $end);
   @include safe-position-horizontal($start, $end);
   top: $top;
   bottom: $bottom;
