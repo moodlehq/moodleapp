@@ -68,7 +68,7 @@ export class AddonModWorkshopHelperProvider {
         const task = this.getTask(tasks, taskCode);
 
         if (task) {
-            return task.completed;
+            return !!task.completed;
         }
 
         // Task not found, assume true.

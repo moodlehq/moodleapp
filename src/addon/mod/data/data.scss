@@ -3,6 +3,7 @@
   white-space: normal;
   word-break: break-word;
   padding: $content-padding;
+  @include safe-area-padding-horizontal($content-padding !important, $content-padding !important);
   background-color: $white;
   border-top-width: 1px;
   border-bottom-width: 1px;
@@ -30,6 +31,18 @@
   td, th {
     @extend .col;
     min-height: auto;
+  }
+
+  // Do not let block elements to define widths or heights.
+  address, article, aside, blockquote, canvas, dd, div, dl, dt, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6,
+  header, hr, li, main, nav, noscript, ol, p, pre, section, table, tfoot, ul, video {
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    // Avoid having one entry over another.
+    max-height: none !important;
+
   }
 }
 

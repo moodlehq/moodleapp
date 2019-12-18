@@ -275,26 +275,6 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Pull to refresh.
-     *
-     * @param refresher Refresher.
-     */
-    refreshSubmission(refresher: any): void {
-        if (this.loaded) {
-            const promises = [];
-
-            promises.push(this.workshopProvider.invalidateSubmissionData(this.workshopId, this.submission.id));
-            promises.push(this.workshopProvider.invalidateSubmissionsData(this.workshopId));
-
-            Promise.all(promises).finally(() => {
-                return this.fetchSubmissionData();
-            }).finally(() => {
-                refresher.complete();
-            });
-        }
-    }
-
-    /**
      * Save the submission.
      */
     save(): void {

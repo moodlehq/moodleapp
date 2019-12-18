@@ -154,6 +154,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                 promises.push(this.workshopProvider.invalidateReviewerAssesmentsData(this.workshop.id));
             }
             promises.push(this.workshopProvider.invalidateGradesData(this.workshop.id));
+            promises.push(this.workshopProvider.invalidateWorkshopWSData(this.workshop.id));
         }
 
         return Promise.all(promises);

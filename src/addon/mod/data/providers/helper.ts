@@ -599,8 +599,10 @@ export class AddonModDataHelperProvider {
     getTemplate(data: any, type: string, fields: any[]): string {
         let template = data[type] || this.getDefaultTemplate(type, fields);
 
-        // Try to fix syntax errors so the template can be parsed by Angular.
-        template = this.domUtils.fixHtml(template);
+        if (type != 'listtemplateheader' && type != 'listtemplatefooter') {
+            // Try to fix syntax errors so the template can be parsed by Angular.
+            template = this.domUtils.fixHtml(template);
+        }
 
         // Add core-link directive to links.
         template = template.replace(/<a ([^>]*href="[^>]*)>/ig, (match, attributes) => {

@@ -9,9 +9,6 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshSubmission($event)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-    </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <form ion-list [formGroup]="editForm" *ngIf="workshop">
             <ion-item text-wrap>

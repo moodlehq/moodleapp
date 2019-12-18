@@ -12,7 +12,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshSubmission($event)">
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshSubmission($event)" *ngIf="!((assessmentId && access.assessingallowed) || canAddFeedback)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">

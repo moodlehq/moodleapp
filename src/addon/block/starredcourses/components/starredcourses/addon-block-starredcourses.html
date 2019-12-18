@@ -1,6 +1,6 @@
 <ion-item-divider>
     <h2>{{ 'addon.block_starredcourses.pluginname' | translate }}</h2>
-    <div *ngIf="downloadEnabled && courses && courses.length > 1" class="core-button-spinner" item-end>
+    <div *ngIf="downloadCoursesEnabled && downloadEnabled && courses && courses.length > 1" class="core-button-spinner" item-end>
         <button *ngIf="prefetchCoursesData.icon && prefetchCoursesData.icon != 'spinner'" ion-button icon-only clear color="dark" (click)="prefetchCourses()">
             <core-icon [name]="prefetchCoursesData.icon"></core-icon>
         </button>
@@ -13,7 +13,7 @@
     <!-- List of courses. -->
     <div class="core-horizontal-scroll">
         <ng-container *ngFor="let course of courses">
-            <core-courses-course-progress [course]="course" class="core-block_starredcourses" [showDownload]="downloadEnabled"></core-courses-course-progress>
+            <core-courses-course-progress [course]="course" class="core-block_starredcourses" [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
         </ng-container>
     </div>
 </core-loading>
