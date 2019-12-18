@@ -373,6 +373,10 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
             promises.push(this.workshopProvider.invalidateAssessmentData(this.workshopId, this.assessmentId));
         }
 
+        if (this.assessmentUserId) {
+            promises.push(this.workshopProvider.invalidateReviewerAssesmentsData(this.workshopId, this.assessmentId));
+        }
+
         return Promise.all(promises).finally(() => {
             this.eventsProvider.trigger(AddonModWorkshopProvider.ASSESSMENT_INVALIDATED, this.siteId);
 
