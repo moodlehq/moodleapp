@@ -13,6 +13,7 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
@@ -30,8 +31,11 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     north: number;
     east: number;
 
-    constructor(protected fb: FormBuilder, private platform: Platform, private geolocation: Geolocation,
-            private domUtils: CoreDomUtilsProvider) {
+    constructor(protected fb: FormBuilder,
+            protected platform: Platform,
+            protected geolocation: Geolocation,
+            protected domUtils: CoreDomUtilsProvider,
+            protected sanitizer: DomSanitizer) {
         super(fb);
     }
 
@@ -58,16 +62,19 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
      * @param east Degrees East.
      * @return Link to maps depending on platform.
      */
-    getLatLongLink(north: number, east: number): string {
+    getLatLongLink(north: number, east: number): SafeUrl {
         if (north !== null || east !== null) {
-            const northFixed = north ? north.toFixed(4) : '0.0000',
-                eastFixed = east ? east.toFixed(4) : '0.0000';
+            const northFixed = north ? north.toFixed(4) : '0.0000';
+            const eastFixed = east ? east.toFixed(4) : '0.0000';
+            let url;
 
             if (this.platform.is('ios')) {
-                return 'http://maps.apple.com/?ll=' + northFixed + ',' + eastFixed + '&near=' + northFixed + ',' + eastFixed;
+                url = 'http://maps.apple.com/?ll=' + northFixed + ',' + eastFixed + '&near=' + northFixed + ',' + eastFixed;
+            } else {
+                url = 'geo:' + northFixed + ',' + eastFixed;
             }
 
-            return 'geo:' + northFixed + ',' + eastFixed;
+            return this.sanitizer.bypassSecurityTrustUrl(url);
         }
     }
 

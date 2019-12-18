@@ -68,7 +68,13 @@ export class CoreMimetypeUtilsProvider {
         }
 
         // If the extension has parameters, remove them.
-        const position = extension.indexOf('?');
+        let position = extension.indexOf('?');
+        if (position > -1) {
+            extension = extension.substr(0, position);
+        }
+
+        // If the extension has an anchor, remove it.
+        position = extension.indexOf('#');
         if (position > -1) {
             extension = extension.substr(0, position);
         }
