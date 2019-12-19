@@ -23,7 +23,7 @@
                     </ion-item-divider>
                     <a *ngFor="let attempt of responses.attempts" ion-item text-wrap (click)="gotoAttempt(attempt)" [class.core-split-item-selected]="attempt.id == attemptId">
                         <ion-avatar core-user-avatar [user]="attempt" item-start></ion-avatar>
-                        <h2><core-format-text [text]="attempt.fullname"></core-format-text></h2>
+                        <h2>{{ attempt.fullname }}</h2>
                         <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate }}</p>
                     </a>
                     <ion-item padding text-center *ngIf="responses.canLoadMore">

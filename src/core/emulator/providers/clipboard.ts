@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ export class ClipboardMock extends Clipboard {
     /**
      * Copy some text to the clipboard.
      *
-     * @param {string} text The text to copy.
-     * @return {Promise<any>} Promise resolved when copied.
+     * @param text The text to copy.
+     * @return Promise resolved when copied.
      */
     copy(text: string): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -74,7 +74,7 @@ export class ClipboardMock extends Clipboard {
     /*
      * Get the text stored in the clipboard.
      *
-     * @return {Promise<any>} Promise resolved with the text.
+     * @return Promise resolved with the text.
      */
     paste(): Promise<any> {
         return new Promise((resolve, reject): void => {

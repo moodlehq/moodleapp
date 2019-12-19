@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ export class AddonModFolderHelperProvider {
      * Folders found in filepaths are added to the array. Each folder has the properties: name, fileicon,
      * type (folder), filepath and contents (array with files and subfolders).
      *
-     * @param {any[]} contents Folder contents.
-     * @return {any[]}         Formatted contents.
+     * @param contents Folder contents.
+     * @return Formatted contents.
      */
     formatContents(contents: any[]): any[] {
         const files = [],

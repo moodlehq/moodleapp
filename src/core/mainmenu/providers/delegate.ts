@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,13 @@ import { Subject, BehaviorSubject } from 'rxjs';
 export interface CoreMainMenuHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
-     * @type {number}
      */
     priority: number;
 
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreMainMenuHandlerData} Data.
+     * @return Data.
      */
     getDisplayData(): CoreMainMenuHandlerData;
 }
@@ -43,55 +42,46 @@ export interface CoreMainMenuHandler extends CoreDelegateHandler {
 export interface CoreMainMenuHandlerData {
     /**
      * Name of the page to load for the handler.
-     * @type {string}
      */
     page: string;
 
     /**
      * Title to display for the handler.
-     * @type {string}
      */
     title: string;
 
     /**
      * Name of the icon to display for the handler.
-     * @type {string}
      */
     icon: string; // Name of the icon to display in the tab.
 
     /**
      * Class to add to the displayed handler.
-     * @type {string}
      */
     class?: string;
 
     /**
      * If the handler has badge to show or not.
-     * @type {boolean}
      */
     showBadge?: boolean;
 
     /**
      * Text to display on the badge. Only used if showBadge is true.
-     * @type {string}
      */
     badge?: string;
 
     /**
      * If true, the badge number is being loaded. Only used if showBadge is true.
-     * @type {boolean}
      */
     loading?: boolean;
 
     /**
      * Params to pass to the page.
-     * @type {any}
      */
     pageParams?: any;
 
     /**
      * Whether the handler should only appear in More menu.
-     * @type {boolean}
      */
     onlyInMore?: boolean;
 }
@@ -102,19 +92,16 @@ export interface CoreMainMenuHandlerData {
 export interface CoreMainMenuHandlerToDisplay extends CoreMainMenuHandlerData {
     /**
      * Name of the handler.
-     * @type {string}
      */
     name?: string;
 
     /**
      * Priority of the handler.
-     * @type {number}
      */
     priority?: number;
 
     /**
      * Hide tab. Used then resizing.
-     * @type {[type]}
      */
     hide?: boolean;
 }
@@ -139,7 +126,7 @@ export class CoreMainMenuDelegate extends CoreDelegate {
     /**
      * Check if handlers are loaded.
      *
-     * @return {boolean} True if handlers are loaded, false otherwise.
+     * @return True if handlers are loaded, false otherwise.
      */
     areHandlersLoaded(): boolean {
         return this.loaded;
@@ -156,7 +143,7 @@ export class CoreMainMenuDelegate extends CoreDelegate {
     /**
      * Get the handlers for the current site.
      *
-     * @return {Subject<CoreMainMenuHandlerToDisplay[]>} An observable that will receive the handlers.
+     * @return An observable that will receive the handlers.
      */
     getHandlers(): Subject<CoreMainMenuHandlerToDisplay[]> {
         return this.siteHandlers;

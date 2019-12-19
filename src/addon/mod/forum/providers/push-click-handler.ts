@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
     /**
      * Check if a notification click is handled by this handler.
      *
-     * @param {any} notification The notification to check.
-     * @return {boolean} Whether the notification click is handled by this handler
+     * @param notification The notification to check.
+     * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
         return this.utils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_forum' &&
@@ -45,8 +45,8 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
     /**
      * Handle the notification click.
      *
-     * @param {any} notification The notification to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification The notification to check.
+     * @return Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
         const contextUrlParams = this.urlUtils.extractUrlParams(notification.contexturl),
@@ -62,7 +62,7 @@ export class AddonModForumPushClickHandler implements CorePushNotificationsClick
             pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
         }
 
-        return this.forumProvider.invalidateDiscussionPosts(pageParams.discussionId, notification.site).catch(() => {
+        return this.forumProvider.invalidateDiscussionPosts(pageParams.discussionId, undefined, notification.site).catch(() => {
             // Ignore errors.
         }).then(() => {
             return this.linkHelper.goInSite(undefined, 'AddonModForumDiscussionPage', pageParams, notification.site);

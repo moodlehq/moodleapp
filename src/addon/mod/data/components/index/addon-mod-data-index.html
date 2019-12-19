@@ -12,14 +12,14 @@
         <core-context-menu-item [priority]="500" *ngIf="canAdd" [content]="'addon.mod_data.addentries' | translate" [iconAction]="'add'" (action)="gotoAddEntries($event)"></core-context-menu-item>
         <core-context-menu-item [priority]="400" *ngIf="firstEntry" [content]="'addon.mod_data.single' | translate" [iconAction]="'document'" (action)="gotoEntry(firstEntry)"></core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="300" [content]="prefetchText" (action)="prefetch($event)" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="200" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="200" [content]="'core.removefiles' | translate:{$a: size}" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <!-- Data done in offline but not synchronized -->
     <div class="core-warning-card" icon-start *ngIf="hasOffline || hasOfflineRatings">
@@ -66,7 +66,7 @@
         </div>
     </ng-container>
 
-    <div class="addon-data-contents addon-data-entries-{{data.id}}" *ngIf="!isEmpty">
+    <div class="addon-data-contents addon-data-entries-{{data.id}} safe-padding-horizontal" *ngIf="!isEmpty">
         <core-style [css]="data.csstemplate" prefix=".addon-data-entries-{{data.id}}"></core-style>
 
         <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>

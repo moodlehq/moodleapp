@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ export class CoreCourseTagAreaComponent {
     /**
      * Open a course.
      *
-     * @param {number} courseId The course to open.
+     * @param courseId The course to open.
      */
     openCourse(courseId: number): void {
         // If this component is inside a split view, use the master nav to open it.

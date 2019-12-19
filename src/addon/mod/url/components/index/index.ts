@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.urlProvider.invalidateContent(this.module.id, this.courseId);
@@ -77,8 +77,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Download url contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let canGetUrl = this.canGetUrl,
@@ -120,10 +120,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             } else {
                 mod = this.module;
 
-                if (!mod.contents || !mod.contents.length) {
-                    // Try to load module contents, it's needed to get the URL with parameters.
-                    return this.courseProvider.loadModuleContents(mod, this.courseId, undefined, false, false, undefined, 'url');
-                }
+                // Try to load module contents, it's needed to get the URL with parameters.
+                return this.courseProvider.loadModuleContents(mod, this.courseId, undefined, false, refresh, undefined, 'url');
             }
         }).then(() => {
             // Always use the URL from the module because it already includes the parameters.
@@ -138,8 +136,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Calculate the display options to determine how the URL should be rendered.
      *
-     * @param {any} url Object with the URL data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param url Object with the URL data.
+     * @return Promise resolved when done.
      */
     protected calculateDisplayOptions(url: any): Promise<any> {
         const displayType = this.urlProvider.getFinalDisplayType(url);
@@ -175,7 +173,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Log view into the site and checks module completion.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected logView(): Promise<void> {
         return this.urlProvider.logView(this.module.instance, this.module.name).then(() => {

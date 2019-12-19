@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,6 +62,8 @@ export class CoreEventsProvider {
     static SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
     static MAIN_MENU_OPEN = 'main_menu_open';
     static SELECT_COURSE_TAB = 'select_course_tab';
+    static WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
+    static SITE_STORAGE_DELETED = 'site_storage_deleted';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
@@ -77,10 +79,10 @@ export class CoreEventsProvider {
      * ...
      * observer.off();
      *
-     * @param {string} eventName Name of the event to listen to.
-     * @param {Function} callBack Function to call when the event is triggered.
-     * @param {string} [siteId] Site where to trigger the event. Undefined won't check the site.
-     * @return {CoreEventObserver} Observer to stop listening.
+     * @param eventName Name of the event to listen to.
+     * @param callBack Function to call when the event is triggered.
+     * @param siteId Site where to trigger the event. Undefined won't check the site.
+     * @return Observer to stop listening.
      */
     on(eventName: string, callBack: (value: any) => void, siteId?: string): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
@@ -121,9 +123,9 @@ export class CoreEventsProvider {
     /**
      * Triggers an event, notifying all the observers.
      *
-     * @param {string} event Name of the event to trigger.
-     * @param {any} [data] Data to pass to the observers.
-     * @param {string} [siteId] Site where to trigger the event. Undefined means no Site.
+     * @param event Name of the event to trigger.
+     * @param data Data to pass to the observers.
+     * @param siteId Site where to trigger the event. Undefined means no Site.
      */
     trigger(eventName: string, data?: any, siteId?: string): void {
         this.logger.debug(`Event '${eventName}' triggered.`);
@@ -141,9 +143,9 @@ export class CoreEventsProvider {
     /**
      * Triggers a unique event, notifying all the observers. If the event has already been triggered, don't do anything.
      *
-     * @param {string} event Name of the event to trigger.
-     * @param {any} data Data to pass to the observers.
-     * @param {string} [siteId] Site where to trigger the event. Undefined means no Site.
+     * @param event Name of the event to trigger.
+     * @param data Data to pass to the observers.
+     * @param siteId Site where to trigger the event. Undefined means no Site.
      */
     triggerUnique(eventName: string, data: any, siteId?: string): void {
         if (this.uniqueEvents[eventName]) {

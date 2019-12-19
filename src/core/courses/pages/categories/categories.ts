@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ export class CoreCoursesCategoriesPage {
     /**
      * Fetch the categories.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCategories(): Promise<any> {
         return this.coursesProvider.getCategories(this.categoryId, true).then((cats) => {
@@ -98,7 +98,7 @@ export class CoreCoursesCategoriesPage {
     /**
      * Refresh the categories.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshCategories(refresher: any): void {
         const promises = [];
@@ -117,7 +117,7 @@ export class CoreCoursesCategoriesPage {
     /**
      * Open a category.
      *
-     * @param {number} categoryId The category ID.
+     * @param categoryId The category ID.
      */
     openCategory(categoryId: number): void {
         this.navCtrl.push('CoreCoursesCategoriesPage', { categoryId: categoryId });

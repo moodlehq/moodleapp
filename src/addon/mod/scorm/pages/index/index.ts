@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ export class AddonModScormIndexPage {
     /**
      * Update some data based on the SCORM instance.
      *
-     * @param {any} scorm SCORM instance.
+     * @param scorm SCORM instance.
      */
     updateData(scorm: any): void {
         this.title = scorm.name || this.title;

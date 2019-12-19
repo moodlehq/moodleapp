@@ -3,19 +3,17 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded" class="core-loading-center">
-        <div class="safe-padding-horizontal">
-            <ion-item *ngIf="showMyEntriesToggle">
-                <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
-                <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">></ion-toggle>
-            </ion-item>
-        </div>
+        <ion-item *ngIf="showMyEntriesToggle">
+            <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
+            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)"></ion-toggle>
+        </ion-item>
         <core-empty-box *ngIf="entries && entries.length == 0" icon="fa-newspaper-o" [message]="'addon.blog.noentriesyet' | translate"></core-empty-box>
         <ng-container *ngFor="let entry of entries">
             <ion-card *ngIf="!onlyMyEntries || entry.userid == currentUserId">
                 <ion-item text-wrap>
                     <ion-avatar core-user-avatar [user]="entry.user" item-start [courseId]="entry.courseid"></ion-avatar>
                     <h2>
-                        <core-format-text [text]="entry.subject"></core-format-text>
+                        <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"></core-format-text>
                         <ion-note float-end padding-left text-end>
                             {{ 'addon.blog.' + entry.publishTranslated | translate}}
                         </ion-note>
@@ -28,7 +26,9 @@
                     </p>
                 </ion-item>
                 <ion-card-content>
-                    <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id"></core-format-text>
+                    <ion-item>
+                        <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"></core-format-text>
+                    </ion-item>
                     <ion-item text-wrap *ngIf="tagsEnabled && entry.tags && entry.tags.length > 0">
                         <div item-start>{{ 'core.tag.tags' | translate }}:</div>
                         <core-tag-list [tags]="entry.tags"></core-tag-list>

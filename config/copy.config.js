@@ -12,5 +12,37 @@ module.exports = {
   copyConfig: {
     src: ['{{ROOT}}/src/config.json'],
     dest: '{{WWW}}/'
-  }
+  },
+  copyMathJaxMain: {
+    src: ['{{ROOT}}/node_modules/mathjax/MathJax.js'],
+    dest: '{{WWW}}/lib/mathjax'
+  },
+  copyMathJaxExtensions: {
+    src: ['{{ROOT}}/node_modules/mathjax/extensions/**/*'],
+    dest: '{{WWW}}/lib/mathjax/extensions'
+  },
+  copyMathJaxElement: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/element/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/element'
+  },
+  copyMathJaxInput: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/input/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/input'
+  },
+  copyMathJaxSVGOutput: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/output/SVG/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/output/SVG'
+  },
+  copyMathJaxPreviewHTMLOutput: {
+    src: ['{{ROOT}}/node_modules/mathjax/jax/output/PreviewHTML/**/*'],
+    dest: '{{WWW}}/lib/mathjax/jax/output/PreviewHTML'
+  },
+  copyMathJaxLocalization: {
+    src: ['{{ROOT}}/node_modules/mathjax/localization/**/*'],
+    dest: '{{WWW}}/lib/mathjax/localization'
+  },
+  copyH5P: {
+    src: ['{{ROOT}}/src/core/h5p/assets/**/*'],
+    dest: '{{WWW}}/h5p/'
+  },
 };

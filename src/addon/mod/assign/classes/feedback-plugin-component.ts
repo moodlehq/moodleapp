@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,15 @@
 
 import { Input } from '@angular/core';
 import { ModalController } from 'ionic-angular';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '../providers/assign';
 
 /**
  * Base class for component to render a feedback plugin.
  */
 export class AddonModAssignFeedbackPluginComponentBase {
-    @Input() assign: any; // The assignment.
-    @Input() submission: any; // The submission.
-    @Input() plugin: any; // The plugin object.
+    @Input() assign: AddonModAssignAssign; // The assignment.
+    @Input() submission: AddonModAssignSubmission; // The submission.
+    @Input() plugin: AddonModAssignPlugin; // The plugin object.
     @Input() userId: number; // The user ID of the submission.
     @Input() configs: any; // The configs for the plugin.
     @Input() canEdit: boolean; // Whether the user can edit.
@@ -32,7 +33,7 @@ export class AddonModAssignFeedbackPluginComponentBase {
     /**
      * Open a modal to edit the feedback plugin.
      *
-     * @return {Promise<any>} Promise resolved with the input data, rejected if cancelled.
+     * @return Promise resolved with the input data, rejected if cancelled.
      */
     editFeedback(): Promise<any> {
         if (this.canEdit) {
@@ -62,7 +63,7 @@ export class AddonModAssignFeedbackPluginComponentBase {
     /**
      * Invalidate the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return Promise.resolve();

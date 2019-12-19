@@ -9,11 +9,11 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description *ngIf="lti && lti.showdescriptionlaunch" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
-    <div padding-horizontal>
+    <div padding>
         <button ion-button block icon-left (click)="launch()">
             <ion-icon name="link"></ion-icon>
             {{ 'addon.mod_lti.launchactivity' | translate }}

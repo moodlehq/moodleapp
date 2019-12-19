@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ export class AddonMessagesIndexPage implements OnDestroy {
     /**
      * Navigate to a particular discussion.
      *
-     * @param {number} discussionUserId Discussion Id to load.
-     * @param {number} [messageId]      Message to scroll after loading the discussion. Used when searching.
+     * @param discussionUserId Discussion Id to load.
+     * @param messageId Message to scroll after loading the discussion. Used when searching.
      */
     gotoDiscussion(discussionUserId: number, messageId?: number): void {
         const params = {

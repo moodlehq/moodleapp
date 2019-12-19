@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ export class CoreConfigProvider {
     /**
      * Deletes an app setting.
      *
-     * @param {string} name The config name.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param name The config name.
+     * @return Promise resolved when done.
      */
     delete(name: string): Promise<any> {
         return this.appDB.deleteRecords(this.TABLE_NAME, { name: name });
@@ -57,9 +57,9 @@ export class CoreConfigProvider {
     /**
      * Get an app setting.
      *
-     * @param {string} name The config name.
-     * @param {any} [defaultValue] Default value to use if the entry is not found.
-     * @return {Promise<any>} Resolves upon success along with the config data. Reject on failure.
+     * @param name The config name.
+     * @param defaultValue Default value to use if the entry is not found.
+     * @return Resolves upon success along with the config data. Reject on failure.
      */
     get(name: string, defaultValue?: any): Promise<any> {
         return this.appDB.getRecord(this.TABLE_NAME, { name: name }).then((entry) => {
@@ -76,9 +76,9 @@ export class CoreConfigProvider {
     /**
      * Set an app setting.
      *
-     * @param {string} name The config name.
-     * @param {number|string} value The config value. Can only store number or strings.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param name The config name.
+     * @param value The config value. Can only store number or strings.
+     * @return Promise resolved when done.
      */
     set(name: string, value: number | string): Promise<any> {
         return this.appDB.insertRecord(this.TABLE_NAME, { name: name, value: value });

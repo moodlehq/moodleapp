@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,21 @@ import { AddonModWorkshopProvider } from './workshop';
 export class AddonModWorkshopLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModWorkshopLinkHandler';
 
-    constructor(courseHelper: CoreCourseHelperProvider) {
-        super(courseHelper, AddonModWorkshopProvider.COMPONENT, 'workshop');
+    constructor(courseHelper: CoreCourseHelperProvider,
+            protected workshopProvider: AddonModWorkshopProvider) {
+        super(courseHelper, AddonModWorkshopProvider.COMPONENT, 'workshop', 'w');
+    }
+
+    /**
+     * Check if the handler is enabled for a certain site (site + user) and a URL.
+     *
+     * @param siteId The site ID.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Whether the handler is enabled for the URL and site.
+     */
+    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
+        return this.workshopProvider.isPluginEnabled(siteId);
     }
 }

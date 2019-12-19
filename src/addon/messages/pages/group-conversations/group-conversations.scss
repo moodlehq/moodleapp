@@ -28,6 +28,9 @@ ion-app.app-root .addon-message-discussion {
         white-space: nowrap;
         color: $black;
         @include margin(null, 2px, null, null);
+        @include darkmode() {
+            color: $white;
+        }
     }
 
     .addon-message-last-message-text {

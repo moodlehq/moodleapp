@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ export class AddonModFeedbackIndexPage {
     /**
      * Update some data based on the feedback instance.
      *
-     * @param {any} feedback Feedback instance.
+     * @param feedback Feedback instance.
      */
     updateData(feedback: any): void {
         this.title = feedback.name || this.title;

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ export class AddonModUrlHelperProvider {
     /**
      * Opens a URL.
      *
-     * @param {string} url The URL to go to.
+     * @param url The URL to go to.
      */
     open(url: string): void {
         const modal = this.domUtils.showModalLoading();

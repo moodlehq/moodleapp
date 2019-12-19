@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Add a behaviour button to the question's "behaviourButtons" property.
      *
-     * @param {any} question Question.
-     * @param {HTMLInputElement} button Behaviour button (DOM element).
+     * @param question Question.
+     * @param button Behaviour button (DOM element).
      */
     protected addBehaviourButton(question: any, button: HTMLInputElement): void {
         if (!button || !question) {
@@ -63,8 +63,8 @@ export class CoreQuestionHelperProvider {
      * Extract question behaviour submit buttons from the question's HTML and add them to "behaviourButtons" property.
      * The buttons aren't deleted from the content because all the im-controls block will be removed afterwards.
      *
-     * @param {any} question Question to treat.
-     * @param {string} [selector] Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
+     * @param question Question to treat.
+     * @param selector Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
      */
     extractQbehaviourButtons(question: any, selector?: string): void {
         if (this.questionDelegate.getPreventSubmitMessage(question)) {
@@ -89,8 +89,8 @@ export class CoreQuestionHelperProvider {
      * The value of the selected option is stored in question.behaviourCertaintySelected.
      * We don't remove them from HTML because the whole im-controls block will be removed afterwards.
      *
-     * @param {any} question Question to treat.
-     * @return {boolean} Wether the certainty is found.
+     * @param question Question to treat.
+     * @return Wether the certainty is found.
      */
     extractQbehaviourCBM(question: any): boolean {
         const element = this.domUtils.convertToElement(question.html);
@@ -128,7 +128,7 @@ export class CoreQuestionHelperProvider {
      * Check if the question has a redo button and, if so, add it to "behaviourButtons" property
      * and remove it from the HTML.
      *
-     * @param {any} question Question to treat.
+     * @param question Question to treat.
      */
     extractQbehaviourRedoButton(question: any): void {
         // Create a fake div element so we can search using querySelector.
@@ -156,8 +156,8 @@ export class CoreQuestionHelperProvider {
      * Check if the question contains a "seen" input.
      * If so, add the name and value to a "behaviourSeenInput" property and remove the input.
      *
-     * @param {any} question Question to treat.
-     * @return {boolean} Whether the seen input is found.
+     * @param question Question to treat.
+     * @return Whether the seen input is found.
      */
     extractQbehaviourSeenInput(question: any): boolean {
         const element = this.domUtils.convertToElement(question.html);
@@ -182,7 +182,7 @@ export class CoreQuestionHelperProvider {
     /**
      * Removes the comment from the question HTML code and adds it in a new "commentHtml" property.
      *
-     * @param {any} question Question.
+     * @param question Question.
      */
     extractQuestionComment(question: any): void {
         this.extractQuestionLastElementNotInContent(question, '.comment', 'commentHtml');
@@ -191,7 +191,7 @@ export class CoreQuestionHelperProvider {
     /**
      * Removes the feedback from the question HTML code and adds it in a new "feedbackHtml" property.
      *
-     * @param {any} question Question.
+     * @param question Question.
      */
     extractQuestionFeedback(question: any): void {
         this.extractQuestionLastElementNotInContent(question, '.outcome', 'feedbackHtml');
@@ -200,8 +200,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Extracts the info box from a question and add it to an "infoHtml" property.
      *
-     * @param {any} question Question.
-     * @param {string} selector Selector to search the element.
+     * @param question Question.
+     * @param selector Selector to search the element.
      */
     extractQuestionInfoBox(question: any, selector: string): void {
         this.extractQuestionLastElementNotInContent(question, selector, 'infoHtml');
@@ -211,9 +211,9 @@ export class CoreQuestionHelperProvider {
      * Searches the last occurrence of a certain element and check it's not in the question contents.
      * If found, removes it from the question HTML and adds it to a new property inside question.
      *
-     * @param {any} question Question.
-     * @param {string} selector Selector to search the element.
-     * @param {string} attrName Name of the attribute to store the HTML in.
+     * @param question Question.
+     * @param selector Selector to search the element.
+     * @param attrName Name of the attribute to store the HTML in.
      */
     protected extractQuestionLastElementNotInContent(question: any, selector: string, attrName: string): void {
         const element = this.domUtils.convertToElement(question.html);
@@ -241,8 +241,8 @@ export class CoreQuestionHelperProvider {
      * Removes the scripts from a question's HTML and adds it in a new 'scriptsCode' property.
      * It will also search for init_question functions of the question type and add the object to an 'initObjects' property.
      *
-     * @param {any} question Question.
-     * @param {number} usageId Usage ID.
+     * @param question Question.
+     * @param usageId Usage ID.
      */
     extractQuestionScripts(question: any, usageId: number): void {
         question.scriptsCode = '';
@@ -275,9 +275,9 @@ export class CoreQuestionHelperProvider {
                     question.initObjects = this.textUtils.parseJSON(initMatch, null);
                 }
 
-                const amdRegExp = new RegExp('require\\(\\["qtype_' + question.type + '/question"\\], ' +
-                    'function\\(amd\\) \\{ amd\.init\\(("(q|question-' + usageId + '-)' + question.slot +
-                    '".*?)\\); \\}\\);;', 'm');
+                const amdRegExp = new RegExp('require\\(\\[["\']qtype_' + question.type + '/question["\']\\], ?' +
+                    'function\\(amd\\) ?\\{ ?amd\\.init\\((["\'](q|question-' + usageId + '-)' + question.slot +
+                    '["\'].*?)\\);', 'm');
                 const amdMatch = match.match(amdRegExp);
                 if (amdMatch) {
                     // Try to convert the arguments to an array and add them to the question.
@@ -292,8 +292,8 @@ export class CoreQuestionHelperProvider {
      * This function will return an object where the keys are the input names. The values will always be true.
      * This is in order to make this function compatible with other functions like CoreQuestionProvider.getBasicAnswers.
      *
-     * @param {string} html HTML code.
-     * @return {any} Object where the keys are the names.
+     * @param html HTML code.
+     * @return Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): any {
         const element = this.domUtils.convertToElement('<form>' + html + '</form>'),
@@ -319,8 +319,8 @@ export class CoreQuestionHelperProvider {
      * Retrieve the answers entered in a form.
      * We don't use ngModel because it doesn't detect changes done by JavaScript and some questions might do that.
      *
-     * @param {HTMLFormElement} form Form.
-     * @return {any} Object with the answers.
+     * @param form Form.
+     * @return Object with the answers.
      */
     getAnswersFromForm(form: HTMLFormElement): any {
         if (!form || !form.elements) {
@@ -358,8 +358,8 @@ export class CoreQuestionHelperProvider {
      * Please take into account that this function will treat all the anchors in the HTML, you should provide
      * an HTML containing only the attachments anchors.
      *
-     * @param  {String} html HTML code to search in.
-     * @return {Object[]}    Attachments.
+     * @param html HTML code to search in.
+     * @return Attachments.
      */
     getQuestionAttachmentsFromHtml(html: string): any[] {
         const element = this.domUtils.convertToElement(html);
@@ -390,8 +390,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Get the sequence check from a question HTML.
      *
-     * @param {string} html Question's HTML.
-     * @return {{name: string, value: string}} Object with the sequencecheck name and value.
+     * @param html Question's HTML.
+     * @return Object with the sequencecheck name and value.
      */
     getQuestionSequenceCheckFromHtml(html: string): {name: string, value: string} {
         if (html) {
@@ -411,8 +411,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Get the CSS class for a question based on its state.
      *
-     * @param {string} name Question's state name.
-     * @return {string} State class.
+     * @param name Question's state name.
+     * @return State class.
      */
     getQuestionStateClass(name: string): string {
         const state = this.questionProvider.getState(name);
@@ -423,8 +423,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Get the validation error message from a question HTML if it's there.
      *
-     * @param {string} html Question's HTML.
-     * @return {string} Validation error message if present.
+     * @param html Question's HTML.
+     * @return Validation error message if present.
      */
     getValidationErrorFromHtml(html: string): string {
         const element = this.domUtils.convertToElement(html);
@@ -435,8 +435,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Check if some HTML contains draft file URLs for the current site.
      *
-     * @param {string} html Question's HTML.
-     * @return {boolean} Whether it contains draft files URLs.
+     * @param html Question's HTML.
+     * @return Whether it contains draft files URLs.
      */
     hasDraftFileUrls(html: string): boolean {
         let url = this.sitesProvider.getCurrentSite().getURL();
@@ -452,7 +452,7 @@ export class CoreQuestionHelperProvider {
      * For each input element found in the HTML, search if there's a local answer stored and
      * override the HTML's value with the local one.
      *
-     * @param {any} question Question.
+     * @param question Question.
      */
     loadLocalAnswersInHtml(question: any): void {
         const element = this.domUtils.convertToElement('<form>' + question.html + '</form>'),
@@ -507,16 +507,16 @@ export class CoreQuestionHelperProvider {
     /**
      * Prefetch the files in a question HTML.
      *
-     * @param {any} question Question.
-     * @param {string} [component] The component to link the files to. If not defined, question component.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component. If not defined, question ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [usageId] Usage ID. Required in Moodle 3.7+.
-     * @return {Promise<any>} Promise resolved when all the files have been downloaded.
+     * @param question Question.
+     * @param component The component to link the files to. If not defined, question component.
+     * @param componentId An ID to use in conjunction with the component. If not defined, question ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param usageId Usage ID. Required in Moodle 3.7+.
+     * @return Promise resolved when all the files have been downloaded.
      */
     prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string, usageId?: number)
             : Promise<any> {
-        const urls = this.domUtils.extractDownloadableFilesFromHtml(question.html);
+        const urls = this.filepoolProvider.extractDownloadableFilesFromHtml(question.html);
 
         if (!component) {
             component = CoreQuestionProvider.COMPONENT;
@@ -548,11 +548,11 @@ export class CoreQuestionHelperProvider {
     /**
      * Prepare and return the answers.
      *
-     * @param {any[]} questions The list of questions.
-     * @param {any} answers The input data.
-     * @param {boolean} offline True if data should be saved in offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with answers to send to server.
+     * @param questions The list of questions.
+     * @param answers The input data.
+     * @param offline True if data should be saved in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with answers to send to server.
      */
     prepareAnswers(questions: any[], answers: any, offline?: boolean, siteId?: string): Promise<any> {
         const promises = [];
@@ -570,7 +570,7 @@ export class CoreQuestionHelperProvider {
     /**
      * Replace Moodle's correct/incorrect classes with the Mobile ones.
      *
-     * @param {HTMLElement} element DOM element.
+     * @param element DOM element.
      */
     replaceCorrectnessClasses(element: HTMLElement): void {
         this.domUtils.replaceClassesInElement(element, {
@@ -582,7 +582,7 @@ export class CoreQuestionHelperProvider {
     /**
      * Replace Moodle's feedback classes with the Mobile ones.
      *
-     * @param {HTMLElement} element DOM element.
+     * @param element DOM element.
      */
     replaceFeedbackClasses(element: HTMLElement): void {
         this.domUtils.replaceClassesInElement(element, {
@@ -594,10 +594,10 @@ export class CoreQuestionHelperProvider {
     /**
      * Search a behaviour button in a certain question property containing HTML.
      *
-     * @param {any} question Question.
-     * @param {string} htmlProperty The name of the property containing the HTML to search.
-     * @param {string} selector The selector to find the button.
-     * @return {boolean} Whether the button is found.
+     * @param question Question.
+     * @param htmlProperty The name of the property containing the HTML to search.
+     * @param selector The selector to find the button.
+     * @return Whether the button is found.
      */
     protected searchBehaviourButton(question: any, htmlProperty: string, selector: string): boolean {
         const element = this.domUtils.convertToElement(question[htmlProperty]);
@@ -622,8 +622,8 @@ export class CoreQuestionHelperProvider {
     /**
      * Convenience function to show a parsing error and abort.
      *
-     * @param {EventEmitter<void>} [onAbort] If supplied, will emit an event.
-     * @param {string} [error] Error to show.
+     * @param onAbort If supplied, will emit an event.
+     * @param error Error to show.
      */
     showComponentError(onAbort: EventEmitter<void>, error?: string): void {
         // Prevent consecutive errors.
@@ -639,7 +639,7 @@ export class CoreQuestionHelperProvider {
     /**
      * Treat correctness icons, replacing them with local icons and setting click events to show the feedback if needed.
      *
-     * @param {HTMLElement} element DOM element.
+     * @param element DOM element.
      */
     treatCorrectnessIcons(element: HTMLElement): void {
 
@@ -688,11 +688,16 @@ export class CoreQuestionHelperProvider {
     /**
      * Add click listeners to all tappable correctness icons.
      *
-     * @param {HTMLElement} element DOM element.
-     * @param {string} [component] The component to use when viewing the feedback.
-     * @param {string|number} [componentId] An ID to use in conjunction with the component.
+     * @param element DOM element.
+     * @param component The component to use when viewing the feedback.
+     * @param componentId An ID to use in conjunction with the component.
+     * @param contextLevel The context level.
+     * @param contextInstanceId Instance ID related to the context.
+     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
      */
-    treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number): void {
+    treatCorrectnessIconsClicks(element: HTMLElement, component?: string, componentId?: number, contextLevel?: string,
+            contextInstanceId?: number, courseId?: number): void {
+
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]')),
             title = this.translate.instant('core.question.feedback');
 
@@ -703,7 +708,8 @@ export class CoreQuestionHelperProvider {
             if (span) {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
-                    this.textUtils.expandText(title, span.innerHTML, component, componentId);
+                    this.textUtils.expandText(title, span.innerHTML, component, componentId, [], true, contextLevel,
+                            contextInstanceId, courseId);
                 });
             }
         });

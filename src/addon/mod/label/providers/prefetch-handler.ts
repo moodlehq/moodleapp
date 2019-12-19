@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
 import { AddonModLabelProvider } from './label';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch labels.
@@ -34,20 +36,28 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
     updatesNames = /^.*files$/;
     skipListStatus = true;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected labelProvider: AddonModLabelProvider) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
+            protected labelProvider: AddonModLabelProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
      * Returns module intro files.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any[]>} Promise resolved with list of intro files.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved with list of intro files.
      */
     getIntroFiles(module: any, courseId: number, ignoreCache?: boolean): Promise<any[]> {
         let promise;
@@ -66,9 +76,9 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.labelProvider.invalidateContent(moduleId, courseId);
@@ -77,9 +87,9 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         const promises = [];

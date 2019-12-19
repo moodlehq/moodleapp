@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ export class AddonBlogUserHandler implements CoreUserProfileHandler {
 
     /**
      * Whether or not the handler is enabled on a site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.blogProvider.isPluginEnabled();
@@ -40,11 +40,11 @@ export class AddonBlogUserHandler implements CoreUserProfileHandler {
     /**
      * Check if handler is enabled for this user in this context.
      *
-     * @param {any} user User to check.
-     * @param {number} courseId Course ID.
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {boolean|Promise<boolean>} Promise resolved with true if enabled, resolved with false otherwise.
+     * @param user User to check.
+     * @param courseId Course ID.
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return Promise resolved with true if enabled, resolved with false otherwise.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         return true;
@@ -53,7 +53,7 @@ export class AddonBlogUserHandler implements CoreUserProfileHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreUserProfileHandlerData} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {

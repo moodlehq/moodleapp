@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,7 +157,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
      * Initialize the audio drawer. This code has been extracted from MDN's example on MediaStream Recording:
      * https://github.com/mdn/web-dictaphone
      *
-     * @param {MediaStream} stream Stream returned by getUserMedia.
+     * @param stream Stream returned by getUserMedia.
      */
     protected initAudioDrawer(stream: MediaStream): void {
         let skip = true,
@@ -318,7 +318,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Close the modal, returning some data (success).
      *
-     * @param {any} data Data to return.
+     * @param data Data to return.
      */
     dismissWithData(data: any): void {
         this.viewCtrl.dismiss(data, 'success');
@@ -327,9 +327,9 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Close the modal, returning an error.
      *
-     * @param {number} code Error code. Will not be used if it's a Camera capture.
-     * @param {string} message Error message.
-     * @param {string} [cameraMessage] A specific message to use if it's a Camera capture. If not set, message will be used.
+     * @param code Error code. Will not be used if it's a Camera capture.
+     * @param message Error message.
+     * @param cameraMessage A specific message to use if it's a Camera capture. If not set, message will be used.
      */
     dismissWithError(code: number, message: string, cameraMessage?: string): void {
         const isCamera = this.isImage && !this.isCaptureImage,

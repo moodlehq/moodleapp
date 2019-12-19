@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ export class AddonModQuizNavigationModalPage {
      *     - Some attributes can change dynamically, and we don't want to create the modal everytime the user opens it.
      *     - The onDidDismiss function takes a while to be called, making the app seem slow. This way we can directly call
      *       the functions we need without having to wait for the modal to be dismissed.
-     * @type {any}
      */
     pageInstance: any;
 
@@ -51,8 +50,8 @@ export class AddonModQuizNavigationModalPage {
     /**
      * Load a certain page.
      *
-     * @param {number} page The page to load.
-     * @param {number} [slot] Slot of the question to scroll to.
+     * @param page The page to load.
+     * @param slot Slot of the question to scroll to.
      */
     loadPage(page: number, slot: number): void {
         this.pageInstance.changePage && this.pageInstance.changePage(page, true, slot);

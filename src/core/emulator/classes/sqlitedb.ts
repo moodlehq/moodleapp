@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Create and open the database.
      *
-     * @param {string} name Database name.
+     * @param name Database name.
      */
     constructor(public name: string) {
         super(name, null, null);
@@ -34,7 +34,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Close the database.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     close(): Promise<any> {
         // WebSQL databases aren't closed.
@@ -44,7 +44,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Drop all the data in the database.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     emptyDatabase(): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -84,9 +84,9 @@ export class SQLiteDBMock extends SQLiteDB {
      * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
      * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
-     * @param {string} sql SQL query to execute.
-     * @param {any[]} params Query parameters.
-     * @return {Promise<any>} Promise resolved with the result.
+     * @param sql SQL query to execute.
+     * @param params Query parameters.
+     * @return Promise resolved with the result.
      */
     execute(sql: string, params?: any[]): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -107,8 +107,8 @@ export class SQLiteDBMock extends SQLiteDB {
      * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
      * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
-     * @param {any[]} sqlStatements SQL statements to execute.
-     * @return {Promise<any>} Promise resolved with the result.
+     * @param sqlStatements SQL statements to execute.
+     * @return Promise resolved with the result.
      */
     executeBatch(sqlStatements: any[]): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -156,7 +156,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Open the database. Only needed if it was closed before, a database is automatically opened when created.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     open(): Promise<any> {
         // WebSQL databases can't closed, so the open method isn't needed.

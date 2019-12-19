@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreGradesProvider } from './grades';
@@ -44,8 +44,8 @@ export class CoreGradesHelperProvider {
     /**
      * Formats a row from the grades table te be rendered in a page.
      *
-     * @param  {any}  tableRow JSON object representing row of grades table data.
-     * @return {any}           Formatted row object.
+     * @param tableRow JSON object representing row of grades table data.
+     * @return Formatted row object.
      */
     protected formatGradeRow(tableRow: any): any {
         const row = {};
@@ -79,8 +79,8 @@ export class CoreGradesHelperProvider {
     /**
      * Formats a row from the grades table to be rendered in one table.
      *
-     * @param  {any}  tableRow JSON object representing row of grades table data.
-     * @return {any}           Formatted row object.
+     * @param tableRow JSON object representing row of grades table data.
+     * @return Formatted row object.
      */
     protected formatGradeRowForTable(tableRow: any): any {
         const row = {};
@@ -119,8 +119,8 @@ export class CoreGradesHelperProvider {
     /**
      * Removes suffix formatted to compatibilize data from table and items.
      *
-     * @param  {any} item Grade item to format.
-     * @return {any}      Grade item formatted.
+     * @param item Grade item to format.
+     * @return Grade item formatted.
      */
     protected formatGradeItem(item: any): any {
         for (const name in item) {
@@ -136,8 +136,8 @@ export class CoreGradesHelperProvider {
     /**
      * Formats the response of gradereport_user_get_grades_table to be rendered.
      *
-     * @param  {any}  table          JSON object representing a table with data.
-     * @return {any}             Formatted HTML table.
+     * @param table JSON object representing a table with data.
+     * @return Formatted HTML table.
      */
     formatGradesTable(table: any): any {
         const maxDepth = table.maxdepth,
@@ -195,36 +195,71 @@ export class CoreGradesHelperProvider {
     /**
      * Get course data for grades since they only have courseid.
      *
-     * @param  {any} grades    Grades to get the data for.
-     * @return {Promise<any>}  Promise always resolved. Resolve param is the formatted grades.
+     * @param grades Grades to get the data for.
+     * @return Promise always resolved. Resolve param is the formatted grades.
      */
-    getGradesCourseData(grades: any): Promise<any> {
-        // Using cache for performance reasons.
-        return this.coursesProvider.getUserCourses(true).then((courses) => {
-            const indexedCourses = {};
-            courses.forEach((course) => {
-                indexedCourses[course.id] = course;
-            });
+    async getGradesCourseData(grades: any[]): Promise<any> {
+        // Obtain courses from cache to prevent network requests.
+        let coursesWereMissing;
 
-            grades.forEach((grade) => {
-                if (typeof indexedCourses[grade.courseid] != 'undefined') {
-                    grade.courseFullName = indexedCourses[grade.courseid].fullname;
-                }
-            });
+        try {
+            const courses = await this.coursesProvider.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.OnlyCache);
 
-            return grades;
-        });
+            const coursesMap = this.utils.arrayToObject(courses, 'id');
+
+            coursesWereMissing = this.addCourseData(grades, coursesMap);
+        } catch (error) {
+            coursesWereMissing = true;
+        }
+
+        // If any course wasn't found, make a network request.
+        if (coursesWereMissing) {
+            const coursesPromise = this.coursesProvider.isGetCoursesByFieldAvailable()
+                ? this.coursesProvider.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
+                : this.coursesProvider.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PreferNetwork);
+
+            const courses = await coursesPromise;
+
+            const coursesMap = this.utils.arrayToObject(courses, 'id');
+
+            this.addCourseData(grades, coursesMap);
+        }
+
+        return grades.filter((grade) => grade.courseFullName !== undefined);
+    }
+
+    /**
+     * Adds course data to grades.
+     *
+     * @param grades Array of grades to populate.
+     * @param courses HashMap of courses to read data from.
+     * @return Boolean indicating if some courses were not found.
+     */
+    protected addCourseData(grades: any[], courses: any): boolean {
+        let someCoursesAreMissing = false;
+
+        for (const grade of grades) {
+            if (!(grade.courseid in courses)) {
+                someCoursesAreMissing = true;
+
+                continue;
+            }
+
+            grade.courseFullName = courses[grade.courseid].fullname;
+        }
+
+        return someCoursesAreMissing;
     }
 
     /**
      * Get an specific grade item.
      *
-     * @param  {number}  courseId             ID of the course to get the grades from.
-     * @param  {number}  gradeId              Grade ID.
-     * @param  {number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
-     * @param  {string}  [siteId]             Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}                Promise to be resolved when the grades are retrieved.
+     * @param courseId ID of the course to get the grades from.
+     * @param gradeId Grade ID.
+     * @param userId ID of the user to get the grades from. If not defined use site's current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the grades are retrieved.
      */
     getGradeItem(courseId: number, gradeId: number, userId?: number, siteId?: string, ignoreCache: boolean = false): Promise<any> {
 
@@ -240,9 +275,9 @@ export class CoreGradesHelperProvider {
     /**
      * Returns the label of the selected grade.
      *
-     * @param {any[]} grades Array with objects with value and label.
-     * @param {number} selectedGrade Selected grade value.
-     * @return {string} Selected grade label.
+     * @param grades Array with objects with value and label.
+     * @param selectedGrade Selected grade value.
+     * @return Selected grade label.
      */
     getGradeLabelFromValue(grades: any[], selectedGrade: number): string {
         selectedGrade = Number(selectedGrade);
@@ -263,13 +298,13 @@ export class CoreGradesHelperProvider {
     /**
      * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
      *
-     * @param  {number}  courseId             ID of the course to get the grades from.
-     * @param  {number}  moduleId             Module ID.
-     * @param  {number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
-     * @param  {number}  [groupId]            ID of the group to get the grades from. Not used for old gradebook table.
-     * @param  {string}  [siteId]             Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}                Promise to be resolved when the grades are retrieved.
+     * @param courseId ID of the course to get the grades from.
+     * @param moduleId Module ID.
+     * @param userId ID of the user to get the grades from. If not defined use site's current user.
+     * @param groupId ID of the group to get the grades from. Not used for old gradebook table.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the grades are retrieved.
      */
     getGradeModuleItems(courseId: number, moduleId: number, userId?: number, groupId?: number, siteId?: string,
             ignoreCache: boolean = false): Promise<any> {
@@ -295,9 +330,9 @@ export class CoreGradesHelperProvider {
     /**
      * Returns the value of the selected grade.
      *
-     * @param {any[]} grades Array with objects with value and label.
-     * @param {string} selectedGrade Selected grade label.
-     * @return {number} Selected grade value.
+     * @param grades Array with objects with value and label.
+     * @param selectedGrade Selected grade label.
+     * @return Selected grade value.
      */
     getGradeValueFromLabel(grades: any[], selectedGrade: string): number {
         if (!grades || !selectedGrade) {
@@ -316,8 +351,8 @@ export class CoreGradesHelperProvider {
     /**
      * Gets the link to the module for the selected grade.
      *
-     * @param  {string} text HTML where the link is present.
-     * @return {string | false}      URL linking to the module.
+     * @param text HTML where the link is present.
+     * @return URL linking to the module.
      */
     protected getModuleLink(text: string): string | false {
         const el = this.domUtils.toDom(text)[0],
@@ -333,9 +368,9 @@ export class CoreGradesHelperProvider {
     /**
      * Get a row from the grades table.
      *
-     * @param  {any}   table    JSON object representing a table with data.
-     * @param  {number} gradeId Grade Object identifier.
-     * @return {any}            Formatted HTML table.
+     * @param table JSON object representing a table with data.
+     * @param gradeId Grade Object identifier.
+     * @return Formatted HTML table.
      */
     getGradesTableRow(table: any, gradeId: number): any {
         if (table.tabledata) {
@@ -355,9 +390,9 @@ export class CoreGradesHelperProvider {
     /**
      * Get the rows related to a module from the grades table.
      *
-     * @param  {any}   table     JSON object representing a table with data.
-     * @param  {number} moduleId Grade Object identifier.
-     * @return {any}             Formatted HTML table.
+     * @param table JSON object representing a table with data.
+     * @param moduleId Grade Object identifier.
+     * @return Formatted HTML table.
      */
     getModuleGradesTableRows(table: any, moduleId: number): any {
 
@@ -388,12 +423,12 @@ export class CoreGradesHelperProvider {
     /**
      * Go to view grades.
      *
-     * @param {number} courseId Course ID t oview.
-     * @param {number} [userId] User to view. If not defined, current user.
-     * @param {number} [moduleId] Module to view. If not defined, view all course grades.
-     * @param {NavController} [navCtrl] NavController to use.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courseId Course ID t oview.
+     * @param userId User to view. If not defined, current user.
+     * @param moduleId Module to view. If not defined, view all course grades.
+     * @param navCtrl NavController to use.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     goToGrades(courseId: number, userId?: number, moduleId?: number, navCtrl?: NavController, siteId?: string): Promise<any> {
 
@@ -485,11 +520,11 @@ export class CoreGradesHelperProvider {
     /**
      * Invalidate the grade items for a certain module.
      *
-     * @param  {number}  courseId     ID of the course to invalidate the grades.
-     * @param  {number}  [userId]     ID of the user to invalidate. If not defined use site's current user.
-     * @param  {number}  [groupId]    ID of the group to invalidate. Not used for old gradebook table.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise}              Promise to be resolved when the grades are invalidated.
+     * @param courseId ID of the course to invalidate the grades.
+     * @param userId ID of the user to invalidate. If not defined use site's current user.
+     * @param groupId ID of the group to invalidate. Not used for old gradebook table.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the grades are invalidated.
      */
     invalidateGradeModuleItems(courseId: number, userId?: number, groupId?: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -510,9 +545,9 @@ export class CoreGradesHelperProvider {
     /**
      * Parses the image and sets it to the row.
      *
-     * @param  {any} row  Formatted grade row object.
-     * @param  {string} text HTML where the image will be rendered.
-     * @return {any}      Row object with the image.
+     * @param row Formatted grade row object.
+     * @param text HTML where the image will be rendered.
+     * @return Row object with the image.
      */
     protected setRowIcon(row: any, text: string): any {
         text = text.replace('%2F', '/').replace('%2f', '/');
@@ -564,13 +599,13 @@ export class CoreGradesHelperProvider {
      *
      * Taken from make_grades_menu on moodlelib.php
      *
-     * @param  {number} gradingType     If positive, max grade you can provide. If negative, scale Id.
-     * @param  {number} [moduleId]      Module ID. Used to retrieve the scale items when they are not passed as parameter.
-     *                                  If the user does not have permision to manage the activity an empty list is returned.
-     * @param  {string} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
-     * @param  {any}    [defaultValue]  Element that will become default option value. Default ''.
-     * @param  {string} [scale]         Scale csv list String. If not provided, it will take it from the module grade info.
-     * @return {Promise<any[]>}         Array with objects with value and label to create a propper HTML select.
+     * @param gradingType If positive, max grade you can provide. If negative, scale Id.
+     * @param moduleId Module ID. Used to retrieve the scale items when they are not passed as parameter.
+     *                 If the user does not have permision to manage the activity an empty list is returned.
+     * @param defaultLabel Element that will become default option, if not defined, it won't be added.
+     * @param defaultValue Element that will become default option value. Default ''.
+     * @param scale Scale csv list String. If not provided, it will take it from the module grade info.
+     * @return Array with objects with value and label to create a propper HTML select.
      */
     makeGradesMenu(gradingType: number, moduleId?: number, defaultLabel: string = '', defaultValue: any = '', scale?: string):
             Promise<any[]> {

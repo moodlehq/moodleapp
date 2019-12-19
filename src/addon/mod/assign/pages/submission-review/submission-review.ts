@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { AddonModAssignProvider } from '../../providers/assign';
+import { AddonModAssignProvider, AddonModAssignAssign } from '../../providers/assign';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 
 /**
@@ -40,7 +40,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     loaded: boolean; // Whether data has been loaded.
     canSaveGrades: boolean; // Whether the user can save grades.
 
-    protected assign: any; // The assignment the submission belongs to.
+    protected assign: AddonModAssignAssign; // The assignment the submission belongs to.
     protected blindMarking: boolean; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
 
@@ -67,7 +67,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (!this.submissionComponent || this.forceLeave) {
@@ -95,7 +95,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Get the submission.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchSubmission(): Promise<any> {
         return this.assignProvider.getAssignment(this.courseId, this.moduleId).then((assignment) => {
@@ -123,7 +123,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Refresh all the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshAllData(): Promise<any> {
         const promises = [];
@@ -146,7 +146,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshSubmission(refresher: any): void {
         this.refreshAllData().finally(() => {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
+import { CoreTagItem } from '@core/tag/providers/tag';
 
 /**
  * Service to handle blog entries.
@@ -40,8 +42,8 @@ export class AddonBlogProvider {
      * This method is called quite often and thus should only perform a quick
      * check, we should not be calling WS from here.
      *
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -53,8 +55,8 @@ export class AddonBlogProvider {
     /**
      * Get the cache key for the blog entries.
      *
-     * @param  {any}     [filter]     Filter to apply on search.
-     * @return {string}          Cache key.
+     * @param filter Filter to apply on search.
+     * @return Cache key.
      */
     getEntriesCacheKey(filter: any = {}): string {
         return this.ROOT_CACHE_KEY + this.utils.sortAndStringify(filter);
@@ -63,12 +65,12 @@ export class AddonBlogProvider {
     /**
      * Get blog entries.
      *
-     * @param  {any}     [filter]     Filter to apply on search.
-     * @param  {any}     [page=0]     Page of the blog entries to fetch.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise to be resolved when the entries are retrieved.
+     * @param filter Filter to apply on search.
+     * @param page Page of the blog entries to fetch.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the entries are retrieved.
      */
-    getEntries(filter: any = {}, page: number = 0, siteId?: string): Promise<any> {
+    getEntries(filter: any = {}, page: number = 0, siteId?: string): Promise<AddonBlogGetEntriesResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const data = {
                 filters: this.utils.objectToArrayOfObjects(filter, 'name', 'value'),
@@ -88,9 +90,9 @@ export class AddonBlogProvider {
     /**
      * Invalidate blog entries WS call.
      *
-     * @param  {any}     [filter]     Filter to apply on search
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved when data is invalidated.
+     * @param filter Filter to apply on search
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateEntries(filter: any = {}, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -101,11 +103,11 @@ export class AddonBlogProvider {
     /**
      * Trigger the blog_entries_viewed event.
      *
-     * @param  {any}     [filter]     Filter to apply on search.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise to be resolved when done.
+     * @param filter Filter to apply on search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when done.
      */
-    logView(filter: any = {}, siteId?: string): Promise<any> {
+    logView(filter: any = {}, siteId?: string): Promise<AddonBlogViewEntriesResult> {
         this.pushNotificationsProvider.logViewListEvent('blog', 'core_blog_view_entries', filter, siteId);
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -117,3 +119,48 @@ export class AddonBlogProvider {
         });
     }
 }
+
+/**
+ * Data returned by blog's post_exporter.
+ */
+export type AddonBlogPost = {
+    id: number; // Post/entry id.
+    module: string; // Where it was published the post (blog, blog_external...).
+    userid: number; // Post author.
+    courseid: number; // Course where the post was created.
+    groupid: number; // Group post was created for.
+    moduleid: number; // Module id where the post was created (not used anymore).
+    coursemoduleid: number; // Course module id where the post was created.
+    subject: string; // Post subject.
+    summary: string; // Post summary.
+    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    content: string; // Post content.
+    uniquehash: string; // Post unique hash.
+    rating: number; // Post rating.
+    format: number; // Post content format.
+    attachment: string; // Post atachment.
+    publishstate: string; // Post publish state.
+    lastmodified: number; // When it was last modified.
+    created: number; // When it was created.
+    usermodified: number; // User that updated the post.
+    summaryfiles: CoreWSExternalFile[]; // Summaryfiles.
+    attachmentfiles?: CoreWSExternalFile[]; // Attachmentfiles.
+    tags?: CoreTagItem[]; // @since 3.7. Tags.
+};
+
+/**
+ * Result of WS core_blog_get_entries.
+ */
+export type AddonBlogGetEntriesResult = {
+    entries: AddonBlogPost[];
+    totalentries: number; // The total number of entries found.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_blog_view_entries.
+ */
+export type AddonBlogViewEntriesResult = {
+    status: boolean; // Status: true if success.
+    warnings?: CoreWSExternalWarning[];
+};

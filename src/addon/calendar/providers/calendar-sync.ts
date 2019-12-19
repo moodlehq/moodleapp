@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,9 +59,9 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all events in a certain site or in all sites.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllEvents(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all calendar events', this.syncAllEventsFunc.bind(this), [force], siteId);
@@ -70,9 +70,9 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync all events on a site.
      *
-     * @param {string} siteId Site ID to sync.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>}          Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllEventsFunc(siteId: string, force?: boolean): Promise<any> {
 
@@ -93,8 +93,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync a site events only if a certain time has passed since the last time.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the events are synced or if it doesn't need to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the events are synced or if it doesn't need to be synced.
      */
     syncEventsIfNeeded(siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -109,8 +109,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize all offline events of a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved if sync is successful, rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncEvents(siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -182,10 +182,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize an offline event.
      *
-     * @param {number} eventId The event ID to sync.
-     * @param {any} result Object where to store the result of the sync.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param eventId The event ID to sync.
+     * @param result Object where to store the result of the sync.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     protected syncOfflineEvent(eventId: number, result: any, siteId?: string): Promise<any> {
 

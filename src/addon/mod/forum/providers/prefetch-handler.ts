@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModForumProvider } from './forum';
 import { AddonModForumSyncProvider } from './sync';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch forums.
@@ -43,21 +45,24 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             filepoolProvider: CoreFilepoolProvider,
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
             private userProvider: CoreUserProvider,
             private groupsProvider: CoreGroupsProvider,
             private forumProvider: AddonModForumProvider,
             private syncProvider: AddonModForumSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
      * Get list of files. If not defined, we'll assume they're in module.contents.
      *
-     * @param {any} module Module.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<any[]>} Promise resolved with the list of files.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
         return this.forumProvider.getForum(courseId, module.id).then((forum) => {
@@ -77,8 +82,8 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Given a list of forum posts, return a list with all the files (attachments and embedded files).
      *
-     * @param {any[]} posts Forum posts.
-     * @return {any[]} Files.
+     * @param posts Forum posts.
+     * @return Files.
      */
     protected getPostsFiles(posts: any[]): any[] {
         let files = [];
@@ -91,7 +96,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
             if (getInlineFiles && post.messageinlinefiles && post.messageinlinefiles.length) {
                 files = files.concat(post.messageinlinefiles);
             } else if (post.message && !getInlineFiles) {
-                files = files.concat(this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
+                files = files.concat(this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
             }
         });
 
@@ -101,8 +106,8 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Get the posts to be prefetched.
      *
-     * @param {any} forum Forum instance.
-     * @return {Promise<any[]>} Promise resolved with array of posts.
+     * @param forum Forum instance.
+     * @return Promise resolved with array of posts.
      */
     protected getPostsForPrefetch(forum: any): Promise<any[]> {
         const promises = this.forumProvider.getAvailableSortOrders().map((sortOrder) => {
@@ -145,9 +150,9 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId The course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId The course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.forumProvider.invalidateContent(moduleId, courseId);
@@ -157,9 +162,9 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
      * Invalidate WS calls needed to determine module status (usually, to check if module is downloadable).
      * It doesn't need to invalidate check updates. It should NOT invalidate files nor all the prefetched data.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         // Invalidate forum data to recalculate unread message count badge.
@@ -174,11 +179,11 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.prefetchPackage(module, courseId, single, this.prefetchForum.bind(this));
@@ -187,11 +192,11 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Prefetch a forum.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchForum(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Get the forum data.
@@ -239,10 +244,10 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Prefetch groups info for a forum.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseI Course ID the module belongs to.
-     * @param {boolean} canCreateDiscussions Whether the user can create discussions in the forum.
-     * @return {Promise<any>} Promise resolved when group data has been prefetched.
+     * @param module The module object returned by WS.
+     * @param courseI Course ID the module belongs to.
+     * @param canCreateDiscussions Whether the user can create discussions in the forum.
+     * @return Promise resolved when group data has been prefetched.
      */
     protected prefetchGroupsInfo(forum: any, courseId: number, canCreateDiscussions: boolean): any {
         // Check group mode.
@@ -299,10 +304,10 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Sync a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     sync(module: any, courseId: number, siteId?: any): Promise<any> {
         const promises = [];

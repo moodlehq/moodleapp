@@ -4,7 +4,7 @@ ion-app.app-root core-timer {
     }
 
     .core-timer {
-        background-color: transparent;
+        background-color: transparent !important;
 
         span {
             font-weight: bold;
@@ -13,7 +13,7 @@ ion-app.app-root core-timer {
         // Create the timer warning colors. Go to $core-timer-warn-color.
         @for $i from 0 through $core-timer-iterations {
             &.core-timer-timeleft-#{$i} {
-                background-color: rgba($core-timer-warn-color, 1 - ($i / $core-timer-iterations));
+                background-color: rgba($core-timer-warn-color, 1 - ($i / $core-timer-iterations)) !important;
 
                 @if $i <= $core-timer-iterations / 2 {
                     label, span, ion-icon {

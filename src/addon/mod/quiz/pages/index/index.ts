@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ export class AddonModQuizIndexPage {
     /**
      * Update some data based on the quiz instance.
      *
-     * @param {any} quiz Quiz instance.
+     * @param quiz Quiz instance.
      */
     updateData(quiz: any): void {
         this.title = quiz.name || this.title;

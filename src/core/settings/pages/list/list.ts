@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ export class CoreSettingsListPage {
     /**
      * Open a handler.
      *
-     * @param {string} page Page to open.
-     * @param {any} params Params of the page to open.
+     * @param page Page to open.
+     * @param params Params of the page to open.
      */
     openHandler(page: string, params?: any): void {
         this.selectedPage = page;

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ export class AddonBlockRecentActivityHandler extends CoreBlockBaseHandler {
     /**
      * Returns the data needed to render the block.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} block The block to render.
-     * @param {string} contextLevel The context where the block will be used.
-     * @param {number} instanceId The instance ID associated with the context level.
-     * @return {CoreBlockHandlerData|Promise<CoreBlockHandlerData>} Data or promise resolved with the data.
+     * @param injector Injector.
+     * @param block The block to render.
+     * @param contextLevel The context where the block will be used.
+     * @param instanceId The instance ID associated with the context level.
+     * @return Data or promise resolved with the data.
      */
     getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number)
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData> {

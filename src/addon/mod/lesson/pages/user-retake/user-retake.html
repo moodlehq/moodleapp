@@ -64,7 +64,7 @@
                     </ion-card-header>
                     <ion-item text-wrap>
                         <p class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</p>
-                        <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [maxHeight]="50" [text]="page.contents"></core-format-text></p>
+                        <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [maxHeight]="50" [text]="page.contents" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                     </ion-item>
                     <ion-item text-wrap>
                         <p class="item-heading">{{ 'addon.mod_lesson.answer' | translate }}</p>
@@ -92,9 +92,9 @@
                                 <!-- Truefalse or matching. -->
                                 <ion-item text-wrap *ngIf="answer[0].isCheckbox" [ngClass]="{'addon-mod_lesson-highlight': answer[0].highlight}">
                                     <ion-label>
-                                        <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[0].content"></core-format-text></p>
+                                        <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[0].content" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                                         <ion-badge *ngIf="answer[1]" color="dark">
-                                            <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]"></core-format-text>
+                                            <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                         </ion-badge>
                                     </ion-label>
                                     <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true" item-end>
@@ -105,7 +105,7 @@
                                 <ion-item text-wrap *ngIf="answer[0].isText">
                                     <p>{{ answer[0].value }}</p>
                                     <ion-badge *ngIf="answer[1]" color="dark">
-                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]"></core-format-text>
+                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                     </ion-badge>
                                 </ion-item>
 
@@ -113,12 +113,12 @@
                                 <ion-item text-wrap *ngIf="answer[0].isSelect">
                                     <ion-row>
                                         <ion-col>
-                                            <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]=" answer[0].content"></core-format-text></p>
+                                            <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]=" answer[0].content" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                                         </ion-col>
                                         <ion-col>
                                             <p>{{answer[0].value}}</p>
                                             <ion-badge *ngIf="answer[1]" color="dark">
-                                                <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]"></core-format-text>
+                                                <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                             </ion-badge>
                                         </ion-col>
                                     </ion-row>
@@ -126,25 +126,25 @@
 
                                 <!-- Essay or couldn't determine. -->
                                 <ion-item text-wrap *ngIf="!answer[0].isCheckbox && !answer[0].isText && !answer[0].isSelect">
-                                    <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[0]"></core-format-text></p>
+                                    <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[0]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                                     <ion-badge *ngIf="answer[1]" color="dark">
-                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]"></core-format-text>
+                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                     </ion-badge>
                                 </ion-item>
                             </div>
 
                             <ion-item text-wrap *ngIf="!page.isContent && !page.isQuestion">
                                 <!-- Another page (end of branch, ...). -->
-                                <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[0]"></core-format-text></p>
+                                <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[0]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                                 <ion-badge *ngIf="answer[1]" color="dark">
-                                    <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]"></core-format-text>
+                                    <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                                 </ion-badge>
                             </ion-item>
                         </div>
 
                         <ion-item text-wrap *ngIf="page.answerdata.response">
                             <p class="item-heading">{{ 'addon.mod_lesson.response' | translate }}</p>
-                            <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="page.answerdata.response"></core-format-text></p>
+                            <p><core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="page.answerdata.response" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text></p>
                         </ion-item>
                         <ion-item text-wrap *ngIf="page.answerdata.score">
                             <p>{{page.answerdata.score}}</p>

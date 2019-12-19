@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,6 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * List of tabs that haven't been initialized yet. This is required because IonTab calls add() on the constructor,
      * but we need it to be called in OnInit to be able to determine the tab position.
-     * @type {CoreIonTabComponent[]}
      */
     protected tabsNotInit: CoreIonTabComponent[] = [];
 
@@ -95,9 +94,9 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Add a new tab if it isn't already in the list of tabs.
      *
-     * @param {CoreIonTabComponent} tab The tab to add.
-     * @param {boolean} [isInit] Whether the tab has been initialized.
-     * @return {string} The tab ID.
+     * @param tab The tab to add.
+     * @param isInit Whether the tab has been initialized.
+     * @return The tab ID.
      */
     add(tab: CoreIonTabComponent, isInit?: boolean): string {
         // Check if tab is already in the list of initialized tabs.
@@ -146,7 +145,7 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Initialize the tabs.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     initTabs(): Promise<any> {
         if (!this.initialized && (this._loaded || typeof this._loaded == 'undefined')) {
@@ -224,7 +223,7 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Remove a tab from the list of tabs.
      *
-     * @param {CoreIonTabComponent} tab The tab to remove.
+     * @param tab The tab to remove.
      */
     remove(tab: CoreIonTabComponent): void {
         // First search in the list of initialized tabs.
@@ -274,11 +273,11 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Select a tab.
      *
-     * @param {number|Tab} tabOrIndex Index, or the Tab instance, of the tab to select.
-     * @param {NavOptions} Nav options.
-     * @param {boolean} [fromUrl] Whether to load from a URL.
-     * @param {boolean} [manualClick] Whether the user manually clicked the tab.
-     * @return {Promise<any>} Promise resolved when selected.
+     * @param tabOrIndex Index, or the Tab instance, of the tab to select.
+     * @param Nav options.
+     * @param fromUrl Whether to load from a URL.
+     * @param manualClick Whether the user manually clicked the tab.
+     * @return Promise resolved when selected.
      */
     select(tabOrIndex: number | Tab, opts: NavOptions = {}, fromUrl?: boolean, manualClick?: boolean): Promise<any> {
 
@@ -314,8 +313,8 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Select a tab by Index. First it will reset the status of the tab.
      *
-     * @param {number} index Index of the tab.
-     * @return {Promise<any>} Promise resolved when selected.
+     * @param index Index of the tab.
+     * @return Promise resolved when selected.
      */
     selectTabRootByIndex(index: number): Promise<any> {
         if (this.initialized) {
@@ -350,7 +349,7 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Change tabs visibility to show/hide them from the view.
      *
-     * @param {boolean} visible If show or hide the tabs.
+     * @param visible If show or hide the tabs.
      */
     changeVisibility(visible: boolean): void {
         if (this.hidden == visible) {
@@ -374,8 +373,8 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
     /**
      * Confirm if the user wants to go to the root of the current tab.
      *
-     * @param {Tab} tab Tab to go to root.
-     * @return {Promise<any>} Promise resolved when confirmed.
+     * @param tab Tab to go to root.
+     * @return Promise resolved when confirmed.
      */
     confirmGoToRoot(tab: Tab): Promise<any> {
         if (!tab || !tab.isSelected || (tab.getActive() && tab.getActive().isFirst())) {

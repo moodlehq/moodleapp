@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ export class AddonModLessonListLinkHandler extends CoreContentLinksModuleListHan
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether or not the handler is enabled on a site level.
+     * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
         return this.lessonProvider.isPluginEnabled();

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesDashboardProvider } from '@core/courses/providers/dashboard';
+import { AddonCalendarEvents, AddonCalendarEventsGroupedByCourse, AddonCalendarEvent } from '@addon/calendar/providers/calendar';
 import * as moment from 'moment';
 
 /**
@@ -32,13 +33,13 @@ export class AddonBlockTimelineProvider {
     /**
      * Get calendar action events for the given course.
      *
-     * @param {number} courseId Only events in this course.
-     * @param {number} [afterEventId] The last seen event id.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{events: any[], canLoadMore: number}>} Promise resolved when the info is retrieved.
+     * @param courseId Only events in this course.
+     * @param afterEventId The last seen event id.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getActionEventsByCourse(courseId: number, afterEventId?: number, siteId?: string):
-            Promise<{ events: any[], canLoadMore: number }> {
+            Promise<{ events: AddonCalendarEvent[], canLoadMore: number }> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
@@ -55,7 +56,9 @@ export class AddonBlockTimelineProvider {
                 data.aftereventid = afterEventId;
             }
 
-            return site.read('core_calendar_get_action_events_by_course', data, preSets).then((courseEvents): any => {
+            return site.read('core_calendar_get_action_events_by_course', data, preSets)
+                    .then((courseEvents: AddonCalendarEvents): any => {
+
                 if (courseEvents && courseEvents.events) {
                     return this.treatCourseEvents(courseEvents, time);
                 }
@@ -68,8 +71,8 @@ export class AddonBlockTimelineProvider {
     /**
      * Get cache key for get calendar action events for the given course value WS call.
      *
-     * @param {number} courseId Only events in this course.
-     * @return {string} Cache key.
+     * @param courseId Only events in this course.
+     * @return Cache key.
      */
     protected getActionEventsByCourseCacheKey(courseId: number): string {
         return this.getActionEventsByCoursesCacheKey() + ':' + courseId;
@@ -78,12 +81,13 @@ export class AddonBlockTimelineProvider {
     /**
      * Get calendar action events for a given list of courses.
      *
-     * @param {number[]} courseIds Course IDs.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{[s: string]: {events: any[], canLoadMore: number}}>} Promise resolved when the info is retrieved.
+     * @param courseIds Course IDs.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the info is retrieved.
      */
-    getActionEventsByCourses(courseIds: number[], siteId?: string): Promise<{ [s: string]:
-            { events: any[], canLoadMore: number } }> {
+    getActionEventsByCourses(courseIds: number[], siteId?: string): Promise<{ [courseId: string]:
+            { events: AddonCalendarEvent[], canLoadMore: number } }> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data = {
@@ -95,7 +99,9 @@ export class AddonBlockTimelineProvider {
                     cacheKey: this.getActionEventsByCoursesCacheKey()
                 };
 
-            return site.read('core_calendar_get_action_events_by_courses', data, preSets).then((events): any => {
+            return site.read('core_calendar_get_action_events_by_courses', data, preSets)
+                    .then((events: AddonCalendarEventsGroupedByCourse): any => {
+
                 if (events && events.groupedbycourse) {
                     const courseEvents = {};
 
@@ -114,7 +120,7 @@ export class AddonBlockTimelineProvider {
     /**
      * Get cache key for get calendar action events for a given list of courses value WS call.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getActionEventsByCoursesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'bycourse';
@@ -123,11 +129,13 @@ export class AddonBlockTimelineProvider {
     /**
      * Get calendar action events based on the timesort value.
      *
-     * @param {number} [afterEventId] The last seen event id.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{events: any[], canLoadMore: number}>} Promise resolved when the info is retrieved.
+     * @param afterEventId The last seen event id.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved when the info is retrieved.
      */
-    getActionEventsByTimesort(afterEventId: number, siteId?: string): Promise<{ events: any[], canLoadMore: number }> {
+    getActionEventsByTimesort(afterEventId: number, siteId?: string):
+            Promise<{ events: AddonCalendarEvent[], canLoadMore: number }> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const time = moment().subtract(14, 'days').unix(), // Check two weeks ago.
                 data: any = {
@@ -144,12 +152,14 @@ export class AddonBlockTimelineProvider {
                 data.aftereventid = afterEventId;
             }
 
-            return site.read('core_calendar_get_action_events_by_timesort', data, preSets).then((events): any => {
-                if (events && events.events) {
-                    const canLoadMore = events.events.length >= data.limitnum ? events.lastid : undefined;
+            return site.read('core_calendar_get_action_events_by_timesort', data, preSets)
+                    .then((result: AddonCalendarEvents): any => {
+
+                if (result && result.events) {
+                    const canLoadMore = result.events.length >= data.limitnum ? result.lastid : undefined;
 
                     // Filter events by time in case it uses cache.
-                    events = events.events.filter((element) => {
+                    const events = result.events.filter((element) => {
                         return element.timesort >= time;
                     });
 
@@ -167,7 +177,7 @@ export class AddonBlockTimelineProvider {
     /**
      * Get prefix cache key for calendar action events based on the timesort value WS calls.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getActionEventsByTimesortPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'bytimesort:';
@@ -176,9 +186,9 @@ export class AddonBlockTimelineProvider {
     /**
      * Get cache key for get calendar action events based on the timesort value WS call.
      *
-     * @param {number} [afterEventId] The last seen event id.
-     * @param {number} [limit] Limit num of the call.
-     * @return {string} Cache key.
+     * @param afterEventId The last seen event id.
+     * @param limit Limit num of the call.
+     * @return Cache key.
      */
     protected getActionEventsByTimesortCacheKey(afterEventId?: number, limit?: number): string {
         afterEventId = afterEventId || 0;
@@ -190,8 +200,8 @@ export class AddonBlockTimelineProvider {
     /**
      * Invalidates get calendar action events for a given list of courses WS call.
      *
-     * @param {string} [siteId] Site ID to invalidate. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateActionEventsByCourses(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -202,8 +212,8 @@ export class AddonBlockTimelineProvider {
     /**
      * Invalidates get calendar action events based on the timesort value WS call.
      *
-     * @param {string} [siteId] Site ID to invalidate. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateActionEventsByTimesort(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -214,8 +224,8 @@ export class AddonBlockTimelineProvider {
     /**
      * Returns whether or not My Overview is available for a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
      */
     isAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -232,11 +242,13 @@ export class AddonBlockTimelineProvider {
     /**
      * Handles course events, filtering and treating if more can be loaded.
      *
-     * @param {any} course Object containing response course events info.
-     * @param {number} timeFrom Current time to filter events from.
-     * @return {{events: any[], canLoadMore: number}} Object with course events and last loaded event id if more can be loaded.
+     * @param course Object containing response course events info.
+     * @param timeFrom Current time to filter events from.
+     * @return Object with course events and last loaded event id if more can be loaded.
      */
-    protected treatCourseEvents(course: any, timeFrom: number): { events: any[], canLoadMore: number } {
+    protected treatCourseEvents(course: AddonCalendarEvents, timeFrom: number):
+            { events: AddonCalendarEvent[], canLoadMore: number } {
+
         const canLoadMore: number =
             course.events.length >= AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE ? course.lastid : undefined;
 

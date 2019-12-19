@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="plugin.name"></core-format-text></ion-title>
+        <ion-title>{{ plugin.name }}</ion-title>
         <ion-buttons end>
             <button ion-button icon-only (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon name="close"></ion-icon>

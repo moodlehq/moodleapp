@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ export class CoreDownloadRefreshComponent {
     /**
      * Download clicked.
      *
-     * @param {Event} e Click event.
-     * @param {boolean} refresh Whether it's refreshing.
+     * @param e Click event.
+     * @param refresh Whether it's refreshing.
      */
     download(e: Event, refresh: boolean): void {
         e.preventDefault();

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,36 +24,33 @@ import { Subject } from 'rxjs';
 export interface CorePushNotificationsClickHandler {
     /**
      * A name to identify the handler.
-     * @type {string}
      */
     name: string;
 
     /**
      * Handler's priority. The highest priority is treated first.
-     * @type {number}
      */
     priority?: number;
 
     /**
      * Name of the feature this handler is related to.
      * It will be used to check if the feature is disabled (@see CoreSite.isFeatureDisabled).
-     * @type {string}
      */
     featureName?: string;
 
     /**
      * Check if a notification click is handled by this handler.
      *
-     * @param {any} notification The notification to check.
-     * @return {boolean} Whether the notification click is handled by this handler.
+     * @param notification The notification to check.
+     * @return Whether the notification click is handled by this handler.
      */
     handles(notification: any): boolean | Promise<boolean>;
 
     /**
      * Handle the notification click.
      *
-     * @param {any} notification The notification to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification The notification to check.
+     * @return Promise resolved when done.
      */
     handleClick(notification: any): Promise<any>;
 }
@@ -77,8 +74,8 @@ export class CorePushNotificationsDelegate {
     /**
      * Function called when a push notification is clicked. Sends notification to handlers.
      *
-     * @param {any} notification Notification clicked.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification Notification clicked.
+     * @return Promise resolved when done.
      */
     clicked(notification: any): Promise<any> {
         if (!notification) {
@@ -122,9 +119,9 @@ export class CorePushNotificationsDelegate {
     /**
      * Check if a handler's feature is disabled for a certain site.
      *
-     * @param {CorePushNotificationsClickHandler} handler Handler to check.
-     * @param {string} siteId The site ID to check.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether the handler feature is disabled.
+     * @param handler Handler to check.
+     * @param siteId The site ID to check.
+     * @return Promise resolved with boolean: whether the handler feature is disabled.
      */
     protected isFeatureDisabled(handler: CorePushNotificationsClickHandler, siteId: string): Promise<boolean> {
         if (handler.featureName) {
@@ -139,7 +136,7 @@ export class CorePushNotificationsDelegate {
      * Function called when a push notification is received in foreground (cannot tell when it's received in background).
      * Sends notification to all handlers.
      *
-     * @param {any} notification Notification received.
+     * @param notification Notification received.
      */
     received(notification: any): void {
         this.observables['receive'].next(notification);
@@ -151,8 +148,8 @@ export class CorePushNotificationsDelegate {
      * ...
      * observer.unsuscribe();
      *
-     * @param {string}  eventName Only receive is permitted.
-     * @return {Subject<any>} Observer to subscribe.
+     * @param eventName Only receive is permitted.
+     * @return Observer to subscribe.
      */
     on(eventName: string): Subject<any> {
         if (typeof this.observables[eventName] == 'undefined') {
@@ -168,8 +165,8 @@ export class CorePushNotificationsDelegate {
     /**
      * Register a click handler.
      *
-     * @param {CorePushNotificationsClickHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
+     * @param handler The handler to register.
+     * @return True if registered successfully, false otherwise.
      */
     registerClickHandler(handler: CorePushNotificationsClickHandler): boolean {
         if (typeof this.clickHandlers[handler.name] !== 'undefined') {
@@ -187,7 +184,7 @@ export class CorePushNotificationsDelegate {
     /**
      * Register a push notifications handler for update badge counter.
      *
-     * @param {string} name  Handler's name.
+     * @param name Handler's name.
      */
     registerCounterHandler(name: string): void {
         if (typeof this.counterHandlers[name] == 'undefined') {
@@ -201,8 +198,8 @@ export class CorePushNotificationsDelegate {
     /**
      * Check if a counter handler is present.
      *
-     * @param {string} name       Handler's name.
-     * @return {boolean}  If handler name is present.
+     * @param name Handler's name.
+     * @return If handler name is present.
      */
     isCounterHandlerRegistered(name: string): boolean {
         return typeof this.counterHandlers[name] != 'undefined';
@@ -211,7 +208,7 @@ export class CorePushNotificationsDelegate {
     /**
      * Get all counter badge handlers.
      *
-     * @return {any}  with all the handler names.
+     * @return with all the handler names.
      */
     getCounterHandlers(): any {
         return this.counterHandlers;

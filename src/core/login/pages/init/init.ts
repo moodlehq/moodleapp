@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,19 +81,26 @@ export class CoreLoginInitPage {
     /**
      * Load the right page.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadPage(): Promise<any> {
         if (this.sitesProvider.isLoggedIn()) {
-            if (!this.loginHelper.isSiteLoggedOut()) {
-                // User is logged in, go to site initial page.
-                return this.loginHelper.goToSiteInitialPage();
-            } else {
-                // The site is marked as logged out. Logout and try again.
+            if (this.loginHelper.isSiteLoggedOut()) {
                 return this.sitesProvider.logout().then(() => {
                     return this.loadPage();
                 });
             }
+
+            return this.sitesProvider.getCurrentSite().getPublicConfig().catch(() => {
+                return {};
+            }).then((config) => {
+                return this.sitesProvider.checkRequiredMinimumVersion(config).then(() => {
+                     // User is logged in, go to site initial page.
+                    return this.loginHelper.goToSiteInitialPage();
+                }).catch(() => {
+                    return this.loadPage();
+                });
+            });
         }
 
         return this.navCtrl.setRoot('CoreLoginSitesPage');

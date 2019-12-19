@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ export class AddonStorageManagerCourseMenuHandler implements CoreCourseOptionsMe
     /**
      * Checks if the handler is enabled for specified course. This handler is always available.
      *
-     * @param {number} courseId Course id
-     * @param {any} accessData Access data
-     * @param {any} [navOptions] Navigation options if any
-     * @param {any} [admOptions] Admin options if any
-     * @return {boolean | Promise<boolean>} True
+     * @param courseId Course id
+     * @param accessData Access data
+     * @param navOptions Navigation options if any
+     * @param admOptions Admin options if any
+     * @return True
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         return true;
@@ -40,7 +40,7 @@ export class AddonStorageManagerCourseMenuHandler implements CoreCourseOptionsMe
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -49,9 +49,9 @@ export class AddonStorageManagerCourseMenuHandler implements CoreCourseOptionsMe
     /**
      * Returns the data needed to render the handler.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} course The course.
-     * @return {CoreCourseOptionsMenuHandlerData} Data needed to render the handler.
+     * @param injector Injector.
+     * @param course The course.
+     * @return Data needed to render the handler.
      */
     getMenuDisplayData(injector: Injector, course: any): CoreCourseOptionsMenuHandlerData {
         return {

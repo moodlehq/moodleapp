@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
-import { AddonMessagesProvider } from '@addon/messages/providers/messages';
+import { AddonMessagesProvider, AddonMessagesMarkMessageReadResult } from '@addon/messages/providers/messages';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
  * Service to handle notifications.
@@ -47,18 +48,17 @@ export class AddonNotificationsProvider {
     /**
      * Function to format notification data.
      *
-     * @param {any[]} notifications List of notifications.
-     * @param {boolean} [read] Whether the notifications are read or unread.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param notifications List of notifications.
+     * @param read Whether the notifications are read or unread.
+     * @return Promise resolved with notifications.
      */
-    protected formatNotificationsData(notifications: any[], read?: boolean): Promise<any> {
+    protected formatNotificationsData(notifications: AddonNotificationsAnyNotification[], read?: boolean): Promise<any> {
+
         const promises = notifications.map((notification) => {
 
             // Set message to show.
             if (notification.component && notification.component == 'mod_forum') {
                 notification.mobiletext = notification.smallmessage;
-            } else if (notification.component && notification.component == 'moodle' && notification.name == 'insights') {
-                notification.mobiletext = notification.fullmessagehtml;
             } else {
                 notification.mobiletext = notification.fullmessage;
             }
@@ -105,7 +105,7 @@ export class AddonNotificationsProvider {
     /**
      * Get the cache key for the get notification preferences call.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getNotificationPreferencesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'notificationPreferences';
@@ -114,10 +114,10 @@ export class AddonNotificationsProvider {
     /**
      * Get notification preferences.
      *
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved with the notification preferences.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the notification preferences.
      */
-    getNotificationPreferences(siteId?: string): Promise<any> {
+    getNotificationPreferences(siteId?: string): Promise<AddonNotificationsNotificationPreferences> {
         this.logger.debug('Get notification preferences');
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -126,7 +126,9 @@ export class AddonNotificationsProvider {
                     updateFrequency: CoreSite.FREQUENCY_SOMETIMES
             };
 
-            return site.read('core_message_get_user_notification_preferences', {}, preSets).then((data) => {
+            return site.read('core_message_get_user_notification_preferences', {}, preSets)
+                    .then((data: AddonNotificationsGetUserNotificationPreferencesResult) => {
+
                 return data.preferences;
             });
         });
@@ -135,7 +137,7 @@ export class AddonNotificationsProvider {
     /**
      * Get cache key for notification list WS calls.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getNotificationsCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'list';
@@ -144,17 +146,17 @@ export class AddonNotificationsProvider {
     /**
      * Get notifications from site.
      *
-     * @param {boolean} read True if should get read notifications, false otherwise.
-     * @param {number} limitFrom Position of the first notification to get.
-     * @param {number} limitNumber Number of notifications to get or 0 to use the default limit.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param read True if should get read notifications, false otherwise.
+     * @param limitFrom Position of the first notification to get.
+     * @param limitNumber Number of notifications to get or 0 to use the default limit.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications.
      */
     getNotifications(read: boolean, limitFrom: number, limitNumber: number = 0, toDisplay: boolean = true,
-            forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+            forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<AddonNotificationsGetMessagesMessage[]> {
         limitNumber = limitNumber || AddonNotificationsProvider.LIST_LIMIT;
         this.logger.debug('Get ' + (read ? 'read' : 'unread') + ' notifications from ' + limitFrom + '. Limit: ' + limitNumber);
 
@@ -176,7 +178,7 @@ export class AddonNotificationsProvider {
             };
 
             // Get unread notifications.
-            return site.read('core_message_get_messages', data, preSets).then((response) => {
+            return site.read('core_message_get_messages', data, preSets).then((response: AddonNotificationsGetMessagesResult) => {
                 if (response.messages) {
                     const notifications = response.messages;
 
@@ -199,17 +201,17 @@ export class AddonNotificationsProvider {
     /**
      * Get notifications from site using the new WebService.
      *
-     * @param {number} offset Position of the first notification to get.
-     * @param {number} [limit] Number of notifications to get. Defaults to LIST_LIMIT.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<{notifications: any[], canLoadMore: boolean}>} Promise resolved with notifications and if can load more.
+     * @param offset Position of the first notification to get.
+     * @param limit Number of notifications to get. Defaults to LIST_LIMIT.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications and if can load more.
      * @since 3.2
      */
     getPopupNotifications(offset: number, limit?: number, toDisplay: boolean = true, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<{notifications: any[], canLoadMore: boolean}> {
+            siteId?: string): Promise<{notifications: AddonNotificationsPopupNotificationFormatted[], canLoadMore: boolean}> {
 
         limit = limit || AddonNotificationsProvider.LIST_LIMIT;
 
@@ -230,17 +232,17 @@ export class AddonNotificationsProvider {
                 };
 
             // Get notifications.
-            return site.read('message_popup_get_popup_notifications', data, preSets).then((response) => {
+            return site.read('message_popup_get_popup_notifications', data, preSets)
+                    .then((response: AddonNotificationsGetPopupNotificationsResult) => {
+
                 if (response.notifications) {
-                    const result: any = {
-                            canLoadMore: response.notifications.length > limit
-                        },
-                        notifications = response.notifications.slice(0, limit);
+                    const result = {
+                            canLoadMore: response.notifications.length > limit,
+                            notifications: response.notifications.slice(0, limit)
+                        };
 
-                    result.notifications = notifications;
-
-                    return this.formatNotificationsData(notifications).then(() => {
-                        const first = notifications[0];
+                    return this.formatNotificationsData(result.notifications).then(() => {
+                        const first = result.notifications[0];
 
                         if (this.appProvider.isDesktop() && toDisplay && offset === 0 && first && !first.read) {
                             // Store the last received notification. Don't block the user for this.
@@ -260,41 +262,41 @@ export class AddonNotificationsProvider {
     /**
      * Get read notifications from site.
      *
-     * @param {number} limitFrom Position of the first notification to get.
-     * @param {number} limitNumber Number of notifications to get.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param limitFrom Position of the first notification to get.
+     * @param limitNumber Number of notifications to get.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications.
      */
     getReadNotifications(limitFrom: number, limitNumber: number, toDisplay: boolean = true,
-            forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+            forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<AddonNotificationsGetMessagesMessage[]> {
         return this.getNotifications(true, limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId);
     }
 
     /**
      * Get unread notifications from site.
      *
-     * @param {number} limitFrom Position of the first notification to get.
-     * @param {number} limitNumber Number of notifications to get.
-     * @param {boolean} [toDisplay=true] True if notifications will be displayed to the user, either in view or in a notification.
-     * @param {boolean} [forceCache] True if it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with notifications.
+     * @param limitFrom Position of the first notification to get.
+     * @param limitNumber Number of notifications to get.
+     * @param toDisplay True if notifications will be displayed to the user, either in view or in a notification.
+     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with notifications.
      */
     getUnreadNotifications(limitFrom: number, limitNumber: number, toDisplay: boolean = true,
-            forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+            forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<AddonNotificationsGetMessagesMessage[]> {
         return this.getNotifications(false, limitFrom, limitNumber, toDisplay, forceCache, ignoreCache, siteId);
     }
 
     /**
      * Get unread notifications count. Do not cache calls.
      *
-     * @param {number} [userId] The user id who received the notification. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, use current site.
-     * @return {Promise<number>} Promise resolved with the message notifications count.
+     * @param userId The user id who received the notification. If not defined, use current user.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise resolved with the message notifications count.
      */
     getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -334,8 +336,8 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not popup WS is available for a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
      */
     isPopupAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -346,10 +348,10 @@ export class AddonNotificationsProvider {
     /**
      * Mark all message notification as read.
      *
-     * @returns {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      * @since 3.2
      */
-    markAllNotificationsAsRead(): Promise<any> {
+    markAllNotificationsAsRead(): Promise<boolean> {
         const params = {
             useridto: this.sitesProvider.getCurrentSiteUserId()
         };
@@ -360,12 +362,14 @@ export class AddonNotificationsProvider {
     /**
      * Mark a single notification as read.
      *
-     * @param {number} notificationId ID of notification to mark as read
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @returns {Promise<any>} Resolved when done.
+     * @param notificationId ID of notification to mark as read
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      * @since 3.5
      */
-    markNotificationRead(notificationId: number, siteId?: string): Promise<any> {
+    markNotificationRead(notificationId: number, siteId?: string)
+            : Promise<AddonNotificationsMarkNotificationReadResult | AddonMessagesMarkMessageReadResult> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             if (site.wsAvailable('core_message_mark_notification_read')) {
@@ -385,8 +389,8 @@ export class AddonNotificationsProvider {
     /**
      * Invalidate get notification preferences.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when data is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when data is invalidated.
      */
     invalidateNotificationPreferences(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -397,8 +401,8 @@ export class AddonNotificationsProvider {
     /**
      * Invalidates notifications list WS calls.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateNotificationsList(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -409,7 +413,7 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not we can mark all notifications as read.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isMarkAllNotificationsAsReadEnabled(): boolean {
@@ -419,7 +423,7 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not we can count unread notifications precisely.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isPreciseNotificationCountEnabled(): boolean {
@@ -429,10 +433,187 @@ export class AddonNotificationsProvider {
     /**
      * Returns whether or not the notification preferences are enabled for the current site.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      * @since 3.2
      */
     isNotificationPreferencesEnabled(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('core_message_get_user_notification_preferences');
     }
 }
+
+/**
+ * Preferences returned by core_message_get_user_notification_preferences.
+ */
+export type AddonNotificationsNotificationPreferences = {
+    userid: number; // User id.
+    disableall: number | boolean; // Whether all the preferences are disabled.
+    processors: AddonNotificationsNotificationPreferencesProcessor[]; // Config form values.
+    components: AddonNotificationsNotificationPreferencesComponent[]; // Available components.
+    enableall?: boolean; // Calculated in the app. Whether all the preferences are enabled.
+};
+
+/**
+ * Processor in notification preferences.
+ */
+export type AddonNotificationsNotificationPreferencesProcessor = {
+    displayname: string; // Display name.
+    name: string; // Processor name.
+    hassettings: boolean; // Whether has settings.
+    contextid: number; // Context id.
+    userconfigured: number; // Whether is configured by the user.
+};
+
+/**
+ * Component in notification preferences.
+ */
+export type AddonNotificationsNotificationPreferencesComponent = {
+    displayname: string; // Display name.
+    notifications: AddonNotificationsNotificationPreferencesNotification[]; // List of notificaitons for the component.
+};
+
+/**
+ * Notification processor in notification preferences component.
+ */
+export type AddonNotificationsNotificationPreferencesNotification = {
+    displayname: string; // Display name.
+    preferencekey: string; // Preference key.
+    processors: AddonNotificationsNotificationPreferencesNotificationProcessor[]; // Processors values for this notification.
+};
+
+/**
+ * Notification processor in notification preferences component.
+ */
+export type AddonNotificationsNotificationPreferencesNotificationProcessor = {
+    displayname: string; // Display name.
+    name: string; // Processor name.
+    locked: boolean; // Is locked by admin?.
+    lockedmessage?: string; // @since 3.6. Text to display if locked.
+    userconfigured: number; // Is configured?.
+    loggedin: AddonNotificationsNotificationPreferencesNotificationProcessorState;
+    loggedoff: AddonNotificationsNotificationPreferencesNotificationProcessorState;
+};
+
+/**
+ * State in notification processor in notification preferences component.
+ */
+export type AddonNotificationsNotificationPreferencesNotificationProcessorState = {
+    name: string; // Name.
+    displayname: string; // Display name.
+    checked: boolean; // Is checked?.
+};
+
+/**
+ * Result of WS core_message_get_messages.
+ */
+export type AddonNotificationsGetMessagesResult = {
+    messages: AddonNotificationsGetMessagesMessage[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Message data returned by core_message_get_messages.
+ */
+export type AddonNotificationsGetMessagesMessage = {
+    id: number; // Message id.
+    useridfrom: number; // User from id.
+    useridto: number; // User to id.
+    subject: string; // The message subject.
+    text: string; // The message text formated.
+    fullmessage: string; // The message.
+    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessagehtml: string; // The message in html.
+    smallmessage: string; // The shorten message.
+    notification: number; // Is a notification?.
+    contexturl: string; // Context URL.
+    contexturlname: string; // Context URL link name.
+    timecreated: number; // Time created.
+    timeread: number; // Time read.
+    usertofullname: string; // User to full name.
+    userfromfullname: string; // User from full name.
+    component?: string; // @since 3.7. The component that generated the notification.
+    eventtype?: string; // @since 3.7. The type of notification.
+    customdata?: any; // @since 3.7. Custom data to be passed to the message processor.
+};
+
+/**
+ * Message data returned by core_message_get_messages with some calculated data.
+ */
+export type AddonNotificationsGetMessagesMessageFormatted =
+        AddonNotificationsGetMessagesMessage & AddonNotificationsNotificationCalculatedData;
+
+/**
+ * Result of WS message_popup_get_popup_notifications.
+ */
+export type AddonNotificationsGetPopupNotificationsResult = {
+    notifications: AddonNotificationsPopupNotification[];
+    unreadcount: number; // The number of unread message for the given user.
+};
+
+/**
+ * Notification returned by message_popup_get_popup_notifications.
+ */
+export type AddonNotificationsPopupNotification = {
+    id: number; // Notification id (this is not guaranteed to be unique within this result set).
+    useridfrom: number; // User from id.
+    useridto: number; // User to id.
+    subject: string; // The notification subject.
+    shortenedsubject: string; // The notification subject shortened with ellipsis.
+    text: string; // The message text formated.
+    fullmessage: string; // The message.
+    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessagehtml: string; // The message in html.
+    smallmessage: string; // The shorten message.
+    contexturl: string; // Context URL.
+    contexturlname: string; // Context URL link name.
+    timecreated: number; // Time created.
+    timecreatedpretty: string; // Time created in a pretty format.
+    timeread: number; // Time read.
+    read: boolean; // Notification read status.
+    deleted: boolean; // Notification deletion status.
+    iconurl: string; // URL for notification icon.
+    component?: string; // The component that generated the notification.
+    eventtype?: string; // The type of notification.
+    customdata?: any; // @since 3.7. Custom data to be passed to the message processor.
+};
+
+/**
+ * Notification returned by message_popup_get_popup_notifications.
+ */
+export type AddonNotificationsPopupNotificationFormatted =
+        AddonNotificationsPopupNotification & AddonNotificationsNotificationCalculatedData;
+
+/**
+ * Any kind of notification that can be retrieved.
+ */
+export type AddonNotificationsAnyNotification =
+        AddonNotificationsPopupNotificationFormatted | AddonNotificationsGetMessagesMessageFormatted;
+
+/**
+ * Result of WS core_message_get_user_notification_preferences.
+ */
+export type AddonNotificationsGetUserNotificationPreferencesResult = {
+    preferences: AddonNotificationsNotificationPreferences;
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_message_mark_notification_read.
+ */
+export type AddonNotificationsMarkNotificationReadResult = {
+    notificationid: number; // Id of the notification.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Calculated data for messages returned by core_message_get_messages.
+ */
+export type AddonNotificationsNotificationCalculatedData = {
+    mobiletext?: string; // Calculated in the app. Text to display for the notification.
+    moodlecomponent?: string; // Calculated in the app. Moodle's component.
+    notif?: number; // Calculated in the app. Whether it's a notification.
+    notification?: number; // Calculated in the app in some cases. Whether it's a notification.
+    read?: boolean; // Calculated in the app. Whether the notifications is read.
+    courseid?: number; // Calculated in the app. Course the notification belongs to.
+    profileimageurlfrom?: string; // Calculated in the app. Avatar of user that sent the notification.
+    userfromfullname?: string; // Calculated in the app in some cases. User from full name.
+};

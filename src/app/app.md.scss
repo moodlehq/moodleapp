@@ -38,11 +38,15 @@ ion-app.app-root.md {
       @extend .card-md;
       @extend .card-content-md;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
-        @include padding(null, null, null, $card-md-padding-left * 2 + 20);
+        @include safe-area-padding(null, null, null, $card-md-padding-left * 2 + 20);
 
         ion-icon {
-          @include position(null, null, null, $card-md-padding-left);
+          @include safe-area-position(null, null, null, $card-md-padding-left);
         }
       }
     }

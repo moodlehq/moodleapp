@@ -10,7 +10,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding>
-    <core-format-text [text]="content" [component]="component" [componentId]="componentId"></core-format-text>
+    <core-format-text [text]="content" [component]="component" [componentId]="componentId" [filter]="filter" [contextLevel]="contextLevel" [contextInstanceId]="instanceId" [courseId]="courseId"></core-format-text>
 
     <ion-card *ngIf="files && files.length">
         <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId"></core-file>

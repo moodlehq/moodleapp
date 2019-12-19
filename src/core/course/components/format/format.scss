@@ -6,13 +6,6 @@ ion-app.app-root ion-badge.core-course-download-section-progress {
 
 ion-app.app-root core-course-format {
 
-    button.core-button-select .core-section-selector-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 2em;
-        white-space: nowrap;
-    }
-
     .core-format-progress-list {
         margin-bottom: 0;
 
@@ -69,6 +62,10 @@ ion-app.app-root core-course-format {
 
     div.core-section-download {
         @include padding(null, 0, null, null);
+    }
+
+    .core-button-selector-row {
+        @include safe-area-padding-start($content-padding !important, $content-padding);
     }
 
     .core-course-section-nav-buttons {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,10 +30,16 @@ export class AddonModScormTocPage {
     isReview: boolean;
     attemptToContinue: number;
     selected: number;
+    moduleId: number;
+    courseId: number;
+    accessInfo: any;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.toc = navParams.get('toc') || [];
         this.attemptToContinue = navParams.get('attemptToContinue');
+        this.moduleId = navParams.get('moduleId');
+        this.courseId = navParams.get('courseId');
+        this.accessInfo = navParams.get('accessInfo');
 
         const mode = navParams.get('mode');
         this.selected = navParams.get('selected');
@@ -45,7 +51,7 @@ export class AddonModScormTocPage {
     /**
      * Function called when a SCO is clicked.
      *
-     * @param {any} sco Clicked SCO.
+     * @param sco Clicked SCO.
      */
     loadSco(sco: any): void {
         if (!sco.prereq || !sco.isvisible || !sco.launch) {

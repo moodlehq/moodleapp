@@ -26,7 +26,7 @@
                 <div *ngIf="!pageInstance.loadingMenu">
                     <ng-container *ngFor="let page of pageInstance.lessonPages">
                         <a ion-item text-wrap *ngIf="page.display && page.displayinmenublock" (click)="loadPage(page.id)" [ngClass]='{"addon-mod_lesson-selected core-white-push-arrow": !pageInstance.eolData && pageInstance.currentPage == page.id}'>
-                            <p><core-format-text [text]="page.title"></core-format-text></p>
+                            <p><core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="pageInstance && pageInstance.lesson && pageInstance.lesson.coursemodule" [courseId]="pageInstance && pageInstance.courseId"></core-format-text></p>
                         </a>
                     </ng-container>
                 </div>

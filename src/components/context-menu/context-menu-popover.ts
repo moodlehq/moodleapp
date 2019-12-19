@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,16 +40,16 @@ export class CoreContextMenuPopoverComponent {
     /**
      * Close the popover.
      */
-    closeMenu(): void {
-        this.viewCtrl.dismiss();
+    closeMenu(item?: CoreContextMenuItemComponent): void {
+        this.viewCtrl.dismiss(item);
     }
 
     /**
      * Function called when an item is clicked.
      *
-     * @param {Event} event Click event.
-     * @param {CoreContextMenuItemComponent} item Item clicked.
-     * @return {boolean} Return true if success, false if error.
+     * @param event Click event.
+     * @param item Item clicked.
+     * @return Return true if success, false if error.
      */
     itemClicked(event: Event, item: CoreContextMenuItemComponent): boolean {
         if (item.action.observers.length > 0) {
@@ -61,12 +61,12 @@ export class CoreContextMenuPopoverComponent {
             }
 
             if (item.closeOnClick) {
-                this.closeMenu();
+                this.closeMenu(item);
             }
 
-            item.action.emit(this.closeMenu.bind(this));
-        } else if (item.href && item.closeOnClick) {
-            this.closeMenu();
+            item.action.emit(this.closeMenu.bind(this, item));
+        } else if (item.closeOnClick && (item.href || item.onClosed.observers.length > 0)) {
+            this.closeMenu(item);
         }
 
         return true;

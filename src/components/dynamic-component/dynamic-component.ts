@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -118,9 +118,9 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
     /**
      * Call a certain function on the component.
      *
-     * @param {string} name Name of the function to call.
-     * @param {any[]} params List of params to send to the function.
-     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     * @param name Name of the function to call.
+     * @param params List of params to send to the function.
+     * @return Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: any[]): any {
         if (this.instance && typeof this.instance[name] == 'function') {
@@ -131,7 +131,7 @@ export class CoreDynamicComponent implements OnInit, OnChanges, DoCheck {
     /**
      * Create a component, add it to a container and set the input data.
      *
-     * @return {boolean} Whether the component was successfully created.
+     * @return Whether the component was successfully created.
      */
     protected createComponent(): boolean {
         this.lastComponent = this.component;

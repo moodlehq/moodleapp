@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the courses in a certain site or in all sites.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether the execution is forced (manual sync).
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether the execution is forced (manual sync).
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllCourses(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this), [force], siteId);
@@ -59,9 +59,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync all courses on a site.
      *
-     * @param {string} siteId Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force Wether the execution is forced (manual sync).
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether the execution is forced (manual sync).
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllCoursesFunc(siteId: string, force: boolean): Promise<any> {
         const p1 = [];
@@ -94,9 +94,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync a course if it's needed.
      *
-     * @param {number} courseId Course ID to be synced.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the course is synced or it doesn't need to be synced.
+     * @param courseId Course ID to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the course is synced or it doesn't need to be synced.
      */
     syncCourseIfNeeded(courseId: number, siteId?: string): Promise<any> {
         // Usually we call isSyncNeeded to check if a certain time has passed.
@@ -107,9 +107,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize a course.
      *
-     * @param {number} courseId Course ID to be synced.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param courseId Course ID to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncCourse(courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

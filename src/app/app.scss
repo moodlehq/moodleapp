@@ -122,6 +122,12 @@ ion-app.app-root {
     @include core-items();
   }
 
+  ion-header ion-title .toolbar-title .MathJax_Display {
+    display: inline-block !important;
+    margin: 0;
+    width: auto;
+  }
+
   .core-oauth-icon, .item.core-oauth-icon, .list .item.core-oauth-icon {
     min-height: 32px;
     img, .label {
@@ -255,6 +261,10 @@ ion-app.app-root {
 
         &.core-shortened {
           color: $gray-darker;
+          @include darkmode() {
+            color: $white;
+          }
+
           overflow: hidden;
           min-height: 50px;
 
@@ -268,6 +278,10 @@ ion-app.app-root {
             z-index: 1001;
             background-color: $white;
             @include padding(null, null, null, 10px);
+            @include darkmode() {
+              color: $white;
+              background-color: $core-dark-item-bg-color;
+            }
           }
 
           &:before {
@@ -282,6 +296,15 @@ ion-app.app-root {
             background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), white calc(100% - 15px));
             z-index: 1000;
+
+            @include darkmode {
+              background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(255, 255, 255, 0)), color-stop(calc(100% - 15px), $core-dark-item-bg-color));
+              background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: -o-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+              background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(100% - 50px), $core-dark-item-bg-color calc(100% - 15px));
+            }
           }
         }
       }
@@ -344,6 +367,9 @@ ion-app.app-root {
     color: $black;
     border-radius: 5px;
     background: rgba(255, 255, 255, .5);
+    @include darkmode() {
+      background-color: rgba(0, 0, 0, .5);
+    }
     text-align: center;
 
     width: 32px;
@@ -353,6 +379,8 @@ ion-app.app-root {
     font-size: 24px;
     ion-icon {
       font-size: 24px;
+
+
     }
   }
 
@@ -467,6 +495,30 @@ ion-app.app-root {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+  }
+
+  @include darkmode() {
+    ion-select.core-button-select,
+    .core-button-select {
+      background-color: $core-dark-item-bg-color;
+
+
+      &.select-md,
+      &.button-md,
+      &.select-ios,
+      &.button-ios,
+      &.select-wp,
+      &.button-wp {
+        background: $core-dark-item-bg-color;
+      }
+    }
+  }
+
+  button.core-button-select .core-button-select-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 2em;
+    white-space: nowrap;
   }
 
   // File uploader.
@@ -675,6 +727,17 @@ ion-app.app-root {
 
   .header .toolbar-ios {
     height: $toolbar-ios-height;
+    max-height: $toolbar-ios-height;
+  }
+
+  .header .toolbar-wp {
+    height: $toolbar-wp-height;
+    max-height: $toolbar-wp-height;
+  }
+
+  .header .toolbar-md {
+    height: $toolbar-md-height;
+    max-height: $toolbar-md-height;
   }
 
   // Footer with auto height.
@@ -692,14 +755,18 @@ ion-app.app-root {
       @extend ion-card;
       border-bottom: 3px solid $color-base;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
-        @include padding(null, null, null, 52px);
+        @include safe-area-padding(null, null, null, 52px);
         position: relative;
 
         > ion-icon {
           color: $color-base;
           position: absolute;
-          @include position(0, null, null, 16px);
+          @include safe-area-position(0, null, null, 16px);
           height: 100%;
           font-size: 24px;
           display: flex;
@@ -712,6 +779,9 @@ ion-app.app-root {
       border-bottom: 3px solid $color-base !important;
       ion-icon {
         color: $color-base;
+      }
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
       }
     }
 
@@ -738,17 +808,7 @@ ion-app.app-root {
     }
 
     .core-#{$color-name}-selected-item {
-      @include safe-area-border-start(5px, solid, $color-base);
-
-      &.item-md {
-        @include padding(null, null, null, $item-md-padding-start - 5px);
-      }
-      &.item-ios {
-        @include padding(null, null, null, $item-ios-padding-start - 5px);
-      }
-      &.item-wp {
-        @include padding(null, null, null, $item-wp-padding-start - 5px);
-      }
+      @include core-selected-item($color-base);
     }
 
     .split-pane-main .core-#{$color-name}-selected-item {
@@ -804,6 +864,8 @@ ion-app.app-root {
 
   @media only screen and (min-height: 400px) and (min-width: 300px) {
       .core-modal-lateral {
+        @include core-split-area-end();
+
         .modal-wrapper {
           position: absolute;
           @include position(0 !important, 0 !important, 0 !important, auto);
@@ -983,6 +1045,14 @@ ion-app.app-root {
     flex-flow: nowrap;
     overflow-x: scroll;
     flex-direction: row;
+
+    .item-ios.item-block {
+      @include padding-horizontal($item-ios-padding-end / 2, null);
+
+      .item-inner {
+        @include padding-horizontal(null, $item-ios-padding-end / 2);
+      }
+    }
   }
 
   ion-content.core-expand-max .scroll-content {
@@ -1047,11 +1117,6 @@ ion-app.app-root {
   }
 }
 
-[dir="ltr"] body, [dir="rtl"] body {
-  padding-top: constant(safe-area-inset-top); //for iOS 11.2
-  padding-top: env(safe-area-inset-top); //for iOS 11.1
-}
-
 body.keyboard-is-open {
   ion-content:not(.has-footer) {
     > .scroll-content, > .fixed-content {
@@ -1062,31 +1127,6 @@ body.keyboard-is-open {
   core-ion-tabs[tabsplacement="bottom"] .tabbar {
       display: none;
   }
-}
-
-.safe-padding-horizontal{
-  @include safe-area-padding-horizontal(0px, 0px);
-}
-
-[padding].safe-padding-horizontal,
-ion-app.ios [padding].safe-padding-horizontal {
-  @include safe-area-padding-horizontal($content-padding, $content-padding);
-}
-
-ion-app.ios .split-pane-side,
-.split-pane-side {
-    .safe-padding-horizontal,
-    [padding].safe-padding-horizontal {
-      @include safe-area-padding-start(0px, $content-padding);
-    }
-}
-
-ion-app.ios .split-pane-main,
-.split-pane-main {
-    .safe-padding-horizontal,
-    [padding].safe-padding-horizontal {
-      @include safe-area-padding-end($content-padding, 0px);
-    }
 }
 
 details summary {
@@ -1189,5 +1229,44 @@ ion-app.platform-desktop {
 .item, .item-inner {
   > ion-icon {
     font-size: 28px;
+  }
+}
+
+// Safe areas
+[dir="ltr"] body, [dir="rtl"] body {
+  padding-top: constant(safe-area-inset-top); //for iOS 11.2
+  padding-top: env(safe-area-inset-top); //for iOS 11.1
+}
+
+ion-app.app-root {
+  .safe-area-page,
+  .safe-padding-horizontal {
+    @include safe-area-padding-horizontal(0px, 0px);
+  }
+
+  [padding].safe-padding-horizontal,
+  &.ios [padding].safe-padding-horizontal {
+    @include safe-area-padding-horizontal($content-padding, $content-padding);
+  }
+
+  // Disable safe area padding.
+  ion-popover,
+  .safe-area-page,
+  .safe-padding-horizontal {
+    .item-ios.item-block {
+      @include padding-horizontal($item-ios-padding-end, null);
+
+      .item-inner {
+        @include padding-horizontal(null, $item-ios-padding-end / 2);
+      }
+    }
+  }
+
+  .item-ios[detail-push] .item-inner,
+  button.item-ios:not([detail-none]) .item-inner,
+  a.item-ios:not([detail-none]) .item-inner {
+    [item-end] {
+      @include safe-area-margin-horizontal(($item-ios-padding-start / 2), ($item-ios-padding-end / 2));
+    }
   }
 }

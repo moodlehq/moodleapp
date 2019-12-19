@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ export class AddonModWikiSubwikiPickerComponent {
     /**
      * Checks if the given subwiki is the one currently selected.
      *
-     * @param {any} subwiki Subwiki to check.
-     * @return {boolean} Whether it's the selected subwiki.
+     * @param subwiki Subwiki to check.
+     * @return Whether it's the selected subwiki.
      */
     protected isSubwikiSelected(subwiki: any): boolean {
         const subwikiId = parseInt(subwiki.id, 10) || 0;
@@ -53,7 +53,7 @@ export class AddonModWikiSubwikiPickerComponent {
     /**
      * Function called when a subwiki is clicked.
      *
-     * @param {any} subwiki The subwiki to open.
+     * @param subwiki The subwiki to open.
      */
     openSubwiki(subwiki: any): void {
         // Check if the subwiki is disabled.

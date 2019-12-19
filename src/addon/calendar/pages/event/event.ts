@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ export class AddonCalendarEventPage implements OnDestroy {
     notificationMax: string;
     notificationTimeText: string;
     event: any = {};
+    courseId: number;
     courseName: string;
     groupName: string;
     courseUrl = '';
@@ -144,9 +145,9 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Fetches the event and updates the view.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     fetchEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite(),
@@ -250,11 +251,13 @@ export class AddonCalendarEventPage implements OnDestroy {
 
             // If the event belongs to a course, get the course name and the URL to view it.
             if (canGetById && event.course && event.course.id != this.siteHomeId) {
+                this.courseId = event.course.id;
                 this.courseName = event.course.fullname;
                 this.courseUrl = event.course.viewurl;
             } else if (event.courseid && event.courseid != this.siteHomeId) {
                 // Retrieve the course.
                 promises.push(this.coursesProvider.getUserCourse(event.courseid, true).then((course) => {
+                    this.courseId = course.id;
                     this.courseName = course.fullname;
                     this.courseUrl = currentSite ? this.textUtils.concatenatePaths(currentSite.siteUrl,
                             '/course/view.php?id=' + event.courseid) : '';
@@ -311,13 +314,8 @@ export class AddonCalendarEventPage implements OnDestroy {
 
     /**
      * Add a reminder for this event.
-     *
-     * @param {Event} e    Click event.
      */
-    addNotificationTime(e: Event): void {
-        e.preventDefault();
-        e.stopPropagation();
-
+    addNotificationTime(): void {
         if (this.notificationTimeText && this.event && this.event.id) {
             let notificationTime = this.timeUtils.convertToTimestamp(this.notificationTimeText);
 
@@ -342,27 +340,36 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Cancel the selected notification.
      *
-     * @param {number} id  Reminder ID.
-     * @param {Event} e    Click event.
+     * @param id Reminder ID.
+     * @param e Click event.
      */
     cancelNotification(id: number, e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
-        this.calendarProvider.deleteEventReminder(id).then(() => {
-            this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
-                this.reminders = reminders;
+        this.domUtils.showDeleteConfirm().then(() => {
+            const modal = this.domUtils.showModalLoading('core.deleting', true);
+            this.calendarProvider.deleteEventReminder(id).then(() => {
+                this.calendarProvider.getEventReminders(this.eventId).then((reminders) => {
+                    this.reminders = reminders;
+                });
+            }).catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error deleting reminder');
+            }).finally(() => {
+                modal.dismiss();
             });
+        }).catch(() => {
+            // Cancelled.
         });
     }
 
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
         if (this.eventLoaded) {
@@ -378,9 +385,9 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Refresh the event.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     refreshEvent(sync?: boolean, showErrors?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
@@ -511,8 +518,8 @@ export class AddonCalendarEventPage implements OnDestroy {
     /**
      * Check the result of an automatic sync or a manual sync not done by this page.
      *
-     * @param {boolean} isManual Whether it's a manual sync.
-     * @param {any} data Sync result.
+     * @param isManual Whether it's a manual sync.
+     * @param data Sync result.
      */
     protected checkSyncResult(isManual: boolean, data: any): void {
         if (!data) {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,14 +86,14 @@ export class AddonModScormDataModel12 {
     /**
      * Constructor.
      *
-     * @param {CoreEventsProvider} eventsProvider Events provider instance.
-     * @param {AddonModScormProvider} scormProvider SCORM provider instance.
-     * @param {any} scorm SCORM.
-     * @param {number} scoId Current SCO ID.
-     * @param {number} attempt Attempt number.
-     * @param {any} userData The user default data.
-     * @param {string} [mode] Mode being played. By default, MODENORMAL.
-     * @param {boolean} offline Whether the attempt is offline.
+     * @param eventsProvider Events provider instance.
+     * @param scormProvider SCORM provider instance.
+     * @param scorm SCORM.
+     * @param scoId Current SCO ID.
+     * @param attempt Attempt number.
+     * @param userData The user default data.
+     * @param mode Mode being played. By default, MODENORMAL.
+     * @param offline Whether the attempt is offline.
      */
     constructor(protected eventsProvider: CoreEventsProvider, protected scormProvider: AddonModScormProvider,
             protected siteId: string, protected scorm: any, protected scoId: number, protected attempt: number,
@@ -108,9 +108,9 @@ export class AddonModScormDataModel12 {
     /**
      * Utility function for adding two times in format hh:mm:ss.
      *
-     * @param {string} first  First time.
-     * @param {string} second Second time.
-     * @return {string} Total time.
+     * @param first First time.
+     * @param second Second time.
+     * @return Total time.
      */
     protected addTime(first: string, second: string): string {
         const sFirst = first.split(':'),
@@ -165,8 +165,8 @@ export class AddonModScormDataModel12 {
     /**
      * Utility function for cloning an object
      *
-     * @param {any} obj The object to be cloned
-     * @return {any} The object cloned
+     * @param obj The object to be cloned
+     * @return The object cloned
      */
     protected cloneObj(obj: any): any {
         if (obj == null || typeof(obj) != 'object') {
@@ -184,7 +184,7 @@ export class AddonModScormDataModel12 {
     /**
      * Collect all the user tracking data that must be persisted in the system, this is usually called by LMSCommit().
      *
-     * @return {any[]} Collected data.
+     * @return Collected data.
      */
     protected collectData(): any[] {
         const data = [];
@@ -250,8 +250,8 @@ export class AddonModScormDataModel12 {
     /**
      * Get the value of the given element from the non-persistent (current) user data.
      *
-     * @param {string} el The element
-     * @return {any} The element value
+     * @param el The element
+     * @return The element value
      */
     protected getEl(el: string): any {
         if (typeof this.currentUserData[this.scoId] != 'undefined' && typeof this.currentUserData[this.scoId][el] != 'undefined') {
@@ -264,7 +264,7 @@ export class AddonModScormDataModel12 {
     /**
      * Initialize the model.
      *
-     * @param {any} userData The user default data.
+     * @param userData The user default data.
      */
     protected init(userData: any): void {
         // Prepare the definition array containing the default values.
@@ -463,8 +463,8 @@ export class AddonModScormDataModel12 {
     /**
      * Commit the changes.
      *
-     * @param {string} param Param.
-     * @return {string} "true" if success, "false" otherwise.
+     * @param param Param.
+     * @return "true" if success, "false" otherwise.
      */
     LMSCommit(param: string): string {
         if (this.timeout) {
@@ -497,8 +497,8 @@ export class AddonModScormDataModel12 {
     /**
      * Finish the data model.
      *
-     * @param {string} param Param.
-     * @return {string} "true" if success, "false" otherwise.
+     * @param param Param.
+     * @return "true" if success, "false" otherwise.
      */
     LMSFinish(param: string): string {
         this.errorCode = '0';
@@ -540,8 +540,8 @@ export class AddonModScormDataModel12 {
     /**
      * Get diagnostic.
      *
-     * @param  {string} param Param.
-     * @return {string} Result.
+     * @param param Param.
+     * @return Result.
      */
     LMSGetDiagnostic(param: string): string {
         if (param == '') {
@@ -554,8 +554,8 @@ export class AddonModScormDataModel12 {
     /**
      * Get the error message for a certain code.
      *
-     * @param {string} param Error code.
-     * @return {string} Error message.
+     * @param param Error code.
+     * @return Error message.
      */
     LMSGetErrorString(param: string): string {
         if (param != '') {
@@ -568,7 +568,7 @@ export class AddonModScormDataModel12 {
     /**
      * Get the last error code.
      *
-     * @return {string} Last error code.
+     * @return Last error code.
      */
     LMSGetLastError(): string {
         return this.errorCode;
@@ -577,8 +577,8 @@ export class AddonModScormDataModel12 {
     /**
      * Get the value of a certain element.
      *
-     * @param {string} element Name of the element to get.
-     * @return {string} Value.
+     * @param element Name of the element to get.
+     * @return Value.
      */
     LMSGetValue(element: string): string {
         this.errorCode = '0';
@@ -633,8 +633,8 @@ export class AddonModScormDataModel12 {
     /**
      * Initialize the data model.
      *
-     * @param {string} param Param.
-     * @return {string} "true" if initialized, "false" otherwise.
+     * @param param Param.
+     * @return "true" if initialized, "false" otherwise.
      */
     LMSInitialize(param: string): string {
         this.errorCode = '0';
@@ -658,9 +658,9 @@ export class AddonModScormDataModel12 {
     /**
      * Set the value of a certain element.
      *
-     * @param {string} element Name of the element to set.
-     * @param {any} value Value to set.
-     * @return {string} "true" if success, "false" otherwise.
+     * @param element Name of the element to set.
+     * @param value Value to set.
+     * @return "true" if success, "false" otherwise.
      */
     LMSSetValue(element: string, value: any): string {
         this.errorCode = '0';
@@ -794,7 +794,7 @@ export class AddonModScormDataModel12 {
      * The scoId is like a pointer to be able to retrieve the SCO default values and set the new ones in the overall SCORM
      * data structure.
      *
-     * @param {number} scoId The new SCO id.
+     * @param scoId The new SCO id.
      */
     loadSco(scoId: number): void {
         this.scoId = scoId;
@@ -803,8 +803,8 @@ export class AddonModScormDataModel12 {
     /**
      * Set the value of the given element in the non-persistent (current) user data.
      *
-     * @param {string} el The element.
-     * @param {any} value The value.
+     * @param el The element.
+     * @param value The value.
      */
     protected setEl(el: string, value: any): void {
         if (typeof this.currentUserData[this.scoId] == 'undefined') {
@@ -817,7 +817,7 @@ export class AddonModScormDataModel12 {
     /**
      * Set offline mode to true or false.
      *
-     * @param {boolean} offline True if offline, false otherwise.
+     * @param offline True if offline, false otherwise.
      */
     setOffline(offline: boolean): void {
         this.offline = offline;
@@ -826,8 +826,8 @@ export class AddonModScormDataModel12 {
     /**
      * Persist the current user data (this is usually called by LMSCommit).
      *
-     * @param {boolean} storeTotalTime If true, we need to calculate the total time too.
-     * @return {boolean} True if success, false otherwise.
+     * @param storeTotalTime If true, we need to calculate the total time too.
+     * @return True if success, false otherwise.
      */
     protected storeData(storeTotalTime?: boolean): boolean {
         let tracks;
@@ -882,7 +882,7 @@ export class AddonModScormDataModel12 {
     /**
      * Utility function for calculating the total time spent in the SCO.
      *
-     * @return {any} Total time element.
+     * @return Total time element.
      */
     protected totalTime(): any {
         const totalTime = this.addTime(this.getEl('cmi.core.total_time'), this.getEl('cmi.core.session_time'));
@@ -893,7 +893,7 @@ export class AddonModScormDataModel12 {
     /**
      * Convenience function to trigger events.
      *
-     * @param {string} name Name of the event to trigger.
+     * @param name Name of the event to trigger.
      */
     protected triggerEvent(name: string): void {
         this.eventsProvider.trigger(name, {

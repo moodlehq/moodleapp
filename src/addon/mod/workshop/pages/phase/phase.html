@@ -20,14 +20,14 @@
                 {{ 'addon.mod_workshop.switchphase' + phase.code | translate }}
                 <ion-icon item-end name="open"></ion-icon>
             </a>
-            <a ion-item text-wrap *ngFor="let task of phase.tasks" [class.item-dimmed]="phase.code != workshopPhase" (click)="runTask(task)" detail-none>
+            <a ion-item text-wrap *ngFor="let task of phase.tasks" [class.item-dimmed]="phase.code != workshopPhase || (task.code == 'submit' && !showSubmit)" (click)="runTask(task)" detail-none>
                 <ion-icon item-start name="radio-button-off" *ngIf="task.completed == null"></ion-icon>
                 <ion-icon item-start name="close-circle" color="danger" *ngIf="task.completed == ''"></ion-icon>
                 <ion-icon item-start name="information-circle" color="info" *ngIf="task.completed == 'info'"></ion-icon>
                 <ion-icon item-start name="checkmark-circle" color="success" *ngIf="task.completed == '1'"></ion-icon>
 
                 <h2 text-wrap>{{task.title}}</h2>
-                <p *ngIf="task.details"><core-format-text [text]="task.details"></core-format-text></p>
+                <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 <ion-icon item-end *ngIf="task.link && task.code != 'submit'" name="open"></ion-icon>
             </a>
         </ng-container>

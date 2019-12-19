@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { AddonBlogEntriesComponent } from '../components/entries/entries';
 import { AddonBlogProvider } from './blog';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Course nav handler.
@@ -37,10 +38,10 @@ export class AddonBlogCourseOptionHandler implements CoreCourseOptionsHandler {
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
      *
-     * @param {number} courseId The course ID.
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courseId The course ID.
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return Promise resolved when done.
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: any, admOptions?: any): Promise<any> {
         return this.courseProvider.invalidateCourseBlocks(courseId);
@@ -49,7 +50,7 @@ export class AddonBlogCourseOptionHandler implements CoreCourseOptionsHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.blogProvider.isPluginEnabled();
@@ -58,11 +59,11 @@ export class AddonBlogCourseOptionHandler implements CoreCourseOptionsHandler {
     /**
      * Whether or not the handler is enabled for a certain course.
      *
-     * @param {number} courseId The course ID.
-     * @param {any} accessData Access type and data. Default, guest, ...
-     * @param {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @param courseId The course ID.
+     * @param accessData Access type and data. Default, guest, ...
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabledForCourse(courseId: number, accessData: any, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         return this.courseHelper.hasABlockNamed(courseId, 'blog_menu').then((enabled) => {
@@ -77,9 +78,9 @@ export class AddonBlogCourseOptionHandler implements CoreCourseOptionsHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @param {Injector} injector Injector.
-     * @param {number} course The course.
-     * @return {CoreCourseOptionsHandlerData|Promise<CoreCourseOptionsHandlerData>} Data or promise resolved with the data.
+     * @param injector Injector.
+     * @param course The course.
+     * @return Data or promise resolved with the data.
      */
     getDisplayData(injector: Injector, course: any): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
@@ -92,15 +93,15 @@ export class AddonBlogCourseOptionHandler implements CoreCourseOptionsHandler {
     /**
      * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
      *
-     * @param {any} course The course.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param course The course.
+     * @return Promise resolved when done.
      */
     prefetch(course: any): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         return this.blogProvider.getEntries({courseid: course.id}).then((result) => {
             return result.entries.map((entry) => {
-                let files = [];
+                let files: CoreWSExternalFile[] = [];
 
                 if (entry.attachmentfiles && entry.attachmentfiles.length) {
                     files = entry.attachmentfiles;

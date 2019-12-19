@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,39 +25,35 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 export interface CoreContentLinksHandler {
     /**
      * A name to identify the handler.
-     * @type {string}
      */
     name: string;
 
     /**
      * Handler's priority. The highest priority is treated first.
-     * @type {number}
      */
     priority?: number;
 
     /**
      * Whether the isEnabled function should be called for all the users in a site. It should be true only if the isEnabled call
      * can return different values for different users in same site.
-     * @type {boolean}
      */
     checkAllUsers?: boolean;
 
     /**
      * Name of the feature this handler is related to.
      * It will be used to check if the feature is disabled (@see CoreSite.isFeatureDisabled).
-     * @type {string}
      */
     featureName?: string;
 
     /**
      * Get the list of actions for a link (url).
      *
-     * @param {string[]} siteIds List of sites the URL belongs to.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @param {any} [data] Extra data to handle the URL.
-     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     * @param siteIds List of sites the URL belongs to.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @param data Extra data to handle the URL.
+     * @return List of (or promise resolved with list of) actions.
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number, data?: any):
         CoreContentLinksAction[] | Promise<CoreContentLinksAction[]>;
@@ -65,16 +61,16 @@ export interface CoreContentLinksHandler {
     /**
      * Check if a URL is handled by this handler.
      *
-     * @param {string} url The URL to check.
-     * @return {boolean} Whether the URL is handled by this handler
+     * @param url The URL to check.
+     * @return Whether the URL is handled by this handler
      */
     handles(url: string): boolean;
 
     /**
      * If the URL is handled by this handler, return the site URL.
      *
-     * @param {string} url The URL to check.
-     * @return {string} Site URL if it is handled, undefined otherwise.
+     * @param url The URL to check.
+     * @return Site URL if it is handled, undefined otherwise.
      */
     getSiteUrl(url: string): string;
 
@@ -82,11 +78,11 @@ export interface CoreContentLinksHandler {
      * Check if the handler is enabled for a certain site (site + user) and a URL.
      * If not defined, defaults to true.
      *
-     * @param {string} siteId The site ID.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
+     * @param siteId The site ID.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Whether the handler is enabled for the URL and site.
      */
     isEnabled?(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean>;
 }
@@ -97,27 +93,24 @@ export interface CoreContentLinksHandler {
 export interface CoreContentLinksAction {
     /**
      * A message to identify the action. Default: 'core.view'.
-     * @type {string}
      */
     message?: string;
 
     /**
      * Name of the icon of the action. Default: 'eye'.
-     * @type {string}
      */
     icon?: string;
 
     /**
      * IDs of the sites that support the action.
-     * @type {string[]}
      */
     sites?: string[];
 
     /**
      * Action to perform when the link is clicked.
      *
-     * @param {string} siteId The site ID.
-     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
+     * @param siteId The site ID.
+     * @param navCtrl Nav Controller to use to navigate.
      */
     action(siteId: string, navCtrl?: NavController): void;
 }
@@ -128,13 +121,11 @@ export interface CoreContentLinksAction {
 export interface CoreContentLinksHandlerActions {
     /**
      * Handler's priority.
-     * @type {number}
      */
     priority: number;
 
     /**
      * List of actions.
-     * @type {CoreContentLinksAction[]}
      */
     actions: CoreContentLinksAction[];
 }
@@ -155,11 +146,11 @@ export class CoreContentLinksDelegate {
     /**
      * Get the list of possible actions to do for a URL.
      *
-     * @param {string} url URL to handle.
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @param {string} [username] Username to use to filter sites.
-     * @param {any} [data] Extra data to handle the URL.
-     * @return {Promise<CoreContentLinksAction[]>}  Promise resolved with the actions.
+     * @param url URL to handle.
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @param username Username to use to filter sites.
+     * @param data Extra data to handle the URL.
+     * @return Promise resolved with the actions.
      */
     getActionsFor(url: string, courseId?: number, username?: string, data?: any): Promise<CoreContentLinksAction[]> {
         if (!url) {
@@ -220,8 +211,8 @@ export class CoreContentLinksDelegate {
     /**
      * Get the site URL if the URL is supported by any handler.
      *
-     * @param {string} url URL to handle.
-     * @return {string} Site URL if the URL is supported by any handler, undefined otherwise.
+     * @param url URL to handle.
+     * @return Site URL if the URL is supported by any handler, undefined otherwise.
      */
     getSiteUrl(url: string): string {
         if (!url) {
@@ -242,12 +233,12 @@ export class CoreContentLinksDelegate {
     /**
      * Check if a handler is enabled for a certain site and URL.
      *
-     * @param {CoreContentLinksHandler} handler Handler to check.
-     * @param {string} url The URL to check.
-     * @param {any} params The params of the URL
-     * @param {number} courseId Course ID the URL belongs to (can be undefined).
-     * @param {string} siteId The site ID to check.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether the handler is enabled.
+     * @param handler Handler to check.
+     * @param url The URL to check.
+     * @param params The params of the URL
+     * @param courseId Course ID the URL belongs to (can be undefined).
+     * @param siteId The site ID to check.
+     * @return Promise resolved with boolean: whether the handler is enabled.
      */
     protected isHandlerEnabled(handler: CoreContentLinksHandler, url: string, params: any, courseId: number, siteId: string)
             : Promise<boolean> {
@@ -277,8 +268,8 @@ export class CoreContentLinksDelegate {
     /**
      * Register a handler.
      *
-     * @param {CoreContentLinksHandler} handler The handler to register.
-     * @return {boolean} True if registered successfully, false otherwise.
+     * @param handler The handler to register.
+     * @return True if registered successfully, false otherwise.
      */
     registerHandler(handler: CoreContentLinksHandler): boolean {
         if (typeof this.handlers[handler.name] !== 'undefined') {
@@ -295,8 +286,8 @@ export class CoreContentLinksDelegate {
     /**
      * Sort actions by priority.
      *
-     * @param {CoreContentLinksHandlerActions[]} actions Actions to sort.
-     * @return {CoreContentLinksAction[]} Sorted actions.
+     * @param actions Actions to sort.
+     * @return Sorted actions.
      */
     protected sortActionsByPriority(actions: CoreContentLinksHandlerActions[]): CoreContentLinksAction[] {
         let sorted: CoreContentLinksAction[] = [];

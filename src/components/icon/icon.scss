@@ -5,6 +5,12 @@
   }
 }
 
+@each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
+  .fa-#{$color-name} {
+    color: $color-base !important;
+  }
+}
+
 
 [dir=rtl] .icon {
     &.core-icon-dir-flip,

@@ -15,5 +15,9 @@ ion-app.app-root addon-qtype-gapselect {
         border-radius: 4px;
         margin-bottom: 10px;
         background: $gray-lighter;
+
+        @include darkmode() {
+            background: $gray-dark;
+        }
     }
 }

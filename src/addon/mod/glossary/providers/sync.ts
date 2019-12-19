@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,9 +67,9 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the glossaries in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllGlossaries(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all glossaries', this.syncAllGlossariesFunc.bind(this), [force], siteId);
@@ -78,9 +78,9 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync all glossaries on a site.
      *
-     * @param  {string} siteId Site ID to sync.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllGlossariesFunc(siteId: string, force?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -126,10 +126,10 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync a glossary only if a certain time has passed since the last time.
      *
-     * @param  {number} glossaryId Glossary ID.
-     * @param  {number} userId     User the entry belong to.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved when the glossary is synced or if it doesn't need to be synced.
+     * @param glossaryId Glossary ID.
+     * @param userId User the entry belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the glossary is synced or if it doesn't need to be synced.
      */
     syncGlossaryEntriesIfNeeded(glossaryId: number, userId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -146,10 +146,10 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize all offline entries of a glossary.
      *
-     * @param  {number} glossaryId Glossary ID to be synced.
-     * @param  {number} [userId]   User the entries belong to.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved if sync is successful, rejected otherwise.
+     * @param glossaryId Glossary ID to be synced.
+     * @param userId User the entries belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncGlossaryEntries(glossaryId: number, userId?: number, siteId?: string): Promise<any> {
         userId = userId || this.sitesProvider.getCurrentSiteUserId();
@@ -258,10 +258,10 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize offline ratings.
      *
-     * @param {number} [cmId] Course module to be synced. If not defined, sync all glossaries.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param cmId Course module to be synced. If not defined, sync all glossaries.
+     * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncRatings(cmId?: number, force?: boolean, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -303,11 +303,11 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Delete a new entry.
      *
-     * @param  {number} glossaryId  Glossary ID.
-     * @param  {string} concept     Glossary entry concept.
-     * @param  {number} timeCreated Time to allow duplicated entries.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved when deleted.
+     * @param glossaryId Glossary ID.
+     * @param concept Glossary entry concept.
+     * @param timeCreated Time to allow duplicated entries.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted.
      */
    protected deleteAddEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<any> {
        const promises = [];
@@ -323,10 +323,10 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Upload attachments of an offline entry.
      *
-     * @param  {number} glossaryId Glossary ID.
-     * @param  {any}    entry      Offline entry.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<number>} Promise resolved with draftid if uploaded, resolved with 0 if nothing to upload.
+     * @param glossaryId Glossary ID.
+     * @param entry Offline entry.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with draftid if uploaded, resolved with 0 if nothing to upload.
      */
     protected uploadAttachments(glossaryId: number, entry: any, siteId?: string): Promise<number> {
         if (entry.attachments) {
@@ -357,9 +357,9 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
     /**
      * Get the ID of a glossary sync.
      *
-     * @param  {number} glossaryId Glossary ID.
-     * @param  {number} [userId]   User the entries belong to.. If not defined, current user.
-     * @return {string}            Sync ID.
+     * @param glossaryId Glossary ID.
+     * @param userId User the entries belong to.. If not defined, current user.
+     * @return Sync ID.
      */
     protected getGlossarySyncId(glossaryId: number, userId?: number): string {
         userId = userId || this.sitesProvider.getCurrentSiteUserId();

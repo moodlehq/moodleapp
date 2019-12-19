@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ import { AddonModUrlModuleHandler } from './providers/module-handler';
 import { AddonModUrlProvider } from './providers/url';
 import { AddonModUrlLinkHandler } from './providers/link-handler';
 import { AddonModUrlListLinkHandler } from './providers/list-link-handler';
+import { AddonModUrlPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModUrlHelperProvider } from './providers/helper';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 
 // List of providers (without handlers).
 export const ADDON_MOD_URL_PROVIDERS: any[] = [
@@ -39,16 +41,22 @@ export const ADDON_MOD_URL_PROVIDERS: any[] = [
         AddonModUrlHelperProvider,
         AddonModUrlModuleHandler,
         AddonModUrlLinkHandler,
-        AddonModUrlListLinkHandler
+        AddonModUrlListLinkHandler,
+        AddonModUrlPrefetchHandler
     ]
 })
 export class AddonModUrlModule {
-    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModUrlModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModUrlLinkHandler,
-            listLinkHandler: AddonModUrlListLinkHandler) {
+    constructor(moduleDelegate: CoreCourseModuleDelegate,
+            moduleHandler: AddonModUrlModuleHandler,
+            contentLinksDelegate: CoreContentLinksDelegate,
+            linkHandler: AddonModUrlLinkHandler,
+            listLinkHandler: AddonModUrlListLinkHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            prefetchHandler: AddonModUrlPrefetchHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
     }
 }

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
  * Service to handle course completion.
@@ -39,11 +40,11 @@ export class AddonCourseCompletionProvider {
      * Returns whether or not the user can mark a course as self completed.
      * It can if it's configured in the course and it hasn't been completed yet.
      *
-     * @param {number} userId     User ID.
-     * @param {any}    completion Course completion.
-     * @return {boolean} True if user can mark course as self completed, false otherwise.
+     * @param userId User ID.
+     * @param completion Course completion.
+     * @return True if user can mark course as self completed, false otherwise.
      */
-    canMarkSelfCompleted(userId: number, completion: any): boolean {
+    canMarkSelfCompleted(userId: number, completion: AddonCourseCompletionCourseCompletionStatus): boolean {
         let selfCompletionActive = false,
             alreadyMarked = false;
 
@@ -65,10 +66,10 @@ export class AddonCourseCompletionProvider {
     /**
      * Get completed status text. The language code returned is meant to be translated.
      *
-     * @param {any} completion Course completion.
-     * @return {string} Language code of the text to show.
+     * @param completion Course completion.
+     * @return Language code of the text to show.
      */
-    getCompletedStatusText(completion: any): string {
+    getCompletedStatusText(completion: AddonCourseCompletionCourseCompletionStatus): string {
         if (completion.completed) {
             return 'addon.coursecompletion.completed';
         } else {
@@ -90,13 +91,15 @@ export class AddonCourseCompletionProvider {
     /**
      * Get course completion status for a certain course and user.
      *
-     * @param {number} courseId  Course ID.
-     * @param {number} [userId]  User ID. If not defined, use current user.
-     * @param {any}    [preSets] Presets to use when calling the WebService.
-     * @param {string} [siteId]  Site ID. If not defined, use current site.
-     * @return {Promise<any>} Promise to be resolved when the completion is retrieved.
+     * @param courseId Course ID.
+     * @param userId User ID. If not defined, use current user.
+     * @param preSets Presets to use when calling the WebService.
+     * @param siteId Site ID. If not defined, use current site.
+     * @return Promise to be resolved when the completion is retrieved.
      */
-    getCompletion(courseId: number, userId?: number, preSets?: any, siteId?: string): Promise<any> {
+    getCompletion(courseId: number, userId?: number, preSets?: any, siteId?: string)
+            : Promise<AddonCourseCompletionCourseCompletionStatus> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
             preSets = preSets || {};
@@ -112,7 +115,9 @@ export class AddonCourseCompletionProvider {
             preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_SOMETIMES;
             preSets.cacheErrors = ['notenroled'];
 
-            return site.read('core_completion_get_course_completion_status', data, preSets).then((data) => {
+            return site.read('core_completion_get_course_completion_status', data, preSets)
+                    .then((data: AddonCourseCompletionGetCourseCompletionStatusResult): any => {
+
                 if (data.completionstatus) {
                     return data.completionstatus;
                 }
@@ -125,9 +130,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Get cache key for get completion WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} useIid   User ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @param useIid User ID.
+     * @return Cache key.
      */
     protected getCompletionCacheKey(courseId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'view:' + courseId + ':' + userId;
@@ -136,9 +141,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Invalidates view course completion WS call.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     * @param courseId Course ID.
+     * @param userId User ID. If not defined, use current user.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateCourseCompletion(courseId: number, userId?: number): Promise<any> {
         userId = userId || this.sitesProvider.getCurrentSiteUserId();
@@ -149,7 +154,7 @@ export class AddonCourseCompletionProvider {
     /**
      * Returns whether or not the view course completion plugin is enabled for the current site.
      *
-     * @return {boolean} True if plugin enabled, false otherwise.
+     * @return True if plugin enabled, false otherwise.
      */
    isPluginViewEnabled(): boolean {
        return this.sitesProvider.isLoggedIn();
@@ -158,9 +163,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Returns whether or not the view course completion plugin is enabled for a certain course.
      *
-     * @param {number}  courseId           Course ID.
-     * @param {boolean} [preferCache=true] True if shouldn't call WS if data is cached, false otherwise.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param courseId Course ID.
+     * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginViewEnabledForCourse(courseId: number, preferCache: boolean = true): Promise<boolean> {
         if (!courseId) {
@@ -187,9 +192,9 @@ export class AddonCourseCompletionProvider {
     /**
      * Returns whether or not the view course completion plugin is enabled for a certain user.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param courseId Course ID.
+     * @param userId User ID. If not defined, use current user.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginViewEnabledForUser(courseId: number, userId?: number): Promise<boolean> {
         // Check if user wants to view his own completion.
@@ -242,18 +247,57 @@ export class AddonCourseCompletionProvider {
     /**
      * Mark a course as self completed.
      *
-     * @param {number} courseId Course ID.
-     * @return {Promise<any>} Resolved on success.
+     * @param courseId Course ID.
+     * @return Promise resolved on success.
      */
-    markCourseAsSelfCompleted(courseId: number): Promise<any> {
+    markCourseAsSelfCompleted(courseId: number): Promise<void> {
         const params = {
             courseid: courseId
         };
 
-        return this.sitesProvider.getCurrentSite().write('core_completion_mark_course_self_completed', params).then((response) => {
+        return this.sitesProvider.getCurrentSite().write('core_completion_mark_course_self_completed', params)
+                .then((response: AddonCourseCompletionMarkCourseSelfCompletedResult) => {
+
             if (!response.status) {
                 return Promise.reject(null);
             }
         });
     }
 }
+
+/**
+ * Completion status returned by core_completion_get_course_completion_status.
+ */
+export type AddonCourseCompletionCourseCompletionStatus = {
+    completed: boolean; // True if the course is complete, false otherwise.
+    aggregation: number; // Aggregation method 1 means all, 2 means any.
+    completions: {
+        type: number; // Completion criteria type.
+        title: string; // Completion criteria Title.
+        status: string; // Completion status (Yes/No) a % or number.
+        complete: boolean; // Completion status (true/false).
+        timecompleted: number; // Timestamp for criteria completetion.
+        details: {
+            type: string; // Type description.
+            criteria: string; // Criteria description.
+            requirement: string; // Requirement description.
+            status: string; // Status description, can be anything.
+        }; // Details.
+    }[];
+};
+
+/**
+ * Result of WS core_completion_get_course_completion_status.
+ */
+export type AddonCourseCompletionGetCourseCompletionStatusResult = {
+    completionstatus: AddonCourseCompletionCourseCompletionStatus; // Course status.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_completion_mark_course_self_completed.
+ */
+export type AddonCourseCompletionMarkCourseSelfCompletedResult = {
+    status: boolean; // Status, true if success.
+    warnings?: CoreWSExternalWarning[];
+};

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,9 +148,9 @@ export class AddonCalendarOfflineProvider {
     /**
      * Delete an offline event.
      *
-     * @param {number} eventId Event ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if deleted, rejected if failure.
+     * @param eventId Event ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     deleteEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -165,8 +165,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get the IDs of all the events created/edited/deleted in offline.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<number[]>} Promise resolved with the IDs.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the IDs.
      */
     getAllEventsIds(siteId?: string): Promise<number[]> {
         const promises = [];
@@ -182,8 +182,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get all the events deleted in offline.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with all the events deleted in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with all the events deleted in offline.
      */
     getAllDeletedEvents(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -194,8 +194,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get the IDs of all the events deleted in offline.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<number[]>} Promise resolved with the IDs of all the events deleted in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the IDs of all the events deleted in offline.
      */
     getAllDeletedEventsIds(siteId?: string): Promise<number[]> {
         return this.getAllDeletedEvents(siteId).then((events) => {
@@ -208,8 +208,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get all the events created/edited in offline.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with events.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with events.
      */
     getAllEditedEvents(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -220,8 +220,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get the IDs of all the events created/edited in offline.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<number[]>} Promise resolved with events IDs.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with events IDs.
      */
     getAllEditedEventsIds(siteId?: string): Promise<number[]> {
         return this.getAllEditedEvents(siteId).then((events) => {
@@ -234,9 +234,9 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get an event deleted in offline.
      *
-     * @param {number} eventId Event ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the deleted event.
+     * @param eventId Event ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the deleted event.
      */
     getDeletedEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -251,9 +251,9 @@ export class AddonCalendarOfflineProvider {
     /**
      * Get an offline event.
      *
-     * @param {number} eventId Event ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the event.
+     * @param eventId Event ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the event.
      */
     getEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -268,8 +268,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Check if there are offline events to send.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline events, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if has offline events, false otherwise.
      */
     hasEditedEvents(siteId?: string): Promise<boolean> {
         return this.getAllEditedEvents(siteId).then((events) => {
@@ -283,8 +283,8 @@ export class AddonCalendarOfflineProvider {
     /**
      * Check whether there's offline data for a site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline data, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if has offline data, false otherwise.
      */
     hasOfflineData(siteId?: string): Promise<boolean> {
         return this.getAllEventsIds(siteId).then((ids) => {
@@ -295,9 +295,9 @@ export class AddonCalendarOfflineProvider {
     /**
      * Check if an event is deleted.
      *
-     * @param {number} eventId Event ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether the event is deleted.
+     * @param eventId Event ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether the event is deleted.
      */
     isEventDeleted(eventId: number, siteId?: string): Promise<boolean> {
         return this.getDeletedEvent(eventId, siteId).then((event) => {
@@ -310,11 +310,11 @@ export class AddonCalendarOfflineProvider {
     /**
      * Mark an event as deleted.
      *
-     * @param {number} eventId Event ID to delete.
-     * @param {number} name Name of the event to delete.
-     * @param {boolean} [deleteAll] If it's a repeated event. whether to delete all events of the series.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param eventId Event ID to delete.
+     * @param name Name of the event to delete.
+     * @param deleteAll If it's a repeated event. whether to delete all events of the series.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     markDeleted(eventId: number, name: string, deleteAll?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -332,11 +332,11 @@ export class AddonCalendarOfflineProvider {
     /**
      * Offline version for adding a new discussion to a forum.
      *
-     * @param {number} eventId Event ID. If it's a new event, set it to undefined/null.
-     * @param {any} data Event data.
-     * @param {number} [timeCreated] The time the event was created. If not defined, current time.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the stored event.
+     * @param eventId Event ID. If it's a new event, set it to undefined/null.
+     * @param data Event data.
+     * @param timeCreated The time the event was created. If not defined, current time.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the stored event.
      */
     saveEvent(eventId: number, data: any, timeCreated?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -373,9 +373,9 @@ export class AddonCalendarOfflineProvider {
     /**
      * Unmark an event as deleted.
      *
-     * @param {number} eventId Event ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if deleted, rejected if failure.
+     * @param eventId Event ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     unmarkDeleted(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

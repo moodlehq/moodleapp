@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     protected questionInstance: AddonQtypeDdwtosQuestion;
     protected inputIds: string[] = []; // Ids of the inputs of the question (where the answers will be stored).
     protected destroyed = false;
+    protected textIsRendered = false;
+    protected answerAreRendered = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
         super(loggerProvider, 'AddonQtypeDdwtosComponent', injector);
@@ -86,16 +88,37 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     }
 
     /**
+     * The question answers have been rendered.
+     */
+    answersRendered(): void {
+        this.answerAreRendered = true;
+        if (this.textIsRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
+     * The question text has been rendered.
+     */
+    textRendered(): void {
+        this.textIsRendered = true;
+        if (this.answerAreRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
      * The question has been rendered.
      */
-    questionRendered(): void {
+    protected questionRendered(): void {
         if (!this.destroyed) {
             this.domUtils.waitForImages(this.questionTextEl.nativeElement).then(() => {
                 // Create the instance.
                 this.questionInstance = new AddonQtypeDdwtosQuestion(this.loggerProvider, this.domUtils, this.element,
                         this.question, this.question.readOnly, this.inputIds, this.textUtils);
 
-                this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+                this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId, this.contextLevel,
+                        this.contextInstanceId, this.courseId);
 
                 this.question.loaded = true;
             });

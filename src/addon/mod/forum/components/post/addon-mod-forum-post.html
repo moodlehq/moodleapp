@@ -1,85 +1,92 @@
-<ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
-    <ion-item text-wrap>
-        <ion-avatar core-user-avatar [user]="post" item-start></ion-avatar>
-        <h2>
-            <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
-            <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
-            <span [class.core-bold]="post.parent == 0"><core-format-text [text]="post.subject"></core-format-text></span>
-        </h2>
-        <p>
-            <ion-note float-end padding-left *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ion-note>
-            <ion-note float-end padding-left text-end *ngIf="post.modified">
-                {{post.modified | coreDateDayOrTime}}
-                <div *ngIf="trackPosts && !post.postread"><core-icon name="fa-circle" color="primary"></core-icon> {{ 'addon.mod_forum.unread' | translate }}</div>
-            </ion-note>
-            {{post.userfullname}}
-        </p>
-    </ion-item>
-</ion-card-header>
-<ion-card-content padding-top>
-    <div padding-bottom *ngIf="post.isprivatereply">
-        <ion-note>{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
+<div class="addon-mod_forum-post">
+    <ion-card-header text-wrap no-padding id="addon-mod_forum-post-{{post.id}}">
+        <ion-item text-wrap>
+            <div class="addon-mod-forum-post-title" *ngIf="displaySubject">
+                <h2 text-wrap>
+                    <core-icon name="fa-map-pin" *ngIf="post.parent == 0 && post.pinned"></core-icon>
+                    <core-icon name="fa-star" class="addon-forum-star" *ngIf="post.parent == 0 && !post.pinned && post.starred"></core-icon>
+                    <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
+                </h2>
+                <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                    <core-icon name="fa-circle" color="primary"></core-icon>
+                </ion-note>
+                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                    <core-icon name="more"></core-icon>
+                </button>
+            </div>
+            <div class="addon-mod-forum-post-info">
+                <ion-avatar *ngIf="post.userfullname" core-user-avatar [user]="post" item-start [courseId]="courseId"></ion-avatar>
+                <div class="addon-mod-forum-post-author">
+                    <h3 *ngIf="post.userfullname">{{post.userfullname}}</h3>
+                    <p *ngIf="post.groupname"><ion-icon name="people"></ion-icon> {{ post.groupname }}</p>
+                    <p *ngIf="post.modified">{{post.modified * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
+                    <p *ngIf="!post.modified"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                </div>
+                <ng-container *ngIf="!displaySubject">
+                    <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                        <core-icon name="fa-circle" color="primary"></core-icon>
+                    </ion-note>
+                    <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                        <core-icon name="more"></core-icon>
+                    </button>
+                </ng-container>
+            </div>
+        </ion-item>
+    </ion-card-header>
+    <ion-card-content [attr.padding-top]="post.parent == 0 || null">
+        <div padding-bottom *ngIf="post.isprivatereply">
+            <ion-note color="danger">{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
+        </div>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId"></core-format-text>
+        <div no-lines *ngIf="post.attachments && post.attachments.length > 0">
+            <core-files [files]="post.attachments" [component]="component" [componentId]="componentId" showInline="true"></core-files>
+        </div>
+    </ion-card-content>
+    <div class="addon-mod-forum-post-more-info">
+        <ion-item text-wrap *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
+            <div item-start>{{ 'core.tag.tags' | translate }}:</div>
+            <core-tag-list [tags]="post.tags"></core-tag-list>
+        </ion-item>
+        <core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
+        <core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
+
+        <ion-item no-padding text-end *ngIf="post.id && post.canreply && !post.isprivatereply" class="addon-forum-reply-button">
+            <button ion-button icon-left clear small (click)="showReplyForm()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
+                <core-icon name="fa-reply"></core-icon> {{ 'addon.mod_forum.reply' | translate }}
+            </button>
+        </ion-item>
     </div>
-    <core-format-text [component]="component" [componentId]="componentId" [text]="post.message"></core-format-text>
-    <div no-lines>
-        <ng-container *ngFor="let attachment of post.attachments">
-            <!-- Files already attached to the submission. -->
-            <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
-            <!-- Files stored in offline to be sent later. -->
-            <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
+
+    <ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)">
+        <ion-item>
+            <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
+            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + post.id" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+        </ion-item>
+        <ion-item text-wrap *ngIf="accessInfo.canpostprivatereply">
+            <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
+            <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply"></ion-checkbox>
+        </ion-item>
+        <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
+            <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
+            <core-icon *ngIf="advanced" name="fa-caret-down" item-start></core-icon>
+            {{ 'addon.mod_forum.advanced' | translate }}
+        </ion-item-divider>
+        <ng-container *ngIf="advanced">
+            <core-attachments *ngIf="forum.id && forum.maxattachments > 0" [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
         </ng-container>
-    </div>
-</ion-card-content>
-<ion-item text-wrap *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
-    <div item-start>{{ 'core.tag.tags' | translate }}:</div>
-    <core-tag-list [tags]="post.tags"></core-tag-list>
-</ion-item>
-<core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
-<core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
-<ion-item no-padding text-end *ngIf="post.id && post.canreply && !post.isprivatereply" class="addon-forum-reply-button">
-    <button ion-button icon-left clear small (click)="showReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
-        <ion-icon name="undo"></ion-icon> {{ 'addon.mod_forum.reply' | translate }}
-    </button>
-</ion-item>
-<ion-item text-end *ngIf="!post.id && (!replyData.isEditing || replyData.replyingTo != post.parent)">
-    <button ion-button icon-left clear small (click)="editReply()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.parent">
-        <ion-icon name="create"></ion-icon> {{ 'addon.mod_forum.edit' | translate }}
-    </button>
-</ion-item>
-<ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)">
-    <ion-item>
-        <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-        <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
-    </ion-item>
-    <ion-item>
-        <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
-        <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + post.id" [component]="component" [componentId]="componentId"></core-rich-text-editor>
-    </ion-item>
-    <ion-item text-wrap *ngIf="accessInfo.canpostprivatereply">
-        <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
-        <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply"></ion-checkbox>
-    </ion-item>
-    <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
-        <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
-        <core-icon *ngIf="advanced" name="fa-caret-down" item-start></core-icon>
-        {{ 'addon.mod_forum.advanced' | translate }}
-    </ion-item-divider>
-    <ng-container *ngIf="advanced">
-        <core-attachments *ngIf="forum.id && forum.maxattachments > 0" [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
-    </ng-container>
-    <ion-grid>
-        <ion-row>
-            <ion-col>
-                <button ion-button block (click)="reply()" [disabled]="replyData.subject == '' || replyData.message == null">{{ 'addon.mod_forum.posttoforum' | translate }}</button>
-            </ion-col>
-            <ion-col>
-                <button ion-button block color="light" (click)="cancel()">{{ 'core.cancel' | translate }}</button>
-            </ion-col>
-        </ion-row>
-        <ion-row *ngIf="replyData.isEditing">
-            <ion-col>
-                <button ion-button block color="light" (click)="discard()">{{ 'core.discard' | translate }}</button>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
-</ion-list>
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <button ion-button block (click)="reply()" [disabled]="replyData.subject == '' || replyData.message == null">{{ 'addon.mod_forum.posttoforum' | translate }}</button>
+                </ion-col>
+                <ion-col>
+                    <button ion-button block color="light" (click)="cancel()">{{ 'core.cancel' | translate }}</button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-list>
+</div>

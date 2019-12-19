@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { AddonModSurveyProvider } from './survey';
 import { AddonModSurveySyncProvider } from './sync';
 import { AddonModSurveyHelperProvider } from './helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch surveys.
@@ -37,20 +39,29 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
 
     protected syncProvider: AddonModSurveySyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected surveyProvider: AddonModSurveyProvider,
-            protected surveyHelper: AddonModSurveyHelperProvider, protected injector: Injector) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
+            protected surveyProvider: AddonModSurveyProvider,
+            protected surveyHelper: AddonModSurveyHelperProvider,
+            protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
      * Returns survey intro files.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @return {Promise<any[]>} Promise resolved with list of intro files.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @return Promise resolved with list of intro files.
      */
     getIntroFiles(module: any, courseId: number): Promise<any[]> {
         return this.surveyProvider.getSurvey(courseId, module.id).catch(() => {
@@ -63,9 +74,9 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.surveyProvider.invalidateContent(moduleId, courseId);
@@ -74,9 +85,9 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         return this.surveyProvider.invalidateSurveyData(courseId);
@@ -85,7 +96,7 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -94,11 +105,11 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.prefetchPackage(module, courseId, single, this.prefetchSurvey.bind(this));
@@ -107,11 +118,11 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch a survey.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {String} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchSurvey(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         return this.surveyProvider.getSurvey(courseId, module.id, true, siteId).then((survey) => {
@@ -133,10 +144,10 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Sync a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     sync(module: any, courseId: number, siteId?: any): Promise<any> {
         if (!this.syncProvider) {

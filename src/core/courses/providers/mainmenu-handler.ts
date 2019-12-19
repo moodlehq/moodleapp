@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.isEnabledForSite();
@@ -45,8 +45,8 @@ export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
     /**
      * Check if the handler is enabled on a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean | Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabledForSite(siteId?: string): Promise<boolean> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -92,7 +92,7 @@ export class CoreDashboardMainMenuHandler implements CoreMainMenuHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreMainMenuHandlerData} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {

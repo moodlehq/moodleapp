@@ -1,11 +1,9 @@
 ion-app.app-root core-iframe {
-    > div {
-        height: 100%;
-    }
     iframe {
         border: 0;
         display: block;
         max-width: 100%;
+        background-color: $gray-light;
     }
 
     .core-loading-container {

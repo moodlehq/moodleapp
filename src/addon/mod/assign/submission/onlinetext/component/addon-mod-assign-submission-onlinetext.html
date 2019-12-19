@@ -3,14 +3,14 @@
     <h2>{{ plugin.name }}</h2>
     <p *ngIf="words">{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
     <p>
-        <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text"></core-format-text>
+        <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true" [fullTitle]="plugin.name" [text]="text" contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course"></core-format-text>
     </p>
 </ion-item>
 
 <!-- Edit -->
 <div *ngIf="edit && loaded">
     <ion-item-divider text-wrap>{{ plugin.name }}</ion-item-divider>
-    <ion-item text-wrap *ngIf="configs.wordlimitenabled && words >= 0">
+    <ion-item text-wrap *ngIf="wordLimitEnabled && words >= 0">
         <h2>{{ 'addon.mod_assign.wordlimit' | translate }}</h2>
         <p>{{ 'core.numwords' | translate: {'$a': words + ' / ' + configs.wordlimit} }}</p>
     </ion-item>

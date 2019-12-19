@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,12 +33,12 @@ export class AddonModQuizAccessOfflineAttemptsHandler implements AddonModQuizAcc
     /**
      * Add preflight data that doesn't require user interaction. The data should be added to the preflightData param.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} preflightData Object where to add the preflight data.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param preflightData Object where to add the preflight data.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     getFixedPreflightData(quiz: any, preflightData: any, attempt?: any, prefetch?: boolean, siteId?: string): void | Promise<any> {
         preflightData.confirmdatasaved = 1;
@@ -49,8 +49,8 @@ export class AddonModQuizAccessOfflineAttemptsHandler implements AddonModQuizAcc
      * Implement this if your access rule requires a preflight check with user interaction.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getPreflightComponent(injector: Injector): any | Promise<any> {
         return AddonModQuizAccessOfflineAttemptsComponent;
@@ -59,7 +59,7 @@ export class AddonModQuizAccessOfflineAttemptsHandler implements AddonModQuizAcc
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -68,11 +68,11 @@ export class AddonModQuizAccessOfflineAttemptsHandler implements AddonModQuizAcc
     /**
      * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean|Promise<boolean>} Whether the rule requires a preflight check.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether the rule requires a preflight check.
      */
     isPreflightCheckRequired(quiz: any, attempt?: any, prefetch?: boolean, siteId?: string): boolean | Promise<boolean> {
         if (prefetch) {

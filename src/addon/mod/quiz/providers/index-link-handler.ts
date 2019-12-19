@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,20 +25,6 @@ export class AddonModQuizIndexLinkHandler extends CoreContentLinksModuleIndexHan
     name = 'AddonModQuizIndexLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider, protected quizProvider: AddonModQuizProvider) {
-        super(courseHelper, 'AddonModQuiz', 'quiz');
-    }
-
-    /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     * If not defined, defaults to true.
-     *
-     * @param {string} siteId The site ID.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
-     */
-    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
-        return this.quizProvider.isPluginEnabled();
+        super(courseHelper, 'AddonModQuiz', 'quiz', 'q');
     }
 }

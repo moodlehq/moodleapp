@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -129,7 +129,7 @@ export class AddonModGlossaryEditPage implements OnInit {
     /**
      * Definition changed.
      *
-     * @param {string} text The new text.
+     * @param text The new text.
      */
     onDefinitionChange(text: string): void {
         this.entry.definition = text;
@@ -138,7 +138,7 @@ export class AddonModGlossaryEditPage implements OnInit {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         let promise: any;

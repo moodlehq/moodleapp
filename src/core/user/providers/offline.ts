@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ export class CoreUserOfflineProvider {
     /**
      * Get preferences that were changed offline.
      *
-     * @return {Promise<CoreUserOfflinePreference[]>} Promise resolved with list of preferences.
+     * @return Promise resolved with list of preferences.
      */
     getChangedPreferences(siteId?: string): Promise<CoreUserOfflinePreference[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -76,8 +76,8 @@ export class CoreUserOfflineProvider {
     /**
      * Get an offline preference.
      *
-     * @param {string} name Name of the preference.
-     * @return {Promise<CoreUserOfflinePreference>} Promise resolved with the preference, rejected if not found.
+     * @param name Name of the preference.
+     * @return Promise resolved with the preference, rejected if not found.
      */
     getPreference(name: string, siteId?: string): Promise<CoreUserOfflinePreference> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -90,10 +90,10 @@ export class CoreUserOfflineProvider {
     /**
      * Set an offline preference.
      *
-     * @param {string} name Name of the preference.
-     * @param {string} value Value of the preference.
-     * @param {string} onlineValue Online value of the preference. If unedfined, preserve previously stored value.
-     * @return {Promise<CoreUserPreference>} Promise resolved when done.
+     * @param name Name of the preference.
+     * @param value Value of the preference.
+     * @param onlineValue Online value of the preference. If unedfined, preserve previously stored value.
+     * @return Promise resolved when done.
      */
     setPreference(name: string, value: string, onlineValue?: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

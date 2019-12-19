@@ -1,6 +1,9 @@
 ion-app.app-root page-addon-mod-forum-discussion {
-    .card.highlight .card-header .item {
+    .highlight .card-header .item {
         background-color: $gray-lighter;
+        @include darkmode() {
+            background-color: $gray-dark;
+        }
     }
 
     .addon-forum-reply-button .label {

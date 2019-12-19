@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreConfigConstants } from '../../../../configconstants';
+import { CoreSettingsHelper } from '../../providers/helper';
 
 /**
  * Page that displays the general settings.
@@ -44,11 +45,13 @@ export class CoreSettingsGeneralPage {
     debugDisplay: boolean;
     analyticsSupported: boolean;
     analyticsEnabled: boolean;
+    colorSchemes = [];
+    selectedScheme: string;
 
-    constructor(appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
+    constructor(private appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
             private eventsProvider: CoreEventsProvider, private langProvider: CoreLangProvider,
             private domUtils: CoreDomUtilsProvider, private pushNotificationsProvider: CorePushNotificationsProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider) {
+            localNotificationsProvider: CoreLocalNotificationsProvider, private settingsHelper: CoreSettingsHelper) {
 
         // Get the supported languages.
         const languages = CoreConfigConstants.languages;
@@ -56,6 +59,23 @@ export class CoreSettingsGeneralPage {
             this.languages.push({
                 code: code,
                 name: languages[code]
+            });
+        }
+
+        if (!CoreConfigConstants.forceColorScheme) {
+            let defaultColorScheme = 'light';
+
+            // Auto is not working on iOS right now until we update Webkit.
+            if (!this.appProvider.isIOS() && (window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                                window.matchMedia('(prefers-color-scheme: light)').matches)) {
+                this.colorSchemes.push('auto');
+                defaultColorScheme = 'auto';
+            }
+            this.colorSchemes.push('light');
+            this.colorSchemes.push('dark');
+
+            this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, defaultColorScheme).then((scheme) => {
+                this.selectedScheme = scheme;
             });
         }
 
@@ -113,7 +133,7 @@ export class CoreSettingsGeneralPage {
      */
     languageChanged(): void {
         this.langProvider.changeCurrentLanguage(this.selectedLanguage).finally(() => {
-            this.eventsProvider.trigger(CoreEventsProvider.LANGUAGE_CHANGED);
+            this.eventsProvider.trigger(CoreEventsProvider.LANGUAGE_CHANGED, this.selectedLanguage);
         });
     }
 
@@ -126,8 +146,17 @@ export class CoreSettingsGeneralPage {
 
             return fontSize;
         });
-        document.documentElement.style.fontSize = this.selectedFontSize + '%';
+
+        this.settingsHelper.setFontSize(this.selectedFontSize);
         this.configProvider.set(CoreConstants.SETTINGS_FONT_SIZE, this.selectedFontSize);
+    }
+
+    /**
+     * Called when a new color scheme is selected.
+     */
+    colorSchemeChanged(): void {
+        this.settingsHelper.setColorScheme(this.selectedScheme);
+        this.configProvider.set(CoreConstants.SETTINGS_COLOR_SCHEME, this.selectedScheme);
     }
 
     /**

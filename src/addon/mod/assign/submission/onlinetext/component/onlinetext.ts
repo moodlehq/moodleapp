@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     component = AddonModAssignProvider.COMPONENT;
     text: string;
     loaded: boolean;
+    wordLimitEnabled: boolean;
 
     protected wordCountTimeout: any;
     protected element: HTMLElement;
@@ -61,9 +62,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             // No offline data found, return online text.
             return this.assignProvider.getSubmissionPluginText(this.plugin);
         }).then((text) => {
-            // We receive them as strings, convert to int.
-            this.configs.wordlimit = parseInt(this.configs.wordlimit, 10);
-            this.configs.wordlimitenabled = parseInt(this.configs.wordlimitenabled, 10);
+            this.wordLimitEnabled = !!parseInt(this.configs.wordlimitenabled, 10);
 
             // Set the text.
             this.text = text;
@@ -76,7 +75,8 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
                     if (text) {
                         // Open a new state with the interpolated contents.
-                        this.textUtils.expandText(this.plugin.name, text, this.component, this.assign.cmid);
+                        this.textUtils.expandText(this.plugin.name, text, this.component, this.assign.cmid, undefined, true,
+                                'module', this.assign.cmid, this.assign.course);
                     }
                 });
             } else {
@@ -85,7 +85,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             }
 
             // Calculate initial words.
-            if (this.configs.wordlimitenabled) {
+            if (this.wordLimitEnabled) {
                 this.words = this.textUtils.countWords(text);
             }
         }).finally(() => {
@@ -96,11 +96,11 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     /**
      * Text changed.
      *
-     * @param {string} text The new text.
+     * @param text The new text.
      */
     onChange(text: string): void {
         // Count words if needed.
-        if (this.configs.wordlimitenabled) {
+        if (this.wordLimitEnabled) {
             // Cancel previous wait.
             clearTimeout(this.wordCountTimeout);
 

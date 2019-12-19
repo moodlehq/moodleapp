@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,10 +72,10 @@ export class AddonModSurveyOfflineProvider {
     /**
      * Delete a survey answers.
      *
-     * @param  {number} surveyId Survey ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the answers belong to. If not defined, current user in site.
-     * @return {Promise<any>}         Promise resolved if deleted, rejected if failure.
+     * @param surveyId Survey ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the answers belong to. If not defined, current user in site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     deleteSurveyAnswers(surveyId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -88,8 +88,8 @@ export class AddonModSurveyOfflineProvider {
     /**
      * Get all the stored data from all the surveys.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with answers.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with answers.
      */
     getAllData(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -106,10 +106,10 @@ export class AddonModSurveyOfflineProvider {
     /**
      * Get a survey stored answers.
      *
-     * @param  {number} surveyId Survey ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the answers belong to. If not defined, current user in site.
-     * @return {Promise<any>}    Promise resolved with the answers.
+     * @param surveyId Survey ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the answers belong to. If not defined, current user in site.
+     * @return Promise resolved with the answers.
      */
     getSurveyAnswers(surveyId: number, siteId?: string, userId?: number): Promise<any> {
         return this.getSurveyData(surveyId, siteId, userId).then((entry) => {
@@ -122,10 +122,10 @@ export class AddonModSurveyOfflineProvider {
     /**
      * Get a survey stored data.
      *
-     * @param  {number} surveyId Survey ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the answers belong to. If not defined, current user in site.
-     * @return {Promise<any>}         Promise resolved with the data.
+     * @param surveyId Survey ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the answers belong to. If not defined, current user in site.
+     * @return Promise resolved with the data.
      */
     getSurveyData(surveyId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -142,10 +142,10 @@ export class AddonModSurveyOfflineProvider {
     /**
      * Check if there are offline answers to send.
      *
-     * @param  {number} surveyId  Survey ID.
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @param  {number} [userId]  User the answers belong to. If not defined, current user in site.
-     * @return {Promise<boolean>}          Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @param surveyId Survey ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the answers belong to. If not defined, current user in site.
+     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     hasAnswers(surveyId: number, siteId?: string, userId?: number): Promise<boolean> {
         return this.getSurveyAnswers(surveyId, siteId, userId).then((answers) => {
@@ -156,13 +156,13 @@ export class AddonModSurveyOfflineProvider {
     /**
      * Save answers to be sent later.
      *
-     * @param  {number} surveyId  Survey ID.
-     * @param  {string} name      Survey name.
-     * @param  {number} courseId  Course ID the survey belongs to.
-     * @param  {any[]} answers    Answers.
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @param  {number} [userId]  User the answers belong to. If not defined, current user in site.
-     * @return {Promise<any>}     Promise resolved if stored, rejected if failure.
+     * @param surveyId Survey ID.
+     * @param name Survey name.
+     * @param courseId Course ID the survey belongs to.
+     * @param answers Answers.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the answers belong to. If not defined, current user in site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     saveAnswers(surveyId: number, name: string, courseId: number, answers: any[], siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

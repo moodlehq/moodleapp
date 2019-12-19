@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ export class CoreRatingProvider {
     /**
      * Returns whether the web serivce to add ratings is available.
      *
-     * @return {boolean} If WS is abalaible.
+     * @return If WS is abalaible.
      * @since 3.2
      */
     isAddRatingWSAvailable(): boolean {
@@ -114,19 +114,19 @@ export class CoreRatingProvider {
     /**
      * Add a rating to an item.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} itemSetId Item set id. Example: forum discussion id.
-     * @param {number} courseId Course id.
-     * @param {number} scaleId Scale id.
-     * @param {number} rating Rating value. Use CoreRatingProvider.UNSET_RATING to delete rating.
-     * @param {number} ratedUserId Rated user id.
-     * @param {number} aggregateMethod Aggregate method.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreRatingItemRating|null>} Promise resolved with the aggregated rating or null if stored offline.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemId Item id. Example: forum post id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @param courseId Course id.
+     * @param scaleId Scale id.
+     * @param rating Rating value. Use CoreRatingProvider.UNSET_RATING to delete rating.
+     * @param ratedUserId Rated user id.
+     * @param aggregateMethod Aggregate method.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the aggregated rating or null if stored offline.
      * @since 3.2
      */
     addRating(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemId: number, itemSetId: number,
@@ -174,17 +174,17 @@ export class CoreRatingProvider {
     /**
      * Add a rating to an item. It will fail if offline or cannot connect.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} scaleId Scale id.
-     * @param {number} rating Rating value. Use CoreRatingProvider.UNSET_RATING to delete rating.
-     * @param {number} ratedUserId Rated user id.
-     * @param {number} aggregateMethod Aggregate method.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreRatingItemRating>} Promise resolved with the aggregated rating.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemId Item id. Example: forum post id.
+     * @param scaleId Scale id.
+     * @param rating Rating value. Use CoreRatingProvider.UNSET_RATING to delete rating.
+     * @param ratedUserId Rated user id.
+     * @param aggregateMethod Aggregate method.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the aggregated rating.
      * @since 3.2
      */
     addRatingOnline(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemId: number,
@@ -225,17 +225,17 @@ export class CoreRatingProvider {
     /**
      * Get item ratings.
      *
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} scaleId Scale id.
-     * @param {string} [sort="timemodified"] Sort field.
-     * @param {number} [courseId] Course id. Used for fetching user profiles.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<CoreRatingItemRating[]>} Promise resolved with the list of ratings.
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param itemId Item id. Example: forum post id.
+     * @param scaleId Scale id.
+     * @param sort Sort field.
+     * @param courseId Course id. Used for fetching user profiles.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved with the list of ratings.
      */
     getItemRatings(contextLevel: string, instanceId: number, component: string, ratingArea: string, itemId: number,
             scaleId: number, sort: string = 'timemodified', courseId?: number, siteId?: string, ignoreCache: boolean = false):
@@ -284,15 +284,15 @@ export class CoreRatingProvider {
     /**
      * Invalidate item ratings.
      *
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} scaleId Scale id.
-     * @param {string} [sort="timemodified"] Sort field.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param itemId Item id. Example: forum post id.
+     * @param scaleId Scale id.
+     * @param sort Sort field.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateRatingItems(contextLevel: string, instanceId: number, component: string, ratingArea: string,
             itemId: number, scaleId: number, sort: string = 'timemodified', siteId?: string): Promise<any> {
@@ -306,8 +306,8 @@ export class CoreRatingProvider {
     /**
      * Check if rating is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isRatingDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -318,8 +318,8 @@ export class CoreRatingProvider {
     /**
      * Check if rating is disabled in a certain site.
      *
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isRatingDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -330,8 +330,8 @@ export class CoreRatingProvider {
     /**
      * Convenience function to merge two or more rating infos of the same instance.
      *
-     * @param {CoreRatingInfo[]} ratingInfos Array of rating infos.
-     * @return {CoreRatingInfo} Merged rating info or null.
+     * @param ratingInfos Array of rating infos.
+     * @return Merged rating info or null.
      */
     mergeRatingInfos(ratingInfos: CoreRatingInfo[]): CoreRatingInfo {
         let result: CoreRatingInfo = null;
@@ -370,12 +370,12 @@ export class CoreRatingProvider {
      *
      * This function should be called from the prefetch handler of activities with ratings.
      *
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Instance id.
-     * @param {string} [siteId] Site id. If not defined, current site.
-     * @param {number} [courseId] Course id. Used for prefetching user profiles.
-     * @param {CoreRatingInfo} [ratingInfo] Rating info returned by web services.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Instance id.
+     * @param siteId Site id. If not defined, current site.
+     * @param courseId Course id. Used for prefetching user profiles.
+     * @param ratingInfo Rating info returned by web services.
+     * @return Promise resolved when done.
      */
     prefetchRatings(contextLevel: string, instanceId: number, scaleId: number, courseId?: number, ratingInfo?: CoreRatingInfo,
             siteId?: string): Promise<any> {
@@ -400,13 +400,13 @@ export class CoreRatingProvider {
     /**
      * Get cache key for rating items WS calls.
      *
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} scaleId Scale id.
-     * @param {string} sort Sort field.
-     * @return {string} Cache key.
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param itemId Item id. Example: forum post id.
+     * @param scaleId Scale id.
+     * @param sort Sort field.
+     * @return Cache key.
      */
     protected getItemRatingsCacheKey(contextLevel: string, instanceId: number, component: string, ratingArea: string,
             itemId: number, scaleId: number, sort: string): string {

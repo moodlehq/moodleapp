@@ -1,7 +1,7 @@
 <core-loading [hideUntil]="coursesLoaded">
     <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
     </ion-searchbar>
-    <ion-grid no-padding>
+    <ion-grid no-padding class="safe-area-page">
         <ion-row no-padding>
             <ion-col *ngFor="let course of filteredCourses" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch>
                 <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true"></core-courses-course-progress>

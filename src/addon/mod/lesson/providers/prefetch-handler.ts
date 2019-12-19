@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModLessonProvider } from './lesson';
 import { AddonModLessonSyncProvider } from './lesson-sync';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch lessons.
@@ -39,19 +41,29 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
 
     protected syncProvider: AddonModLessonSyncProvider; // It will be injected later to prevent circular dependencies.
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected modalCtrl: ModalController, protected groupsProvider: CoreGroupsProvider,
-            protected lessonProvider: AddonModLessonProvider, protected injector: Injector) {
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
+            protected modalCtrl: ModalController,
+            protected groupsProvider: CoreGroupsProvider,
+            protected lessonProvider: AddonModLessonProvider,
+            protected injector: Injector) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
      * Ask password.
      *
-     * @param {any} info Lesson access info.
-     * @return {Promise<string>} Promise resolved with the password.
+     * @param info Lesson access info.
+     * @return Promise resolved with the password.
      */
     protected askUserPassword(info: any): Promise<string> {
         // Create and show the modal.
@@ -74,11 +86,11 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Get the download size of a module.
      *
-     * @param {any} module Module.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<{size: number, total: boolean}>} Promise resolved with the size and a boolean indicating if it was able
-     *                                                   to calculate the total size.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @return Promise resolved with the size and a boolean indicating if it was able
+     *         to calculate the total size.
      */
     getDownloadSize(module: any, courseId: any, single?: boolean): Promise<{ size: number, total: boolean }> {
         const siteId = this.sitesProvider.getCurrentSiteId();
@@ -99,7 +111,9 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             let files = lesson.mediafiles || [];
             files = files.concat(this.getIntroFilesFromInstance(module, lesson));
 
-            result = this.utils.sumFileSizes(files);
+            return this.pluginFileDelegate.getFilesSize(files);
+        }).then((res) => {
+            result = res;
 
             // Get the pages to calculate the size.
             return this.lessonProvider.getPages(lesson.id, password, false, false, siteId);
@@ -115,12 +129,12 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Get the lesson password if needed. If not stored, it can ask the user to enter it.
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {boolean} [forceCache] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {boolean} [askPassword] True if we should ask for password if needed, false otherwise.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{password?: string, lesson?: any, accessInfo: any}>} Promise resolved when done.
+     * @param lessonId Lesson ID.
+     * @param forceCache Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param askPassword True if we should ask for password if needed, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     getLessonPassword(lessonId: number, forceCache?: boolean, ignoreCache?: boolean, askPassword?: boolean, siteId?: string)
             : Promise<{password?: string, lesson?: any, accessInfo: any}> {
@@ -167,9 +181,9 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId The course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId The course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         // Only invalidate the data that doesn't ignore cache when prefetching.
@@ -185,9 +199,9 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         const siteId = this.sitesProvider.getCurrentSiteId();
@@ -206,9 +220,9 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Check if a module can be downloaded. If the function is not defined, we assume that all modules are downloadable.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {boolean|Promise<boolean>} Whether the module can be downloaded. The promise should never be rejected.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Whether the module can be downloaded. The promise should never be rejected.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
         const siteId = this.sitesProvider.getCurrentSiteId();
@@ -230,7 +244,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.lessonProvider.isPluginEnabled();
@@ -239,11 +253,11 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.prefetchPackage(module, courseId, single, this.prefetchLesson.bind(this));
@@ -252,11 +266,11 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch a lesson.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {String} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchLesson(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         let lesson,
@@ -405,7 +419,8 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                                         return;
                                     }
                                     answerPage.answerdata.answers.forEach((answer) => {
-                                        files.push(...this.domUtils.extractDownloadableFilesFromHtmlAsFakeFileObjects(answer[0]));
+                                        files.push(...this.filepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects(
+                                                answer[0]));
                                     });
                                 });
 
@@ -427,13 +442,13 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Validate the password.
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {any} info Lesson access info.
-     * @param {string} pwd Password to check.
-     * @param {boolean} [forceCache] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{password: string, lesson: any, accessInfo: any}>} Promise resolved when done.
+     * @param lessonId Lesson ID.
+     * @param info Lesson access info.
+     * @param pwd Password to check.
+     * @param forceCache Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     protected validatePassword(lessonId: number, info: any, pwd: string, forceCache?: boolean, ignoreCache?: boolean,
             siteId?: string): Promise<{password: string, lesson: any, accessInfo: any}> {
@@ -455,10 +470,10 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Sync a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     sync(module: any, courseId: number, siteId?: any): Promise<any> {
         if (!this.syncProvider) {

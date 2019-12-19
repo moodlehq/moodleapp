@@ -10,5 +10,13 @@ ion-app.app-root page-addon-mod-quiz-navigation-modal {
         }
         color: $text-color;
         background-color: $white;
+
+        @include darkmode() {
+            ion-label.label {
+                color: $core-dark-text-color;
+            }
+            color: $core-dark-text-color;
+            background-color: $core-dark-item-bg-color;
+        }
     }
 }

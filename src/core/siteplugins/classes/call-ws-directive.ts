@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Call a WS.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected callWS(): Promise<any> {
         const params = this.getParamsForWS();
@@ -78,7 +78,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Get the params for the WS call.
      *
-     * @return {any} Params.
+     * @return Params.
      */
     protected getParamsForWS(): any {
         let params = this.params || {};
@@ -97,7 +97,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Function called when the WS call is successful.
      *
-     * @param {any} result Result of the WS call.
+     * @param result Result of the WS call.
      */
     protected wsCallSuccess(result: any): void {
         // Function to be overridden.
@@ -106,7 +106,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Invalidate the WS call.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         const params = this.getParamsForWS();

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,9 +63,9 @@ export class CoreCourseOfflineProvider {
     /**
      * Delete a manual completion stored.
      *
-     * @param {number} cmId The module ID to remove the completion.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when deleted, rejected if failure.
+     * @param cmId The module ID to remove the completion.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted, rejected if failure.
      */
     deleteManualCompletion(cmId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -77,8 +77,8 @@ export class CoreCourseOfflineProvider {
     /**
      * Get all offline manual completions for a certain course.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of completions.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of completions.
      */
     getAllManualCompletions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -90,9 +90,9 @@ export class CoreCourseOfflineProvider {
     /**
      * Get all offline manual completions for a certain course.
      *
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of completions.
+     * @param courseId Course ID the module belongs to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of completions.
      */
     getCourseManualCompletions(courseId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -104,9 +104,9 @@ export class CoreCourseOfflineProvider {
     /**
      * Get the offline manual completion for a certain module.
      *
-     * @param {number} cmId The module ID to remove the completion.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the completion, rejected if failure or not found.
+     * @param cmId The module ID to remove the completion.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the completion, rejected if failure or not found.
      */
     getManualCompletion(cmId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -118,12 +118,12 @@ export class CoreCourseOfflineProvider {
     /**
      * Offline version for manually marking a module as completed.
      *
-     * @param {number} cmId The module ID to store the completion.
-     * @param {number} completed Whether the module is completed or not.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {string} [courseName] Course name. Recommended, it is used to display a better warning message.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{status: boolean, offline: boolean}>} Promise resolved when completion is successfully stored.
+     * @param cmId The module ID to store the completion.
+     * @param completed Whether the module is completed or not.
+     * @param courseId Course ID the module belongs to.
+     * @param courseName Course name. Recommended, it is used to display a better warning message.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when completion is successfully stored.
      */
     markCompletedManually(cmId: number, completed: number, courseId: number, courseName?: string, siteId?: string)
             : Promise<{status: boolean, offline: boolean}> {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSite } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Service that provides some features for IMSCP.
@@ -39,8 +40,8 @@ export class AddonModImscpProvider {
     /**
      * Get the IMSCP toc as an array.
      *
-     * @param  {any[]} contents The module contents.
-     * @return {any} The toc.
+     * @param contents The module contents.
+     * @return The toc.
      */
     protected getToc(contents: any[]): any {
         if (!contents || !contents.length) {
@@ -53,8 +54,8 @@ export class AddonModImscpProvider {
     /**
      * Get the imscp toc as an array of items (not nested) to build the navigation tree.
      *
-     * @param  {any[]} contents The module contents.
-     * @return {any[]} The toc as a list.
+     * @param contents The module contents.
+     * @return The toc as a list.
      */
     createItemList(contents: any[]): any[] {
         const items = [];
@@ -72,9 +73,9 @@ export class AddonModImscpProvider {
     /**
      * Get the previous item to the given one.
      *
-     * @param  {any[]}  items  The items list.
-     * @param  {string} itemId The current item.
-     * @return {string} The previous item id.
+     * @param items The items list.
+     * @param itemId The current item.
+     * @return The previous item id.
      */
     getPreviousItem(items: any[], itemId: string): string {
         const position = this.getItemPosition(items, itemId);
@@ -93,9 +94,9 @@ export class AddonModImscpProvider {
     /**
      * Get the next item to the given one.
      *
-     * @param  {any[]}  items  The items list.
-     * @param  {string} itemId The current item.
-     * @return {string} The next item id.
+     * @param items The items list.
+     * @param itemId The current item.
+     * @return The next item id.
      */
     getNextItem(items: any[], itemId: string): string {
         const position = this.getItemPosition(items, itemId);
@@ -114,9 +115,9 @@ export class AddonModImscpProvider {
     /**
      * Get the position of a item.
      *
-     * @param  {any[]}  items  The items list.
-     * @param  {string} itemId The item to search.
-     * @return {number} The item position.
+     * @param items The items list.
+     * @param itemId The item to search.
+     * @return The item position.
      */
     protected getItemPosition(items: any[], itemId: string): number {
         for (let i = 0; i < items.length; i++) {
@@ -131,8 +132,8 @@ export class AddonModImscpProvider {
     /**
      * Check if we should ommit the file download.
      *
-     * @param  {string} fileName The file name
-     * @return {boolean} True if we should ommit the file.
+     * @param fileName The file name
+     * @return True if we should ommit the file.
      */
     protected checkSpecialFiles(fileName: string): boolean {
         return fileName == 'imsmanifest.xml';
@@ -141,8 +142,8 @@ export class AddonModImscpProvider {
     /**
      * Get cache key for imscp data WS calls.
      *
-     * @param  {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getImscpDataCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY +  'imscp:' + courseId;
@@ -151,13 +152,13 @@ export class AddonModImscpProvider {
     /**
      * Get a imscp with key=value. If more than one is found, only the first will be returned.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {string} key      Name of the property to check.
-     * @param  {any}    value    Value to search.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the imscp is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the imscp is retrieved.
      */
-    protected getImscpByKey(courseId: number, key: string, value: any, siteId?: string): Promise<any> {
+    protected getImscpByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModImscpImscp> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 courseids: [courseId]
@@ -167,7 +168,9 @@ export class AddonModImscpProvider {
                 updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
-            return site.read('mod_imscp_get_imscps_by_courses', params, preSets).then((response) => {
+            return site.read('mod_imscp_get_imscps_by_courses', params, preSets)
+                    .then((response: AddonModImscpGetImscpsByCoursesResult): any => {
+
                 if (response && response.imscps) {
                     const currentImscp = response.imscps.find((imscp) => imscp[key] == value);
                     if (currentImscp) {
@@ -183,21 +186,21 @@ export class AddonModImscpProvider {
     /**
      * Get a imscp by course module ID.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {number} cmId     Course module ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the imscp is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the imscp is retrieved.
      */
-    getImscp(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getImscp(courseId: number, cmId: number, siteId?: string): Promise<AddonModImscpImscp> {
         return this.getImscpByKey(courseId, 'coursemodule', cmId, siteId);
     }
 
     /**
      * Given a filepath, get a certain fileurl from module contents.
      *
-     * @param  {any[]}  contents       Module contents.
-     * @param  {string} targetFilePath Path of the searched file.
-     * @return {string} File URL.
+     * @param contents Module contents.
+     * @param targetFilePath Path of the searched file.
+     * @return File URL.
      */
     protected getFileUrlFromContents(contents: any[], targetFilePath: string): string {
         let indexUrl;
@@ -218,9 +221,9 @@ export class AddonModImscpProvider {
     /**
      * Get src of a imscp item.
      *
-     * @param  {any}    module     The module object.
-     * @param  {string} [itemHref] Href of item to get. If not defined, gets src of main item.
-     * @return {Promise<string>} Promise resolved with the item src.
+     * @param module The module object.
+     * @param itemHref Href of item to get. If not defined, gets src of main item.
+     * @return Promise resolved with the item src.
      */
     getIframeSrc(module: any, itemHref?: string): Promise<string> {
         if (!itemHref) {
@@ -242,7 +245,7 @@ export class AddonModImscpProvider {
 
                 if (indexUrl) {
                     return this.sitesProvider.getSite(siteId).then((site) => {
-                        return site.fixPluginfileURL(indexUrl);
+                        return site.checkAndFixPluginfileURL(indexUrl);
                     });
                 }
             }
@@ -254,10 +257,10 @@ export class AddonModImscpProvider {
     /**
      * Invalidate the prefetched content.
      *
-     * @param  {number} moduleId The module ID.
-     * @param  {number} courseId Course ID of the module.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the content is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID of the module.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the content is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -274,9 +277,9 @@ export class AddonModImscpProvider {
     /**
      * Invalidates imscp data.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateImscpData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -288,8 +291,8 @@ export class AddonModImscpProvider {
      * Check if a file is downloadable. The file param must have 'type' and 'filename' attributes
      * like in core_course_get_contents response.
      *
-     * @param  {any} file File to check.
-     * @return {boolean} True if downloadable, false otherwise.
+     * @param file File to check.
+     * @return True if downloadable, false otherwise.
      */
     isFileDownloadable(file: any): boolean {
         return file.type === 'file' && !this.checkSpecialFiles(file.filename);
@@ -298,10 +301,10 @@ export class AddonModImscpProvider {
     /**
      * Return whether or not the plugin is enabled in a certain site.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    isPluginEnabled(siteId?: string): Promise<any> {
+    isPluginEnabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             return site.canDownloadFiles();
         });
@@ -310,10 +313,10 @@ export class AddonModImscpProvider {
     /**
      * Report a IMSCP as being viewed.
      *
-     * @param  {string} id Module ID.
-     * @param {string} [name] Name of the imscp.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param name Name of the imscp.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -324,3 +327,32 @@ export class AddonModImscpProvider {
                 siteId);
     }
 }
+
+/**
+ * IMSCP returned by mod_imscp_get_imscps_by_courses.
+ */
+export type AddonModImscpImscp = {
+    id: number; // IMSCP id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Activity name.
+    intro?: string; // The IMSCP intro.
+    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    revision?: number; // Revision.
+    keepold?: number; // Number of old IMSCP to keep.
+    structure?: string; // IMSCP structure.
+    timemodified?: string; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: boolean; // If visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Result of WS mod_imscp_get_imscps_by_courses.
+ */
+export type AddonModImscpGetImscpsByCoursesResult = {
+    imscps: AddonModImscpImscp[];
+    warnings?: CoreWSExternalWarning[];
+};

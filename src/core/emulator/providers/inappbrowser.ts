@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,10 +33,10 @@ export class InAppBrowserMock extends InAppBrowser {
     /**
      * Opens a URL in a new InAppBrowser instance, the current browser instance, or the system browser.
      *
-     * @param {string} url The URL to load.
-     * @param {string} [target] The target in which to load the URL, an optional parameter that defaults to _self.
-     * @param {string} [options] Options for the InAppBrowser.
-     * @return {any} The new instance.
+     * @param url The URL to load.
+     * @param target The target in which to load the URL, an optional parameter that defaults to _self.
+     * @param options Options for the InAppBrowser.
+     * @return The new instance.
      */
     create(url: string, target?: string, options: string = 'location=yes'): any {
         if (options && typeof options !== 'string') {

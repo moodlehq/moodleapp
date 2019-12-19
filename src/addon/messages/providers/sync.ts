@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { AddonMessagesOfflineProvider } from './messages-offline';
-import { AddonMessagesProvider } from './messages';
+import { AddonMessagesProvider, AddonMessagesConversationFormatted } from './messages';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -46,9 +46,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Get the ID of a discussion sync.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {number} userId User ID talking to (if no conversation ID).
-     * @return {string} Sync ID.
+     * @param conversationId Conversation ID.
+     * @param userId User ID talking to (if no conversation ID).
+     * @return Sync ID.
      */
     protected getSyncId(conversationId: number, userId: number): string {
         if (conversationId) {
@@ -61,10 +61,10 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the discussions in a certain site or in all sites.
      *
-     * @param  {string} [siteId]                   Site ID to sync. If not defined, sync all sites.
-     * @param  {boolean} [onlyDeviceOffline=false] True to only sync discussions that failed because device was offline,
-     *                                             false to sync all.
-     * @return {Promise<any>}                      Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param onlyDeviceOffline True to only sync discussions that failed because device was offline,
+     *                          false to sync all.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDiscussions(siteId?: string, onlyDeviceOffline: boolean = false): Promise<any> {
         const syncFunctionLog = 'all discussions' + (onlyDeviceOffline ? ' (Only offline)' : '');
@@ -75,9 +75,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Get all messages pending to be sent in the site.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [onlyDeviceOffline=false] True to only sync discussions that failed because device was offline.
-     * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param onlyDeviceOffline True to only sync discussions that failed because device was offline.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllDiscussionsFunc(siteId?: string, onlyDeviceOffline: boolean = false): Promise<any> {
         const promise = onlyDeviceOffline ?
@@ -132,9 +132,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize a discussion.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {number} userId User ID talking to (if no conversation ID).
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param conversationId Conversation ID.
+     * @param userId User ID talking to (if no conversation ID).
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncDiscussion(conversationId: number, userId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -245,11 +245,11 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Handle sync errors.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {number} userId User ID talking to (if no conversation ID).
-     * @param {any[]} errors List of errors.
-     * @param {any[]} warnings Array where to place the warnings.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param conversationId Conversation ID.
+     * @param userId User ID talking to (if no conversation ID).
+     * @param errors List of errors.
+     * @param warnings Array where to place the warnings.
+     * @return Promise resolved when done.
      */
     protected handleSyncErrors(conversationId: number, userId: number, errors: any[], warnings: any[]): Promise<any> {
         if (errors && errors.length) {
@@ -258,7 +258,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
                 // Get conversation name and add errors to warnings array.
                 return this.messagesProvider.getConversation(conversationId, false, false).catch(() => {
                     // Ignore errors.
-                    return {};
+                    return <AddonMessagesConversationFormatted> {};
                 }).then((conversation) => {
                     errors.forEach((error) => {
                         warnings.push(this.translate.instant('addon.messages.warningconversationmessagenotsent', {
@@ -289,10 +289,10 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
      * If there's an ongoing sync for a certain conversation, wait for it to end.
      * If there's no sync ongoing the promise will be resolved right away.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {number} userId User ID talking to (if no conversation ID).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when there's no sync going on for the identifier.
+     * @param conversationId Conversation ID.
+     * @param userId User ID talking to (if no conversation ID).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when there's no sync going on for the identifier.
      */
     waitForSyncConversation(conversationId: number, userId: number, siteId?: string): Promise<any> {
         const syncId = this.getSyncId(conversationId, userId);

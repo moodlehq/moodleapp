@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ import { CoreCronHandler } from '@providers/cron';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreAppProvider } from '@providers/app';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 
 /**
  * Handler to inject an option into main menu.
@@ -49,7 +49,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
 
     constructor(private messagesProvider: AddonMessagesProvider, private sitesProvider: CoreSitesProvider,
             eventsProvider: CoreEventsProvider, private appProvider: CoreAppProvider,
-            private localNotificationsProvider: CoreLocalNotificationsProvider, private textUtils: CoreTextUtilsProvider,
+            private localNotificationsProvider: CoreLocalNotificationsProvider, private filterHelper: CoreFilterHelperProvider,
             private pushNotificationsProvider: CorePushNotificationsProvider, utils: CoreUtilsProvider,
             pushNotificationsDelegate: CorePushNotificationsDelegate, private emulatorHelper: CoreEmulatorHelperProvider) {
 
@@ -89,7 +89,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {boolean} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.messagesProvider.isPluginEnabled();
@@ -98,7 +98,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreMainMenuHandlerToDisplay} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerToDisplay {
         this.handler.page = this.messagesProvider.isGroupMessagingEnabled() ?
@@ -114,9 +114,9 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Refreshes badge number.
      *
-     * @param {string} [siteId] Site ID or current Site if undefined.
-     * @param {boolean} [unreadOnly] If true only the unread conversations count is refreshed.
-     * @return {Promise<any>} Resolve when done.
+     * @param siteId Site ID or current Site if undefined.
+     * @param unreadOnly If true only the unread conversations count is refreshed.
+     * @return Resolve when done.
      */
     refreshBadge(siteId?: string, unreadOnly?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -147,7 +147,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Update badge number and push notifications counter from loaded data.
      *
-     * @param {string} siteId Site ID.
+     * @param siteId Site ID.
      */
     updateBadge(siteId: string): void {
         const totalCount = this.unreadCount + (this.contactRequestsCount || 0);
@@ -165,9 +165,9 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
      * Execute the process.
      * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
-     * @param {boolean} [force] Wether the execution is forced (manual sync).
-     * @return {Promise<any>}         Promise resolved when done, rejected if failure.
+     * @param siteId ID of the site affected, undefined for all sites.
+     * @param force Wether the execution is forced (manual sync).
+     * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<any> {
         if (this.sitesProvider.isCurrentSite(siteId)) {
@@ -186,7 +186,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Get the time between consecutive executions.
      *
-     * @return {number} Time between consecutive executions (in ms).
+     * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
         if (this.appProvider.isDesktop()) {
@@ -201,7 +201,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Whether it's a synchronization process or not.
      *
-     * @return {boolean} True if is a sync process, false otherwise.
+     * @return True if is a sync process, false otherwise.
      */
     isSync(): boolean {
         // This is done to use only wifi if using the fallback function.
@@ -217,7 +217,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Whether the process should be executed during a manual sync.
      *
-     * @return {boolean} True if is a manual sync process, false otherwise.
+     * @return True if is a manual sync process, false otherwise.
      */
     canManualSync(): boolean {
         return true;
@@ -226,8 +226,8 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Get the latest unread received messages from a site.
      *
-     * @param  {string} [siteId] Site ID. Default current.
-     * @return {Promise<any>}    Promise resolved with the notifications.
+     * @param siteId Site ID. Default current.
+     * @return Promise resolved with the notifications.
      */
     protected fetchMessages(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -248,7 +248,7 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
                     }
 
                     const currentUserId = site.getUserId(),
-                        message = conv.messages[0]; // Treat only the last message, is the one we're interested.
+                        message: any = conv.messages[0]; // Treat only the last message, is the one we're interested.
 
                     if (!message || message.useridfrom == currentUserId) {
                         // No last message or not from current user. Return empty list.
@@ -289,18 +289,18 @@ export class AddonMessagesMainMenuHandler implements CoreMainMenuHandler, CoreCr
     /**
      * Given a message, return the title and the text for the message.
      *
-     * @param  {any} message Message.
-     * @return {Promise<any>}        Promise resolved with an object with title and text.
+     * @param message Message.
+     * @return Promise resolved with an object with title and text.
      */
     protected getTitleAndText(message: any): Promise<any> {
         const data = {
             title: message.name || message.userfromfullname,
         };
 
-        return this.textUtils.formatText(message.text, true, true).catch(() => {
-            return message.text;
-        }).then((formattedText) => {
-            data['text'] = formattedText;
+        return this.filterHelper.getFiltersAndFormatText(message.text, 'system', 0, {clean: true, singleLine: true}).catch(() => {
+            return {text: message.text};
+        }).then((result) => {
+            data['text'] = result.text;
 
             return data;
         });

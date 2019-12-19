@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ export class CoreDurationPipe implements PipeTransform {
     /**
      * Turn a number of seconds to a duration. E.g. 60 -> 1 minute.
      *
-     * @param {number|string} seconds The number of seconds.
-     * @return {string} Formatted duration.
+     * @param seconds The number of seconds.
+     * @return Formatted duration.
      */
     transform(seconds: string | number): string {
         if (typeof seconds == 'string') {

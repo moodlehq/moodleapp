@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,10 +72,10 @@ export class AddonModChoiceOfflineProvider {
     /**
      * Delete a response.
      *
-     * @param  {number} choiceId Choice ID to remove.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the responses belong to. If not defined, current user in site.
-     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     * @param choiceId Choice ID to remove.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the responses belong to. If not defined, current user in site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteResponse(choiceId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -88,8 +88,8 @@ export class AddonModChoiceOfflineProvider {
     /**
      * Get all offline responses.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promi[se resolved with responses.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promi[se resolved with responses.
      */
     getResponses(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -106,10 +106,10 @@ export class AddonModChoiceOfflineProvider {
     /**
      * Check if there are offline responses to send.
      *
-     * @param  {number} choiceId Choice ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the responses belong to. If not defined, current user in site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @param choiceId Choice ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the responses belong to. If not defined, current user in site.
+     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     hasResponse(choiceId: number, siteId?: string, userId?: number): Promise<boolean> {
         return this.getResponse(choiceId, siteId, userId).then((response) => {
@@ -123,10 +123,10 @@ export class AddonModChoiceOfflineProvider {
     /**
      * Get response to be synced.
      *
-     * @param  {number} choiceId Choice ID to get.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the responses belong to. If not defined, current user in site.
-     * @return {Promise<any>} Promise resolved with the object to be synced.
+     * @param choiceId Choice ID to get.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the responses belong to. If not defined, current user in site.
+     * @return Promise resolved with the object to be synced.
      */
     getResponse(choiceId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -144,14 +144,14 @@ export class AddonModChoiceOfflineProvider {
     /**
      * Offline version for sending a response to a choice to Moodle.
      *
-     * @param  {number}   choiceId  Choice ID.
-     * @param  {string}   name      Choice name.
-     * @param  {number}   courseId  Course ID the choice belongs to.
-     * @param  {number[]} responses IDs of selected options.
-     * @param  {boolean}  deleting  If true, the user is deleting responses, if false, submitting.
-     * @param  {string}   [siteId]  Site ID. If not defined, current site.
-     * @param  {number}   [userId]  User the responses belong to. If not defined, current user in site.
-     * @return {Promise<any>} Promise resolved when results are successfully submitted.
+     * @param choiceId Choice ID.
+     * @param name Choice name.
+     * @param courseId Course ID the choice belongs to.
+     * @param responses IDs of selected options.
+     * @param deleting If true, the user is deleting responses, if false, submitting.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the responses belong to. If not defined, current user in site.
+     * @return Promise resolved when results are successfully submitted.
      */
     saveResponse(choiceId: number, name: string, courseId: number, responses: number[], deleting: boolean,
             siteId?: string, userId?: number): Promise<any> {

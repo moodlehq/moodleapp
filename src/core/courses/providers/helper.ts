@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from './courses';
 import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,17 +27,18 @@ import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-
 @Injectable()
 export class CoreCoursesHelperProvider {
 
-    constructor(private coursesProvider: CoreCoursesProvider,
-            private utils: CoreUtilsProvider,
-            private courseCompletionProvider: AddonCourseCompletionProvider,
-            private translate: TranslateService,
-            private popoverCtrl: PopoverController) { }
+    constructor(protected coursesProvider: CoreCoursesProvider,
+            protected utils: CoreUtilsProvider,
+            protected courseCompletionProvider: AddonCourseCompletionProvider,
+            protected translate: TranslateService,
+            protected popoverCtrl: PopoverController,
+            protected sitesProvider: CoreSitesProvider) { }
 
     /**
      * Get the courses to display the course picker popover. If a courseId is specified, it will also return its categoryId.
      *
-     * @param {number} [courseId] Course ID to get the category.
-     * @return {Promise<{courses: any[], categoryId: number}>} Promise resolved with the list of courses and the category.
+     * @param courseId Course ID to get the category.
+     * @return Promise resolved with the list of courses and the category.
      */
     getCoursesForPopover(courseId?: number): Promise<{courses: any[], categoryId: number}> {
         return this.coursesProvider.getUserCourses(false).then((courses) => {
@@ -71,12 +73,14 @@ export class CoreCoursesHelperProvider {
      * Given a course object returned by core_enrol_get_users_courses and another one returned by core_course_get_courses_by_field,
      * load some extra data to the first one.
      *
-     * @param {any} course Course returned by core_enrol_get_users_courses.
-     * @param {any} courseByField Course returned by core_course_get_courses_by_field.
+     * @param course Course returned by core_enrol_get_users_courses.
+     * @param courseByField Course returned by core_course_get_courses_by_field.
+     * @param addCategoryName Whether add category name or not.
      */
-    loadCourseExtraInfo(course: any, courseByField: any): void {
+    loadCourseExtraInfo(course: any, courseByField: any, addCategoryName: boolean = false): void {
         if (courseByField) {
             course.displayname = courseByField.displayname;
+            course.categoryname = addCategoryName ? courseByField.categoryname : null;
 
             if (courseByField.overviewfiles && courseByField.overviewfiles[0]) {
                 course.courseImage = courseByField.overviewfiles[0].fileurl;
@@ -93,34 +97,54 @@ export class CoreCoursesHelperProvider {
      * Given a list of courses returned by core_enrol_get_users_courses, load some extra data using the WebService
      * core_course_get_courses_by_field if available.
      *
-     * @param {any[]} courses List of courses.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param courses List of courses.
+     * @param loadCategoryNames Whether load category names or not.
+     * @return Promise resolved when done.
      */
-    loadCoursesExtraInfo(courses: any[]): Promise<any> {
-        if (courses[0] && typeof courses[0].overviewfiles != 'undefined' && typeof courses[0].displayname != 'undefined') {
-            // We already have the extra data. Call loadCourseExtraInfo to load the calculated fields.
-            courses.forEach((course) => {
-                this.loadCourseExtraInfo(course, course);
-            });
-
-            return Promise.resolve();
-        }
-
-        if (!courses.length || !this.coursesProvider.isGetCoursesByFieldAvailable()) {
+    loadCoursesExtraInfo(courses: any[], loadCategoryNames: boolean = false): Promise<any> {
+        if (!courses.length ) {
             // No courses or cannot get the data, stop.
             return Promise.resolve();
         }
 
-        const courseIds = courses.map((course) => {
+        let coursesInfo = {},
+            courseInfoAvailable = false;
+
+        const site = this.sitesProvider.getCurrentSite(),
+            promises = [],
+            colors = [];
+
+        if (site.isVersionGreaterEqualThan('3.8')) {
+            promises.push(site.getConfig().then((configs) => {
+                for (let x = 0; x < 10; x++) {
+                    colors[x] = configs['core_admin_coursecolor' + (x + 1)] || null;
+                }
+            }).catch(() => {
+                // Ignore errors.
+            }));
+        }
+
+        if (this.coursesProvider.isGetCoursesByFieldAvailable() && (loadCategoryNames ||
+                (typeof courses[0].overviewfiles == 'undefined' && typeof courses[0].displayname == 'undefined'))) {
+            const courseIds = courses.map((course) => {
                 return course.id;
             }).join(',');
 
-        // Get the extra data for the courses.
-        return this.coursesProvider.getCoursesByField('ids', courseIds).then((coursesInfo) => {
-            coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
+            courseInfoAvailable = true;
 
+            // Get the extra data for the courses.
+            promises.push(this.coursesProvider.getCoursesByField('ids', courseIds).then((coursesInfos) => {
+                coursesInfo = this.utils.arrayToObject(coursesInfos, 'id');
+            }));
+        }
+
+        return Promise.all(promises).then(() => {
             courses.forEach((course) => {
-                this.loadCourseExtraInfo(course, coursesInfo[course.id]);
+                this.loadCourseExtraInfo(course, courseInfoAvailable ? coursesInfo[course.id] : course, loadCategoryNames);
+                if (!course.courseImage) {
+                    course.colorNumber = course.id % 10;
+                    course.color = colors.length && colors[course.colorNumber];
+                }
             });
         });
     }
@@ -128,12 +152,14 @@ export class CoreCoursesHelperProvider {
     /**
      * Get user courses with admin and nav options.
      *
-     * @param  {string}  [sort=fullname] Sort courses after get them. If sort is not defined it won't be sorted.
-     * @param  {number}  [slice=0]    Slice results to get the X first one. If slice > 0 it will be done after sorting.
-     * @param  {string}  [filter]    Filter using some field.
-     * @return {Promise<any[]>} Courses filled with options.
+     * @param sort Sort courses after get them. If sort is not defined it won't be sorted.
+     * @param slice Slice results to get the X first one. If slice > 0 it will be done after sorting.
+     * @param filter Filter using some field.
+     * @param loadCategoryNames Whether load category names or not.
+     * @return Courses filled with options.
      */
-    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0, filter?: string): Promise<any[]> {
+    getUserCoursesWithOptions(sort: string = 'fullname', slice: number = 0, filter?: string, loadCategoryNames: boolean = false):
+            Promise<any[]> {
         return this.coursesProvider.getUserCourses().then((courses) => {
             const promises = [],
                 courseIds = courses.map((course) => {
@@ -150,7 +176,7 @@ export class CoreCoursesHelperProvider {
                 }));
             }
 
-            promises.push(this.loadCoursesExtraInfo(courses));
+            promises.push(this.loadCoursesExtraInfo(courses, loadCategoryNames));
 
             return Promise.all(promises).then(() => {
                 if (courses.length <= 0) {
@@ -220,10 +246,10 @@ export class CoreCoursesHelperProvider {
      * Show a context menu to select a course, and return the courseId and categoryId of the selected course (-1 for all courses).
      * Returns an empty object if popover closed without picking a course.
      *
-     * @param {MouseEvent} event Click event.
-     * @param {any[]} courses List of courses, from CoreCoursesHelperProvider.getCoursesForPopover.
-     * @param {number} courseId The course to select at start.
-     * @return {Promise<{courseId?: number, categoryId?: number}>} Promise resolved with the course ID and category ID.
+     * @param event Click event.
+     * @param courses List of courses, from CoreCoursesHelperProvider.getCoursesForPopover.
+     * @param courseId The course to select at start.
+     * @return Promise resolved with the course ID and category ID.
      */
     selectCourse(event: MouseEvent, courses: any[], courseId: number): Promise<{courseId?: number, categoryId?: number}> {
         return new Promise((resolve, reject): any => {

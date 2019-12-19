@@ -1,0 +1,18 @@
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <ion-item text-wrap (click)="editPost()" *ngIf="canEdit">
+        <ion-icon name="create" item-start></ion-icon>
+        <h2>{{ 'addon.mod_forum.edit' | translate }}</h2>
+    </ion-item>
+    <ion-item text-wrap (click)="deletePost()" *ngIf="canDelete">
+        <ion-icon name="trash" item-start></ion-icon>
+        <h2 *ngIf="post.id">{{ 'addon.mod_forum.delete' | translate }}</h2>
+        <h2 *ngIf="!post.id">{{ 'core.discard' | translate }}</h2>
+    </ion-item>
+    <ion-item text-wrap (click)="dismiss()" *ngIf="wordCount">
+        <h2>{{ 'core.numwords' | translate: {'$a': wordCount} }}</h2>
+    </ion-item>
+    <a ion-item text-wrap [href]="url" *ngIf="url" core-link capture="false">
+        <ion-icon name="open" item-start></ion-icon>
+        <h2>{{ 'core.openinbrowser' | translate }}</h2>
+    </a>
+</core-loading>

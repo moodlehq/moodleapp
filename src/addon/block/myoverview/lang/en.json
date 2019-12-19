@@ -1,5 +1,6 @@
 {
-    "all": "All (except removed from view)",
+    "allincludinghidden": "All",
+    "all": "All (except hidden)",
     "favourites": "Starred",
     "future": "Future",
     "hiddencourses": "Removed from view",

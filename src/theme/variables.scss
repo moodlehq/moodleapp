@@ -30,7 +30,6 @@ $red:             #cb3d4d;
 $orange:          #f98012; // Accent (never text).
 $yellow:          #fbad1a; // Accent (never text).
 $purple:          #8e24aa; // Accent (never text).
-$core-color:      $orange;
 
 // Branded apps customization
 // --------------------------------------------------
@@ -53,6 +52,7 @@ $orange-light:    lighten($orange, 10%) !default;
 $yellow-light:    mix($yellow, white, 20%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
+$core-color:          $orange !default;
 $core-color-light:    lighten($core-color, 10%) !default;
 $core-color-dark:     darken($core-color, 10%) !default;
 
@@ -88,6 +88,15 @@ $info: $blue !default;
 $inverted-base: $white !default;
 $inverted-contrast: $primary !default;
 
+$primary-dark: lighten($primary, 10%) !default;
+$secondary-dark: mix($secondary, white, 20%) !default;
+$danger-dark: mix($danger, white, 20%) !default;
+$warning-dark: mix($warning, white, 20%) !default;
+$success-dark: mix($success, white, 20%) !default;
+$info-dark: mix($info, white, 20%) !default;
+$inverted-base-dark: $dark !default;
+$inverted-contrast-dark: $primary-dark !default;
+
 $colors: (
   primary:    $primary,
   secondary:  $secondary,
@@ -101,6 +110,22 @@ $colors: (
   inverted: (
     base: $inverted-base,
     contrast: $inverted-contrast
+  )
+);
+
+$colors-dark: (
+  primary:    $primary-dark,
+  secondary:  $secondary-dark,
+  danger:     $danger-dark,
+  light:      $dark,
+  gray:       $color-gray,
+  dark:       $light,
+  warning:    $warning-dark,
+  success:    $success-dark,
+  info:       $info-dark,
+  inverted: (
+    base: $inverted-base-dark,
+    contrast: $inverted-contrast-dark
   )
 );
 
@@ -162,6 +187,8 @@ $core-fixed-url:                  false !default;
 $core-loading-spinner-color: $core-color !default;
 $core-spinner-color: $core-color !default;
 $core-button-outline-background-color: $white !default;
+
+$core-network-message-height: 16px !default;
 
 // Login.
 $core-login-page-background-color: radial-gradient(white, $gray-light) !default;
@@ -388,7 +415,6 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
   }
 }
 
-
 @mixin safe-area-border-end($px, $type, $color) {
   $safe-area-position: calc(constant(safe-area-inset-right) + #{$px});
   $safe-area-position-env: calc(env(safe-area-inset-right) + #{$px});
@@ -397,6 +423,29 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
   @media screen and (orientation: landscape) {
     @include border-end($safe-area-position, $type, $color);
     @include border-end($safe-area-position-env, $type, $color);
+  }
+}
+
+@mixin safe-area-margin-horizontal($start, $end: $start) {
+  $safe-area-end: null;
+  $safe-area-start: null;
+  $safe-area-start-env: null;
+  $safe-area-end-env: null;
+
+  @if ($end) {
+    $safe-area-end: calc(constant(safe-area-inset-right) + #{$end});
+    $safe-area-end-env: calc(env(safe-area-inset-right) + #{$end});
+  }
+  @if ($start) {
+    $safe-area-start: calc(constant(safe-area-inset-left) + #{$start});
+    $safe-area-start-env: calc(env(safe-area-inset-left) + #{$start});
+  }
+
+  @include margin-horizontal($start, $end);
+
+  @media screen and (orientation: landscape) {
+    @include margin-horizontal($safe-area-start, $safe-area-end);
+    @include margin-horizontal($safe-area-start-env, $safe-area-end-env);
   }
 }
 
@@ -422,6 +471,13 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
     @include padding-horizontal($start, $safe-area-end);
     @include padding-horizontal($start, $safe-area-end-env);
   }
+}
+
+@mixin safe-area-position($top: null, $end: null, $bottom: null, $start: null) {
+  @include position-horizontal($start, $end);
+  @include safe-position-horizontal($start, $end);
+  top: $top;
+  bottom: $bottom;
 }
 
 @mixin horizontal_scroll_item($width, $min-width, $max-width) {
@@ -531,16 +587,109 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
 }
 
 @mixin core-selected-item($selected-color) {
-  @include border-start(5px, solid, $selected-color);
+  @include safe-area-border-start(5px, solid, $selected-color);
 
   &.item-md {
-      @include padding(null, null, null, $item-md-padding-start - 5px);
+      @include padding-horizontal($item-md-padding-start - 5px, null);
   }
   &.item-ios {
-      @include padding(null, null, null, $item-ios-padding-start - 5px);
+      @include padding-horizontal($item-ios-padding-start - 5px, null);
   }
   &.item-wp {
-      @include padding(null, null, null, $item-wp-padding-start - 5px);
+      @include padding-horizontal($item-wp-padding-start - 5px, null);
+  }
+}
+
+
+@mixin core-split-area-start() {
+  .safe-padding-horizontal,
+  [padding].safe-padding-horizontal {
+    @include safe-area-padding-start(0px, $content-padding);
+  }
+
+  .safe-area-page  {
+    @include safe-area-padding-start(0px, 0px);
+
+    .core-split-item-selected {
+      @include border-start(5px, solid, $core-splitview-selected);
+    }
+  }
+
+  core-loading.safe-area-page {
+    > .core-loading-content > *,
+    > .core-loading-content-loading > * {
+        @include safe-area-padding-start(0px, 0px);
+    }
+  }
+
+  // Disable safe area padding on the "end" side.
+  .item-ios.item-block .item-inner {
+    @include padding-horizontal(null, $item-ios-padding-end / 2);
+  }
+
+  @if $item-ios-detail-push-show == true {
+    .item-ios[detail-push] .item-inner,
+    button.item-ios:not([detail-none]) .item-inner,
+    a.item-ios:not([detail-none]) .item-inner {
+      @include padding-horizontal(null, 32px);
+      @include background-position(end, $item-ios-padding-end - 2, center);
+      [item-end] {
+        @include margin-horizontal(($item-ios-padding-start / 2), ($item-ios-padding-end / 2));
+      }
+    }
+  }
+
+  ion-fab[end] {
+    @include position-horizontal(null, $fab-content-margin);
+  }
+}
+
+@mixin core-split-area-end() {
+  .safe-padding-horizontal,
+  [padding].safe-padding-horizontal {
+    @include safe-area-padding-end($content-padding, 0px);
+  }
+
+  .safe-area-page  {
+    @include safe-area-padding-end(0px, 0px);
+  }
+
+  core-loading.safe-area-page {
+    > .core-loading-content > *,
+    > .core-loading-content-loading > * {
+        @include safe-area-padding-end(0px, 0px);
+    }
+  }
+
+  // Disable safe area padding on the "start" side.
+  .item-ios {
+    @include padding-horizontal($item-ios-padding-end / 2, null);
+  }
+
+  .toolbar {
+    @include safe-area-padding-end(0px, 0px);
+  }
+
+  .core-nav-item-selected, .item.core-nav-item-selected {
+    @include border-start(5px, solid, $core-splitview-selected);
+  }
+}
+
+@mixin darkmode() {
+  $root: #{&};
+
+  @at-root body.scheme-auto {
+    #{$root} {
+      @media (prefers-color-scheme: dark) {
+        @content;
+      }
+    }
+  }
+
+  @at-root body.scheme-dark {
+    #{$root} {
+      @content;
+    }
   }
 }
 
@@ -550,3 +699,6 @@ $fa-font-path: $font-path;
 
 // Format text styles.
 @import "format-text";
+
+// Dark mode.
+@import "dark";

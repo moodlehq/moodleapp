@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@ export interface CoreDelegateHandler {
     /**
      * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
      * This name will be used to check if the feature is disabled.
-     * @type {string}
      */
     name: string;
 
     /**
      * Whether or not the handler is enabled on a site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean>;
 }
@@ -39,38 +38,32 @@ export class CoreDelegate {
 
     /**
      * Logger instance get from CoreLoggerProvider.
-     * @type {any}
      */
     protected logger;
 
     /**
      * List of registered handlers.
-     * @type {any}
      */
     protected handlers: { [s: string]: CoreDelegateHandler } = {};
 
     /**
      * List of registered handlers enabled for the current site.
-     * @type {any}
      */
     protected enabledHandlers: { [s: string]: CoreDelegateHandler } = {};
 
     /**
      * Default handler
-     * @type {CoreDelegateHandler}
      */
     protected defaultHandler: CoreDelegateHandler;
 
     /**
      * Time when last updateHandler functions started.
-     * @type {number}
      */
     protected lastUpdateHandlersStart: number;
 
     /**
      * Feature prefix to check is feature is enabled or disabled in site.
      * This check is only made if not false. Override on the subclass or override isFeatureDisabled function.
-     * @type {string}
      */
     protected featurePrefix: string;
 
@@ -78,28 +71,45 @@ export class CoreDelegate {
      * Name of the property to be used to index the handlers. By default, the handler's name will be used.
      * If your delegate uses a Moodle component name to identify the handlers, please override this property.
      * E.g. CoreCourseModuleDelegate uses 'modName' to index the handlers.
-     * @type {string}
      */
     protected handlerNameProperty = 'name';
 
     /**
      * Set of promises to update a handler, to prevent doing the same operation twice.
-     * @type {{[siteId: string]: {[name: string]: Promise<any>}}}
      */
     protected updatePromises: {[siteId: string]: {[name: string]: Promise<any>}} = {};
 
     /**
+     * Whether handlers have been initialized.
+     */
+    protected handlersInitialized = false;
+
+    /**
+     * Promise to wait for handlers to be initialized.
+     */
+    protected handlersInitPromise: Promise<any>;
+
+    /**
+     * Function to resolve the handlers init promise.
+     */
+    protected handlersInitResolve: (value?: any) => void;
+
+    /**
      * Constructor of the Delegate.
      *
-     * @param {string} delegateName Delegate name used for logging purposes.
-     * @param {CoreLoggerProvider}   loggerProvider CoreLoggerProvider instance, cannot be directly injected.
-     * @param {CoreSitesProvider}    sitesProvider  CoreSitesProvider instance, cannot be directly injected.
-     * @param {CoreEventsProvider}   [eventsProvider]  CoreEventsProvider instance, cannot be directly injected.
-     *                                                  If not set, no events will be fired.
+     * @param delegateName Delegate name used for logging purposes.
+     * @param loggerProvider CoreLoggerProvider instance, cannot be directly injected.
+     * @param sitesProvider CoreSitesProvider instance, cannot be directly injected.
+     * @param eventsProvider CoreEventsProvider instance, cannot be directly injected.
+     *                       If not set, no events will be fired.
      */
     constructor(delegateName: string, protected loggerProvider: CoreLoggerProvider, protected sitesProvider: CoreSitesProvider,
             protected eventsProvider?: CoreEventsProvider) {
         this.logger = this.loggerProvider.getInstance(delegateName);
+
+        this.handlersInitPromise = new Promise((resolve): void => {
+            this.handlersInitResolve = resolve;
+        });
 
         if (eventsProvider) {
             // Update handlers on this cases.
@@ -113,10 +123,10 @@ export class CoreDelegate {
      * Execute a certain function in a enabled handler.
      * If the handler isn't found or function isn't defined, call the same function in the default handler.
      *
-     * @param {string} handlerName The handler name.
-     * @param {string} fnName Name of the function to execute.
-     * @param {any[]} params Parameters to pass to the function.
-     * @return {any} Function returned value or default value.
+     * @param handlerName The handler name.
+     * @param fnName Name of the function to execute.
+     * @param params Parameters to pass to the function.
+     * @return Function returned value or default value.
      */
     protected executeFunctionOnEnabled(handlerName: string, fnName: string, params?: any[]): any {
         return this.execute(this.enabledHandlers[handlerName], fnName, params);
@@ -126,10 +136,10 @@ export class CoreDelegate {
      * Execute a certain function in a handler.
      * If the handler isn't found or function isn't defined, call the same function in the default handler.
      *
-     * @param {string} handlerName The handler name.
-     * @param {string} fnName Name of the function to execute.
-     * @param {any[]} params Parameters to pass to the function.
-     * @return {any} Function returned value or default value.
+     * @param handlerName The handler name.
+     * @param fnName Name of the function to execute.
+     * @param params Parameters to pass to the function.
+     * @return Function returned value or default value.
      */
     protected executeFunction(handlerName: string, fnName: string, params?: any[]): any {
         return this.execute(this.handlers[handlerName], fnName, params);
@@ -139,10 +149,10 @@ export class CoreDelegate {
      * Execute a certain function in a handler.
      * If the handler isn't found or function isn't defined, call the same function in the default handler.
      *
-     * @param {any} handler The handler.
-     * @param {string} fnName Name of the function to execute.
-     * @param {any[]} params Parameters to pass to the function.
-     * @return {any} Function returned value or default value.
+     * @param handler The handler.
+     * @param fnName Name of the function to execute.
+     * @param params Parameters to pass to the function.
+     * @return Function returned value or default value.
      */
     private execute(handler: any, fnName: string, params?: any[]): any {
         if (handler && handler[fnName]) {
@@ -155,9 +165,9 @@ export class CoreDelegate {
     /**
      * Get a handler.
      *
-     * @param  {string} handlerName The handler name.
-     * @param  {boolean} [enabled]  Only enabled, or any.
-     * @return {CoreDelegateHandler} Handler.
+     * @param handlerName The handler name.
+     * @param enabled Only enabled, or any.
+     * @return Handler.
      */
     protected getHandler(handlerName: string, enabled: boolean = false): CoreDelegateHandler {
         return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
@@ -167,8 +177,8 @@ export class CoreDelegate {
      * Gets the handler full name for a given name. This is useful when the handlerNameProperty is different than "name".
      * E.g. blocks are indexed by blockName. If you call this function passing the blockName it will return the name.
      *
-     * @param {string} name Name used to indentify the handler.
-     * @return {string} Full name of corresponding handler.
+     * @param name Name used to indentify the handler.
+     * @return Full name of corresponding handler.
      */
     getHandlerName(name: string): string {
         const handler = this.getHandler(name, true);
@@ -183,10 +193,10 @@ export class CoreDelegate {
     /**
      * Check if function exists on a handler.
      *
-     * @param {string} handlerName         The handler name.
-     * @param {string} fnName              Name of the function to execute.
-     * @param {booealn} [onlyEnabled=true] If check only enabled handlers or all.
-     * @return {any} Function returned value or default value.
+     * @param handlerName The handler name.
+     * @param fnName Name of the function to execute.
+     * @param onlyEnabled If check only enabled handlers or all.
+     * @return Function returned value or default value.
      */
     protected hasFunction(handlerName: string, fnName: string, onlyEnabled: boolean = true): any {
         const handler = onlyEnabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
@@ -197,9 +207,9 @@ export class CoreDelegate {
     /**
      * Check if a handler name has a registered handler (not necessarily enabled).
      *
-     * @param {string} name The handler name.
-     * @param  {boolean} [enabled]  Only enabled, or any.
-     * @return {boolean} If the handler is registered or not.
+     * @param name The handler name.
+     * @param enabled Only enabled, or any.
+     * @return If the handler is registered or not.
      */
     hasHandler(name: string, enabled: boolean = false): boolean {
         return enabled ? typeof this.enabledHandlers[name] !== 'undefined' : typeof this.handlers[name] !== 'undefined';
@@ -209,8 +219,8 @@ export class CoreDelegate {
      * Check if a time belongs to the last update handlers call.
      * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
      *
-     * @param {number} time Time to check.
-     * @return {boolean} Whether it's the last call.
+     * @param time Time to check.
+     * @return Whether it's the last call.
      */
     isLastUpdateCall(time: number): boolean {
         if (!this.lastUpdateHandlersStart) {
@@ -223,18 +233,20 @@ export class CoreDelegate {
     /**
      * Register a handler.
      *
-     * @param {CoreDelegateHandler} handler The handler delegate object to register.
-     * @return {boolean} True when registered, false if already registered.
+     * @param handler The handler delegate object to register.
+     * @return True when registered, false if already registered.
      */
     registerHandler(handler: CoreDelegateHandler): boolean {
-        if (typeof this.handlers[handler[this.handlerNameProperty]] !== 'undefined') {
+        const key = handler[this.handlerNameProperty] || handler.name;
+
+        if (typeof this.handlers[key] !== 'undefined') {
             this.logger.log(`Handler '${handler[this.handlerNameProperty]}' already registered`);
 
             return false;
         }
 
         this.logger.log(`Registered handler '${handler[this.handlerNameProperty]}'`);
-        this.handlers[handler[this.handlerNameProperty]] = handler;
+        this.handlers[key] = handler;
 
         return true;
     }
@@ -242,9 +254,9 @@ export class CoreDelegate {
     /**
      * Update the handler for the current site.
      *
-     * @param {CoreDelegateHandler} handler The handler to check.
-     * @param {number} time Time this update process started.
-     * @return {Promise<void>} Resolved when done.
+     * @param handler The handler to check.
+     * @param time Time this update process started.
+     * @return Resolved when done.
      */
     protected updateHandler(handler: CoreDelegateHandler, time: number): Promise<void> {
         const siteId = this.sitesProvider.getCurrentSiteId(),
@@ -272,10 +284,12 @@ export class CoreDelegate {
         }).then((enabled: boolean) => {
             // Check that site hasn't changed since the check started.
             if (this.sitesProvider.getCurrentSiteId() === siteId) {
+                const key = handler[this.handlerNameProperty] || handler.name;
+
                 if (enabled) {
-                    this.enabledHandlers[handler[this.handlerNameProperty]] = handler;
+                    this.enabledHandlers[key] = handler;
                 } else {
-                    delete this.enabledHandlers[handler[this.handlerNameProperty]];
+                    delete this.enabledHandlers[key];
                 }
             }
         }).finally(() => {
@@ -289,9 +303,9 @@ export class CoreDelegate {
     /**
      * Check if feature is enabled or disabled in the site, depending on the feature prefix and the handler name.
      *
-     * @param  {CoreDelegateHandler} handler Handler to check.
-     * @param  {CoreSite} site Site to check.
-     * @return {boolean} Whether is enabled or disabled in site.
+     * @param handler Handler to check.
+     * @param site Site to check.
+     * @return Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: CoreDelegateHandler, site: CoreSite): boolean {
         return typeof this.featurePrefix != 'undefined' && site.isFeatureDisabled(this.featurePrefix + handler.name);
@@ -300,7 +314,7 @@ export class CoreDelegate {
     /**
      * Update the handlers for the current site.
      *
-     * @return {Promise<void>} Resolved when done.
+     * @return Resolved when done.
      */
     protected updateHandlers(): Promise<void> {
         const promises = [],
@@ -324,6 +338,9 @@ export class CoreDelegate {
 
             // Verify that this call is the last one that was started.
             if (this.isLastUpdateCall(now)) {
+                this.handlersInitialized = true;
+                this.handlersInitResolve();
+
                 this.updateData();
             }
         });

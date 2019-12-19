@@ -3,13 +3,18 @@
   white-space: normal;
   word-break: break-word;
   padding: $content-padding;
-  background-color: white;
+  @include safe-area-padding-horizontal($content-padding !important, $content-padding !important);
+  background-color: $white;
   border-top-width: 1px;
   border-bottom-width: 1px;
   border-right-width: 0;
   border-left-width: 0;
   border-style: solid;
   border-color: $list-border-color;
+
+  @include darkmode {
+    background-color: $core-dark-item-bg-color;
+  }
 
   table, tbody {
     display: block;
@@ -26,6 +31,18 @@
   td, th {
     @extend .col;
     min-height: auto;
+  }
+
+  // Do not let block elements to define widths or heights.
+  address, article, aside, blockquote, canvas, dd, div, dl, dt, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6,
+  header, hr, li, main, nav, noscript, ol, p, pre, section, table, tfoot, ul, video {
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    // Avoid having one entry over another.
+    max-height: none !important;
+
   }
 }
 
@@ -45,6 +62,11 @@ page-addon-mod-data-edit {
     .addon-data-contents form,
     form .addon-data-advanced-search {
         background-color: $list-background-color;
+
+        @include darkmode() {
+          background-color: $core-dark-item-bg-color;
+          color: $core-dark-text-color;
+        }
 
         .item.item-input .item-block .item-inner ion-input,
         .item.item-input.item-input-has-focus .item-inner ion-input,

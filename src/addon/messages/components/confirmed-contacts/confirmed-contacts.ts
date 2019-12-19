@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@
 import { Content } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesProvider, AddonMessagesConversationMember } from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -33,7 +33,7 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
     loaded = false;
     canLoadMore = false;
     loadMoreError = false;
-    contacts = [];
+    contacts: AddonMessagesConversationMember[] = [];
     selectedUserId: number;
 
     protected memberInfoObserver;
@@ -80,8 +80,8 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
     /**
      * Fetch contacts.
      *
-     * @param {boolean} [refresh=false] True if we are refreshing contacts, false if we are loading more.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh True if we are refreshing contacts, false if we are loading more.
+     * @return Promise resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -112,8 +112,8 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
     /**
      * Refresh contacts.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any): Promise<any> {
         // No need to invalidate contacts, we always try to get the latest.
@@ -125,8 +125,8 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
     /**
      * Load more contacts.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMore(infiniteComplete?: any): Promise<any> {
         return this.fetchData().finally(() => {
@@ -137,8 +137,8 @@ export class AddonMessagesConfirmedContactsComponent implements OnInit, OnDestro
     /**
      * Notify that a contact has been selected.
      *
-     * @param {number} userId User id.
-     * @param {boolean} [onInit=false] Whether the contact is selected on initial load.
+     * @param userId User id.
+     * @param onInit Whether the contact is selected on initial load.
      */
     selectUser(userId: number, onInit: boolean = false): void {
         this.selectedUserId = userId;

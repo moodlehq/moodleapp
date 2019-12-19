@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
     protected questionInstance: AddonQtypeDdImageOrTextQuestion;
     protected drops: any[]; // The drop zones received in the init object of the question.
     protected destroyed = false;
+    protected textIsRendered = false;
+    protected ddAreaisRendered = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef) {
         super(loggerProvider, 'AddonQtypeDdImageOrTextComponent', injector);
@@ -85,9 +87,29 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
     }
 
     /**
+     * The question ddArea has been rendered.
+     */
+    ddAreaRendered(): void {
+        this.ddAreaisRendered = true;
+        if (this.textIsRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
+     * The question text has been rendered.
+     */
+    textRendered(): void {
+        this.textIsRendered = true;
+        if (this.ddAreaisRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
      * The question has been rendered.
      */
-    questionRendered(): void {
+    protected questionRendered(): void {
         if (!this.destroyed) {
             // Create the instance.
             this.questionInstance = new AddonQtypeDdImageOrTextQuestion(this.loggerProvider, this.domUtils, this.element,

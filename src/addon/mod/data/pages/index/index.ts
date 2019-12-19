@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ export class AddonModDataIndexPage {
     /**
      * Update some data based on the data instance.
      *
-     * @param {any} data Data instance.
+     * @param data Data instance.
      */
     updateData(data: any): void {
         this.title = data.name || this.title;

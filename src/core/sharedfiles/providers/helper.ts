@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Ask a user if he wants to replace a file (using originalName) or rename it (using newName).
      *
-     * @param {string} originalName Original name.
-     * @param {string} newName New name.
-     * @return {Promise<string>} Promise resolved with the name to use when the user chooses. Rejected if user cancels.
+     * @param originalName Original name.
+     * @param newName New name.
+     * @return Promise resolved with the name to use when the user chooses. Rejected if user cancels.
      */
     askRenameReplace(originalName: string, newName: string): Promise<string> {
         const deferred = this.utils.promiseDefer(),
@@ -76,8 +76,8 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Go to the choose site view.
      *
-     * @param {string} filePath File path to send to the view.
-     * @param {boolean} [isInbox] Whether the file is in the Inbox folder.
+     * @param filePath File path to send to the view.
+     * @param isInbox Whether the file is in the Inbox folder.
      */
     goToChooseSite(filePath: string, isInbox?: boolean): void {
         const navCtrl = this.appProvider.getRootNavController();
@@ -87,7 +87,7 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Whether the user is already choosing a site to store a shared file.
      *
-     * @return {boolean} Whether the user is already choosing a site to store a shared file.
+     * @return Whether the user is already choosing a site to store a shared file.
      */
     protected isChoosingSite(): boolean {
         const navCtrl = this.appProvider.getRootNavController();
@@ -98,8 +98,8 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Open the view to select a shared file.
      *
-     * @param  {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return {Promise<any>} Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
+     * @return Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
     pickSharedFile(mimetypes?: string[]): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -130,9 +130,9 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Delete a shared file.
      *
-     * @param {any} fileEntry The file entry to delete.
-     * @param {boolean} [isInbox] Whether the file is in the Inbox folder.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param fileEntry The file entry to delete.
+     * @param isInbox Whether the file is in the Inbox folder.
+     * @return Promise resolved when done.
      */
     protected removeSharedFile(fileEntry: any, isInbox?: boolean): Promise<any> {
         if (isInbox) {
@@ -147,8 +147,8 @@ export class CoreSharedFilesHelperProvider {
      * If more than one site is found, the user will have to choose the site where to store it in.
      * If more than one file is found, treat only the first one.
      *
-     * @param {string} [path] Path to a file received when launching the app.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param path Path to a file received when launching the app.
+     * @return Promise resolved when done.
      */
     searchIOSNewSharedFiles(path?: string): Promise<any> {
         return this.initDelegate.ready().then(() => {
@@ -190,10 +190,10 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Store a shared file in a site's shared files folder.
      *
-     * @param {any} fileEntry Shared file entry.
-     * @param {string} [siteId]  Site ID. If not defined, current site.
-     * @param {boolean} [isInbox] Whether the file is in the Inbox folder.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param fileEntry Shared file entry.
+     * @param siteId Site ID. If not defined, current site.
+     * @param isInbox Whether the file is in the Inbox folder.
+     * @return Promise resolved when done.
      */
     storeSharedFileInSite(fileEntry: any, siteId?: string, isInbox?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

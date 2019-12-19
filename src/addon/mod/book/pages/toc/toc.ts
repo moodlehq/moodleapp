@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,18 +25,22 @@ import { AddonModBookTocChapter } from '../../providers/book';
     templateUrl: 'toc.html'
 })
 export class AddonModBookTocPage {
+    moduleId: number;
     chapters: AddonModBookTocChapter[];
     selected: number;
+    courseId: number;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
+        this.moduleId = navParams.get('moduleId');
         this.chapters = navParams.get('chapters') || [];
         this.selected = navParams.get('selected');
+        this.courseId = navParams.get('courseId');
     }
 
     /**
      * Function called when a course is clicked.
      *
-     * @param {string} id ID of the clicked chapter.
+     * @param id ID of the clicked chapter.
      */
     loadChapter(id: string): void {
         this.viewCtrl.dismiss(id);

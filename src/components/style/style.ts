@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ export class CoreStyleComponent implements OnChanges {
     /**
      * Add a prefix to all rules in a CSS string.
      *
-     * @param {string} css CSS code to be prefixed.
-     * @param {string} prefix Prefix css selector.
-     * @return {string} Prefixed CSS.
+     * @param css CSS code to be prefixed.
+     * @param prefix Prefix css selector.
+     * @return Prefixed CSS.
      */
     protected prefixCSS(css: string, prefix: string): string {
         if (!css) {

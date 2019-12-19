@@ -37,17 +37,20 @@ ion-app.app-root.ios {
     @include margin-horizontal(0, null);
   }
 
-
   @each $color-name, $color-base, $color-contrast in get-colors($colors-ios) {
     .core-#{$color-name}-card {
       @extend .card-ios ;
       @extend .card-content-ios;
 
+      @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+      }
+
       &[icon-start] {
-        @include padding(null, null, null, $card-ios-padding-left * 2 + 20);
+        @include safe-area-padding(null, null, null, $card-ios-padding-left * 2 + 20);
 
         ion-icon {
-          @include position(null, null, null, $card-ios-padding-left);
+          @include safe-area-position(null, null, null, $card-ios-padding-left);
         }
       }
     }

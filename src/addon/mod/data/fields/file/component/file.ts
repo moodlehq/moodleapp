@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginCompo
     /**
      * Get the files from the input value.
      *
-     * @param  {any} value Input value.
-     * @return {any}     List of files.
+     * @param value Input value.
+     * @return List of files.
      */
     protected getFiles(value: any): any {
         let files = (value && value.files) || [];
@@ -74,7 +74,7 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginCompo
     /**
      * Update value being shown.
      *
-     * @param {any} value New value to be set.
+     * @param value New value to be set.
      */
     protected updateValue(value: any): void {
         this.value = value;

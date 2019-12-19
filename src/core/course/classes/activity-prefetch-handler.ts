@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
  * The string returned by this function will be stored as "extra" data in the filepool package. If you don't need to store
  * extra data, don't return anything.
  *
- * @param {any} module Module.
- * @param {number} courseId Course ID the module belongs to.
- * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
- * @param {string} siteId Site ID. If not defined, current site.
- * @return {Promise<string>} Promise resolved when the prefetch finishes. The string returned will be stored as "extra" data in the
- *                           filepool package. If you don't need to store extra data, don't return anything.
+ * @param module Module.
+ * @param courseId Course ID the module belongs to.
+ * @param single True if we're downloading a single module, false if we're downloading a whole section.
+ * @param siteId Site ID. If not defined, current site.
+ * @return Promise resolved when the prefetch finishes. The string returned will be stored as "extra" data in the
+ *         filepool package. If you don't need to store extra data, don't return anything.
  */
 export type prefetchFunction = (module: any, courseId: number, single: boolean, siteId: string, ...args: any[]) => Promise<string>;
 
@@ -46,10 +46,10 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Download the module.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when all content is downloaded.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when all content is downloaded.
      */
     download(module: any, courseId: number, dirPath?: string): Promise<any> {
         // Same implementation for download and prefetch.
@@ -59,11 +59,11 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         // To be overridden. It should call prefetchPackage
@@ -79,12 +79,12 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * Then the function "prefetchModule" will receive params:
      *     prefetchModule(module, courseId, single, siteId, someParam, anotherParam)
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {prefetchFunction} downloadFn Function to perform the prefetch. Please check the documentation of prefetchFunction.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the module has been downloaded. Data returned is not reliable.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param downloadFn Function to perform the prefetch. Please check the documentation of prefetchFunction.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the module has been downloaded. Data returned is not reliable.
      */
     prefetchPackage(module: any, courseId: number, single: boolean, downloadFn: prefetchFunction, siteId?: string, ...args: any[])
             : Promise<any> {
@@ -101,10 +101,11 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
         }
 
         const prefetchPromise = this.setDownloading(module.id, siteId).then(() => {
-            // Package marked as downloading, get module info to be able to handle links.
+            // Package marked as downloading, get module info to be able to handle links. Get module filters too.
             return Promise.all([
                 this.courseProvider.getModuleBasicInfo(module.id, siteId),
                 this.courseProvider.getModule(module.id, courseId, undefined, false, true, siteId),
+                this.filterHelper.getFilters('module', module.id, {courseId: courseId})
             ]);
         }).then(() => {
             // Call the download function, send all the params except downloadFn. This includes all params passed after siteId.
@@ -128,10 +129,10 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Mark the module as downloaded.
      *
-     * @param {number} id Unique identifier per component.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {string} [extra] Extra data to store.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param id Unique identifier per component.
+     * @param siteId Site ID. If not defined, current site.
+     * @param extra Extra data to store.
+     * @return Promise resolved when done.
      */
     setDownloaded(id: number, siteId?: string, extra?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -142,9 +143,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Mark the module as downloading.
      *
-     * @param {number} id Unique identifier per component.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param id Unique identifier per component.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     setDownloading(id: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -155,10 +156,10 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Set previous status and return a rejected promise.
      *
-     * @param {number} id Unique identifier per component.
-     * @param {any} [error] Error to return.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<never>} Rejected promise.
+     * @param id Unique identifier per component.
+     * @param error Error to return.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Rejected promise.
      */
     setPreviousStatusAndReject(id: number, error?: any, siteId?: string): Promise<never> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { AddonModDataProvider, AddonModDataEntry } from './data';
 import { AddonModDataSyncProvider } from './sync';
 import { AddonModDataHelperProvider } from './helper';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch databases.
@@ -38,25 +40,35 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     component = AddonModDataProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected dataProvider: AddonModDataProvider,
-            protected timeUtils: CoreTimeUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected commentsProvider: CoreCommentsProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
+            protected dataProvider: AddonModDataProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected dataHelper: AddonModDataHelperProvider,
+            protected groupsProvider: CoreGroupsProvider,
+            protected commentsProvider: CoreCommentsProvider,
             protected syncProvider: AddonModDataSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
      * Retrieves all the entries for all the groups and then returns only unique entries.
      *
-     * @param  {number}  dataId         Database Id.
-     * @param  {any[]}   groups         Array of groups in the activity.
-     * @param  {boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
-     * @param  {boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {string}  [siteId]       Site ID.
-     * @return {Promise<AddonModDataEntry[]>} All unique entries.
+     * @param dataId Database Id.
+     * @param groups Array of groups in the activity.
+     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID.
+     * @return All unique entries.
      */
     protected getAllUniqueEntries(dataId: number, groups: any[], forceCache: boolean = false, ignoreCache: boolean = false,
             siteId?: string): Promise<AddonModDataEntry[]> {
@@ -81,13 +93,13 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Helper function to get all database info just once.
      *
-     * @param  {any}     module         Module to get the files.
-     * @param  {number}  courseId       Course ID the module belongs to.
-     * @param  {boolean} [omitFail]     True to always return even if fails. Default false.
-     * @param  {boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
-     * @param  {boolean} [ignoreCache]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @param  {string}  siteId         Site ID.
-     * @return {Promise<any>}           Promise resolved with the info fetched.
+     * @param module Module to get the files.
+     * @param courseId Course ID the module belongs to.
+     * @param omitFail True to always return even if fails. Default false.
+     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID.
+     * @return Promise resolved with the info fetched.
      */
     protected getDatabaseInfoHelper(module: any, courseId: number, omitFail: boolean = false, forceCache: boolean = false,
             ignoreCache: boolean = false, siteId?: string): Promise<any> {
@@ -138,8 +150,8 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Returns the file contained in the entries.
      *
-     * @param {AddonModDataEntry[]} entries List of entries to get files from.
-     * @return {any[]} List of files.
+     * @param entries List of entries to get files from.
+     * @return List of files.
      */
     protected getEntriesFiles(entries: AddonModDataEntry[]): any[] {
         let files = [];
@@ -156,10 +168,10 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Get the list of downloadable files.
      *
-     * @param  {any} module    Module to get the files.
-     * @param  {number} courseId  Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<any>}     Promise resolved with the list of files.
+     * @param module Module to get the files.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
         return this.getDatabaseInfoHelper(module, courseId, true).then((info) => {
@@ -170,9 +182,9 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Returns data intro files.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @return {Promise<any[]>} Promise resolved with list of intro files.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @return Promise resolved with list of intro files.
      */
     getIntroFiles(module: any, courseId: number): Promise<any[]> {
         return this.dataProvider.getDatabase(courseId, module.id).catch(() => {
@@ -185,9 +197,9 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.dataProvider.invalidateContent(moduleId, courseId);
@@ -196,9 +208,9 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         const promises = [];
@@ -212,9 +224,9 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * Check if a database is downloadable.
      * A database isn't downloadable if it's not open yet.
      *
-     * @param {any} module       Module to check.
-     * @param {number} courseId  Course ID the module belongs to.
-     * @return {Promise<any>}    Promise resolved with true if downloadable, resolved with false otherwise.
+     * @param module Module to check.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved with true if downloadable, resolved with false otherwise.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
         return this.dataProvider.getDatabase(courseId, module.id, undefined, true).then((database) => {
@@ -240,7 +252,7 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.dataProvider.isPluginEnabled();
@@ -249,11 +261,11 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.prefetchPackage(module, courseId, single, this.prefetchDatabase.bind(this));
@@ -262,17 +274,18 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Prefetch a database.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {String} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchDatabase(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
 
         return this.getDatabaseInfoHelper(module, courseId, false, false, true, siteId).then((info) => {
             // Prefetch the database data.
             const database = info.database,
+                commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite(),
                 promises = [];
 
             promises.push(this.dataProvider.getFields(database.id, false, true, siteId));
@@ -286,7 +299,7 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
             info.entries.forEach((entry) => {
                 promises.push(this.dataProvider.getEntry(database.id, entry.id, true, siteId));
 
-                if (database.comments) {
+                if (commentsEnabled && database.comments) {
                     promises.push(this.commentsProvider.getComments('module', database.coursemodule, 'mod_data', entry.id,
                         'database_entry', 0, siteId));
                 }
@@ -302,10 +315,10 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
     /**
      * Sync a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     sync(module: any, courseId: number, siteId?: any): Promise<any> {
         const promises = [

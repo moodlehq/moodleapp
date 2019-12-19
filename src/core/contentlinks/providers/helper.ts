@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,11 +51,11 @@ export class CoreContentLinksHelperProvider {
     /**
      * Check whether a link can be handled by the app.
      *
-     * @param {string} url URL to handle.
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @param {string} [username] Username to use to filter sites.
-     * @param {boolean} [checkRoot] Whether to check if the URL is the root URL of a site.
-     * @return {Promise<boolean>} Promise resolved with a boolean: whether the URL can be handled.
+     * @param url URL to handle.
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @param username Username to use to filter sites.
+     * @param checkRoot Whether to check if the URL is the root URL of a site.
+     * @return Promise resolved with a boolean: whether the URL can be handled.
      */
     canHandleLink(url: string, courseId?: number, username?: string, checkRoot?: boolean): Promise<boolean> {
         let promise;
@@ -83,8 +83,8 @@ export class CoreContentLinksHelperProvider {
     /**
      * Get the first valid action in a list of actions.
      *
-     * @param {CoreContentLinksAction[]} actions List of actions.
-     * @return {CoreContentLinksAction} First valid action. Returns undefined if no valid action found.
+     * @param actions List of actions.
+     * @return First valid action. Returns undefined if no valid action found.
      */
     getFirstValidAction(actions: CoreContentLinksAction[]): CoreContentLinksAction {
         if (actions) {
@@ -101,12 +101,12 @@ export class CoreContentLinksHelperProvider {
      * Goes to a certain page in a certain site. If the site is current site it will perform a regular navigation,
      * otherwise it will 'redirect' to the other site.
      *
-     * @param {NavController} navCtrl The NavController instance to use.
-     * @param {string} pageName Name of the page to go.
-     * @param {any} [pageParams] Params to send to the page.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [checkMenu] If true, check if the root page of a main menu tab. Only the page name will be checked.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl The NavController instance to use.
+     * @param pageName Name of the page to go.
+     * @param pageParams Params to send to the page.
+     * @param siteId Site ID. If not defined, current site.
+     * @param checkMenu If true, check if the root page of a main menu tab. Only the page name will be checked.
+     * @return Promise resolved when done.
      */
     goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string, checkMenu?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -144,7 +144,7 @@ export class CoreContentLinksHelperProvider {
     /**
      * Go to the page to choose a site.
      *
-     * @param {string} url URL to treat.
+     * @param url URL to treat.
      */
     goToChooseSite(url: string): void {
         this.appProvider.getRootNavController().setRoot('CoreContentLinksChooseSitePage', { url: url });
@@ -153,8 +153,8 @@ export class CoreContentLinksHelperProvider {
     /**
      * Handle a URL received by Custom URL Scheme.
      *
-     * @param {string} url URL to handle.
-     * @return {boolean} True if the URL should be handled by this component, false otherwise.
+     * @param url URL to handle.
+     * @return True if the URL should be handled by this component, false otherwise.
      * @deprecated Please use CoreCustomURLSchemesProvider.handleCustomURL instead.
      */
     handleCustomUrl(url: string): boolean {
@@ -270,13 +270,13 @@ export class CoreContentLinksHelperProvider {
     /**
      * Handle a link.
      *
-     * @param {string} url URL to handle.
-     * @param {string} [username] Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
-     *                            the username 'myuser'. Don't use it if you don't want to filter by username.
-     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
-     * @param {boolean} [checkRoot] Whether to check if the URL is the root URL of a site.
-     * @param {boolean} [openBrowserRoot] Whether to open in browser if it's root URL and it belongs to current site.
-     * @return {Promise<boolean>} Promise resolved with a boolean: true if URL was treated, false otherwise.
+     * @param url URL to handle.
+     * @param username Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
+     *                 the username 'myuser'. Don't use it if you don't want to filter by username.
+     * @param navCtrl Nav Controller to use to navigate.
+     * @param checkRoot Whether to check if the URL is the root URL of a site.
+     * @param openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
+     * @return Promise resolved with a boolean: true if URL was treated, false otherwise.
      */
     handleLink(url: string, username?: string, navCtrl?: NavController, checkRoot?: boolean, openBrowserRoot?: boolean)
             : Promise<boolean> {
@@ -336,11 +336,11 @@ export class CoreContentLinksHelperProvider {
     /**
      * Handle a root URL of a site.
      *
-     * @param {CoreSite} site Site to handle.
-     * @param {boolean} [openBrowserRoot] Whether to open in browser if it's root URL and it belongs to current site.
-     * @param {boolean} [checkToken] Whether to check that token is the same to verify it's current site. If false or not defined,
-     *                               only the URL will be checked.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param site Site to handle.
+     * @param openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
+     * @param checkToken Whether to check that token is the same to verify it's current site. If false or not defined,
+     *                   only the URL will be checked.
+     * @return Promise resolved when done.
      */
     handleRootURL(site: CoreSite, openBrowserRoot?: boolean, checkToken?: boolean): Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite();

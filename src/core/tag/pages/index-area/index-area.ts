@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -88,8 +88,8 @@ export class CoreTagIndexAreaPage {
     /**
      * Fetch next page of the tag index area.
      *
-     * @param {boolean} [refresh=false] Whether to refresh the data or fetch a new page.
-     * @return {Promise<any>} Resolved when done.
+     * @param refresh Whether to refresh the data or fetch a new page.
+     * @return Resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -125,8 +125,8 @@ export class CoreTagIndexAreaPage {
     /**
      * Load more items.
      *
-     * @param {any} infiniteComplete Infinite scroll complete function.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function.
+     * @return Resolved when done.
      */
     loadMore(infiniteComplete: any): Promise<any> {
         return this.fetchData().finally(() => {
@@ -137,7 +137,7 @@ export class CoreTagIndexAreaPage {
     /**
      * Refresh data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         this.tagProvider.invalidateTagIndexPerArea(this.tagId, this.tagName, this.collectionId, this.areaId, this.fromContextId,

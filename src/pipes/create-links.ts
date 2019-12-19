@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ export class CoreCreateLinksPipe implements PipeTransform {
     /**
      * Takes some text and adds anchor tags to all links that aren't inside anchors.
      *
-     * @param {string} text Text to treat.
-     * @return {string} Treated text.
+     * @param text Text to treat.
+     * @return Treated text.
      */
     transform(text: string): string {
         return text.replace(this.replacePattern, '<a href="$1">$1</a>');

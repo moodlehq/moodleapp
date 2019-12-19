@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModChoiceProvider } from '../../providers/choice';
+import { AddonModChoiceProvider, AddonModChoiceChoice, AddonModChoiceOption, AddonModChoiceResult } from '../../providers/choice';
 import { AddonModChoiceOfflineProvider } from '../../providers/offline';
 import { AddonModChoiceSyncProvider } from '../../providers/sync';
 
@@ -31,9 +31,9 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     component = AddonModChoiceProvider.COMPONENT;
     moduleName = 'choice';
 
-    choice: any;
-    options = [];
-    selectedOption: any;
+    choice: AddonModChoiceChoice;
+    options: AddonModChoiceOption[] = [];
+    selectedOption: {id: number};
     choiceNotOpenYet = false;
     choiceClosed = false;
     canEdit = false;
@@ -43,6 +43,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     labels = [];
     results = [];
     publishInfo: string; // Message explaining the user what will happen with his choices.
+    openTimeReadable: string;
+    closeTimeReadable: string;
 
     protected userId: number;
     protected syncEventName = AddonModChoiceSyncProvider.AUTO_SYNCED;
@@ -78,7 +80,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -96,8 +98,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.choice && syncEventData.choiceId == this.choice.id && syncEventData.userId == this.userId) {
@@ -112,22 +114,22 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Download choice contents.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.now = new Date().getTime();
 
         return this.choiceProvider.getChoice(this.courseId, this.module.id).then((choice) => {
             this.choice = choice;
-            this.choice.timeopen = parseInt(choice.timeopen) * 1000;
-            this.choice.openTimeReadable = this.timeUtils.userDate(choice.timeopen);
-            this.choice.timeclose = parseInt(choice.timeclose) * 1000;
-            this.choice.closeTimeReadable = this.timeUtils.userDate(choice.timeclose);
+            this.choice.timeopen = choice.timeopen * 1000;
+            this.choice.timeclose = choice.timeclose * 1000;
+            this.openTimeReadable = this.timeUtils.userDate(choice.timeopen);
+            this.closeTimeReadable = this.timeUtils.userDate(choice.timeclose);
 
-            this.description = choice.intro || choice.description;
+            this.description = choice.intro;
             this.choiceNotOpenYet = choice.timeopen && choice.timeopen > this.now;
             this.choiceClosed = choice.timeclose && choice.timeclose <= this.now;
 
@@ -154,8 +156,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return this.fetchOptions(hasOffline).then(() => {
                 return this.fetchResults();
             });
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }
@@ -163,8 +164,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Convenience function to get choice options.
      *
-     * @param {boolean} hasOffline True if there are responses stored offline.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param hasOffline True if there are responses stored offline.
+     * @return Promise resolved when done.
      */
     protected fetchOptions(hasOffline: boolean): Promise<any> {
         return this.choiceProvider.getOptions(this.choice.id).then((options) => {
@@ -175,7 +176,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
             if (hasOffline) {
                 promise = this.choiceOffline.getResponse(this.choice.id).then((response) => {
-                    const optionsKeys = {};
+                    const optionsKeys: {[id: number]: AddonModChoiceOption} = {};
                     options.forEach((option) => {
                         optionsKeys[option.id] = option;
                     });
@@ -223,7 +224,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 promise = Promise.resolve(options);
             }
 
-            promise.then((options) => {
+            promise.then((options: AddonModChoiceOption[]) => {
                 const isOpen = this.isChoiceOpen();
 
                 let hasAnswered = false;
@@ -277,7 +278,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Convenience function to get choice results.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchResults(): Promise<any> {
         if (this.choiceNotOpenYet) {
@@ -291,11 +292,11 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             let hasVotes = false;
             this.data = [];
             this.labels = [];
-            results.forEach((result) => {
+            results.forEach((result: AddonModChoiceResultFormatted) => {
                 if (result.numberofuser > 0) {
                     hasVotes = true;
                 }
-                result.percentageamount = parseFloat(result.percentageamount).toFixed(1);
+                result.percentageamountfixed = result.percentageamount.toFixed(1);
                 this.data.push(result.numberofuser);
                 this.labels.push(result.text);
             });
@@ -307,7 +308,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Check if a choice is open.
      *
-     * @return {boolean} True if choice is open, false otherwise.
+     * @return True if choice is open, false otherwise.
      */
     protected isChoiceOpen(): boolean {
         return (this.choice.timeopen === 0 || this.choice.timeopen <= this.now) &&
@@ -317,7 +318,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Return true if the user has selected at least one option.
      *
-     * @return {boolean} True if the user has responded.
+     * @return True if the user has responded.
      */
     canSave(): boolean {
         if (this.choice.allowmultiple) {
@@ -371,7 +372,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * Delete options selected.
      */
     delete(): void {
-        this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
+        this.domUtils.showDeleteConfirm().then(() => {
             const modal = this.domUtils.showModalLoading('core.sending', true);
             this.choiceProvider.deleteResponses(this.choice.id, this.choice.name, this.courseId).then(() => {
                 this.domUtils.scrollToTop(this.content);
@@ -391,8 +392,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Function to call when some data has changed. It will refresh/prefetch data.
      *
-     * @param {boolean} online Whether the data was sent to server or stored in offline.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param online Whether the data was sent to server or stored in offline.
+     * @return Promise resolved when done.
      */
     protected dataUpdated(online: boolean): Promise<any> {
         if (online && this.isPrefetched()) {
@@ -413,7 +414,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.choiceSync.syncChoice(this.choice.id, this.userId);
@@ -422,10 +423,17 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any} result Data returned on the sync function.
-     * @return {boolean} Whether it succeed or not.
+     * @param result Data returned on the sync function.
+     * @return Whether it succeed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;
     }
 }
+
+/**
+ * Choice result with some calculated data.
+ */
+export type AddonModChoiceResultFormatted = AddonModChoiceResult & {
+    percentageamountfixed: string; // Percentage of users answers with fixed decimals.
+};

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,11 +26,13 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { AddonModAssignProvider } from './assign';
-import { AddonModAssignHelperProvider } from './helper';
+import { AddonModAssignProvider, AddonModAssignGetSubmissionStatusResult, AddonModAssignSubmission } from './assign';
+import { AddonModAssignHelperProvider, AddonModAssignSubmissionFormatted } from './helper';
 import { AddonModAssignSyncProvider } from './assign-sync';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
+import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 /**
  * Handler to prefetch assigns.
@@ -42,16 +44,28 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     component = AddonModAssignProvider.COMPONENT;
     updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
 
-    constructor(translate: TranslateService, appProvider: CoreAppProvider, utils: CoreUtilsProvider,
-            courseProvider: CoreCourseProvider, filepoolProvider: CoreFilepoolProvider, sitesProvider: CoreSitesProvider,
-            domUtils: CoreDomUtilsProvider, protected assignProvider: AddonModAssignProvider,
-            protected textUtils: CoreTextUtilsProvider, protected feedbackDelegate: AddonModAssignFeedbackDelegate,
-            protected submissionDelegate: AddonModAssignSubmissionDelegate, protected courseHelper: CoreCourseHelperProvider,
-            protected groupsProvider: CoreGroupsProvider, protected gradesHelper: CoreGradesHelperProvider,
-            protected userProvider: CoreUserProvider, protected assignHelper: AddonModAssignHelperProvider,
+    constructor(translate: TranslateService,
+            appProvider: CoreAppProvider,
+            utils: CoreUtilsProvider,
+            courseProvider: CoreCourseProvider,
+            filepoolProvider: CoreFilepoolProvider,
+            sitesProvider: CoreSitesProvider,
+            domUtils: CoreDomUtilsProvider,
+            filterHelper: CoreFilterHelperProvider,
+            pluginFileDelegate: CorePluginFileDelegate,
+            protected assignProvider: AddonModAssignProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected feedbackDelegate: AddonModAssignFeedbackDelegate,
+            protected submissionDelegate: AddonModAssignSubmissionDelegate,
+            protected courseHelper: CoreCourseHelperProvider,
+            protected groupsProvider: CoreGroupsProvider,
+            protected gradesHelper: CoreGradesHelperProvider,
+            protected userProvider: CoreUserProvider,
+            protected assignHelper: AddonModAssignHelperProvider,
             protected syncProvider: AddonModAssignSyncProvider) {
 
-        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils);
+        super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
+                pluginFileDelegate);
     }
 
     /**
@@ -59,9 +73,9 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * If not defined, it will assume all modules can be checked.
      * The modules that return false will always be shown as outdated when they're downloaded.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @return {boolean|Promise<boolean>} Whether the module can use check_updates. The promise should never be rejected.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Whether the module can use check_updates. The promise should never be rejected.
      */
     canUseCheckUpdates(module: any, courseId: number): boolean | Promise<boolean> {
         // Teachers cannot use the WS because it doesn't check student submissions.
@@ -84,11 +98,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Get list of files. If not defined, we'll assume they're in module.contents.
      *
-     * @param {any} module Module.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of files.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean, siteId?: string): Promise<any[]> {
 
@@ -106,7 +120,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
                     return this.assignHelper.getSubmissionsUserData(assign, data.submissions, 0, false, siteId)
-                            .then((submissions) => {
+                            .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                         const promises = [];
 
@@ -149,11 +163,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Get submission files.
      *
-     * @param {any} assign Assign.
-     * @param {number} submitId User ID of the submission to get.
-     * @param {boolean} blindMarking True if blind marking, false otherwise.
-     * @param {string} siteId Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with array of files.
+     * @param assign Assign.
+     * @param submitId User ID of the submission to get.
+     * @param blindMarking True if blind marking, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with array of files.
      */
     protected getSubmissionFiles(assign: any, submitId: number, blindMarking: boolean, siteId?: string)
             : Promise<any[]> {
@@ -161,9 +175,10 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
         return this.assignProvider.getSubmissionStatusWithRetry(assign, submitId, undefined, blindMarking, true, false, siteId)
                 .then((response) => {
             const promises = [];
+            let userSubmission: AddonModAssignSubmission;
 
             if (response.lastattempt) {
-                const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, response.lastattempt);
+                userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, response.lastattempt);
                 if (userSubmission && userSubmission.plugins) {
                     // Add submission plugin files.
                     userSubmission.plugins.forEach((plugin) => {
@@ -175,7 +190,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             if (response.feedback && response.feedback.plugins) {
                 // Add feedback plugin files.
                 response.feedback.plugins.forEach((plugin) => {
-                    promises.push(this.feedbackDelegate.getPluginFiles(assign, response, plugin, siteId));
+                    promises.push(this.feedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
                 });
             }
 
@@ -195,9 +210,9 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId The course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId The course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         return this.assignProvider.invalidateContent(moduleId, courseId);
@@ -206,9 +221,9 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Invalidate WS calls needed to determine module status.
      *
-     * @param  {any}    module   Module.
-     * @param  {number} courseId Course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when invalidated.
      */
     invalidateModule(module: any, courseId: number): Promise<any> {
         return this.assignProvider.invalidateAssignmentData(courseId);
@@ -217,7 +232,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.assignProvider.isPluginEnabled();
@@ -226,11 +241,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.prefetchPackage(module, courseId, single, this.prefetchAssign.bind(this));
@@ -239,11 +254,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch an assignment.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {String} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
      */
     protected prefetchAssign(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         const userId = this.sitesProvider.getCurrentSiteUserId(),
@@ -281,12 +296,12 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch assign submissions.
      *
-     * @param {any} assign Assign.
-     * @param {number} courseId Course ID.
-     * @param {number} moduleId Module ID.
-     * @param {number} userId User ID. If not defined, site's current user.
-     * @param {string} siteId Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when prefetched, rejected otherwise.
+     * @param assign Assign.
+     * @param courseId Course ID.
+     * @param moduleId Module ID.
+     * @param userId User ID. If not defined, site's current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when prefetched, rejected otherwise.
      */
     protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId: number, siteId: string): Promise<any> {
         // Get submissions.
@@ -303,7 +318,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
                     groupInfo.groups.forEach((group) => {
                         groupProms.push(this.assignHelper.getSubmissionsUserData(assign, data.submissions, group.id, true, siteId)
-                                .then((submissions) => {
+                                .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                             const subPromises = [];
 
@@ -327,7 +342,8 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                             }
 
                             // Prefetch the submission of the current user even if it does not exist, this will be create it.
-                            if (!data.submissions || !data.submissions.find((subm) => subm.submitid == userId)) {
+                            if (!data.submissions ||
+                                    !data.submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid == userId)) {
                                 subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, userId, group.id,
                                         false, true, true, siteId).then((subm) => {
                                     return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
@@ -377,23 +393,24 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Prefetch a submission.
      *
-     * @param {any} assign Assign.
-     * @param {number} courseId Course ID.
-     * @param {number} moduleId Module ID.
-     * @param {any} submission Data returned by AddonModAssignProvider.getSubmissionStatus.
-     * @param {number} [userId] User ID. If not defined, site's current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when prefetched, rejected otherwise.
+     * @param assign Assign.
+     * @param courseId Course ID.
+     * @param moduleId Module ID.
+     * @param submission Data returned by AddonModAssignProvider.getSubmissionStatus.
+     * @param userId User ID. If not defined, site's current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when prefetched, rejected otherwise.
      */
-    protected prefetchSubmission(assign: any, courseId: number, moduleId: number, submission: any, userId?: number,
-            siteId?: string): Promise<any> {
+    protected prefetchSubmission(assign: any, courseId: number, moduleId: number,
+            submission: AddonModAssignGetSubmissionStatusResult, userId?: number, siteId?: string): Promise<any> {
 
         const promises = [],
             blindMarking = assign.blindmarking && !assign.revealidentities;
-        let userIds = [];
+        let userIds = [],
+            userSubmission: AddonModAssignSubmission;
 
         if (submission.lastattempt) {
-            const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
+            userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
 
             // Get IDs of the members who need to submit.
             if (!blindMarking && submission.lastattempt.submissiongroupmemberswhoneedtosubmit) {
@@ -440,10 +457,10 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
             if (submission.feedback.plugins) {
                 submission.feedback.plugins.forEach((plugin) => {
                     // Prefetch the plugin WS data.
-                    promises.push(this.feedbackDelegate.prefetch(assign, submission, plugin, siteId));
+                    promises.push(this.feedbackDelegate.prefetch(assign, userSubmission, plugin, siteId));
 
                     // Prefetch the plugin files.
-                    promises.push(this.feedbackDelegate.getPluginFiles(assign, submission, plugin, siteId).then((files) => {
+                    promises.push(this.feedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId).then((files) => {
                         return this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id);
                     }).catch(() => {
                         // Ignore errors.
@@ -461,10 +478,10 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     /**
      * Sync a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     sync(module: any, courseId: number, siteId?: any): Promise<any> {
         return this.syncProvider.syncAssign(module.instance, siteId);

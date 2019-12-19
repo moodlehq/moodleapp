@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,8 +77,8 @@ export class AddonNotificationsActionsComponent implements OnInit {
     /**
      * Default action. Open in browser.
      *
-     * @param {string} siteId Site ID to use.
-     * @param {NavController} [navCtrl] NavController.
+     * @param siteId Site ID to use.
+     * @param navCtrl NavController.
      */
     protected defaultAction(siteId: string, navCtrl?: NavController): void {
         const url = (this.data && this.data.appurl) || this.contextUrl;

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ export class CorePushNotificationsRegisterCronHandler implements CoreCronHandler
     /**
      * Check whether the sync can be executed manually. Call isSync if not defined.
      *
-     * @return {boolean} Whether the sync can be executed manually.
+     * @return Whether the sync can be executed manually.
      */
     canManualSync(): boolean {
         return true; // Execute the handler when the site is manually synchronized.
@@ -38,8 +38,8 @@ export class CorePushNotificationsRegisterCronHandler implements CoreCronHandler
      * Execute the process.
      * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
-     * @return {Promise<any>}         Promise resolved when done, rejected if failure.
+     * @param siteId ID of the site affected, undefined for all sites.
+     * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string): Promise<any> {
         if (!siteId || !this.pushNotificationsProvider.canRegisterOnMoodle()) {
@@ -54,7 +54,7 @@ export class CorePushNotificationsRegisterCronHandler implements CoreCronHandler
     /**
      * Get the time between consecutive executions.
      *
-     * @return {number} Time between consecutive executions (in ms).
+     * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return 86400000; // 1 day. We won't do anything with automatic execution, so use a big number.
@@ -63,7 +63,7 @@ export class CorePushNotificationsRegisterCronHandler implements CoreCronHandler
     /**
      * Check whether it's a synchronization process or not. True if not defined.
      *
-     * @return {boolean} Whether it's a synchronization process or not.
+     * @return Whether it's a synchronization process or not.
      */
     isSync(): boolean {
         return false;

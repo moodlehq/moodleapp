@@ -10,15 +10,15 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <ion-card icon-start class="core-info-card" *ngIf="chatInfo">
         <ion-icon name="time"></ion-icon> {{ 'addon.mod_chat.sessionstart' | translate:{$a: chatInfo} }}
     </ion-card>
 
-    <div padding>
+    <div padding *ngIf="chat">
         <a ion-button block color="primary" (click)="enterChat()">{{ 'addon.mod_chat.enterchat' | translate }}</a>
         <a ion-button block color="light" margin-top *ngIf="sessionsAvailable" (click)="viewSessions()">{{ 'addon.mod_chat.viewreport' | translate }}</a>
     </div>

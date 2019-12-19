@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,15 +13,16 @@
 // limitations under the License.
 
 import { Input } from '@angular/core';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '../providers/assign';
 
 /**
  * Base class for component to render a submission plugin.
  */
 export class AddonModAssignSubmissionPluginComponent {
-    @Input() assign: any; // The assignment.
-    @Input() submission: any; // The submission.
-    @Input() plugin: any; // The plugin object.
-    @Input() configs: any; // The configs for the plugin.
+    @Input() assign: AddonModAssignAssign; // The assignment.
+    @Input() submission: AddonModAssignSubmission; // The submission.
+    @Input() plugin: AddonModAssignPlugin; // The plugin object.
+    @Input() configs: {[name: string]: string}; // The configs for the plugin.
     @Input() edit: boolean; // Whether the user is editing.
     @Input() allowOffline: boolean; // Whether to allow offline.
 
@@ -32,7 +33,7 @@ export class AddonModAssignSubmissionPluginComponent {
     /**
      * Invalidate the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return Promise.resolve();

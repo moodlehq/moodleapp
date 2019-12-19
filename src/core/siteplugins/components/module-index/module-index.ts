@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
     @Input() module: any; // The module.
     @Input() courseId: number; // Course ID the module belongs to.
+    @Input() pageTitle: string; // Current page title. It can be used by the "new-content" directives.
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
@@ -102,9 +103,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void): Promise<any> {
         if (this.content) {
@@ -145,7 +146,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * Expand the description.
      */
     expandDescription(): void {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id);
+        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id,
+                [], true, 'module', this.module.id, this.courseId);
     }
 
     /**
@@ -173,9 +175,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Call a certain function on the component instance.
      *
-     * @param {string} name Name of the function to call.
-     * @param {any[]} params List of params to send to the function.
-     * @return {any} Result of the call. Undefined if no component instance or the function doesn't exist.
+     * @param name Name of the function to call.
+     * @param params List of params to send to the function.
+     * @return Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: any[]): any {
         return this.content.callComponentFunction(name, params);

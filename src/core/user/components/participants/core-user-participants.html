@@ -1,21 +1,37 @@
+<core-navbar-buttons>
+    <button [hidden]="!canSearch" ion-button icon-only (click)="toggleSearch()" [attr.aria-label]="'core.search' | translate">
+        <ion-icon name="search"></ion-icon>
+    </button>
+</core-navbar-buttons>
+
 <core-split-view>
     <ion-content>
-        <ion-refresher [enabled]="participantsLoaded" (ionRefresh)="refreshParticipants($event)">
+        <ion-refresher [enabled]="participantsLoaded && !displaySearchResult" (ionRefresh)="refreshParticipants($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
+
+        <core-search-box *ngIf="showSearchBox" (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"></core-search-box>
+
         <core-loading [hideUntil]="participantsLoaded">
-            <core-empty-box *ngIf="participants && participants.length == 0" icon="person" [message]="'core.user.noparticipants' | translate">
+            <core-empty-box *ngIf="!displaySearchResults && !participants.length" icon="person" [message]="'core.user.noparticipants' | translate">
             </core-empty-box>
+
+            <core-empty-box *ngIf="displaySearchResults && !participants.length" icon="search" [message]="'core.noresults' | translate"></core-empty-box>
 
             <ion-list *ngIf="participants && participants.length > 0" no-margin>
                 <a ion-item text-wrap *ngFor="let participant of participants" [title]="participant.fullname" (click)="gotoParticipant(participant.id)" [class.core-split-item-selected]="participant.id == participantId">
                     <ion-avatar core-user-avatar [user]="participant" item-start [userId]="participant.id" [checkOnline]="true"></ion-avatar>
-                    <h2><core-format-text [text]="participant.fullname"></core-format-text></h2>
-                    <p *ngIf="participant.lastcourseaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastcourseaccess | coreTimeAgo }}</p>
-                    <p *ngIf="participant.lastcourseaccess == null && participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess | coreTimeAgo }}</p>
+                    <ng-container *ngIf="!displaySearchResults">
+                        <h2>{{ participant.fullname }}</h2>
+                        <p *ngIf="participant.lastcourseaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastcourseaccess | coreTimeAgo }}</p>
+                        <p *ngIf="participant.lastcourseaccess == null && participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess | coreTimeAgo }}</p>
+                    </ng-container>
+                    <ng-container *ngIf="displaySearchResults">
+                        <h2><core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false"></core-format-text></h2>
+                    </ng-container>
                 </a>
             </ion-list>
-            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreData($event)" [error]="loadMoreError"></core-infinite-loading>
+            <core-infinite-loading [enabled]="canLoadMore && participantsLoaded" (action)="loadMoreData($event)" [error]="loadMoreError"></core-infinite-loading>
         </core-loading>
     </ion-content>
 </core-split-view>

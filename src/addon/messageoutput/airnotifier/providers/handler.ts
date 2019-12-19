@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ export class AddonMessageOutputAirnotifierHandler implements AddonMessageOutputH
     /**
      * Whether or not the module is enabled for the site.
      *
-     * @return {boolean} True if enabled, false otherwise.
+     * @return True if enabled, false otherwise.
      */
     isEnabled(): boolean {
         return this.airnotifierProvider.isEnabled();
@@ -38,8 +38,8 @@ export class AddonMessageOutputAirnotifierHandler implements AddonMessageOutputH
     /**
      * Returns the data needed to render the handler.
      *
-     * @param {any} processor The processor object.
-     * @return {CoreMainMenuHandlerData} Data.
+     * @param processor The processor object.
+     * @return Data.
      */
     getDisplayData(processor: any): AddonMessageOutputHandlerData {
         return {

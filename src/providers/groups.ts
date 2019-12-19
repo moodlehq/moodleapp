@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,25 +24,21 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 export interface CoreGroupInfo {
     /**
      * List of groups.
-     * @type {any[]}
      */
     groups?: any[];
 
     /**
      * Whether it's separate groups.
-     * @type {boolean}
      */
     separateGroups?: boolean;
 
     /**
      * Whether it's visible groups.
-     * @type {boolean}
      */
     visibleGroups?: boolean;
 
     /**
      * The group ID to use by default. If all participants is visible, 0 will be used. First group ID otherwise.
-     * @type {number}
      */
     defaultGroupId?: number;
 }
@@ -64,10 +60,10 @@ export class CoreGroupsProvider {
     /**
      * Check if group mode of an activity is enabled.
      *
-     * @param {number} cmId Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<boolean>} Promise resolved with true if the activity has groups, resolved with false otherwise.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved with true if the activity has groups, resolved with false otherwise.
      */
     activityHasGroups(cmId: number, siteId?: string, ignoreCache?: boolean): Promise<boolean> {
         return this.getActivityGroupMode(cmId, siteId, ignoreCache).then((groupmode) => {
@@ -80,11 +76,11 @@ export class CoreGroupsProvider {
     /**
      * Get the groups allowed in an activity.
      *
-     * @param {number} cmId Course module ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>} Promise resolved when the groups are retrieved.
+     * @param cmId Course module ID.
+     * @param userId User ID. If not defined, use current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the groups are retrieved.
      */
     getActivityAllowedGroups(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -117,9 +113,9 @@ export class CoreGroupsProvider {
     /**
      * Get cache key for group mode WS calls.
      *
-     * @param {number} cmId Course module ID.
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param cmId Course module ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getActivityAllowedGroupsCacheKey(cmId: number, userId: number): string {
         return this.ROOT_CACHE_KEY + 'allowedgroups:' + cmId + ':' + userId;
@@ -128,11 +124,11 @@ export class CoreGroupsProvider {
     /**
      * Get the groups allowed in an activity if they are allowed.
      *
-     * @param {number} cmId Course module ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any[]>} Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
+     * @param cmId Course module ID.
+     * @param userId User ID. If not defined, use current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
      */
     getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -153,12 +149,12 @@ export class CoreGroupsProvider {
     /**
      * Helper function to get activity group info (group mode and list of groups).
      *
-     * @param {number} cmId Course module ID.
-     * @param {boolean} [addAllParts] Deprecated.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<CoreGroupInfo>} Promise resolved with the group info.
+     * @param cmId Course module ID.
+     * @param addAllParts Deprecated.
+     * @param userId User ID. If not defined, use current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved with the group info.
      */
     getActivityGroupInfo(cmId: number, addAllParts?: boolean, userId?: number, siteId?: string, ignoreCache?: boolean)
             : Promise<CoreGroupInfo> {
@@ -203,10 +199,10 @@ export class CoreGroupsProvider {
     /**
      * Get the group mode of an activity.
      *
-     * @param {number} cmId Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<number>} Promise resolved when the group mode is retrieved.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the group mode is retrieved.
      */
     getActivityGroupMode(cmId: number, siteId?: string, ignoreCache?: boolean): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -236,8 +232,8 @@ export class CoreGroupsProvider {
     /**
      * Get cache key for group mode WS calls.
      *
-     * @param {number} cmId Course module ID.
-     * @return {string} Cache key.
+     * @param cmId Course module ID.
+     * @return Cache key.
      */
     protected getActivityGroupModeCacheKey(cmId: number): string {
         return this.ROOT_CACHE_KEY + 'groupmode:' + cmId;
@@ -246,8 +242,8 @@ export class CoreGroupsProvider {
     /**
      * Get user groups in all the user enrolled courses.
      *
-     * @param {string} [siteId] Site to get the groups from. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved when the groups are retrieved.
+     * @param siteId Site to get the groups from. If not defined, use current site.
+     * @return Promise resolved when the groups are retrieved.
      */
     getAllUserGroups(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -268,10 +264,10 @@ export class CoreGroupsProvider {
     /**
      * Get user groups in all the supplied courses.
      *
-     * @param {any[]} courses List of courses or course ids to get the groups from.
-     * @param {string} [siteId] Site to get the groups from. If not defined, use current site.
-     * @param {number} [userId] ID of the user. If not defined, use the userId related to siteId.
-     * @return {Promise<any[]>} Promise resolved when the groups are retrieved.
+     * @param courses List of courses or course ids to get the groups from.
+     * @param siteId Site to get the groups from. If not defined, use current site.
+     * @param userId ID of the user. If not defined, use the userId related to siteId.
+     * @return Promise resolved when the groups are retrieved.
      */
     getUserGroups(courses: any[], siteId?: string, userId?: number): Promise<any[]> {
         // Get all courses one by one.
@@ -289,10 +285,10 @@ export class CoreGroupsProvider {
     /**
      * Get user groups in a course.
      *
-     * @param {number} courseId ID of the course. 0 to get all enrolled courses groups (Moodle version > 3.6).
-     * @param {string} [siteId] Site to get the groups from. If not defined, use current site.
-     * @param {number} [userId] ID of the user. If not defined, use ID related to siteid.
-     * @return {Promise<any[]>} Promise resolved when the groups are retrieved.
+     * @param courseId ID of the course. 0 to get all enrolled courses groups (Moodle version > 3.6).
+     * @param siteId Site to get the groups from. If not defined, use current site.
+     * @param userId ID of the user. If not defined, use ID related to siteid.
+     * @return Promise resolved when the groups are retrieved.
      */
     getUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -319,7 +315,7 @@ export class CoreGroupsProvider {
     /**
      * Get prefix cache key for  user groups in course WS calls.
      *
-     * @return {string} Prefix Cache key.
+     * @return Prefix Cache key.
      */
     protected getUserGroupsInCoursePrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'courseGroups:';
@@ -328,9 +324,9 @@ export class CoreGroupsProvider {
     /**
      * Get cache key for user groups in course WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getUserGroupsInCourseCacheKey(courseId: number, userId: number): string {
         return this.getUserGroupsInCoursePrefixCacheKey() + courseId + ':' + userId;
@@ -339,10 +335,10 @@ export class CoreGroupsProvider {
     /**
      * Invalidates activity allowed groups.
      *
-     * @param {number} cmId Course module ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param cmId Course module ID.
+     * @param userId User ID. If not defined, use current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateActivityAllowedGroups(cmId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -355,9 +351,9 @@ export class CoreGroupsProvider {
     /**
      * Invalidates activity group mode.
      *
-     * @param {number} cmId Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateActivityGroupMode(cmId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -368,10 +364,10 @@ export class CoreGroupsProvider {
     /**
      * Invalidates all activity group info: mode and allowed groups.
      *
-     * @param {number} cmId Course module ID.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param cmId Course module ID.
+     * @param userId User ID. If not defined, use current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateActivityGroupInfo(cmId: number, userId?: number, siteId?: string): Promise<any> {
         const promises = [];
@@ -384,8 +380,8 @@ export class CoreGroupsProvider {
     /**
      * Invalidates user groups in all user enrolled courses.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllUserGroups(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -400,10 +396,10 @@ export class CoreGroupsProvider {
     /**
      * Invalidates user groups in courses.
      *
-     * @param {any[]} courses List of courses or course ids.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courses List of courses or course ids.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, use current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserGroups(courses: any[], siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -422,10 +418,10 @@ export class CoreGroupsProvider {
     /**
      * Invalidates user groups in course.
      *
-     * @param {number} courseId ID of the course. 0 to get all enrolled courses groups (Moodle version > 3.6).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, use current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId ID of the course. 0 to get all enrolled courses groups (Moodle version > 3.6).
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, use current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -438,9 +434,9 @@ export class CoreGroupsProvider {
     /**
      * Validate a group ID. If the group is not visible by the user, it will return the first group ID.
      *
-     * @param {number} groupId Group ID to validate.
-     * @param {CoreGroupInfo} groupInfo Group info.
-     * @return {number} Group ID to use.
+     * @param groupId Group ID to validate.
+     * @param groupInfo Group info.
+     * @return Group ID to use.
      */
     validateGroupId(groupId: number, groupInfo: CoreGroupInfo): number {
         if (groupId > 0 && groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {

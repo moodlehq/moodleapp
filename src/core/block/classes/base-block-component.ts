@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 import { Injector, OnInit, Input } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 
 /**
  * Template class to easily create components for blocks.
@@ -31,10 +33,14 @@ export class CoreBlockBaseComponent implements OnInit {
     protected fetchContentDefaultError: string; // Default error to show when loading contents.
 
     protected domUtils: CoreDomUtilsProvider;
+    protected textUtils: CoreTextUtilsProvider;
+    protected utils: CoreUtilsProvider;
     protected logger;
 
     constructor(injector: Injector, loggerName: string = 'AddonBlockComponent') {
         this.domUtils = injector.get(CoreDomUtilsProvider);
+        this.utils = injector.get(CoreUtilsProvider);
+        this.textUtils = injector.get(CoreTextUtilsProvider);
         const loggerProvider = injector.get(CoreLoggerProvider);
         this.logger = loggerProvider.getInstance(loggerName);
     }
@@ -43,16 +49,26 @@ export class CoreBlockBaseComponent implements OnInit {
      */
     ngOnInit(): void {
         this.loaded = false;
+        if (this.block.configs && this.block.configs.length > 0) {
+            this.block.configs.map((config) => {
+                config.value = this.textUtils.parseJSON(config.value);
+
+                return config;
+            });
+
+            this.block.configs = this.utils.arrayToObject(this.block.configs, 'name');
+        }
+
         this.loadContent();
     }
 
     /**
      * Refresh the data.
      *
-     * @param {any}       [refresher] Refresher.
-     * @param {Function}  [done] Function to call when done.
-     * @param {boolean}   [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.loaded) {
@@ -68,8 +84,8 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Perform the refresh content function.
      *
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Resolved when done.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Resolved when done.
      */
     protected refreshContent(showErrors: boolean = false): Promise<any> {
         // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
@@ -94,7 +110,7 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return Promise.resolve();
@@ -103,9 +119,9 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Loads the component contents and shows the corresponding error.
      *
-     * @param {boolean}       [refresh=false] Whether we're refreshing data.
-     * @param  {boolean}      [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Promise resolved when done.
      */
     protected loadContent(refresh?: boolean, showErrors: boolean = false): Promise<any> {
         // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
@@ -131,8 +147,8 @@ export class CoreBlockBaseComponent implements OnInit {
     /**
      * Download the component contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         return Promise.resolve();

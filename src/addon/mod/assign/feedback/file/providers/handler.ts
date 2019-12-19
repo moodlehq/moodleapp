@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { AddonModAssignProvider } from '../../../providers/assign';
+import {
+    AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin
+} from '../../../providers/assign';
 import { AddonModAssignFeedbackHandler } from '../../../providers/feedback-delegate';
 import { AddonModAssignFeedbackFileComponent } from '../component/file';
 
@@ -29,14 +31,14 @@ export class AddonModAssignFeedbackFileHandler implements AddonModAssignFeedback
     constructor(private assignProvider: AddonModAssignProvider) { }
 
     /**
-     * Return the Component to use to display the plugin data, either in read or in edit mode.
+     * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} plugin The plugin object.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param plugin The plugin object.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector, plugin: any): any | Promise<any> {
+    getComponent(injector: Injector, plugin: AddonModAssignPlugin): any | Promise<any> {
         return AddonModAssignFeedbackFileComponent;
     }
 
@@ -44,20 +46,21 @@ export class AddonModAssignFeedbackFileHandler implements AddonModAssignFeedback
      * Get files used by this plugin.
      * The files returned by this function will be prefetched when the user prefetches the assign.
      *
-     * @param {any} assign The assignment.
-     * @param {any} submission The submission.
-     * @param {any} plugin The plugin object.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {any[]|Promise<any[]>} The files (or promise resolved with the files).
+     * @param assign The assignment.
+     * @param submission The submission.
+     * @param plugin The plugin object.
+     * @param siteId Site ID. If not defined, current site.
+     * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(assign: any, submission: any, plugin: any, siteId?: string): any[] | Promise<any[]> {
+    getPluginFiles(assign: AddonModAssignAssign, submission: AddonModAssignSubmission,
+            plugin: AddonModAssignPlugin, siteId?: string): any[] | Promise<any[]> {
         return this.assignProvider.getSubmissionPluginAttachments(plugin);
     }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;

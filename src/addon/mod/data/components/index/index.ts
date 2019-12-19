@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     timeAvailableFromReadable: string | boolean;
     timeAvailableTo: number | boolean;
     timeAvailableToReadable: string | boolean;
-    isEmpty = false;
+    isEmpty = true;
     groupInfo: CoreGroupInfo;
     entries = [];
     firstEntry = false;
@@ -124,24 +124,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.selectedGroup = this.group || 0;
 
         this.loadContent(false, true).then(() => {
-            if (!this.data) {
-                return;
-            }
-
-            this.dataProvider.logView(this.data.id, this.data.name).then(() => {
-                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
-            }).catch(() => {
-                // Ignore errors.
-            });
+            return this.logView(true);
         });
-
-        // Setup search modal.
     }
 
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -151,6 +141,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             promises.push(this.dataProvider.invalidateDatabaseAccessInformationData(this.data.id));
             promises.push(this.groupsProvider.invalidateActivityGroupInfo(this.data.coursemodule));
             promises.push(this.dataProvider.invalidateEntriesData(this.data.id));
+            promises.push(this.dataProvider.invalidateFieldsData(this.data.id));
 
             if (this.hasComments) {
                 this.eventsProvider.trigger(CoreCommentsProvider.REFRESH_COMMENTS_EVENT, {
@@ -166,8 +157,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean}          True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (this.data && syncEventData.dataId == this.data.id && typeof syncEventData.entryId == 'undefined') {
@@ -184,10 +175,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Download data contents.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         let canAdd = false,
@@ -247,19 +238,17 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
                 return this.fetchEntriesData();
             });
-        }).then(() => {
-            // All data obtained, now fill the context menu.
-            this.fillContextMenu(refresh);
         }).finally(() => {
             this.canAdd = canAdd;
             this.canSearch = canSearch;
+            this.fillContextMenu(refresh);
         });
     }
 
     /**
      * Fetch current database entries.
      *
-     * @return {Promise<any>} Resolved then done.
+     * @return Resolved then done.
      */
     protected fetchEntriesData(): Promise<any> {
 
@@ -316,7 +305,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 });
                 entriesHTML += this.dataHelper.getTemplate(this.data, 'listtemplatefooter', this.fieldsArray);
 
-                this.entriesRendered = entriesHTML;
+                this.entriesRendered = this.domUtils.fixHtml(entriesHTML);
 
                 // Pass the input data to the component.
                 this.jsData = {
@@ -356,14 +345,17 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Performs the search and closes the modal.
      *
-     * @param  {number}       page Page number.
-     * @return {Promise<any>}      Resolved when done.
+     * @param page Page number.
+     * @return Resolved when done.
      */
     searchEntries(page: number): Promise<any> {
         this.loaded = false;
         this.search.page = page;
 
-        return this.fetchEntriesData().catch((message) => {
+        return this.fetchEntriesData().then(() => {
+            // Log activity view for coherence with Moodle web.
+            return this.logView();
+        }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
         }).finally(() => {
             this.loaded = true;
@@ -386,14 +378,17 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Set group to see the database.
      *
-     * @param  {number}       groupId Group ID.
-     * @return {Promise<any>}         Resolved when new group is selected or rejected if not.
+     * @param groupId Group ID.
+     * @return Resolved when new group is selected or rejected if not.
      */
     setGroup(groupId: number): Promise<any> {
         this.selectedGroup = groupId;
         this.search.page = 0;
 
-        return this.fetchEntriesData().catch((message) => {
+        return this.fetchEntriesData().then(() => {
+            // Log activity view for coherence with Moodle web.
+            return this.logView();
+        }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
 
             return Promise.reject(null);
@@ -416,7 +411,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Goto the selected entry.
      *
-     * @param {number} entryId Entry ID.
+     * @param entryId Entry ID.
      */
     gotoEntry(entryId: number): void {
         const params = {
@@ -439,7 +434,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.prefetchHandler.sync(this.module, this.courseId);
@@ -448,11 +443,31 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any}     result Data returned on the sync function.
-     * @return {boolean}        If suceed or not.
+     * @param result Data returned on the sync function.
+     * @return If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;
+    }
+
+    /**
+     * Log viewing the activity.
+     *
+     * @param checkCompletion Whether to check completion.
+     * @return Promise resolved when done.
+     */
+    protected logView(checkCompletion?: boolean): Promise<any> {
+        if (!this.data || !this.data.id) {
+            return Promise.resolve();
+        }
+
+        return this.dataProvider.logView(this.data.id, this.data.name).then(() => {
+            if (checkCompletion) {
+                this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
+            }
+        }).catch(() => {
+            // Ignore errors, the user could be offline.
+        });
     }
 
     /**

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { AddonMessagesProvider } from '../../providers/messages';
+import {
+    AddonMessagesProvider, AddonMessagesConversationFormatted, AddonMessagesConversationMember
+} from '../../providers/messages';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -28,15 +31,15 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 export class AddonMessagesConversationInfoPage implements OnInit {
 
     loaded = false;
-    conversation: any;
-    members = [];
+    conversation: AddonMessagesConversationFormatted;
+    members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
 
     protected conversationId: number;
 
     constructor(private messagesProvider: AddonMessagesProvider, private domUtils: CoreDomUtilsProvider, navParams: NavParams,
-            protected viewCtrl: ViewController) {
+            protected viewCtrl: ViewController, sitesProvider: CoreSitesProvider) {
         this.conversationId = navParams.get('conversationId');
     }
 
@@ -52,7 +55,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Fetch the required data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         // Get the conversation data first.
@@ -69,8 +72,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Get conversation members.
      *
-     * @param {boolean} [loadingMore} Whether we are loading more data or just the first ones.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param loadingMore Whether we are loading more data or just the first ones.
+     * @return Promise resolved when done.
      */
     protected fetchMembers(loadingMore?: boolean): Promise<any> {
         this.loadMoreError = false;
@@ -91,8 +94,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Function to load more members.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMoreMembers(infiniteComplete?: any): Promise<any> {
         return this.fetchMembers(true).catch((error) => {
@@ -106,8 +109,8 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any): Promise<any> {
         const promises = [];
@@ -125,7 +128,7 @@ export class AddonMessagesConversationInfoPage implements OnInit {
     /**
      * Close modal.
      *
-     * @param {number} [userId] User conversation to load.
+     * @param userId User conversation to load.
      */
     closeModal(userId?: number): void {
         this.viewCtrl.dismiss(userId);

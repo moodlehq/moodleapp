@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreSearchBoxComponent } from './search-box/search-box';
 import { CoreFileComponent } from './file/file';
+import { CoreFilesComponent } from './files/files';
 import { CoreIconComponent } from './icon/icon';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
@@ -67,6 +68,7 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreEmptyBoxComponent,
         CoreSearchBoxComponent,
         CoreFileComponent,
+        CoreFilesComponent,
         CoreIconComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
@@ -118,6 +120,7 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreEmptyBoxComponent,
         CoreSearchBoxComponent,
         CoreFileComponent,
+        CoreFilesComponent,
         CoreIconComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,

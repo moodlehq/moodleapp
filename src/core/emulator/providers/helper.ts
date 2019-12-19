@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
     /**
      * Load the Mocks that need it.
      *
-     * @return {Promise<void>} Promise resolved when loaded.
+     * @return Promise resolved when loaded.
      */
     load(): Promise<void> {
         const promises = [];
@@ -96,11 +96,11 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
      * Check if there are new notifications, triggering a local notification if found.
      * Only for desktop apps since they don't support push notifications.
      *
-     * @param  {string}   component Component to check.
-     * @param  {Function} fetchFn   Function that receives a site ID and returns a Promise resolved with an array of notifications.
-     * @param  {Function} getDataFn Function that receives a notification and returns a promise resolved with the title and text.
-     * @param  {string}   [siteId]  Site ID to check. If not defined, check all sites.
-     * @return {Promise<any>}       Promise resolved when done.
+     * @param component Component to check.
+     * @param fetchFn Function that receives a site ID and returns a Promise resolved with an array of notifications.
+     * @param getDataFn Function that receives a notification and returns a promise resolved with the title and text.
+     * @param siteId Site ID to check. If not defined, check all sites.
+     * @return Promise resolved when done.
      */
     checkNewNotifications(component: string, fetchFn: Function, getDataFn: Function, siteId?: string): Promise<any> {
         if (!this.appProvider.isDesktop() || !this.localNotifProvider.isAvailable()) {
@@ -134,11 +134,11 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
     /**
      * Check if there are new notifications for a certain site, triggering a local notification if found.
      *
-     * @param  {string}   component Component to check.
-     * @param  {Function} fetchFn   Function that receives a site ID and returns a Promise resolved with an array of notifications.
-     * @param  {Function} getDataFn Function that receives a notification and returns a promise resolved with the title and text.
-     * @param  {string}   siteId    Site ID to check.
-     * @return {Promise<any>}       Promise resolved when done.
+     * @param component Component to check.
+     * @param fetchFn Function that receives a site ID and returns a Promise resolved with an array of notifications.
+     * @param getDataFn Function that receives a notification and returns a promise resolved with the title and text.
+     * @param siteId Site ID to check.
+     * @return Promise resolved when done.
      */
     protected checkNewNotificationsForSite(component: string, fetchFn: Function, getDataFn: Function, siteId: string)
             : Promise<any> {
@@ -181,9 +181,9 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
     /**
      * Get the last notification received in a certain site for a certain component.
      *
-     * @param  {string} component Component of the notification to get.
-     * @param  {string} siteId    Site ID of the notification.
-     * @return {Promise<any>}     Promise resolved with the notification or false if not found.
+     * @param component Component of the notification to get.
+     * @param siteId Site ID of the notification.
+     * @return Promise resolved with the notification or false if not found.
      */
     getLastReceivedNotification(component: string, siteId: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -196,10 +196,10 @@ export class CoreEmulatorHelperProvider implements CoreInitHandler {
     /**
      * Store the last notification received in a certain site.
      *
-     * @param  {string} component    Component of the notification to store.
-     * @param  {any}    notification Notification to store.
-     * @param  {string} siteId       Site ID of the notification.
-     * @return {Promise<any>}        Promise resolved when done.
+     * @param component Component of the notification to store.
+     * @param notification Notification to store.
+     * @param siteId Site ID of the notification.
+     * @return Promise resolved when done.
      */
     storeLastReceivedNotification(component: string, notification: any, siteId: string): Promise<any> {
         if (!notification) {

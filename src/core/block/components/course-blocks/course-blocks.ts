@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
     /**
      * Invalidate blocks data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidateBlocks(): Promise<any> {
         const promises = [];
@@ -79,7 +79,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
     /**
      * Convenience function to fetch the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     loadContent(): Promise<any> {
         return this.blockHelper.getCourseBlocks(this.courseId).then((blocks) => {

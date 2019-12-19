@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component
 export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {
     @Input() downloadEnabled: boolean;
 
+    component = 'AddonBlockSiteMainMenu';
     mainMenuBlock: any;
     siteHomeId: number;
 
@@ -54,7 +55,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -73,7 +74,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     /**
      * Fetch the data to render the block.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
         return this.courseProvider.getSections(this.siteHomeId, false, true).then((sections) => {
@@ -81,7 +82,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
 
             if (this.mainMenuBlock) {
                 this.mainMenuBlock.hasContent = this.courseHelper.sectionHasContent(this.mainMenuBlock);
-                this.courseHelper.addHandlerDataForModules([this.mainMenuBlock], this.siteHomeId);
+                this.courseHelper.addHandlerDataForModules([this.mainMenuBlock], this.siteHomeId, undefined, undefined, true);
 
                 // Check if Site Home displays announcements. If so, remove it from the main menu block.
                 const currentSite = this.sitesProvider.getCurrentSite(),

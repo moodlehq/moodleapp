@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ export class CoreSitePluginsCompileInitComponent {
     /**
      * Function called when the component is created.
      *
-     * @param {any} instance The component instance.
+     * @param instance The component instance.
      */
     componentCreated(instance: any): void {
         // Check if the JS defined an init function.
@@ -42,7 +42,7 @@ export class CoreSitePluginsCompileInitComponent {
     /**
      * Get the handler data.
      *
-     * @param {string} name The name of the handler.
+     * @param name The name of the handler.
      */
     getHandlerData(name: string): void {
         // Retrieve the handler data.

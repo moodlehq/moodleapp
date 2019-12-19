@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -97,11 +97,11 @@ export class AddonMessagesOfflineProvider {
     /**
      * Delete a message.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} message The message.
-     * @param {number} timeCreated The time the message was created.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     * @param conversationId Conversation ID.
+     * @param message The message.
+     * @param timeCreated The time the message was created.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteConversationMessage(conversationId: number, message: string, timeCreated: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -116,9 +116,9 @@ export class AddonMessagesOfflineProvider {
     /**
      * Delete all the messages in a conversation.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     * @param conversationId Conversation ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteConversationMessages(conversationId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -131,11 +131,11 @@ export class AddonMessagesOfflineProvider {
     /**
      * Delete a message.
      *
-     * @param  {number} toUserId    User ID to send the message to.
-     * @param  {string} message     The message.
-     * @param  {number} timeCreated The time the message was created.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved if stored, rejected if failure.
+     * @param toUserId User ID to send the message to.
+     * @param message The message.
+     * @param timeCreated The time the message was created.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteMessage(toUserId: number, message: string, timeCreated: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -150,8 +150,8 @@ export class AddonMessagesOfflineProvider {
     /**
      * Get all messages where deviceoffline is set to 1.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}    Promise resolved with messages.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with messages.
      */
     getAllDeviceOfflineMessages(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -171,8 +171,8 @@ export class AddonMessagesOfflineProvider {
     /**
      * Get all offline messages.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved with messages.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with messages.
      */
     getAllMessages(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -192,9 +192,9 @@ export class AddonMessagesOfflineProvider {
     /**
      * Get offline messages to send to a certain user.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with messages.
+     * @param conversationId Conversation ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with messages.
      */
     getConversationMessages(conversationId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -209,9 +209,9 @@ export class AddonMessagesOfflineProvider {
     /**
      * Get offline messages to send to a certain user.
      *
-     * @param  {number} toUserId       User ID to get messages to.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}    Promise resolved with messages.
+     * @param toUserId User ID to get messages to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with messages.
      */
     getMessages(toUserId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -222,9 +222,9 @@ export class AddonMessagesOfflineProvider {
     /**
      * Check if there are offline messages to send to a conversation.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline messages, false otherwise.
+     * @param conversationId Conversation ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if has offline messages, false otherwise.
      */
     hasConversationMessages(conversationId: number, siteId?: string): Promise<boolean> {
         return this.getConversationMessages(conversationId, siteId).then((messages) => {
@@ -235,9 +235,9 @@ export class AddonMessagesOfflineProvider {
     /**
      * Check if there are offline messages to send to a certain user.
      *
-     * @param  {number} toUserId User ID to check.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>}    Promise resolved with boolean: true if has offline messages, false otherwise.
+     * @param toUserId User ID to check.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if has offline messages, false otherwise.
      */
     hasMessages(toUserId: number, siteId?: string): Promise<boolean> {
         return this.getMessages(toUserId, siteId).then((messages) => {
@@ -248,8 +248,8 @@ export class AddonMessagesOfflineProvider {
     /**
      * Parse some fields of each offline conversation messages.
      *
-     * @param {any[]} messages List of messages to parse.
-     * @return {any[]} Parsed messages.
+     * @param messages List of messages to parse.
+     * @return Parsed messages.
      */
     protected parseConversationMessages(messages: any[]): any[] {
         if (!messages) {
@@ -268,10 +268,10 @@ export class AddonMessagesOfflineProvider {
     /**
      * Save a conversation message to be sent later.
      *
-     * @param {any} conversation Conversation.
-     * @param {string} message The message to send.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     * @param conversation Conversation.
+     * @param message The message to send.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     saveConversationMessage(conversation: any, message: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -298,10 +298,10 @@ export class AddonMessagesOfflineProvider {
     /**
      * Save a message to be sent later.
      *
-     * @param  {number} toUserId User ID recipient of the message.
-     * @param  {string} message  The message to send.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if stored, rejected if failure.
+     * @param toUserId User ID recipient of the message.
+     * @param message The message to send.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     saveMessage(toUserId: number, message: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -322,10 +322,10 @@ export class AddonMessagesOfflineProvider {
     /**
      * Set deviceoffline for a group of messages.
      *
-     * @param  {any} messages Messages to update. Should be the same entry as retrieved from the DB.
-     * @param  {boolean} value   Value to set.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if stored, rejected if failure.
+     * @param messages Messages to update. Should be the same entry as retrieved from the DB.
+     * @param value Value to set.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     setMessagesDeviceOffline(messages: any, value: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

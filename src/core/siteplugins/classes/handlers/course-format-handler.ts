@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @type {boolean} Whether it can view all sections.
+     * @param course The course to check.
+     * @return Whether it can view all sections.
      */
     canViewAllSections(course: any): boolean {
         return typeof this.handlerSchema.canviewallsections != 'undefined' ? this.handlerSchema.canviewallsections : true;
@@ -39,8 +39,8 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
     /**
      * Whether the option to enable section/module download should be displayed. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @type {boolean} Whether the option to enable section/module download should be displayed.
+     * @param course The course to check.
+     * @return Whether the option to enable section/module download should be displayed.
      */
     displayEnableDownload(course: any): boolean {
         return typeof this.handlerSchema.displayenabledownload != 'undefined' ? this.handlerSchema.displayenabledownload : true;
@@ -49,8 +49,8 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
     /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @type {boolean} Whether the default section selector should be displayed.
+     * @param course The course to check.
+     * @return Whether the default section selector should be displayed.
      */
     displaySectionSelector(course: any): boolean {
         return typeof this.handlerSchema.displaysectionselector != 'undefined' ? this.handlerSchema.displaysectionselector : true;
@@ -62,9 +62,9 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
      * If you want to customize the default format there are several methods to customize parts of it.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} course The course to render.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param course The course to render.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getCourseFormatComponent(injector: Injector, course: any): any | Promise<any> {
         if (this.handlerSchema.method) {

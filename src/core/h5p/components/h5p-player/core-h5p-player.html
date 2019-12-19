@@ -1,0 +1,13 @@
+<div *ngIf="!showPackage" class="core-h5p-placeholder">
+    <button *ngIf="!loading" class="core-h5p-placeholder-play-button" ion-button icon-only clear (click)="play($event)">
+        <core-icon name="fa-play-circle"></core-icon>
+    </button>
+
+    <ion-spinner *ngIf="loading" class="core-h5p-placeholder-spinner"></ion-spinner>
+
+    <div class="core-h5p-placeholder-download-container">
+        <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="calculating" [canTrustDownload]="true" (action)="download()"></core-download-refresh>
+    </div>
+</div>
+<core-iframe *ngIf="showPackage" [src]="playerSrc" iframeHeight="auto" [allowFullscreen]="true" (loaded)="iframeLoaded()"></core-iframe>
+<script *ngIf="resizeScript && showPackage" type="text/javascript" [src]="resizeScript"></script>

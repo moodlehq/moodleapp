@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ export class AddonModLessonHelperProvider {
     /**
      * Given the HTML of next activity link, format it to extract the href and the text.
      *
-     * @param {string} activityLink HTML of the activity link.
-     * @return {{formatted: boolean, label: string, href: string}} Formatted data.
+     * @param activityLink HTML of the activity link.
+     * @return Formatted data.
      */
     formatActivityLink(activityLink: string): {formatted: boolean, label: string, href: string} {
         const element = this.domUtils.convertToElement(activityLink),
@@ -59,8 +59,8 @@ export class AddonModLessonHelperProvider {
     /**
      * Given the HTML of an answer from a content page, extract the data to render the answer.
      *
-     * @param  {String} html Answer's HTML.
-     * @return {{buttonText: string, content: string}} Data to render the answer.
+     * @param html Answer's HTML.
+     * @return Data to render the answer.
      */
     getContentPageAnswerDataFromHtml(html: string): {buttonText: string, content: string} {
         const data = {
@@ -86,8 +86,8 @@ export class AddonModLessonHelperProvider {
     /**
      * Get the buttons to change pages.
      *
-     * @param {string} html Page's HTML.
-     * @return {any[]} List of buttons.
+     * @param html Page's HTML.
+     * @return List of buttons.
      */
     getPageButtonsFromHtml(html: string): any[] {
         const buttons = [],
@@ -138,8 +138,8 @@ export class AddonModLessonHelperProvider {
     /**
      * Given a page data (result of getPageData), get the page contents.
      *
-     * @param {any} data Page data.
-     * @return {string} Page contents.
+     * @param data Page data.
+     * @return Page contents.
      */
     getPageContentsFromPageData(data: any): string {
         // Search the page contents inside the whole page HTML. Use data.pagecontent because it's filtered.
@@ -164,9 +164,9 @@ export class AddonModLessonHelperProvider {
     /**
      * Get a question and all the data required to render it from the page data (result of AddonModLessonProvider.getPageData).
      *
-     * @param {FormGroup} questionForm The form group where to add the controls.
-     * @param {any} pageData Page data (result of $mmaModLesson#getPageData).
-     * @return {any} Question data.
+     * @param questionForm The form group where to add the controls.
+     * @param pageData Page data (result of $mmaModLesson#getPageData).
+     * @return Question data.
      */
     getQuestionFromPageData(questionForm: FormGroup, pageData: any): any {
         const question: any = {},
@@ -359,9 +359,9 @@ export class AddonModLessonHelperProvider {
     /**
      * Given the HTML of an answer from a question page, extract the data to render the answer.
      *
-     * @param {string} html Answer's HTML.
-     * @return {any} Object with the data to render the answer. If the answer doesn't require any parsing, return a string with
-     *               the HTML.
+     * @param html Answer's HTML.
+     * @return Object with the data to render the answer. If the answer doesn't require any parsing, return a string with
+     *         the HTML.
      */
     getQuestionPageAnswerDataFromHtml(html: string): any {
         const data: any = {},
@@ -419,9 +419,9 @@ export class AddonModLessonHelperProvider {
     /**
      * Get a label to identify a retake (lesson attempt).
      *
-     * @param {any} retake Retake object.
-     * @param {boolean} [includeDuration] Whether to include the duration of the retake.
-     * @return {string} Retake label.
+     * @param retake Retake object.
+     * @param includeDuration Whether to include the duration of the retake.
+     * @return Retake label.
      */
     getRetakeLabel(retake: any, includeDuration?: boolean): string {
         const data = {
@@ -455,9 +455,9 @@ export class AddonModLessonHelperProvider {
     /**
      * Prepare the question data to be sent to server.
      *
-     * @param {any} question Question to prepare.
-     * @param {any} data Data to prepare.
-     * @return {any} Data to send.
+     * @param question Question to prepare.
+     * @param data Data to prepare.
+     * @return Data to send.
      */
     prepareQuestionData(question: any, data: any): any {
         if (question.template == 'essay' && question.textarea) {
@@ -478,8 +478,8 @@ export class AddonModLessonHelperProvider {
     /**
      * Given the feedback of a process page in HTML, remove the question text.
      *
-     * @param {string} html Feedback's HTML.
-     * @return {string} Feedback without the question text.
+     * @param html Feedback's HTML.
+     * @return Feedback without the question text.
      */
     removeQuestionFromFeedback(html: string): string {
         const element = this.domUtils.convertToElement(html);

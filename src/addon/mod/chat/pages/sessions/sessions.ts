@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatSession, AddonModChatSessionUser } from '../../providers/chat';
 
 /**
  * Page that displays list of chat sessions.
@@ -62,8 +62,8 @@ export class AddonModChatSessionsPage {
     /**
      * Fetch chat sessions.
      *
-     * @param {number} [showLoading] Display a loading modal.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param showLoading Display a loading modal.
+     * @return Promise resolved when done.
      */
     fetchSessions(showLoading?: boolean): Promise<any> {
         const modal = showLoading ? this.domUtils.showModalLoading() : null;
@@ -73,13 +73,13 @@ export class AddonModChatSessionsPage {
             this.groupId = this.groupsProvider.validateGroupId(this.groupId, groupInfo);
 
             return this.chatProvider.getSessions(this.chatId, this.groupId, this.showAll);
-        }).then((sessions) => {
+        }).then((sessions: AddonModChatSessionFormatted[]) => {
             // Fetch user profiles.
             const promises = [];
 
             sessions.forEach((session) => {
                 session.duration = session.sessionend - session.sessionstart;
-                session.sessionusers.forEach((sessionUser) => {
+                session.sessionusers.forEach((sessionUser: AddonModChatUserSessionFormatted) => {
                     if (!sessionUser.userfullname) {
                         // The WS does not return the user name, fetch user profile.
                         promises.push(this.userProvider.getProfile(sessionUser.userid, this.courseId, true).then((user) => {
@@ -112,7 +112,7 @@ export class AddonModChatSessionsPage {
     /**
      * Refresh chat sessions.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshSessions(refresher: any): void {
         const promises = [
@@ -130,7 +130,7 @@ export class AddonModChatSessionsPage {
     /**
      * Navigate to a session.
      *
-     * @param {any} session Chat session.
+     * @param session Chat session.
      */
     openSession(session: any): void {
         this.selectedSessionStart = session.sessionstart;
@@ -140,7 +140,8 @@ export class AddonModChatSessionsPage {
             chatId: this.chatId,
             groupId: this.groupId,
             sessionStart: session.sessionstart,
-            sessionEnd: session.sessionend
+            sessionEnd: session.sessionend,
+            cmId: this.cmId
         };
         this.splitviewCtrl.push('AddonModChatSessionMessagesPage', params);
     }
@@ -148,11 +149,26 @@ export class AddonModChatSessionsPage {
     /**
      * Show more session users.
      *
-     * @param {any} session Chat session.
-     * @param {Event} $event The event.
+     * @param session Chat session.
+     * @param $event The event.
      */
     showMoreUsers(session: any, $event: Event): void {
         session.sessionusers = session.allsessionusers;
         $event.stopPropagation();
     }
 }
+
+/**
+ * Fields added to chat session in this view.
+ */
+type AddonModChatSessionFormatted = AddonModChatSession & {
+    duration?: number; // Session duration.
+    allsessionusers?: AddonModChatUserSessionFormatted[]; // All session users.
+};
+
+/**
+ * Fields added to user session in this view.
+ */
+type AddonModChatUserSessionFormatted = AddonModChatSessionUser & {
+    userfullname?: string; // User full name.
+};

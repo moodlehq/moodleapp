@@ -34,7 +34,7 @@
 
                 <ion-item text-wrap *ngIf="timeRemaining" [ngClass]="[timeRemainingClass]">
                     <h2>{{ 'addon.mod_assign.timeremaining' | translate }}</h2>
-                    <p><core-format-text [text]="timeRemaining"></core-format-text></p>
+                    <p [innerHTML]="timeRemaining"></p>
                 </ion-item>
 
                 <ion-item text-wrap *ngIf="fromDate && !isSubmittedForGrading">
@@ -73,7 +73,7 @@
                         <a ion-button block text-wrap color="primary" *ngIf="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" (click)="goToEdit()">{{ 'addon.mod_assign.addsubmission' | translate }}</a>
                         <!-- If reopened, show addfromprevious and addnewattempt. -->
                         <ng-container *ngIf="!hasOffline && userSubmission && userSubmission.status == statusReopened">
-                            <a ion-button block text-wrap color="primary" (click)="copyPrevious()">{{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}</a>
+                            <a *ngIf="!isPreviousAttemptEmpty" ion-button block text-wrap color="primary" (click)="copyPrevious()">{{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}</a>
                             <a ion-button block text-wrap color="primary" (click)="goToEdit()">{{ 'addon.mod_assign.addnewattempt' | translate }}</a>
                         </ng-container>
                         <!-- Else show editsubmission. -->
@@ -91,7 +91,7 @@
                 <!-- Submit for grading form. -->
                 <div *ngIf="canSubmit">
                     <ion-item text-wrap *ngIf="submissionStatement">
-                        <ion-label><core-format-text [text]="submissionStatement"></core-format-text></ion-label>
+                        <ion-label><core-format-text [text]="submissionStatement" [filter]="false"></core-format-text></ion-label>
                         <ion-checkbox item-end name="submissionstatement" [(ngModel)]="submitModel.submissionStatement">
                         </ion-checkbox>
                     </ion-item>
@@ -115,7 +115,7 @@
                             <h2>{{ user.fullname }}</h2>
                         </a>
                         <ion-item text-wrap *ngIf="!user.fullname">
-                            {{ 'addon.mod_assign.hiddenuser' | translate }} <core-format-text [text]="user"></core-format-text>
+                            {{ 'addon.mod_assign.hiddenuser' | translate }} {{ user }}
                         </ion-item>
                     </div>
                 </ion-item>
@@ -140,7 +140,7 @@
                 <!-- Current grade if method is advanced. -->
                 <ion-item text-wrap *ngIf="feedback.gradefordisplay && (!isGrading || grade.method != 'simple')" class="core-grading-summary">
                     <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
-                    <p><core-format-text [text]="feedback.gradefordisplay"></core-format-text></p>
+                    <p><core-format-text [text]="feedback.gradefordisplay" [filter]="false"></core-format-text></p>
                     <a ion-button item-end icon-only *ngIf="feedback.advancedgrade" (click)="showAdvancedGrade()">
                         <ion-icon name="search"></ion-icon>
                     </a>

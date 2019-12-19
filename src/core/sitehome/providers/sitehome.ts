@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ export class CoreSiteHomeProvider {
     /**
      * Get the news forum for the Site Home.
      *
-     * @param {number} siteHomeId Site Home ID.
-     * @return {Promise<any>} Promise resolved with the forum if found, rejected otherwise.
+     * @param siteHomeId Site Home ID.
+     * @return Promise resolved with the forum if found, rejected otherwise.
      */
     getNewsForum(siteHomeId: number): Promise<any> {
         return this.forumProvider.getCourseForums(siteHomeId).then((forums) => {
@@ -52,8 +52,8 @@ export class CoreSiteHomeProvider {
     /**
      * Invalidate the WS call to get the news forum for the Site Home.
      *
-     * @param {number} siteHomeId Site Home ID.
-     * @return {Promise<any>} Promise resolved when invalidated.
+     * @param siteHomeId Site Home ID.
+     * @return Promise resolved when invalidated.
      */
     invalidateNewsForum(siteHomeId: number): Promise<any> {
         return this.forumProvider.invalidateForumData(siteHomeId);
@@ -62,8 +62,8 @@ export class CoreSiteHomeProvider {
     /**
      * Returns whether or not the frontpage is available for the current site.
      *
-     * @param {string} [siteId] The site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it's available.
+     * @param siteId The site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's available.
      */
     isAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -112,8 +112,8 @@ export class CoreSiteHomeProvider {
     /**
      * Check if Site Home is disabled in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -124,8 +124,8 @@ export class CoreSiteHomeProvider {
     /**
      * Check if Site Home is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isDisabledInSite(site: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();

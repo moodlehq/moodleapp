@@ -22,7 +22,7 @@
             <ng-container *ngIf="total > 0">
                 <ion-item *ngFor="let user of users" text-wrap>
                     <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
-                    <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+                    <h2>{{ user.fullname }}</h2>
                     <p>
                         <ion-badge color="success" *ngIf="user.started">
                             {{ 'addon.mod_feedback.started' | translate}}

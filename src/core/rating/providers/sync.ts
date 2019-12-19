@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,14 +54,14 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
      *
      * This function should be called from the sync provider of activities with ratings.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} [contextLevel] Context level: course, module, user, etc.
-     * @param {numnber} [instanceId] Context instance id.
-     * @param {number} [itemSetId] Item set id.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemSetId Item set id.
+     * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncRatings(component: string, ratingArea: string, contextLevel?: string, instanceId?: number, itemSetId?: number,
             force?: boolean, siteId?: string): Promise<{itemSet: CoreRatingItemSet, updated: number[], warnings: string[]}[]> {
@@ -97,13 +97,13 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync ratings of an item set only if a certain time has passed since the last time.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {number} itemSetId Item set id. Example: forum discussion id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when ratings are synced or if it doesn't need to be synced.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when ratings are synced or if it doesn't need to be synced.
      */
     protected syncItemSetIfNeeded(component: string, ratingArea: string,  contextLevel: string, instanceId: number,
             itemSetId: number, siteId?: string): Promise<{updated: number[], warnings: string[]}> {
@@ -121,13 +121,13 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize all offline ratings of an item set.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {number} itemSetId Item set id. Example: forum discussion id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     protected syncItemSet(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemSetId: number,
             siteId?: string): Promise<{updated: number[], warnings: string[]}> {
@@ -186,12 +186,12 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider {
     /**
      * Get the sync id of an item set.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} instanceId Context instance id.
-     * @param {number} itemSetId Item set id. Example: forum discussion id.
-     * @return {string} Sync id.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @return Sync id.
      */
     protected getItemSetSyncId(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemSetId: number):
             string {

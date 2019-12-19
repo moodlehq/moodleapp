@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,6 @@ export class AddonModGlossaryIndexLinkHandler extends CoreContentLinksModuleInde
     name = 'AddonModGlossaryIndexLinkHandler';
 
     constructor(courseHelper: CoreCourseHelperProvider, protected glossaryProvider: AddonModGlossaryProvider) {
-        super(courseHelper, 'AddonModGlossary', 'glossary');
+        super(courseHelper, 'AddonModGlossary', 'glossary', 'g');
     }
 }

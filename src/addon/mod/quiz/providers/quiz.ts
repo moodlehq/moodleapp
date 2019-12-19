@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ export class AddonModQuizProvider {
     /**
      * Formats a grade to be displayed.
      *
-     * @param {number} grade Grade.
-     * @param {number} decimals Decimals to use.
-     * @return {string} Grade to display.
+     * @param grade Grade.
+     * @param decimals Decimals to use.
+     * @return Grade to display.
      */
     formatGrade(grade: number, decimals: number): string {
         if (typeof grade == 'undefined' || grade == -1 || grade === null) {
@@ -87,14 +87,14 @@ export class AddonModQuizProvider {
     /**
      * Get attempt questions. Returns all of them or just the ones in certain pages.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {number[]} [pages] List of pages to get. If not defined, all pages.
-     * @param {boolean} [offline] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the questions.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param preflightData Preflight required data (like password).
+     * @param pages List of pages to get. If not defined, all pages.
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the questions.
      */
     getAllQuestionsData(quiz: any, attempt: any, preflightData: any, pages?: number[], offline?: boolean, ignoreCache?: boolean,
             siteId?: string): Promise<any> {
@@ -130,9 +130,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get attempt access information WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} attemptId Attempt ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @param attemptId Attempt ID.
+     * @return Cache key.
      */
     protected getAttemptAccessInformationCacheKey(quizId: number, attemptId: number): string {
         return this.getAttemptAccessInformationCommonCacheKey(quizId) + ':' + attemptId;
@@ -141,8 +141,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get attempt access information WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getAttemptAccessInformationCommonCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'attemptAccessInformation:' + quizId;
@@ -151,12 +151,12 @@ export class AddonModQuizProvider {
     /**
      * Get access information for an attempt.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} attemptId Attempt ID. 0 for user's last attempt.
-     * @param {boolean} offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the access information.
+     * @param quizId Quiz ID.
+     * @param attemptId Attempt ID. 0 for user's last attempt.
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the access information.
      */
     getAttemptAccessInformation(quizId: number, attemptId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string)
             : Promise<any> {
@@ -184,9 +184,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get attempt data WS calls.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} page Page.
-     * @return {string} Cache key.
+     * @param attemptId Attempt ID.
+     * @param page Page.
+     * @return Cache key.
      */
     protected getAttemptDataCacheKey(attemptId: number, page: number): string {
         return this.getAttemptDataCommonCacheKey(attemptId) + ':' + page;
@@ -195,8 +195,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get attempt data WS calls.
      *
-     * @param {number} attemptId Attempt ID.
-     * @return {string} Cache key.
+     * @param attemptId Attempt ID.
+     * @return Cache key.
      */
     protected getAttemptDataCommonCacheKey(attemptId: number): string {
         return this.ROOT_CACHE_KEY + 'attemptData:' + attemptId;
@@ -205,13 +205,13 @@ export class AddonModQuizProvider {
     /**
      * Get an attempt's data.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} page Page number.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [offline] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the attempt data.
+     * @param attemptId Attempt ID.
+     * @param page Page number.
+     * @param preflightData Preflight required data (like password).
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the attempt data.
      */
     getAttemptData(attemptId: number, page: number, preflightData: any, offline?: boolean, ignoreCache?: boolean, siteId?: string)
             : Promise<any> {
@@ -240,9 +240,9 @@ export class AddonModQuizProvider {
     /**
      * Get an attempt's due date.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @return {number} Attempt's due date, 0 if no due date or invalid data.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @return Attempt's due date, 0 if no due date or invalid data.
      */
     getAttemptDueDate(quiz: any, attempt: any): number {
         const deadlines = [];
@@ -281,9 +281,9 @@ export class AddonModQuizProvider {
     /**
      * Get an attempt's warning because of due date.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @return {string} Attempt's warning, undefined if no due date.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @return Attempt's warning, undefined if no due date.
      */
     getAttemptDueDateWarning(quiz: any, attempt: any): string {
         const dueDate = this.getAttemptDueDate(quiz, attempt);
@@ -298,9 +298,9 @@ export class AddonModQuizProvider {
     /**
      * Turn attempt's state into a readable state, including some extra data depending on the state.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @return {string[]} List of state sentences.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @return List of state sentences.
      */
     getAttemptReadableState(quiz: any, attempt: any): string[] {
         if (attempt.finishedOffline) {
@@ -342,8 +342,8 @@ export class AddonModQuizProvider {
     /**
      * Turn attempt's state into a readable state name, without any more data.
      *
-     * @param {string} state State.
-     * @return {string} Readable state name.
+     * @param state State.
+     * @return Readable state name.
      */
     getAttemptReadableStateName(state: string): string {
         switch (state) {
@@ -367,9 +367,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get attempt review WS calls.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} page Page.
-     * @return {string} Cache key.
+     * @param attemptId Attempt ID.
+     * @param page Page.
+     * @return Cache key.
      */
     protected getAttemptReviewCacheKey(attemptId: number, page: number): string {
         return this.getAttemptReviewCommonCacheKey(attemptId) + ':' + page;
@@ -378,8 +378,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get attempt review WS calls.
      *
-     * @param {number} attemptId Attempt ID.
-     * @return {string} Cache key.
+     * @param attemptId Attempt ID.
+     * @return Cache key.
      */
     protected getAttemptReviewCommonCacheKey(attemptId: number): string {
         return this.ROOT_CACHE_KEY + 'attemptReview:' + attemptId;
@@ -388,11 +388,11 @@ export class AddonModQuizProvider {
     /**
      * Get an attempt's review.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} [page] Page number. If not defined, return all the questions in all the pages.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the attempt review.
+     * @param attemptId Attempt ID.
+     * @param page Page number. If not defined, return all the questions in all the pages.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the attempt review.
      */
     getAttemptReview(attemptId: number, page?: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         if (typeof page == 'undefined') {
@@ -421,8 +421,8 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get attempt summary WS calls.
      *
-     * @param {number} attemptId Attempt ID.
-     * @return {string} Cache key.
+     * @param attemptId Attempt ID.
+     * @return Cache key.
      */
     protected getAttemptSummaryCacheKey(attemptId: number): string {
         return this.ROOT_CACHE_KEY + 'attemptSummary:' + attemptId;
@@ -431,13 +431,13 @@ export class AddonModQuizProvider {
     /**
      * Get an attempt's summary.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [offline] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {boolean} [loadLocal] Whether it should load local state for each question. Only applicable if offline=true.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of questions for the attempt summary.
+     * @param attemptId Attempt ID.
+     * @param preflightData Preflight required data (like password).
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param loadLocal Whether it should load local state for each question. Only applicable if offline=true.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of questions for the attempt summary.
      */
     getAttemptSummary(attemptId: number, preflightData: any, offline?: boolean, ignoreCache?: boolean, loadLocal?: boolean,
             siteId?: string): Promise<any[]> {
@@ -475,9 +475,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get combined review options WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getCombinedReviewOptionsCacheKey(quizId: number, userId: number): string {
         return this.getCombinedReviewOptionsCommonCacheKey(quizId) + ':' + userId;
@@ -486,8 +486,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get combined review options WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getCombinedReviewOptionsCommonCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'combinedReviewOptions:' + quizId;
@@ -496,11 +496,11 @@ export class AddonModQuizProvider {
     /**
      * Get a quiz combined review options.
      *
-     * @param {number} quizId  Quiz ID.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>}Promise resolved with the combined review options.
+     * @param quizId Quiz ID.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved with the combined review options.
      */
     getCombinedReviewOptions(quizId: number, ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -536,9 +536,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get feedback for grade WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} grade  Grade.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @param grade Grade.
+     * @return Cache key.
      */
     protected getFeedbackForGradeCacheKey(quizId: number, grade: number): string {
         return this.getFeedbackForGradeCommonCacheKey(quizId) + ':' + grade;
@@ -547,8 +547,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get feedback for grade WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getFeedbackForGradeCommonCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'feedbackForGrade:' + quizId;
@@ -557,11 +557,11 @@ export class AddonModQuizProvider {
     /**
      * Get the feedback for a certain grade.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} grade Grade.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the feedback.
+     * @param quizId Quiz ID.
+     * @param grade Grade.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the feedback.
      */
     getFeedbackForGrade(quizId: number, grade: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -587,8 +587,8 @@ export class AddonModQuizProvider {
      * Determine the correct number of decimal places required to format a grade.
      * Based on Moodle's quiz_get_grade_format.
      *
-     * @param {any} quiz Quiz.
-     * @return {number} Number of decimals.
+     * @param quiz Quiz.
+     * @return Number of decimals.
      */
     getGradeDecimals(quiz: any): number {
         if (typeof quiz.questiondecimalpoints == 'undefined') {
@@ -605,12 +605,12 @@ export class AddonModQuizProvider {
     /**
      * Gets a quiz grade and feedback from the gradebook.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} moduleId Quiz module ID.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved with an object containing the grade and the feedback.
+     * @param courseId Course ID.
+     * @param moduleId Quiz module ID.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved with an object containing the grade and the feedback.
      */
     getGradeFromGradebook(courseId: number, moduleId: number, ignoreCache?: boolean, siteId?: string, userId?: number)
             : Promise<any> {
@@ -623,8 +623,8 @@ export class AddonModQuizProvider {
     /**
      * Given a list of attempts, returns the last finished attempt.
      *
-     * @param {any[]} attempts Attempts.
-     * @return {any} Last finished attempt.
+     * @param attempts Attempts.
+     * @return Last finished attempt.
      */
     getLastFinishedAttemptFromList(attempts: any[]): any {
         if (attempts && attempts.length) {
@@ -642,8 +642,8 @@ export class AddonModQuizProvider {
      * Given a list of questions, check if the quiz can be submitted.
      * Will return an array with the messages to prevent the submit. Empty array if quiz can be submitted.
      *
-     * @param {any[]} questions Questions.
-     * @return {string[]} List of prevent submit messages. Empty array if quiz can be submitted.
+     * @param questions Questions.
+     * @return List of prevent submit messages. Empty array if quiz can be submitted.
      */
     getPreventSubmitMessages(questions: any[]): string[] {
         const messages = [];
@@ -670,8 +670,8 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for quiz data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getQuizDataCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'quiz:' + courseId;
@@ -680,13 +680,13 @@ export class AddonModQuizProvider {
     /**
      * Get a Quiz with key=value. If more than one is found, only the first will be returned.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} key Name of the property to check.
-     * @param {any} value Value to search.
-     * @param {boolean} [forceCache] Whether it should always return cached data.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the Quiz is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param forceCache Whether it should always return cached data.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the Quiz is retrieved.
      */
     protected getQuizByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
             siteId?: string): Promise<any> {
@@ -726,12 +726,12 @@ export class AddonModQuizProvider {
     /**
      * Get a quiz by module ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId Course module ID.
-     * @param {boolean} [forceCache] Whether it should always return cached data.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the quiz is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param forceCache Whether it should always return cached data.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the quiz is retrieved.
      */
     getQuiz(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.getQuizByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
@@ -740,12 +740,12 @@ export class AddonModQuizProvider {
     /**
      * Get a quiz by quiz ID.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} id Quiz ID.
-     * @param {boolean} [forceCache] Whether it should always return cached data.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the quiz is retrieved.
+     * @param courseId Course ID.
+     * @param id Quiz ID.
+     * @param forceCache Whether it should always return cached data.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the quiz is retrieved.
      */
     getQuizById(courseId: number, id: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.getQuizByField(courseId, 'id', id, forceCache, ignoreCache, siteId);
@@ -754,8 +754,8 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get quiz access information WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getQuizAccessInformationCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'quizAccessInformation:' + quizId;
@@ -764,11 +764,11 @@ export class AddonModQuizProvider {
     /**
      * Get access information for an attempt.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {boolean} [offline] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the access information.
+     * @param quizId Quiz ID.
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the access information.
      */
     getQuizAccessInformation(quizId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -793,8 +793,8 @@ export class AddonModQuizProvider {
     /**
      * Get a readable Quiz grade method.
      *
-     * @param {number|string} method Grading method.
-     * @return {string} Readable grading method.
+     * @param method Grading method.
+     * @return Readable grading method.
      */
     getQuizGradeMethod(method: number | string): string {
         if (typeof method == 'string') {
@@ -818,8 +818,8 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get quiz required qtypes WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getQuizRequiredQtypesCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'quizRequiredQtypes:' + quizId;
@@ -828,10 +828,10 @@ export class AddonModQuizProvider {
     /**
      * Get the potential question types that would be required for a given quiz.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the access information.
+     * @param quizId Quiz ID.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the access information.
      */
     getQuizRequiredQtypes(quizId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -861,8 +861,8 @@ export class AddonModQuizProvider {
     /**
      * Given an attempt's layout, return the list of pages.
      *
-     * @param {string} layout Attempt's layout.
-     * @return {number[]} Pages.
+     * @param layout Attempt's layout.
+     * @return Pages.
      * @description
      * An attempt's layout is a string with the question numbers separated by commas. A 0 indicates a change of page.
      * Example: 1,2,3,0,4,5,6,0
@@ -889,9 +889,9 @@ export class AddonModQuizProvider {
      * Given an attempt's layout and a list of questions identified by question slot,
      * return the list of pages that have at least 1 of the questions.
      *
-     * @param {string} layout Attempt's layout.
-     * @param {any} questions List of questions. It needs to be an object where the keys are question slot.
-     * @return {number[]} Pages.
+     * @param layout Attempt's layout.
+     * @param questions List of questions. It needs to be an object where the keys are question slot.
+     * @return Pages.
      * @description
      * An attempt's layout is a string with the question numbers separated by commas. A 0 indicates a change of page.
      * Example: 1,2,3,0,4,5,6,0
@@ -923,8 +923,8 @@ export class AddonModQuizProvider {
     /**
      * Given a list of question types, returns the types that aren't supported.
      *
-     * @param {string[]} questionTypes Question types to check.
-     * @return {string[]} Not supported question types.
+     * @param questionTypes Question types to check.
+     * @return Not supported question types.
      */
     getUnsupportedQuestions(questionTypes: string[]): string[] {
         const notSupported = [];
@@ -941,8 +941,8 @@ export class AddonModQuizProvider {
     /**
      * Given a list of access rules names, returns the rules that aren't supported.
      *
-     * @param {string[]} rulesNames Rules to check.
-     * @return {string[]} Not supported rules names.
+     * @param rulesNames Rules to check.
+     * @return Not supported rules names.
      */
     getUnsupportedRules(rulesNames: string[]): string[] {
         const notSupported = [];
@@ -959,9 +959,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get user attempts WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getUserAttemptsCacheKey(quizId: number, userId: number): string {
         return this.getUserAttemptsCommonCacheKey(quizId) + ':' + userId;
@@ -970,8 +970,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get user attempts WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getUserAttemptsCommonCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'userAttempts:' + quizId;
@@ -980,14 +980,14 @@ export class AddonModQuizProvider {
     /**
      * Get quiz attempts for a certain user.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} [status=all]  Status of the attempts to get. By default, 'all'.
-     * @param {boolean} [includePreviews=true] Whether to include previews. Defaults to true.
-     * @param {boolean} [offline] Whether it should return cached data. Has priority over ignoreCache.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any[]>} Promise resolved with the attempts.
+     * @param quizId Quiz ID.
+     * @param status Status of the attempts to get. By default, 'all'.
+     * @param includePreviews Whether to include previews. Defaults to true.
+     * @param offline Whether it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved with the attempts.
      */
     getUserAttempts(quizId: number, status: string = 'all', includePreviews: boolean = true, offline?: boolean,
             ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any[]> {
@@ -1026,9 +1026,9 @@ export class AddonModQuizProvider {
     /**
      * Get cache key for get user best grade WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} userId User ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @param userId User ID.
+     * @return Cache key.
      */
     protected getUserBestGradeCacheKey(quizId: number, userId: number): string {
         return this.getUserBestGradeCommonCacheKey(quizId) + ':' + userId;
@@ -1037,8 +1037,8 @@ export class AddonModQuizProvider {
     /**
      * Get common cache key for get user best grade WS calls.
      *
-     * @param {number} quizId Quiz ID.
-     * @return {string} Cache key.
+     * @param quizId Quiz ID.
+     * @return Cache key.
      */
     protected getUserBestGradeCommonCacheKey(quizId: number): string {
         return this.ROOT_CACHE_KEY + 'userBestGrade:' + quizId;
@@ -1047,11 +1047,11 @@ export class AddonModQuizProvider {
     /**
      * Get best grade in a quiz for a certain user.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {boolean} [ignoreCache] Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved with the best grade data.
+     * @param quizId Quiz ID.
+     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved with the best grade data.
      */
     getUserBestGrade(quizId: number, ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1077,12 +1077,12 @@ export class AddonModQuizProvider {
     /**
      * Invalidates all the data related to a certain quiz.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} [courseId] Course ID.
-     * @param {number} [attemptId] Attempt ID to invalidate some WS calls.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param courseId Course ID.
+     * @param attemptId Attempt ID to invalidate some WS calls.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllQuizData(quizId: number, courseId?: number, attemptId?: number, siteId?: string, userId?: number): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1113,9 +1113,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt access information for all attempts in a quiz.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptAccessInformation(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1126,10 +1126,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt access information for an attempt.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptAccessInformationForAttempt(quizId: number, attemptId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1140,9 +1140,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt data for all pages.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptData(attemptId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1153,10 +1153,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt data for a certain page.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} page Page.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param attemptId Attempt ID.
+     * @param page Page.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptDataForPage(attemptId: number, page: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1167,9 +1167,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt review for all pages.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptReview(attemptId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1180,10 +1180,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt review for a certain page.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} page Page.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param attemptId Attempt ID.
+     * @param page Page.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptReviewForPage(attemptId: number, page: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1194,9 +1194,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates attempt summary.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAttemptSummary(attemptId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1207,9 +1207,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates combined review options for all users.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCombinedReviewOptions(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1220,10 +1220,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates combined review options for a certain user.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCombinedReviewOptionsForUser(quizId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1237,10 +1237,10 @@ export class AddonModQuizProvider {
      * Invalidate the prefetched content except files.
      * To invalidate files, use AddonModQuizProvider.invalidateFiles.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1259,9 +1259,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates feedback for all grades of a quiz.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateFeedback(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1272,10 +1272,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates feedback for a certain grade.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {number} grade Grade.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param grade Grade.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateFeedbackForGrade(quizId: number, grade: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1286,8 +1286,8 @@ export class AddonModQuizProvider {
     /**
      * Invalidate the prefetched files.
      *
-     * @param {number} moduleId The module ID.
-     * @return {Promise<any>} Promise resolved when the files are invalidated.
+     * @param moduleId The module ID.
+     * @return Promise resolved when the files are invalidated.
      */
     invalidateFiles(moduleId: number): Promise<any> {
         return this.filepoolProvider.invalidateFilesByComponent(this.sitesProvider.getCurrentSiteId(),
@@ -1297,10 +1297,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates grade from gradebook for a certain user.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateGradeFromGradebook(courseId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1313,9 +1313,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates quiz access information for a quiz.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId]  Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateQuizAccessInformation(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1326,9 +1326,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates required qtypes for a quiz.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateQuizRequiredQtypes(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1339,9 +1339,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates user attempts for all users.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserAttempts(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1352,10 +1352,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates user attempts for a certain user.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserAttemptsForUser(quizId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1368,9 +1368,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates user best grade for all users.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserBestGrade(quizId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1381,10 +1381,10 @@ export class AddonModQuizProvider {
     /**
      * Invalidates user best grade for a certain user.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined use site's current user.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined use site's current user.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUserBestGradeForUser(quizId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1397,9 +1397,9 @@ export class AddonModQuizProvider {
     /**
      * Invalidates quiz data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateQuizData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1410,8 +1410,8 @@ export class AddonModQuizProvider {
     /**
      * Check if an attempt is finished based on its state.
      *
-     * @param {string} state Attempt's state.
-     * @return {boolean} Whether it's finished.
+     * @param state Attempt's state.
+     * @return Whether it's finished.
      */
     isAttemptFinished(state: string): boolean {
         return state == AddonModQuizProvider.ATTEMPT_FINISHED || state == AddonModQuizProvider.ATTEMPT_ABANDONED;
@@ -1420,9 +1420,9 @@ export class AddonModQuizProvider {
     /**
      * Check if an attempt is finished in offline but not synced.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if finished in offline but not synced, false otherwise.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if finished in offline but not synced, false otherwise.
      */
     isAttemptFinishedOffline(attemptId: number, siteId?: string): Promise<boolean> {
         return this.quizOfflineProvider.getAttemptById(attemptId, siteId).then((attempt) => {
@@ -1438,9 +1438,9 @@ export class AddonModQuizProvider {
      * OR
      * - It finished before autosaveperiod passes.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @return {boolean} Whether it's nearly over or over.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @return Whether it's nearly over or over.
      */
     isAttemptTimeNearlyOver(quiz: any, attempt: any): boolean {
         if (attempt.state != AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
@@ -1461,10 +1461,10 @@ export class AddonModQuizProvider {
     /**
      * Check if last attempt is offline and unfinished.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {number} [userId] User ID. If not defined, user current site's user.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if last offline attempt is unfinished, false otherwise.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User ID. If not defined, user current site's user.
+     * @return Promise resolved with boolean: true if last offline attempt is unfinished, false otherwise.
      */
     isLastAttemptOfflineUnfinished(quiz: any, siteId?: string, userId?: number): Promise<boolean> {
         return this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId, userId).then((attempts) => {
@@ -1479,8 +1479,8 @@ export class AddonModQuizProvider {
     /**
      * Check if a quiz navigation is sequential.
      *
-     * @param {any} quiz Quiz.
-     * @return {boolean} Whether navigation is sequential.
+     * @param quiz Quiz.
+     * @return Whether navigation is sequential.
      */
     isNavigationSequential(quiz: any): boolean {
         return quiz.navmethod == 'sequential';
@@ -1489,8 +1489,8 @@ export class AddonModQuizProvider {
     /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the quiz WS are available.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean} Whether the plugin is enabled.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether the plugin is enabled.
      */
     isPluginEnabled(siteId?: string): boolean {
         // Quiz WebServices were introduced in 3.1, it will always be enabled.
@@ -1500,8 +1500,8 @@ export class AddonModQuizProvider {
     /**
      * Check if a question is blocked.
      *
-     * @param {any} question Question.
-     * @return {boolean} Whether it's blocked.
+     * @param question Question.
+     * @return Whether it's blocked.
      */
     isQuestionBlocked(question: any): boolean {
         const element = this.domUtils.convertToElement(question.html);
@@ -1512,8 +1512,8 @@ export class AddonModQuizProvider {
     /**
      * Check if a quiz is enabled to be used in offline.
      *
-     * @param {any} quiz Quiz.
-     * @return {boolean} Whether offline is enabled.
+     * @param quiz Quiz.
+     * @return Whether offline is enabled.
      */
     isQuizOffline(quiz: any): boolean {
         // Don't allow downloading the quiz if offline is disabled to prevent wasting a lot of data when opening it.
@@ -1523,9 +1523,9 @@ export class AddonModQuizProvider {
     /**
      * Given a list of attempts, add finishedOffline=true to those attempts that are finished in offline but not synced.
      *
-     * @param {any[]} attempts List of attempts.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param attempts List of attempts.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     loadFinishedOfflineData(attempts: any[], siteId?: string): Promise<void> {
         if (attempts.length) {
@@ -1543,13 +1543,13 @@ export class AddonModQuizProvider {
     /**
      * Report an attempt as being viewed. It did not store logs offline because order of the log is important.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} [page=0] Page number.
-     * @param {any} [preflightData] Preflight required data (like password).
-     * @param {boolean} [offline] Whether attempt is offline.
-     * @param {string} [quiz] Quiz instance. If set, a Firebase event will be stored.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param attemptId Attempt ID.
+     * @param page Page number.
+     * @param preflightData Preflight required data (like password).
+     * @param offline Whether attempt is offline.
+     * @param quiz Quiz instance. If set, a Firebase event will be stored.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logViewAttempt(attemptId: number, page: number = 0, preflightData: any = {}, offline?: boolean, quiz?: any,
             siteId?: string): Promise<any> {
@@ -1578,11 +1578,11 @@ export class AddonModQuizProvider {
     /**
      * Report an attempt's review as being viewed.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {number} quizId Quiz ID.
-     * @param {string} [name] Name of the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param attemptId Attempt ID.
+     * @param quizId Quiz ID.
+     * @param name Name of the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logViewAttemptReview(attemptId: number, quizId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -1596,12 +1596,12 @@ export class AddonModQuizProvider {
     /**
      * Report an attempt's summary as being viewed.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {number} quizId Quiz ID.
-     * @param {string} [name] Name of the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param attemptId Attempt ID.
+     * @param preflightData Preflight required data (like password).
+     * @param quizId Quiz ID.
+     * @param name Name of the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logViewAttemptSummary(attemptId: number, preflightData: any, quizId: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -1616,10 +1616,10 @@ export class AddonModQuizProvider {
     /**
      * Report a quiz as being viewed.
      *
-     * @param {number} id Module ID.
-     * @param {string} [name] Name of the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param name Name of the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logViewQuiz(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -1633,15 +1633,15 @@ export class AddonModQuizProvider {
     /**
      * Process an attempt, saving its data.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {any} data Data to save.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [finish] Whether to finish the quiz.
-     * @param {boolean} [timeUp] Whether the quiz time is up, false otherwise.
-     * @param {boolean} [offline] Whether the attempt is offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved in success, rejected otherwise.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param data Data to save.
+     * @param preflightData Preflight required data (like password).
+     * @param finish Whether to finish the quiz.
+     * @param timeUp Whether the quiz time is up, false otherwise.
+     * @param offline Whether the attempt is offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success, rejected otherwise.
      */
     processAttempt(quiz: any, attempt: any, data: any, preflightData: any, finish?: boolean, timeUp?: boolean, offline?: boolean,
             siteId?: string): Promise<any> {
@@ -1655,13 +1655,13 @@ export class AddonModQuizProvider {
     /**
      * Process an online attempt, saving its data.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {any} data Data to save.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [finish] Whether to finish the quiz.
-     * @param {boolean} [timeUp] Whether the quiz time is up, false otherwise.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved in success, rejected otherwise.
+     * @param attemptId Attempt ID.
+     * @param data Data to save.
+     * @param preflightData Preflight required data (like password).
+     * @param finish Whether to finish the quiz.
+     * @param timeUp Whether the quiz time is up, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success, rejected otherwise.
      */
     protected processAttemptOnline(attemptId: number, data: any, preflightData: any, finish?: boolean, timeUp?: boolean,
             siteId?: string): Promise<any> {
@@ -1691,13 +1691,13 @@ export class AddonModQuizProvider {
     /**
      * Process an offline attempt, saving its data.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {any} data Data to save.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [finish] Whether to finish the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved in success, rejected otherwise.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param data Data to save.
+     * @param preflightData Preflight required data (like password).
+     * @param finish Whether to finish the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success, rejected otherwise.
      */
     protected processAttemptOffline(quiz: any, attempt: any, data: any, preflightData: any, finish?: boolean, siteId?: string)
             : Promise<any> {
@@ -1714,8 +1714,8 @@ export class AddonModQuizProvider {
     /**
      * Check if it's a graded quiz. Based on Moodle's quiz_has_grades.
      *
-     * @param {any} quiz Quiz.
-     * @return {boolean} Whether quiz is graded.
+     * @param quiz Quiz.
+     * @return Whether quiz is graded.
      */
     quizHasGrades(quiz: any): boolean {
         return quiz.grade >= 0.000005 && quiz.sumgrades >= 0.000005;
@@ -1725,11 +1725,11 @@ export class AddonModQuizProvider {
      * Convert the raw grade into a grade out of the maximum grade for this quiz.
      * Based on Moodle's quiz_rescale_grade.
      *
-     * @param {string} rawGrade The unadjusted grade, for example attempt.sumgrades.
-     * @param {any} quiz Quiz.
-     * @param {boolean|string} format True to format the results for display, 'question' to format a question grade
-     *                                 (different number of decimal places), false to not format it.
-     * @return {string} Grade to display.
+     * @param rawGrade The unadjusted grade, for example attempt.sumgrades.
+     * @param quiz Quiz.
+     * @param format True to format the results for display, 'question' to format a question grade
+     *               (different number of decimal places), false to not format it.
+     * @return Grade to display.
      */
     rescaleGrade(rawGrade: string, quiz: any, format: boolean | string = true): string {
         let grade: number;
@@ -1761,13 +1761,13 @@ export class AddonModQuizProvider {
     /**
      * Save an attempt data.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {any} data Data to save.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [offline] Whether attempt is offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved in success, rejected otherwise.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param data Data to save.
+     * @param preflightData Preflight required data (like password).
+     * @param offline Whether attempt is offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success, rejected otherwise.
      */
     saveAttempt(quiz: any, attempt: any, data: any, preflightData: any, offline?: boolean, siteId?: string): Promise<any> {
         try {
@@ -1786,11 +1786,11 @@ export class AddonModQuizProvider {
     /**
      * Save an attempt data.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {any} data Data to save.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<void>} Promise resolved in success, rejected otherwise.
+     * @param attemptId Attempt ID.
+     * @param data Data to save.
+     * @param preflightData Preflight required data (like password).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success, rejected otherwise.
      */
     protected saveAttemptOnline(attemptId: number, data: any, preflightData: any, siteId?: string): Promise<void> {
 
@@ -1815,10 +1815,10 @@ export class AddonModQuizProvider {
     /**
      * Check if time left should be shown.
      *
-     * @param {string[]} rules List of active rules names.
-     * @param {any} attempt Attempt.
-     * @param {number} endTime The attempt end time (in seconds).
-     * @return {boolean} Whether time left should be displayed.
+     * @param rules List of active rules names.
+     * @param attempt Attempt.
+     * @param endTime The attempt end time (in seconds).
+     * @return Whether time left should be displayed.
      */
     shouldShowTimeLeft(rules: string[], attempt: any, endTime: number): boolean {
         const timeNow = this.timeUtils.timestamp();
@@ -1833,11 +1833,11 @@ export class AddonModQuizProvider {
     /**
      * Start an attempt.
      *
-     * @param {number} quizId Quiz ID.
-     * @param {any} preflightData Preflight required data (like password).
-     * @param {boolean} [forceNew] Whether to force a new attempt or not.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the attempt data.
+     * @param quizId Quiz ID.
+     * @param preflightData Preflight required data (like password).
+     * @param forceNew Whether to force a new attempt or not.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the attempt data.
      */
     startAttempt(quizId: number, preflightData: any, forceNew?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

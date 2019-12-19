@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ export class AddonModDataFieldUrlHandler extends AddonModDataFieldTextHandler {
      * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} field         The field object.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param field The field object.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, plugin: any): any | Promise<any> {
         return AddonModDataFieldUrlComponent;
@@ -43,9 +43,9 @@ export class AddonModDataFieldUrlHandler extends AddonModDataFieldTextHandler {
     /**
      * Get field edit data in the input data.
      *
-     * @param  {any} field      Defines the field to be rendered.
-     * @param  {any} inputData  Data entered in the edit form.
-     * @return {any}            With name and value of the data to be sent.
+     * @param field Defines the field to be rendered.
+     * @param inputData Data entered in the edit form.
+     * @return With name and value of the data to be sent.
      */
     getFieldEditData(field: any, inputData: any, originalFieldData: any): any {
         const fieldName = 'f_' + field.id;
@@ -62,9 +62,9 @@ export class AddonModDataFieldUrlHandler extends AddonModDataFieldTextHandler {
     /**
      * Check and get field requeriments.
      *
-     * @param  {any} field               Defines the field to be rendered.
-     * @param  {any} inputData           Data entered in the edit form.
-     * @return {string | false}                  String with the notification or false.
+     * @param field Defines the field to be rendered.
+     * @param inputData Data entered in the edit form.
+     * @return String with the notification or false.
      */
     getFieldsNotifications(field: any, inputData: any): string | false {
         if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {

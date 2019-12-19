@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,8 +107,8 @@ export class CoreCommentsOfflineProvider {
     /**
      * Get all offline comments.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with comments.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with comments.
      */
     getAllComments(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -122,13 +122,13 @@ export class CoreCommentsOfflineProvider {
     /**
      * Get an offline comment.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved with the comments.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the comments.
      */
     getComment(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
@@ -148,13 +148,13 @@ export class CoreCommentsOfflineProvider {
     /**
      * Get all offline comments added or deleted of a special area.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved with the comments.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the comments.
      */
     getComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
@@ -176,8 +176,8 @@ export class CoreCommentsOfflineProvider {
     /**
      * Get all offline deleted comments.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved with comments.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with comments.
      */
     getAllDeletedComments(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -188,13 +188,13 @@ export class CoreCommentsOfflineProvider {
     /**
      * Get an offline comment.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved with the comments.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the comments.
      */
     getDeletedComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
@@ -214,13 +214,13 @@ export class CoreCommentsOfflineProvider {
     /**
      * Remove an offline comment.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved if deleted, rejected if failure.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     removeComment(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
@@ -238,13 +238,13 @@ export class CoreCommentsOfflineProvider {
     /**
      * Remove an offline deleted comment.
      *
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved if deleted, rejected if failure.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     removeDeletedComments(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = '',
             siteId?: string): Promise<any> {
@@ -262,14 +262,14 @@ export class CoreCommentsOfflineProvider {
     /**
      * Save a comment to be sent later.
      *
-     * @param  {string} content      Comment text.
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if stored, rejected if failure.
+     * @param content Comment text.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     saveComment(content: string, contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = '', siteId?: string): Promise<any> {
@@ -294,14 +294,14 @@ export class CoreCommentsOfflineProvider {
     /**
      * Delete a comment offline to be sent later.
      *
-     * @param  {number} commentId    Comment ID.
-     * @param  {string} contextLevel Contextlevel system, course, user...
-     * @param  {number} instanceId   The Instance id of item associated with the context level.
-     * @param  {string} component    Component name.
-     * @param  {number} itemId       Associated id.
-     * @param  {string} [area='']    String comment area. Default empty.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if stored, rejected if failure.
+     * @param commentId Comment ID.
+     * @param contextLevel Contextlevel system, course, user...
+     * @param instanceId The Instance id of item associated with the context level.
+     * @param component Component name.
+     * @param itemId Associated id.
+     * @param area String comment area. Default empty.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteComment(commentId: number, contextLevel: string, instanceId: number, component: string, itemId: number,
             area: string = '', siteId?: string): Promise<any> {
@@ -326,9 +326,9 @@ export class CoreCommentsOfflineProvider {
     /**
      * Undo delete a comment.
      *
-     * @param  {number} commentId   Comment ID.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved if deleted, rejected if failure.
+     * @param commentId Comment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     undoDeleteComment(commentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

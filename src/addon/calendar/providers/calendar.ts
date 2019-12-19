@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { AddonCalendarOfflineProvider } from './calendar-offline';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreWSExternalWarning, CoreWSDate } from '@providers/ws';
 import * as moment from 'moment';
 
 /**
@@ -49,11 +50,17 @@ export class AddonCalendarProvider {
     static EDIT_EVENT_EVENT = 'addon_calendar_edit_event';
     static DELETED_EVENT_EVENT = 'addon_calendar_deleted_event';
     static UNDELETED_EVENT_EVENT = 'addon_calendar_undeleted_event';
+    static FILTER_CHANGED_EVENT = 'addon_calendar_filter_changed_event';
     static TYPE_CATEGORY = 'category';
     static TYPE_COURSE = 'course';
     static TYPE_GROUP = 'group';
     static TYPE_SITE = 'site';
     static TYPE_USER = 'user';
+    static ALL_TYPES = [ AddonCalendarProvider.TYPE_SITE,
+        AddonCalendarProvider.TYPE_CATEGORY,
+        AddonCalendarProvider.TYPE_COURSE,
+        AddonCalendarProvider.TYPE_GROUP,
+        AddonCalendarProvider.TYPE_USER ];
 
     static CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
     static CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.
@@ -335,8 +342,8 @@ export class AddonCalendarProvider {
     /**
      * Check if a certain site allows deleting events.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if can delete.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if can delete.
      * @since 3.3
      */
     canDeleteEvents(siteId?: string): Promise<boolean> {
@@ -350,8 +357,8 @@ export class AddonCalendarProvider {
     /**
      * Check if a certain site allows deleting events.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether events can be deleted.
+     * @param site Site. If not defined, use current site.
+     * @return Whether events can be deleted.
      * @since 3.3
      */
     canDeleteEventsInSite(site?: CoreSite): boolean {
@@ -363,8 +370,8 @@ export class AddonCalendarProvider {
     /**
      * Check if a certain site allows creating and editing events.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if can create/edit.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if can create/edit.
      * @since 3.7.1
      */
     canEditEvents(siteId?: string): Promise<boolean> {
@@ -378,8 +385,8 @@ export class AddonCalendarProvider {
     /**
      * Check if a certain site allows creating and editing events.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether events can be created and edited.
+     * @param site Site. If not defined, use current site.
+     * @return Whether events can be created and edited.
      * @since 3.7.1
      */
     canEditEventsInSite(site?: CoreSite): boolean {
@@ -392,8 +399,8 @@ export class AddonCalendarProvider {
     /**
      * Check if a certain site allows viewing events in monthly view.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if monthly view is supported.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if monthly view is supported.
      * @since 3.4
      */
     canViewMonth(siteId?: string): Promise<boolean> {
@@ -407,8 +414,8 @@ export class AddonCalendarProvider {
     /**
      * Check if a certain site allows viewing events in monthly view.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether monthly view is supported.
+     * @param site Site. If not defined, use current site.
+     * @return Whether monthly view is supported.
      * @since 3.4
      */
     canViewMonthInSite(site?: CoreSite): boolean {
@@ -420,8 +427,8 @@ export class AddonCalendarProvider {
     /**
      * Removes expired events from local DB.
      *
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when done.
      */
     cleanExpiredEvents(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -442,12 +449,12 @@ export class AddonCalendarProvider {
     /**
      * Delete an event.
      *
-     * @param {number} eventId Event ID to delete.
-     * @param {string} name Name of the event to delete.
-     * @param {boolean} [deleteAll] If it's a repeated event. whether to delete all events of the series.
-     * @param {boolean} [forceOffline] True to always save it in offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param eventId Event ID to delete.
+     * @param name Name of the event to delete.
+     * @param deleteAll If it's a repeated event. whether to delete all events of the series.
+     * @param forceOffline True to always save it in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     deleteEvent(eventId: number, name: string, deleteAll?: boolean, forceOffline?: boolean, siteId?: string): Promise<boolean> {
 
@@ -484,12 +491,12 @@ export class AddonCalendarProvider {
     /**
      * Delete an event. It will fail if offline or cannot connect.
      *
-     * @param {number} eventId Event ID to delete.
-     * @param {boolean} [deleteAll] If it's a repeated event. whether to delete all events of the series.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param eventId Event ID to delete.
+     * @param deleteAll If it's a repeated event. whether to delete all events of the series.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
-    deleteEventOnline(eventId: number, deleteAll?: boolean, siteId?: string): Promise<any> {
+    deleteEventOnline(eventId: number, deleteAll?: boolean, siteId?: string): Promise<null> {
         return this.sitesProvider.getSite(siteId).then((site) => {
 
             const params = {
@@ -511,9 +518,9 @@ export class AddonCalendarProvider {
     /**
      * Delete a locally stored event cancelling all the reminders and notifications.
      *
-     * @param  {number}       eventId Event ID.
-     * @param  {string}       [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>}         Resolved when done.
+     * @param eventId Event ID.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Resolved when done.
      */
     protected deleteLocalEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -536,34 +543,18 @@ export class AddonCalendarProvider {
     }
 
     /**
-     * Check if event ends the same day or not.
-     *
-     * @param {any} event Event info.
-     * @return {boolean} If the .
-     */
-    endsSameDay(event: any): boolean {
-        if (!event.timeduration) {
-            // No duration.
-            return true;
-        }
-
-        // Check if day has changed.
-        return moment(event.timestart * 1000).isSame((event.timestart + event.timeduration) * 1000, 'day');
-    }
-
-    /**
      * Format event time. Similar to calendar_format_event_time.
      *
-     * @param {any} event Event to format.
-     * @param {string} format Calendar time format (from getCalendarTimeFormat).
-     * @param {boolean} [useCommonWords=true] Whether to use common words like "Today", "Yesterday", etc.
-     * @param {number} [seenDay] Timestamp of day currently seen. If set, the function will not add links to this day.
-     * @param {number} [showTime=0] Determine the show time GMT timestamp.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<string>} Promise resolved with the formatted event time.
+     * @param event Event to format.
+     * @param format Calendar time format (from getCalendarTimeFormat).
+     * @param useCommonWords Whether to use common words like "Today", "Yesterday", etc.
+     * @param seenDay Timestamp of day currently seen. If set, the function will not add links to this day.
+     * @param showTime Determine the show time GMT timestamp.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the formatted event time.
      */
-    formatEventTime(event: any, format: string, useCommonWords: boolean = true, seenDay?: number, showTime: number = 0,
-            siteId?: string): Promise<string> {
+    formatEventTime(event: AddonCalendarAnyEvent, format: string, useCommonWords: boolean = true, seenDay?: number,
+            showTime: number = 0, siteId?: string): Promise<string> {
 
         const start = event.timestart * 1000,
             end = (event.timestart + event.timeduration) * 1000;
@@ -630,12 +621,12 @@ export class AddonCalendarProvider {
     /**
      * Get access information for a calendar (either course calendar or site calendar).
      *
-     * @param {number} [courseId] Course ID. If not defined, site calendar.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with object with access information.
+     * @param courseId Course ID. If not defined, site calendar.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with object with access information.
      * @since 3.7
      */
-    getAccessInformation(courseId?: number, siteId?: string): Promise<any> {
+    getAccessInformation(courseId?: number, siteId?: string): Promise<AddonCalendarGetAccessInfoResult> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params: any = {},
                 preSets = {
@@ -653,8 +644,8 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for calendar access information WS calls.
      *
-     * @param {number} [courseId] Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getAccessInformationCacheKey(courseId?: number): string {
         return this.ROOT_CACHE_KEY + 'accessInformation:' + (courseId || 0);
@@ -663,8 +654,8 @@ export class AddonCalendarProvider {
     /**
      * Get all calendar events from local Db.
      *
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with all the events.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved with all the events.
      */
     getAllEventsFromLocalDb(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -675,12 +666,12 @@ export class AddonCalendarProvider {
     /**
      * Get the type of events a user can create (either course calendar or site calendar).
      *
-     * @param {number} [courseId] Course ID. If not defined, site calendar.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with an object indicating the types.
+     * @param courseId Course ID. If not defined, site calendar.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with an object indicating the types.
      * @since 3.7
      */
-    getAllowedEventTypes(courseId?: number, siteId?: string): Promise<any> {
+    getAllowedEventTypes(courseId?: number, siteId?: string): Promise<{[name: string]: boolean}> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params: any = {},
                 preSets = {
@@ -691,7 +682,8 @@ export class AddonCalendarProvider {
                 params.courseid = courseId;
             }
 
-            return site.read('core_calendar_get_allowed_event_types', params, preSets).then((response) => {
+            return site.read('core_calendar_get_allowed_event_types', params, preSets)
+                    .then((response: AddonCalendarGetAllowedEventTypesResult) => {
                 // Convert the array to an object.
                 const result = {};
 
@@ -709,8 +701,8 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for calendar allowed event types WS calls.
      *
-     * @param {number} [courseId] Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getAllowedEventTypesCacheKey(courseId?: number): string {
         return this.ROOT_CACHE_KEY + 'allowedEventTypes:' + (courseId || 0);
@@ -719,8 +711,8 @@ export class AddonCalendarProvider {
     /**
      * Get the "look ahead" for a certain user.
      *
-     * @param  {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<number>} Promise resolved with the look ahead (number of days).
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved with the look ahead (number of days).
      */
     getCalendarLookAhead(siteId?: string): Promise<number> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -739,8 +731,8 @@ export class AddonCalendarProvider {
     /**
      * Get the time format to use in calendar.
      *
-     * @param  {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<string>} Promise resolved with the format.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved with the format.
      */
     getCalendarTimeFormat(siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -766,9 +758,9 @@ export class AddonCalendarProvider {
     /**
      * Return the representation day. Equivalent to Moodle's calendar_day_representation.
      *
-     * @param {number} time Timestamp to get the day from.
-     * @param {boolean} [useCommonWords=true] Whether to use common words like "Today", "Yesterday", etc.
-     * @return {string} The formatted date/time.
+     * @param time Timestamp to get the day from.
+     * @param useCommonWords Whether to use common words like "Today", "Yesterday", etc.
+     * @return The formatted date/time.
      */
     getDayRepresentation(time: number, useCommonWords: boolean = true): string {
 
@@ -797,8 +789,8 @@ export class AddonCalendarProvider {
     /**
      * Get the configured default notification time.
      *
-     * @param  {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<number>}  Promise resolved with the default time.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved with the default time.
      */
     getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -811,12 +803,11 @@ export class AddonCalendarProvider {
     /**
      * Get a calendar event. If the server request fails and data is not cached, try to get it from local DB.
      *
-     * @param {number}  id        Event ID.
-     * @param {boolean} [refresh] True when we should update the event data.
-     * @param {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the event data is retrieved.
+     * @param id Event ID.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved when the event data is retrieved.
      */
-    getEvent(id: number, siteId?: string): Promise<any> {
+    getEvent(id: number, siteId?: string): Promise<AddonCalendarGetEventsEvent> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
                     cacheKey: this.getEventCacheKey(id),
@@ -834,7 +825,8 @@ export class AddonCalendarProvider {
                     }
                 };
 
-            return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
+            return site.read('core_calendar_get_calendar_events', data, preSets)
+                    .then((response: AddonCalendarGetEventsResult) => {
                 // The WebService returns all category events. Check the response to search for the event we want.
                 const event = response.events.find((e) => { return e.id == id; });
 
@@ -848,13 +840,12 @@ export class AddonCalendarProvider {
     /**
      * Get a calendar event by ID. This function returns more data than getEvent, but it isn't available in all Moodles.
      *
-     * @param {number} id Event ID.
-     * @param {boolean} [refresh] True when we should update the event data.
-     * @param {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the event data is retrieved.
+     * @param id Event ID.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved when the event data is retrieved.
      * @since 3.4
      */
-    getEventById(id: number, siteId?: string): Promise<any> {
+    getEventById(id: number, siteId?: string): Promise<AddonCalendarEvent> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const preSets = {
                     cacheKey: this.getEventCacheKey(id),
@@ -864,7 +855,8 @@ export class AddonCalendarProvider {
                     eventid: id
                 };
 
-            return site.read('core_calendar_get_calendar_event_by_id', data, preSets).then((response) => {
+            return site.read('core_calendar_get_calendar_event_by_id', data, preSets)
+                    .then((response: AddonCalendarGetEventByIdResult) => {
                 return response.event;
             }).catch((error) => {
                 return this.getEventFromLocalDb(id).catch(() => {
@@ -877,8 +869,8 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for a single event WS call.
      *
-     * @param {number} id Event ID.
-     * @return {string} Cache key.
+     * @param id Event ID.
+     * @return Cache key.
      */
     protected getEventCacheKey(id: number): string {
         return this.ROOT_CACHE_KEY + 'events:' + id;
@@ -887,9 +879,9 @@ export class AddonCalendarProvider {
     /**
      * Get a calendar event from local Db.
      *
-     * @param  {number} id       Event ID.
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>}    Promise resolved when the event data is retrieved.
+     * @param id Event ID.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when the event data is retrieved.
      */
     getEventFromLocalDb(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -913,12 +905,12 @@ export class AddonCalendarProvider {
     /**
      * Adds an event reminder and schedule a new notification.
      *
-     * @param  {any} event       Event to update its notification time.
-     * @param  {number} time     New notification setting timestamp.
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the notification is updated.
+     * @param event Event to update its notification time.
+     * @param time New notification setting timestamp.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when the notification is updated.
      */
-    addEventReminder(event: any, time: number, siteId?: string): Promise<any> {
+    addEventReminder(event: AddonCalendarAnyEvent, time: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const reminder = {
                 eventid: event.id,
@@ -935,8 +927,8 @@ export class AddonCalendarProvider {
      * Return the normalised event type.
      * Activity events are normalised to be course events.
      *
-     * @param {any} event The event to get its type.
-     * @return {string} Event type.
+     * @param event The event to get its type.
+     * @return Event type.
      */
     getEventType(event: any): string {
         if (event.modulename) {
@@ -949,9 +941,9 @@ export class AddonCalendarProvider {
     /**
      * Remove an event reminder and cancel the notification.
      *
-     * @param  {number} id       Reminder ID.
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the notification is updated.
+     * @param id Reminder ID.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when the notification is updated.
      */
     deleteEventReminder(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -966,17 +958,17 @@ export class AddonCalendarProvider {
     /**
      * Get calendar events for a certain day.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @param {number} day Day to get.
-     * @param {number} [courseId] Course to get.
-     * @param {number} [categoryId] Category to get.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @param day Day to get.
+     * @param courseId Course to get.
+     * @param categoryId Category to get.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the response.
      */
     getDayEvents(year: number, month: number, day: number, courseId?: number, categoryId?: number, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+            siteId?: string): Promise<AddonCalendarCalendarDay> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
@@ -1003,7 +995,7 @@ export class AddonCalendarProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('core_calendar_get_calendar_day_view', data, preSets).then((response) => {
+            return site.read('core_calendar_get_calendar_day_view', data, preSets).then((response: AddonCalendarCalendarDay) => {
                 this.storeEventsInLocalDB(response.events, siteId);
 
                 return response;
@@ -1014,7 +1006,7 @@ export class AddonCalendarProvider {
     /**
      * Get prefix cache key for day events WS calls.
      *
-     * @return {string} Prefix Cache key.
+     * @return Prefix Cache key.
      */
     protected getDayEventsPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'day:';
@@ -1023,10 +1015,10 @@ export class AddonCalendarProvider {
     /**
      * Get prefix cache key for a certain day for day events WS calls.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @param {number} day Day to get.
-     * @return {string} Prefix Cache key.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @param day Day to get.
+     * @return Prefix Cache key.
      */
     protected getDayEventsDayPrefixCacheKey(year: number, month: number, day: number): string {
         return this.getDayEventsPrefixCacheKey() + year + ':' + month + ':' + day + ':';
@@ -1035,12 +1027,12 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for day events WS calls.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @param {number} day Day to get.
-     * @param {number} [courseId] Course to get.
-     * @param {number} [categoryId] Category to get.
-     * @return {string} Cache key.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @param day Day to get.
+     * @param courseId Course to get.
+     * @param categoryId Category to get.
+     * @return Cache key.
      */
     protected getDayEventsCacheKey(year: number, month: number, day: number, courseId?: number, categoryId?: number): string {
         return this.getDayEventsDayPrefixCacheKey(year, month, day) + (courseId ? courseId : '') + ':' +
@@ -1050,9 +1042,9 @@ export class AddonCalendarProvider {
     /**
      * Get a calendar reminders from local Db.
      *
-     * @param  {number} id       Event ID.
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>}    Promise resolved when the event data is retrieved.
+     * @param id Event ID.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when the event data is retrieved.
      */
     getEventReminders(id: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1067,14 +1059,14 @@ export class AddonCalendarProvider {
      * E.g. using provider.getEventsList(undefined, 30, 30) is going to get the events starting after 30 days from now
      * and ending before 60 days from now.
      *
-     * @param {number} [initialTime] Timestamp when the first fetch was done. If not defined, current time.
-     * @param {number} [daysToStart=0] Number of days from now to start getting events.
-     * @param {number} [daysInterval=30] Number of days between timestart and timeend.
-     * @param {string} [siteId]          Site to get the events from. If not defined, use current site.
-     * @return {Promise<any[]>}          Promise to be resolved when the participants are retrieved.
+     * @param initialTime Timestamp when the first fetch was done. If not defined, current time.
+     * @param daysToStart Number of days from now to start getting events.
+     * @param daysInterval Number of days between timestart and timeend.
+     * @param siteId Site to get the events from. If not defined, use current site.
+     * @return Promise to be resolved when the events are retrieved.
      */
     getEventsList(initialTime?: number, daysToStart: number = 0, daysInterval: number = AddonCalendarProvider.DAYS_INTERVAL,
-            siteId?: string): Promise<any[]> {
+            siteId?: string): Promise<AddonCalendarGetEventsEvent[]> {
 
         initialTime = initialTime || this.timeUtils.timestamp();
 
@@ -1122,7 +1114,9 @@ export class AddonCalendarProvider {
                     updateFrequency: CoreSite.FREQUENCY_SOMETIMES
                 };
 
-                return site.read('core_calendar_get_calendar_events', data, preSets).then((response) => {
+                return site.read('core_calendar_get_calendar_events', data, preSets)
+                        .then((response: AddonCalendarGetEventsResult) => {
+
                     if (!this.canViewMonthInSite(site)) {
                         // Store events only in 3.1-3.3. In 3.4+ we'll use the new WS that return more info.
                         this.storeEventsInLocalDB(response.events, siteId);
@@ -1137,7 +1131,7 @@ export class AddonCalendarProvider {
     /**
      * Get prefix cache key for events list WS calls.
      *
-     * @return {string} Prefix Cache key.
+     * @return Prefix Cache key.
      */
     protected getEventsListPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'events:';
@@ -1146,9 +1140,9 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for events list WS calls.
      *
-     * @param {number} daysToStart  Number of days from now to start getting events.
-     * @param {number} daysInterval Number of days between timestart and timeend.
-     * @return {string} Cache key.
+     * @param daysToStart Number of days from now to start getting events.
+     * @param daysInterval Number of days between timestart and timeend.
+     * @return Cache key.
      */
     protected getEventsListCacheKey(daysToStart: number, daysInterval: number): string {
         return this.getEventsListPrefixCacheKey() + daysToStart + ':' + daysInterval;
@@ -1157,9 +1151,9 @@ export class AddonCalendarProvider {
     /**
      * Get calendar events from local Db that have the same repeatid.
      *
-     * @param {number} [repeatId] Repeat Id of the event.
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved with all the events.
+     * @param repeatId Repeat Id of the event.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved with all the events.
      */
     getLocalEventsByRepeatIdFromLocalDb(repeatId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1169,16 +1163,16 @@ export class AddonCalendarProvider {
     /**
      * Get monthly calendar events.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @param {number} [courseId] Course to get.
-     * @param {number} [categoryId] Category to get.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @param courseId Course to get.
+     * @param categoryId Category to get.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the response.
      */
     getMonthlyEvents(year: number, month: number, courseId?: number, categoryId?: number, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+            : Promise<AddonCalendarMonth> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
@@ -1210,7 +1204,9 @@ export class AddonCalendarProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('core_calendar_get_calendar_monthly_view', data, preSets).then((response) => {
+            return site.read('core_calendar_get_calendar_monthly_view', data, preSets)
+                    .then((response: AddonCalendarMonth) => {
+
                 response.weeks.forEach((week) => {
                     week.days.forEach((day) => {
                         this.storeEventsInLocalDB(day.events, siteId);
@@ -1230,7 +1226,7 @@ export class AddonCalendarProvider {
     /**
      * Get prefix cache key for monthly events WS calls.
      *
-     * @return {string} Prefix Cache key.
+     * @return Prefix Cache key.
      */
     protected getMonthlyEventsPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'monthly:';
@@ -1239,9 +1235,9 @@ export class AddonCalendarProvider {
     /**
      * Get prefix cache key for a certain month for monthly events WS calls.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @return {string} Prefix Cache key.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @return Prefix Cache key.
      */
     protected getMonthlyEventsMonthPrefixCacheKey(year: number, month: number): string {
         return this.getMonthlyEventsPrefixCacheKey() + year + ':' + month + ':';
@@ -1250,11 +1246,11 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for monthly events WS calls.
      *
-     * @param {number} year Year to get.
-     * @param {number} month Month to get.
-     * @param {number} [courseId] Course to get.
-     * @param {number} [categoryId] Category to get.
-     * @return {string} Cache key.
+     * @param year Year to get.
+     * @param month Month to get.
+     * @param courseId Course to get.
+     * @param categoryId Category to get.
+     * @return Cache key.
      */
     protected getMonthlyEventsCacheKey(year: number, month: number, courseId?: number, categoryId?: number): string {
         return this.getMonthlyEventsMonthPrefixCacheKey(year, month) + (courseId ? courseId : '') + ':' +
@@ -1264,13 +1260,14 @@ export class AddonCalendarProvider {
     /**
      * Get upcoming calendar events.
      *
-     * @param {number} [courseId] Course to get.
-     * @param {number} [categoryId] Category to get.
-     * @param  {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the response.
+     * @param courseId Course to get.
+     * @param categoryId Category to get.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the response.
      */
-    getUpcomingEvents(courseId?: number, categoryId?: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getUpcomingEvents(courseId?: number, categoryId?: number, ignoreCache?: boolean, siteId?: string)
+            : Promise<AddonCalendarUpcoming> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
 
@@ -1293,7 +1290,7 @@ export class AddonCalendarProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('core_calendar_get_calendar_upcoming_view', data, preSets).then((response) => {
+            return site.read('core_calendar_get_calendar_upcoming_view', data, preSets).then((response: AddonCalendarUpcoming) => {
                 this.storeEventsInLocalDB(response.events, siteId);
 
                 return response;
@@ -1304,7 +1301,7 @@ export class AddonCalendarProvider {
     /**
      * Get prefix cache key for upcoming events WS calls.
      *
-     * @return {string} Prefix Cache key.
+     * @return Prefix Cache key.
      */
     protected getUpcomingEventsPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'upcoming:';
@@ -1313,9 +1310,9 @@ export class AddonCalendarProvider {
     /**
      * Get cache key for upcoming events WS calls.
      *
-     * @param {number} [courseId] Course to get.
-     * @param {number} [categoryId] Category to get.
-     * @return {string} Cache key.
+     * @param courseId Course to get.
+     * @param categoryId Category to get.
+     * @return Cache key.
      */
     protected getUpcomingEventsCacheKey(courseId?: number, categoryId?: number): string {
         return this.getUpcomingEventsPrefixCacheKey() + (courseId ? courseId : '') + ':' + (categoryId ? categoryId : '');
@@ -1324,11 +1321,11 @@ export class AddonCalendarProvider {
     /**
      * Get URL to view a calendar.
      *
-     * @param {string} view The view to load: 'month', 'day', 'upcoming', etc.
-     * @param {number} [time] Time to load. If not defined, current time.
-     * @param {string} [courseId] Course to load. If not defined, all courses.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<string>} Promise resolved with the URL.x
+     * @param view The view to load: 'month', 'day', 'upcoming', etc.
+     * @param time Time to load. If not defined, current time.
+     * @param courseId Course to load. If not defined, all courses.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the URL.x
      */
     getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1349,8 +1346,8 @@ export class AddonCalendarProvider {
     /**
      * Get the week days, already ordered according to a specified starting day.
      *
-     * @param {number} [startingDay=0] Starting day. 0=Sunday, 1=Monday, ...
-     * @return {any[]} Week days.
+     * @param startingDay Starting day. 0=Sunday, 1=Monday, ...
+     * @return Week days.
      */
     getWeekDays(startingDay?: number): any[] {
         startingDay = startingDay || 0;
@@ -1361,9 +1358,9 @@ export class AddonCalendarProvider {
     /**
      * Invalidates access information.
      *
-     * @param {number} [courseId] Course ID. If not defined, site calendar.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the data is invalidated.
+     * @param courseId Course ID. If not defined, site calendar.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAccessInformation(courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1374,9 +1371,9 @@ export class AddonCalendarProvider {
     /**
      * Invalidates allowed event types.
      *
-     * @param {number} [courseId] Course ID. If not defined, site calendar.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the data is invalidated.
+     * @param courseId Course ID. If not defined, site calendar.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllowedEventTypes(courseId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1387,8 +1384,8 @@ export class AddonCalendarProvider {
     /**
      * Invalidates day events for all days.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllDayEvents(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1399,10 +1396,10 @@ export class AddonCalendarProvider {
     /**
      * Invalidates day events for a certain day.
      *
-     * @param {number} year Year.
-     * @param {number} month Month.
-     * @param {number} day Day.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1413,8 +1410,8 @@ export class AddonCalendarProvider {
     /**
      * Invalidates events list and all the single events and related info.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any[]>} Promise resolved when the list is invalidated.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateEventsList(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1433,9 +1430,9 @@ export class AddonCalendarProvider {
     /**
      * Invalidates a single event.
      *
-     * @param {number} eventId List of courses or course ids.
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the list is invalidated.
+     * @param eventId List of courses or course ids.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the list is invalidated.
      */
     invalidateEvent(eventId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1446,8 +1443,8 @@ export class AddonCalendarProvider {
     /**
      * Invalidates monthly events for all months.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllMonthlyEvents(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1458,9 +1455,9 @@ export class AddonCalendarProvider {
     /**
      * Invalidates monthly events for a certain months.
      *
-     * @param {number} year Year.
-     * @param {number} month Month.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param year Year.
+     * @param month Month.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1471,8 +1468,8 @@ export class AddonCalendarProvider {
     /**
      * Invalidates upcoming events for all courses and categories.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllUpcomingEvents(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1483,10 +1480,10 @@ export class AddonCalendarProvider {
     /**
      * Invalidates upcoming events for a certain course or category.
      *
-     * @param {number} [courseId] Course ID.
-     * @param {number} [categoryId] Category ID.
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param categoryId Category ID.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1497,8 +1494,8 @@ export class AddonCalendarProvider {
     /**
      * Invalidates look ahead setting.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateLookAhead(siteId?: string): Promise<any> {
         return this.userProvider.invalidateUserPreference('calendar_lookahead', siteId);
@@ -1507,8 +1504,8 @@ export class AddonCalendarProvider {
     /**
      * Invalidates time format setting.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateTimeFormat(siteId?: string): Promise<any> {
         return this.userProvider.invalidateUserPreference('calendar_timeformat', siteId);
@@ -1517,8 +1514,8 @@ export class AddonCalendarProvider {
     /**
      * Check if Calendar is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isCalendarDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -1529,8 +1526,8 @@ export class AddonCalendarProvider {
     /**
      * Check if Calendar is disabled in a certain site.
      *
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1541,8 +1538,8 @@ export class AddonCalendarProvider {
     /**
      * Check if the get event by ID WS is available.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if available.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if available.
      * @since 3.4
      */
     isGetEventByIdAvailable(siteId?: string): Promise<boolean> {
@@ -1556,8 +1553,8 @@ export class AddonCalendarProvider {
     /**
      * Check if the get event by ID WS is available in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's available.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's available.
      * @since 3.4
      */
     isGetEventByIdAvailableInSite(site?: CoreSite): boolean {
@@ -1571,7 +1568,7 @@ export class AddonCalendarProvider {
      * If an event notification time is 0, cancel its scheduled notification (if any).
      * If local notification plugin is not enabled, resolve the promise.
      *
-     * @return {Promise}         Promise resolved when all the notifications have been scheduled.
+     * @return Promise resolved when all the notifications have been scheduled.
      */
     scheduleAllSitesEventsNotifications(): Promise<any[]> {
         const notificationsEnabled = this.localNotificationsProvider.isAvailable();
@@ -1603,12 +1600,15 @@ export class AddonCalendarProvider {
      * Schedules an event notification. If time is 0, cancel scheduled notification if any.
      * If local notification plugin is not enabled, resolve the promise.
      *
-     * @param  {any} event    Event to schedule.
-     * @param  {number} time     Notification setting time (in minutes). E.g. 10 means "notificate 10 minutes before start".
-     * @param  {string} [siteId] Site ID the event belongs to. If not defined, use current site.
-     * @return {Promise<void>}    Promise resolved when the notification is scheduled.
+     * @param event Event to schedule.
+     * @param reminderId The reminder ID.
+     * @param time Notification setting time (in minutes). E.g. 10 means "notificate 10 minutes before start".
+     * @param siteId Site ID the event belongs to. If not defined, use current site.
+     * @return Promise resolved when the notification is scheduled.
      */
-    protected scheduleEventNotification(event: any, reminderId: number, time: number, siteId?: string): Promise<void> {
+    protected scheduleEventNotification(event: AddonCalendarAnyEvent, reminderId: number, time: number, siteId?: string)
+            : Promise<void> {
+
         if (this.localNotificationsProvider.isAvailable()) {
             siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -1668,11 +1668,11 @@ export class AddonCalendarProvider {
      * If an event notification time is 0, cancel its scheduled notification (if any).
      * If local notification plugin is not enabled, resolve the promise.
      *
-     * @param  {any[]} events Events to schedule.
-     * @param  {string} [siteId] ID of the site the events belong to. If not defined, use current site.
-     * @return {Promise<any[]>}         Promise resolved when all the notifications have been scheduled.
+     * @param events Events to schedule.
+     * @param siteId ID of the site the events belong to. If not defined, use current site.
+     * @return Promise resolved when all the notifications have been scheduled.
      */
-    scheduleEventsNotifications(events: any[], siteId?: string): Promise<any[]> {
+    scheduleEventsNotifications(events: AddonCalendarAnyEvent[], siteId?: string): Promise<any[]> {
 
         if (this.localNotificationsProvider.isAvailable()) {
             siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1699,9 +1699,9 @@ export class AddonCalendarProvider {
     /**
      * Set the default notification time.
      *
-     * @param  {number} time     New default time.
-     * @param  {string} [siteId] ID of the site. If not defined, use current site.
-     * @return {Promise<any[]>}    Promise resolved when stored.
+     * @param time New default time.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved when stored.
      */
     setDefaultNotificationTime(time: number, siteId?: string): Promise<any[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -1714,9 +1714,9 @@ export class AddonCalendarProvider {
     /**
      * Store an event in local DB as it is.
      *
-     * @param {any} event Event to store.
-     * @param {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any>} Promise resolved when stored.
+     * @param event Event to store.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when stored.
      */
     storeEventInLocalDb(event: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1780,9 +1780,9 @@ export class AddonCalendarProvider {
     /**
      * Store events in local DB.
      *
-     * @param {any[]} events  Events to store.
-     * @param  {string} [siteId] ID of the site the event belongs to. If not defined, use current site.
-     * @return {Promise<any[]>}         Promise resolved when the events are stored.
+     * @param events Events to store.
+     * @param siteId ID of the site the event belongs to. If not defined, use current site.
+     * @return Promise resolved when the events are stored.
      */
     protected storeEventsInLocalDB(events: any[], siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1798,16 +1798,15 @@ export class AddonCalendarProvider {
     /**
      * Submit a calendar event.
      *
-     * @param {number} eventId ID of the event. If undefined/null, create a new event.
-     * @param {any} formData Form data.
-     * @param {number} [timeCreated] The time the event was created. Only if modifying a new offline event.
-     * @param {boolean} [forceOffline] True to always save it in offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{sent: boolean, event: any}>} Promise resolved with the event and a boolean indicating if data was
-     *                                                sent to server or stored in offline.
+     * @param eventId ID of the event. If undefined/null, create a new event.
+     * @param formData Form data.
+     * @param timeCreated The time the event was created. Only if modifying a new offline event.
+     * @param forceOffline True to always save it in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the event and a boolean indicating if data was sent to server or stored in offline.
      */
     submitEvent(eventId: number, formData: any, timeCreated?: number, forceOffline?: boolean, siteId?: string):
-            Promise<{sent: boolean, event: any}> {
+            Promise<{sent: boolean, event: AddonCalendarEvent}> {
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
@@ -1842,12 +1841,12 @@ export class AddonCalendarProvider {
     /**
      * Submit an event, either to create it or to edit it. It will fail if offline or cannot connect.
      *
-     * @param {number} eventId ID of the event. If undefined/null, create a new event.
-     * @param {any} formData Form data.
-     * @param {string} [siteId] Site ID. If not provided, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param eventId ID of the event. If undefined/null, create a new event.
+     * @param formData Form data.
+     * @param siteId Site ID. If not provided, current site.
+     * @return Promise resolved when done.
      */
-    submitEventOnline(eventId: number, formData: any, siteId?: string): Promise<any> {
+    submitEventOnline(eventId: number, formData: any, siteId?: string): Promise<AddonCalendarEvent> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             // Add data that is "hidden" in web.
             formData.id = eventId || 0;
@@ -1865,10 +1864,12 @@ export class AddonCalendarProvider {
                 formdata: this.utils.objectToGetParams(formData)
             };
 
-            return site.write('core_calendar_submit_create_update_form', params).then((result) => {
+            return site.write('core_calendar_submit_create_update_form', params)
+                    .then((result: AddonCalendarSubmitCreateUpdateFormResult): AddonCalendarEvent => {
+
                 if (result.validationerror) {
                     // Simulate a WS error.
-                    return Promise.reject({
+                    return <any> Promise.reject({
                         message: this.translate.instant('core.invalidformdata'),
                         errorcode: 'validationerror'
                     });
@@ -1879,3 +1880,337 @@ export class AddonCalendarProvider {
         });
     }
 }
+
+/**
+ * Data returned by calendar's events_exporter.
+ */
+export type AddonCalendarEvents = {
+    events: AddonCalendarEvent[]; // Events.
+    firstid: number; // Firstid.
+    lastid: number; // Lastid.
+};
+
+/**
+ * Data returned by calendar's events_grouped_by_course_exporter.
+ */
+export type AddonCalendarEventsGroupedByCourse = {
+    groupedbycourse: AddonCalendarEventsSameCourse[]; // Groupped by course.
+};
+
+/**
+ * Data returned by calendar's events_same_course_exporter.
+ */
+export type AddonCalendarEventsSameCourse = AddonCalendarEvents & {
+    courseid: number; // Courseid.
+};
+
+/**
+ * Data returned by calendar's event_exporter_base.
+ */
+export type AddonCalendarEventBase = {
+    id: number; // Id.
+    name: string; // Name.
+    description?: string; // Description.
+    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    location?: string; // @since 3.6. Location.
+    categoryid?: number; // Categoryid.
+    groupid?: number; // Groupid.
+    userid?: number; // Userid.
+    repeatid?: number; // Repeatid.
+    eventcount?: number; // Eventcount.
+    modulename?: string; // Modulename.
+    instance?: number; // Instance.
+    eventtype: string; // Eventtype.
+    timestart: number; // Timestart.
+    timeduration: number; // Timeduration.
+    timesort: number; // Timesort.
+    visible: number; // Visible.
+    timemodified: number; // Timemodified.
+    icon: {
+        key: string; // Key.
+        component: string; // Component.
+        alttext: string; // Alttext.
+    };
+    category?: {
+        id: number; // Id.
+        name: string; // Name.
+        idnumber: string; // Idnumber.
+        description?: string; // Description.
+        parent: number; // Parent.
+        coursecount: number; // Coursecount.
+        visible: number; // Visible.
+        timemodified: number; // Timemodified.
+        depth: number; // Depth.
+        nestedname: string; // Nestedname.
+        url: string; // Url.
+    };
+    course?: {
+        id: number; // Id.
+        fullname: string; // Fullname.
+        shortname: string; // Shortname.
+        idnumber: string; // Idnumber.
+        summary: string; // Summary.
+        summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        startdate: number; // Startdate.
+        enddate: number; // Enddate.
+        visible: boolean; // @since 3.8. Visible.
+        fullnamedisplay: string; // Fullnamedisplay.
+        viewurl: string; // Viewurl.
+        courseimage: string; // @since 3.6. Courseimage.
+        progress?: number; // @since 3.6. Progress.
+        hasprogress: boolean; // @since 3.6. Hasprogress.
+        isfavourite: boolean; // @since 3.6. Isfavourite.
+        hidden: boolean; // @since 3.6. Hidden.
+        timeaccess?: number; // @since 3.6. Timeaccess.
+        showshortname: boolean; // @since 3.6. Showshortname.
+        coursecategory: string; // @since 3.7. Coursecategory.
+    };
+    subscription?: {
+        displayeventsource: boolean; // Displayeventsource.
+        subscriptionname?: string; // Subscriptionname.
+        subscriptionurl?: string; // Subscriptionurl.
+    };
+    canedit: boolean; // Canedit.
+    candelete: boolean; // Candelete.
+    deleteurl: string; // Deleteurl.
+    editurl: string; // Editurl.
+    viewurl: string; // Viewurl.
+    formattedtime: string; // Formattedtime.
+    isactionevent: boolean; // Isactionevent.
+    iscourseevent: boolean; // Iscourseevent.
+    iscategoryevent: boolean; // Iscategoryevent.
+    groupname?: string; // Groupname.
+    normalisedeventtype: string; // @since 3.7. Normalisedeventtype.
+    normalisedeventtypetext: string; // @since 3.7. Normalisedeventtypetext.
+};
+
+/**
+ * Data returned by calendar's event_exporter.  Don't confuse it with AddonCalendarCalendarEvent.
+ */
+export type AddonCalendarEvent = AddonCalendarEventBase & {
+    url: string; // Url.
+    action?: {
+        name: string; // Name.
+        url: string; // Url.
+        itemcount: number; // Itemcount.
+        actionable: boolean; // Actionable.
+        showitemcount: boolean; // Showitemcount.
+    };
+};
+
+/**
+ * Data returned by calendar's calendar_event_exporter. Don't confuse it with AddonCalendarEvent.
+ */
+export type AddonCalendarCalendarEvent = AddonCalendarEventBase & {
+    url: string; // Url.
+    islastday: boolean; // Islastday.
+    popupname: string; // Popupname.
+    mindaytimestamp?: number; // Mindaytimestamp.
+    mindayerror?: string; // Mindayerror.
+    maxdaytimestamp?: number; // Maxdaytimestamp.
+    maxdayerror?: string; // Maxdayerror.
+    draggable: boolean; // Draggable.
+} & AddonCalendarCalendarEventCalculatedData;
+
+/**
+ * Any of the possible types of events.
+ */
+export type AddonCalendarAnyEvent = AddonCalendarGetEventsEvent | AddonCalendarEvent | AddonCalendarCalendarEvent;
+
+/**
+ * Data returned by calendar's calendar_day_exporter. Don't confuse it with AddonCalendarDay.
+ */
+export type AddonCalendarCalendarDay = {
+    events: AddonCalendarCalendarEvent[]; // Events.
+    defaulteventcontext: number; // Defaulteventcontext.
+    filter_selector: string; // Filter_selector.
+    courseid: number; // Courseid.
+    categoryid?: number; // Categoryid.
+    neweventtimestamp: number; // Neweventtimestamp.
+    date: CoreWSDate;
+    periodname: string; // Periodname.
+    previousperiod: CoreWSDate;
+    previousperiodlink: string; // Previousperiodlink.
+    previousperiodname: string; // Previousperiodname.
+    nextperiod: CoreWSDate;
+    nextperiodname: string; // Nextperiodname.
+    nextperiodlink: string; // Nextperiodlink.
+    larrow: string; // Larrow.
+    rarrow: string; // Rarrow.
+};
+
+/**
+ * Data returned by calendar's month_exporter.
+ */
+export type AddonCalendarMonth = {
+    url: string; // Url.
+    courseid: number; // Courseid.
+    categoryid?: number; // Categoryid.
+    filter_selector?: string; // Filter_selector.
+    weeks: AddonCalendarWeek[]; // Weeks.
+    daynames: AddonCalendarDayName[]; // Daynames.
+    view: string; // View.
+    date: CoreWSDate;
+    periodname: string; // Periodname.
+    includenavigation: boolean; // Includenavigation.
+    initialeventsloaded: boolean; // @since 3.5. Initialeventsloaded.
+    previousperiod: CoreWSDate;
+    previousperiodlink: string; // Previousperiodlink.
+    previousperiodname: string; // Previousperiodname.
+    nextperiod: CoreWSDate;
+    nextperiodname: string; // Nextperiodname.
+    nextperiodlink: string; // Nextperiodlink.
+    larrow: string; // Larrow.
+    rarrow: string; // Rarrow.
+    defaulteventcontext: number; // Defaulteventcontext.
+};
+
+/**
+ * Data returned by calendar's week_exporter.
+ */
+export type AddonCalendarWeek = {
+    prepadding: number[]; // Prepadding.
+    postpadding: number[]; // Postpadding.
+    days: AddonCalendarWeekDay[]; // Days.
+};
+
+/**
+ * Data returned by calendar's week_day_exporter.
+ */
+export type AddonCalendarWeekDay = AddonCalendarDay & {
+    istoday: boolean; // Istoday.
+    isweekend: boolean; // Isweekend.
+    popovertitle: string; // Popovertitle.
+    ispast?: boolean; // Calculated in the app. Whether the day is in the past.
+    filteredEvents?: AddonCalendarCalendarEvent[]; // Calculated in the app. Filtered events.
+};
+
+/**
+ * Data returned by calendar's day_exporter. Don't confuse it with AddonCalendarCalendarDay.
+ */
+export type AddonCalendarDay = {
+    seconds: number; // Seconds.
+    minutes: number; // Minutes.
+    hours: number; // Hours.
+    mday: number; // Mday.
+    wday: number; // Wday.
+    year: number; // Year.
+    yday: number; // Yday.
+    timestamp: number; // Timestamp.
+    neweventtimestamp: number; // Neweventtimestamp.
+    viewdaylink?: string; // Viewdaylink.
+    events: AddonCalendarCalendarEvent[]; // Events.
+    hasevents: boolean; // Hasevents.
+    calendareventtypes: string[]; // Calendareventtypes.
+    previousperiod: number; // Previousperiod.
+    nextperiod: number; // Nextperiod.
+    navigation: string; // Navigation.
+    haslastdayofevent: boolean; // Haslastdayofevent.
+};
+
+/**
+ * Data returned by calendar's day_name_exporter.
+ */
+export type AddonCalendarDayName = {
+    dayno: number; // Dayno.
+    shortname: string; // Shortname.
+    fullname: string; // Fullname.
+};
+
+/**
+ * Data returned by calendar's calendar_upcoming_exporter.
+ */
+export type AddonCalendarUpcoming = {
+    events: AddonCalendarCalendarEvent[]; // Events.
+    defaulteventcontext: number; // Defaulteventcontext.
+    filter_selector: string; // Filter_selector.
+    courseid: number; // Courseid.
+    categoryid?: number; // Categoryid.
+    isloggedin: boolean; // Isloggedin.
+    date: CoreWSDate; // @since 3.8. Date.
+};
+
+/**
+ * Result of WS core_calendar_get_calendar_access_information.
+ */
+export type AddonCalendarGetAccessInfoResult = {
+    canmanageentries: boolean; // Whether the user can manage entries.
+    canmanageownentries: boolean; // Whether the user can manage its own entries.
+    canmanagegroupentries: boolean; // Whether the user can manage group entries.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_calendar_get_allowed_event_types.
+ */
+export type AddonCalendarGetAllowedEventTypesResult = {
+    allowedeventtypes: string[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_calendar_get_calendar_events.
+ */
+export type AddonCalendarGetEventsResult = {
+    events: AddonCalendarGetEventsEvent[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Event data returned by WS core_calendar_get_calendar_events.
+ */
+export type AddonCalendarGetEventsEvent = {
+    id: number; // Event id.
+    name: string; // Event name.
+    description?: string; // Description.
+    format: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    courseid: number; // Course id.
+    categoryid?: number; // @since 3.4. Category id (only for category events).
+    groupid: number; // Group id.
+    userid: number; // User id.
+    repeatid: number; // Repeat id.
+    modulename?: string; // Module name.
+    instance: number; // Instance id.
+    eventtype: string; // Event type.
+    timestart: number; // Timestart.
+    timeduration: number; // Time duration.
+    visible: number; // Visible.
+    uuid?: string; // Unique id of ical events.
+    sequence: number; // Sequence.
+    timemodified: number; // Time modified.
+    subscriptionid?: number; // Subscription id.
+    showDate?: boolean; // Calculated in the app. Whether date should be shown before this event.
+    endsSameDay?: boolean; // Calculated in the app. Whether the event finishes the same day it starts.
+    deleted?: boolean; // Calculated in the app. Whether it has been deleted in offline.
+};
+
+/**
+ * Result of WS core_calendar_get_calendar_event_by_id.
+ */
+export type AddonCalendarGetEventByIdResult = {
+    event: AddonCalendarEvent; // Event.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_calendar_submit_create_update_form.
+ */
+export type AddonCalendarSubmitCreateUpdateFormResult = {
+    event?: AddonCalendarEvent; // Event.
+    validationerror: boolean; // Invalid form data.
+};
+
+/**
+ * Calculated data for AddonCalendarCalendarEvent.
+ */
+export type AddonCalendarCalendarEventCalculatedData = {
+    eventIcon?: string; // Calculated in the app. Event icon.
+    moduleIcon?: string; // Calculated in the app. Module icon.
+    formattedType?: string; // Calculated in the app. Formatted type.
+    duration?: number; // Calculated in the app. Duration of offline event.
+    format?: number; // Calculated in the app. Format of offline event.
+    timedurationuntil?: number; // Calculated in the app. Time duration until of offline event.
+    timedurationminutes?: number; // Calculated in the app. Time duration in minutes of offline event.
+    deleted?: boolean; // Calculated in the app. Whether it has been deleted in offline.
+    ispast?: boolean; // Calculated in the app. Whether the event is in the past.
+};

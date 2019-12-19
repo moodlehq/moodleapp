@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ export class AddonModLessonGradeLinkHandler extends CoreContentLinksModuleGradeH
     /**
      * Go to the page to review.
      *
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} courseId Course ID related to the URL.
-     * @param {string} siteId Site to use.
-     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL.
+     * @param siteId Site to use.
+     * @param navCtrl Nav Controller to use to navigate.
+     * @return Promise resolved when done.
      */
     protected goToReview(url: string, params: any, courseId: number, siteId: string, navCtrl?: NavController): Promise<any> {
 
@@ -83,11 +83,11 @@ export class AddonModLessonGradeLinkHandler extends CoreContentLinksModuleGradeH
      * Check if the handler is enabled for a certain site (site + user) and a URL.
      * If not defined, defaults to true.
      *
-     * @param {string} siteId The site ID.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
+     * @param siteId The site ID.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
         return this.lessonProvider.isPluginEnabled();

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
     /**
      * Invalidate the data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         return this.commentsProvider.invalidateCommentsData('module', this.assign.cmid, 'assignsubmission_comments',

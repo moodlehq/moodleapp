@@ -99,7 +99,7 @@
         <ion-avatar *ngIf="conversation.type != typeGroup" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false" [checkOnline]="conversation.showonlinestatus" item-start></ion-avatar>
 
         <h2>
-            <core-format-text [text]="conversation.name"></core-format-text>
+            <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
             <core-icon name="fa-ban" *ngIf="conversation.isblocked" [label]="'addon.messages.contactblocked' | translate"></core-icon>
             <core-icon *ngIf="conversation.ismuted" name="volume-off" [label]="'addon.messages.mutedconversation' | translate"></core-icon>
         </h2>
@@ -107,11 +107,11 @@
             <ion-badge *ngIf="conversation.unreadcount > 0">{{ conversation.unreadcount }}</ion-badge>
             <span *ngIf="conversation.lastmessagedate > 0">{{conversation.lastmessagedate | coreDateDayOrTime}}</span>
         </ion-note>
-        <p *ngIf="conversation.subname"><core-format-text [text]="conversation.subname"></core-format-text></p>
+        <p *ngIf="conversation.subname"><core-format-text [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
         <p class="addon-message-last-message">
             <span *ngIf="conversation.sentfromcurrentuser" class="addon-message-last-message-user">{{ 'addon.messages.you' | translate }}</span>
-            <core-format-text *ngIf="!conversation.sentfromcurrentuser && conversation.type == typeGroup && conversation.members[0]" [text]="conversation.members[0].fullname + ':'" class="addon-message-last-message-user"></core-format-text>
-            <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage" class="addon-message-last-message-text"></core-format-text>
+            <span *ngIf="!conversation.sentfromcurrentuser && conversation.type == typeGroup && conversation.members[0]" class="addon-message-last-message-user">{{ conversation.members[0].fullname + ':' }}</span>
+            <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage" class="addon-message-last-message-text" contextLevel="system" [contextInstanceId]="0"></core-format-text>
         </p>
     </a>
 </ng-template>

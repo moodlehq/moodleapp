@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,18 +27,17 @@ import { CoreQuestionBehaviourDefaultHandler } from './default-behaviour-handler
 export interface CoreQuestionBehaviourHandler extends CoreDelegateHandler {
     /**
      * Type of the behaviour the handler supports. E.g. 'adaptive'.
-     * @type {string}
      */
     type: string;
 
     /**
      * Determine a question new state based on its answer(s).
      *
-     * @param {string} component Component the question belongs to.
-     * @param {number} attemptId Attempt ID the question belongs to.
-     * @param {any} question The question.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {CoreQuestionState|Promise<CoreQuestionState>} State (or promise resolved with state).
+     * @param component Component the question belongs to.
+     * @param attemptId Attempt ID the question belongs to.
+     * @param question The question.
+     * @param siteId Site ID. If not defined, current site.
+     * @return State (or promise resolved with state).
      */
     determineNewState?(component: string, attemptId: number, question: any, siteId?: string)
         : CoreQuestionState | Promise<CoreQuestionState>;
@@ -48,10 +47,10 @@ export interface CoreQuestionBehaviourHandler extends CoreDelegateHandler {
      * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question.
-     * @return {any[]|Promise<any[]>} Components (or promise resolved with components) to render some extra data in the question
-     *                                (e.g. certainty options). Don't return anything if no extra data is required.
+     * @param injector Injector.
+     * @param question The question.
+     * @return Components (or promise resolved with components) to render some extra data in the question
+     *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion?(injector: Injector, question: any): any[] | Promise<any[]>;
 }
@@ -72,11 +71,11 @@ export class CoreQuestionBehaviourDelegate extends CoreDelegate {
     /**
      * Determine a question new state based on its answer(s).
      *
-     * @param {string} component Component the question belongs to.
-     * @param {number} attemptId Attempt ID the question belongs to.
-     * @param {any} question The question.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreQuestionState>} Promise resolved with state.
+     * @param component Component the question belongs to.
+     * @param attemptId Attempt ID the question belongs to.
+     * @param question The question.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with state.
      */
     determineNewState(behaviour: string, component: string, attemptId: number, question: any, siteId?: string)
             : Promise<CoreQuestionState> {
@@ -91,10 +90,10 @@ export class CoreQuestionBehaviourDelegate extends CoreDelegate {
      * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
      * If the behaviour requires to show some extra data, it should return a directive to render it.
      *
-     * @param {Injector} injector Injector.
-     * @param {string} behaviour Default behaviour.
-     * @param {any} question The question.
-     * @return {Promise<any[]>} Promise resolved with components to render some extra data in the question.
+     * @param injector Injector.
+     * @param behaviour Default behaviour.
+     * @param question The question.
+     * @return Promise resolved with components to render some extra data in the question.
      */
     handleQuestion(injector: Injector, behaviour: string, question: any): Promise<any[]> {
         behaviour = this.questionDelegate.getBehaviourForQuestion(question, behaviour);
@@ -105,8 +104,8 @@ export class CoreQuestionBehaviourDelegate extends CoreDelegate {
     /**
      * Check if a question behaviour is supported.
      *
-     * @param {string} behaviour Name of the behaviour.
-     * @return {boolean} Whether it's supported.
+     * @param behaviour Name of the behaviour.
+     * @return Whether it's supported.
      */
     isBehaviourSupported(behaviour: string): boolean {
         return this.hasHandler(behaviour, true);

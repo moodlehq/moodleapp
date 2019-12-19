@@ -1,5 +1,72 @@
-ion-app.app-root addon-mod-forum-post {
+ion-app.app-root addon-mod-forum-post .addon-mod_forum-post {
+    background-color: $white;
+    border-bottom: 1px solid $list-md-border-color;
+
+    @include darkmode() {
+        background-color: $core-dark-item-bg-color;
+    }
+
     .addon-forum-star {
         color: $core-star-color;
     }
+
+    .card-header .item {
+        .label {
+            margin-top: 4px;
+
+            h2 {
+                margin-top: 8px;
+                margin-bottom: 8px;
+                font-weight: bold;
+                ion-icon {
+                    @include margin(0, 6px, 0, 0);
+                }
+            }
+            h3 {
+                font-size: 1.6rem;
+            }
+        }
+
+        ion-avatar {
+            width: $addon-forum-avatar-size;
+            height: $addon-forum-avatar-size;
+            min-width: $addon-forum-avatar-size;
+            min-height: $addon-forum-avatar-size;
+            &[item-start] {
+                @include margin(0, 8px, 0, 0);
+            }
+            img {
+                width: $addon-forum-avatar-size;
+                height: $addon-forum-avatar-size;
+            }
+        }
+
+        .addon-mod-forum-post-title,
+        .addon-mod-forum-post-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .addon-mod-forum-post-info {
+            margin-top: 8px;
+        }
+
+        .addon-mod-forum-post-title + .addon-mod-forum-post-info {
+            margin-top: 0px;
+        }
+
+        .addon-mod-forum-post-title h2,
+        .addon-mod-forum-post-info .addon-mod-forum-post-author {
+            flex-grow: 1;
+        }
+    }
+
+    .item .item-inner {
+        border-bottom: 0;
+    }
+
+    .addon-mod-forum-post-more-info div {
+        font-size: 1.4rem;
+    }
 }
+

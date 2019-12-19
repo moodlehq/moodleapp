@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Change the retake displayed.
      *
-     * @param {number} retakeNumber The new retake number.
+     * @param retakeNumber The new retake number.
      */
     changeRetake(retakeNumber: number): void {
         this.loaded = false;
@@ -88,7 +88,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Pull to refresh.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     doRefresh(refresher: any): void {
         this.refreshData().finally(() => {
@@ -99,7 +99,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Get lesson and retake data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         return this.lessonProvider.getLessonById(this.courseId, this.lessonId).then((lessonData) => {
@@ -166,7 +166,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Refreshes data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshData(): Promise<any> {
         const promises = [];
@@ -187,8 +187,8 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Set the retake to view and load its data.
      *
-     * @param {number}retakeNumber Retake number to set.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param retakeNumber Retake number to set.
+     * @return Promise resolved when done.
      */
     protected setRetake(retakeNumber: number): Promise<any> {
         this.selectedRetake = retakeNumber;

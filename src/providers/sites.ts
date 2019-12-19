@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@ import { CoreAppProvider } from './app';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
+import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreWSProvider } from './ws';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 import { WP_PROVIDER } from '@app/app.module';
@@ -36,31 +37,26 @@ import { WP_PROVIDER } from '@app/app.module';
 export interface CoreSiteCheckResponse {
     /**
      * Code to identify the authentication method to use.
-     * @type {number}
      */
     code: number;
 
     /**
      * Site url to use (might have changed during the process).
-     * @type {string}
      */
     siteUrl: string;
 
     /**
      * Service used.
-     * @type {string}
      */
     service: string;
 
     /**
      * Code of the warning message to show to the user.
-     * @type {string}
      */
     warning?: string;
 
     /**
      * Site public config (if available).
-     * @type {any}
      */
     config?: any;
 }
@@ -71,19 +67,16 @@ export interface CoreSiteCheckResponse {
 export interface CoreSiteUserTokenResponse {
     /**
      * User token.
-     * @type {string}
      */
     token: string;
 
     /**
      * Site URL to use.
-     * @type {string}
      */
     siteUrl: string;
 
     /**
      * User private token.
-     * @type {string}
      */
     privateToken?: string;
 }
@@ -94,39 +87,38 @@ export interface CoreSiteUserTokenResponse {
 export interface CoreSiteBasicInfo {
     /**
      * Site ID.
-     * @type {string}
      */
     id: string;
 
     /**
      * Site URL.
-     * @type {string}
      */
     siteUrl: string;
 
     /**
      * User's full name.
-     * @type {string}
      */
     fullName: string;
 
     /**
      * Site's name.
-     * @type {string}
      */
     siteName: string;
 
     /**
      * User's avatar.
-     * @type {string}
      */
     avatar: string;
 
     /**
      * Badge to display in the site.
-     * @type {number}
      */
     badge?: number;
+
+    /**
+     * Site home ID.
+     */
+    siteHomeId?: number;
 }
 
 /**
@@ -135,22 +127,16 @@ export interface CoreSiteBasicInfo {
 export interface CoreSiteSchema {
     /**
      * Name of the schema.
-     *
-     * @type {string}
      */
     name: string;
 
     /**
      * Latest version of the schema (integer greater than 0).
-     *
-     * @type {number}
      */
     version: number;
 
     /**
      * Names of the tables of the site schema that can be cleared.
-     *
-     * @type {string[]}
      */
     canBeCleared?: string[];
 
@@ -164,12 +150,18 @@ export interface CoreSiteSchema {
      *
      * Called when installing and upgrading the schema, after creating the defined tables.
      *
-     * @param {SQLiteDB} db Site database.
-     * @param {number} oldVersion Old version of the schema or 0 if not installed.
-     * @param {string} siteId Site Id to migrate.
-     * @return {Promise<any> | void} Promise resolved when done.
+     * @param db Site database.
+     * @param oldVersion Old version of the schema or 0 if not installed.
+     * @param siteId Site Id to migrate.
+     * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
+}
+
+export const enum CoreSitesReadingStrategy {
+    OnlyCache,
+    PreferCache,
+    PreferNetwork,
 }
 
 /*
@@ -326,7 +318,8 @@ export class CoreSitesProvider {
     constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
             private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
             private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
-            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider) {
+            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider,
+            protected domUtils: CoreDomUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
         this.appDB = appProvider.getDB();
@@ -337,8 +330,8 @@ export class CoreSitesProvider {
     /**
      * Get the demo data for a certain "name" if it is a demo site.
      *
-     * @param {string} name Name of the site to check.
-     * @return {any} Site data if it's a demo site, undefined otherwise.
+     * @param name Name of the site to check.
+     * @return Site data if it's a demo site, undefined otherwise.
      */
     getDemoSiteData(name: string): any {
         const demoSites = CoreConfigConstants.demo_sites;
@@ -351,9 +344,9 @@ export class CoreSitesProvider {
      * Check if a site is valid and if it has specifics settings for authentication (like force to log in using the browser).
      * It will test both protocols if the first one fails: http and https.
      *
-     * @param {string} siteUrl URL of the site to check.
-     * @param {string} [protocol=https://] Protocol to use first.
-     * @return {Promise<CoreSiteCheckResponse>} A promise resolved when the site is checked.
+     * @param siteUrl URL of the site to check.
+     * @param protocol Protocol to use first.
+     * @return A promise resolved when the site is checked.
      */
     checkSite(siteUrl: string, protocol: string = 'https://'): Promise<CoreSiteCheckResponse> {
         // The formatURL function adds the protocol if is missing.
@@ -384,7 +377,7 @@ export class CoreSitesProvider {
                     } else if (this.textUtils.getErrorMessageFromError(secondError)) {
                         return Promise.reject(secondError);
                     } else {
-                        return this.translate.instant('core.cannotconnect');
+                        return this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION});
                     }
                 });
             });
@@ -394,9 +387,9 @@ export class CoreSitesProvider {
     /**
      * Helper function to check if a site is valid and if it has specifics settings for authentication.
      *
-     * @param {string} siteUrl URL of the site to check.
-     * @param {string} protocol Protocol to use.
-     * @return {Promise<CoreSiteCheckResponse>} A promise resolved when the site is checked.
+     * @param siteUrl URL of the site to check.
+     * @param protocol Protocol to use.
+     * @return A promise resolved when the site is checked.
      */
     checkSiteWithProtocol(siteUrl: string, protocol: string): Promise<CoreSiteCheckResponse> {
         let publicConfig;
@@ -476,7 +469,8 @@ export class CoreSitesProvider {
                                         error.error = this.translate.instant('core.login.sitehasredirect');
                                     } else {
                                         // We can't be sure if there is a redirect or not. Display cannot connect error.
-                                        error.error = this.translate.instant('core.cannotconnect');
+                                        error.error = this.translate.instant('core.cannotconnect',
+                                            {$a: CoreSite.MINIMUM_MOODLE_VERSION});
                                     }
 
                                     return Promise.reject(error);
@@ -514,14 +508,14 @@ export class CoreSitesProvider {
     /**
      * Check if a site exists.
      *
-     * @param  {string} siteUrl URL of the site to check.
-     * @return {Promise} A promise to be resolved if the site exists.
+     * @param siteUrl URL of the site to check.
+     * @return A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
         return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
                 .catch(() => {
             // Default error messages are kinda bad, return our own message.
-            return Promise.reject({error: this.translate.instant('core.cannotconnect')});
+            return Promise.reject({error: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION})});
         }).then((data: any) => {
 
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
@@ -536,12 +530,12 @@ export class CoreSitesProvider {
     /**
      * Gets a user token from the server.
      *
-     * @param {string} siteUrl The site url.
-     * @param {string} username User name.
-     * @param {string} password Password.
-     * @param {string} [service] Service to use. If not defined, it will be searched in memory.
-     * @param {boolean} [retry] Whether we are retrying with a prefixed URL.
-     * @return {Promise<CoreSiteUserTokenResponse>} A promise resolved when the token is retrieved.
+     * @param siteUrl The site url.
+     * @param username User name.
+     * @param password Password.
+     * @param service Service to use. If not defined, it will be searched in memory.
+     * @param retry Whether we are retrying with a prefixed URL.
+     * @return A promise resolved when the token is retrieved.
      */
     getUserToken(siteUrl: string, username: string, password: string, service?: string, retry?: boolean)
             : Promise<CoreSiteUserTokenResponse> {
@@ -563,7 +557,7 @@ export class CoreSitesProvider {
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
-                return Promise.reject(this.translate.instant('core.cannotconnect'));
+                return Promise.reject(this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
             } else {
                 if (typeof data.token != 'undefined') {
                     return { token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken };
@@ -595,18 +589,18 @@ export class CoreSitesProvider {
                 }
             }
         }, () => {
-            return Promise.reject(this.translate.instant('core.cannotconnect'));
+            return Promise.reject(this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
         });
     }
 
     /**
      * Add a new site to the site list and authenticate the user in this site.
      *
-     * @param {string} siteUrl The site url.
-     * @param {string} token User's token.
-     * @param {string} [privateToken=''] User's private token.
-     * @param {boolean} [login=true] Whether to login the user in the site. Defaults to true.
-     * @return {Promise<string>} A promise resolved with siteId when the site is added and the user is authenticated.
+     * @param siteUrl The site url.
+     * @param token User's token.
+     * @param privateToken User's private token.
+     * @param login Whether to login the user in the site. Defaults to true.
+     * @return A promise resolved with siteId when the site is added and the user is authenticated.
      */
     newSite(siteUrl: string, token: string, privateToken: string = '', login: boolean = true): Promise<string> {
         if (typeof login != 'boolean') {
@@ -682,14 +676,15 @@ export class CoreSitesProvider {
     /**
      * Having the result of isValidMoodleVersion, it treats the error message to be shown.
      *
-     * @param {number} result Result returned by isValidMoodleVersion function.
-     * @param {string} siteUrl The site url.
-     * @param  {string} siteId If site is already added, it will invalidate the token.
-     * @return {Promise<any>} A promise rejected with the error info.
+     * @param result Result returned by isValidMoodleVersion function.
+     * @param siteUrl The site url.
+     * @param siteId If site is already added, it will invalidate the token.
+     * @return A promise rejected with the error info.
      */
     protected treatInvalidAppVersion(result: number, siteUrl: string, siteId?: string): Promise<any> {
         let errorCode,
-            errorKey;
+            errorKey,
+            translateParams;
 
         switch (result) {
             case this.MOODLE_APP:
@@ -703,6 +698,7 @@ export class CoreSitesProvider {
             default:
                 errorCode = 'invalidmoodleversion';
                 errorKey = 'core.login.invalidmoodleversion';
+                translateParams = {$a: CoreSite.MINIMUM_MOODLE_VERSION};
         }
 
         let promise;
@@ -715,7 +711,7 @@ export class CoreSitesProvider {
 
         return promise.then(() => {
            return Promise.reject({
-                error: this.translate.instant(errorKey),
+                error: this.translate.instant(errorKey, translateParams),
                 errorcode: errorCode,
                 loggedout: true
             });
@@ -725,9 +721,9 @@ export class CoreSitesProvider {
     /**
      * Create a site ID based on site URL and username.
      *
-     * @param {string} siteUrl The site url.
-     * @param {string} username Username.
-     * @return {string} Site ID.
+     * @param siteUrl The site url.
+     * @param username Username.
+     * @return Site ID.
      */
     createSiteID(siteUrl: string, username: string): string {
         return <string> Md5.hashAsciiStr(siteUrl + username);
@@ -736,8 +732,8 @@ export class CoreSitesProvider {
     /**
      * Function for determine which service we should use (default or extended plugin).
      *
-     * @param {string} siteUrl The site URL.
-     * @return {string} The service shortname.
+     * @param siteUrl The site URL.
+     * @return The service shortname.
      */
     determineService(siteUrl: string): string {
         // We need to try siteUrl in both https or http (due to loginhttps setting).
@@ -761,8 +757,8 @@ export class CoreSitesProvider {
     /**
      * Check for the minimum required version.
      *
-     * @param {any} info Site info.
-     * @return {number} Either VALID_VERSION, WORKPLACE_APP, MOODLE_APP or INVALID_VERSION.
+     * @param info Site info.
+     * @return Either VALID_VERSION, WORKPLACE_APP, MOODLE_APP or INVALID_VERSION.
      */
     protected isValidMoodleVersion(info: any): number {
         if (!info) {
@@ -770,7 +766,7 @@ export class CoreSitesProvider {
         }
 
         const version31 = 2016052300,
-            release31 = '3.1';
+            release31 = CoreSite.MINIMUM_MOODLE_VERSION;
 
         // Try to validate by version.
         if (info.version) {
@@ -797,8 +793,8 @@ export class CoreSitesProvider {
     /**
      * Check if needs to be redirected to specific Workplace App or general Moodle App.
      *
-     * @param {any} info Site info.
-     * @return {number} Either VALID_VERSION, WORKPLACE_APP or MOODLE_APP.
+     * @param info Site info.
+     * @return Either VALID_VERSION, WORKPLACE_APP or MOODLE_APP.
      */
     protected validateWorkplaceVersion(info: any): number {
         const isWorkplace = !!info.functions && info.functions.some((func) => {
@@ -824,8 +820,8 @@ export class CoreSitesProvider {
     /**
      * Returns the release number from site release info.
      *
-     * @param  {string}  rawRelease Raw release info text.
-     * @return {string}   Release number or empty.
+     * @param rawRelease Raw release info text.
+     * @return Release number or empty.
      */
     getReleaseNumber(rawRelease: string): string {
         const matches = rawRelease.match(/^\d(\.\d(\.\d+)?)?/);
@@ -839,8 +835,8 @@ export class CoreSitesProvider {
     /**
      * Check if site info is valid. If it's not, return error message.
      *
-     * @param {any} info Site info.
-     * @return {any} True if valid, object with error message to show and its params if not valid.
+     * @param info Site info.
+     * @return True if valid, object with error message to show and its params if not valid.
      */
     protected validateSiteInfo(info: any): any {
         if (!info.firstname || !info.lastname) {
@@ -855,13 +851,13 @@ export class CoreSitesProvider {
     /**
      * Saves a site in local DB.
      *
-     * @param {string} id Site ID.
-     * @param {string} siteUrl Site URL.
-     * @param {string} token User's token in the site.
-     * @param {any} info Site's info.
-     * @param {string} [privateToken=''] User's private token.
-     * @param {any} [config] Site config (from tool_mobile_get_config).
-     * @return {Promise<any>} Promise resolved when done.
+     * @param id Site ID.
+     * @param siteUrl Site URL.
+     * @param token User's token in the site.
+     * @param info Site's info.
+     * @param privateToken User's private token.
+     * @param config Site config (from tool_mobile_get_config).
+     * @return Promise resolved when done.
      */
     addSite(id: string, siteUrl: string, token: string, info: any, privateToken: string = '', config?: any): Promise<any> {
         const entry = {
@@ -878,12 +874,93 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Check the required minimum version of the app for a site and shows a download dialog.
+     *
+     * @param  config Config object of the site.
+     * @param siteId ID of the site to check. Current site id will be used otherwise.
+     * @return Resolved with  if meets the requirements, rejected otherwise.
+     */
+    checkRequiredMinimumVersion(config: any, siteId?: string): Promise<void> {
+        if (config && config.tool_mobile_minimumversion) {
+            const requiredVersion = this.convertVersionName(config.tool_mobile_minimumversion),
+                appVersion = this.convertVersionName(CoreConfigConstants.versionname);
+
+            if (requiredVersion > appVersion) {
+                let downloadUrl = '';
+
+                if (this.appProvider.isAndroid() && config.tool_mobile_androidappid) {
+                    downloadUrl = 'market://details?id=' + config.tool_mobile_androidappid;
+                } else if (this.appProvider.isIOS() && config.tool_mobile_iosappid) {
+                    downloadUrl = 'itms-apps://itunes.apple.com/app/id' + config.tool_mobile_iosappid;
+                } else if (config.tool_mobile_setuplink) {
+                    downloadUrl = config.tool_mobile_setuplink;
+                } else if (this.appProvider.isMobile()) {
+                    downloadUrl = 'https://download.moodle.org/mobile/';
+                } else {
+                    downloadUrl = 'https://download.moodle.org/desktop/';
+                }
+
+                siteId = siteId || this.getCurrentSiteId();
+
+                // Do not block interface.
+                this.domUtils.showConfirm(
+                    this.translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                    this.translate.instant('core.updaterequired'),
+                    this.translate.instant('core.download'),
+                    this.translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel')).then(() => {
+
+                    this.utils.openInBrowser(downloadUrl);
+                }).catch(() => {
+                    // Do nothing.
+                });
+
+                if (siteId) {
+                    // Logout if it's the currentSite.
+                    const promise = siteId == this.getCurrentSiteId() ? this.logout() : Promise.resolve();
+
+                    return promise.then(() => {
+                        // Always expire the token.
+                        return this.setSiteLoggedOut(siteId, true);
+                    }).then(() => {
+                        return Promise.reject(null);
+                    });
+                }
+
+                return Promise.reject(null);
+            }
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * Convert version name to numbers.
+     *
+     * @param  name Version name (dot separated).
+     * @return Version translated to a comparable number.
+     */
+    protected convertVersionName(name: string): number {
+        let version = 0;
+
+        const parts = name.split('-')[0].split('.', 3);
+        parts.forEach((num) => {
+            version = (version * 100) + Number(num);
+        });
+
+        if (parts.length < 3) {
+            version = version * Math.pow(100, 3 - parts.length);
+        }
+
+        return version;
+    }
+
+    /**
      * Login a user to a site from the list of sites.
      *
-     * @param {string} siteId ID of the site to load.
-     * @param {string} [pageName] Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param {any} [params] Params of the page to go once authenticated if logged out.
-     * @return {Promise<boolean>} Promise resolved with true if site is loaded, resolved with false if cannot login.
+     * @param siteId ID of the site to load.
+     * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
+     * @param params Params of the page to go once authenticated if logged out.
+     * @return Promise resolved with true if site is loaded, resolved with false if cannot login.
      */
     loadSite(siteId: string, pageName?: string, params?: any): Promise<boolean> {
         this.logger.debug(`Load site ${siteId}`);
@@ -911,12 +988,20 @@ export class CoreSitesProvider {
 
                 return false;
             }, () => {
-                this.login(siteId);
+                return site.getPublicConfig().catch(() => {
+                    return {};
+                }).then((config) => {
+                    return this.checkRequiredMinimumVersion(config).then(() => {
+                        this.login(siteId);
 
-                // Update site info. We don't block the UI.
-                this.updateSiteInfo(siteId);
+                        // Update site info. We don't block the UI.
+                        this.updateSiteInfo(siteId);
 
-                return true;
+                        return true;
+                    }).catch(() => {
+                        return false;
+                    });
+                });
             });
         });
     }
@@ -924,7 +1009,7 @@ export class CoreSitesProvider {
     /**
      * Get current site.
      *
-     * @return {CoreSite} Current site.
+     * @return Current site.
      */
     getCurrentSite(): CoreSite {
         return this.currentSite;
@@ -933,7 +1018,7 @@ export class CoreSitesProvider {
     /**
      * Get the site home ID of the current site.
      *
-     * @return {number} Current site home ID.
+     * @return Current site home ID.
      */
     getCurrentSiteHomeId(): number {
         if (this.currentSite) {
@@ -946,7 +1031,7 @@ export class CoreSitesProvider {
     /**
      * Get current site ID.
      *
-     * @return {string} Current site ID.
+     * @return Current site ID.
      */
     getCurrentSiteId(): string {
         if (this.currentSite) {
@@ -959,7 +1044,7 @@ export class CoreSitesProvider {
     /**
      * Get current site User ID.
      *
-     * @return {number} Current site User ID.
+     * @return Current site User ID.
      */
     getCurrentSiteUserId(): number {
         if (this.currentSite) {
@@ -972,7 +1057,7 @@ export class CoreSitesProvider {
     /**
      * Check if the user is logged in a site.
      *
-     * @return {boolean} Whether the user is logged in a site.
+     * @return Whether the user is logged in a site.
      */
     isLoggedIn(): boolean {
         return typeof this.currentSite != 'undefined' && typeof this.currentSite.token != 'undefined' &&
@@ -982,8 +1067,8 @@ export class CoreSitesProvider {
     /**
      * Delete a site from the sites list.
      *
-     * @param {string} siteId ID of the site to delete.
-     * @return {Promise<any>} Promise to be resolved when the site is deleted.
+     * @param siteId ID of the site to delete.
+     * @return Promise to be resolved when the site is deleted.
      */
     deleteSite(siteId: string): Promise<any> {
         this.logger.debug(`Delete site ${siteId}`);
@@ -1013,7 +1098,7 @@ export class CoreSitesProvider {
     /**
      * Check if there are sites stored.
      *
-     * @return {Promise<boolean>} Promise resolved with true if there are sites and false if there aren't.
+     * @return Promise resolved with true if there are sites and false if there aren't.
      */
     hasSites(): Promise<boolean> {
         return this.appDB.countRecords(this.SITES_TABLE).then((count) => {
@@ -1024,8 +1109,8 @@ export class CoreSitesProvider {
     /**
      * Returns a site object.
      *
-     * @param {string} [siteId] The site ID. If not defined, current site (if available).
-     * @return {Promise<CoreSite>} Promise resolved with the site.
+     * @param siteId The site ID. If not defined, current site (if available).
+     * @return Promise resolved with the site.
      */
     getSite(siteId?: string): Promise<CoreSite> {
         if (!siteId) {
@@ -1045,8 +1130,8 @@ export class CoreSitesProvider {
     /**
      * Create a site from an entry of the sites list DB. The new site is added to the list of "cached" sites: this.sites.
      *
-     * @param {any} entry Site list entry.
-     * @return {Promise<CoreSite>} Promised resolved with the created site.
+     * @param entry Site list entry.
+     * @return Promised resolved with the created site.
      */
     makeSiteFromSiteListEntry(entry: any): Promise<CoreSite> {
         let site: CoreSite,
@@ -1071,8 +1156,8 @@ export class CoreSitesProvider {
     /**
      * Returns if the site is the current one.
      *
-     * @param {string|CoreSite} [site] Site object or siteId to be compared. If not defined, use current site.
-     * @return {boolean} Whether site or siteId is the current one.
+     * @param site Site object or siteId to be compared. If not defined, use current site.
+     * @return Whether site or siteId is the current one.
      */
     isCurrentSite(site: string | CoreSite): boolean {
         if (!site || !this.currentSite) {
@@ -1087,8 +1172,8 @@ export class CoreSitesProvider {
     /**
      * Returns the database object of a site.
      *
-     * @param {string} [siteId] The site ID. If not defined, current site (if available).
-     * @return {Promise<SQLiteDB>} Promise resolved with the database.
+     * @param siteId The site ID. If not defined, current site (if available).
+     * @return Promise resolved with the database.
      */
     getSiteDb(siteId: string): Promise<SQLiteDB> {
         return this.getSite(siteId).then((site) => {
@@ -1099,8 +1184,8 @@ export class CoreSitesProvider {
     /**
      * Returns the site home ID of a site.
      *
-     * @param  {number} [siteId] The site ID. If not defined, current site (if available).
-     * @return {Promise}         Promise resolved with site home ID.
+     * @param siteId The site ID. If not defined, current site (if available).
+     * @return Promise resolved with site home ID.
      */
     getSiteHomeId(siteId?: string): Promise<number> {
         return this.getSite(siteId).then((site) => {
@@ -1111,8 +1196,8 @@ export class CoreSitesProvider {
     /**
      * Get the list of sites stored.
      *
-     * @param {String[]} [ids] IDs of the sites to get. If not defined, return all sites.
-     * @return {Promise<CoreSiteBasicInfo[]>} Promise resolved when the sites are retrieved.
+     * @param ids IDs of the sites to get. If not defined, return all sites.
+     * @return Promise resolved when the sites are retrieved.
      */
     getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         return this.appDB.getAllRecords(this.SITES_TABLE).then((sites) => {
@@ -1126,7 +1211,8 @@ export class CoreSitesProvider {
                             siteUrl: site.siteUrl,
                             fullName: siteInfo && siteInfo.fullname,
                             siteName: CoreConfigConstants.sitename ? CoreConfigConstants.sitename : siteInfo && siteInfo.sitename,
-                            avatar: siteInfo && siteInfo.userpictureurl
+                            avatar: siteInfo && siteInfo.userpictureurl,
+                            siteHomeId: siteInfo && siteInfo.siteid || 1
                         };
                     formattedSites.push(basicInfo);
                 }
@@ -1139,8 +1225,8 @@ export class CoreSitesProvider {
     /**
      * Get the list of sites stored, sorted by URL and full name.
      *
-     * @param {String[]} [ids] IDs of the sites to get. If not defined, return all sites.
-     * @return {Promise<CoreSiteBasicInfo[]>} Promise resolved when the sites are retrieved.
+     * @param ids IDs of the sites to get. If not defined, return all sites.
+     * @return Promise resolved when the sites are retrieved.
      */
     getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         return this.getSites(ids).then((sites) => {
@@ -1169,7 +1255,7 @@ export class CoreSitesProvider {
     /**
      * Get the list of IDs of sites stored and not logged out.
      *
-     * @return {Promise<string[]>} Promise resolved when the sites IDs are retrieved.
+     * @return Promise resolved when the sites IDs are retrieved.
      */
     getLoggedInSitesIds(): Promise<string[]> {
         return this.appDB.getRecords(this.SITES_TABLE, {loggedOut : 0}).then((sites) => {
@@ -1182,7 +1268,7 @@ export class CoreSitesProvider {
     /**
      * Get the list of IDs of sites stored.
      *
-     * @return {Promise<string[]>} Promise resolved when the sites IDs are retrieved.
+     * @return Promise resolved when the sites IDs are retrieved.
      */
     getSitesIds(): Promise<string[]> {
         return this.appDB.getAllRecords(this.SITES_TABLE).then((sites) => {
@@ -1195,8 +1281,8 @@ export class CoreSitesProvider {
     /**
      * Login the user in a site.
      *
-     * @param {string} siteid ID of the site the user is accessing.
-     * @return {Promise<void>} Promise resolved when current site is stored.
+     * @param siteid ID of the site the user is accessing.
+     * @return Promise resolved when current site is stored.
      */
     login(siteId: string): Promise<void> {
         const entry = {
@@ -1212,7 +1298,7 @@ export class CoreSitesProvider {
     /**
      * Logout the user.
      *
-     * @return {Promise<any>} Promise resolved when the user is logged out.
+     * @return Promise resolved when the user is logged out.
      */
     logout(): Promise<any> {
         let siteId;
@@ -1239,7 +1325,7 @@ export class CoreSitesProvider {
     /**
      * Restores the session to the previous one so the user doesn't has to login everytime the app is started.
      *
-     * @return {Promise<any>} Promise resolved if a session is restored.
+     * @return Promise resolved if a session is restored.
      */
     restoreSession(): Promise<any> {
         if (this.sessionRestored) {
@@ -1261,9 +1347,9 @@ export class CoreSitesProvider {
     /**
      * Mark or unmark a site as logged out so the user needs to authenticate again.
      *
-     * @param {string} siteId ID of the site.
-     * @param {boolean} loggedOut True to set the site as logged out, false otherwise.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param siteId ID of the site.
+     * @param loggedOut True to set the site as logged out, false otherwise.
+     * @return Promise resolved when done.
      */
     setSiteLoggedOut(siteId: string, loggedOut: boolean): Promise<any> {
         return this.getSite(siteId).then((site) => {
@@ -1288,11 +1374,11 @@ export class CoreSitesProvider {
     /**
      * Updates a site's token.
      *
-     * @param {string} siteUrl Site's URL.
-     * @param {string} username Username.
-     * @param {string} token User's new token.
-     * @param {string} [privateToken=''] User's private token.
-     * @return {Promise<any>} A promise resolved when the site is updated.
+     * @param siteUrl Site's URL.
+     * @param username Username.
+     * @param token User's new token.
+     * @param privateToken User's private token.
+     * @return A promise resolved when the site is updated.
      */
     updateSiteToken(siteUrl: string, username: string, token: string, privateToken: string = ''): Promise<any> {
         const siteId = this.createSiteID(siteUrl, username);
@@ -1305,10 +1391,10 @@ export class CoreSitesProvider {
     /**
      * Updates a site's token using siteId.
      *
-     * @param {string} siteId Site Id.
-     * @param {string} token User's new token.
-     * @param {string} [privateToken=''] User's private token.
-     * @return {Promise<any>} A promise resolved when the site is updated.
+     * @param siteId Site Id.
+     * @param token User's new token.
+     * @param privateToken User's private token.
+     * @return A promise resolved when the site is updated.
      */
     updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<any> {
         return this.getSite(siteId).then((site) => {
@@ -1329,8 +1415,8 @@ export class CoreSitesProvider {
     /**
      * Updates a site's info.
      *
-     * @param {string} siteid Site's ID.
-     * @return {Promise<any>} A promise resolved when the site is updated.
+     * @param siteid Site's ID.
+     * @return A promise resolved when the site is updated.
      */
     updateSiteInfo(siteId: string): Promise<any> {
         return this.getSite(siteId).then((site) => {
@@ -1370,9 +1456,9 @@ export class CoreSitesProvider {
     /**
      * Updates a site's info.
      *
-     * @param {string} siteUrl  Site's URL.
-     * @param {string} username Username.
-     * @return {Promise<any>} A promise to be resolved when the site is updated.
+     * @param siteUrl Site's URL.
+     * @param username Username.
+     * @return A promise to be resolved when the site is updated.
      */
     updateSiteInfoByUrl(siteUrl: string, username: string): Promise<any> {
         const siteId = this.createSiteID(siteUrl, username);
@@ -1384,11 +1470,11 @@ export class CoreSitesProvider {
      * Get the site IDs a URL belongs to.
      * Someone can have more than one account in the same site, that's why this function returns an array of IDs.
      *
-     * @param {string} url URL to check.
-     * @param {boolean} [prioritize] True if it should prioritize current site. If the URL belongs to current site then it won't
-     *                               check any other site, it will only return current site.
-     * @param {string} [username] If set, it will return only the sites where the current user has this username.
-     * @return {Promise<string[]>} Promise resolved with the site IDs (array).
+     * @param url URL to check.
+     * @param prioritize True if it should prioritize current site. If the URL belongs to current site then it won't
+     *                   check any other site, it will only return current site.
+     * @param username If set, it will return only the sites where the current user has this username.
+     * @return Promise resolved with the site IDs (array).
      */
     getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string): Promise<string[]> {
         // If prioritize is true, check current site first.
@@ -1442,7 +1528,7 @@ export class CoreSitesProvider {
     /**
      * Get the site ID stored in DB as current site.
      *
-     * @return {Promise<string>} Promise resolved with the site ID.
+     * @return Promise resolved with the site ID.
      */
     getStoredCurrentSiteId(): Promise<string> {
         return this.appDB.getRecord(this.CURRENT_SITE_TABLE, { id: 1 }).then((currentSite) => {
@@ -1453,8 +1539,8 @@ export class CoreSitesProvider {
     /**
      * Get the public config of a certain site.
      *
-     * @param {string} siteUrl URL of the site.
-     * @return {Promise<any>} Promise resolved with the public config.
+     * @param siteUrl URL of the site.
+     * @return Promise resolved with the public config.
      */
     getSitePublicConfig(siteUrl: string): Promise<any> {
         const temporarySite = this.sitesFactory.makeSite(undefined, siteUrl);
@@ -1465,8 +1551,8 @@ export class CoreSitesProvider {
     /**
      * Get site config.
      *
-     * @param {any} site The site to get the config.
-     * @return {Promise<any>} Promise resolved with config if available.
+     * @param site The site to get the config.
+     * @return Promise resolved with config if available.
      */
     protected getSiteConfig(site: CoreSite): Promise<any> {
         if (!site.wsAvailable('tool_mobile_get_config')) {
@@ -1480,9 +1566,9 @@ export class CoreSitesProvider {
     /**
      * Check if a certain feature is disabled in a site.
      *
-     * @param {string} name Name of the feature to check.
-     * @param {string} [siteId] The site ID. If not defined, current site (if available).
-     * @return {Promise<boolean>} Promise resolved with true if disabled.
+     * @param name Name of the feature to check.
+     * @param siteId The site ID. If not defined, current site (if available).
+     * @return Promise resolved with true if disabled.
      */
     isFeatureDisabled(name: string, siteId?: string): Promise<boolean> {
         return this.getSite(siteId).then((site) => {
@@ -1493,7 +1579,7 @@ export class CoreSitesProvider {
     /**
      * Create a table in all the sites databases.
      *
-     * @param {SQLiteDBTamableSchema} table Table schema.
+     * @param table Table schema.
      */
     createTableFromSchema(table: SQLiteDBTableSchema): void {
         this.createTablesFromSchema([table]);
@@ -1502,7 +1588,7 @@ export class CoreSitesProvider {
     /**
      * Create several tables in all the sites databases.
      *
-     * @param {SQLiteDBTamableSchema[]} tables List of tables schema.
+     * @param tables List of tables schema.
      */
     createTablesFromSchema(tables: SQLiteDBTableSchema[]): void {
         // Add the tables to the list of schemas. This list is to create all the tables in new sites.
@@ -1517,9 +1603,9 @@ export class CoreSitesProvider {
     /**
      * Check if a WS is available in the current site, if any.
      *
-     * @param {string} method WS name.
-     * @param {boolean} [checkPrefix=true] When true also checks with the compatibility prefix.
-     * @return {boolean} Whether the WS is available.
+     * @param method WS name.
+     * @param checkPrefix When true also checks with the compatibility prefix.
+     * @return Whether the WS is available.
      */
     wsAvailableInCurrentSite(method: string, checkPrefix: boolean = true): boolean {
         const site = this.getCurrentSite();
@@ -1530,8 +1616,8 @@ export class CoreSitesProvider {
     /**
      * Check if a site is a legacy site by its info.
      *
-     * @param {any} info The site info.
-     * @return {boolean} Whether it's a legacy Moodle.
+     * @param info The site info.
+     * @return Whether it's a legacy Moodle.
      * @deprecated since 3.7.1
      */
     isLegacyMoodleByInfo(info: any): boolean {
@@ -1548,8 +1634,8 @@ export class CoreSitesProvider {
     /**
      * Install and upgrade all the registered schemas and tables.
      *
-     * @param {CoreSite} site Site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param site Site.
+     * @return Promise resolved when done.
      */
     migrateSiteSchemas(site: CoreSite): Promise<any> {
         const db = site.getDb();
@@ -1607,10 +1693,10 @@ export class CoreSitesProvider {
     /**
      * Check if a URL is the root URL of any of the stored sites.
      *
-     * @param {string} url URL to check.
-     * @param {string} [username] Username to check.
-     * @return {Promise<{site: CoreSite, siteIds: string[]}>} Promise resolved with site to use and the list of sites that have
-     *                                   the URL. Site will be undefined if it isn't the root URL of any stored site.
+     * @param url URL to check.
+     * @param username Username to check.
+     * @return Promise resolved with site to use and the list of sites that have
+     *         the URL. Site will be undefined if it isn't the root URL of any stored site.
      */
     isStoredRootURL(url: string, username?: string): Promise<{site: CoreSite, siteIds: string[]}> {
         // Check if the site is stored.
@@ -1641,7 +1727,7 @@ export class CoreSitesProvider {
     /**
      * Returns the Site Schema names that can be cleared on space storage.
      *
-     * @return {string[]} Name of the site schemas.
+     * @return Name of the site schemas.
      */
     getSiteTableSchemasToClear(): string[] {
         let reset = [];
@@ -1653,4 +1739,28 @@ export class CoreSitesProvider {
 
         return reset;
     }
+
+    /**
+     * Returns presets for a given reading strategy.
+     *
+     * @param strategy Reading strategy.
+     * @return PreSets options object.
+     */
+    getReadingStrategyPreSets(strategy: CoreSitesReadingStrategy): CoreSiteWSPreSets {
+        switch (strategy) {
+            case CoreSitesReadingStrategy.PreferCache:
+                return {
+                    omitExpires: true,
+                };
+            case CoreSitesReadingStrategy.OnlyCache:
+                return {
+                    omitExpires: true,
+                    forceOffline: true,
+                };
+            case CoreSitesReadingStrategy.PreferNetwork:
+            default:
+                return {};
+        }
+    }
+
 }

@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title *ngIf="entry"><core-format-text [text]="entry.concept"></core-format-text></ion-title>
+        <ion-title *ngIf="entry"><core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary && glossary.coursemodule" [courseId]="courseId"></core-format-text></ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content>
@@ -12,16 +12,16 @@
         <ng-container *ngIf="entry">
             <ion-item text-wrap *ngIf="showAuthor">
                 <ion-avatar core-user-avatar [user]="entry" (click)="openUserProfile(post.userid)" item-start></ion-avatar>
-                <h2><core-format-text [text]="entry.concept"></core-format-text></h2>
+                <h2><core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary && glossary.coursemodule" [courseId]="courseId"></core-format-text></h2>
                 <ion-note item-end *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
-                <p><core-format-text [text]="entry.userfullname"></core-format-text></p>
+                <p>{{ entry.userfullname }}</p>
             </ion-item>
             <ion-item text-wrap *ngIf="!showAuthor">
-                <h2><core-format-text [text]="entry.concept"></core-format-text></h2>
+                <h2><core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary && glossary.coursemodule"></core-format-text></h2>
                 <ion-note item-end *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
             </ion-item>
             <ion-item text-wrap>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="entry.definition"></core-format-text>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="entry.definition" contextLevel="module" [contextInstanceId]="glossary && glossary.coursemodule" [courseId]="courseId"></core-format-text>
             </ion-item>
             <ng-container *ngIf="entry.attachment">
                 <div no-lines>
@@ -34,6 +34,9 @@
             </ion-item>
             <ion-item text-wrap *ngIf="entry.approved != 1">
                 <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
+            </ion-item>
+            <ion-item *ngIf="glossary && glossary.allowcomments && entry && entry.id > 0 && commentsEnabled">
+                <core-comments contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary" [itemId]="entry.id" area="glossary_entry" [courseId]="glossary.courseid"></core-comments>
             </ion-item>
             <core-rating-rate *ngIf="glossary && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="glossary.coursemodule" [itemId]="entry.id" [itemSetId]="0" [courseId]="glossary.courseid" [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()"></core-rating-rate>
             <core-rating-aggregate *ngIf="glossary && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="glossary.coursemodule" [itemId]="entry.id" [courseId]="glossary.courseid" [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale"></core-rating-aggregate>

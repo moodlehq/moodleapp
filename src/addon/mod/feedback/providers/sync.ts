@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,11 +56,11 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Conveniece function to prefetch data after an update.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID.
-     * @param {RegExp} [regex] If regex matches, don't download the data. Defaults to check files and timers.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID.
+     * @param regex If regex matches, don't download the data. Defaults to check files and timers.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     prefetchAfterUpdate(module: any, courseId: number, regex?: RegExp, siteId?: string): Promise<any> {
         regex = regex || /^.*files$|^timers/;
@@ -71,9 +71,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Try to synchronize all the feedbacks in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllFeedbacks(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all feedbacks', this.syncAllFeedbacksFunc.bind(this), [force], siteId);
@@ -82,9 +82,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Sync all pending feedbacks on a site.
      *
-     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force    Wether to force sync not depending on last execution.
-     * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllFeedbacksFunc(siteId?: string, force?: boolean): Promise<any> {
          // Sync all new responses.
@@ -122,9 +122,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Sync a feedback only if a certain time has passed since the last time.
      *
-     * @param  {number} feedbackId  Feedback ID.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}       Promise resolved when the feedback is synced or if it doesn't need to be synced.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the feedback is synced or if it doesn't need to be synced.
      */
     syncFeedbackIfNeeded(feedbackId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -139,9 +139,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Synchronize all offline responses of a feedback.
      *
-     * @param  {number} feedbackId Feedback ID to be synced.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
+     * @param feedbackId Feedback ID to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncFeedback(feedbackId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -260,12 +260,12 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Convenience function to sync process page calls.
      *
-     * @param  {any}          feedback     Feedback object.
-     * @param  {any}          data         Response data.
-     * @param  {string}       siteId       Site Id.
-     * @param  {number}       timemodified Current completed modification time.
-     * @param  {any}          result       Result object to be modified.
-     * @return {Promise<any>}              Resolve when done or rejected with error.
+     * @param feedback Feedback object.
+     * @param data Response data.
+     * @param siteId Site Id.
+     * @param timemodified Current completed modification time.
+     * @param result Result object to be modified.
+     * @return Resolve when done or rejected with error.
      */
     protected processPage(feedback: any, data: any, siteId: string, timemodified: number, result: any): Promise<any> {
         // Delete all pages that are submitted before changing website.

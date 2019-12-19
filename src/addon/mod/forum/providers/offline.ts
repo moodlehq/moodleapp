@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -132,11 +132,11 @@ export class AddonModForumOfflineProvider {
     /**
      * Delete a forum offline discussion.
      *
-     * @param  {number} forumId     Forum ID.
-     * @param  {number} timeCreated The time the discussion was created.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @param  {number} [userId]    User the discussion belongs to. If not defined, current user in site.
-     * @return {Promise<any>}       Promise resolved if stored, rejected if failure.
+     * @param forumId Forum ID.
+     * @param timeCreated The time the discussion was created.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the discussion belongs to. If not defined, current user in site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteNewDiscussion(forumId: number, timeCreated: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -153,11 +153,11 @@ export class AddonModForumOfflineProvider {
     /**
      * Get a forum offline discussion.
      *
-     * @param  {number} forumId     Forum ID.
-     * @param  {number} timeCreated The time the discussion was created.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @param  {number} [userId]    User the discussion belongs to. If not defined, current user in site.
-     * @return {Promise<any>}       Promise resolved if stored, rejected if failure.
+     * @param forumId Forum ID.
+     * @param timeCreated The time the discussion was created.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the discussion belongs to. If not defined, current user in site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     getNewDiscussion(forumId: number, timeCreated: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -178,8 +178,8 @@ export class AddonModForumOfflineProvider {
     /**
      * Get all offline new discussions.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}  Promise resolved with discussions.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with discussions.
      */
     getAllNewDiscussions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -190,10 +190,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Check if there are offline new discussions to send.
      *
-     * @param  {number} forumId   Forum ID.
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @param  {number} [userId]  User the discussions belong to. If not defined, current user in site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @param forumId Forum ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the discussions belong to. If not defined, current user in site.
+     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     hasNewDiscussions(forumId: number, siteId?: string, userId?: number): Promise<boolean> {
         return this.getNewDiscussions(forumId, siteId, userId).then((discussions) => {
@@ -207,10 +207,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Get new discussions to be synced.
      *
-     * @param  {number} forumId  Forum ID to get.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the discussions belong to. If not defined, current user in site.
-     * @return {Promise<any[]>}  Promise resolved with the object to be synced.
+     * @param forumId Forum ID to get.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the discussions belong to. If not defined, current user in site.
+     * @return Promise resolved with the object to be synced.
      */
     getNewDiscussions(forumId: number, siteId?: string, userId?: number): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -227,17 +227,17 @@ export class AddonModForumOfflineProvider {
     /**
      * Offline version for adding a new discussion to a forum.
      *
-     * @param  {number} forumId       Forum ID.
-     * @param  {string} name          Forum name.
-     * @param  {number} courseId      Course ID the forum belongs to.
-     * @param  {string} subject       New discussion's subject.
-     * @param  {string} message       New discussion's message.
-     * @param  {any}    [options]     Options (subscribe, pin, ...).
-     * @param  {string} [groupId]     Group this discussion belongs to.
-     * @param  {number} [timeCreated] The time the discussion was created. If not defined, current time.
-     * @param  {string} [siteId]      Site ID. If not defined, current site.
-     * @param  {number} [userId]      User the discussion belong to. If not defined, current user in site.
-     * @return {Promise<any>}         Promise resolved when new discussion is successfully saved.
+     * @param forumId Forum ID.
+     * @param name Forum name.
+     * @param courseId Course ID the forum belongs to.
+     * @param subject New discussion's subject.
+     * @param message New discussion's message.
+     * @param options Options (subscribe, pin, ...).
+     * @param groupId Group this discussion belongs to.
+     * @param timeCreated The time the discussion was created. If not defined, current time.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the discussion belong to. If not defined, current user in site.
+     * @return Promise resolved when new discussion is successfully saved.
      */
     addNewDiscussion(forumId: number, name: string, courseId: number, subject: string, message: string, options?: any,
             groupId?: number, timeCreated?: number, siteId?: string, userId?: number): Promise<any> {
@@ -261,10 +261,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Delete forum offline replies.
      *
-     * @param  {number} postId   ID of the post being replied.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the reply belongs to. If not defined, current user in site.
-     * @return {Promise<any>}    Promise resolved if stored, rejected if failure.
+     * @param postId ID of the post being replied.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the reply belongs to. If not defined, current user in site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteReply(postId: number, siteId?: string, userId?: number): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -280,8 +280,8 @@ export class AddonModForumOfflineProvider {
     /**
      * Get all offline replies.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}  Promise resolved with replies.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with replies.
      */
     getAllReplies(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -292,10 +292,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Check if there is an offline reply for a forum to be synced.
      *
-     * @param  {number} forumId   ID of the forum being replied.
-     * @param  {string} [siteId]  Site ID. If not defined, current site.
-     * @param  {number} [userId]  User the replies belong to. If not defined, current user in site.
-     * @return {Promise<boolean>} Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @param forumId ID of the forum being replied.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the replies belong to. If not defined, current user in site.
+     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     hasForumReplies(forumId: number, siteId?: string, userId?: number): Promise<boolean> {
         return this.getForumReplies(forumId, siteId, userId).then((replies) => {
@@ -309,10 +309,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Get the replies of a forum to be synced.
      *
-     * @param  {number} forumId  ID of the forum being replied.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the replies belong to. If not defined, current user in site.
-     * @return {Promise<any[]>}  Promise resolved with replies.
+     * @param forumId ID of the forum being replied.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the replies belong to. If not defined, current user in site.
+     * @return Promise resolved with replies.
      */
     getForumReplies(forumId: number, siteId?: string, userId?: number): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -329,10 +329,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Check if there is an offline reply to be synced.
      *
-     * @param  {number} discussionId ID of the discussion the user is replying to.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @param  {number} [userId]     User the replies belong to. If not defined, current user in site.
-     * @return {Promise<boolean>}    Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @param discussionId ID of the discussion the user is replying to.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the replies belong to. If not defined, current user in site.
+     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     hasDiscussionReplies(discussionId: number, siteId?: string, userId?: number): Promise<boolean> {
         return this.getDiscussionReplies(discussionId, siteId, userId).then((replies) => {
@@ -346,10 +346,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Get the replies of a discussion to be synced.
      *
-     * @param  {number} discussionId ID of the discussion the user is replying to.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @param  {number} [userId]     User the replies belong to. If not defined, current user in site.
-     * @return {Promise<any[]>}      Promise resolved with discussions.
+     * @param discussionId ID of the discussion the user is replying to.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the replies belong to. If not defined, current user in site.
+     * @return Promise resolved with discussions.
      */
     getDiscussionReplies(discussionId: number, siteId?: string, userId?: number): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -366,17 +366,17 @@ export class AddonModForumOfflineProvider {
     /**
      * Offline version for replying to a certain post.
      *
-     * @param  {number}  postId       ID of the post being replied.
-     * @param  {number}  discussionId ID of the discussion the user is replying to.
-     * @param  {number}  forumId      ID of the forum the user is replying to.
-     * @param  {string}  name         Forum name.
-     * @param  {number}  courseId     Course ID the forum belongs to.
-     * @param  {string}  subject      New post's subject.
-     * @param  {string}  message      New post's message.
-     * @param  {any}     [options]    Options (subscribe, attachments, ...).
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @param  {number}  [userId]     User the post belong to. If not defined, current user in site.
-     * @return {Promise<any>}         Promise resolved when the post is created.
+     * @param postId ID of the post being replied.
+     * @param discussionId ID of the discussion the user is replying to.
+     * @param forumId ID of the forum the user is replying to.
+     * @param name Forum name.
+     * @param courseId Course ID the forum belongs to.
+     * @param subject New post's subject.
+     * @param message New post's message.
+     * @param options Options (subscribe, attachments, ...).
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the post belong to. If not defined, current user in site.
+     * @return Promise resolved when the post is created.
      */
     replyPost(postId: number, discussionId: number, forumId: number, name: string, courseId: number, subject: string,
             message: string, options?: any, siteId?: string, userId?: number): Promise<any> {
@@ -401,9 +401,9 @@ export class AddonModForumOfflineProvider {
     /**
      * Get the path to the folder where to store files for offline attachments in a forum.
      *
-     * @param  {number} forumId  Forum ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<string>} Promise resolved with the path.
+     * @param forumId Forum ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the path.
      */
     getForumFolder(forumId: number, siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -416,10 +416,10 @@ export class AddonModForumOfflineProvider {
     /**
      * Get the path to the folder where to store files for a new offline discussion.
      *
-     * @param  {number} forumId     Forum ID.
-     * @param  {number} timeCreated The time the discussion was created.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<string>}    Promise resolved with the path.
+     * @param forumId Forum ID.
+     * @param timeCreated The time the discussion was created.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the path.
      */
     getNewDiscussionFolder(forumId: number, timeCreated: number, siteId?: string): Promise<string> {
         return this.getForumFolder(forumId, siteId).then((folderPath) => {
@@ -430,11 +430,11 @@ export class AddonModForumOfflineProvider {
     /**
      * Get the path to the folder where to store files for a new offline reply.
      *
-     * @param  {number} forumId  Forum ID.
-     * @param  {number} postId   ID of the post being replied.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @param  {number} [userId] User the replies belong to. If not defined, current user in site.
-     * @return {Promise<string>} Promise resolved with the path.
+     * @param forumId Forum ID.
+     * @param postId ID of the post being replied.
+     * @param siteId Site ID. If not defined, current site.
+     * @param userId User the replies belong to. If not defined, current user in site.
+     * @return Promise resolved with the path.
      */
     getReplyFolder(forumId: number, postId: number, siteId?: string, userId?: number): Promise<string> {
         return this.getForumFolder(forumId, siteId).then((folderPath) => {
@@ -449,8 +449,8 @@ export class AddonModForumOfflineProvider {
     /**
      * Parse "options" column of fetched records.
      *
-     * @param  {any[]} records List of records.
-     * @return {any[]}         List of records with options parsed.
+     * @param records List of records.
+     * @return List of records with options parsed.
      */
     protected parseRecordOptions(records: any[]): any[] {
         records.forEach((record) => {

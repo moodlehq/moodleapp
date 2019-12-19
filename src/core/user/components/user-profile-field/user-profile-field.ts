@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ export class CoreUserProfileFieldComponent implements OnInit {
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() form?: any; // Form where to add the form control. Required if edit=true or signup=true.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 
     componentClass: any; // The class of the component to render.
     data: any = {}; // Data to pass to the component.
@@ -51,6 +54,9 @@ export class CoreUserProfileFieldComponent implements OnInit {
             this.data.disabled = this.utilsProvider.isTrueOrOne(this.field.locked);
             this.data.form = this.form;
             this.data.registerAuth = this.registerAuth;
+            this.data.contextLevel = this.contextLevel;
+            this.data.contextInstanceId = this.contextInstanceId;
+            this.data.courseId = this.courseId;
         }
     }
 }

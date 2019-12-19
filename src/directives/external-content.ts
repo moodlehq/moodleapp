@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     /**
      * Add a new source with a certain URL as a sibling of the current element.
      *
-     * @param {string} url URL to use in the source.
+     * @param url URL to use in the source.
      */
     protected addSource(url: string): void {
         if (this.element.tagName !== 'SOURCE') {
@@ -174,10 +174,10 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     /**
      * Handle external content, setting the right URL.
      *
-     * @param {string} targetAttr Attribute to modify.
-     * @param {string} url Original URL to treat.
-     * @param {string} [siteId] Site ID.
-     * @return {Promise<any>} Promise resolved if the element is successfully treated.
+     * @param targetAttr Attribute to modify.
+     * @param url Original URL to treat.
+     * @param siteId Site ID.
+     * @return Promise resolved if the element is successfully treated.
      */
     protected handleExternalContent(targetAttr: string, url: string, siteId?: string): Promise<any> {
 
@@ -285,8 +285,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     /**
      * Handle inline styles, trying to download referenced files.
      *
-     * @param {string} siteId Site ID.
-     * @return {Promise<any>} Promise resolved if the element is successfully treated.
+     * @param siteId Site ID.
+     * @return Promise resolved if the element is successfully treated.
      */
     protected handleInlineStyles(siteId: string): Promise<any> {
         let inlineStyles = this.element.getAttribute('style');

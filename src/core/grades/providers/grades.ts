@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ export class CoreGradesProvider {
     /**
      * Get cache key for grade table data WS calls.
      *
-     * @param {number} courseId ID of the course to get the grades from.
-     * @param {number} userId   ID of the user to get the grades from.
-     * @return {string}         Cache key.
+     * @param courseId ID of the course to get the grades from.
+     * @param userId ID of the user to get the grades from.
+     * @return Cache key.
      */
     protected getCourseGradesCacheKey(courseId: number, userId: number): string {
         return this.getCourseGradesPrefixCacheKey(courseId) + userId;
@@ -52,10 +52,10 @@ export class CoreGradesProvider {
     /**
      * Get cache key for grade items data WS calls.
      *
-     * @param {number} courseId     ID of the course to get the grades from.
-     * @param {number} userId       ID of the user to get the grades from.
-     * @param {number} [groupId]    ID of the group to get the grades from. Default: 0.
-     * @return {string}         Cache key.
+     * @param courseId ID of the course to get the grades from.
+     * @param userId ID of the user to get the grades from.
+     * @param groupId ID of the group to get the grades from. Default: 0.
+     * @return Cache key.
      */
     protected getCourseGradesItemsCacheKey(courseId: number, userId: number, groupId: number): string {
         groupId = groupId || 0;
@@ -66,8 +66,8 @@ export class CoreGradesProvider {
     /**
      * Get prefix cache key for grade table data WS calls.
      *
-     * @param {number} courseId ID of the course to get the grades from.
-     * @return {string}         Cache key.
+     * @param courseId ID of the course to get the grades from.
+     * @return Cache key.
      */
     protected getCourseGradesPrefixCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'items:' + courseId + ':';
@@ -76,7 +76,7 @@ export class CoreGradesProvider {
     /**
      * Get cache key for courses grade WS calls.
      *
-     * @return {string}   Cache key.
+     * @return Cache key.
      */
     protected getCoursesGradesCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'coursesgrades';
@@ -86,12 +86,12 @@ export class CoreGradesProvider {
      * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
      * Fallback function only used if 'gradereport_user_get_grade_items' WS is not avalaible Moodle < 3.2.
      *
-     * @param  {number}  courseId             ID of the course to get the grades from.
-     * @param  {number}  [userId]             ID of the user to get the grades from. If not defined use site's current user.
-     * @param  {number}  [groupId]            ID of the group to get the grades from. Not used for old gradebook table.
-     * @param  {string}  [siteId]             Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}                Promise to be resolved when the grades are retrieved.
+     * @param courseId ID of the course to get the grades from.
+     * @param userId ID of the user to get the grades from. If not defined use site's current user.
+     * @param groupId ID of the group to get the grades from. Not used for old gradebook table.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the grades are retrieved.
      */
     getGradeItems(courseId: number, userId?: number, groupId?: number, siteId?: string, ignoreCache: boolean = false):
             Promise<any> {
@@ -116,12 +116,12 @@ export class CoreGradesProvider {
     /**
      * Get the grade items for a certain course.
      *
-     * @param  {number}  courseId             ID of the course to get the grades from.
-     * @param  {number}  [userId]             ID of the user to get the grades from.
-     * @param  {number}  [groupId]            ID of the group to get the grades from. Default 0.
-     * @param  {string}  [siteId]             Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}                      Promise to be resolved when the grades table is retrieved.
+     * @param courseId ID of the course to get the grades from.
+     * @param userId ID of the user to get the grades from.
+     * @param groupId ID of the group to get the grades from. Default 0.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the grades table is retrieved.
      */
     getCourseGradesItems(courseId: number, userId?: number, groupId?: number, siteId?: string,
             ignoreCache: boolean = false): Promise<any> {
@@ -158,11 +158,11 @@ export class CoreGradesProvider {
     /**
      * Get the grades for a certain course.
      *
-     * @param  {number}  courseId             ID of the course to get the grades from.
-     * @param  {number}  [userId]             ID of the user to get the grades from.
-     * @param  {string}  [siteId]             Site ID. If not defined, current site.
-     * @param  {boolean} [ignoreCache=false]  True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}                      Promise to be resolved when the grades table is retrieved.
+     * @param courseId ID of the course to get the grades from.
+     * @param userId ID of the user to get the grades from.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the grades table is retrieved.
      */
     getCourseGradesTable(courseId: number, userId?: number, siteId?: string, ignoreCache: boolean = false): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -196,8 +196,8 @@ export class CoreGradesProvider {
     /**
      * Get the grades for a certain course.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise to be resolved when the grades are retrieved.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise to be resolved when the grades are retrieved.
      */
     getCoursesGrades(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -220,9 +220,9 @@ export class CoreGradesProvider {
     /**
      * Invalidates courses grade table and items WS calls for all users.
      *
-     * @param {number} courseId ID of the course to get the grades from.
-     * @param {string} [siteId] Site ID (empty for current site).
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId ID of the course to get the grades from.
+     * @param siteId Site ID (empty for current site).
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -233,10 +233,10 @@ export class CoreGradesProvider {
     /**
      * Invalidates grade table data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} [userId]   User ID.
-     * @param {string} [siteId]   Site id (empty for current site).
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param userId User ID.
+     * @param siteId Site id (empty for current site).
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCourseGradesData(courseId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -249,8 +249,8 @@ export class CoreGradesProvider {
     /**
      * Invalidates courses grade data WS calls.
      *
-     * @param {string} [siteId]   Site id (empty for current site).
-     * @return {Promise<any>}     Promise resolved when the data is invalidated.
+     * @param siteId Site id (empty for current site).
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCoursesGradesData(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -261,11 +261,11 @@ export class CoreGradesProvider {
     /**
      * Invalidates courses grade items data WS calls.
      *
-     * @param {number} courseId     ID of the course to get the grades from.
-     * @param {number} userId       ID of the user to get the grades from.
-     * @param {number} [groupId]    ID of the group to get the grades from. Default: 0.
-     * @param {string} [siteId]     Site id (empty for current site).
-     * @return {Promise<any>}     Promise resolved when the data is invalidated.
+     * @param courseId ID of the course to get the grades from.
+     * @param userId ID of the user to get the grades from.
+     * @param groupId ID of the group to get the grades from. Default: 0.
+     * @param siteId Site id (empty for current site).
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -276,8 +276,8 @@ export class CoreGradesProvider {
     /**
      * Returns whether or not the plugin is enabled for a certain site.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>}  Resolve with true if plugin is enabled, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Resolve with true if plugin is enabled, false otherwise.
      * @since  Moodle 3.2
      */
     isCourseGradesEnabled(siteId?: string): Promise<boolean> {
@@ -295,9 +295,9 @@ export class CoreGradesProvider {
     /**
      * Returns whether or not the grade addon is enabled for a certain course.
      *
-     * @param {number} courseId  Course ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promisee<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     isPluginEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
         if (!courseId) {
@@ -312,8 +312,8 @@ export class CoreGradesProvider {
     /**
      * Returns whether or not WS Grade Items is avalaible.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>}         True if ws is avalaible, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return True if ws is avalaible, false otherwise.
      * @since  Moodle 3.2
      */
     isGradeItemsAvalaible(siteId?: string): Promise<boolean> {
@@ -325,10 +325,10 @@ export class CoreGradesProvider {
     /**
      * Log Course grades view in Moodle.
      *
-     * @param  {number}  courseId Course ID.
-     * @param  {number}  userId   User ID.
-     * @param  {string}  [name]   Course name. If not set, it will be calculated.
-     * @return {Promise<any>}     Promise resolved when done.
+     * @param courseId Course ID.
+     * @param userId User ID.
+     * @param name Course name. If not set, it will be calculated.
+     * @return Promise resolved when done.
      */
     logCourseGradesView(courseId: number, userId: number, name?: string): Promise<any> {
         userId = userId || this.sitesProvider.getCurrentSiteUserId();
@@ -354,8 +354,8 @@ export class CoreGradesProvider {
     /**
      * Log Courses grades view in Moodle.
      *
-     * @param  {number}  [courseId] Course ID. If not defined, site Home ID.
-     * @return {Promise<any>}     Promise resolved when done.
+     * @param courseId Course ID. If not defined, site Home ID.
+     * @return Promise resolved when done.
      */
     logCoursesGradesView(courseId?: number): Promise<any> {
         if (!courseId) {

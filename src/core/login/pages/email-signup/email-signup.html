@@ -31,7 +31,7 @@
                 <ion-label stacked core-mark-required="true">{{ 'core.wheredoyoulive' | translate }}</ion-label>
                 <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
                     <ion-option value="">{{ 'core.login.selectacountry' | translate }}</ion-option>
-                    <ion-option *ngFor="let key of countriesKeys" [value]="key">{{countries[key]}}</ion-option>
+                    <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
                 </ion-select>
             </ion-item>
 
@@ -52,7 +52,7 @@
                 <!-- If no sitename show big siteurl. -->
                 <p *ngIf="!siteName" padding class="item-heading">{{siteUrl}}</p>
                 <!-- If sitename, show big sitename and small siteurl. -->
-                <p *ngIf="siteName" padding class="item-heading"><core-format-text [text]="siteName"></core-format-text></p>
+                <p *ngIf="siteName" padding class="item-heading"><core-format-text [text]="siteName" [filter]="false"></core-format-text></p>
                 <p *ngIf="siteName">{{siteUrl}}</p>
             </ion-item>
 
@@ -103,7 +103,7 @@
                 <ion-label stacked id="core-login-signup-country">{{ 'core.user.country' | translate }}</ion-label>
                 <ion-select name="country" formControlName="country" aria-labelledby="core-login-signup-country" [placeholder]="'core.login.selectacountry' | translate">
                     <ion-option value="">{{ 'core.login.selectacountry' | translate }}</ion-option>
-                    <ion-option *ngFor="let key of countriesKeys" [value]="key">{{countries[key]}}</ion-option>
+                    <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
                 </ion-select>
             </ion-item>
 
@@ -145,7 +145,7 @@
 
     <ion-list *ngIf="isMinor">
         <ion-item-divider text-wrap>
-            <p *ngIf="siteName" class="item-heading padding"><core-format-text [text]="siteName"></core-format-text></p>
+            <p *ngIf="siteName" class="item-heading padding"><core-format-text [text]="siteName" [filter]="false"></core-format-text></p>
         </ion-item-divider>
         <ion-item text-wrap>
             <p class="item-heading">{{ 'core.considereddigitalminor' | translate }}</p>

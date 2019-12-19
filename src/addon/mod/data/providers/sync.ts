@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,9 +55,9 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Check if a database has data to synchronize.
      *
-     * @param  {number} dataId   Database ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>}         Promise resolved with boolean: true if has data to sync, false otherwise.
+     * @param dataId Database ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if has data to sync, false otherwise.
      */
     hasDataToSync(dataId: number, siteId?: string): Promise<boolean> {
         return this.dataOffline.hasOfflineData(dataId, siteId);
@@ -66,9 +66,9 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the databases in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDatabases(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all databases', this.syncAllDatabasesFunc.bind(this), [force], siteId);
@@ -77,9 +77,9 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync all pending databases on a site.
      *
-     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force    Wether to force sync not depending on last execution.
-     * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllDatabasesFunc(siteId?: string, force?: boolean): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -122,9 +122,9 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync a database only if a certain time has passed since the last time.
      *
-     * @param {number} dataId      Database ID.
-     * @param {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}            Promise resolved when the data is synced or if it doesn't need to be synced.
+     * @param dataId Database ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is synced or if it doesn't need to be synced.
      */
     syncDatabaseIfNeeded(dataId: number, siteId?: string): Promise<any> {
         return this.isSyncNeeded(dataId, siteId).then((needed) => {
@@ -137,9 +137,9 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize a data.
      *
-     * @param  {number} dataId Data ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
+     * @param dataId Data ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncDatabase(dataId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -226,11 +226,11 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize an entry.
      *
-     * @param {any} data Database.
-     * @param {AddonModDataOfflineAction[]} entryActions  Entry actions.
-     * @param {any} result Object with the result of the sync.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if success, rejected otherwise.
+     * @param data Database.
+     * @param entryActions Entry actions.
+     * @param result Object with the result of the sync.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected otherwise.
      */
     protected syncEntry(data: any, entryActions: AddonModDataOfflineAction[], result: any, siteId?: string): Promise<any> {
         let discardError,
@@ -388,10 +388,10 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize offline ratings.
      *
-     * @param {number} [cmId] Course module to be synced. If not defined, sync all databases.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param cmId Course module to be synced. If not defined, sync all databases.
+     * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncRatings(cmId?: number, force?: boolean, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

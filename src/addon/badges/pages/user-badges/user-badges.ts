@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Content, NavParams } from 'ionic-angular';
-import { AddonBadgesProvider } from '../../providers/badges';
+import { AddonBadgesProvider, AddonBadgesUserBadge } from '../../providers/badges';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
@@ -36,7 +36,7 @@ export class AddonBadgesUserBadgesPage {
     userId: number;
 
     badgesLoaded = false;
-    badges = [];
+    badges: AddonBadgesUserBadge[] = [];
     currentTime = 0;
     badgeHash: string;
 
@@ -64,7 +64,7 @@ export class AddonBadgesUserBadgesPage {
     /**
      * Fetch all the badges required for the view.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchBadges(): Promise<any> {
         this.currentTime = this.timeUtils.timestamp();
@@ -79,7 +79,7 @@ export class AddonBadgesUserBadgesPage {
     /**
      * Refresh the badges.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshBadges(refresher: any): void {
         this.badgesProvider.invalidateUserBadges(this.courseId, this.userId).finally(() => {
@@ -92,7 +92,7 @@ export class AddonBadgesUserBadgesPage {
     /**
      * Navigate to a particular badge.
      *
-     * @param {string} badgeHash Badge to load.
+     * @param badgeHash Badge to load.
      */
     loadIssuedBadge(badgeHash: string): void {
         this.badgeHash = badgeHash;

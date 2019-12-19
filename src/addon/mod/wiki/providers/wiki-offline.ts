@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -91,8 +91,8 @@ export class AddonModWikiOfflineProvider {
     /**
      * Convert a value to a positive number. If not a number or less than 0, 0 will be returned.
      *
-     * @param {any} value Value to convert.
-     * @return {number} Converted value.
+     * @param value Value to convert.
+     * @return Converted value.
      */
     convertToPositiveNumber(value: any): number {
         value = parseInt(value, 10);
@@ -103,13 +103,13 @@ export class AddonModWikiOfflineProvider {
     /**
      * Delete a new page.
      *
-     * @param {string} title Title of the page.
-     * @param {number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
-     * @param {number} [wikiId] Wiki ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [userId] User ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [groupId] Group ID. Optional, will be used create subwiki if not informed.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if deleted, rejected if failure.
+     * @param title Title of the page.
+     * @param subwikiId Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param wikiId Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param userId User ID. Optional, will be used create subwiki if not informed.
+     * @param groupId Group ID. Optional, will be used create subwiki if not informed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if deleted, rejected if failure.
      */
     deleteNewPage(title: string, subwikiId?: number, wikiId?: number, userId?: number, groupId?: number, siteId?: string)
             : Promise<any> {
@@ -134,8 +134,8 @@ export class AddonModWikiOfflineProvider {
     /**
      * Get all the stored new pages from all the wikis.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with pages.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with pages.
      */
     getAllNewPages(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -146,13 +146,13 @@ export class AddonModWikiOfflineProvider {
     /**
      * Get a stored new page.
      *
-     * @param {string} title Title of the page.
-     * @param {number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
-     * @param {number} [wikiId] Wiki ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [userId] User ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [groupId] Group ID. Optional, will be used create subwiki if not informed.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with page.
+     * @param title Title of the page.
+     * @param subwikiId Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param wikiId Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param userId User ID. Optional, will be used create subwiki if not informed.
+     * @param groupId Group ID. Optional, will be used create subwiki if not informed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with page.
      */
     getNewPage(title: string, subwikiId?: number, wikiId?: number, userId?: number, groupId?: number, siteId?: string)
             : Promise<any> {
@@ -177,12 +177,12 @@ export class AddonModWikiOfflineProvider {
     /**
      * Get all the stored new pages from a certain subwiki.
      *
-     * @param {number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
-     * @param {number} [wikiId] Wiki ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [userId] User ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [groupId] Group ID. Optional, will be used create subwiki if not informed.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with pages.
+     * @param subwikiId Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param wikiId Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param userId User ID. Optional, will be used create subwiki if not informed.
+     * @param groupId Group ID. Optional, will be used create subwiki if not informed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with pages.
      */
     getSubwikiNewPages(subwikiId?: number, wikiId?: number, userId?: number, groupId?: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -204,9 +204,9 @@ export class AddonModWikiOfflineProvider {
     /**
      * Get all the stored new pages from a list of subwikis.
      *
-     * @param {any[]} subwikis List of subwiki.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with pages.
+     * @param subwikis List of subwiki.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with pages.
      */
     getSubwikisNewPages(subwikis: any[], siteId?: string): Promise<any[]> {
         const promises = [];
@@ -227,14 +227,14 @@ export class AddonModWikiOfflineProvider {
     /**
      * Save a new page to be sent later.
      *
-     * @param {string} title Title of the page.
-     * @param {string} content Content of the page.
-     * @param {number} [subwikiId] Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
-     * @param {number} [wikiId] Wiki ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [userId] User ID. Optional, will be used create subwiki if not informed.
-     * @param {number} [groupId] Group ID. Optional, will be used create subwiki if not informed.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if stored, rejected if failure.
+     * @param title Title of the page.
+     * @param content Content of the page.
+     * @param subwikiId Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+     * @param wikiId Wiki ID. Optional, will be used create subwiki if not informed.
+     * @param userId User ID. Optional, will be used create subwiki if not informed.
+     * @param groupId Group ID. Optional, will be used create subwiki if not informed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     saveNewPage(title: string, content: string, subwikiId?: number, wikiId?: number, userId?: number, groupId?: number,
             siteId?: string): Promise<any> {
@@ -261,9 +261,9 @@ export class AddonModWikiOfflineProvider {
     /**
      * Check if a list of subwikis have offline data stored.
      *
-     * @param {any[]} subwikis List of subwikis.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return{Promise<boolean>} Promise resolved with boolean: whether it has offline data.
+     * @param subwikis List of subwikis.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it has offline data.
      */
     subwikisHaveOfflineData(subwikis: any[], siteId?: string): Promise<boolean> {
         return this.getSubwikisNewPages(subwikis, siteId).then((pages) => {

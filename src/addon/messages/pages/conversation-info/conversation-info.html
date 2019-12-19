@@ -18,15 +18,15 @@
             <div class="item-avatar-center">
                 <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name" role="presentation" onError="this.src='assets/img/group-avatar.png'">
             </div>
-            <h2><core-format-text [text]="conversation.name"></core-format-text></h2>
-            <p><core-format-text *ngIf="conversation.subname" [text]="conversation.subname"></core-format-text></p>
+            <h2><core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text></h2>
+            <p><core-format-text *ngIf="conversation.subname" [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
             <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation.membercount} }}</p>
         </ion-item>
 
         <a ion-item text-wrap *ngFor="let member of members" (click)="closeModal(member.id)" class="addon-messages-conversation-item">
             <ion-avatar core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" item-start></ion-avatar>
             <h2>
-                <core-format-text [text]="member.fullname"></core-format-text>
+                {{ member.fullname }}
                 <core-icon name="fa-ban" *ngIf="member.isblocked" [label]="'addon.messages.contactblocked' | translate"></core-icon>
             </h2>
         </a>

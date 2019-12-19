@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ export class AddonBadgesUserHandler implements CoreUserProfileHandler {
     /**
      * Check if handler is enabled.
      *
-     * @return {Promise<boolean>} Always enabled.
+     * @return Always enabled.
      */
     isEnabled(): Promise<boolean> {
         return this.badgesProvider.isPluginEnabled();
@@ -39,11 +39,11 @@ export class AddonBadgesUserHandler implements CoreUserProfileHandler {
     /**
      * Check if handler is enabled for this user in this context.
      *
-     * @param {any} user     User to check.
-     * @param {number} courseId Course ID.
-     * @param  {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param  {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return  {boolean}   True if enabled, false otherwise.
+     * @param user User to check.
+     * @param courseId Course ID.
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return True if enabled, false otherwise.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean {
 
@@ -58,7 +58,7 @@ export class AddonBadgesUserHandler implements CoreUserProfileHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreUserProfileHandlerData} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {

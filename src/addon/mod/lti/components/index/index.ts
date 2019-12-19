@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModLtiProvider } from '../../providers/lti';
+import { AddonModLtiProvider, AddonModLtiLti } from '../../providers/lti';
 
 /**
  * Component that displays an LTI entry page.
@@ -28,7 +28,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     component = AddonModLtiProvider.COMPONENT;
     moduleName = 'lti';
 
-    lti: any; // The LTI object.
+    lti: AddonModLtiLti; // The LTI object.
 
     protected fetchContentDefaultError = 'addon.mod_lti.errorgetlti';
 
@@ -57,18 +57,17 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Get the LTI data.
      *
-     * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If it should try to sync.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.ltiProvider.getLti(this.courseId, this.module.id).then((ltiData) => {
             this.lti = ltiData;
-            this.description = this.lti.intro || this.description;
+            this.description = this.lti.intro;
             this.dataRetrieved.emit(this.lti);
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }
@@ -76,7 +75,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];

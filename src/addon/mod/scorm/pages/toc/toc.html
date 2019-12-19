@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content>
     <nav>
-        <ion-list>
+        <ion-list class="addon-mod_scorm-toc">
             <ion-item text-wrap *ngIf="attemptToContinue">
                 <p>{{ 'addon.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
             </ion-item>
@@ -23,9 +23,10 @@
 
             <!-- List of SCOs. -->
             <ng-container *ngFor="let sco of toc">
-                <a *ngIf="sco.isvisible" ion-item text-wrap [ngClass]="'core-padding-' + sco.level" [class.core-nav-item-selected]="selected == sco.id" (click)="loadSco(sco)" [attr.disabled]="!sco.prereq || !sco.launch ? true : null" [attr.detail-none]="!sco.prereq || !sco.launch ? true : null">
-                    <img [src]="sco.image.url" [alt]="sco.image.description" />
-                    <span>{{ sco.title }}</span>
+                <a *ngIf="sco.isvisible" ion-item text-wrap [ngClass]="'core-padding-' + sco.level + ' addon-mod_scorm-type-' + sco.scormtype" [class.core-nav-item-selected]="selected == sco.id" [class]="" (click)="loadSco(sco)" [attr.disabled]="!sco.prereq || !sco.launch ? true : null" [attr.detail-none]="!sco.prereq || !sco.launch ? true : null">
+                    <core-icon [name]="sco.image.icon" [label]="sco.image.description" item-start></core-icon>
+                    <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId"></core-format-text>
+                    <span *ngIf="accessInfo && accessInfo.canviewscores && sco.score_raw">({{ 'addon.mod_scorm.score' | translate }}: {{sco.score_raw}})</span>
                 </a>
             </ng-container>
         </ion-list>

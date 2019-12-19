@@ -14,3 +14,32 @@ ion-app.app-root addon-block-timeline-events {
         pointer-events: auto;
     }
 }
+
+ion-app.app-root core-courses-course-progress addon-block-timeline-events {
+    @include media-breakpoint-up(md) {
+        .hidden-tablet {
+            display: block !important;
+            opacity: 1 !important;
+            &.button[disabled] {
+                opacity: .4 !important;
+            }
+        }
+        .hidden-phone {
+            display: none !important;
+            opacity: 0 !important;
+        }
+    }
+    @include media-breakpoint-up(lg) {
+        .hidden-tablet {
+            display: none !important;
+            opacity: 0 !important;
+        }
+        .hidden-phone {
+            display: block !important;
+            opacity: 1 !important;
+            &.button[disabled] {
+                opacity: .4 !important;
+            }
+        }
+    }
+}

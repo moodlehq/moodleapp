@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ export class CoreCoursesAvailableCoursesPage {
     /**
      * Load the courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadCourses(): Promise<any> {
         const frontpageCourseId = this.sitesProvider.getCurrentSite().getSiteHomeId();
@@ -62,7 +62,7 @@ export class CoreCoursesAvailableCoursesPage {
     /**
      * Refresh the courses.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshCourses(refresher: any): void {
         const promises = [];

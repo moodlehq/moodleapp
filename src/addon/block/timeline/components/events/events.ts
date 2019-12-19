@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,9 +89,9 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * Filter the events by time.
      *
-     * @param {number} start Number of days to start getting events from today. E.g. -1 will get events from yesterday.
-     * @param {number} [end] Number of days after the start.
-     * @return {any[]} Filtered events.
+     * @param start Number of days to start getting events from today. E.g. -1 will get events from yesterday.
+     * @param end Number of days after the start.
+     * @return Filtered events.
      */
     protected filterEventsByTime(start: number, end?: number): any[] {
         start = moment().add(start, 'days').startOf('day').unix();
@@ -121,8 +121,8 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * Action clicked.
      *
-     * @param {Event} e     Click event.
-     * @param {string} url  Url of the action.
+     * @param e Click event.
+     * @param url Url of the action.
      */
     action(e: Event, url: string): void {
         e.preventDefault();

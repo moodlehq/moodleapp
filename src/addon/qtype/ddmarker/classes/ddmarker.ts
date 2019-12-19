@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,14 +58,14 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Create the instance.
      *
-     * @param {CoreLoggerProvider} logger Logger provider.
-     * @param {CoreDomUtilsProvider} domUtils Dom Utils provider.
-     * @param {CoreTextUtilsProvider} textUtils Text Utils provider.
-     * @param {HTMLElement} container The container HTMLElement of the question.
-     * @param {any} question The question instance.
-     * @param {boolean} readOnly Whether it's read only.
-     * @param {any[]} dropZones The drop zones received in the init object of the question.
-     * @param {string} [imgSrc] Background image source (3.6+ sites).
+     * @param logger Logger provider.
+     * @param domUtils Dom Utils provider.
+     * @param textUtils Text Utils provider.
+     * @param container The container HTMLElement of the question.
+     * @param question The question instance.
+     * @param readOnly Whether it's read only.
+     * @param dropZones The drop zones received in the init object of the question.
+     * @param imgSrc Background image source (3.6+ sites).
      */
     constructor(logger: CoreLoggerProvider, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
             protected container: HTMLElement, protected question: any, protected readOnly: boolean, protected dropZones: any[],
@@ -93,9 +93,9 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Create a new draggable element cloning a certain element.
      *
-     * @param {HTMLElement} dragHome The element to clone.
-     * @param {number} itemNo The number of the new item.
-     * @return {HTMLElement} The new element.
+     * @param dragHome The element to clone.
+     * @param itemNo The number of the new item.
+     * @return The new element.
      */
     cloneNewDragItem(dragHome: HTMLElement, itemNo: number): HTMLElement {
         const marker = <HTMLElement> dragHome.querySelector('span.markertext');
@@ -119,8 +119,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Convert the X and Y position of the BG IMG to a position relative to the window.
      *
-     * @param {number[]} bgImgXY X and Y of the BG IMG relative position.
-     * @return {number[]} Position relative to the window.
+     * @param bgImgXY X and Y of the BG IMG relative position.
+     * @return Position relative to the window.
      */
     convertToWindowXY(bgImgXY: number[]): number[] {
         const bgImg = this.doc.bgImg(),
@@ -136,8 +136,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Check if some coordinates (X, Y) are inside the background image.
      *
-     * @param {number[]} coords Coordinates to check.
-     * @return {boolean} Whether they're inside the background image.
+     * @param coords Coordinates to check.
+     * @return Whether they're inside the background image.
      */
     coordsInImg(coords: number[]): boolean {
         const bgImg = this.doc.bgImg();
@@ -168,8 +168,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Returns an object to encapsulate operations on dd area.
      *
-     * @param {number} slot The question slot.
-     * @return {AddonQtypeDdMarkerQuestionDocStructure} The object.
+     * @param slot The question slot.
+     * @return The object.
      */
     docStructure(slot: number): AddonQtypeDdMarkerQuestionDocStructure {
         const topNode = <HTMLElement> this.container.querySelector('.addon-qtype-ddmarker-container'),
@@ -235,7 +235,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Make an element "draggable". In the mobile app, items are "dragged" using tap and drop.
      *
-     * @param {HTMLElement} drag Element.
+     * @param drag Element.
      */
     draggable(drag: HTMLElement): void {
         drag.addEventListener('click', (e) => {
@@ -272,8 +272,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the coordinates of the drag home of a certain choice.
      *
-     * @param {number} choiceNo Choice number.
-     * @return {number[]} Coordinates.
+     * @param choiceNo Choice number.
+     * @return Coordinates.
      */
     dragHomeXY(choiceNo: number): number[] {
         const dragItemHome = this.doc.dragItemHome(choiceNo),
@@ -285,11 +285,11 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Draw a drop zone.
      *
-     * @param {number} dropZoneNo Number of the drop zone.
-     * @param {string} markerText The marker text to set.
-     * @param {string} shape Name of the shape of the drop zone (circle, rectangle, polygon).
-     * @param {string} coords Coordinates of the shape.
-     * @param {string} colour Colour of the shape.
+     * @param dropZoneNo Number of the drop zone.
+     * @param markerText The marker text to set.
+     * @param shape Name of the shape of the drop zone (circle, rectangle, polygon).
+     * @param coords Coordinates of the shape.
+     * @param colour Colour of the shape.
      */
     drawDropZone(dropZoneNo: number, markerText: string, shape: string, coords: string, colour: string): void {
         let existingMarkerText: HTMLElement;
@@ -363,10 +363,10 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Draw a circle in a drop zone.
      *
-     * @param {number} dropZoneNo Number of the drop zone.
-     * @param {string} coords Coordinates of the circle.
-     * @param {string} colour Colour of the circle.
-     * @return {number[]} X and Y position of the center of the circle.
+     * @param dropZoneNo Number of the drop zone.
+     * @param coords Coordinates of the circle.
+     * @param colour Colour of the circle.
+     * @return X and Y position of the center of the circle.
      */
     drawShapeCircle(dropZoneNo: number, coords: string, colour: string): number[] {
         // Extract the numbers in the coordinates.
@@ -404,10 +404,10 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Draw a rectangle in a drop zone.
      *
-     * @param {number} dropZoneNo Number of the drop zone.
-     * @param {string} coords Coordinates of the rectangle.
-     * @param {string} colour Colour of the rectangle.
-     * @return {number[]} X and Y position of the center of the rectangle.
+     * @param dropZoneNo Number of the drop zone.
+     * @param coords Coordinates of the rectangle.
+     * @param colour Colour of the rectangle.
+     * @return X and Y position of the center of the rectangle.
      */
     drawShapeRectangle(dropZoneNo: number, coords: string, colour: string): number[] {
         // Extract the numbers in the coordinates.
@@ -446,10 +446,10 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Draw a polygon in a drop zone.
      *
-     * @param {number} dropZoneNo Number of the drop zone.
-     * @param {string} coords Coordinates of the polygon.
-     * @param {string} colour Colour of the polygon.
-     * @return {number[]} X and Y position of the center of the polygon.
+     * @param dropZoneNo Number of the drop zone.
+     * @param coords Coordinates of the polygon.
+     * @param colour Colour of the polygon.
+     * @return X and Y position of the center of the polygon.
      */
     drawShapePolygon(dropZoneNo: number, coords: string, colour: string): number[] {
         const coordsParts = coords.split(';'),
@@ -497,8 +497,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Drop a drag element into a certain position.
      *
-     * @param {HTMLElement} drag The element to drop.
-     * @param {number[]} position Position to drop to (X, Y).
+     * @param drag The element to drop.
+     * @param position Position to drop to (X, Y).
      */
     dropDrag(drag: HTMLElement, position: number[]): void {
         const choiceNo = this.getChoiceNoForNode(drag);
@@ -522,8 +522,8 @@ export class AddonQtypeDdMarkerQuestion {
      * Determine which drag items need to be shown and return coords of all drag items except any that are currently being
      * dragged based on contents of hidden inputs and whether drags are 'infinite' or how many drags should be shown.
      *
-     * @param {HTMLElement} input The input element.
-     * @return {number[][]} List of coordinates.
+     * @param input The input element.
+     * @return List of coordinates.
      */
     getCoords(input: HTMLElement): number[][] {
         const choiceNo = this.getChoiceNoForNode(input),
@@ -557,8 +557,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the choice number from an HTML element.
      *
-     * @param {HTMLElement} node Element to check.
-     * @return {number} Choice number.
+     * @param node Element to check.
+     * @return Choice number.
      */
     getChoiceNoForNode(node: HTMLElement): number {
         return Number(this.doc.getClassnameNumericSuffix(node, 'choice'));
@@ -567,8 +567,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the coordinates (X, Y) of a draggable element.
      *
-     * @param {HTMLElement} dragItem The draggable item.
-     * @return {number[]} Coordinates.
+     * @param dragItem The draggable item.
+     * @return Coordinates.
      */
     getDragXY(dragItem: HTMLElement): number[] {
         const position = this.domUtils.getElementXY(dragItem, null, 'ddarea'),
@@ -593,8 +593,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the item number from an HTML element.
      *
-     * @param {HTMLElement} node Element to check.
-     * @return {number} Choice number.
+     * @param node Element to check.
+     * @return Choice number.
      */
     getItemNoForNode(node: HTMLElement): number {
         return Number(this.doc.getClassnameNumericSuffix(node, 'item'));
@@ -603,7 +603,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the next colour.
      *
-     * @return {string} Colour.
+     * @return Colour.
      */
     getNextColour(): string {
         const colour = this.COLOURS[this.nextColourIndex];
@@ -620,8 +620,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the number of drags from an HTML element.
      *
-     * @param {HTMLElement} node Element to check.
-     * @return {number} Choice number.
+     * @param node Element to check.
+     * @return Choice number.
      */
     getNoOfDragsForNode(node: HTMLElement): number {
         return Number(this.doc.getClassnameNumericSuffix(node, 'noofdrags'));
@@ -630,7 +630,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Initialize the question.
      *
-     * @param {any} question Question.
+     * @param question Question.
      */
     initializer(question: any): void {
         this.doc = this.docStructure(question.slot);
@@ -800,7 +800,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Reset the coordinates stored for a choice.
      *
-     * @param {number} choiceNo Choice number.
+     * @param choiceNo Choice number.
      */
     resetDragXY(choiceNo: number): void {
         this.setFormValue(choiceNo, '');
@@ -816,9 +816,9 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Save all the coordinates of a choice into the right input.
      *
-     * @param {number} choiceNo Number of the choice.
-     * @param {HTMLElement} dropped Element being dropped.
-     * @param {number[]} position Position where the element is dropped.
+     * @param choiceNo Number of the choice.
+     * @param dropped Element being dropped.
+     * @param position Position where the element is dropped.
      */
     saveAllXYForChoice(choiceNo: number, dropped: HTMLElement, position: number[]): void {
         const coords = [];
@@ -860,8 +860,8 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Save a certain value in the input of a choice.
      *
-     * @param {number} choiceNo Choice number.
-     * @param {string} value The value to set.
+     * @param choiceNo Choice number.
+     * @param value The value to set.
      */
     setFormValue(choiceNo: number, value: string): void {
         this.doc.inputForChoice(choiceNo).setAttribute('value', value);
@@ -870,7 +870,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Select a draggable element.
      *
-     * @param {HTMLElement} drag Element.
+     * @param drag Element.
      */
     selectDrag(drag: HTMLElement): void {
         // Deselect previous drags.

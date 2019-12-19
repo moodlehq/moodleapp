@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ export class NetworkMock extends Network {
     /**
      * Returns an observable to watch connection changes.
      *
-     * @return {Observable<any>} Observable.
+     * @return Observable.
      */
     onchange(): Observable<any> {
         return Observable.merge(this.onConnect(), this.onDisconnect());
@@ -50,7 +50,7 @@ export class NetworkMock extends Network {
     /**
      * Returns an observable to notify when the app is connected.
      *
-     * @return {Observable<any>} Observable.
+     * @return Observable.
      */
     onConnect(): Observable<any> {
         const observable = new Subject<any>();
@@ -65,7 +65,7 @@ export class NetworkMock extends Network {
     /**
      * Returns an observable to notify when the app is disconnected.
      *
-     * @return {Observable<any>} Observable.
+     * @return Observable.
      */
     onDisconnect(): Observable<any> {
         const observable = new Subject<any>();

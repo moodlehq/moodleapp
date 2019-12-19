@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     /**
      * Add the form control for the search mode.
      *
-     * @param {string} fieldName Control field name.
-     * @param {any}    value     Initial set value.
+     * @param fieldName Control field name.
+     * @param value Initial set value.
      */
     protected addControl(fieldName: string, value?: any): void {
         if (!this.form) {
@@ -68,7 +68,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     /**
      * Return if is shown or list mode.
      *
-     * @return {boolean} True if mode is show or list.
+     * @return True if mode is show or list.
      */
     isShowOrListMode(): boolean {
         return this.mode == 'list' || this.mode == 'show';

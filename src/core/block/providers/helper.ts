@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ export class CoreBlockHelperProvider {
     /**
      * Return if it get course blocks options is enabled for the current site.
      *
-     * @return {boolean} true if enabled, false otherwise.
+     * @return true if enabled, false otherwise.
      */
     canGetCourseBlocks(): boolean {
         return this.courseProvider.canGetCourseBlocks() && !this.blockDelegate.areBlocksDisabledInCourses();
@@ -36,8 +36,8 @@ export class CoreBlockHelperProvider {
     /**
      * Returns the list of blocks for the selected course.
      *
-     * @param  {number}       courseId Course ID.
-     * @return {Promise<any>}          List of supported blocks.
+     * @param courseId Course ID.
+     * @return List of supported blocks.
      */
     getCourseBlocks(courseId: number): Promise<any> {
         const canGetBlocks = this.canGetCourseBlocks();

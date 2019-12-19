@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, DoCheck, Output, EventEmitter, KeyValueDiffers } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonCalendarProvider } from '../../providers/calendar';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarProvider, AddonCalendarCalendarEvent } from '../../providers/calendar';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreConstants } from '@core/constants';
@@ -30,9 +30,8 @@ import { CoreConstants } from '@core/constants';
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
 })
-export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, OnDestroy {
-    @Input() courseId: number | string;
-    @Input() categoryId: number | string; // Category ID the course belongs to.
+export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
+    @Input() filter: AddonCalendarFilter; // Filter to apply.
     @Output() onEventClicked = new EventEmitter<number>();
 
     filteredEvents = [];
@@ -43,12 +42,13 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     protected categoriesRetrieved = false;
     protected categories = {};
     protected currentSiteId: string;
-    protected events = []; // Events (both online and offline).
-    protected onlineEvents = [];
+    protected events: AddonCalendarCalendarEvent[] = []; // Events (both online and offline).
+    protected onlineEvents: AddonCalendarCalendarEvent[] = [];
     protected offlineEvents = []; // Offline events.
     protected deletedEvents = []; // Events deleted in offline.
     protected lookAhead: number;
     protected timeFormat: string;
+    protected differ: any; // To detect changes in the data input.
 
     // Observers.
     protected undeleteEventObserver: any;
@@ -57,6 +57,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     constructor(eventsProvider: CoreEventsProvider,
             sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider,
+            differs: KeyValueDiffers,
             private calendarProvider: AddonCalendarProvider,
             private calendarHelper: AddonCalendarHelperProvider,
             private calendarOffline: AddonCalendarOfflineProvider,
@@ -85,6 +86,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
                 }
             }
         }, this.currentSiteId);
+
+        this.differ = differs.find([]).create();
     }
 
     /**
@@ -95,10 +98,12 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     }
 
     /**
-     * Detect changes on input properties.
+     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.courseId || changes.categoryId) {
+    ngDoCheck(): void {
+        // Check if there's any change in the filter object.
+        const changes = this.differ.diff(this.filter);
+        if (changes) {
             this.filterEvents();
         }
     }
@@ -106,8 +111,8 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Fetch data.
      *
-     * @param {boolean} [refresh=false] True if we are refreshing events.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh True if we are refreshing events.
+     * @return Promise resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         const promises = [];
@@ -151,7 +156,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Fetch upcoming events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchEvents(): Promise<any> {
         // Don't pass courseId and categoryId, we'll filter them locally.
@@ -185,7 +190,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Load categories to be able to filter events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadCategories(): Promise<any> {
         if (this.categoriesRetrieved) {
@@ -207,26 +212,17 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     }
 
     /**
-     * Filter events to only display events belonging to a certain course.
+     * Filter events based on the filter popover.
      */
-    filterEvents(): void {
-        const courseId = this.courseId ? Number(this.courseId) : undefined,
-            categoryId = this.categoryId ? Number(this.categoryId) : undefined;
-
-        if (!courseId || courseId < 0) {
-            this.filteredEvents = this.events;
-        } else {
-            this.filteredEvents = this.events.filter((event) => {
-                return this.calendarHelper.shouldDisplayEvent(event, courseId, categoryId, this.categories);
-            });
-        }
+    protected filterEvents(): void {
+        this.filteredEvents = this.calendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**
      * Refresh events.
      *
-     * @param {boolean} [afterChange] Whether the refresh is done after an event has changed or has been synced.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
+     * @return Promise resolved when done.
      */
     refreshData(afterChange?: boolean): Promise<any> {
         const promises = [];
@@ -249,7 +245,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * An event was clicked.
      *
-     * @param {any} event Event.
+     * @param event Event.
      */
     eventClicked(event: any): void {
         this.onEventClicked.emit(event.id);
@@ -258,7 +254,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Merge online events with the offline events of that period.
      *
-     * @return {any[]} Merged events.
+     * @return Merged events.
      */
     protected mergeEvents(): any[] {
         if (!this.offlineEvents.length && !this.deletedEvents.length) {
@@ -302,7 +298,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Sort events by timestart.
      *
-     * @param {any[]} events List to sort.
+     * @param events List to sort.
      */
     protected sortEvents(events: any[]): any[] {
         return events.sort((a, b) => {
@@ -317,7 +313,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, OnChanges, 
     /**
      * Undelete a certain event.
      *
-     * @param {number} eventId Event ID.
+     * @param eventId Event ID.
      */
     protected undeleteEvent(eventId: number): void {
         const event = this.onlineEvents.find((event) => {

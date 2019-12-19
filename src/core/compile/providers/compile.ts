@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ import { CORE_CONTENTLINKS_PROVIDERS } from '@core/contentlinks/contentlinks.mod
 import { CORE_COURSE_PROVIDERS } from '@core/course/course.module';
 import { CORE_COURSES_PROVIDERS } from '@core/courses/courses.module';
 import { CORE_FILEUPLOADER_PROVIDERS } from '@core/fileuploader/fileuploader.module';
+import { CORE_FILTER_PROVIDERS } from '@core/filter/filter.module';
 import { CORE_GRADES_PROVIDERS } from '@core/grades/grades.module';
+import { CORE_H5P_PROVIDERS } from '@core/h5p/h5p.module';
 import { CORE_LOGIN_PROVIDERS } from '@core/login/login.module';
 import { CORE_MAINMENU_PROVIDERS } from '@core/mainmenu/mainmenu.module';
 import { CORE_QUESTION_PROVIDERS } from '@core/question/question.module';
@@ -154,10 +156,10 @@ export class CoreCompileProvider {
     /**
      * Create and compile a dynamic component.
      *
-     * @param {string} template The template of the component.
-     * @param {any} componentClass The JS class of the component.
-     * @param {any[]} [extraImports] Extra imported modules if needed and not imported by this class.
-     * @return {Promise<ComponentFactory<any>>} Promise resolved with the factory to instantiate the component.
+     * @param template The template of the component.
+     * @param componentClass The JS class of the component.
+     * @param extraImports Extra imported modules if needed and not imported by this class.
+     * @return Promise resolved with the factory to instantiate the component.
      */
     createAndCompileComponent(template: string, componentClass: any, extraImports: any[] = []): Promise<ComponentFactory<any>> {
         // Create the component using the template and the class.
@@ -190,8 +192,8 @@ export class CoreCompileProvider {
     /**
      * Eval some javascript using the context of the function.
      *
-     * @param {string} javascript The javascript to eval.
-     * @return {any} Result of the eval.
+     * @param javascript The javascript to eval.
+     * @return Result of the eval.
      */
     protected evalInContext(javascript: string): any {
         // tslint:disable: no-eval
@@ -201,9 +203,9 @@ export class CoreCompileProvider {
     /**
      * Execute some javascript code, using a certain instance as the context.
      *
-     * @param {any} instance Instance to use as the context. In the JS code, "this" will be this instance.
-     * @param {string} javascript The javascript code to eval.
-     * @return {any} Result of the javascript execution.
+     * @param instance Instance to use as the context. In the JS code, "this" will be this instance.
+     * @param javascript The javascript code to eval.
+     * @return Result of the javascript execution.
      */
     executeJavascript(instance: any, javascript: string): any {
         try {
@@ -216,8 +218,8 @@ export class CoreCompileProvider {
     /**
      * Inject all the core libraries in a certain object.
      *
-     * @param {any} instance The instance where to inject the libraries.
-     * @param {any[]} [extraProviders] Extra imported providers if needed and not imported by this class.
+     * @param instance The instance where to inject the libraries.
+     * @param extraProviders Extra imported providers if needed and not imported by this class.
      */
     injectLibraries(instance: any, extraProviders: any[] = []): void {
         const providers = (<any[]> CORE_PROVIDERS).concat(CORE_CONTENTLINKS_PROVIDERS).concat(CORE_COURSE_PROVIDERS)
@@ -234,7 +236,8 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_QUIZ_PROVIDERS).concat(ADDON_MOD_RESOURCE_PROVIDERS).concat(ADDON_MOD_SCORM_PROVIDERS)
                 .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
-                .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS);
+                .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS)
+                .concat(CORE_FILTER_PROVIDERS).concat(CORE_H5P_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {
@@ -284,10 +287,10 @@ export class CoreCompileProvider {
     /**
      * Instantiate a dynamic component.
      *
-     * @param {string} template The template of the component.
-     * @param {any} componentClass The JS class of the component.
-     * @param {Injector} [injector] The injector to use. It's recommended to pass it so NavController and similar can be injected.
-     * @return {Promise<ComponentRef<any>>} Promise resolved with the component instance.
+     * @param template The template of the component.
+     * @param componentClass The JS class of the component.
+     * @param injector The injector to use. It's recommended to pass it so NavController and similar can be injected.
+     * @return Promise resolved with the component instance.
      */
     instantiateDynamicComponent(template: string, componentClass: any, injector?: Injector): Promise<ComponentRef<any>> {
         injector = injector || this.injector;

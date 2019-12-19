@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,10 +34,10 @@ export class AddonQbehaviourImmediateFeedbackHandler implements CoreQuestionBeha
      * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question.
-     * @return {any[]|Promise<any[]>} Components (or promise resolved with components) to render some extra data in the question
-     *                                (e.g. certainty options). Don't return anything if no extra data is required.
+     * @param injector Injector.
+     * @param question The question.
+     * @return Components (or promise resolved with components) to render some extra data in the question
+     *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(injector: Injector, question: any): any[] | Promise<any[]> {
         // Just extract the button, it doesn't need any specific component.
@@ -49,7 +49,7 @@ export class AddonQbehaviourImmediateFeedbackHandler implements CoreQuestionBeha
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;

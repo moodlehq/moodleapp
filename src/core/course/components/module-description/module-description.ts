@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,9 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() component?: string; // Component for format text directive.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
     @Input() showFull?: string | boolean; // Whether to always display the full description.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 
     constructor() {
         // Nothing to do.

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -42,8 +42,8 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Get the title to use in course page.
      *
-     * @param {any} course The course.
-     * @return {string} Title.
+     * @param course The course.
+     * @return Title.
      */
     getCourseTitle(course: any): string {
         if (course.displayname) {
@@ -58,8 +58,8 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @type {boolean} Whether it can view all sections.
+     * @param course The course to check.
+     * @return Whether it can view all sections.
      */
     canViewAllSections(course: any): boolean {
         return true;
@@ -68,8 +68,8 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Whether the option to enable section/module download should be displayed. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @return {boolean} Whether the option to enable section/module download should be displayed
+     * @param course The course to check.
+     * @return Whether the option to enable section/module download should be displayed
      */
     displayEnableDownload(course: any): boolean {
         return true;
@@ -78,8 +78,8 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @type {boolean} Whether the default section selector should be displayed.
+     * @param course The course to check.
+     * @return Whether the default section selector should be displayed.
      */
     displaySectionSelector(course: any): boolean {
         return true;
@@ -89,9 +89,9 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * Whether the course refresher should be displayed. If it returns false, a refresher must be included in the course format,
      * and the doRefresh method of CoreCourseSectionPage must be called on refresh. Defaults to true.
      *
-     * @param {any} course The course to check.
-     * @param {any[]} sections List of course sections.
-     * @return {boolean} Whether the refresher should be displayed.
+     * @param course The course to check.
+     * @param sections List of course sections.
+     * @return Whether the refresher should be displayed.
      */
     displayRefresher?(course: any, sections: any[]): boolean {
         return true;
@@ -100,9 +100,9 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Given a list of sections, get the "current" section that should be displayed first.
      *
-     * @param {any} course The course to get the title.
-     * @param {any[]} sections List of sections.
-     * @return {any|Promise<any>} Current section (or promise resolved with current section).
+     * @param course The course to get the title.
+     * @param sections List of sections.
+     * @return Current section (or promise resolved with current section).
      */
     getCurrentSection(course: any, sections: any[]): any | Promise<any> {
         let promise;
@@ -143,9 +143,9 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * Invalidate the data required to load the course format.
      *
-     * @param {any} course The course to get the title.
-     * @param {any[]} sections List of sections.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param course The course to get the title.
+     * @param sections List of sections.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateData(course: any, sections: any[]): Promise<any> {
         return this.coursesProvider.invalidateCoursesByField('id', course.id);
@@ -157,10 +157,10 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * getCourseFormatComponent because it will display the course handlers at the top.
      * Your page should include the course handlers using CoreCoursesDelegate.
      *
-     * @param {NavController} navCtrl The NavController instance to use. If not defined, please use loginHelper.redirect.
-     * @param {any} course The course to open. It should contain a "format" attribute.
-     * @param {any} [params] Params to pass to the course page.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl The NavController instance to use. If not defined, please use loginHelper.redirect.
+     * @param course The course to open. It should contain a "format" attribute.
+     * @param params Params to pass to the course page.
+     * @return Promise resolved when done.
      */
     openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
         params = params || {};
@@ -183,8 +183,8 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * Whether the view should be refreshed when completion changes. If your course format doesn't display
      * activity completion then you should return false.
      *
-     * @param {any} course The course.
-     * @return {boolean|Promise<boolean>} Whether course view should be refreshed when an activity completion changes.
+     * @param course The course.
+     * @return Whether course view should be refreshed when an activity completion changes.
      */
     shouldRefreshWhenCompletionChanges(course: any): boolean | Promise<boolean> {
         return true;

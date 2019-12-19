@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
     /**
      * Convert a number of seconds to Hours:Minutes:Seconds.
      *
-     * @param {number|string} seconds Number of seconds.
-     * @return {string} Formatted seconds.
+     * @param seconds Number of seconds.
+     * @return Formatted seconds.
      */
     transform(seconds: string | number): string {
         let hours,

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -187,7 +187,7 @@ export class CoreMainMenuPage implements OnDestroy {
     /**
      * Handle a redirect.
      *
-     * @param {any} data Data received.
+     * @param data Data received.
      */
     protected handleRedirect(data: any): void {
         // Check if the redirect page is the root page of any of the tabs.

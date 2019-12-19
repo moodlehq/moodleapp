@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandler implements CoreUserProfileHandler {
     /**
      * The highest priority is displayed first.
-     * @type {number}
      */
     priority: number;
 
@@ -34,7 +33,6 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
      * - TYPE_NEW_PAGE: will be displayed as a list of items. Should have icon. Spinner not used.
      *     Default value if none is specified.
      * - TYPE_ACTION: will be displayed as a button and should not redirect to any state. Spinner use is recommended.
-     * @type {string}
      */
     type: string;
 
@@ -54,11 +52,11 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
 
     /**
      * Whether or not the handler is enabled for a user.
-     * @param  {any}     user       User object.
-     * @param  {number}  courseId   Course ID where to show.
-     * @param  {any}     [navOptions] Navigation options for the course.
-     * @param  {any}     [admOptions] Admin options for the course.
-     * @return {boolean|Promise<boolean>}            Whether or not the handler is enabled for a user.
+     * @param user User object.
+     * @param courseId Course ID where to show.
+     * @param navOptions Navigation options for the course.
+     * @param admOptions Admin options for the course.
+     * @return Whether or not the handler is enabled for a user.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         // First check if it's enabled for the user.
@@ -75,9 +73,9 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
 
     /**
      * Returns the data needed to render the handler.
-     * @param  {any}     user       User object.
-     * @param  {number}  courseId   Course ID where to show.
-     * @return {CoreUserProfileHandlerData}    Data to be shown.
+     * @param user User object.
+     * @param courseId Course ID where to show.
+     * @return Data to be shown.
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
         return {
@@ -105,7 +103,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
     /**
      * Set init result.
      *
-     * @param {any} result Result to set.
+     * @param result Result to set.
      */
     setInitResult(result: any): void {
         this.initResult = result;

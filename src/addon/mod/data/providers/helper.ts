@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,10 +43,10 @@ export class AddonModDataHelperProvider {
     /**
      * Returns the record with the offline actions applied.
      *
-     * @param {AddonModDataEntry} record Entry to modify.
-     * @param {AddonModDataOfflineAction[]} offlineActions Offline data with the actions done.
-     * @param {any[]} fields Entry defined fields indexed by fieldid.
-     * @return {Promise<AddonModDataEntry>} Promise resolved when done.
+     * @param record Entry to modify.
+     * @param offlineActions Offline data with the actions done.
+     * @param fields Entry defined fields indexed by fieldid.
+     * @return Promise resolved when done.
      */
     applyOfflineActions(record: AddonModDataEntry, offlineActions: AddonModDataOfflineAction[], fields: any[]):
             Promise<AddonModDataEntry> {
@@ -113,11 +113,11 @@ export class AddonModDataHelperProvider {
     /**
      * Approve or disapprove a database entry.
      *
-     * @param {number} dataId Database ID.
-     * @param {number} entryId Entry ID.
-     * @param {boolaen} approve True to approve, false to disapprove.
-     * @param {number} [courseId] Course ID. It not defined, it will be fetched.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param dataId Database ID.
+     * @param entryId Entry ID.
+     * @param approve True to approve, false to disapprove.
+     * @param courseId Course ID. It not defined, it will be fetched.
+     * @param siteId Site ID. If not defined, current site.
      */
     approveOrDisapproveEntry(dataId: number, entryId: number, approve: boolean, courseId?: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -153,13 +153,13 @@ export class AddonModDataHelperProvider {
     /**
      * Displays fields for being shown.
      *
-     * @param {string} template Template HMTL.
-     * @param {any[]} fields Fields that defines every content in the entry.
-     * @param {any} entry Entry.
-     * @param {number} offset Entry offset.
-     * @param {string} mode Mode list or show.
-     * @param {{[name: string]: boolean}} actions Actions that can be performed to the record.
-     * @return {string} Generated HTML.
+     * @param template Template HMTL.
+     * @param fields Fields that defines every content in the entry.
+     * @param entry Entry.
+     * @param offset Entry offset.
+     * @param mode Mode list or show.
+     * @param actions Actions that can be performed to the record.
+     * @return Generated HTML.
      */
     displayShowFields(template: string, fields: any[], entry: any, offset: number, mode: string,
             actions: {[name: string]: boolean}): string {
@@ -208,24 +208,24 @@ export class AddonModDataHelperProvider {
     /**
      * Get online and offline entries, or search entries.
      *
-     * @param   {any}       data               Database object.
-     * @param   {any[]}     fields             The fields that define the contents.
-     * @param   {number}    [groupId=0]        Group ID.
-     * @param   {string}    [search]           Search text. It will be used if advSearch is not defined.
-     * @param   {any[]}     [advSearch]        Advanced search data.
-     * @param   {string}    [sort=0]           Sort the records by this field id, reserved ids are:
-     *                                            0: timeadded
-     *                                           -1: firstname
-     *                                           -2: lastname
-     *                                           -3: approved
-     *                                           -4: timemodified.
-     *                                          Empty for using the default database setting.
-     * @param   {string}    [order=DESC]        The direction of the sorting: 'ASC' or 'DESC'.
-     *                                          Empty for using the default database setting.
-     * @param   {number}    [page=0]            Page of records to return.
-     * @param   {number}    [perPage=PER_PAGE]  Records per page to return. Default on PER_PAGE.
-     * @param   {string}    [siteId]            Site ID. If not defined, current site.
-     * @return  {Promise<AddonModDataEntries>}  Promise resolved when the database is retrieved.
+     * @param data Database object.
+     * @param fields The fields that define the contents.
+     * @param groupId Group ID.
+     * @param search Search text. It will be used if advSearch is not defined.
+     * @param advSearch Advanced search data.
+     * @param sort Sort the records by this field id, reserved ids are:
+     *             0: timeadded
+     *             -1: firstname
+     *             -2: lastname
+     *             -3: approved
+     *             -4: timemodified.
+     *             Empty for using the default database setting.
+     * @param order The direction of the sorting: 'ASC' or 'DESC'.
+     *              Empty for using the default database setting.
+     * @param page Page of records to return.
+     * @param perPage Records per page to return. Default on PER_PAGE.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the database is retrieved.
      */
     fetchEntries(data: any, fields: any[], groupId: number = 0, search?: string, advSearch?: any[], sort: string = '0',
             order: string = 'DESC', page: number = 0, perPage: number = AddonModDataProvider.PER_PAGE, siteId?: string):
@@ -310,11 +310,11 @@ export class AddonModDataHelperProvider {
     /**
      * Fetch an online or offline entry.
      *
-     * @param {any} data Database.
-     * @param {any[]} fields List of database fields.
-     * @param {number} entryId Entry ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<{entry: AddonModDataEntry, ratinginfo?: CoreRatingInfo}>} Promise resolved with the entry.
+     * @param data Database.
+     * @param fields List of database fields.
+     * @param entryId Entry ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the entry.
      */
     fetchEntry(data: any, fields: any[], entryId: number, siteId?: string):
             Promise<{entry: AddonModDataEntry, ratinginfo?: CoreRatingInfo}> {
@@ -355,10 +355,10 @@ export class AddonModDataHelperProvider {
     /**
      * Returns an object with all the actions that the user can do over the record.
      *
-     * @param {any}  database     Database activity.
-     * @param {any}  accessInfo   Access info to the activity.
-     * @param {any}  record       Entry or record where the actions will be performed.
-     * @return {{[name: string]: boolean}} Keyed with the action names and boolean to evalute if it can or cannot be done.
+     * @param database Database activity.
+     * @param accessInfo Access info to the activity.
+     * @param record Entry or record where the actions will be performed.
+     * @return Keyed with the action names and boolean to evalute if it can or cannot be done.
      */
     getActions(database: any, accessInfo: any, record: any): {[name: string]: boolean} {
         return {
@@ -387,10 +387,10 @@ export class AddonModDataHelperProvider {
     /**
      * Convenience function to get the course id of the database.
      *
-     * @param {number} dataId Database id.
-     * @param {number} [courseId] Course id, if known.
-     * @param {string} [siteId] Site id, if not set, current site will be used.
-     * @return {Promise<number>} Resolved with course Id when done.
+     * @param dataId Database id.
+     * @param courseId Course id, if known.
+     * @param siteId Site id, if not set, current site will be used.
+     * @return Resolved with course Id when done.
      */
     protected getActivityCourseIdIfNotSet(dataId: number, courseId?: number, siteId?: string): Promise<number> {
         if (courseId) {
@@ -407,9 +407,9 @@ export class AddonModDataHelperProvider {
      *
      * Based on Moodle function data_generate_default_template.
      *
-     * @param {string} type Type of template.
-     * @param {any[]} fields List of database fields.
-     * @return {string} Template HTML.
+     * @param type Type of template.
+     * @param fields List of database fields.
+     * @return Template HTML.
      */
     getDefaultTemplate(type: string, fields: any[]): string {
         if (type == 'listtemplateheader' || type == 'listtemplatefooter') {
@@ -483,14 +483,14 @@ export class AddonModDataHelperProvider {
      * Retrieve the entered data in the edit form.
      * We don't use ng-model because it doesn't detect changes done by JavaScript.
      *
-     * @param {any} inputData Array with the entered form values.
-     * @param {Array} fields Fields that defines every content in the entry.
-     * @param {number} [dataId] Database Id. If set, files will be uploaded and itemId set.
-     * @param {number} entryId Entry Id.
-     * @param {AddonModDataEntryFields} entryContents Original entry contents.
-     * @param {boolean} offline True to prepare the data for an offline uploading, false otherwise.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} That contains object with the answers.
+     * @param inputData Array with the entered form values.
+     * @param fields Fields that defines every content in the entry.
+     * @param dataId Database Id. If set, files will be uploaded and itemId set.
+     * @param entryId Entry Id.
+     * @param entryContents Original entry contents.
+     * @param offline True to prepare the data for an offline uploading, false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return That contains object with the answers.
      */
     getEditDataFromForm(inputData: any, fields: any, dataId: number, entryId: number, entryContents: AddonModDataEntryFields,
             offline: boolean = false, siteId?: string): Promise<any> {
@@ -549,11 +549,11 @@ export class AddonModDataHelperProvider {
     /**
      * Retrieve the temp files to be updated.
      *
-     * @param {any} inputData Array with the entered form values.
-     * @param {any[]} fields Fields that defines every content in the entry.
-     * @param {number} [dataId] Database Id. If set, fils will be uploaded and itemId set.
-     * @param {AddonModDataEntryFields} entryContents Original entry contents indexed by field id.
-     * @return {Promise<any>} That contains object with the files.
+     * @param inputData Array with the entered form values.
+     * @param fields Fields that defines every content in the entry.
+     * @param dataId Database Id. If set, fils will be uploaded and itemId set.
+     * @param entryContents Original entry contents indexed by field id.
+     * @return That contains object with the files.
      */
     getEditTmpFiles(inputData: any, fields: any[], dataId: number, entryContents: AddonModDataEntryFields): Promise<any> {
         if (!inputData) {
@@ -573,11 +573,11 @@ export class AddonModDataHelperProvider {
     /**
      * Get a list of stored attachment files for a new entry. See $mmaModDataHelper#storeFiles.
      *
-     * @param  {number} dataId     Database ID.
-     * @param  {number} entryId    Entry ID or, if creating, timemodified.
-     * @param  {number} fieldId    Field ID.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved with the files.
+     * @param dataId Database ID.
+     * @param entryId Entry ID or, if creating, timemodified.
+     * @param fieldId Field ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the files.
      */
     getStoredFiles(dataId: number, entryId: number, fieldId: number, siteId?: string): Promise<any> {
         return this.dataOffline.getEntryFieldFolder(dataId, entryId, fieldId, siteId).then((folderPath) => {
@@ -591,16 +591,18 @@ export class AddonModDataHelperProvider {
     /**
      * Returns the template of a certain type.
      *
-     * @param {any} data Database object.
-     * @param {string} type Type of template.
-     * @param {any[]} fields List of database fields.
-     * @return {string} Template HTML.
+     * @param data Database object.
+     * @param type Type of template.
+     * @param fields List of database fields.
+     * @return Template HTML.
      */
     getTemplate(data: any, type: string, fields: any[]): string {
         let template = data[type] || this.getDefaultTemplate(type, fields);
 
-        // Try to fix syntax errors so the template can be parsed by Angular.
-        template = this.domUtils.fixHtml(template);
+        if (type != 'listtemplateheader' && type != 'listtemplatefooter') {
+            // Try to fix syntax errors so the template can be parsed by Angular.
+            template = this.domUtils.fixHtml(template);
+        }
 
         // Add core-link directive to links.
         template = template.replace(/<a ([^>]*href="[^>]*)>/ig, (match, attributes) => {
@@ -613,11 +615,11 @@ export class AddonModDataHelperProvider {
     /**
      * Check if data has been changed by the user.
      *
-     * @param {any} inputData Object with the entered form values.
-     * @param {any[]} fields Fields that defines every content in the entry.
-     * @param {number} [dataId] Database Id. If set, fils will be uploaded and itemId set.
-     * @param {AddonModDataEntryFields} entryContents Original entry contents indexed by field id.
-     * @return {Promise<boolean>} True if changed, false if not.
+     * @param inputData Object with the entered form values.
+     * @param fields Fields that defines every content in the entry.
+     * @param dataId Database Id. If set, fils will be uploaded and itemId set.
+     * @param entryContents Original entry contents indexed by field id.
+     * @return True if changed, false if not.
      */
     hasEditDataChanged(inputData: any, fields: any[], dataId: number, entryContents: AddonModDataEntryFields): Promise<boolean> {
         const promises = fields.map((field) => {
@@ -637,15 +639,15 @@ export class AddonModDataHelperProvider {
     /**
      * Displays a confirmation modal for deleting an entry.
      *
-     * @param {number} dataId Database ID.
-     * @param {number} entryId Entry ID.
-     * @param {number} [courseId] Course ID. It not defined, it will be fetched.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param dataId Database ID.
+     * @param entryId Entry ID.
+     * @param courseId Course ID. It not defined, it will be fetched.
+     * @param siteId Site ID. If not defined, current site.
      */
     showDeleteEntryModal(dataId: number, entryId: number, courseId?: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        this.domUtils.showConfirm(this.translate.instant('addon.mod_data.confirmdeleterecord')).then(() => {
+        this.domUtils.showDeleteConfirm('addon.mod_data.confirmdeleterecord').then(() => {
             const modal = this.domUtils.showModalLoading();
 
             return this.getActivityCourseIdIfNotSet(dataId, courseId, siteId).then((courseId) => {
@@ -677,12 +679,12 @@ export class AddonModDataHelperProvider {
      * Given a list of files (either online files or local files), store the local files in a local folder
      * to be submitted later.
      *
-     * @param  {number}   dataId   Database ID.
-     * @param  {number}   entryId  Entry ID or, if creating, timemodified.
-     * @param  {number}   fieldId  Field ID.
-     * @param  {any[]}    files    List of files.
-     * @param  {string}   [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved if success, rejected otherwise.
+     * @param dataId Database ID.
+     * @param entryId Entry ID or, if creating, timemodified.
+     * @param fieldId Field ID.
+     * @param files List of files.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success, rejected otherwise.
      */
     storeFiles(dataId: number, entryId: number, fieldId: number, files: any[], siteId?: string): Promise<any> {
         // Get the folder where to store the files.
@@ -694,14 +696,14 @@ export class AddonModDataHelperProvider {
     /**
      * Upload or store some files, depending if the user is offline or not.
      *
-     * @param  {number}   dataId     Database ID.
-     * @param  {number}   [itemId=0] Draft ID to use. Undefined or 0 to create a new draft ID.
-     * @param  {number}   entryId    Entry ID or, if creating, timemodified.
-     * @param  {number}   fieldId    Field ID.
-     * @param  {any[]}    files      List of files.
-     * @param  {boolean}  offline    True if files sould be stored for offline, false to upload them.
-     * @param  {string}   [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if success.
+     * @param dataId Database ID.
+     * @param itemId Draft ID to use. Undefined or 0 to create a new draft ID.
+     * @param entryId Entry ID or, if creating, timemodified.
+     * @param fieldId Field ID.
+     * @param files List of files.
+     * @param offline True if files sould be stored for offline, false to upload them.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if success.
      */
     uploadOrStoreFiles(dataId: number, itemId: number = 0, entryId: number, fieldId: number, files: any[], offline: boolean,
             siteId?: string): Promise<any> {

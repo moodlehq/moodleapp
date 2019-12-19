@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import { TranslateService } from '@ngx-translate/core';
 export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHandler, OnDestroy {
     /**
      * Update handler information event.
-     * @type {string}
      */
     static UPDATED_EVENT = 'AddonMessagesBlockContactUserHandler_updated_event';
 
@@ -51,7 +50,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
     /**
      * Check if handler is enabled.
      *
-     * @return {Promise<boolean>} Promise resolved with true if enabled, rejected or resolved with false otherwise.
+     * @return Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     isEnabled(): Promise<boolean> {
         return this.messagesProvider.isPluginEnabled();
@@ -60,11 +59,11 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
     /**
      * Check if handler is enabled for this user in this context.
      *
-     * @param {any} user          User to check.
-     * @param {number} courseId   Course ID.
-     * @param  {any} [navOptions] Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param  {any} [admOptions] Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return  {boolean|Promise<boolean>}   Promise resolved with true if enabled, resolved with false otherwise.
+     * @param user User to check.
+     * @param courseId Course ID.
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
+     * @return Promise resolved with true if enabled, resolved with false otherwise.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean> {
         return user.id != this.sitesProvider.getCurrentSiteUserId();
@@ -73,7 +72,7 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
     /**
      * Returns the data needed to render the handler.
      *
-     * @return {CoreUserProfileHandlerData} Data needed to render the handler.
+     * @return Data needed to render the handler.
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData {
 
@@ -125,8 +124,8 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
 
     /**
      * Update Button with avalaible data.
-     * @param {number} userId User Id to update.
-     * @return {Promise<void>}   Promise resolved when done.
+     * @param userId User Id to update.
+     * @return Promise resolved when done.
      */
     protected checkButton(userId: number): Promise<void> {
         this.updateButton(userId, {spinner: true});
@@ -158,8 +157,8 @@ export class AddonMessagesBlockContactUserHandler implements CoreUserProfileHand
     /**
      * Triggers the event to update the handler information.
      *
-     * @param {number} userId The user ID the handler belongs to.
-     * @param {any} data Data that should be updated.
+     * @param userId The user ID the handler belongs to.
+     * @param data Data that should be updated.
      */
     protected updateButton(userId: number, data: any): void {
         // This fails for some reason, let's just hide the button.

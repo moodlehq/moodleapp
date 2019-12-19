@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import { CoreBlockBaseComponent } from '../../classes/base-block-component';
 })
 export class CoreBlockPreRenderedComponent  extends CoreBlockBaseComponent implements OnInit {
 
+    courseId: number;
+
     constructor(injector: Injector) {
         super(injector, 'CoreBlockPreRenderedComponent');
     }
@@ -33,6 +35,8 @@ export class CoreBlockPreRenderedComponent  extends CoreBlockBaseComponent imple
      */
     ngOnInit(): void {
         super.ngOnInit();
+
+        this.courseId = this.contextLevel == 'course' ? this.instanceId : undefined;
 
         this.fetchContentDefaultError = 'Error getting ' + this.block.contents.title + ' data.';
     }

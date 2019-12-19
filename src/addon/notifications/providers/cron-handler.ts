@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
     /**
      * Get the time between consecutive executions.
      *
-     * @return {number} Time between consecutive executions (in ms).
+     * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return this.appProvider.isDesktop() ? 60000 : 600000; // 1 or 10 minutes.
@@ -47,7 +47,7 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
     /**
      * Check whether it's a synchronization process or not. True if not defined.
      *
-     * @return {boolean} Whether it's a synchronization process or not.
+     * @return Whether it's a synchronization process or not.
      */
     isSync(): boolean {
         // This is done to use only wifi if using the fallback function.
@@ -58,7 +58,7 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
     /**
      * Check whether the sync can be executed manually. Call isSync if not defined.
      *
-     * @return {boolean} Whether the sync can be executed manually.
+     * @return Whether the sync can be executed manually.
      */
     canManualSync(): boolean {
         return true;
@@ -68,10 +68,10 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
      * Execute the process.
      * Receives the ID of the site affected, undefined for all sites.
      *
-     * @param  {string} [siteId] ID of the site affected, undefined for all sites.
-     * @param {boolean} [force] Wether the execution is forced (manual sync).
-     * @return {Promise<any>}         Promise resolved when done, rejected if failure. If the promise is rejected, this function
-     *                                will be called again often, it shouldn't be abused.
+     * @param siteId ID of the site affected, undefined for all sites.
+     * @param force Wether the execution is forced (manual sync).
+     * @return Promise resolved when done, rejected if failure. If the promise is rejected, this function
+     *         will be called again often, it shouldn't be abused.
      */
     execute(siteId?: string, force?: boolean): Promise<any> {
         if (this.sitesProvider.isCurrentSite(siteId)) {
@@ -90,8 +90,8 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
     /**
      * Get the latest unread notifications from a site.
      *
-     * @param  {string} siteId  Site ID.
-     * @return {Promise<any[]>} Promise resolved with the notifications.
+     * @param siteId Site ID.
+     * @return Promise resolved with the notifications.
      */
     protected fetchNotifications(siteId: string): Promise<any[]> {
         return this.notificationsHelper.getNotifications([], undefined, true, false, true, siteId).then((result) => {
@@ -102,8 +102,8 @@ export class AddonNotificationsCronHandler implements CoreCronHandler {
     /**
      * Given a notification, return the title and the text for the notification.
      *
-     * @param  {any} notification Notification.
-     * @return {Promise<any>} Promise resvoled with an object with title and text.
+     * @param notification Notification.
+     * @return Promise resvoled with an object with title and text.
      */
     protected getTitleAndText(notification: any): Promise<any> {
         const data = {

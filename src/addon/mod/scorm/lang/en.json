@@ -44,6 +44,7 @@
     "organizations": "Organisations",
     "passed": "Passed",
     "reviewmode": "Review mode",
+    "score": "Score",
     "scormstatusnotdownloaded": "This SCORM package is not downloaded. It will be automatically downloaded when you open it.",
     "scormstatusoutdated": "This SCORM package has been modified since the last download. It will be automatically downloaded when you open it.",
     "suspended": "Suspended",

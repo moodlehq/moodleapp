@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginC
     /**
      * Format value to be shown. Replacing plugin file Urls.
      *
-     * @param  {any}    value Value to replace.
-     * @return {string}       Replaced string to be rendered.
+     * @param value Value to replace.
+     * @return Replaced string to be rendered.
      */
     format(value: any): string {
         const files = (value && value.files) || [];

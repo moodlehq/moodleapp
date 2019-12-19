@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ export class CoreFileSessionProvider {
     /**
      * Add a file to the session.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {any} file File to add.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param file File to add.
+     * @param siteId Site ID. If not defined, current site.
      */
     addFile(component: string, id: string | number, file: any, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -47,9 +47,9 @@ export class CoreFileSessionProvider {
     /**
      * Clear files stored in session.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param siteId Site ID. If not defined, current site.
      */
     clearFiles(component: string, id: string | number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -61,10 +61,10 @@ export class CoreFileSessionProvider {
     /**
      * Get files stored in session.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {any[]} Array of files in session.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Array of files in session.
      */
     getFiles(component: string, id: string | number, siteId?: string): any[] {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -78,9 +78,9 @@ export class CoreFileSessionProvider {
     /**
      * Initializes the filearea to store the file.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param siteId Site ID. If not defined, current site.
      */
     protected initFileArea(component: string, id: string | number, siteId?: string): void {
         if (!this.files[siteId]) {
@@ -99,10 +99,10 @@ export class CoreFileSessionProvider {
     /**
      * Remove a file stored in session.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {any} file File to remove. The instance should be exactly the same as the one stored in session.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param file File to remove. The instance should be exactly the same as the one stored in session.
+     * @param siteId Site ID. If not defined, current site.
      */
     removeFile(component: string, id: string | number, file: any, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -117,10 +117,10 @@ export class CoreFileSessionProvider {
     /**
      * Remove a file stored in session.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {number} index Position of the file to remove.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param index Position of the file to remove.
+     * @param siteId Site ID. If not defined, current site.
      */
     removeFileByIndex(component: string, id: string | number, index: number, siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -133,10 +133,10 @@ export class CoreFileSessionProvider {
     /**
      * Set a group of files in the session.
      *
-     * @param {string} component Component Name.
-     * @param {string|number} id File area identifier.
-     * @param {any[]} newFiles Files to set.
-     * @param {string} [siteId] Site ID. If not defined, current site.
+     * @param component Component Name.
+     * @param id File area identifier.
+     * @param newFiles Files to set.
+     * @param siteId Site ID. If not defined, current site.
      */
     setFiles(component: string, id: string | number, newFiles: any[], siteId?: string): void {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

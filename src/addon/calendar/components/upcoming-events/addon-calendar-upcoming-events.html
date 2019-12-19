@@ -6,9 +6,9 @@
         <ng-container *ngFor="let event of filteredEvents">
             <a ion-item text-wrap [title]="event.name" (click)="eventClicked(event)" [class.core-split-item-selected]="event.id == eventId" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                 <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
-                <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
-                <h2><core-format-text [text]="event.name"></core-format-text></h2>
-                <p><core-format-text [text]="event.formattedtime"></core-format-text></p>
+                <core-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
+                <h2><core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"></core-format-text></h2>
+                <p [innerHTML]="event.formattedtime"></p>
                 <ion-note *ngIf="event.offline && !event.deleted" item-end>
                     <ion-icon name="time"></ion-icon>
                     <span text-wrap>{{ 'core.notsent' | translate }}</span>

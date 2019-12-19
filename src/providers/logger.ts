@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ export class CoreLoggerProvider {
     /**
      * Get a logger instance for a certain class, service or component.
      *
-     * @param {string} className Name to use in the messages.
-     * @return {ant} Instance.
+     * @param className Name to use in the messages.
+     * @return Instance.
      */
     getInstance(className: string): any {
         className = className || '';
@@ -57,9 +57,9 @@ export class CoreLoggerProvider {
     /**
      * Prepare a logging function, concatenating the timestamp and class name to all messages.
      *
-     * @param {Function} logFn Log function to use.
-     * @param {string} className Name to use in the messages.
-     * @return {Function} Prepared function.
+     * @param logFn Log function to use.
+     * @param className Name to use in the messages.
+     * @return Prepared function.
      */
     private prepareLogFn(logFn: Function, className: string): Function {
         // Return our own function that will call the logging function with the treated message.

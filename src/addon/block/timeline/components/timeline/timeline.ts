@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, Injector } from '@angular/core';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
@@ -21,6 +20,7 @@ import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
 import { AddonBlockTimelineProvider } from '../../providers/timeline';
+import { AddonCalendarEvent } from '@addon/calendar/providers/calendar';
 
 /**
  * Component to render a timeline block.
@@ -34,9 +34,9 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     filter = 'next30days';
     currentSite: any;
     timeline = {
-        events: [],
+        events: <AddonCalendarEvent[]> [],
         loaded: false,
-        canLoadMore: undefined
+        canLoadMore: <number> undefined
     };
     timelineCourses = {
         courses: [],
@@ -49,7 +49,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
 
-    constructor(injector: Injector, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
+    constructor(injector: Injector, private coursesProvider: CoreCoursesProvider,
             private timelineProvider: AddonBlockTimelineProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private coursesHelper: CoreCoursesHelperProvider, private sitesProvider: CoreSitesProvider,
             private timeUtils: CoreTimeUtilsProvider) {
@@ -75,7 +75,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -94,7 +94,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Fetch the courses for my overview.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
         if (this.sort == 'sortbydates') {
@@ -120,8 +120,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Load more events.
      *
-     * @param {any} course Course.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param course Course.
+     * @return Promise resolved when done.
      */
     loadMoreCourse(course: any): Promise<any> {
         return this.timelineProvider.getActionEventsByCourse(course.id, course.canLoadMore).then((courseEvents) => {
@@ -135,8 +135,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Fetch the timeline.
      *
-     * @param {number} [afterEventId] The last event id.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param afterEventId The last event id.
+     * @return Promise resolved when done.
      */
     protected fetchMyOverviewTimeline(afterEventId?: number): Promise<any> {
         return this.timelineProvider.getActionEventsByTimesort(afterEventId).then((events) => {
@@ -148,7 +148,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Fetch the timeline by courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMyOverviewTimelineByCourses(): Promise<any> {
         return this.coursesHelper.getUserCoursesWithOptions().then((courses) => {
@@ -210,7 +210,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     /**
      * Change timeline sort being viewed.
      *
-     * @param {string} sort New sorting.
+     * @param sort New sorting.
      */
     switchSort(sort: string): void {
         this.sort = sort;

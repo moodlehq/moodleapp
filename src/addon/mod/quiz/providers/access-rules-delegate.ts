@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,30 +26,29 @@ export interface AddonModQuizAccessRuleHandler extends CoreDelegateHandler {
 
     /**
      * Name of the rule the handler supports. E.g. 'password'.
-     * @type {string}
      */
     ruleName: string;
 
     /**
      * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean|Promise<boolean>} Whether the rule requires a preflight check.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether the rule requires a preflight check.
      */
     isPreflightCheckRequired(quiz: any, attempt?: any, prefetch?: boolean, siteId?: string): boolean | Promise<boolean>;
 
     /**
      * Add preflight data that doesn't require user interaction. The data should be added to the preflightData param.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} preflightData Object where to add the preflight data.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param preflightData Object where to add the preflight data.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     getFixedPreflightData?(quiz: any, preflightData: any, attempt?: any, prefetch?: boolean, siteId?: string): void | Promise<any>;
 
@@ -58,20 +57,20 @@ export interface AddonModQuizAccessRuleHandler extends CoreDelegateHandler {
      * Implement this if your access rule requires a preflight check with user interaction.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getPreflightComponent?(injector: Injector): any | Promise<any>;
 
     /**
      * Function called when the preflight check has passed. This is a chance to record that fact in some way.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} attempt The attempt started/continued.
-     * @param {any} preflightData Preflight data gathered.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued.
+     * @param preflightData Preflight data gathered.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     notifyPreflightCheckPassed?(quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
         : void | Promise<any>;
@@ -79,12 +78,12 @@ export interface AddonModQuizAccessRuleHandler extends CoreDelegateHandler {
     /**
      * Function called when the preflight check fails. This is a chance to record that fact in some way.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} attempt The attempt started/continued.
-     * @param {any} preflightData Preflight data gathered.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued.
+     * @param preflightData Preflight data gathered.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     notifyPreflightCheckFailed?(quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
         : void | Promise<any>;
@@ -92,10 +91,10 @@ export interface AddonModQuizAccessRuleHandler extends CoreDelegateHandler {
     /**
      * Whether or not the time left of an attempt should be displayed.
      *
-     * @param {any} attempt The attempt.
-     * @param {number} endTime The attempt end time (in seconds).
-     * @param {number} timeNow The current time in seconds.
-     * @return {boolean} Whether it should be displayed.
+     * @param attempt The attempt.
+     * @param endTime The attempt end time (in seconds).
+     * @param timeNow The current time in seconds.
+     * @return Whether it should be displayed.
      */
     shouldShowTimeLeft?(attempt: any, endTime: number, timeNow: number): boolean;
 }
@@ -116,8 +115,8 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Get the handler for a certain rule.
      *
-     * @param {string} ruleName Name of the access rule.
-     * @return {AddonModQuizAccessRuleHandler} Handler. Undefined if no handler found for the rule.
+     * @param ruleName Name of the access rule.
+     * @return Handler. Undefined if no handler found for the rule.
      */
     getAccessRuleHandler(ruleName: string): AddonModQuizAccessRuleHandler {
         return <AddonModQuizAccessRuleHandler> this.getHandler(ruleName, true);
@@ -126,13 +125,13 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Given a list of rules, get some fixed preflight data (data that doesn't require user interaction).
      *
-     * @param {string[]} rules List of active rules names.
-     * @param {any} quiz Quiz.
-     * @param {any} preflightData Object where to store the preflight data.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when all the data has been gathered.
+     * @param rules List of active rules names.
+     * @param quiz Quiz.
+     * @param preflightData Object where to store the preflight data.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when all the data has been gathered.
      */
     getFixedPreflightData(rules: string[], quiz: any, preflightData: any, attempt?: any, prefetch?: boolean, siteId?: string)
             : Promise<any> {
@@ -153,8 +152,8 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Get the Component to use to display the access rule preflight.
      *
-     * @param {Injector} injector Injector.
-     * @return {Promise<any>} Promise resolved with the component to use, undefined if not found.
+     * @param injector Injector.
+     * @return Promise resolved with the component to use, undefined if not found.
      */
     getPreflightComponent(rule: string, injector: Injector): Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(rule, 'getPreflightComponent', [injector]));
@@ -163,8 +162,8 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Check if an access rule is supported.
      *
-     * @param {string} ruleName Name of the rule.
-     * @return {boolean} Whether it's supported.
+     * @param ruleName Name of the rule.
+     * @return Whether it's supported.
      */
     isAccessRuleSupported(ruleName: string): boolean {
         return this.hasHandler(ruleName, true);
@@ -173,12 +172,12 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Given a list of rules, check if preflight check is required.
      *
-     * @param {string[]} rules List of active rules names.
-     * @param {any} quiz Quiz.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it's required.
+     * @param rules List of active rules names.
+     * @param quiz Quiz.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's required.
      */
     isPreflightCheckRequired(rules: string[], quiz: any, attempt: any, prefetch?: boolean, siteId?: string): Promise<boolean> {
         rules = rules || [];
@@ -205,12 +204,12 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Check if preflight check is required for a certain rule.
      *
-     * @param {string} rule Rule name.
-     * @param {any} quiz Quiz.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it's required.
+     * @param rule Rule name.
+     * @param quiz Quiz.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's required.
      */
     isPreflightCheckRequiredForRule(rule: string, quiz: any, attempt: any, prefetch?: boolean, siteId?: string): Promise<boolean> {
         return Promise.resolve(this.executeFunctionOnEnabled(rule, 'isPreflightCheckRequired', [quiz, attempt, prefetch, siteId]));
@@ -219,13 +218,13 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Notify all rules that the preflight check has passed.
      *
-     * @param {string[]} rules List of active rules names.
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {any} preflightData Preflight data gathered.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param rules List of active rules names.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param preflightData Preflight data gathered.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     notifyPreflightCheckPassed(rules: string[], quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
             : Promise<any> {
@@ -246,13 +245,13 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Notify all rules that the preflight check has failed.
      *
-     * @param {string[]} rules List of active rules names.
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {any} preflightData Preflight data gathered.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param rules List of active rules names.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param preflightData Preflight data gathered.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     notifyPreflightCheckFailed(rules: string[], quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
             : Promise<any> {
@@ -273,11 +272,11 @@ export class AddonModQuizAccessRuleDelegate extends CoreDelegate {
     /**
      * Whether or not the time left of an attempt should be displayed.
      *
-     * @param {string[]} rules List of active rules names.
-     * @param {any} attempt The attempt.
-     * @param {number} endTime The attempt end time (in seconds).
-     * @param {number} timeNow The current time in seconds.
-     * @return {boolean} Whether it should be displayed.
+     * @param rules List of active rules names.
+     * @param attempt The attempt.
+     * @param endTime The attempt end time (in seconds).
+     * @param timeNow The current time in seconds.
+     * @return Whether it should be displayed.
      */
     shouldShowTimeLeft(rules: string[], attempt: any, endTime: number, timeNow: number): boolean {
         rules = rules || [];

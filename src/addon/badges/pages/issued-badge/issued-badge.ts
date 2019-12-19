@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
-import { AddonBadgesProvider } from '../../providers/badges';
+import { AddonBadgesProvider, AddonBadgesUserBadge } from '../../providers/badges';
 
 /**
  * Page that displays the list of calendar events.
@@ -38,7 +38,7 @@ export class AddonBadgesIssuedBadgePage {
 
     user: any = {};
     course: any = {};
-    badge: any = {};
+    badge: AddonBadgesUserBadge;
 
     badgeLoaded = false;
     currentTime = 0;
@@ -65,7 +65,7 @@ export class AddonBadgesIssuedBadgePage {
     /**
      * Fetch the issued badge required for the view.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     fetchIssuedBadge(): Promise<any> {
         const promises = [];
@@ -101,7 +101,7 @@ export class AddonBadgesIssuedBadgePage {
     /**
      * Refresh the badges.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshBadges(refresher: any): void {
         this.badgesProvider.invalidateUserBadges(this.courseId, this.userId).finally(() => {

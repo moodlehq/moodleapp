@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ export class AddonModQuizPreflightModalPage implements OnInit {
     /**
      * Check that the data is valid and send it back.
      *
-     * @param {Event} e Event.
+     * @param e Event.
      */
     sendData(e: Event): void {
         e.preventDefault();

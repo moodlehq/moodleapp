@@ -2,7 +2,7 @@
     <div *ngIf="!summary">
         <ion-list-header text-wrap>
             <ion-avatar core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile && profile.id" item-start></ion-avatar>
-            <h2>{{submission.title}}</h2>
+            <h2><core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
             <p *ngIf="showGrade(submission.submissiongrade)" [class.addon-has-overriden-grade]="showGrade(submission.submissiongradeover)">
                 {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.submissiongrade}}
@@ -23,19 +23,14 @@
             </ion-note>
         </ion-list-header>
         <ion-item text-wrap *ngIf="submission.content">
-            <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content"></core-format-text>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         </ion-item>
-        <ion-item *ngFor="let attachment of submission.attachmentfiles">
-            <!-- Files already attached to the submission. -->
-            <core-file *ngIf="!attachment.name" [file]="attachment" [component]="component" [componentId]="componentId"></core-file>
-            <!-- Files stored in offline to be sent later. -->
-            <core-local-file *ngIf="attachment.name" [file]="attachment"></core-local-file>
-        </ion-item>
+        <core-files [files]="submission.attachmentfiles" [component]="component" [componentId]="componentId"></core-files>
         <ion-item text-wrap *ngIf="viewDetails && submission.feedbackauthor">
             <ion-avatar *ngIf="evaluateByProfile" core-user-avatar [user]="evaluateByProfile" item-start [courseId]="courseId" [userId]="evaluateByProfile.id"></ion-avatar>
 
             <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
-            <core-format-text [text]="submission.feedbackauthor"></core-format-text>
+            <core-format-text [text]="submission.feedbackauthor" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         </ion-item>
         <ion-item *ngIf="viewDetails">
             <button ion-button block (click)="gotoSubmission()">
@@ -48,7 +43,7 @@
     <a ion-item text-wrap *ngIf="summary" [attr.detail-none]="submission.timemodified ? null : true" (click)="gotoSubmission()">
         <ion-avatar core-user-avatar [user]="profile" item-start [courseId]="courseId" [userId]="profile && profile.id"></ion-avatar>
 
-        <h2>{{submission.title}}</h2>
+        <h2><core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></h2>
         <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
         <p *ngIf="submission.reviewedbycount">
             {{ 'addon.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbycount}} / {{submission.reviewedby.length}}

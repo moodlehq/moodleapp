@@ -11,10 +11,10 @@
         <core-loading [hideUntil]="loaded">
             <!-- Section selector. -->
             <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
-                <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" padding class="clearfix" ion-row justify-content-between class="safe-padding-horizontal" [class.core-section-download]="downloadEnabled">
+                <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" padding class="clearfix" ion-row justify-content-between class="safe-padding-horizontal core-button-selector-row" [class.core-section-download]="downloadEnabled">
                     <button float-start ion-button icon-start icon-end (click)="showSectionSelector($event)" color="light" class="core-button-select button-no-uppercase" ion-col [attr.aria-label]="('core.course.sections' | translate) + ': ' + (selectedSection && (selectedSection.formattedName || selectedSection.name))" aria-haspopup="true" [attr.aria-expanded]="sectionSelectorExpanded" aria-controls="core-course-section-selector" id="core-course-section-button">
                         <core-icon name="fa-folder"></core-icon>
-                        <span class="core-section-selector-text">{{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}</span>
+                        <span class="core-button-select-text">{{selectedSection && (selectedSection.formattedName || selectedSection.name) || 'core.course.sections' | translate }}</span>
                         <ion-icon name="arrow-dropdown" ios="md-arrow-dropdown"></ion-icon>
                     </button>
                     <!-- Section download. -->
@@ -55,13 +55,13 @@
                 <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
             </div>
 
-            <ion-buttons padding end class="core-course-section-nav-buttons" *ngIf="displaySectionSelector && sections && sections.length">
+            <ion-buttons padding end class="core-course-section-nav-buttons safe-padding-horizontal" *ngIf="displaySectionSelector && sections && sections.length">
                 <button *ngIf="previousSection" ion-button color="light" icon-only (click)="sectionChanged(previousSection)" title="{{ 'core.previous' | translate }}">
                     <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
-                    <core-format-text class="accesshide" [text]="previousSection.formattedName || previousSection.name"></core-format-text>
+                    <core-format-text class="accesshide" [text]="previousSection.formattedName || previousSection.name" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
                 </button>
                 <button *ngIf="nextSection" ion-button icon-only (click)="sectionChanged(nextSection)" title="{{ 'core.next' | translate }}">
-                    <core-format-text class="accesshide" [text]="nextSection.formattedName || nextSection.name"></core-format-text>
+                    <core-format-text class="accesshide" [text]="nextSection.formattedName || nextSection.name" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
                     <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
                 </button>
             </ion-buttons>
@@ -74,13 +74,13 @@
     <section ion-list *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId">
         <!-- Title is only displayed when viewing all sections. -->
         <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name" [class.core-section-download]="downloadEnabled">
-            <core-format-text [text]="section.name"></core-format-text>
+            <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
             <!-- Section download. -->
             <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
         </ion-item-divider>
 
         <ion-item text-wrap *ngIf="section.summary">
-            <core-format-text [text]="section.summary"></core-format-text>
+            <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">

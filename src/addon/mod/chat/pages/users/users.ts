@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatUser } from '../../providers/chat';
 import { Network } from '@ionic-native/network';
 
 /**
@@ -30,12 +30,12 @@ import { Network } from '@ionic-native/network';
 })
 export class AddonModChatUsersPage {
 
-    users = [];
+    users: AddonModChatUser[] = [];
     usersLoaded = false;
     currentUserId: number;
     isOnline: boolean;
 
-    protected sessionId: number;
+    protected sessionId: string;
     protected onlineObserver: any;
 
     constructor(navParams: NavParams, network: Network,  zone: NgZone, private appProvider: CoreAppProvider,
@@ -69,25 +69,25 @@ export class AddonModChatUsersPage {
      * Close the chat users modal.
      */
     closeModal(): void {
-        this.viewCtrl.dismiss();
+        this.viewCtrl.dismiss({users: this.users});
     }
 
     /**
      * Add "To user:".
      *
-     * @param {any} user User object.
+     * @param user User object.
      */
-     talkTo(user: any): void {
-        this.viewCtrl.dismiss({talkTo: user.fullname});
+    talkTo(user: AddonModChatUser): void {
+        this.viewCtrl.dismiss({talkTo: user.fullname, users: this.users});
     }
 
     /**
      * Beep a user.
      *
-     * @param {any} user User object.
+     * @param user User object.
      */
-    beepTo(user: any): void {
-        this.viewCtrl.dismiss({beepTo: user.id});
+    beepTo(user: AddonModChatUser): void {
+        this.viewCtrl.dismiss({beepTo: user.id, users: this.users});
     }
 
     /**

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,13 +61,15 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Show the TOC.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     showToc(event: MouseEvent): void {
         // Create the toc modal.
         const modal =  this.modalCtrl.create('AddonModBookTocPage', {
+            moduleId: this.module.id,
             chapters: this.chapters,
-            selected: this.currentChapter
+            selected: this.currentChapter,
+            courseId: this.courseId
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,
@@ -88,8 +90,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Change the current chapter.
      *
-     * @param {string} chapterId Chapter to load.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param chapterId Chapter to load.
+     * @return Promise resolved when done.
      */
     changeChapter(chapterId: string): void {
         if (chapterId && chapterId != this.currentChapter) {
@@ -102,7 +104,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.bookProvider.invalidateContent(this.module.id, this.courseId);
@@ -111,8 +113,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Download book contents and load the current chapter.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         const promises = [];
@@ -121,7 +123,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
             this.dataRetrieved.emit(book);
-            this.description = book.intro || this.description;
+            this.description = book.intro;
         }).catch(() => {
             // Ignore errors since this WS isn't available in some Moodle versions.
         }));
@@ -163,20 +165,19 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                     // We could load the main file but the download failed. Show error message.
                     this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
                 }
-
-                // All data obtained, now fill the context menu.
-                this.fillContextMenu(refresh);
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.
             });
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 
     /**
      * Load a book chapter.
      *
-     * @param {string} chapterId Chapter to load.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param chapterId Chapter to load.
+     * @return Promise resolved when done.
      */
     protected loadChapter(chapterId: string): Promise<void> {
         this.currentChapter = chapterId;

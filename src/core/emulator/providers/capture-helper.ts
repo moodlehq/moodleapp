@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,9 +44,9 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Capture media (image, audio, video).
      *
-     * @param {string} type Type of media: image, audio, video.
-     * @param {any} [options] Optional options.
-     * @return {Promise<any>} Promise resolved when captured, rejected if error.
+     * @param type Type of media: image, audio, video.
+     * @param options Optional options.
+     * @return Promise resolved when captured, rejected if error.
      */
     captureMedia(type: string, options: any): Promise<any> {
         options = options || {};
@@ -118,9 +118,9 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Get the mimetype and extension to capture media.
      *
-     * @param {string} type Type of media: image, audio, video.
-     * @param {string[]} [mimetypes] List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return {{extension: string, mimetype: string}} An object with mimetype and extension to use.
+     * @param type Type of media: image, audio, video.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
+     * @return An object with mimetype and extension to use.
      */
     protected getMimeTypeAndExtension(type: string, mimetypes: string[]): { extension: string, mimetype: string } {
         const result: any = {};
@@ -157,7 +157,7 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Init the getUserMedia function, using a deprecated function as fallback if the new one doesn't exist.
      *
-     * @return {boolean} Whether the function is supported.
+     * @return Whether the function is supported.
      */
     protected initGetUserMedia(): boolean {
         const nav = <any> navigator;
@@ -209,7 +209,7 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Load the Mocks that need it.
      *
-     * @return {Promise<void>} Promise resolved when loaded.
+     * @return Promise resolved when loaded.
      */
     load(): Promise<void> {
         if (typeof this.win.MediaRecorder != 'undefined' && this.initGetUserMedia()) {

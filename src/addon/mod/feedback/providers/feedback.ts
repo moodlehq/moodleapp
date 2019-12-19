@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ export class AddonModFeedbackProvider {
     /**
      * Check dependency of a question item.
      *
-     * @param   {any[]}  items      All question items to check dependency.
-     * @param   {any}    item       Item to check.
-     * @return  {boolean}           Return true if dependency is acomplished and it can be shown. False, otherwise.
+     * @param items All question items to check dependency.
+     * @param item Item to check.
+     * @return Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected checkDependencyItem(items: any[], item: any): boolean {
         const depend = items.find((itemFind) => {
@@ -77,9 +77,9 @@ export class AddonModFeedbackProvider {
     /**
      * Check dependency item of type Multichoice.
      *
-     * @param  {any}     item        Item to check.
-     * @param  {string}  dependValue Value to compare.
-     * @return {boolean}             Return true if dependency is acomplished and it can be shown. False, otherwise.
+     * @param item Item to check.
+     * @param dependValue Value to compare.
+     * @return Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected compareDependItemMultichoice(item: any, dependValue: string): boolean {
         let values, choices;
@@ -128,12 +128,12 @@ export class AddonModFeedbackProvider {
     /**
      * Fill values of item questions.
      *
-     * @param   {number}   feedbackId   Feedback ID.
-     * @param   {any[]}    items        Item to fill the value.
-     * @param   {boolean}  offline      True if it should return cached data. Has priority over ignoreCache.
-     * @param   {boolean}  ignoreCache  True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}   siteId       Site ID.
-     * @return  {Promise<any>}          Resolved with values when done.
+     * @param feedbackId Feedback ID.
+     * @param items Item to fill the value.
+     * @param offline True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID.
+     * @return Resolved with values when done.
      */
     protected fillValues(feedbackId: number, items: any[], offline: boolean, ignoreCache: boolean, siteId: string): Promise<any> {
         return this.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then((valuesArray) => {
@@ -202,12 +202,12 @@ export class AddonModFeedbackProvider {
     /**
      * Returns all the feedback non respondents users.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @param   {any}       [previous]      Only for recurrent use. Object with the previous fetched info.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param previous Only for recurrent use. Object with the previous fetched info.
+     * @return Promise resolved when the info is retrieved.
      */
     getAllNonRespondents(feedbackId: number, groupId: number, ignoreCache?: boolean, siteId?: string, previous?: any)
             : Promise<any> {
@@ -240,12 +240,12 @@ export class AddonModFeedbackProvider {
     /**
      * Returns all the feedback user responses.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @param   {any}       [previous]      Only for recurrent use. Object with the previous fetched info.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param previous Only for recurrent use. Object with the previous fetched info.
+     * @return Promise resolved when the info is retrieved.
      */
     getAllResponsesAnalysis(feedbackId: number, groupId: number, ignoreCache?: boolean, siteId?: string, previous?: any)
             : Promise<any> {
@@ -285,11 +285,11 @@ export class AddonModFeedbackProvider {
     /**
      * Get analysis information for a given feedback.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    [groupId]       Group ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}                   Promise resolved when the feedback is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the feedback is retrieved.
      */
     getAnalysis(feedbackId: number, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -316,9 +316,9 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for feedback analysis data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @param {number} [groupId=0]  Group ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group ID.
+     * @return Cache key.
      */
     protected getAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
         return this.getAnalysisDataPrefixCacheKey(feedbackId) + groupId;
@@ -327,8 +327,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for feedback analysis data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getAnalysisDataPrefixCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis:';
@@ -337,12 +337,12 @@ export class AddonModFeedbackProvider {
     /**
      * Find an attempt in all responses analysis.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    attemptId       Attempt id to find.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @param   {any}       [previous]      Only for recurrent use. Object with the previous fetched info.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param attemptId Attempt id to find.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param previous Only for recurrent use. Object with the previous fetched info.
+     * @return Promise resolved when the info is retrieved.
      */
     getAttempt(feedbackId: number, attemptId: number, ignoreCache?: boolean, siteId?: string, previous?: any): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -396,8 +396,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for feedback completion data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getCompletedDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completed:';
@@ -406,10 +406,10 @@ export class AddonModFeedbackProvider {
     /**
      * Returns the temporary completion timemodified for the current user.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}                   Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getCurrentCompletedTimeModified(feedbackId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -441,8 +441,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for feedback current completed temp data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getCurrentCompletedTimeModifiedDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completedtime:';
@@ -451,11 +451,11 @@ export class AddonModFeedbackProvider {
     /**
      * Returns the temporary responses or responses of the last submission for the current user.
      *
-     * @param   {number}    feedbackId          Feedback ID.
-     * @param   {boolean}   [offline=false]     True if it should return cached data. Has priority over ignoreCache.
-     * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it always fail in offline or server down).
-     * @param   {string}    [siteId]            Site ID. If not defined, current site.
-     * @return  {Promise<any>}                  Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param offline True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getCurrentValues(feedbackId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -497,8 +497,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for get current values feedback data WS calls.
      *
-     * @param  {number} feedbackId  Feedback ID.
-     * @return {string}             Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getCurrentValuesDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
@@ -507,11 +507,11 @@ export class AddonModFeedbackProvider {
     /**
      * Get  access information for a given feedback.
      *
-     * @param   {number}    feedbackId          Feedback ID.
-     * @param   {boolean}   [offline=false]     True if it should return cached data. Has priority over ignoreCache.
-     * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it always fail in offline or server down).
-     * @param   {string}    [siteId]            Site ID. If not defined, current site.
-     * @return  {Promise<any>}                  Promise resolved when the feedback is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param offline True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the feedback is retrieved.
      */
     getFeedbackAccessInformation(feedbackId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string):
             Promise<any> {
@@ -537,8 +537,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for feedback access information data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getFeedbackAccessInformationDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':access';
@@ -547,8 +547,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for feedback data WS calls.
      *
-     * @param {number} courseId Course ID.
-     * @return {string}         Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getFeedbackCacheKey(courseId: number): string {
         return this.ROOT_CACHE_KEY + 'feedback:' + courseId;
@@ -557,8 +557,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for all feedback activity data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getFeedbackDataPrefixCacheKey(feedbackId: number): string {
         return this.ROOT_CACHE_KEY + feedbackId;
@@ -567,13 +567,13 @@ export class AddonModFeedbackProvider {
     /**
      * Get a feedback with key=value. If more than one is found, only the first will be returned.
      *
-     * @param {number}   courseId            Course ID.
-     * @param {string}   key                 Name of the property to check.
-     * @param {any}      value               Value to search.
-     * @param {string}   [siteId]            Site ID. If not defined, current site.
-     * @param {boolean} [forceCache]  True to always get the value from cache, false otherwise. Default false.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}  Promise resolved when the feedback is retrieved.
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param siteId Site ID. If not defined, current site.
+     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the feedback is retrieved.
      */
     protected getFeedbackDataByKey(courseId: number, key: string, value: any, siteId?: string, forceCache?: boolean,
             ignoreCache?: boolean): Promise<any> {
@@ -612,12 +612,12 @@ export class AddonModFeedbackProvider {
     /**
      * Get a feedback by course module ID.
      *
-     * @param {number}   courseId       Course ID.
-     * @param {number}   cmId           Course module ID.
-     * @param {string}   [siteId]       Site ID. If not defined, current site.
-     * @param {boolean} [forceCache]   True to always get the value from cache, false otherwise. Default false.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}   Promise resolved when the feedback is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the feedback is retrieved.
      */
     getFeedback(courseId: number, cmId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean): Promise<any> {
         return this.getFeedbackDataByKey(courseId, 'coursemodule', cmId, siteId, forceCache, ignoreCache);
@@ -626,12 +626,12 @@ export class AddonModFeedbackProvider {
     /**
      * Get a feedback by ID.
      *
-     * @param {number}  courseId      Course ID.
-     * @param {number}  id            Feedback ID.
-     * @param {string}  [siteId]      Site ID. If not defined, current site.
-     * @param {boolean} [forceCache]  True to always get the value from cache, false otherwise. Default false.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise<any>}         Promise resolved when the feedback is retrieved.
+     * @param courseId Course ID.
+     * @param id Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when the feedback is retrieved.
      */
     getFeedbackById(courseId: number, id: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean): Promise<any> {
         return this.getFeedbackDataByKey(courseId, 'id', id, siteId, forceCache, ignoreCache);
@@ -640,10 +640,10 @@ export class AddonModFeedbackProvider {
     /**
      * Returns the items (questions) in the given feedback.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}                   Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getItems(feedbackId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -667,8 +667,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for get items feedback data WS calls.
      *
-     * @param  {number} feedbackId  Feedback ID.
-     * @return {string}             Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getItemsDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
@@ -677,12 +677,12 @@ export class AddonModFeedbackProvider {
     /**
      * Retrieves a list of students who didn't submit the feedback.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    [groupId=0]     Group id, 0 means that the function will determine the user group.
-     * @param   {number}    [page=0]        The page of records to return.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @param page The page of records to return.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getNonRespondents(feedbackId: number, groupId: number = 0, page: number = 0, ignoreCache?: boolean, siteId?: string)
             : Promise<any> {
@@ -709,9 +709,9 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for non respondents feedback data WS calls.
      *
-     * @param  {number} feedbackId  Feedback ID.
-     * @param  {number} [groupId=0] Group id, 0 means that the function will determine the user group.
-     * @return {string}             Cache key.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @return Cache key.
      */
     protected getNonRespondentsDataCacheKey(feedbackId: number, groupId: number = 0): string {
         return this.getNonRespondentsDataPrefixCacheKey(feedbackId) + groupId;
@@ -720,8 +720,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for feedback non respondents data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}           Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getNonRespondentsDataPrefixCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
@@ -730,10 +730,10 @@ export class AddonModFeedbackProvider {
     /**
      * Get a single feedback page items. This function is not cached, use AddonModFeedbackHelperProvider#getPageItems instead.
      *
-     * @param   {number}    feedbackId  Feedback ID.
-     * @param   {number}    page        The page to get.
-     * @param   {string}    [siteId]    Site ID. If not defined, current site.
-     * @return  {Promise<any>}          Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param page The page to get.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getPageItems(feedbackId: number, page: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -749,12 +749,12 @@ export class AddonModFeedbackProvider {
     /**
      * Get a single feedback page items. If offline or server down it will use getItems to calculate dependencies.
      *
-     * @param   {number}  feedbackId          Feedback ID.
-     * @param   {number}  page                The page to get.
-     * @param   {boolean} [offline=false]     True if it should return cached data. Has priority over ignoreCache.
-     * @param   {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}  [siteId]            Site ID. If not defined, current site.
-     * @return  {Promise<any>}                Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param page The page to get.
+     * @param offline True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getPageItemsWithValues(feedbackId: number, page: number, offline: boolean = false, ignoreCache: boolean = false,
             siteId?: string): Promise<any> {
@@ -816,11 +816,11 @@ export class AddonModFeedbackProvider {
     /**
      * Convenience function to get the page we can jump.
      *
-     * @param  {number}  feedbackId Feedback ID.
-     * @param  {number}  page       Page where we want to jump.
-     * @param  {number}  changePage If page change is forward (1) or backward (-1).
-     * @param  {string}  siteId     Site ID.
-     * @return {Promise<number | false>}  Page number where to jump. Or false if completed or first page.
+     * @param feedbackId Feedback ID.
+     * @param page Page where we want to jump.
+     * @param changePage If page change is forward (1) or backward (-1).
+     * @param siteId Site ID.
+     * @return Page number where to jump. Or false if completed or first page.
      */
     protected getPageJumpTo(feedbackId: number, page: number, changePage: number, siteId: string): Promise<number | false> {
         return this.getPageItemsWithValues(feedbackId, page, true, false, siteId).then((resp) => {
@@ -842,12 +842,12 @@ export class AddonModFeedbackProvider {
     /**
      * Returns the feedback user responses.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
-     * @param   {number}    page            The page of records to return.
-     * @param   {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @param page The page of records to return.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getResponsesAnalysis(feedbackId: number, groupId: number, page: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -872,9 +872,9 @@ export class AddonModFeedbackProvider {
     /**
      * Get cache key for responses analysis feedback data WS calls.
      *
-     * @param  {number} feedbackId  Feedback ID.
-     * @param  {number} [groupId=0] Group id, 0 means that the function will determine the user group.
-     * @return {string}             Cache key.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @return Cache key.
      */
     protected getResponsesAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
         return this.getResponsesAnalysisDataPrefixCacheKey(feedbackId) + groupId;
@@ -883,8 +883,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for feedback responses analysis data WS calls.
      *
-     * @param {number} feedbackId Feedback ID.
-     * @return {string}         Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getResponsesAnalysisDataPrefixCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
@@ -893,11 +893,11 @@ export class AddonModFeedbackProvider {
     /**
      * Gets the resume page information.
      *
-     * @param   {number}    feedbackId          Feedback ID.
-     * @param   {boolean}   [offline=false]     True if it should return cached data. Has priority over ignoreCache.
-     * @param   {boolean}   [ignoreCache=false] True if it should ignore cached data (it always fail in offline or server down).
-     * @param   {string}    [siteId]            Site ID. If not defined, current site.
-     * @return  {Promise<any>}                  Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param offline True if it should return cached data. Has priority over ignoreCache.
+     * @param ignoreCache True if it should ignore cached data (it always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     getResumePage(feedbackId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -929,8 +929,8 @@ export class AddonModFeedbackProvider {
     /**
      * Get prefix cache key for resume feedback page data WS calls.
      *
-     * @param {number} feedbackId   Feedback ID.
-     * @return {string}             Cache key.
+     * @param feedbackId Feedback ID.
+     * @return Cache key.
      */
     protected getResumePageDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
@@ -939,9 +939,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates feedback data except files and module info.
      *
-     * @param  {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllFeedbackData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -952,9 +952,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates feedback analysis data.
      *
-     * @param {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAnalysisData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -966,10 +966,10 @@ export class AddonModFeedbackProvider {
      * Invalidate the prefetched content.
      * To invalidate files, use AddonFeedbackProvider#invalidateFiles.
      *
-     * @param  {number} moduleId The module ID.
-     * @param  {number} courseId Course ID of the module.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId Course ID of the module.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -994,9 +994,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates temporary completion record data.
      *
-     * @param  {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateCurrentValuesData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1007,9 +1007,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates feedback access information data.
      *
-     * @param {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateFeedbackAccessInformationData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1020,9 +1020,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates feedback data.
      *
-     * @param {number} courseId Course ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}   Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateFeedbackData(courseId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1033,9 +1033,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidate the prefetched files.
      *
-     * @param {number} moduleId  The module ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved when the files are invalidated.
+     * @param moduleId The module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the files are invalidated.
      */
     invalidateFiles(moduleId: number, siteId?: string): Promise<any> {
         return this.filepoolProvider.invalidateFilesByComponent(siteId, AddonModFeedbackProvider.COMPONENT, moduleId);
@@ -1044,9 +1044,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates feedback non respondents record data.
      *
-     * @param  {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateNonRespondentsData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1058,9 +1058,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates feedback user responses record data.
      *
-     * @param  {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateResponsesAnalysisData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1072,9 +1072,9 @@ export class AddonModFeedbackProvider {
     /**
      * Invalidates launch feedback data.
      *
-     * @param {number} feedbackId   Feedback ID.
-     * @param  {string} [siteId]    Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when the data is invalidated.
+     * @param feedbackId Feedback ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateResumePageData(feedbackId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1085,10 +1085,10 @@ export class AddonModFeedbackProvider {
     /**
      * Returns if feedback has been completed
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<boolean>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     isCompleted(feedbackId: number, ignoreCache?: boolean, siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -1111,8 +1111,8 @@ export class AddonModFeedbackProvider {
     /**
      * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      * @since 3.3
      */
     isPluginEnabled(siteId?: string): Promise<boolean> {
@@ -1125,11 +1125,11 @@ export class AddonModFeedbackProvider {
     /**
      * Report the feedback as being viewed.
      *
-     * @param {number} id                   Module ID.
-     * @param {string} [name] Name of the feedback.
-     * @param  {boolean} [formViewed=false] True if form was viewed.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}               Promise resolved when the WS call is successful.
+     * @param id Module ID.
+     * @param name Name of the feedback.
+     * @param formViewed True if form was viewed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, formViewed: boolean = false, siteId?: string): Promise<any> {
         const params = {
@@ -1144,14 +1144,14 @@ export class AddonModFeedbackProvider {
     /**
      * Process a jump between pages.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    page            The page being processed.
-     * @param   {any}       responses       The data to be processed the key is the field name (usually type[index]_id).
-     * @param   {boolean}   goPrevious      Whether we want to jump to previous page.
-     * @param   {boolean}   formHasErrors   Whether the form we sent has required but empty fields (only used in offline).
-     * @param   {number}    courseId        Course ID the feedback belongs to.
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param page The page being processed.
+     * @param responses The data to be processed the key is the field name (usually type[index]_id).
+     * @param goPrevious Whether we want to jump to previous page.
+     * @param formHasErrors Whether the form we sent has required but empty fields (only used in offline).
+     * @param courseId Course ID the feedback belongs to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     processPage(feedbackId: number, page: number, responses: any, goPrevious: boolean, formHasErrors: boolean, courseId: number,
             siteId?: string): Promise<any> {
@@ -1231,12 +1231,12 @@ export class AddonModFeedbackProvider {
     /**
      * Process a jump between pages.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    page            The page being processed.
-     * @param   {any}       responses       The data to be processed the key is the field name (usually type[index]_id).
-     * @param   {boolean}   goPrevious      Whether we want to jump to previous page.
-     * @param   {string}    [siteId]        Site ID. If not defined, current site.
-     * @return  {Promise<any>}                   Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param page The page being processed.
+     * @param responses The data to be processed the key is the field name (usually type[index]_id).
+     * @param goPrevious Whether we want to jump to previous page.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the info is retrieved.
      */
     processPageOnline(feedbackId: number, page: number, responses: any, goPrevious: boolean, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

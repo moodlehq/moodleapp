@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform, IonicApp } from 'ionic-angular';
+import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
@@ -42,7 +43,7 @@ export class MoodleMobileApp implements OnInit {
             private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
             private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
             private screenOrientation: ScreenOrientation, private urlSchemesProvider: CoreCustomURLSchemesProvider,
-            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider) {
+            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private network: Network) {
         this.logger = logger.getInstance('AppComponent');
 
         platform.ready().then(() => {
@@ -98,7 +99,7 @@ export class MoodleMobileApp implements OnInit {
 
         // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
         this.eventsProvider.on(CoreEventsProvider.PASSWORD_CHANGE_FORCED, (data) => {
-            this.loginHelper.openInAppForEdit(data.siteId, '/login/change_password.php', 'core.forcepasswordchangenotice', true);
+            this.loginHelper.passwordChangeForced(data.siteId);
         });
         this.eventsProvider.on(CoreEventsProvider.USER_NOT_FULLY_SETUP, (data) => {
             this.loginHelper.openInAppForEdit(data.siteId, '/user/edit.php', 'core.usernotfullysetup');
@@ -107,6 +108,29 @@ export class MoodleMobileApp implements OnInit {
         // Listen for sitepolicynotagreed event to accept the site policy.
         this.eventsProvider.on(CoreEventsProvider.SITE_POLICY_NOT_AGREED, (data) => {
             this.loginHelper.sitePolicyNotAgreed(data.siteId);
+        });
+
+        this.platform.ready().then(() => {
+            // Refresh online status when changes.
+            this.network.onchange().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                this.zone.run(() => {
+                    const isOnline = this.appProvider.isOnline(),
+                        hadOfflineMessage = document.body.classList.contains('core-offline');
+
+                    document.body.classList.toggle('core-offline', !isOnline);
+
+                    if (isOnline && hadOfflineMessage) {
+                        document.body.classList.add('core-online');
+
+                        setTimeout(() => {
+                            document.body.classList.remove('core-online');
+                        }, 3000);
+                    } else if (!isOnline) {
+                        document.body.classList.remove('core-online');
+                    }
+                });
+            });
         });
 
         // Check URLs loaded in any InAppBrowser.
@@ -266,7 +290,7 @@ export class MoodleMobileApp implements OnInit {
     /**
      * Convenience function to add version to body classes.
      *
-     * @param {string} release Current release number of the site.
+     * @param release Current release number of the site.
      */
     protected addVersionClass(release: string): void {
         const parts = release.split('.');
@@ -298,7 +322,7 @@ export class MoodleMobileApp implements OnInit {
     /**
      * Close one modal if any.
      *
-     * @return {boolean} True if one modal was present.
+     * @return True if one modal was present.
      */
     closeModal(): boolean {
         // Following function is hidden in Ionic Code, however there's no solution for that.

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,16 +40,16 @@ export class AddonModQuizHelperProvider {
      * Validate a preflight data or show a modal to input the preflight data if required.
      * It calls AddonModQuizProvider.startAttempt if a new attempt is needed.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
-     * @param {any} preflightData Object where to store the preflight data.
-     * @param {any} [attempt] Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param {boolean} [offline] Whether the attempt is offline.
-     * @param {boolean} [prefetch] Whether user is prefetching.
-     * @param {string} [title] The title to display in the modal and in the submit button.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {boolean} [retrying] Whether we're retrying after a failure.
-     * @return {Promise<any>} Promise resolved when the preflight data is validated. The resolve param is the attempt.
+     * @param quiz Quiz.
+     * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
+     * @param preflightData Object where to store the preflight data.
+     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param offline Whether the attempt is offline.
+     * @param prefetch Whether user is prefetching.
+     * @param title The title to display in the modal and in the submit button.
+     * @param siteId Site ID. If not defined, current site.
+     * @param retrying Whether we're retrying after a failure.
+     * @return Promise resolved when the preflight data is validated. The resolve param is the attempt.
      */
     getAndCheckPreflightData(quiz: any, accessInfo: any, preflightData: any, attempt: any, offline?: boolean, prefetch?: boolean,
             title?: string, siteId?: string, retrying?: boolean): Promise<any> {
@@ -101,13 +101,13 @@ export class AddonModQuizHelperProvider {
     /**
      * Get the preflight data from the user using a modal.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [title] The title to display in the modal and in the submit button.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the preflight data. Rejected if user cancels.
+     * @param quiz Quiz.
+     * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param title The title to display in the modal and in the submit button.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the preflight data. Rejected if user cancels.
      */
     getPreflightData(quiz: any, accessInfo: any, attempt: any, prefetch?: boolean, title?: string, siteId?: string): Promise<any> {
         const notSupported: string[] = [];
@@ -152,8 +152,8 @@ export class AddonModQuizHelperProvider {
      * Gets the mark string from a question HTML.
      * Example result: "Marked out of 1.00".
      *
-     * @param  {string} html Question's HTML.
-     * @return {string}      Question's mark.
+     * @param html Question's HTML.
+     * @return Question's mark.
      */
     getQuestionMarkFromHtml(html: string): string {
         const element = this.domUtils.convertToElement(html);
@@ -164,9 +164,9 @@ export class AddonModQuizHelperProvider {
     /**
      * Get a quiz ID by attempt ID.
      *
-     * @param {number} attemptId Attempt ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<number>} Promise resolved with the quiz ID.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the quiz ID.
      */
     getQuizIdByAttemptId(attemptId: number, siteId?: string): Promise<number> {
         // Use getAttemptReview to retrieve the quiz ID.
@@ -182,13 +182,13 @@ export class AddonModQuizHelperProvider {
     /**
      * Handle a review link.
      *
-     * @param {NavController} navCtrl Nav controller, can be undefined/null.
-     * @param {number} attemptId Attempt ID.
-     * @param {number} [page] Page to load, -1 to all questions in same page.
-     * @param {number} [courseId] Course ID.
-     * @param {number} [quizId] Quiz ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl Nav controller, can be undefined/null.
+     * @param attemptId Attempt ID.
+     * @param page Page to load, -1 to all questions in same page.
+     * @param courseId Course ID.
+     * @param quizId Quiz ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     handleReviewLink(navCtrl: NavController, attemptId: number, page?: number, courseId?: number, quizId?: number,
             siteId?: string): Promise<any> {
@@ -234,10 +234,10 @@ export class AddonModQuizHelperProvider {
     /**
      * Add some calculated data to the attempt.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} attempt Attempt.
-     * @param {boolean} highlight Whether we should check if attempt should be highlighted.
-     * @param {number} [bestGrade] Quiz's best grade (formatted). Required if highlight=true.
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param highlight Whether we should check if attempt should be highlighted.
+     * @param bestGrade Quiz's best grade (formatted). Required if highlight=true.
      */
     setAttemptCalculatedData(quiz: any, attempt: any, highlight?: boolean, bestGrade?: string): void {
 
@@ -265,8 +265,8 @@ export class AddonModQuizHelperProvider {
     /**
      * Add some calculated data to the quiz.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} options Options returned by AddonModQuizProvider.getCombinedReviewOptions.
+     * @param quiz Quiz.
+     * @param options Options returned by AddonModQuizProvider.getCombinedReviewOptions.
      */
     setQuizCalculatedData(quiz: any, options: any): void {
         quiz.sumGradesFormatted = this.quizProvider.formatGrade(quiz.sumgrades, quiz.decimalpoints);
@@ -282,16 +282,16 @@ export class AddonModQuizHelperProvider {
     /**
      * Validate the preflight data. It calls AddonModQuizProvider.startAttempt if a new attempt is needed.
      *
-     * @param {any} quiz Quiz.
-     * @param {any} accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
-     * @param {any} preflightData Object where to store the preflight data.
-     * @param {any} [attempt] Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param {boolean} [offline] Whether the attempt is offline.
-     * @param {boolean} [sent] Whether preflight data has been entered by the user.
-     * @param {boolean} [prefetch] Whether user is prefetching.
-     * @param {string} [title] The title to display in the modal and in the submit button.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the preflight data is validated.
+     * @param quiz Quiz.
+     * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
+     * @param preflightData Object where to store the preflight data.
+     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param offline Whether the attempt is offline.
+     * @param sent Whether preflight data has been entered by the user.
+     * @param prefetch Whether user is prefetching.
+     * @param title The title to display in the modal and in the submit button.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the preflight data is validated.
      */
     validatePreflightData(quiz: any, accessInfo: any, preflightData: any, attempt: any, offline?: boolean, prefetch?: boolean,
             siteId?: string): Promise<any> {

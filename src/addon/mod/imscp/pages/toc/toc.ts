@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ export class AddonModImscpTocPage {
     /**
      * Function called when an item is clicked.
      *
-     * @param {string} id ID of the clicked item.
+     * @param id ID of the clicked item.
      */
     loadItem(id: string): void {
         this.viewCtrl.dismiss(id);
@@ -44,8 +44,8 @@ export class AddonModImscpTocPage {
     /**
      * Get dummy array for padding.
      *
-     * @param {number} n Array length.
-     * @return {number[]} Dummy array with n elements.
+     * @param n Array length.
+     * @return Dummy array with n elements.
      */
     getNumberForPadding(n: number): number[] {
         return new Array(n);

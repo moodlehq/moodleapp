@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { AddonFilesProvider } from '../../providers/files';
+import { AddonFilesProvider, AddonFilesFile, AddonFilesGetUserPrivateFilesInfoResult } from '../../providers/files';
 import { AddonFilesHelperProvider } from '../../providers/helper';
 
 /**
@@ -40,10 +40,10 @@ export class AddonFilesListPage implements OnDestroy {
     root: string; // The root of the files loaded: 'my' or 'site'.
     path: string; // The path of the directory being loaded. If empty path it means the root is being loaded.
     userQuota: number; // The user quota (in bytes).
-    filesInfo: any; // Info about private files (size, number of files, etc.).
+    filesInfo: AddonFilesGetUserPrivateFilesInfoResult; // Info about private files (size, number of files, etc.).
     spaceUsed: string; // Space used in a readable format.
     userQuotaReadable: string; // User quota in a readable format.
-    files: any[]; // List of files.
+    files: AddonFilesFile[]; // List of files.
     component: string; // Component to link the file downloads to.
     filesLoaded: boolean; // Whether the files are loaded.
 
@@ -89,7 +89,7 @@ export class AddonFilesListPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
         this.refreshFiles().finally(() => {
@@ -144,10 +144,10 @@ export class AddonFilesListPage implements OnDestroy {
     /**
      * Fetch the files.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchFiles(): Promise<any> {
-        let promise;
+        let promise: Promise<AddonFilesFile[]>;
 
         if (!this.path) {
             // The path is unknown, the user must be requesting a root.
@@ -193,7 +193,7 @@ export class AddonFilesListPage implements OnDestroy {
     /**
      * Refresh the displayed files.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected refreshFiles(): Promise<any> {
         const promises = [];

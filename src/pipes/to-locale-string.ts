@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ export class CoreToLocaleStringPipe implements PipeTransform {
     /**
      * Format a timestamp to a locale string.
      *
-     * @param {number|string} timestamp The timestamp (can be in seconds or milliseconds).
-     * @return {string} Formatted time.
+     * @param timestamp The timestamp (can be in seconds or milliseconds).
+     * @return Formatted time.
      */
     transform(timestamp: number | string): string {
         if (typeof timestamp == 'string') {

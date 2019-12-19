@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ export class AddonModQuizAccessOpenCloseDateHandler implements AddonModQuizAcces
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -41,11 +41,11 @@ export class AddonModQuizAccessOpenCloseDateHandler implements AddonModQuizAcces
     /**
      * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean|Promise<boolean>} Whether the rule requires a preflight check.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether the rule requires a preflight check.
      */
     isPreflightCheckRequired(quiz: any, attempt?: any, prefetch?: boolean, siteId?: string): boolean | Promise<boolean> {
         return false;
@@ -54,10 +54,10 @@ export class AddonModQuizAccessOpenCloseDateHandler implements AddonModQuizAcces
     /**
      * Whether or not the time left of an attempt should be displayed.
      *
-     * @param {any} attempt The attempt.
-     * @param {number} endTime The attempt end time (in seconds).
-     * @param {number} timeNow The current time in seconds.
-     * @return {boolean} Whether it should be displayed.
+     * @param attempt The attempt.
+     * @param endTime The attempt end time (in seconds).
+     * @param timeNow The current time in seconds.
+     * @return Whether it should be displayed.
      */
     shouldShowTimeLeft(attempt: any, endTime: number, timeNow: number): boolean {
         // If this is a teacher preview after the close date, do not show the time.

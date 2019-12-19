@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -40,10 +40,10 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
     /**
      * Get the data required to display the module in the course contents view.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @param {number} sectionId The section ID.
-     * @return {CoreCourseModuleHandlerData} Data to render the module.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @param sectionId The section ID.
+     * @return Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         // Return the default data.
@@ -55,7 +55,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                 event.preventDefault();
                 event.stopPropagation();
 
-                navCtrl.push('CoreCourseUnsupportedModulePage', { module: module }, options);
+                navCtrl.push('CoreCourseUnsupportedModulePage', { module: module, courseId: courseId }, options);
             }
         };
 
@@ -80,10 +80,10 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * The component returned must implement CoreCourseModuleMainComponent.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} course The course object.
-     * @param {any} module The module object.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param course The course object.
+     * @param module The module object.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getMainComponent(injector: Injector, course: any, module: any): any | Promise<any> {
         // We can't inject CoreCourseUnsupportedModuleComponent here due to circular dependencies.
@@ -94,7 +94,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
      * included in the template that calls the doRefresh method of the component. Defaults to true.
      *
-     * @return {boolean} Whether the refresher should be displayed.
+     * @return Whether the refresher should be displayed.
      */
     displayRefresherInSingleActivity(): boolean {
         return true;

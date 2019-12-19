@@ -18,8 +18,10 @@
         <!-- Review summary -->
         <ion-card *ngIf="attempt">
             <ion-card-header text-wrap>
-                <h2 *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</h2>
-                <h2 *ngIf="!attempt.preview">{{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}</h2>
+                <div class="safe-padding-horizontal">
+                    <h2 *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</h2>
+                    <h2 *ngIf="!attempt.preview">{{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}</h2>
+                </div>
             </ion-card-header>
             <ion-list>
                 <ion-item text-wrap no-lines>
@@ -44,7 +46,7 @@
                 </ion-item>
                 <ion-item text-wrap no-lines *ngIf="attempt.readableMark">
                     <h2>{{ 'addon.mod_quiz.marks' | translate }}</h2>
-                    <p><core-format-text [text]="attempt.readableMark"></core-format-text></p>
+                    <p>{{ attempt.readableMark }}</p>
                 </ion-item>
                 <ion-item text-wrap no-lines *ngIf="attempt.readableGrade">
                     <h2>{{ 'addon.mod_quiz.grade' | translate }}</h2>
@@ -52,7 +54,7 @@
                 </ion-item>
                 <ion-item text-wrap no-lines *ngFor="let data of additionalData">
                     <h2>{{ data.title }}</h2>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="data.content"></core-format-text>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="data.content" contextLevel="module" [contextInstanceId]="quiz.coursemodule" [courseId]="courseId"></core-format-text>
                 </ion-item>
             </ion-list>
         </ion-card>
@@ -71,11 +73,11 @@
                         <h2 *ngIf="!question.number" class="inline">{{ 'core.question.information' | translate }}</h2>
                         <ion-note text-wrap item-end *ngIf="question.status || question.readableMark">
                             <p *ngIf="question.status">{{question.status}}</p>
-                            <p *ngIf="question.readableMark"><core-format-text [text]="question.readableMark"></core-format-text></p>
+                            <p *ngIf="question.readableMark">{{question.readableMark}}</p>
                         </ion-note>
                     </ion-item-divider>
                     <!-- Body of the question. -->
-                    <core-question text-wrap [question]="question" [component]="component" [componentId]="componentId" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false"></core-question>
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="componentId" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module" [contextInstanceId]="quiz.coursemodule" [courseId]="courseId"></core-question>
                 </ion-card>
             </div>
 

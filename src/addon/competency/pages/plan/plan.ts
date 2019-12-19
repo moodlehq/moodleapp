@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import { AddonCompetencyProvider, AddonCompetencyDataForPlanPageResult } from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
 /**
@@ -31,7 +31,7 @@ import { AddonCompetencyHelperProvider } from '../../providers/helper';
 export class AddonCompetencyPlanPage {
     protected planId: number;
     planLoaded = false;
-    plan: any;
+    plan: AddonCompetencyDataForPlanPageResult;
     user: any;
 
     constructor(private navCtrl: NavController, navParams: NavParams, private appProvider: CoreAppProvider,
@@ -52,7 +52,7 @@ export class AddonCompetencyPlanPage {
     /**
      * Fetches the learning plan and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchLearningPlan(): Promise<void> {
         return this.competencyProvider.getLearningPlan(this.planId).then((plan) => {
@@ -62,9 +62,6 @@ export class AddonCompetencyPlanPage {
                 this.user = user;
             });
 
-            plan.competencies.forEach((competency) => {
-                competency.usercompetency = competency.usercompetencyplan || competency.usercompetency;
-            });
             this.plan = plan;
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'Error getting learning plan data.');
@@ -74,7 +71,7 @@ export class AddonCompetencyPlanPage {
     /**
      * Navigates to a particular competency.
      *
-     * @param {number} competencyId
+     * @param competencyId
      */
     openCompetency(competencyId: number): void {
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
@@ -88,7 +85,7 @@ export class AddonCompetencyPlanPage {
     /**
      * Refreshes the learning plan.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshLearningPlan(refresher: any): void {
         this.competencyProvider.invalidateLearningPlan(this.planId).finally(() => {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { AddonModChatComponentsModule } from './components/components.module';
 import { AddonModChatProvider } from './providers/chat';
+import { AddonModChatHelperProvider } from './providers/helper';
 import { AddonModChatLinkHandler } from './providers/link-handler';
 import { AddonModChatListLinkHandler } from './providers/list-link-handler';
 import { AddonModChatModuleHandler } from './providers/module-handler';
@@ -36,6 +37,7 @@ export const ADDON_MOD_CHAT_PROVIDERS: any[] = [
     ],
     providers: [
         AddonModChatProvider,
+        AddonModChatHelperProvider,
         AddonModChatLinkHandler,
         AddonModChatListLinkHandler,
         AddonModChatModuleHandler,

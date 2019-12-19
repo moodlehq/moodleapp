@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return {boolean|Promise<void>} Resolved if we can leave it, rejected if not.
+     * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): boolean | Promise<void> {
         if (this.forceLeave || !this.evaluating) {
@@ -134,7 +134,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     /**
      * Fetch the assessment data.
      *
-     * @return {Promise<void>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchAssessmentData(): Promise<void> {
         return this.workshopProvider.getWorkshopById(this.courseId, this.workshopId).then((workshopData) => {
@@ -247,7 +247,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     /**
      * Check if data has changed.
      *
-     * @return {boolean} True if changed, false otherwise.
+     * @return True if changed, false otherwise.
      */
     protected hasEvaluationChanged(): boolean {
         if (!this.loaded || !this.evaluating) {
@@ -276,7 +276,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     /**
      * Convenience function to refresh all the data.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected refreshAllData(): Promise<any> {
         const promises = [];
@@ -300,7 +300,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     /**
      * Pull to refresh.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshAssessment(refresher: any): void {
         if (this.loaded) {
@@ -328,7 +328,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
     /**
      * Sends the evaluation to be saved on the server.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected sendEvaluation(): Promise<any> {
         const modal = this.domUtils.showModalLoading('core.sending', true),

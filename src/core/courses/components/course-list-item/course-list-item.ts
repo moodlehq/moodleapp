@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
     /**
      * Open a course.
      *
-     * @param {any} course The course to open.
+     * @param course The course to open.
      */
     openCourse(course: any): void {
         if (course.isEnrolled) {

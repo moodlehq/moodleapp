@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider } from '../../providers/competency';
+import { AddonCompetencyProvider, AddonCompetencyPlan } from '../../providers/competency';
 import { AddonCompetencyHelperProvider } from '../../providers/helper';
 
 /**
@@ -33,7 +33,7 @@ export class AddonCompetencyPlanListPage {
     protected userId: number;
     protected planId: number;
     plansLoaded = false;
-    plans = [];
+    plans: AddonCompetencyPlan[] = [];
 
     constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private competencyProvider: AddonCompetencyProvider,
             private competencyHelperProvider: AddonCompetencyHelperProvider) {
@@ -62,11 +62,11 @@ export class AddonCompetencyPlanListPage {
     /**
      * Fetches the learning plans and updates the view.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchLearningPlans(): Promise<void> {
         return this.competencyProvider.getLearningPlans(this.userId).then((plans) => {
-            plans.forEach((plan) => {
+            plans.forEach((plan: AddonCompetencyPlanFormatted) => {
                 plan.statusname = this.competencyHelperProvider.getPlanStatusName(plan.status);
                 switch (plan.status) {
                     case AddonCompetencyProvider.STATUS_ACTIVE:
@@ -89,7 +89,7 @@ export class AddonCompetencyPlanListPage {
     /**
      * Refreshes the learning plans.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshLearningPlans(refresher: any): void {
         this.competencyProvider.invalidateLearningPlans(this.userId).finally(() => {
@@ -102,10 +102,17 @@ export class AddonCompetencyPlanListPage {
     /**
      * Opens a learning plan.
      *
-     * @param {number} planId Learning plan to load.
+     * @param planId Learning plan to load.
      */
     openPlan(planId: number): void {
         this.planId = planId;
         this.splitviewCtrl.push('AddonCompetencyPlanPage', { planId });
     }
 }
+
+/**
+ * Competency plan with some calculated data.
+ */
+type AddonCompetencyPlanFormatted = AddonCompetencyPlan & {
+    statuscolor?: string; // Calculated in the app. Color of the plan's status.
+};

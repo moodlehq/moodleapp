@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,9 +55,9 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Get the ID of a survey sync.
      *
-     * @param  {number} surveyId Survey ID.
-     * @param  {number} userId   User the answers belong to.
-     * @return {string}          Sync ID.
+     * @param surveyId Survey ID.
+     * @param userId User the answers belong to.
+     * @return Sync ID.
      * @protected
      */
     getSyncId(surveyId: number, userId: number): string {
@@ -67,9 +67,9 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Try to synchronize all the surveys in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllSurveys(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all surveys', this.syncAllSurveysFunc.bind(this), [force], siteId);
@@ -78,9 +78,9 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Sync all pending surveys on a site.
      *
-     * @param  {string} siteId Site ID to sync.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @param {Promise<any>}     Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync.
+     * @param force Wether to force sync not depending on last execution.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllSurveysFunc(siteId: string, force?: boolean): Promise<any> {
         // Get all survey answers pending to be sent in the site.
@@ -109,10 +109,10 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Sync a survey only if a certain time has passed since the last time.
      *
-     * @param  {number} surveyId Survey ID.
-     * @param  {number} userId   User the answers belong to.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when the survey is synced or if it doesn't need to be synced.
+     * @param surveyId Survey ID.
+     * @param userId User the answers belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the survey is synced or if it doesn't need to be synced.
      */
     syncSurveyIfNeeded(surveyId: number, userId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -129,10 +129,10 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Synchronize a survey.
      *
-     * @param  {number} surveyId Survey ID.
-     * @param  {number} [userId]   User the answers belong to. If not defined, current user.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
+     * @param surveyId Survey ID.
+     * @param userId User the answers belong to. If not defined, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncSurvey(surveyId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -202,9 +202,11 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 });
             }).then(() => {
                 if (courseId) {
-                    // Data has been sent to server, update survey data.
-                    return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
-                        return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                    return this.surveyProvider.invalidateSurveyData(courseId, siteId).then(() => {
+                        // Data has been sent to server, update survey data.
+                        return this.courseProvider.getModuleBasicInfoByInstance(surveyId, 'survey', siteId).then((module) => {
+                            return this.prefetchAfterUpdate(module, courseId, undefined, siteId);
+                        });
                     }).catch(() => {
                         // Ignore errors.
                     });

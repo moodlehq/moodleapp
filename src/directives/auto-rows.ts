@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ export class CoreAutoRowsDirective {
 
     /**
      * Resize the textarea.
-     * @param {any} $event Event fired.
+     * @param $event Event fired.
      */
     protected resize($event?: any): void {
         let nativeElement = this.element.nativeElement;

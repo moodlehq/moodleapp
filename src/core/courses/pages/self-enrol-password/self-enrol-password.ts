@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ export class CoreCoursesSelfEnrolPasswordPage {
     /**
      * Submit password.
      *
-     * @param {Event} e Event.
-     * @param {string} password Password to submit.
+     * @param e Event.
+     * @param password Password to submit.
      */
     submitPassword(e: Event, password: string): void {
         e.preventDefault();

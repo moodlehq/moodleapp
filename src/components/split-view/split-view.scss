@@ -17,17 +17,20 @@ ion-app.app-root core-split-view {
     .split-pane-visible {
         .split-pane-main {
             display: block;
+            @include core-split-area-end();
+        }
+
+        .split-pane-side {
+            @include core-split-area-start();
         }
 
         .split-pane-side .core-split-item-selected {
             background-color: $gray-lighter;
             @include core-selected-item($core-splitview-selected);
-        }
 
-        .item-ios[detail-push] .item-inner,
-        button.item-ios:not([detail-none]) .item-inner,
-        a.item-ios:not([detail-none]) .item-inner {
-            @include background-position(end, $item-ios-padding-end - 2, center);
+            @include darkmode() {
+              background-color: $black;
+            }
         }
     }
     ion-header {
@@ -36,33 +39,4 @@ ion-app.app-root core-split-view {
     ion-content.statusbar-padding:first-child .scroll-content {
         padding-top: 0  !important;
     }
-}
-
-.safe-area-page {
-    @include safe-area-padding-horizontal(0px, 0px);
-}
-
-ion-app.app-root .split-pane-visible .split-pane-side {
-  .safe-area-page  {
-    @include safe-area-padding-start(0px, 0px);
-
-    .core-split-item-selected {
-      @include border-start(5px, solid, $core-splitview-selected);
-    }
-  }
-
-  // Disable safe area padding.
-  .item-ios.item-block .item-inner {
-    @include padding-horizontal(null, $item-ios-padding-end / 2);
-  }
-}
-
-ion-app.app-root .split-pane-visible .split-pane-main {
-  .safe-area-page  {
-    @include safe-area-padding-end(0px, 0px);
-  }
-
-  .toolbar {
-    @include safe-area-padding-end(0px, 0px);
-  }
 }

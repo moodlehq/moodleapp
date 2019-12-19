@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,12 +45,12 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Check if the page we are going to open is in the history and returns the view controller in the stack to go back.
      *
-     * @param {string} pageName       Name of the page we want to navigate.
-     * @param {number} instance       Activity instance Id. I.e FeedbackId.
-     * @param {string} paramName      Param name where to find the instance number.
-     * @param {string} prefix         Prefix to check if we are out of the activity context.
-     * @param {NavController} navCtrl Nav Controller of the view.
-     * @return {ViewController}   Returns view controller found or null.
+     * @param pageName Name of the page we want to navigate.
+     * @param instance Activity instance Id. I.e FeedbackId.
+     * @param paramName Param name where to find the instance number.
+     * @param prefix Prefix to check if we are out of the activity context.
+     * @param navCtrl Nav Controller of the view.
+     * @return Returns view controller found or null.
      */
     protected getPageView(pageName: string, instance: number, paramName: string, prefix: string,
             navCtrl: NavController): ViewController {
@@ -85,10 +85,10 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Retrieves a list of students who didn't submit the feedback with extra info.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
-     * @param   {number}    page            The page of records to return.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @param page The page of records to return.
+     * @return Promise resolved when the info is retrieved.
      */
     getNonRespondents(feedbackId: number, groupId: number, page: number): Promise<any> {
         return this.feedbackProvider.getNonRespondents(feedbackId, groupId, page).then((responses) => {
@@ -103,8 +103,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Get page items responses to be sent.
      *
-     * @param   {any[]} items    Items where the values are.
-     * @return  {any}            Responses object to be sent.
+     * @param items Items where the values are.
+     * @return Responses object to be sent.
      */
     getPageItemsResponses(items: any[]): any {
         const responses = {};
@@ -185,10 +185,10 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Returns the feedback user responses with extra info.
      *
-     * @param   {number}    feedbackId      Feedback ID.
-     * @param   {number}    groupId         Group id, 0 means that the function will determine the user group.
-     * @param   {number}    page            The page of records to return.
-     * @return  {Promise<any>}              Promise resolved when the info is retrieved.
+     * @param feedbackId Feedback ID.
+     * @param groupId Group id, 0 means that the function will determine the user group.
+     * @param page The page of records to return.
+     * @return Promise resolved when the info is retrieved.
      */
     getResponsesAnalysis(feedbackId: number, groupId: number, page: number): Promise<any> {
         return this.feedbackProvider.getResponsesAnalysis(feedbackId, groupId, page).then((responses) => {
@@ -203,10 +203,10 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Handle a show entries link.
      *
-     * @param {NavController} navCtrl Nav controller to use to navigate. Can be undefined/null.
-     * @param {any} params URL params.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param navCtrl Nav controller to use to navigate. Can be undefined/null.
+     * @param params URL params.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     handleShowEntriesLink(navCtrl: NavController, params: any, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -245,8 +245,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Add Image profile url field on attempts
      *
-     * @param  {any}          attempts Attempts array to get profile from.
-     * @return {Promise<any>}          Returns the same array with the profileimageurl added if found.
+     * @param attempts Attempts array to get profile from.
+     * @return Returns the same array with the profileimageurl added if found.
      */
     protected addImageProfileToAttempts(attempts: any): Promise<any> {
         const promises = attempts.map((attempt) => {
@@ -265,12 +265,12 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper function to open a feature in the app.
      *
-     * @param {string}        feature   Name of the feature to open.
-     * @param {NavController} navCtrl   NavController.
-     * @param {any}           module    Course module activity object.
-     * @param {number}        courseId  Course Id.
-     * @param {number}        [group=0] Course module activity object.
-     * @return {Promise<void>}    Resolved when navigation animation is done.
+     * @param feature Name of the feature to open.
+     * @param navCtrl NavController.
+     * @param module Course module activity object.
+     * @param courseId Course Id.
+     * @param group Course module activity object.
+     * @return Resolved when navigation animation is done.
      */
     openFeature(feature: string, navCtrl: NavController, module: any, courseId: number, group: number = 0): Promise<void> {
         const pageName = feature && feature != 'analysis' ? 'AddonModFeedback' + feature + 'Page' : 'AddonModFeedbackIndexPage',
@@ -300,8 +300,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Label.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormLabel(item: any): any {
         item.template = 'label';
@@ -314,8 +314,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Info.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormInfo(item: any): any {
         item.template = 'label';
@@ -340,8 +340,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Numeric.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormNumeric(item: any): any {
         item.template = 'numeric';
@@ -361,8 +361,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Text field.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormTextfield(item: any): any {
         item.template = 'textfield';
@@ -375,8 +375,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Textarea.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormTextarea(item: any): any {
         item.template = 'textarea';
@@ -388,8 +388,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Multichoice.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormMultichoice(item: any): any {
         let parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP) || [];
@@ -443,8 +443,8 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Helper funtion for item type Captcha.
      *
-     * @param  {any} item Item to process.
-     * @return {any}      Item processed to show form.
+     * @param item Item to process.
+     * @return Item processed to show form.
      */
     protected getItemFormCaptcha(item: any): any {
         const data = this.textUtils.parseJSON(item.otherdata);
@@ -462,9 +462,9 @@ export class AddonModFeedbackHelperProvider {
     /**
      * Process and returns item to print form.
      *
-     * @param {any}  item        Item to process.
-     * @param {boolean} preview  Previewing options.
-     * @return {any}             Item processed to show form.
+     * @param item Item to process.
+     * @param preview Previewing options.
+     * @return Item processed to show form.
      */
     getItemForm(item: any, preview: boolean): any {
         switch (item.typ) {
@@ -502,9 +502,9 @@ export class AddonModFeedbackHelperProvider {
      * Returns human-readable boundaries (min - max).
      * Based on Moodle's get_boundaries_for_display.
      *
-     * @param {number} rangeFrom Range from.
-     * @param {number} rangeTo Range to.
-     * @return {string} Human-readable boundaries.
+     * @param rangeFrom Range from.
+     * @param rangeTo Range to.
+     * @return Human-readable boundaries.
      */
     protected getNumericBoundariesForDisplay(rangeFrom: number, rangeTo: number): string {
         const rangeFromSet = typeof rangeFrom == 'number',

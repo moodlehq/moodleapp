@@ -7,6 +7,9 @@ ion-app.app-root {
             text-align: center;
             padding-top: 10px;
             clear: both;
+            @include darkmode() {
+                color: $core-dark-text-color;
+            }
         }
 
         .core-loading-content {
@@ -16,6 +19,16 @@ ion-app.app-root {
 
         &.core-loading-noheight .core-loading-content {
             height: auto;
+        }
+
+        &.safe-area-page {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+
+            > .core-loading-content > *:not[padding],
+            > .core-loading-content-loading > *:not[padding] {
+                @include safe-area-padding-horizontal(0px, 0px);
+            }
         }
     }
 

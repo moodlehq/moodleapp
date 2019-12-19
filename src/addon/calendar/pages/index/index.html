@@ -2,9 +2,9 @@
     <ion-navbar core-back-button>
         <ion-title>{{ (showCalendar ? 'addon.calendar.calendarevents' : 'addon.calendar.upcomingevents') | translate }}</ion-title>
         <ion-buttons end>
-            <button *ngIf="courses && courses.length" ion-button icon-only (click)="openCourseFilter($event)" [attr.aria-label]="'core.courses.filter' | translate">
-                <ion-icon name="funnel" *ngIf="courseId"></ion-icon>
-                <ion-icon name="ios-funnel-outline" *ngIf="!courseId"></ion-icon>
+            <button ion-button icon-only (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
+                <ion-icon name="funnel" *ngIf="filter.filtered"></ion-icon>
+                <ion-icon name="ios-funnel-outline" *ngIf="!filter.filtered"></ion-icon>
             </button>
             <core-context-menu>
                 <core-context-menu-item *ngIf="showCalendar" [priority]="800" [content]="'addon.calendar.upcomingevents' | translate" [iconAction]="'list'" (action)="toggleDisplay()"></core-context-menu-item>
@@ -25,9 +25,9 @@
         <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}
     </ion-card>
 
-    <addon-calendar-calendar [hidden]="!showCalendar" [initialYear]="year" [initialMonth]="month" [courseId]="courseId" [categoryId]="categoryId" [displayNavButtons]="showCalendar" (onEventClicked)="gotoEvent($event)" (onDayClicked)="gotoDay($event)"></addon-calendar-calendar>
+    <addon-calendar-calendar [hidden]="!showCalendar" [initialYear]="year" [initialMonth]="month" [filter]="filter" [displayNavButtons]="showCalendar" (onEventClicked)="gotoEvent($event)" (onDayClicked)="gotoDay($event)"></addon-calendar-calendar>
 
-    <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [courseId]="courseId" [categoryId]="categoryId" (onEventClicked)="gotoEvent($event)"></addon-calendar-upcoming-events>
+    <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [filter]="filter" (onEventClicked)="gotoEvent($event)"></addon-calendar-upcoming-events>
 
     <!-- Create a calendar event. -->
     <ion-fab core-fab bottom end *ngIf="canCreate">

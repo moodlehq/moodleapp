@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ export class AddonModUrlIndexPage {
     /**
      * Update some data based on the url instance.
      *
-     * @param {any} url Url instance.
+     * @param url Url instance.
      */
     updateData(url: any): void {
         this.title = url.name || this.title;

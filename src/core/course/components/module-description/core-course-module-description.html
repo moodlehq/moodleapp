@@ -1,6 +1,6 @@
 <ion-card *ngIf="description">
     <ion-item text-wrap>
-        <core-format-text [text]="description" [component]="component" [componentId]="componentId" [maxHeight]="showFull && showFull !== 'false' ? 0 : 120" fullOnClick="true"></core-format-text>
+        <core-format-text [text]="description" [component]="component" [componentId]="componentId" [maxHeight]="showFull && showFull !== 'false' ? 0 : 120" fullOnClick="true" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
     </ion-item>
     <ion-item text-wrap *ngIf="note">
         <ion-note item-end>{{ note }}</ion-note>

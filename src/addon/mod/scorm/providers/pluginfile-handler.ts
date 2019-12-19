@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
     /**
      * Return the RegExp to match the revision on pluginfile URLs.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {RegExp} RegExp to match the revision on pluginfile URLs.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return RegExp to match the revision on pluginfile URLs.
      */
     getComponentRevisionRegExp(args: string[]): RegExp {
         // Check filearea.
@@ -40,11 +40,20 @@ export class AddonModScormPluginFileHandler implements CorePluginFileHandler {
     /**
      * Should return the string to remove the revision on pluginfile url.
      *
-     * @param {string[]} args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return {string} String to remove the revision on pluginfile url.
+     * @param args Arguments of the pluginfile URL defining component and filearea at least.
+     * @return String to remove the revision on pluginfile url.
      */
     getComponentRevisionReplace(args: string[]): string {
         // Component + Filearea + Revision
         return '/mod_scorm/content/0/';
+    }
+
+    /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @return Whether or not the handler is enabled on a site level.
+     */
+    isEnabled(): boolean | Promise<boolean> {
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,9 +56,9 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Get the ID of a choice sync.
      *
-     * @param  {number} choiceId Choice ID.
-     * @param  {number} userId   User the responses belong to.
-     * @return {string} Sync ID.
+     * @param choiceId Choice ID.
+     * @param userId User the responses belong to.
+     * @return Sync ID.
      */
     protected getSyncId(choiceId: number, userId: number): string {
         return choiceId + '#' + userId;
@@ -67,9 +67,9 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Try to synchronize all the choices in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force Wether to force sync not depending on last execution.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllChoices(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('choices', this.syncAllChoicesFunc.bind(this), [force], siteId);
@@ -78,9 +78,9 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Sync all pending choices on a site.
      *
-     * @param {string}  [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} force    Wether to force sync not depending on last execution.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllChoicesFunc(siteId?: string, force?: boolean): Promise<any> {
         return this.choiceOffline.getResponses(siteId).then((responses) => {
@@ -108,10 +108,10 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Sync an choice only if a certain time has passed since the last time.
      *
-     * @param  {number} choiceId Choice ID to be synced.
-     * @param  {number} userId   User the answers belong to.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the choice is synced or it doesn't need to be synced.
+     * @param choiceId Choice ID to be synced.
+     * @param userId User the answers belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the choice is synced or it doesn't need to be synced.
      */
     syncChoiceIfNeeded(choiceId: number, userId: number, siteId?: string): Promise<any> {
         const syncId = this.getSyncId(choiceId, userId);
@@ -126,10 +126,10 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Synchronize a choice.
      *
-     * @param  {number} choiceId Choice ID to be synced.
-     * @param  {number} [userId] User the answers belong to.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected otherwise.
+     * @param choiceId Choice ID to be synced.
+     * @param userId User the answers belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncChoice(choiceId: number, userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {

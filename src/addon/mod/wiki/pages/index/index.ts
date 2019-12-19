@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ export class AddonModWikiIndexPage {
     /**
      * Update some data based on the data received.
      *
-     * @param {any} data The data received.
+     * @param data The data received.
      */
     updateData(data: any): void {
         if (typeof data == 'string') {

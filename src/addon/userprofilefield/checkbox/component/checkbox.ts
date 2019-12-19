@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ export class AddonUserProfileFieldCheckboxComponent implements OnInit {
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form: FormGroup; // Form where to add the form control.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
 
     constructor(private fb: FormBuilder, protected utils: CoreUtilsProvider) { }
 

@@ -10,6 +10,9 @@ ion-app.app-root addon-mod-assign-submission {
 
     div.submissioneditable p {
         color: $red;
+        @include darkmode() {
+            color: $red-light;
+        }
     }
 
     .core-grading-summary .advancedgrade {
@@ -45,6 +48,7 @@ core-format-text {
         margin: 0 auto;
         tbody {
             background: $white;
+            color: $text-color;
         }
     }
 

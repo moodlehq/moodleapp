@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ export class CoreSitePluginsQuestionBehaviourHandler extends CoreQuestionBehavio
      * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question.
-     * @return {any[]|Promise<any[]>} Components (or promise resolved with components) to render some extra data in the question
-     *                                (e.g. certainty options). Don't return anything if no extra data is required.
+     * @param injector Injector.
+     * @param question The question.
+     * @return Components (or promise resolved with components) to render some extra data in the question
+     *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(injector: Injector, question: any): any[] | Promise<any[]> {
         if (this.hasTemplate) {

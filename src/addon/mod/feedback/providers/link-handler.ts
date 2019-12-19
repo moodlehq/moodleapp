@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
+import { AddonModFeedbackProvider } from './feedback';
 
 /**
  * Handler to treat links to feedback.
@@ -23,7 +24,21 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 export class AddonModFeedbackLinkHandler extends CoreContentLinksModuleIndexHandler {
     name = 'AddonModFeedbackLinkHandler';
 
-    constructor(courseHelper: CoreCourseHelperProvider) {
+    constructor(courseHelper: CoreCourseHelperProvider,
+            protected feedbackProvider: AddonModFeedbackProvider) {
         super(courseHelper, 'AddonModFeedback', 'feedback');
+    }
+
+    /**
+     * Check if the handler is enabled for a certain site (site + user) and a URL.
+     *
+     * @param siteId The site ID.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Whether the handler is enabled for the URL and site.
+     */
+    isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
+        return this.feedbackProvider.isPluginEnabled();
     }
 }

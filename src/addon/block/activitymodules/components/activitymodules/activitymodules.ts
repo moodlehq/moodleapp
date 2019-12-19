@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { Component, OnInit, Injector, Input } from '@angular/core';
-import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreBlockBaseComponent } from '@core/block/classes/base-block-component';
-import { CoreConstants } from '@core/constants';
+import { CoreConstants, ContextLevel } from '@core/constants';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Component to render an "activity modules" block.
@@ -29,15 +29,16 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent implements OnInit {
     @Input() block: any; // The block to render.
-    @Input() contextLevel: string; // The context where the block will be used.
+    @Input() contextLevel: ContextLevel; // The context where the block will be used.
     @Input() instanceId: number; // The instance ID associated with the context level.
 
     entries: any[] = [];
 
     protected fetchContentDefaultError = 'Error getting activity modules data.';
 
-    constructor(injector: Injector, protected utils: CoreUtilsProvider, protected courseProvider: CoreCourseProvider,
-            protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate) {
+    constructor(injector: Injector, protected courseProvider: CoreCourseProvider,
+            protected translate: TranslateService, protected moduleDelegate: CoreCourseModuleDelegate,
+            protected sitesProvider: CoreSitesProvider) {
 
         super(injector, 'AddonBlockActivityModulesComponent');
     }
@@ -52,7 +53,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.courseProvider.invalidateSections(this.instanceId);
@@ -61,11 +62,10 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     /**
      * Fetch the data to render the block.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchContent(): Promise<any> {
-        return this.courseProvider.getSections(this.instanceId, false, true).then((sections) => {
-
+        return this.courseProvider.getSections(this.getCourseId(), false, true).then((sections) => {
             this.entries = [];
 
             const archetypes = {},
@@ -122,5 +122,19 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 });
             }
         });
+    }
+
+    /**
+     * Obtain the appropiate course id for the block.
+     *
+     * @return Course id.
+     */
+    protected getCourseId(): number {
+        switch (this.contextLevel) {
+            case ContextLevel.COURSE:
+                return this.instanceId;
+            default:
+                return this.sitesProvider.getCurrentSiteHomeId();
+        }
     }
 }

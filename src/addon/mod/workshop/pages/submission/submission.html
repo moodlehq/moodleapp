@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></ion-title>
         <ion-buttons end [hidden]="!loaded">
             <button *ngIf="assessmentId && access.assessingallowed" ion-button clear (click)="saveAssessment()" [attr.aria-label]="'core.save' | translate">
                 {{ 'core.save' | translate }}
@@ -12,7 +12,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshSubmission($event)">
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshSubmission($event)" *ngIf="!((assessmentId && access.assessingallowed) || canAddFeedback)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
@@ -38,7 +38,7 @@
             <ion-item text-wrap>
                 <ion-avatar core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" item-start [courseId]="courseId" [userId]="evaluateByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}</h2>
-                <core-format-text [text]="evaluate.text"></core-format-text>
+                <core-format-text [text]="evaluate.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
             </ion-item>
         </ion-list>
 
@@ -97,7 +97,7 @@
             <ion-item text-wrap>
                 <ion-avatar core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" item-start [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></ion-avatar>
                 <h2 *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">{{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}</h2>
-                <core-format-text [text]="assessment.feedbackreviewer"></core-format-text>
+                <core-format-text [text]="assessment.feedbackreviewer" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
             </ion-item>
         </ion-list>
     </core-loading>

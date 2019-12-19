@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,21 +21,21 @@ import { CoreQuestionProvider, CoreQuestionState } from '@core/question/provider
 /**
  * Check if a response is complete.
  *
- * @param {any} question The question.
- * @param {any} answers Object with the question answers (without prefix).
- * @return {number} 1 if complete, 0 if not complete, -1 if cannot determine.
+ * @param question The question.
+ * @param answers Object with the question answers (without prefix).
+ * @return 1 if complete, 0 if not complete, -1 if cannot determine.
  */
 export type isCompleteResponseFunction = (question: any, answers: any) => number;
 
 /**
  * Check if two responses are the same.
  *
- * @param {any} question Question.
- * @param {any} prevAnswers Object with the previous question answers.
- * @param {any} prevBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
- * @param {any} newAnswers Object with the new question answers.
- * @param {any} newBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
- * @return {boolean} Whether they're the same.
+ * @param question Question.
+ * @param prevAnswers Object with the previous question answers.
+ * @param prevBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
+ * @param newAnswers Object with the new question answers.
+ * @param newBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
+ * @return Whether they're the same.
  */
 export type isSameResponseFunction = (question: any, prevAnswers: any, prevBasicAnswers: any, newAnswers: any,
         newBasicAnswers: any) => boolean;
@@ -55,11 +55,11 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
     /**
      * Determine a question new state based on its answer(s).
      *
-     * @param {string} component Component the question belongs to.
-     * @param {number} attemptId Attempt ID the question belongs to.
-     * @param {any} question The question.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {CoreQuestionState|Promise<CoreQuestionState>} New state (or promise resolved with state).
+     * @param component Component the question belongs to.
+     * @param attemptId Attempt ID the question belongs to.
+     * @param question The question.
+     * @param siteId Site ID. If not defined, current site.
+     * @return New state (or promise resolved with state).
      */
     determineNewState(component: string, attemptId: number, question: any, siteId?: string)
             : CoreQuestionState | Promise<CoreQuestionState> {
@@ -69,13 +69,13 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
     /**
      * Determine a question new state based on its answer(s) for deferred question behaviour.
      *
-     * @param {string} component Component the question belongs to.
-     * @param {number} attemptId Attempt ID the question belongs to.
-     * @param {any} question The question.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @param {isCompleteResponseFunction} [isCompleteFn] Function to override the default isCompleteResponse check.
-     * @param {isSameResponseFunction} [isSameFn] Function to override the default isSameResponse check.
-     * @return {Promise<CoreQuestionState>} Promise resolved with state.
+     * @param component Component the question belongs to.
+     * @param attemptId Attempt ID the question belongs to.
+     * @param question The question.
+     * @param siteId Site ID. If not defined, current site.
+     * @param isCompleteFn Function to override the default isCompleteResponse check.
+     * @param isSameFn Function to override the default isSameResponse check.
+     * @return Promise resolved with state.
      */
     determineNewStateDeferred(component: string, attemptId: number, question: any, siteId?: string,
             isCompleteFn?: isCompleteResponseFunction, isSameFn?: isSameResponseFunction): Promise<CoreQuestionState> {
@@ -146,7 +146,7 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;

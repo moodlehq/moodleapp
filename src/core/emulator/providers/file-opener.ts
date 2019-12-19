@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ export class FileOpenerMock extends FileOpener {
     /**
      * Check if an app is already installed.
      *
-     * @param {string} packageId Package ID.
-     * @returns {Promise<any>} Promise resolved when done.
+     * @param packageId Package ID.
+     * @return Promise resolved when done.
      */
     appIsInstalled(packageId: string): Promise<any> {
         return Promise.reject('appIsInstalled not supported in browser or dekstop.');
@@ -39,9 +39,9 @@ export class FileOpenerMock extends FileOpener {
     /**
      * Open an file.
      *
-     * @param {string} filePath File path.
-     * @param {string} fileMIMEType File MIME type.
-     * @returns {Promise<any>} Promise resolved when done.
+     * @param filePath File path.
+     * @param fileMIMEType File MIME type.
+     * @return Promise resolved when done.
      */
     open(filePath: string, fileMIMEType: string): Promise<any> {
         if (this.appProvider.isDesktop()) {
@@ -61,8 +61,8 @@ export class FileOpenerMock extends FileOpener {
     /**
      * Uninstalls a package.
      *
-     * @param {string} packageId Package ID.
-     * @returns {Promise<any>} Promise resolved when done.
+     * @param packageId Package ID.
+     * @return Promise resolved when done.
      */
     uninstall(packageId: string): Promise<any> {
         return Promise.reject('uninstall not supported in browser or dekstop.');

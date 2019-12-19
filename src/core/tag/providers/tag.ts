@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,74 +18,6 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 
 /**
- * Structure of a tag cloud returned by WS.
- */
-export interface CoreTagCloud {
-    tags: CoreTagCloudTag[];
-    tagscount: number;
-    totalcount: number;
-}
-
-/**
- * Structure of a tag cloud tag returned by WS.
- */
-export interface CoreTagCloudTag {
-    name: string;
-    viewurl: string;
-    flag: boolean;
-    isstandard: boolean;
-    count: number;
-    size: number;
-}
-
-/**
- * Structure of a tag collection returned by WS.
- */
-export interface CoreTagCollection {
-    id: number;
-    name: string;
-    isdefault: boolean;
-    component: string;
-    sortoder: number;
-    searchable: boolean;
-    customurl: string;
-}
-
-/**
- * Structure of a tag index returned by WS.
- */
-export interface CoreTagIndex {
-    tagid: number;
-    ta: number;
-    component: string;
-    itemtype: string;
-    nextpageurl: string;
-    prevpageurl: string;
-    exclusiveurl: string;
-    exclusivetext: string;
-    title: string;
-    content: string;
-    hascontent: number;
-    anchor: string;
-}
-
-/**
- * Structure of a tag item returned by WS.
- */
-export interface CoreTagItem {
-    id: number;
-    name: string;
-    rawname: string;
-    isstandard: boolean;
-    tagcollid: number;
-    taginstanceid: number;
-    taginstancecontextid: number;
-    itemid: number;
-    ordering: number;
-    flag: number;
-}
-
-/**
  * Service to handle tags.
  */
 @Injectable()
@@ -100,8 +32,8 @@ export class CoreTagProvider {
     /**
      * Check whether tags are available in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if available, resolved with false otherwise.
      * @since 3.7
      */
     areTagsAvailable(siteId?: string): Promise<boolean> {
@@ -113,8 +45,8 @@ export class CoreTagProvider {
     /**
      * Check whether tags are available in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} True if available.
+     * @param site Site. If not defined, use current site.
+     * @return True if available.
      */
     areTagsAvailableInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -128,16 +60,16 @@ export class CoreTagProvider {
     /**
      * Fetch the tag cloud.
      *
-     * @param {number} [collectionId=0] Tag collection ID.
-     * @param {boolean} [isStandard=false] Whether to return only standard tags.
-     * @param {string} [sort='name'] Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
-     * @param {string} [search=''] Search string.
-     * @param {number} [fromContextId=0] Context ID where this tag cloud is displayed.
-     * @param {number} [contextId=0] Only retrieve tag instances in this context.
-     * @param {boolean} [recursive=true] Retrieve tag instances in the context and its children.
-     * @param {number} [limit] Maximum number of tags to retrieve. Defaults to SEARCH_LIMIT.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreTagCloud>} Promise resolved with the tag cloud.
+     * @param collectionId Tag collection ID.
+     * @param isStandard Whether to return only standard tags.
+     * @param sort Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
+     * @param search Search string.
+     * @param fromContextId Context ID where this tag cloud is displayed.
+     * @param contextId Only retrieve tag instances in this context.
+     * @param recursive Retrieve tag instances in the context and its children.
+     * @param limit Maximum number of tags to retrieve. Defaults to SEARCH_LIMIT.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the tag cloud.
      * @since 3.7
      */
     getTagCloud(collectionId: number = 0, isStandard: boolean = false, sort: string = 'name', search: string = '',
@@ -169,8 +101,8 @@ export class CoreTagProvider {
     /**
      * Fetch the tag collections.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreTagCollection[]>} Promise resolved with the tag collections.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the tag collections.
      * @since 3.7
      */
     getTagCollections(siteId?: string): Promise<CoreTagCollection[]> {
@@ -193,16 +125,16 @@ export class CoreTagProvider {
     /**
      * Fetch the tag index.
      *
-     * @param {number} [id=0] Tag ID.
-     * @param {string} [name=''] Tag name.
-     * @param {number} [collectionId=0] Tag collection ID.
-     * @param {number} [areaId=0] Tag area ID.
-     * @param {number} [fromContextId=0] Context ID where the link was displayed.
-     * @param {number} [contextId=0] Context ID where to search for items.
-     * @param {boolean} [recursive=true] Search in the context and its children.
-     * @param {number} [page=0] Page number.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreTagIndex[]>} Promise resolved with the tag index per area.
+     * @param id Tag ID.
+     * @param name Tag name.
+     * @param collectionId Tag collection ID.
+     * @param areaId Tag area ID.
+     * @param fromContextId Context ID where the link was displayed.
+     * @param contextId Context ID where to search for items.
+     * @param recursive Search in the context and its children.
+     * @param page Page number.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the tag index per area.
      * @since 3.7
      */
     getTagIndexPerArea(id: number, name: string = '', collectionId: number = 0, areaId: number = 0, fromContextId: number = 0,
@@ -246,14 +178,14 @@ export class CoreTagProvider {
     /**
      * Invalidate tag cloud.
      *
-     * @param {number} [collectionId=0] Tag collection ID.
-     * @param {boolean} [isStandard=false] Whether to return only standard tags.
-     * @param {string} [sort='name'] Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
-     * @param {string} [search=''] Search string.
-     * @param {number} [fromContextId=0] Context ID where this tag cloud is displayed.
-     * @param {number} [contextId=0] Only retrieve tag instances in this context.
-     * @param {boolean} [recursive=true] Retrieve tag instances in the context and its children.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param collectionId Tag collection ID.
+     * @param isStandard Whether to return only standard tags.
+     * @param sort Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
+     * @param search Search string.
+     * @param fromContextId Context ID where this tag cloud is displayed.
+     * @param contextId Only retrieve tag instances in this context.
+     * @param recursive Retrieve tag instances in the context and its children.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateTagCloud(collectionId: number = 0, isStandard: boolean = false, sort: string = 'name', search: string = '',
             fromContextId: number = 0, contextId: number = 0, recursive: boolean = true, siteId?: string): Promise<any> {
@@ -267,7 +199,7 @@ export class CoreTagProvider {
     /**
      * Invalidate tag collections.
      *
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateTagCollections(siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -280,14 +212,14 @@ export class CoreTagProvider {
     /**
      * Invalidate tag index.
      *
-     * @param {number} [id=0] Tag ID.
-     * @param {string} [name=''] Tag name.
-     * @param {number} [collectionId=0] Tag collection ID.
-     * @param {number} [areaId=0] Tag area ID.
-     * @param {number} [fromContextId=0] Context ID where the link was displayed.
-     * @param {number} [contextId=0] Context ID where to search for items.
-     * @param {boolean} [recursive=true] Search in the context and its children.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param id Tag ID.
+     * @param name Tag name.
+     * @param collectionId Tag collection ID.
+     * @param areaId Tag area ID.
+     * @param fromContextId Context ID where the link was displayed.
+     * @param contextId Context ID where to search for items.
+     * @param recursive Search in the context and its children.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateTagIndexPerArea(id: number, name: string = '', collectionId: number = 0, areaId: number = 0,
             fromContextId: number = 0, contextId: number = 0, recursive: boolean = true, siteId?: string): Promise<any> {
@@ -301,14 +233,14 @@ export class CoreTagProvider {
     /**
      * Get cache key for tag cloud.
      *
-     * @param {number} collectionId Tag collection ID.
-     * @param {boolean} isStandard Whether to return only standard tags.
-     * @param {string} sort Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
-     * @param {string} search Search string.
-     * @param {number} fromContextId Context ID where this tag cloud is displayed.
-     * @param {number} contextId Only retrieve tag instances in this context.
-     * @param {boolean} recursive Retrieve tag instances in the context and it's children.
-     * @return {string} Cache key.
+     * @param collectionId Tag collection ID.
+     * @param isStandard Whether to return only standard tags.
+     * @param sort Sort order for display (id, name, rawname, count, flag, isstandard, tagcollid).
+     * @param search Search string.
+     * @param fromContextId Context ID where this tag cloud is displayed.
+     * @param contextId Only retrieve tag instances in this context.
+     * @param recursive Retrieve tag instances in the context and it's children.
+     * @return Cache key.
      */
     protected getTagCloudKey(collectionId: number, isStandard: boolean, sort: string, search: string, fromContextId: number,
             contextId: number, recursive: boolean): string {
@@ -319,7 +251,7 @@ export class CoreTagProvider {
     /**
      * Get cache key for tag collections.
      *
-     * @return {string} Cache key.
+     * @return Cache key.
      */
     protected getTagCollectionsKey(): string {
         return this.ROOT_CACHE_KEY + 'collections';
@@ -328,14 +260,14 @@ export class CoreTagProvider {
     /**
      * Get cache key for tag index.
      *
-     * @param {number} id Tag ID.
-     * @param {string} name Tag name.
-     * @param {number} collectionId Tag collection ID.
-     * @param {number} areaId Tag area ID.
-     * @param {number} fromContextId Context ID where the link was displayed.
-     * @param {number} contextId Context ID where to search for items.
-     * @param {boolean} [recursive=true] Search in the context and its children.
-     * @return {string} Cache key.
+     * @param id Tag ID.
+     * @param name Tag name.
+     * @param collectionId Tag collection ID.
+     * @param areaId Tag area ID.
+     * @param fromContextId Context ID where the link was displayed.
+     * @param contextId Context ID where to search for items.
+     * @param recursive Search in the context and its children.
+     * @return Cache key.
      */
     protected getTagIndexPerAreaKey(id: number, name: string, collectionId: number, areaId: number,  fromContextId: number,
             contextId: number, recursive: boolean): string {
@@ -343,3 +275,71 @@ export class CoreTagProvider {
             + contextId + ':' +  (recursive ? 1 : 0);
     }
 }
+
+/**
+ * Structure of a tag cloud returned by WS.
+ */
+export type CoreTagCloud = {
+    tags: CoreTagCloudTag[];
+    tagscount: number;
+    totalcount: number;
+};
+
+/**
+ * Structure of a tag cloud tag returned by WS.
+ */
+export type CoreTagCloudTag = {
+    name: string;
+    viewurl: string;
+    flag: boolean;
+    isstandard: boolean;
+    count: number;
+    size: number;
+};
+
+/**
+ * Structure of a tag collection returned by WS.
+ */
+export type CoreTagCollection = {
+    id: number;
+    name: string;
+    isdefault: boolean;
+    component: string;
+    sortoder: number;
+    searchable: boolean;
+    customurl: string;
+};
+
+/**
+ * Structure of a tag index returned by WS.
+ */
+export type CoreTagIndex = {
+    tagid: number;
+    ta: number;
+    component: string;
+    itemtype: string;
+    nextpageurl: string;
+    prevpageurl: string;
+    exclusiveurl: string;
+    exclusivetext: string;
+    title: string;
+    content: string;
+    hascontent: number;
+    anchor: string;
+};
+
+/**
+ * Structure of a tag item returned by WS.
+ */
+export type CoreTagItem = {
+    id: number;
+    name: string;
+    rawname: string;
+    isstandard: boolean;
+    tagcollid: number;
+    taginstanceid: number;
+    taginstancecontextid: number;
+    itemid: number;
+    ordering: number;
+    flag: number;
+};

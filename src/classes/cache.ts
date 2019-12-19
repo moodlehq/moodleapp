@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ export class CoreCache {
     /**
      * Get all the data stored in the cache for a certain id.
      *
-     * @param {any} id The ID to identify the entry.
-     * @return {any} The data from the cache. Undefined if not found.
+     * @param id The ID to identify the entry.
+     * @return The data from the cache. Undefined if not found.
      */
     getEntry(id: any): any {
         if (!this.cacheStore[id]) {
@@ -51,10 +51,10 @@ export class CoreCache {
     /**
      * Get the status of a module from the "cache".
      *
-     * @param {any} id The ID to identify the entry.
-     * @param {string} name Name of the value to get.
-     * @param {boolean} [ignoreInvalidate] Whether it should always return the cached data, even if it's expired.
-     * @return {any} Cached value. Undefined if not cached or expired.
+     * @param id The ID to identify the entry.
+     * @param name Name of the value to get.
+     * @param ignoreInvalidate Whether it should always return the cached data, even if it's expired.
+     * @return Cached value. Undefined if not cached or expired.
      */
     getValue(id: any, name: string, ignoreInvalidate?: boolean): any {
         const entry = this.getEntry(id);
@@ -73,7 +73,7 @@ export class CoreCache {
     /**
      * Invalidate all the cached data for a certain entry.
      *
-     * @param {any} id The ID to identify the entry.
+     * @param id The ID to identify the entry.
      */
     invalidate(id: any): void {
         const entry = this.getEntry(id);
@@ -85,10 +85,10 @@ export class CoreCache {
     /**
      * Update the status of a module in the "cache".
      *
-     * @param {any} id The ID to identify the entry.
-     * @param {string} name Name of the value to set.
-     * @param {any} value Value to set.
-     * @return {any} The set value.
+     * @param id The ID to identify the entry.
+     * @param name Name of the value to set.
+     * @param value Value to set.
+     * @return The set value.
      */
     setValue(id: any, name: string, value: any): any {
         const entry = this.getEntry(id);

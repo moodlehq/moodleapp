@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,8 +57,10 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
             return;
         }
 
-        // Get the data to render the block.
-        this.initBlock();
+        if (this.block.visible) {
+            // Get the data to render the block.
+            this.initBlock();
+        }
     }
 
     /**
@@ -128,10 +130,10 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher. Please pass this only if the refresher should finish when this function finishes.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher. Please pass this only if the refresher should finish when this function finishes.
+     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<any> {
         if (this.dynamicComponent) {
@@ -144,7 +146,7 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     /**
      * Invalidate some data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     invalidate(): Promise<any> {
         if (this.dynamicComponent) {

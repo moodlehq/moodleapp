@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ export class AddonModLessonModuleHandler implements CoreCourseModuleHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return {Promise<boolean>} Promise resolved with boolean: whether or not the handler is enabled on a site level.
+     * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
         return this.lessonProvider.isPluginEnabled();
@@ -54,10 +54,10 @@ export class AddonModLessonModuleHandler implements CoreCourseModuleHandler {
     /**
      * Get the data required to display the module in the course contents view.
      *
-     * @param {any} module The module object.
-     * @param {number} courseId The course ID.
-     * @param {number} sectionId The section ID.
-     * @return {CoreCourseModuleHandlerData} Data to render the module.
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @param sectionId The section ID.
+     * @return Data to render the module.
      */
     getData(module: any, courseId: number, sectionId: number): CoreCourseModuleHandlerData {
         return {
@@ -79,9 +79,9 @@ export class AddonModLessonModuleHandler implements CoreCourseModuleHandler {
      * Get the component to render the module. This is needed to support singleactivity course format.
      * The component returned must implement CoreCourseModuleMainComponent.
      *
-     * @param {any} course The course object.
-     * @param {any} module The module object.
-     * @return {any} The component to use, undefined if not found.
+     * @param course The course object.
+     * @param module The module object.
+     * @return The component to use, undefined if not found.
      */
     getMainComponent(course: any, module: any): any {
         return AddonModLessonIndexComponent;

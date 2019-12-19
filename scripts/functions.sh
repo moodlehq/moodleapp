@@ -20,22 +20,22 @@ function print_success {
 }
 
 function print_error {
-    tput setaf 1; echo "  ERROR:  $1"
+    tput setaf 1; echo "  ERROR:  $1"; tput sgr0
 }
 
 function print_ok {
-    tput setaf 2; echo "     OK:  $1"
+    tput setaf 2; echo "     OK:  $1"; tput sgr0
     echo
 }
 
 function print_message {
-    tput setaf 3; echo "--------  $1"
+    tput setaf 3; echo "--------  $1"; tput sgr0
     echo
 }
 
 function print_title {
     stepnumber=$(($stepnumber + 1))
     echo
-    tput setaf 5; echo "$stepnumber $1"
-    tput setaf 5; echo '=================='
+    tput setaf 5; echo "$stepnumber $1"; tput sgr0
+    tput setaf 5; echo '=================='; tput sgr0
 }

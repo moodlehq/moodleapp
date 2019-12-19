@@ -2,8 +2,8 @@
     <ion-navbar core-back-button>
         <ion-title>
             <img *ngIf="event && event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation" class="core-module-icon">
-            <core-icon *ngIf="event && event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
-            <core-format-text *ngIf="event" [text]="event.name"></core-format-text>
+            <core-icon *ngIf="event && event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
+            <core-format-text *ngIf="event" [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"></core-format-text>
         </ion-title>
         <ion-buttons end>
             <!-- The context menu will be added in here. -->
@@ -32,16 +32,16 @@
             <ion-card-content *ngIf="event">
                 <ion-item text-wrap *ngIf="isSplitViewOn">
                     <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start alt="" role="presentation" class="core-module-icon">
-                    <core-icon *ngIf="event.icon && !event.moduleIcon" [name]="event.icon" item-start></core-icon>
+                    <core-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
                     <h2>{{ 'addon.calendar.eventname' | translate }}</h2>
-                    <p><core-format-text [text]="event.name"></core-format-text></p>
+                    <p><core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"></core-format-text></p>
                     <ion-note item-end *ngIf="event.deleted">
                         <ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}
                     </ion-note>
                 </ion-item>
                 <ion-item>
                     <h2>{{ 'addon.calendar.when' | translate }}</h2>
-                    <p><core-format-text [text]="event.formattedtime"></core-format-text></p>
+                    <p [innerHTML]="event.formattedtime"></p>
                     <ion-note item-end *ngIf="!isSplitViewOn && event.deleted">
                         <ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}
                     </ion-note>
@@ -52,7 +52,7 @@
                 </ion-item>
                 <a ion-item text-wrap *ngIf="courseName" [href]="courseUrl" core-link capture="true">
                     <h2>{{ 'core.course' | translate}}</h2>
-                    <p><core-format-text [text]="courseName"></core-format-text></p>
+                    <p><core-format-text [text]="courseName" contextLevel="course" [contextInstanceId]="courseId"></core-format-text></p>
                 </a>
                 <ion-item text-wrap *ngIf="groupName">
                     <h2>{{ 'core.group' | translate}}</h2>
@@ -60,19 +60,19 @@
                 </ion-item>
                 <a ion-item text-wrap *ngIf="categoryPath">
                     <h2>{{ 'core.category' | translate}}</h2>
-                    <p><core-format-text [text]="categoryPath"></core-format-text></p>
+                    <p><core-format-text [text]="categoryPath" contextLevel="coursecat" [contextInstanceId]="event.category.id"></core-format-text></p>
                 </a>
                 <ion-item text-wrap *ngIf="event.description">
                     <h2>{{ 'core.description' | translate}}</h2>
                     <p>
-                        <core-format-text [text]="event.description"></core-format-text>
+                        <core-format-text [text]="event.description" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"></core-format-text>
                     </p>
                 </ion-item>
                 <ion-item text-wrap *ngIf="event.location">
                     <h2>{{ 'core.location' | translate}}</h2>
                     <p>
                         <a [href]="event.encodedLocation" core-link auto-login="no">
-                            <core-format-text [text]="event.location"></core-format-text>
+                            <core-format-text [text]="event.location" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"></core-format-text>
                         </a>
                     </p>
                 </ion-item>
@@ -98,12 +98,11 @@
 
             <ng-container *ngIf="event.timestart + event.timeduration > currentTime">
                 <ion-item>
-                    <ion-label stacked><h2>{{ 'addon.calendar.setnewreminder' | translate }}</h2></ion-label>
-                    <ion-datetime [(ngModel)]="notificationTimeText" [placeholder]="'core.choosedots' | translate" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"></ion-datetime>
+                    <button ion-button block color="primary" (click)="notificationPicker.open()">
+                        {{ 'addon.calendar.setnewreminder' | translate }}
+                    </button>
                 </ion-item>
-                <ion-item>
-                    <button ion-button block color="primary" (click)="addNotificationTime($event)" [disabled]="!notificationTimeText">{{ 'core.save' | translate }}</button>
-                </ion-item>
+                <ion-datetime #notificationPicker hidden [(ngModel)]="notificationTimeText" [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax" [doneText]="'core.add' | translate"(ionChange)="addNotificationTime()"></ion-datetime>
             </ng-container>
         </ion-card>
     </core-loading>

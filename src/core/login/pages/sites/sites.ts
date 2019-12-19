@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
 
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreLoginHelperProvider } from '../../providers/helper';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
 
 /**
  * Page that displays the list of stored sites.
@@ -35,9 +34,12 @@ export class CoreLoginSitesPage {
     showDelete: boolean;
     protected logger;
 
-    constructor(private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider, logger: CoreLoggerProvider,
-            private translate: TranslateService, private pushNotificationsProvider: CorePushNotificationsProvider) {
+    constructor(private domUtils: CoreDomUtilsProvider,
+            private filterProvider: CoreFilterProvider,
+            private sitesProvider: CoreSitesProvider,
+            private loginHelper: CoreLoginHelperProvider,
+            logger: CoreLoggerProvider,
+            private pushNotificationsProvider: CorePushNotificationsProvider) {
         this.logger = logger.getInstance('CoreLoginSitesPage');
     }
 
@@ -77,8 +79,8 @@ export class CoreLoginSitesPage {
     /**
      * Delete a site.
      *
-     * @param {Event} e Click event.
-     * @param {number} index Position of the site.
+     * @param e Click event.
+     * @param index Position of the site.
      */
     deleteSite(e: Event, index: number): void {
         e.stopPropagation();
@@ -86,8 +88,9 @@ export class CoreLoginSitesPage {
         const site = this.sites[index],
             siteName = site.siteName;
 
-        this.textUtils.formatText(siteName).then((siteName) => {
-            this.domUtils.showConfirm(this.translate.instant('core.login.confirmdeletesite', { sitename: siteName })).then(() => {
+        this.filterProvider.formatText(siteName, {clean: true, singleLine: true, filter: false}, [], site.id).then((siteName) => {
+
+            this.domUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName }).then(() => {
                 this.sitesProvider.deleteSite(site.id).then(() => {
                     this.sites.splice(index, 1);
                     this.showDelete = false;
@@ -112,7 +115,7 @@ export class CoreLoginSitesPage {
     /**
      * Login in a site.
      *
-     * @param {string} siteId The site ID.
+     * @param siteId The site ID.
      */
     login(siteId: string): void {
         const modal = this.domUtils.showModalLoading();

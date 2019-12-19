@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     mode: string;
     src: string;
     contentText: string;
+    displayDescription = true;
 
     constructor(injector: Injector, private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchHandler: AddonModResourcePrefetchHandler,
@@ -64,7 +65,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         return this.resourceProvider.invalidateContent(this.module.id, this.courseId);
@@ -73,8 +74,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     /**
      * Download resource contents.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
@@ -96,6 +97,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         }).then((resource) => {
             if (resource) {
                 this.description = resource.intro || resource.description;
+                const options = this.textUtils.unserialize(resource.displayoptions) || {};
+                this.displayDescription = typeof options.printintro == 'undefined' || !!options.printintro;
                 this.dataRetrieved.emit(resource);
             }
 
@@ -131,12 +134,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
                 return this.resourceHelper.getEmbeddedHtml(this.module, this.courseId).then((html) => {
                     this.contentText = html;
+
+                    this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
                 });
             } else {
                 this.mode = 'external';
             }
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }

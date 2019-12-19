@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import { CoreEventsProvider } from '@providers/events';
 export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
     /**
      * Type of the field the handler supports. E.g. 'checkbox'.
-     * @type {string}
      */
     type: string;
 
@@ -29,18 +28,18 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
      * Return the Component to use to display the user profile field.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector): any | Promise<any>;
 
     /**
      * Get the data to send for the field based on the input data.
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     formValues     Form Values.
-     * @return {Promise<CoreUserProfileFieldHandlerData>|CoreUserProfileFieldHandlerData}  Data to send for the field.
+     * @param field User field to get the data for.
+     * @param signup True if user is in signup page.
+     * @param registerAuth Register auth method. E.g. 'email'.
+     * @param formValues Form Values.
+     * @return Data to send for the field.
      */
     getData?(field: any, signup: boolean, registerAuth: string, formValues: any):
         Promise<CoreUserProfileFieldHandlerData> | CoreUserProfileFieldHandlerData;
@@ -49,19 +48,16 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
 export interface CoreUserProfileFieldHandlerData {
     /**
      * Name to display.
-     * @type {string}
      */
     name: string;
 
     /**
      * Field type.
-     * @type {string}
      */
     type?: string;
 
     /**
      * Value of the field.
-     * @type {any}
      */
     value: any;
 }
@@ -81,10 +77,10 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
     /**
      * Get the component to use to display an user field.
      *
-     * @param {Injector} injector Injector.
-     * @param  {any} field      User field to get the directive for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @return {Promise<any>} Promise resolved with component to use, undefined if not found.
+     * @param injector Injector.
+     * @param field User field to get the directive for.
+     * @param signup True if user is in signup page.
+     * @return Promise resolved with component to use, undefined if not found.
      */
     getComponent(injector: Injector, field: any, signup: boolean): Promise<any> {
         const type = field.type || field.datatype;
@@ -103,11 +99,11 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
     /**
      * Get the data to send for a certain field based on the input data.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  registerAuth   Register auth method. E.g. 'email'.
-     * @param  {any}     formValues     Form values.
-     * @return {Promise<any>}           Data to send for the field.
+     * @param field User field to get the data for.
+     * @param signup True if user is in signup page.
+     * @param registerAuth Register auth method. E.g. 'email'.
+     * @param formValues Form values.
+     * @return Data to send for the field.
      */
     getDataForField(field: any, signup: boolean, registerAuth: string, formValues: any): Promise<any> {
         const type = field.type || field.datatype,
@@ -133,11 +129,11 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
     /**
      * Get the data to send for a list of fields based on the input data.
      *
-     * @param  {any[]}   fields           User fields to get the data for.
-     * @param  {boolean} [signup]       True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     formValues     Form values.
-     * @return {Promise<any>}           Data to send.
+     * @param fields User fields to get the data for.
+     * @param signup True if user is in signup page.
+     * @param registerAuth Register auth method. E.g. 'email'.
+     * @param formValues Form values.
+     * @return Data to send.
      */
     getDataForFields(fields: any[], signup: boolean = false, registerAuth: string = '', formValues: any): Promise<any> {
         const result = [],

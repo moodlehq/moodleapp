@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ export class CoreSendMessageFormComponent implements OnInit {
     @Input() message: string; // Input text.
     @Input() placeholder = ''; // Placeholder for the input area.
     @Input() showKeyboard = false; // If keyboard is shown or not.
+    @Input() sendDisabled = false; // If send is disabled.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
@@ -66,7 +67,7 @@ export class CoreSendMessageFormComponent implements OnInit {
     /**
      * Form submitted.
      *
-     * @param {Event} $event Mouse event.
+     * @param $event Mouse event.
      */
     submitForm($event: Event): void {
         $event.preventDefault();
@@ -95,10 +96,14 @@ export class CoreSendMessageFormComponent implements OnInit {
     /**
      * Enter key clicked.
      *
-     * @param {Event} e Event.
-     * @param {string} other The name of the other key that was clicked, undefined if no other key.
+     * @param e Event.
+     * @param other The name of the other key that was clicked, undefined if no other key.
      */
     enterClicked(e: Event, other: string): void {
+        if (this.sendDisabled) {
+            return;
+        }
+
         if (this.sendOnEnter && !other) {
             // Enter clicked, send the message.
             this.submitForm(e);

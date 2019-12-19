@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,13 +37,11 @@ import { AddonModLessonPrefetchHandler } from './prefetch-handler';
 export interface AddonModLessonSyncResult {
     /**
      * List of warnings.
-     * @type {string[]}
      */
     warnings: string[];
 
     /**
      * Whether some data was sent to the server or offline data was updated.
-     * @type {boolean}
      */
     updated: boolean;
 }
@@ -108,9 +106,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Unmark a retake as finished in a synchronization.
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param lessonId Lesson ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     deleteRetakeFinishedInSync(lessonId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -123,9 +121,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Get a retake finished in a synchronization for a certain lesson (if any).
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved with the retake entry (undefined if no retake).
+     * @param lessonId Lesson ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the retake entry (undefined if no retake).
      */
     getRetakeFinishedInSync(lessonId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -138,10 +136,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Check if a lesson has data to synchronize.
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {number} retake  Retake number.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with boolean: whether it has data to sync.
+     * @param lessonId Lesson ID.
+     * @param retake Retake number.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it has data to sync.
      */
     hasDataToSync(lessonId: number, retake: number, siteId?: string): Promise<boolean> {
         const promises = [];
@@ -165,11 +163,11 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Mark a retake as finished in a synchronization.
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {number} retake The retake number.
-     * @param {number} pageId The page ID to start reviewing from.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param lessonId Lesson ID.
+     * @param retake The retake number.
+     * @param pageId The page ID to start reviewing from.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     setRetakeFinishedInSync(lessonId: number, retake: number, pageId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -185,9 +183,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Try to synchronize all the lessons in a certain site or in all sites.
      *
-     * @param {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllLessons(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all lessons', this.syncAllLessonsFunc.bind(this), [force], siteId);
@@ -196,9 +194,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Sync all lessons on a site.
      *
-     * @param  {string} siteId Site ID to sync.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @param {Promise<any>} Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync.
+     * @param force Wether to force sync not depending on last execution.
+     * @param Promise resolved if sync is successful, rejected if sync fails.
      */
     protected syncAllLessonsFunc(siteId: string, force?: boolean): Promise<any> {
         // Get all the lessons that have something to be synchronized.
@@ -228,10 +226,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Sync a lesson only if a certain time has passed since the last time.
      *
-     * @param {any} lessonId Lesson ID.
-     * @param {boolean} [askPreflight] Whether we should ask for password if needed.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the lesson is synced or if it doesn't need to be synced.
+     * @param lessonId Lesson ID.
+     * @param askPreflight Whether we should ask for password if needed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the lesson is synced or if it doesn't need to be synced.
      */
     syncLessonIfNeeded(lessonId: number, askPassword?: boolean, siteId?: string): Promise<any> {
         return this.isSyncNeeded(lessonId, siteId).then((needed) => {
@@ -244,11 +242,11 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Try to synchronize a lesson.
      *
-     * @param {number} lessonId Lesson ID.
-     * @param {boolean} askPassword True if we should ask for password if needed, false otherwise.
-     * @param {boolean} ignoreBlock True to ignore the sync block setting.
-     * @param {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<AddonModLessonSyncResult>} Promise resolved in success.
+     * @param lessonId Lesson ID.
+     * @param askPassword True if we should ask for password if needed, false otherwise.
+     * @param ignoreBlock True to ignore the sync block setting.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success.
      */
     syncLesson(lessonId: number, askPassword?: boolean, ignoreBlock?: boolean, siteId?: string): Promise<AddonModLessonSyncResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
@@ -458,12 +456,12 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     /**
      * Send an attempt to the site and delete it afterwards.
      *
-     * @param {any} lesson Lesson.
-     * @param {string} password Password (if any).
-     * @param {any} attempt Attempt to send.
-     * @param {AddonModLessonSyncResult} result Result where to store the data.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param lesson Lesson.
+     * @param password Password (if any).
+     * @param attempt Attempt to send.
+     * @param result Result where to store the data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
     protected sendAttempt(lesson: any, password: string, attempt: any, result: AddonModLessonSyncResult, siteId?: string)
             : Promise<any> {

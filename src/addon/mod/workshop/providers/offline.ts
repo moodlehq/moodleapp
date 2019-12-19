@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -179,8 +179,8 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get all the workshops ids that have something to be synced.
      *
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<number[]>} Promise resolved with workshops id that have something to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with workshops id that have something to be synced.
      */
     getAllWorkshops(siteId?: string): Promise<number[]> {
         const promises = [
@@ -207,9 +207,9 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Check if there is an offline data to be synced.
      *
-     * @param  {number} workshopId Workshop ID to remove.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<boolean>}  Promise resolved with boolean: true if has offline data, false otherwise.
+     * @param workshopId Workshop ID to remove.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: true if has offline data, false otherwise.
      */
     hasWorkshopOfflineData(workshopId: number, siteId?: string): Promise<boolean> {
         const promises = [
@@ -230,11 +230,11 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Delete workshop submission action.
      *
-     * @param  {number} workshopId   Workshop ID.
-     * @param  {number} submissionId Submission ID.
-     * @param  {string} action       Action to be done.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if stored, rejected if failure.
+     * @param workshopId Workshop ID.
+     * @param submissionId Submission ID.
+     * @param action Action to be done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteSubmissionAction(workshopId: number, submissionId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -251,10 +251,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Delete all workshop submission actions.
      *
-     * @param  {number} workshopId   Workshop ID.
-     * @param  {number} submissionId Submission ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if stored, rejected if failure.
+     * @param workshopId Workshop ID.
+     * @param submissionId Submission ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteAllSubmissionActions(workshopId: number, submissionId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -270,8 +270,8 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the all the submissions to be synced.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}  Promise resolved with the objects to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the objects to be synced.
      */
     getAllSubmissions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -286,9 +286,9 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the submissions of a workshop to be synced.
      *
-     * @param  {number} workshopId ID of the workshop.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any>}      Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getSubmissions(workshopId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -307,10 +307,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get all actions of a submission of a workshop to be synced.
      *
-     * @param  {number} workshopId   ID of the workshop.
-     * @param  {number} submissionId ID of the submission.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any[]>}      Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param submissionId ID of the submission.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getSubmissionActions(workshopId: number, submissionId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -330,11 +330,11 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get an specific action of a submission of a workshop to be synced.
      *
-     * @param  {number} workshopId   ID of the workshop.
-     * @param  {number} submissionId ID of the submission.
-     * @param  {string} action       Action to be done.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param submissionId ID of the submission.
+     * @param action Action to be done.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getSubmissionAction(workshopId: number, submissionId: number, action: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -355,16 +355,16 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Offline version for adding a submission action to a workshop.
      *
-     * @param  {number} workshopId    Workshop ID.
-     * @param  {number} courseId      Course ID the workshop belongs to.
-     * @param  {string} title         The submission title.
-     * @param  {string} content       The submission text content.
-     * @param  {any}    attachmentsId Stored attachments.
-     * @param  {number} submissionId  Submission Id, if action is add, the time the submission was created.
-     *                                If set to 0, current time is used.
-     * @param  {string} action        Action to be done. ['add', 'update', 'delete']
-     * @param  {string} [siteId]      Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved when submission action is successfully saved.
+     * @param workshopId Workshop ID.
+     * @param courseId Course ID the workshop belongs to.
+     * @param title The submission title.
+     * @param content The submission text content.
+     * @param attachmentsId Stored attachments.
+     * @param submissionId Submission Id, if action is add, the time the submission was created.
+     *                     If set to 0, current time is used.
+     * @param action Action to be done. ['add', 'update', 'delete']
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when submission action is successfully saved.
      */
     saveSubmission(workshopId: number, courseId: number, title: string, content: string, attachmentsId: any,
             submissionId: number, action: string, siteId?: string): Promise<any> {
@@ -388,7 +388,7 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Parse "attachments" column of a submission record.
      *
-     * @param  {any} record Submission record, modified in place.
+     * @param record Submission record, modified in place.
      */
     protected parseSubmissionRecord(record: any): void {
         record.attachmentsid = this.textUtils.parseJSON(record.attachmentsid);
@@ -397,10 +397,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Delete workshop assessment.
      *
-     * @param  {number} workshopId   Workshop ID.
-     * @param  {number} assessmentId Assessment ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if stored, rejected if failure.
+     * @param workshopId Workshop ID.
+     * @param assessmentId Assessment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteAssessment(workshopId: number, assessmentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -416,8 +416,8 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the all the assessments to be synced.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}  Promise resolved with the objects to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the objects to be synced.
      */
     getAllAssessments(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -432,9 +432,9 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the assessments of a workshop to be synced.
      *
-     * @param  {number} workshopId ID of the workshop.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any[]>}    Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getAssessments(workshopId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -453,10 +453,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get an specific assessment of a workshop to be synced.
      *
-     * @param  {number} workshopId   ID of the workshop.
-     * @param  {number} assessmentId Assessment ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param assessmentId Assessment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getAssessment(workshopId: number, assessmentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -476,12 +476,12 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Offline version for adding an assessment to a workshop.
      *
-     * @param  {number} workshopId   Workshop ID.
-     * @param  {number} assessmentId Assessment ID.
-     * @param  {number} courseId     Course ID the workshop belongs to.
-     * @param  {any}    inputData    Assessment data.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved when assessment is successfully saved.
+     * @param workshopId Workshop ID.
+     * @param assessmentId Assessment ID.
+     * @param courseId Course ID the workshop belongs to.
+     * @param inputData Assessment data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when assessment is successfully saved.
      */
     saveAssessment(workshopId: number, assessmentId: number, courseId: number, inputData: any, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -500,7 +500,7 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Parse "inpudata" column of an assessment record.
      *
-     * @param {any} record Assessnent record, modified in place.
+     * @param record Assessnent record, modified in place.
      */
     protected parseAssessmentRecord(record: any): void {
         record.inputdata = this.textUtils.parseJSON(record.inputdata);
@@ -509,10 +509,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Delete workshop evaluate submission.
      *
-     * @param  {number} workshopId   Workshop ID.
-     * @param  {number} submissionId Submission ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if stored, rejected if failure.
+     * @param workshopId Workshop ID.
+     * @param submissionId Submission ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteEvaluateSubmission(workshopId: number, submissionId: number, siteId?: string): Promise<any> {
         const conditions = {
@@ -528,8 +528,8 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the all the evaluate submissions to be synced.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}  Promise resolved with the objects to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the objects to be synced.
      */
     getAllEvaluateSubmissions(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -544,9 +544,9 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the evaluate submissions of a workshop to be synced.
      *
-     * @param  {number} workshopId ID of the workshop.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any[]>}    Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getEvaluateSubmissions(workshopId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -566,10 +566,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get an specific evaluate submission of a workshop to be synced.
      *
-     * @param  {number} workshopId   ID of the workshop.
-     * @param  {number} submissionId Submission ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param submissionId Submission ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getEvaluateSubmission(workshopId: number, submissionId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -589,14 +589,14 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Offline version for evaluation a submission to a workshop.
      *
-     * @param  {number}  workshopId   Workshop ID.
-     * @param  {number}  submissionId Submission ID.
-     * @param  {number}  courseId     Course ID the workshop belongs to.
-     * @param  {string}  feedbackText The feedback for the author.
-     * @param  {boolean} published    Whether to publish the submission for other users.
-     * @param  {any}     gradeOver    The new submission grade (empty for no overriding the grade).
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}         Promise resolved when submission evaluation is successfully saved.
+     * @param workshopId Workshop ID.
+     * @param submissionId Submission ID.
+     * @param courseId Course ID the workshop belongs to.
+     * @param feedbackText The feedback for the author.
+     * @param published Whether to publish the submission for other users.
+     * @param gradeOver The new submission grade (empty for no overriding the grade).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when submission evaluation is successfully saved.
      */
     saveEvaluateSubmission(workshopId: number, submissionId: number, courseId: number, feedbackText: string, published: boolean,
             gradeOver: any, siteId?: string): Promise<any> {
@@ -618,7 +618,7 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Parse "published" and "gradeover" columns of an evaluate submission record.
      *
-     * @param  {any} record Evaluate submission record, modified in place.
+     * @param record Evaluate submission record, modified in place.
      */
     protected parseEvaluateSubmissionRecord(record: any): void {
         record.published = Boolean(record.published);
@@ -628,10 +628,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Delete workshop evaluate assessment.
      *
-     * @param  {number} workshopId   Workshop ID.
-     * @param  {number} assessmentId Assessment ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved if stored, rejected if failure.
+     * @param workshopId Workshop ID.
+     * @param assessmentId Assessment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if stored, rejected if failure.
      */
     deleteEvaluateAssessment(workshopId: number, assessmentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -647,8 +647,8 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the all the evaluate assessments to be synced.
      *
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>}  Promise resolved with the objects to be synced.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the objects to be synced.
      */
     getAllEvaluateAssessments(siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -663,9 +663,9 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the evaluate assessments of a workshop to be synced.
      *
-     * @param  {number} workshopId ID of the workshop.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<any[]>}    Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getEvaluateAssessments(workshopId: number, siteId?: string): Promise<any[]> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -685,10 +685,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get an specific evaluate assessment of a workshop to be synced.
      *
-     * @param  {number} workshopId   ID of the workshop.
-     * @param  {number} assessmentId Assessment ID.
-     * @param  {string} [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<any>}        Promise resolved with the object to be synced.
+     * @param workshopId ID of the workshop.
+     * @param assessmentId Assessment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the object to be synced.
      */
     getEvaluateAssessment(workshopId: number, assessmentId: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -708,14 +708,14 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Offline version for evaluating an assessment to a workshop.
      *
-     * @param  {number}  workshopId       Workshop ID.
-     * @param  {number}  assessmentId     Assessment ID.
-     * @param  {number}  courseId         Course ID the workshop belongs to.
-     * @param  {string}  feedbackText     The feedback for the reviewer.
-     * @param  {number}  weight           The new weight for the assessment.
-     * @param  {any}     gradingGradeOver The new grading grade (empty for no overriding the grade).
-     * @param  {string}  [siteId]         Site ID. If not defined, current site.
-     * @return {Promise<any>}             Promise resolved when assessment evaluation is successfully saved.
+     * @param workshopId Workshop ID.
+     * @param assessmentId Assessment ID.
+     * @param courseId Course ID the workshop belongs to.
+     * @param feedbackText The feedback for the reviewer.
+     * @param weight The new weight for the assessment.
+     * @param gradingGradeOver The new grading grade (empty for no overriding the grade).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when assessment evaluation is successfully saved.
      */
     saveEvaluateAssessment(workshopId: number, assessmentId: number, courseId: number, feedbackText: string, weight: number,
             gradingGradeOver: any, siteId?: string): Promise<any> {
@@ -737,7 +737,7 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Parse "gradinggradeover" column of an evaluate assessment record.
      *
-     * @param  {any} record Evaluate assessment record, modified in place.
+     * @param record Evaluate assessment record, modified in place.
      */
     protected parseEvaluateAssessmentRecord(record: any): void {
         record.gradinggradeover = this.textUtils.parseJSON(record.gradinggradeover);
@@ -746,9 +746,9 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the path to the folder where to store files for offline attachments in a workshop.
      *
-     * @param  {number} workshopId Workshop ID.
-     * @param  {string} [siteId]   Site ID. If not defined, current site.
-     * @return {Promise<string>}   Promise resolved with the path.
+     * @param workshopId Workshop ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the path.
      */
     getWorkshopFolder(workshopId: number, siteId?: string): Promise<string> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -763,11 +763,11 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the path to the folder where to store files for offline submissions.
      *
-     * @param  {number}  workshopId   Workshop ID.
-     * @param  {number}  submissionId If not editing, it will refer to timecreated.
-     * @param  {boolean} editing      If the submission is being edited or added otherwise.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<string>}      Promise resolved with the path.
+     * @param workshopId Workshop ID.
+     * @param submissionId If not editing, it will refer to timecreated.
+     * @param editing If the submission is being edited or added otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the path.
      */
     getSubmissionFolder(workshopId: number, submissionId: number, editing: boolean, siteId?: string): Promise<string> {
         return this.getWorkshopFolder(workshopId, siteId).then((folderPath) => {
@@ -781,10 +781,10 @@ export class AddonModWorkshopOfflineProvider {
     /**
      * Get the path to the folder where to store files for offline assessment.
      *
-     * @param  {number}  workshopId   Workshop ID.
-     * @param  {number}  assessmentId Assessment ID.
-     * @param  {string}  [siteId]     Site ID. If not defined, current site.
-     * @return {Promise<string>}      Promise resolved with the path.
+     * @param workshopId Workshop ID.
+     * @param assessmentId Assessment ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the path.
      */
     getAssessmentFolder(workshopId: number, assessmentId: number, siteId?: string): Promise<string> {
         return this.getWorkshopFolder(workshopId, siteId).then((folderPath) => {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent impl
      * The question has been rendered.
      */
     questionRendered(): void {
-        this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId);
+        this.questionHelper.treatCorrectnessIconsClicks(this.element, this.component, this.componentId, this.contextLevel,
+                this.contextInstanceId, this.courseId);
     }
 }

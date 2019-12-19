@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ export class CoreCoursesDashboardProvider {
     /**
      * Get cache key for dashboard blocks WS calls.
      *
-     * @param {number} [userId] User ID. Default, 0 means current user.
-     * @return {string} Cache key.
+     * @param userId User ID. Default, 0 means current user.
+     * @return Cache key.
      */
     protected getDashboardBlocksCacheKey(userId: number = 0): string {
         return this.ROOT_CACHE_KEY + 'blocks:' + userId;
@@ -39,9 +39,9 @@ export class CoreCoursesDashboardProvider {
     /**
      * Get dashboard blocks.
      *
-     * @param {number} [userId] User ID. Default, current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of blocks.
+     * @param userId User ID. Default, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of blocks.
      * @since 3.6
      */
     getDashboardBlocks(userId?: number, siteId?: string): Promise<any[]> {
@@ -67,9 +67,9 @@ export class CoreCoursesDashboardProvider {
     /**
      * Invalidates dashboard blocks WS call.
      *
-     * @param {number} [userId] User ID. Default, current user.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param userId User ID. Default, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateDashboardBlocks(userId?: number, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -80,8 +80,8 @@ export class CoreCoursesDashboardProvider {
     /**
      * Returns whether or not block based Dashboard is available for a certain site.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
      * @since 3.6
      */
     isAvailable(siteId?: string): Promise<boolean> {
@@ -98,8 +98,8 @@ export class CoreCoursesDashboardProvider {
     /**
      * Check if Site Home is disabled in a certain site.
      *
-     * @param {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>} Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     isDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -110,8 +110,8 @@ export class CoreCoursesDashboardProvider {
     /**
      * Check if Site Home is disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     isDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();

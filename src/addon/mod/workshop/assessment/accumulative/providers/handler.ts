@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
 
     /**
      * Whether or not the handler is enabled on a site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -40,8 +40,8 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
      * Return the Component to render the plugin.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector): any | Promise<any> {
         return AddonModWorkshopAssessmentStrategyAccumulativeComponent;
@@ -50,9 +50,9 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
     /**
      * Prepare original values to be shown and compared.
      *
-     * @param  {any}    form       Original data of the form.
-     * @param  {number} workshopId WorkShop Id
-     * @return {Promise<any[]>}    Promise resolved with original values sorted.
+     * @param form Original data of the form.
+     * @param workshopId WorkShop Id
+     * @return Promise resolved with original values sorted.
      */
      getOriginalValues(form: any, workshopId: number): Promise<any[]> {
         const defaultGrade = this.translate.instant('core.choosedots'),
@@ -92,9 +92,9 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
     /**
      * Check if the assessment data has changed for a certain submission and workshop for a this strategy plugin.
      *
-     * @param  {any[]} originalValues Original values of the form.
-     * @param  {any[]} currentValues  Current values of the form.
-     * @return {boolean}              True if data has changed, false otherwise.
+     * @param originalValues Original values of the form.
+     * @param currentValues Current values of the form.
+     * @return True if data has changed, false otherwise.
      */
     hasDataChanged(originalValues: any[], currentValues: any[]): boolean {
         for (const x in originalValues) {
@@ -112,9 +112,9 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandler implements Ad
     /**
      * Prepare assessment data to be sent to the server depending on the strategy selected.
      *
-     * @param  {any{}} currentValues Current values of the form.
-     * @param  {any}   form          Assessment form data.
-     * @return {Promise<any>}        Promise resolved with the data to be sent. Or rejected with the input errors object.
+     * @param currentValues Current values of the form.
+     * @param form Assessment form data.
+     * @return Promise resolved with the data to be sent. Or rejected with the input errors object.
      */
     prepareAssessmentData(currentValues: any[], form: any): Promise<any> {
         const data =  {};

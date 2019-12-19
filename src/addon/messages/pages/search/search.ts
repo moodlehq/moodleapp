@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import { AddonMessagesProvider, AddonMessagesConversationMember, AddonMessagesMessageAreaContact } from '../../providers/messages';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreAppProvider } from '@providers/app';
@@ -38,21 +38,21 @@ export class AddonMessagesSearchPage implements OnDestroy {
     contacts = {
         type: 'contacts',
         titleString: 'addon.messages.contacts',
-        results: [],
+        results: <AddonMessagesConversationMember[]> [],
         canLoadMore: false,
         loadingMore: false
     };
     nonContacts = {
         type: 'noncontacts',
         titleString: 'addon.messages.noncontacts',
-        results: [],
+        results: <AddonMessagesConversationMember[]> [],
         canLoadMore: false,
         loadingMore: false
     };
     messages = {
         type: 'messages',
         titleString: 'addon.messages.messages',
-        results: [],
+        results: <AddonMessagesMessageAreaContact[]> [],
         canLoadMore: false,
         loadingMore: false,
         loadMoreError: false
@@ -103,10 +103,10 @@ export class AddonMessagesSearchPage implements OnDestroy {
     /**
      * Start a new search or load more results.
      *
-     * @param {string} query Text to search for.
-     * @param {strings} loadMore Load more contacts, noncontacts or messages. If undefined, start a new search.
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param query Text to search for.
+     * @param loadMore Load more contacts, noncontacts or messages. If undefined, start a new search.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     search(query: string, loadMore?: 'contacts' | 'noncontacts' | 'messages', infiniteComplete?: any): Promise<any> {
         this.appProvider.closeKeyboard();
@@ -116,9 +116,9 @@ export class AddonMessagesSearchPage implements OnDestroy {
         this.displaySearching = !loadMore;
 
         const promises = [];
-        let newContacts = [];
-        let newNonContacts = [];
-        let newMessages = [];
+        let newContacts: AddonMessagesConversationMember[] = [];
+        let newNonContacts: AddonMessagesConversationMember[] = [];
+        let newMessages: AddonMessagesMessageAreaContact[] = [];
         let canLoadMoreContacts = false;
         let canLoadMoreNonContacts = false;
         let canLoadMoreMessages = false;
@@ -225,8 +225,8 @@ export class AddonMessagesSearchPage implements OnDestroy {
     /**
      * Open a conversation in the split view.
      *
-     * @param {any} result User or message.
-     * @param {boolean} [onInit=false] Whether the tser was selected on initial load.
+     * @param result User or message.
+     * @param onInit Whether the tser was selected on initial load.
      */
     openConversation(result: any, onInit: boolean = false): void {
         if (!onInit || this.splitviewCtrl.isOn()) {
@@ -244,8 +244,8 @@ export class AddonMessagesSearchPage implements OnDestroy {
     /**
      * Set the highlight values for each entry.
      *
-     * @param {any[]} results Results to highlight.
-     * @param {boolean} isUser Whether the results are from a user search or from a message search.
+     * @param results Results to highlight.
+     * @param isUser Whether the results are from a user search or from a message search.
      */
     setHighlight(results: any[], isUser: boolean): void {
         results.forEach((result) => {

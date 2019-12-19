@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { CoreTagProvider } from '@core/tag/providers/tag';
+import { CoreCommentsProvider } from '@core/comments/providers/comments';
+import { CoreCommentsCommentsComponent } from '@core/comments/components/comments/comments';
 import { AddonModGlossaryProvider } from '../../providers/glossary';
 
 /**
@@ -28,6 +30,8 @@ import { AddonModGlossaryProvider } from '../../providers/glossary';
     templateUrl: 'entry.html',
 })
 export class AddonModGlossaryEntryPage {
+    @ViewChild(CoreCommentsCommentsComponent) comments: CoreCommentsCommentsComponent;
+
     component = AddonModGlossaryProvider.COMPONENT;
     componentId: number;
     entry: any;
@@ -37,23 +41,27 @@ export class AddonModGlossaryEntryPage {
     showDate = false;
     ratingInfo: CoreRatingInfo;
     tagsEnabled: boolean;
+    commentsEnabled: boolean;
 
     protected courseId: number;
     protected entryId: number;
 
     constructor(navParams: NavParams,
-            private domUtils: CoreDomUtilsProvider,
-            private glossaryProvider: AddonModGlossaryProvider,
-            private tagProvider: CoreTagProvider) {
+            protected domUtils: CoreDomUtilsProvider,
+            protected glossaryProvider: AddonModGlossaryProvider,
+            protected tagProvider: CoreTagProvider,
+            protected commentsProvider: CoreCommentsProvider) {
         this.courseId = navParams.get('courseId');
         this.entryId = navParams.get('entryId');
-        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
     }
 
     /**
      * View loaded.
      */
     ionViewDidLoad(): void {
+        this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
+        this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
+
         this.fetchEntry().then(() => {
             this.glossaryProvider.logEntryView(this.entry.id, this.componentId, this.glossary.name).catch(() => {
                 // Ignore errors.
@@ -66,10 +74,18 @@ export class AddonModGlossaryEntryPage {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @return Promise resolved when done.
      */
      doRefresh(refresher?: any): Promise<any> {
+        if (this.glossary && this.glossary.allowcomments && this.entry && this.entry.id > 0 && this.commentsEnabled &&
+                this.comments) {
+            // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
+            this.comments.doRefresh().catch(() => {
+                // Ignore errors.
+            });
+        }
+
         return this.glossaryProvider.invalidateEntry(this.entry.id).catch(() => {
             // Ignore errors.
         }).then(() => {
@@ -82,8 +98,8 @@ export class AddonModGlossaryEntryPage {
     /**
      * Convenience function to get the glossary entry.
      *
-     * @param {boolean} [refresh] Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchEntry(refresh?: boolean): Promise<any> {
         return this.glossaryProvider.getEntry(this.entryId).then((result) => {

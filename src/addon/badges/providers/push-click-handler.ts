@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ export class AddonBadgesPushClickHandler implements CorePushNotificationsClickHa
     /**
      * Check if a notification click is handled by this handler.
      *
-     * @param {any} notification The notification to check.
-     * @return {boolean} Whether the notification click is handled by this handler
+     * @param notification The notification to check.
+     * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
         const data = notification.customdata || {};
@@ -50,8 +50,8 @@ export class AddonBadgesPushClickHandler implements CorePushNotificationsClickHa
     /**
      * Handle the notification click.
      *
-     * @param {any} notification The notification to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param notification The notification to check.
+     * @return Promise resolved when done.
      */
     handleClick(notification: any): Promise<any> {
         const data = notification.customdata || {};

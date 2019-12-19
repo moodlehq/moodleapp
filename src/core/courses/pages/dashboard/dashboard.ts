@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     /**
      * Convenience function to fetch the dashboard data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadDashboardContent(): Promise<any> {
         return this.dashboardProvider.isAvailable().then((available) => {
@@ -171,7 +171,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     /**
      * Refresh the dashboard data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshDashboard(refresher: any): void {
         const promises = [];
@@ -195,7 +195,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     /**
      * Refresh the dashboard data and My Courses.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshMyCourses(refresher: any): void {
         // First of all, refresh dashboard blocks, maybe a new block was added and now we can display the dashboard.
@@ -222,7 +222,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     /**
      * Convenience function to switch download enabled.
      *
-     * @param {boolean} enable If enable or disable.
+     * @param enable If enable or disable.
      */
     protected switchDownload(enable: boolean): void {
         this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
@@ -236,10 +236,12 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     protected loadFallbackBlocks(): void {
         this.blocks = [
             {
-                name: 'myoverview'
+                name: 'myoverview',
+                visible: true
             },
             {
-                name: 'timeline'
+                name: 'timeline',
+                visible: true
             }
         ];
     }

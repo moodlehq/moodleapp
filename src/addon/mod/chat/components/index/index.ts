@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import { Component, Injector } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
-import { AddonModChatProvider } from '../../providers/chat';
+import { AddonModChatProvider, AddonModChatChat } from '../../providers/chat';
 
 /**
  * Component that displays a chat.
@@ -29,7 +29,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     component = AddonModChatProvider.COMPONENT;
     moduleName = 'chat';
 
-    chat: any;
+    chat: AddonModChatChat;
     chatInfo: any;
 
     protected title: string;
@@ -58,15 +58,15 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Download chat.
      *
-     * @param  {boolean}      [refresh=false]    If it's refreshing content.
-     * @param  {boolean}      [sync=false]       If it should try to sync.
-     * @param  {boolean}      [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.chatProvider.getChat(this.courseId, this.module.id).then((chat) => {
             this.chat = chat;
-            this.description = chat.intro || chat.description;
+            this.description = chat.intro;
 
             const now = this.timeUtils.timestamp();
             const span = chat.chattime - now;
@@ -82,12 +82,11 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
 
             this.dataRetrieved.emit(chat);
 
-            // All data obtained, now fill the context menu.
-            this.fillContextMenu(refresh);
-
             return this.chatProvider.areSessionsAvailable().then((available) => {
                 this.sessionsAvailable = available;
             });
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 
@@ -96,7 +95,12 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
      */
     enterChat(): void {
         const title = this.chat.name || this.moduleName;
-        this.navCtrl.push('AddonModChatChatPage', {chatId: this.chat.id, courseId: this.courseId, title: title });
+        this.navCtrl.push('AddonModChatChatPage', {
+            chatId: this.chat.id,
+            courseId: this.courseId,
+            title: title,
+            cmId: this.module.id
+        });
     }
 
     /**

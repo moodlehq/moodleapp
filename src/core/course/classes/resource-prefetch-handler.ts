@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Download the module.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when all content is downloaded.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when all content is downloaded.
      */
     download(module: any, courseId: number, dirPath?: string): Promise<any> {
         return this.downloadOrPrefetch(module, courseId, false, dirPath);
@@ -40,13 +40,13 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Download or prefetch the content.
      *
-     * @param {any} module The module object returned by WS.
-     * @param {number} courseId Course ID.
-     * @param {boolean} [prefetch] True to prefetch, false to download right away.
-     * @param {string} [dirPath] Path of the directory where to store all the content files. This is to keep the files
-     *                           relative paths and make the package work in an iframe. Undefined to download the files
-     *                           in the filepool root folder.
-     * @return {Promise<any>} Promise resolved when all content is downloaded. Data returned is not reliable.
+     * @param module The module object returned by WS.
+     * @param courseId Course ID.
+     * @param prefetch True to prefetch, false to download right away.
+     * @param dirPath Path of the directory where to store all the content files. This is to keep the files
+     *                relative paths and make the package work in an iframe. Undefined to download the files
+     *                in the filepool root folder.
+     * @return Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     downloadOrPrefetch(module: any, courseId: number, prefetch?: boolean, dirPath?: string): Promise<any> {
         if (!this.appProvider.isOnline()) {
@@ -87,6 +87,8 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
                 promises.push(downloadFn(siteId, files, this.component, module.id));
             }
 
+            promises.push(this.filterHelper.getFilters('module', module.id, {courseId: courseId}));
+
             return Promise.all(promises);
         });
 
@@ -96,10 +98,10 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Get list of files. If not defined, we'll assume they're in module.contents.
      *
-     * @param {any} module Module.
-     * @param {Number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @return {Promise<any[]>} Promise resolved with the list of files.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
         // Load module contents if needed.
@@ -113,9 +115,9 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Invalidate the prefetched content.
      *
-     * @param {number} moduleId The module ID.
-     * @param {number} courseId The course ID the module belongs to.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param moduleId The module ID.
+     * @param courseId The course ID the module belongs to.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<any> {
         const promises = [],
@@ -130,10 +132,10 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Load module contents into module.contents if they aren't loaded already.
      *
-     * @param {any} module Module to load the contents.
-     * @param {number} [courseId] The course ID. Recommended to speed up the process and minimize data usage.
-     * @param {boolean} [ignoreCache] True if it should ignore cached data (it will always fail in offline or server down).
-     * @return {Promise}           Promise resolved when loaded.
+     * @param module Module to load the contents.
+     * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise resolved when loaded.
      */
     loadContents(module: any, courseId: number, ignoreCache?: boolean): Promise<void> {
         return this.courseProvider.loadModuleContents(module, courseId, undefined, false, ignoreCache);
@@ -142,11 +144,11 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Prefetch a module.
      *
-     * @param {any} module Module.
-     * @param {number} courseId Course ID the module belongs to.
-     * @param {boolean} [single] True if we're downloading a single module, false if we're downloading a whole section.
-     * @param {string} [dirPath] Path of the directory where to store all the content files.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when done.
      */
     prefetch(module: any, courseId?: number, single?: boolean, dirPath?: string): Promise<any> {
         return this.downloadOrPrefetch(module, courseId, true, dirPath);

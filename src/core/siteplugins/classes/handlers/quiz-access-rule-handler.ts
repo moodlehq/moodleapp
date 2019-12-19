@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ export class CoreSitePluginsQuizAccessRuleHandler {
     /**
      * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {boolean|Promise<boolean>} Whether the rule requires a preflight check.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Whether the rule requires a preflight check.
      */
     isPreflightCheckRequired(quiz: any, attempt?: any, prefetch?: boolean, siteId?: string): boolean | Promise<boolean> {
         return this.hasTemplate;
@@ -38,12 +38,12 @@ export class CoreSitePluginsQuizAccessRuleHandler {
     /**
      * Add preflight data that doesn't require user interaction. The data should be added to the preflightData param.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} preflightData Object where to add the preflight data.
-     * @param {any} [attempt] The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param preflightData Object where to add the preflight data.
+     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     getFixedPreflightData(quiz: any, preflightData: any, attempt?: any, prefetch?: boolean, siteId?: string): void | Promise<any> {
         // Nothing to do.
@@ -54,8 +54,8 @@ export class CoreSitePluginsQuizAccessRuleHandler {
      * Implement this if your access rule requires a preflight check with user interaction.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getPreflightComponent(injector: Injector): any | Promise<any> {
         if (this.hasTemplate) {
@@ -66,12 +66,12 @@ export class CoreSitePluginsQuizAccessRuleHandler {
     /**
      * Function called when the preflight check has passed. This is a chance to record that fact in some way.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} attempt The attempt started/continued.
-     * @param {any} preflightData Preflight data gathered.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued.
+     * @param preflightData Preflight data gathered.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     notifyPreflightCheckPassed(quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
             : void | Promise<any> {
@@ -81,12 +81,12 @@ export class CoreSitePluginsQuizAccessRuleHandler {
     /**
      * Function called when the preflight check fails. This is a chance to record that fact in some way.
      *
-     * @param {any} quiz The quiz the rule belongs to.
-     * @param {any} attempt The attempt started/continued.
-     * @param {any} preflightData Preflight data gathered.
-     * @param {boolean} [prefetch] Whether the user is prefetching the quiz.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Promise resolved when done if async, void if it's synchronous.
+     * @param quiz The quiz the rule belongs to.
+     * @param attempt The attempt started/continued.
+     * @param preflightData Preflight data gathered.
+     * @param prefetch Whether the user is prefetching the quiz.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done if async, void if it's synchronous.
      */
     notifyPreflightCheckFailed(quiz: any, attempt: any, preflightData: any, prefetch?: boolean, siteId?: string)
             : void | Promise<any> {
@@ -96,10 +96,10 @@ export class CoreSitePluginsQuizAccessRuleHandler {
     /**
      * Whether or not the time left of an attempt should be displayed.
      *
-     * @param {any} attempt The attempt.
-     * @param {number} endTime The attempt end time (in seconds).
-     * @param {number} timeNow The current time in seconds.
-     * @return {boolean} Whether it should be displayed.
+     * @param attempt The attempt.
+     * @param endTime The attempt end time (in seconds).
+     * @param timeNow The current time in seconds.
+     * @return Whether it should be displayed.
      */
     shouldShowTimeLeft(attempt: any, endTime: number, timeNow: number): boolean {
         return false;

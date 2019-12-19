@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,18 +28,17 @@ import { Subject } from 'rxjs';
 export interface CoreBlockHandler extends CoreDelegateHandler {
     /**
      * Name of the block the handler supports. E.g. 'activity_modules'.
-     * @type {string}
      */
     blockName: string;
 
     /**
      * Returns the data needed to render the block.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} block The block to render.
-     * @param {string} contextLevel The context where the block will be used.
-     * @param {number} instanceId The instance ID associated with the context level.
-     * @return {CoreBlockHandlerData|Promise<CoreBlockHandlerData>} Data or promise resolved with the data.
+     * @param injector Injector.
+     * @param block The block to render.
+     * @param contextLevel The context where the block will be used.
+     * @param instanceId The instance ID associated with the context level.
+     * @return Data or promise resolved with the data.
      */
     getDisplayData?(injector: Injector, block: any, contextLevel: string, instanceId: number)
             : CoreBlockHandlerData | Promise<CoreBlockHandlerData>;
@@ -51,38 +50,32 @@ export interface CoreBlockHandler extends CoreDelegateHandler {
 export interface CoreBlockHandlerData {
     /**
      * Title to display for the block.
-     * @type {string}
      */
     title: string;
 
     /**
      * Class to add to the displayed block.
-     * @type {string}
      */
     class?: string;
 
     /**
      * The component to render the contents of the block.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
-     * @type {any}
      */
     component: any;
 
     /**
      * Data to pass to the component. All the properties in this object will be passed to the component as inputs.
-     * @type {any}
      */
     componentData?: any;
 
     /**
      * Link to go when showing only title.
-     * @type {string}
      */
     link?: string;
 
     /**
      * Params of the link.
-     * @type {[type]}
      */
     linkParams?: any;
 }
@@ -108,8 +101,8 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Check if blocks are disabled in a certain site.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     areBlocksDisabledInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -120,8 +113,8 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Check if blocks are disabled in a certain site for courses.
      *
-     * @param {CoreSite} [site] Site. If not defined, use current site.
-     * @return {boolean} Whether it's disabled.
+     * @param site Site. If not defined, use current site.
+     * @return Whether it's disabled.
      */
     areBlocksDisabledInCourses(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
@@ -132,8 +125,8 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Check if blocks are disabled in a certain site.
      *
-     * @param  {string} [siteId] Site Id. If not defined, use current site.
-     * @return {Promise<boolean>}     Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     areBlocksDisabled(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -144,11 +137,11 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Get the display data for a certain block.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} block The block to render.
-     * @param {string} contextLevel The context where the block will be used.
-     * @param {number} instanceId The instance ID associated with the context level.
-     * @return {Promise<CoreBlockHandlerData>} Promise resolved with the display data.
+     * @param injector Injector.
+     * @param block The block to render.
+     * @param contextLevel The context where the block will be used.
+     * @param instanceId The instance ID associated with the context level.
+     * @return Promise resolved with the display data.
      */
     getBlockDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number): Promise<CoreBlockHandlerData> {
         return Promise.resolve(this.executeFunctionOnEnabled(block.name, 'getDisplayData',
@@ -158,8 +151,8 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Check if any of the blocks in a list is supported.
      *
-     * @param {any[]} blocks The list of blocks.
-     * @return {boolean} Whether any of the blocks is supported.
+     * @param blocks The list of blocks.
+     * @return Whether any of the blocks is supported.
      */
     hasSupportedBlock(blocks: any[]): boolean {
         blocks = blocks || [];
@@ -170,8 +163,8 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Check if a block is supported.
      *
-     * @param {string} name Block "name". E.g. 'activity_modules'.
-     * @return {boolean} Whether it's supported.
+     * @param name Block "name". E.g. 'activity_modules'.
+     * @return Whether it's supported.
      */
     isBlockSupported(name: string): boolean {
         return this.hasHandler(name, true);
@@ -180,9 +173,9 @@ export class CoreBlockDelegate extends CoreDelegate {
     /**
      * Check if feature is enabled or disabled in the site, depending on the feature prefix and the handler name.
      *
-     * @param  {CoreDelegateHandler} handler Handler to check.
-     * @param  {CoreSite} site Site to check.
-     * @return {boolean} Whether is enabled or disabled in site.
+     * @param handler Handler to check.
+     * @param site Site to check.
+     * @return Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: CoreDelegateHandler, site: CoreSite): boolean {
         return this.areBlocksDisabledInSite(site) || super.isFeatureDisabled(handler, site);

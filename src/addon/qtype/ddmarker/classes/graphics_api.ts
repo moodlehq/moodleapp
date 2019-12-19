@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,17 +26,17 @@ export class AddonQtypeDdMarkerGraphicsApi {
     /**
      * Create the instance.
      *
-     * @param {AddonQtypeDdMarkerQuestion} instance Question instance.
-     * @param {CoreDomUtilsProvider} domUtils Dom Utils provider.
+     * @param instance Question instance.
+     * @param domUtils Dom Utils provider.
      */
     constructor(protected instance: AddonQtypeDdMarkerQuestion, protected domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Add a shape.
      *
-     * @param {{type: string, color: string}} shapeAttribs Attributes for the shape: type and color.
-     * @param {{[name: string]: number|string} styles Object with the styles for the shape (name -> value).
-     * @return {Element} The new shape.
+     * @param shapeAttribs Attributes for the shape: type and color.
+     * @param styles Object with the styles for the shape (name -> value).
+     * @return The new shape.
      */
     addShape(shapeAttribs: {type: string, color: string}, styles: {[name: string]: number | string}): Element {
         const shape = document.createElementNS(this.NS, shapeAttribs.type);

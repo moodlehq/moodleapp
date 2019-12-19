@@ -1,6 +1,9 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text  [text]=" attempt.fullname "></core-format-text></ion-title>
+        <ion-title>
+            <ng-container *ngIf="attempt.fullname">{{ attempt.fullname }}</ng-container>
+            <ng-container *ngIf="!attempt.fullname">{{ 'addon.mod_feedback.response_nr' |translate }}: {{attempt.number}}</ng-container>
+        </ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content>
@@ -21,9 +24,9 @@
                     <ion-item-divider *ngIf="item.typ == 'pagebreak'"></ion-item-divider>
                     <ion-item text-wrap *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <h2 *ngIf="item.name" [core-mark-required]="item.required">
-                            <span *ngIf="feedback.autonumbering && item.itemnumber">{{item.itemnumber}}. </span><core-format-text  [component]="component" [componentId]="componentId" [text]="item.name"></core-format-text>
+                            <span *ngIf="feedback.autonumbering && item.itemnumber">{{item.itemnumber}}. </span><core-format-text  [component]="component" [componentId]="componentId" [text]="item.name" contextLevel="module" [contextInstanceId]="feedback.coursemodule" [courseId]="courseId"></core-format-text>
                         </h2>
-                        <p *ngIf="item.submittedValue"><core-format-text  [component]="component" [componentId]="componentId" [text]=" item.submittedValue"></core-format-text></p>
+                        <p *ngIf="item.submittedValue"><core-format-text [component]="component" [componentId]="componentId" [text]=" item.submittedValue" contextLevel="module" [contextInstanceId]="feedback.coursemodule" [courseId]="courseId"></core-format-text></p>
                     </ion-item>
                 </ng-container>
             </ng-container>

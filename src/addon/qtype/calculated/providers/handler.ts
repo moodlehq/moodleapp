@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * Return the Component to use to display the question.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question to render.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param question The question to render.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, question: any): any | Promise<any> {
         return AddonQtypeCalculatedComponent;
@@ -44,9 +44,9 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     /**
      * Check if a response is complete.
      *
-     * @param {any} question The question.
-     * @param {any} answers Object with the question answers (without prefix).
-     * @return {number} 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @param question The question.
+     * @param answers Object with the question answers (without prefix).
+     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any): number {
         if (this.isGradableResponse(question, answers) === 0 || !this.validateUnits(answers['answer'])) {
@@ -63,7 +63,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -73,9 +73,9 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
-     * @param {any} question The question.
-     * @param {any} answers Object with the question answers (without prefix).
-     * @return {number} 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @param question The question.
+     * @param answers Object with the question answers (without prefix).
+     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse(question: any, answers: any): number {
         let isGradable = this.isValidValue(answers['answer']);
@@ -90,10 +90,10 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     /**
      * Check if two responses are the same.
      *
-     * @param {any} question Question.
-     * @param {any} prevAnswers Object with the previous question answers.
-     * @param {any} newAnswers Object with the new question answers.
-     * @return {boolean} Whether they're the same.
+     * @param question Question.
+     * @param prevAnswers Object with the previous question answers.
+     * @param newAnswers Object with the new question answers.
+     * @return Whether they're the same.
      */
     isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
         return this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
@@ -103,8 +103,8 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     /**
      * Check if a value is valid (not empty).
      *
-     * @param {string|number} value Value to check.
-     * @return {boolean} Whether the value is valid.
+     * @param value Value to check.
+     * @return Whether the value is valid.
      */
     isValidValue(value: string | number): boolean {
         return !!value || value === '0' || value === 0;
@@ -113,8 +113,8 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     /**
      * Check if a question requires units in a separate input.
      *
-     * @param {any} question The question.
-     * @return {boolean} Whether the question requires units.
+     * @param question The question.
+     * @return Whether the question requires units.
      */
     requiresUnits(question: any): boolean {
         const element = this.domUtils.convertToElement(question.html);
@@ -126,8 +126,8 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * Validate a number with units. We don't have the list of valid units and conversions, so we can't perform
      * a full validation. If this function returns true it means we can't be sure it's valid.
      *
-     * @param {string} answer Answer.
-     * @return {boolean} False if answer isn't valid, true if we aren't sure if it's valid.
+     * @param answer Answer.
+     * @return False if answer isn't valid, true if we aren't sure if it's valid.
      */
     validateUnits(answer: string): boolean {
         if (!answer) {

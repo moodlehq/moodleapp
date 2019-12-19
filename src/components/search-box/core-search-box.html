@@ -2,10 +2,10 @@
     <form #f="ngForm" (ngSubmit)="submitForm($event)" role="search">
         <ion-item>
             <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder" [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus" [disabled]="disabled" role="searchbox"></ion-input>
-            <button item-end ion-button clear icon-only type="submit" class="button-small" [attr.aria-label]="searchLabel" [disabled]="!searchText || (searchText.length < lengthCheck)" [disabled]="disabled">
+            <button item-end ion-button clear icon-only type="submit" class="button-small" [attr.aria-label]="searchLabel" [disabled]="disabled || !searchText || (searchText.length < lengthCheck)">
                 <ion-icon name="search"></ion-icon>
             </button>
-            <button *ngIf="showClear" item-end ion-button clear icon-only class="button-small" [attr.aria-label]="'core.clearsearch' | translate" [disabled]="!searched" (click)="clearForm()" [disabled]="disabled">
+            <button *ngIf="showClear" item-end ion-button clear icon-only class="button-small" [attr.aria-label]="'core.clearsearch' | translate" [disabled]="!searched || disabled" (click)="clearForm()">
                 <ion-icon name="close"></ion-icon>
             </button>
         </ion-item>

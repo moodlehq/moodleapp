@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -139,9 +139,9 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {boolean} [refreshUnreadCounts=true] Whteher to refresh unread counts.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param refreshUnreadCounts Whteher to refresh unread counts.
+     * @return Promise resolved when done.
      */
     refreshData(refresher?: any, refreshUnreadCounts: boolean = true): Promise<any> {
         const promises = [];
@@ -163,7 +163,7 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     /**
      * Fetch discussions.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchData(): Promise<any> {
         this.loadingMessage = this.loadingMessages;
@@ -208,8 +208,8 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     /**
      * Search messages cotaining text.
      *
-     * @param  {string}       query Text to search for.
-     * @return {Promise<any>}       Resolved when done.
+     * @param query Text to search for.
+     * @return Resolved when done.
      */
     searchMessage(query: string): Promise<any> {
         this.appProvider.closeKeyboard();
@@ -229,9 +229,9 @@ export class AddonMessagesDiscussionsComponent implements OnDestroy {
     /**
      * Navigate to a particular discussion.
      *
-     * @param {number} discussionUserId Discussion Id to load.
-     * @param {number} [messageId]      Message to scroll after loading the discussion. Used when searching.
-     * @param {boolean} [onlyWithSplitView=false]  Only go to Discussion if split view is on.
+     * @param discussionUserId Discussion Id to load.
+     * @param messageId Message to scroll after loading the discussion. Used when searching.
+     * @param onlyWithSplitView Only go to Discussion if split view is on.
      */
     gotoDiscussion(discussionUserId: number, messageId?: number, onlyWithSplitView: boolean = false): void {
         this.discussionUserId = discussionUserId;

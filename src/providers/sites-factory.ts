@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ export class CoreSitesFactoryProvider {
     /**
      * Make a site object.
      *
-     * @param {string} id Site ID.
-     * @param {string} siteUrl Site URL.
-     * @param {string} [token] Site's WS token.
-     * @param {any} [info] Site info.
-     * @param {string} [privateToken] Private token.
-     * @param {any} [config] Site public config.
-     * @param {boolean} [loggedOut] Whether user is logged out.
-     * @return {CoreSite} Site instance.
+     * @param id Site ID.
+     * @param siteUrl Site URL.
+     * @param token Site's WS token.
+     * @param info Site info.
+     * @param privateToken Private token.
+     * @param config Site public config.
+     * @param loggedOut Whether user is logged out.
+     * @return Site instance.
      * @description
      * This returns a site object.
      */
@@ -45,7 +45,7 @@ export class CoreSitesFactoryProvider {
     /**
      * Gets the list of Site methods.
      *
-     * @return {string[]} List of methods.
+     * @return List of methods.
      */
     getSiteMethods(): string[] {
         const methods = [];

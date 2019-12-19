@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -120,10 +120,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Download the component contents.
      *
-     * @param  {boolean} [refresh=false]    Whether we're refreshing data.
-     * @param  {boolean} [sync=false]       If the refresh needs syncing.
-     * @param  {boolean} [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         return this.glossaryProvider.getGlossary(this.courseId, this.module.id).then((glossary) => {
@@ -131,6 +131,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
             this.description = glossary.intro || this.description;
             this.canAdd = (this.glossaryProvider.isPluginEnabledForEditing() && glossary.canaddentry) || false;
+
+            this.dataRetrieved.emit(this.glossary);
 
             if (!this.fetchMode) {
                 this.switchMode('letter_all');
@@ -158,8 +160,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             }));
 
             return Promise.all(promises);
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }
@@ -167,8 +168,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to fetch entries.
      *
-     * @param {boolean} [append=false] True if fetched entries are appended to exsiting ones.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param append True if fetched entries are appended to exsiting ones.
+     * @return Promise resolved when done.
      */
     protected fetchEntries(append: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -196,7 +197,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -217,7 +218,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<boolean> {
         return this.prefetchHandler.sync(this.module, this.courseId);
@@ -226,8 +227,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any} result Data returned on the sync function.
-     * @return {boolean} Whether it succeed or not.
+     * @param result Data returned on the sync function.
+     * @return Whether it succeed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;
@@ -236,8 +237,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param  {any} syncEventData Data receiven on sync observer.
-     * @return {boolean} True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         return this.glossary && syncEventData.glossaryId == this.glossary.id &&
@@ -247,7 +248,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Change fetch mode.
      *
-     * @param {FetchMode} mode New mode.
+     * @param mode New mode.
      */
     protected switchMode(mode: FetchMode): void {
         this.fetchMode = mode;
@@ -321,8 +322,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to load more forum discussions.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Promise resolved when done.
      */
     loadMoreEntries(infiniteComplete?: any): Promise<any> {
         return this.fetchEntries(true).catch((error) => {
@@ -336,7 +337,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Show the mode picker menu.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     openModePicker(event: MouseEvent): void {
         const popover = this.popoverCtrl.create(AddonModGlossaryModePickerPopoverComponent, {
@@ -371,7 +372,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Opens an entry.
      *
-     * @param {number} entryId Entry id.
+     * @param entryId Entry id.
      */
     openEntry(entryId: number): void {
         const params = {
@@ -385,7 +386,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Opens new entry editor.
      *
-     * @param {any} [entry] Offline entry to edit.
+     * @param entry Offline entry to edit.
      */
     openNewEntry(entry?: any): void {
         const params = {
@@ -401,7 +402,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Search entries.
      *
-     * @param {string} query Text entered on the search box.
+     * @param query Text entered on the search box.
      */
     search(query: string): void {
         this.loadingMessage = this.translate.instant('core.searching');
@@ -413,7 +414,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Function called when we receive an event of new entry.
      *
-     * @param {any} data Event data.
+     * @param data Event data.
      */
     protected eventReceived(data: any): void {
         if (this.glossary && this.glossary.id === data.glossaryId) {

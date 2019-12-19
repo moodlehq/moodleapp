@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ export class AddonModGlossaryTagAreaHandler implements CoreTagAreaHandler {
 
     /**
      * Whether or not the handler is enabled on a site level.
-     * @return {boolean|Promise<boolean>} Whether or not the handler is enabled on a site level.
+     * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -38,8 +38,8 @@ export class AddonModGlossaryTagAreaHandler implements CoreTagAreaHandler {
     /**
      * Parses the rendered content of a tag index and returns the items.
      *
-     * @param {string} content Rendered content.
-     * @return {any[]|Promise<any[]>} Area items (or promise resolved with the items).
+     * @param content Rendered content.
+     * @return Area items (or promise resolved with the items).
      */
     parseContent(content: string): any[] | Promise<any[]> {
         return this.tagHelper.parseFeedContent(content);
@@ -48,8 +48,8 @@ export class AddonModGlossaryTagAreaHandler implements CoreTagAreaHandler {
     /**
      * Get the component to use to display items.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector): any | Promise<any> {
         return CoreTagFeedComponent;

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ export class BadgeMock implements Badge {
 
     /**
      * Clear the badge of the app icon.
-     *
-     * @returns {Promise<boolean>}
      */
     clear(): Promise<boolean> {
         return Promise.reject('clear is only supported in mobile devices');
@@ -35,8 +33,7 @@ export class BadgeMock implements Badge {
 
     /**
      * Set the badge of the app icon.
-     * @param {number} badgeNumber  The new badge number.
-     * @returns {Promise<any>}
+     * @param badgeNumber The new badge number.
      */
     set(badgeNumber: number): Promise<any> {
         if (!this.appProvider.isDesktop()) {
@@ -57,8 +54,6 @@ export class BadgeMock implements Badge {
 
     /**
      * Get the badge of the app icon.
-     *
-     * @returns {Promise<any>}
      */
     get(): Promise<any> {
         if (!this.appProvider.isDesktop()) {
@@ -77,8 +72,7 @@ export class BadgeMock implements Badge {
     /**
      * Increase the badge number.
      *
-     * @param {number} increaseBy  Count to add to the current badge number
-     * @returns {Promise<any>}
+     * @param increaseBy Count to add to the current badge number
      */
     increase(increaseBy: number): Promise<any> {
         return Promise.reject('increase is only supported in mobile devices');
@@ -87,8 +81,7 @@ export class BadgeMock implements Badge {
     /**
      * Decrease the badge number.
      *
-     * @param {number} decreaseBy  Count to subtract from the current badge number
-     * @returns {Promise<any>}
+     * @param decreaseBy Count to subtract from the current badge number
      */
     decrease(decreaseBy: number): Promise<any> {
         return Promise.reject('decrease is only supported in mobile devices');
@@ -96,8 +89,6 @@ export class BadgeMock implements Badge {
 
     /**
      * Check support to show badges.
-     *
-     * @returns {Promise<any>}
      */
     isSupported(): Promise<any> {
         return Promise.reject('isSupported is only supported in mobile devices');
@@ -105,8 +96,6 @@ export class BadgeMock implements Badge {
 
     /**
      * Determine if the app has permission to show badges.
-     *
-     * @returns {Promise<any>}
      */
     hasPermission(): Promise<any> {
         return Promise.reject('hasPermission is only supported in mobile devices');
@@ -114,8 +103,6 @@ export class BadgeMock implements Badge {
 
     /**
      * Register permission to set badge notifications
-     *
-     * @returns {Promise<any>}
      */
     requestPermission(): Promise<any> {
         return Promise.reject('requestPermission is only supported in mobile devices');

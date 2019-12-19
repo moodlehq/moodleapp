@@ -9,18 +9,18 @@
         <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" [iconAction]="'fa-newspaper-o'" (action)="gotoBlog($event)"></core-context-menu-item>
         <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="600" [content]="prefetchText" (action)="prefetch($event)" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="500" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="500" [content]="'core.removefiles' | translate:{$a: size}" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
-    <div padding>
+    <div padding class="safe-padding-horizontal">
         <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="chapterContent"></core-format-text>
+        <core-format-text [component]="component" [componentId]="componentId" [text]="chapterContent" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         <div margin-top *ngIf="tagsEnabled && contentsMap && contentsMap[currentChapter] && contentsMap[currentChapter].tags && contentsMap[currentChapter].tags.length > 0">
             <b>{{ 'core.tag.tags' | translate }}:</b>
             <core-tag-list [tags]="contentsMap[currentChapter].tags"></core-tag-list>

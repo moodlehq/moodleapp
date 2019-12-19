@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.platform.is('ios');
@@ -38,8 +38,8 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
     /**
      * Given a list of mimetypes, return the ones that are supported by the handler.
      *
-     * @param {string[]} [mimetypes] List of mimetypes.
-     * @return {string[]} Supported mimetypes.
+     * @param mimetypes List of mimetypes.
+     * @return Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         return mimetypes;
@@ -48,7 +48,7 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
     /**
      * Get the data to display the handler.
      *
-     * @return {CoreFileUploaderHandlerData} Data.
+     * @return Data.
      */
     getData(): CoreFileUploaderHandlerData {
         return {

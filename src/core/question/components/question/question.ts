@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,9 @@ export class CoreQuestionComponent implements OnInit {
     @Input() attemptId: number; // Attempt ID.
     @Input() usageId: number; // Usage ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
+    @Input() contextLevel?: string; // The context level.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the question belongs to (if any). It can be used to improve performance with filters.
     @Output() buttonClicked: EventEmitter<any>; // Will emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Will emit an event if the question should be aborted.
 
@@ -82,6 +85,9 @@ export class CoreQuestionComponent implements OnInit {
                     componentId: this.componentId,
                     attemptId: this.attemptId,
                     offlineEnabled: this.offlineEnabled,
+                    contextLevel: this.contextLevel,
+                    contextInstanceId: this.contextInstanceId,
+                    courseId: this.courseId,
                     buttonClicked: this.buttonClicked,
                     onAbort: this.onAbort
                 };
@@ -156,7 +162,7 @@ export class CoreQuestionComponent implements OnInit {
     /**
      * Update the sequence check of the question.
      *
-     * @param {any} sequenceChecks Object with sequence checks. The keys are the question slot.
+     * @param sequenceChecks Object with sequence checks. The keys are the question slot.
      */
     updateSequenceCheck(sequenceChecks: any): void {
         if (sequenceChecks[this.question.slot]) {

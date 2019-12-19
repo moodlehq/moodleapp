@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -109,8 +109,8 @@ export class InAppBrowserObjectMock {
     /**
      * Execute a JS script.
      *
-     * @param {any} details Details of the script to run, specifying either a file or code key.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param details Details of the script to run, specifying either a file or code key.
+     * @return Promise resolved when done.
      */
     executeScript(details: any): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -129,8 +129,8 @@ export class InAppBrowserObjectMock {
     /**
      * Recursive function to get the launch URL from the contents of a BrowserWindow.
      *
-     * @param {number} [retry=0] Retry number.
-     * @return {Promise<string>} Promise resolved with the launch URL.
+     * @param retry Retry number.
+     * @return Promise resolved with the launch URL.
      */
     protected getLaunchUrl(retry: number = 0): Promise<string> {
 
@@ -172,8 +172,8 @@ export class InAppBrowserObjectMock {
     /**
      * Insert CSS.
      *
-     * @param {any} details Details of the CSS to insert, specifying either a file or code key.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param details Details of the CSS to insert, specifying either a file or code key.
+     * @return Promise resolved when done.
      */
     insertCSS(details: any): Promise<any> {
         return new Promise((resolve, reject): void => {
@@ -194,9 +194,9 @@ export class InAppBrowserObjectMock {
     /**
      * Listen to events happening.
      *
-     * @param {string} name Name of the event.
-     * @return {Observable<InAppBrowserEvent>} Observable that will listen to the event on subscribe, and will stop listening
-     *                                         to the event on unsubscribe.
+     * @param name Name of the event.
+     * @return Observable that will listen to the event on subscribe, and will stop listening
+     *         to the event on unsubscribe.
      */
     on(name: string): Observable<InAppBrowserEvent> {
         // Create the observable.

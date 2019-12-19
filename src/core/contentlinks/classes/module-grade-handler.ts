@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,25 +26,23 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
 
     /**
      * Whether the module can be reviewed in the app. If true, the handler needs to implement the goToReview function.
-     * @type {boolean}
      */
     canReview: boolean;
 
     /**
      * If this boolean is set to true, the app will retrieve all modules with this modName with a single WS call.
      * This reduces the number of WS calls, but it isn't recommended for modules that can return a lot of contents.
-     * @type {boolean}
      */
     protected useModNameToGetModule = false;
 
     /**
      * Construct the handler.
      *
-     * @param {CoreCourseHelperProvider} courseHelper The CoreCourseHelperProvider instance.
-     * @param {CoreDomUtilsProvider} domUtils The CoreDomUtilsProvider instance.
-     * @param {CoreSitesProvider} sitesProvider The CoreSitesProvider instance.
-     * @param {string} addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
-     * @param {string} modName Name of the module (assign, book, ...).
+     * @param courseHelper The CoreCourseHelperProvider instance.
+     * @param domUtils The CoreDomUtilsProvider instance.
+     * @param sitesProvider The CoreSitesProvider instance.
+     * @param addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
+     * @param modName Name of the module (assign, book, ...).
      */
     constructor(protected courseHelper: CoreCourseHelperProvider, protected domUtils: CoreDomUtilsProvider,
             protected sitesProvider: CoreSitesProvider, public addon: string, public modName: string) {
@@ -58,11 +56,11 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
     /**
      * Get the list of actions for a link (url).
      *
-     * @param {string[]} siteIds List of sites the URL belongs to.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     * @param siteIds List of sites the URL belongs to.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return List of (or promise resolved with list of) actions.
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
@@ -95,12 +93,12 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
     /**
      * Go to the page to review.
      *
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} courseId Course ID related to the URL.
-     * @param {string} siteId Site to use.
-     * @param {NavController} [navCtrl] Nav Controller to use to navigate.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL.
+     * @param siteId Site to use.
+     * @param navCtrl Nav Controller to use to navigate.
+     * @return Promise resolved when done.
      */
     protected goToReview(url: string, params: any, courseId: number, siteId: string, navCtrl?: NavController): Promise<any> {
         // This function should be overridden.

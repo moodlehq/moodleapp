@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ export class CoreLoginCredentialsPage {
     pageLoaded = false;
     isBrowserSSO = false;
     isFixedUrlSet = false;
+    showForgottenPassword = true;
 
     protected siteConfig;
     protected eventThrown = false;
@@ -50,9 +51,14 @@ export class CoreLoginCredentialsPage {
     protected siteId: string;
     protected urlToOpen: string;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService,
+    constructor(private navCtrl: NavController,
+            navParams: NavParams,
+            fb: FormBuilder,
+            private appProvider: CoreAppProvider,
+            private sitesProvider: CoreSitesProvider,
+            private loginHelper: CoreLoginHelperProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private translate: TranslateService,
             private eventsProvider: CoreEventsProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
@@ -100,8 +106,8 @@ export class CoreLoginCredentialsPage {
      * Check if a site uses local_mobile, requires SSO login, etc.
      * This should be used only if a fixed URL is set, otherwise this check is already performed in CoreLoginSitePage.
      *
-     * @param {string} siteUrl Site URL to check.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param siteUrl Site URL to check.
+     * @return Promise resolved when done.
      */
     protected checkSite(siteUrl: string): Promise<any> {
         this.pageLoaded = false;
@@ -149,8 +155,12 @@ export class CoreLoginCredentialsPage {
             this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
-            this.canSignup = this.siteConfig.registerauth == 'email' && !this.loginHelper.isEmailSignupDisabled(this.siteConfig);
             this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
+
+            const disabledFeatures = this.loginHelper.getDisabledFeatures(this.siteConfig);
+            this.canSignup = this.siteConfig.registerauth == 'email' &&
+                    !this.loginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
+            this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;
@@ -168,7 +178,7 @@ export class CoreLoginCredentialsPage {
     /**
      * Tries to authenticate the user.
      *
-     * @param {Event} [e] Event.
+     * @param e Event.
      */
     login(e?: Event): void {
         if (e) {
@@ -245,7 +255,7 @@ export class CoreLoginCredentialsPage {
     /**
      * An OAuth button was clicked.
      *
-     * @param {any} provider The provider that was clicked.
+     * @param provider The provider that was clicked.
      */
     oauthClicked(provider: any): void {
         if (!this.loginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig.launchurl)) {

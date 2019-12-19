@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Create the this.
      *
-     * @param {CoreLoggerProvider} logger Logger provider.
-     * @param {CoreDomUtilsProvider} domUtils Dom Utils provider.
-     * @param {HTMLElement} container The container HTMLElement of the question.
-     * @param {any} question The question this.
-     * @param {boolean} readOnly Whether it's read only.
-     * @param {any[]} drops The drop zones received in the init object of the question.
+     * @param logger Logger provider.
+     * @param domUtils Dom Utils provider.
+     * @param container The container HTMLElement of the question.
+     * @param question The question this.
+     * @param readOnly Whether it's read only.
+     * @param drops The drop zones received in the init object of the question.
      */
     constructor(logger: CoreLoggerProvider, protected domUtils: CoreDomUtilsProvider, protected container: HTMLElement,
                 protected question: any, protected readOnly: boolean, protected drops: any[]) {
@@ -80,8 +80,8 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Convert the X and Y position of the BG IMG to a position relative to the window.
      *
-     * @param {number[]} bgImgXY X and Y of the BG IMG relative position.
-     * @return {number[]} Position relative to the window.
+     * @param bgImgXY X and Y of the BG IMG relative position.
+     * @return Position relative to the window.
      */
     convertToWindowXY(bgImgXY: number[]): number[] {
         const bgImg = this.doc.bgImg(),
@@ -192,8 +192,8 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Returns an object to encapsulate operations on dd area.
      *
-     * @param {number} slot The question slot.
-     * @return {AddonQtypeDdImageOrTextQuestionDocStructure} The object.
+     * @param slot The question slot.
+     * @return The object.
      */
     docStructure(slot: number): AddonQtypeDdImageOrTextQuestionDocStructure {
         const topNode = <HTMLElement> this.container.querySelector('.addon-qtype-ddimageortext-container'),
@@ -323,9 +323,9 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Make an element draggable.
      *
-     * @param {HTMLElement} drag Element to make draggable.
-     * @param {number} group Group the element belongs to.
-     * @param {number} choice Choice the element belongs to.
+     * @param drag Element to make draggable.
+     * @param group Group the element belongs to.
+     * @param choice Choice the element belongs to.
      */
     draggableForQuestion(drag: HTMLElement, group: number, choice: number): void {
         // Set attributes.
@@ -348,7 +348,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Function called when a drop zone is clicked.
      *
-     * @param {HTMLElement} dropNode Drop element.
+     * @param dropNode Drop element.
      */
     dropClick(dropNode: HTMLElement): void {
         const drag = this.selected;
@@ -368,9 +368,9 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Get all the draggable elements for a choice and a drop zone.
      *
-     * @param {number} choice Choice number.
-     * @param {HTMLElement} drop Drop zone.
-     * @return {HTMLElement[]} Draggable elements.
+     * @param choice Choice number.
+     * @param drop Drop zone.
+     * @return Draggable elements.
      */
     getChoicesForDrop(choice: number, drop: HTMLElement): HTMLElement[] {
         return <HTMLElement[]> Array.from(this.doc.topNode().querySelectorAll(
@@ -380,9 +380,9 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Get an unplaced draggable element that belongs to a certain choice and drop zone.
      *
-     * @param {number} choice Choice number.
-     * @param {HTMLElement} drop Drop zone.
-     * @return {HTMLElement} Unplaced draggable element.
+     * @param choice Choice number.
+     * @param drop Drop zone.
+     * @return Unplaced draggable element.
      */
     getUnplacedChoiceForDrop(choice: number, drop: HTMLElement): HTMLElement {
         const dragItems = this.getChoicesForDrop(choice, drop);
@@ -443,7 +443,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Initialize the question.
      *
-     * @param {any} question Question.
+     * @param question Question.
      */
     initializer(question: any): void {
         this.doc = this.docStructure(question.slot);
@@ -517,8 +517,8 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Place a draggable element into a certain drop zone.
      *
-     * @param {HTMLElement} drag Draggable element.
-     * @param {HTMLElement} drop Drop zone element.
+     * @param drag Draggable element.
+     * @param drop Drop zone element.
      */
     placeDragInDrop(drag: HTMLElement, drop: HTMLElement): void {
         // Search the input related to the drop zone.
@@ -568,7 +568,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Remove a draggable element from the drop zone where it is.
      *
-     * @param {HTMLElement} drag Draggable element to remove.
+     * @param drag Draggable element to remove.
      */
     removeDragFromDrop(drag: HTMLElement): void {
         // Check if the draggable element is assigned to an input. If so, empty the input's value.
@@ -670,7 +670,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Mark a draggable element as selected.
      *
-     * @param {HTMLElement} drag Element to select.
+     * @param drag Element to select.
      */
     selectDrag(drag: HTMLElement): void {
         // Deselect previous ones.
@@ -690,7 +690,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     /**
      * Update the padding of all items in a group to make them all have the same width and height.
      *
-     * @param {number} groupNo The group number.
+     * @param groupNo The group number.
      */
     updatePaddingSizeForGroup(groupNo: number): void {
 

@@ -21,16 +21,16 @@
             <ion-item text-wrap>
                 <ion-avatar *ngIf="notification.useridfrom > 0" core-user-avatar [user]="notification" item-start [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname" [userId]="notification.useridfrom" [extraIcon]="notification.iconurl"></ion-avatar>
                 <img *ngIf="notification.useridfrom <= 0 && notification.iconurl" [src]="notification.iconurl" alt="" role="presentation" class="core-notification-icon" item-start>
-                <h2><core-format-text [text]="notification.subject"></core-format-text></h2>
+                <h2>{{ notification.subject }}</h2>
                 <p><ion-note float-end padding-left text-end>
                         {{notification.timecreated | coreDateDayOrTime}}
                         <span *ngIf="!notification.timeread"><core-icon name="fa-circle" color="primary"></core-icon></span>
                     </ion-note>
                 </p>
-                <p *ngIf="notification.userfromfullname"><core-format-text [text]="notification.userfromfullname"></core-format-text></p>
+                <p *ngIf="notification.userfromfullname">{{ notification.userfromfullname }}</p>
             </ion-item>
             <ion-item text-wrap>
-                <p><core-format-text [text]="notification.mobiletext | coreCreateLinks"></core-format-text></p>
+                <p><core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
             </ion-item>
             <addon-notifications-actions [contextUrl]="notification.contexturl" [courseId]="notification.courseid" [data]="notification.customdata"></addon-notifications-actions>
         </ion-card>

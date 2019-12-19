@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Try to synchronize all the notes in a certain site or in all sites.
      *
-     * @param  {string} [siteId] Site ID to sync. If not defined, sync all sites.
-     * @param {boolean} [force] Wether to force sync not depending on last execution.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllNotes(siteId?: string, force?: boolean): Promise<any> {
         return this.syncOnSites('all notes', this.syncAllNotesFunc.bind(this), [force], siteId);
@@ -58,9 +58,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize all the notes in a certain site
      *
-     * @param  {string} siteId Site ID to sync.
-     * @param  {boolean} force Wether to force sync not depending on last execution.
-     * @return {Promise<any>}  Promise resolved if sync is successful, rejected if sync fails.
+     * @param siteId Site ID to sync.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     private syncAllNotesFunc(siteId: string, force: boolean): Promise<any> {
         const proms = [];
@@ -100,9 +100,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Sync course notes only if a certain time has passed since the last time.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved when the notes are synced or if they don't need to be synced.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the notes are synced or if they don't need to be synced.
      */
     private syncNotesIfNeeded(courseId: number, siteId?: string): Promise<void> {
         return this.isSyncNeeded(courseId, siteId).then((needed) => {
@@ -115,9 +115,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider {
     /**
      * Synchronize notes of a course.
      *
-     * @param  {number} courseId Course ID.
-     * @param  {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}    Promise resolved if sync is successful, rejected otherwise.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
      */
     syncNotes(courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();

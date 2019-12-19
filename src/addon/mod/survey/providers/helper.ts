@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { AddonModSurveyQuestion } from './survey';
 
 /**
  * Service that provides helper functions for surveys.
@@ -26,10 +27,10 @@ export class AddonModSurveyHelperProvider {
     /**
      * Turns a string with values separated by commas into an array.
      *
-     * @param {any} value Value to convert.
-     * @return {string[]}    Array.
+     * @param value Value to convert.
+     * @return Array.
      */
-    protected commaStringToArray(value: any): string[] {
+    protected commaStringToArray(value: string | string[]): string[] {
         if (typeof value == 'string') {
             if (value.length > 0) {
                 return value.split(',');
@@ -44,10 +45,10 @@ export class AddonModSurveyHelperProvider {
     /**
      * Gets the parent questions and puts them in an object: ID -> question.
      *
-     * @param {Object[]} questions Questions.
-     * @return {any}            Object with parent questions.
+     * @param questions Questions.
+     * @return Object with parent questions.
      */
-    protected getParentQuestions(questions: any[]): any {
+    protected getParentQuestions(questions: AddonModSurveyQuestion[]): {[id: number]: AddonModSurveyQuestion} {
         const parents = {};
 
         questions.forEach((question) => {
@@ -63,27 +64,27 @@ export class AddonModSurveyHelperProvider {
      * Format a questions list, turning "multi" and "options" strings into arrays and adding the properties
      * 'num' and 'name'.
      *
-     * @param {any[]} questions Questions.
-     * @return {any[]}           Promise resolved with the formatted questions.
+     * @param questions Questions.
+     * @return Promise resolved with the formatted questions.
      */
-    formatQuestions(questions: any[]): any[] {
+    formatQuestions(questions: AddonModSurveyQuestion[]): AddonModSurveyQuestionFormatted[] {
 
         const strIPreferThat = this.translate.instant('addon.mod_survey.ipreferthat'),
             strIFoundThat = this.translate.instant('addon.mod_survey.ifoundthat'),
             strChoose = this.translate.instant('core.choose'),
-            formatted = [],
+            formatted: AddonModSurveyQuestionFormatted[] = [],
             parents = this.getParentQuestions(questions);
 
         let num = 1;
 
         questions.forEach((question) => {
             // Copy the object to prevent modifying the original.
-            const q1 = Object.assign({}, question),
+            const q1: AddonModSurveyQuestionFormatted = Object.assign({}, question),
                 parent = parents[q1.parent];
 
             // Turn multi and options into arrays.
-            q1.multi = this.commaStringToArray(q1.multi);
-            q1.options = this.commaStringToArray(q1.options);
+            q1.multiArray = this.commaStringToArray(q1.multi);
+            q1.optionsArray = this.commaStringToArray(q1.options);
 
             if (parent) {
                 // It's a sub-question.
@@ -109,12 +110,12 @@ export class AddonModSurveyHelperProvider {
 
                     return;
                 }
-            } else if (q1.multi && q1.multi.length === 0) {
+            } else if (q1.multiArray && q1.multiArray.length === 0) {
                 // It's a single question.
                 q1.name = 'q' + q1.id;
                 q1.num = num++;
                 if (q1.type > 0) { // Add "choose" option since this question is not required.
-                    q1.options.unshift(strChoose);
+                    q1.optionsArray.unshift(strChoose);
                 }
             }
 
@@ -123,5 +124,15 @@ export class AddonModSurveyHelperProvider {
 
         return formatted;
     }
-
 }
+
+/**
+ * Survey question with some calculated data.
+ */
+export type AddonModSurveyQuestionFormatted = AddonModSurveyQuestion & {
+    required?: boolean; // Calculated in the app. Whether the question is required.
+    name?: string; // Calculated in the app. The name of the question.
+    num?: number; // Calculated in the app. Number of the question.
+    multiArray?: string[]; // Subquestions ids, converted to an array.
+    optionsArray?: string[]; // Question options, converted to an array.
+};

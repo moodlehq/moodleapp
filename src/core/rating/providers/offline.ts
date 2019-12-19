@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,13 +117,13 @@ export class CoreRatingOfflineProvider {
     /**
      * Get an offline rating.
      *
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {numnber} instanceId Context instance id.
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreRatingOfflineRating>} Promise resolved with the saved rating, rejected if not found.
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param itemId Item id. Example: forum post id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the saved rating, rejected if not found.
      */
     getRating(contextLevel: string, instanceId: number, component: string, ratingArea: string, itemId: number,  siteId?: string):
             Promise<CoreRatingOfflineRating> {
@@ -143,19 +143,19 @@ export class CoreRatingOfflineProvider {
     /**
      * Add an offline rating.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {numnber} instanceId Context instance id.
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} itemSetId Item set id. Example: forum discussion id.
-     * @param {number} courseId Course id.
-     * @param {number} scaleId Scale id.
-     * @param {number} rating Rating value. Use CoreRatingProvider.UNSET_RATING to delete rating.
-     * @param {number} ratedUserId Rated user id.
-     * @param {number} aggregateMethod Aggregate method.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the rating is saved.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemId Item id. Example: forum post id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @param courseId Course id.
+     * @param scaleId Scale id.
+     * @param rating Rating value. Use CoreRatingProvider.UNSET_RATING to delete rating.
+     * @param ratedUserId Rated user id.
+     * @param aggregateMethod Aggregate method.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the rating is saved.
      */
     addRating(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemId: number, itemSetId: number,
             courseId: number, scaleId: number, rating: number, ratedUserId: number, aggregateMethod: number, siteId?: string):
@@ -182,12 +182,12 @@ export class CoreRatingOfflineProvider {
     /**
      * Delete offline rating.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the rating is saved.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param itemId Item id. Example: forum post id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the rating is saved.
      */
     deleteRating(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemId: number, siteId?: string):
             Promise<any> {
@@ -207,13 +207,13 @@ export class CoreRatingOfflineProvider {
     /**
      * Get the list of item sets in a component or instance.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} [contextLevel] Context level: course, module, user, etc.
-     * @param {numnber} [instanceId] Context instance id.
-     * @param {number} [itemSetId] Item set id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreRatingItemSet[]>} Promise resolved with the list of item set ids.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemSetId Item set id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of item set ids.
      */
     getItemSets(component: string, ratingArea: string, contextLevel?: string, instanceId?: number, itemSetId?: number,
             siteId?: string): Promise<CoreRatingItemSet[]> {
@@ -250,13 +250,13 @@ export class CoreRatingOfflineProvider {
     /**
      * Get offline ratings of an item set.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} contextLevel Context level: course, module, user, etc.
-     * @param {number} itemId Item id. Example: forum post id.
-     * @param {number} itemSetId Item set id. Example: forum discussion id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<CoreRatingOfflineRating[]>} Promise resolved with the list of ratings.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param itemId Item id. Example: forum post id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of ratings.
      */
     getRatings(component: string, ratingArea: string, contextLevel: string, instanceId: number, itemSetId: number, siteId?: string):
             Promise<CoreRatingOfflineRating[]> {
@@ -276,13 +276,13 @@ export class CoreRatingOfflineProvider {
     /**
      * Return whether a component, instance or item set has offline ratings.
      *
-     * @param {string} component Component. Example: "mod_forum".
-     * @param {string} ratingArea Rating Area. Example: "post".
-     * @param {string} [contextLevel] Context level: course, module, user, etc.
-     * @param {number} [instanceId] Context instance id.
-     * @param {number} [itemSetId] Item set id. Example: forum discussion id.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with a boolean.
+     * @param component Component. Example: "mod_forum".
+     * @param ratingArea Rating Area. Example: "post".
+     * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Context instance id.
+     * @param itemSetId Item set id. Example: forum discussion id.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with a boolean.
      */
     hasRatings(component: string, ratingArea: string, contextLevel?: string, instanceId?: number, itemSetId?: number,
             siteId?: string): Promise<boolean> {

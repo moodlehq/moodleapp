@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ export class CoreSupressEventsDirective implements OnInit {
     /**
      * Stop event default and propagation.
      *
-     * @param {Event} event Event.
+     * @param event Event.
      */
     protected stopBubble(event: Event): void {
         event.preventDefault();

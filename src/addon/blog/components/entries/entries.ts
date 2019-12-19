@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
-import { AddonBlogProvider } from '../../providers/blog';
+import { AddonBlogProvider, AddonBlogPost } from '../../providers/blog';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
@@ -42,24 +42,28 @@ export class AddonBlogEntriesComponent implements OnInit {
     protected userPageLoaded = 0;
     protected canLoadMoreEntries = false;
     protected canLoadMoreUserEntries = true;
+    protected siteHomeId: number;
 
     @ViewChild(Content) content: Content;
 
     loaded = false;
     canLoadMore = false;
     loadMoreError = false;
-    entries = [];
+    entries: AddonBlogPostFormatted[] = [];
     currentUserId: number;
     showMyEntriesToggle = false;
     onlyMyEntries = false;
     component = AddonBlogProvider.COMPONENT;
     commentsEnabled: boolean;
     tagsEnabled: boolean;
+    contextLevel: string;
+    contextInstanceId: number;
 
     constructor(protected blogProvider: AddonBlogProvider, protected domUtils: CoreDomUtilsProvider,
             protected userProvider: CoreUserProvider, sitesProvider: CoreSitesProvider, protected utils: CoreUtilsProvider,
             protected commentsProvider: CoreCommentsProvider, private tagProvider: CoreTagProvider) {
         this.currentUserId = sitesProvider.getCurrentSiteUserId();
+        this.siteHomeId = sitesProvider.getCurrentSiteHomeId();
     }
 
     /**
@@ -91,6 +95,18 @@ export class AddonBlogEntriesComponent implements OnInit {
             this.filter['tagid'] = this.tagId;
         }
 
+        // Calculate the context level.
+        if (this.userId && !this.courseId && !this.cmId) {
+            this.contextLevel = 'user';
+            this.contextInstanceId = this.userId;
+        } else if (this.courseId && this.courseId != this.siteHomeId) {
+            this.contextLevel = 'course';
+            this.contextInstanceId = this.courseId;
+        } else {
+            this.contextLevel = 'system';
+            this.contextInstanceId = 0;
+        }
+
         this.commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
         this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
 
@@ -104,8 +120,8 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Fetch blog entries.
      *
-     * @param {boolean} [refresh] Empty events array first.
-     * @return {Promise<any>}         Promise with the entries.
+     * @param refresh Empty events array first.
+     * @return Promise with the entries.
      */
     private fetchEntries(refresh: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -118,7 +134,7 @@ export class AddonBlogEntriesComponent implements OnInit {
         const loadPage = this.onlyMyEntries ? this.userPageLoaded : this.pageLoaded;
 
         return this.blogProvider.getEntries(this.filter, loadPage).then((result) => {
-            const promises = result.entries.map((entry) => {
+            const promises = result.entries.map((entry: AddonBlogPostFormatted) => {
                 switch (entry.publishstate) {
                     case 'draft':
                         entry.publishTranslated = 'publishtonoone';
@@ -132,6 +148,18 @@ export class AddonBlogEntriesComponent implements OnInit {
                     default:
                         entry.publishTranslated = 'privacy:unknown';
                         break;
+                }
+
+                // Calculate the context. This code was inspired by calendar events, Moodle doesn't do this for blogs.
+                if (entry.moduleid || entry.coursemoduleid) {
+                    entry.contextLevel = 'module';
+                    entry.contextInstanceId = entry.moduleid || entry.coursemoduleid;
+                } else if (entry.courseid) {
+                    entry.contextLevel = 'course';
+                    entry.contextInstanceId = entry.courseid;
+                } else {
+                    entry.contextLevel = 'user';
+                    entry.contextInstanceId = entry.userid;
                 }
 
                 return this.userProvider.getProfile(entry.userid, entry.courseid, true).then((user) => {
@@ -174,7 +202,7 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Toggle between showing only my entries or not.
      *
-     * @param {boolean} enabled If true, filter my entries. False otherwise.
+     * @param enabled If true, filter my entries. False otherwise.
      */
     onlyMyEntriesToggleChanged(enabled: boolean): void {
         if (enabled) {
@@ -198,8 +226,8 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Function to load more entries.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMore(infiniteComplete?: any): Promise<any> {
         return this.fetchEntries().finally(() => {
@@ -210,7 +238,7 @@ export class AddonBlogEntriesComponent implements OnInit {
     /**
      * Refresh blog entries on PTR.
      *
-     * @param {any}     refresher  Refresher instance.
+     * @param refresher Refresher instance.
      */
     refresh(refresher?: any): void {
         const promises = this.entries.map((entry) => {
@@ -237,5 +265,14 @@ export class AddonBlogEntriesComponent implements OnInit {
             });
         });
     }
-
 }
+
+/**
+ * Blog post with some calculated data.
+ */
+type AddonBlogPostFormatted = AddonBlogPost & {
+    publishTranslated?: string; // Calculated in the app. Key of the string to translate the publish state of the post.
+    user?: any; // Calculated in the app. Data of the user that wrote the post.
+    contextLevel?: string; // Calculated in the app. The context level of the entry.
+    contextInstanceId?: number; // Calculated in the app. The context instance id.
+};

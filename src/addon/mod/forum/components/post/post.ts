@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,21 @@
 
 import { Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Content } from 'ionic-angular';
+import { Content, PopoverController, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { CoreTagProvider } from '@core/tag/providers/tag';
+import { AddonForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -45,15 +48,18 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     @Input() trackPosts: boolean; // True if post is being tracked.
     @Input() forum: any; // The forum the post belongs to. Required for attachments and offline posts.
     @Input() accessInfo: any; // Forum access information.
-    @Input() defaultSubject: string; // Default subject to set to new posts.
+    @Input() parentSubject?: string; // Subject of parent post.
     @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
     @Output() onPostChange: EventEmitter<void>; // Event emitted when a reply is posted or modified.
 
     messageControl = new FormControl();
 
     uniqueId: string;
+    defaultReplySubject: string;
     advanced = false; // Display all form fields.
     tagsEnabled: boolean;
+    displaySubject = true;
+    optionsMenuEnabled = false;
 
     protected syncId: string;
 
@@ -68,7 +74,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             private forumOffline: AddonModForumOfflineProvider,
             private forumSync: AddonModForumSyncProvider,
             private tagProvider: CoreTagProvider,
-            @Optional() private content: Content) {
+            @Optional() private content: Content,
+            protected popoverCtrl: PopoverController,
+            protected modalCtrl: ModalController,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) {
         this.onPostChange = new EventEmitter<void>();
         this.tagsEnabled = this.tagProvider.areTagsAvailableInSite();
     }
@@ -78,26 +88,67 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parent;
+
+        const reTranslated = this.translate.instant('addon.mod_forum.re');
+        this.displaySubject = !this.parentSubject ||
+            (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
+                this.post.subject != `${reTranslated} ${this.parentSubject}`);
+        this.defaultReplySubject = (this.post.subject.startsWith('Re: ') || this.post.subject.startsWith(reTranslated))
+            ? this.post.subject : `${reTranslated} ${this.post.subject}`;
+
+        this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
+                    (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
     }
 
     /**
-     * Set data to new post, clearing temporary files and updating original data.
-     *
-     * @param {number} [replyingTo] Id of post beeing replied.
-     * @param {boolean} [isEditing] True it's an offline reply beeing edited, false otherwise.
-     * @param {string} [subject] Subject of the reply.
-     * @param {string} [message] Message of the reply.
-     * @param {boolean} [isPrivate] True if it's private reply.
-     * @param {any[]} [files] Reply attachments.
+     * Deletes an online post.
      */
-    protected setReplyData(replyingTo?: number, isEditing?: boolean, subject?: string, message?: string, files?: any[],
+    deletePost(): void {
+        this.domUtils.showDeleteConfirm('addon.mod_forum.deletesure').then(() => {
+            const modal = this.domUtils.showModalLoading('core.deleting', true);
+
+            this.forumProvider.deletePost(this.post.id).then((response) => {
+
+                const data = {
+                    forumId: this.forum.id,
+                    discussionId: this.discussionId,
+                    cmId: this.forum.cmid,
+                    deleted: response.status,
+                    post: this.post
+                };
+
+                this.eventsProvider.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data,
+                    this.sitesProvider.getCurrentSiteId());
+
+                this.domUtils.showToast('addon.mod_forum.deletedpost', true);
+            }).catch((error) => {
+                this.domUtils.showErrorModal(error);
+            }).finally(() => {
+                modal.dismiss();
+            });
+        }).catch((error) => {
+            // Do nothing.
+        });
+    }
+
+    /**
+     * Set data to new reply post, clearing temporary files and updating original data.
+     *
+     * @param replyingTo Id of post beeing replied.
+     * @param isEditing True it's an offline reply beeing edited, false otherwise.
+     * @param subject Subject of the reply.
+     * @param message Message of the reply.
+     * @param isPrivate True if it's private reply.
+     * @param files Reply attachments.
+     */
+    protected setReplyFormData(replyingTo?: number, isEditing?: boolean, subject?: string, message?: string, files?: any[],
             isPrivate?: boolean): void {
         // Delete the local files from the tmp folder if any.
         this.uploaderProvider.clearTmpFiles(this.replyData.files);
 
         this.replyData.replyingTo = replyingTo || 0;
         this.replyData.isEditing = !!isEditing;
-        this.replyData.subject = subject || this.defaultSubject || '';
+        this.replyData.subject = subject || this.defaultReplySubject || '';
         this.replyData.message = message || null;
         this.replyData.files = files || [];
         this.replyData.isprivatereply = !!isPrivate;
@@ -116,13 +167,106 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Show the context menu.
+     *
+     * @param e Click Event.
+     */
+    showOptionsMenu(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const popover = this.popoverCtrl.create(AddonForumPostOptionsMenuComponent, {
+            post: this.post,
+            forumId: this.forum.id
+        });
+        popover.onDidDismiss((data) => {
+            if (data && data.action) {
+                switch (data.action) {
+                    case 'edit':
+                        this.editPost();
+                        break;
+                    case 'editoffline':
+                        this.editOfflineReply();
+                        break;
+                    case 'delete':
+                        this.deletePost();
+                        break;
+                    case 'deleteoffline':
+                        this.discardOfflineReply();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        popover.present({
+            ev: e
+        });
+    }
+
+    /**
+     * Shows a form modal to edit an online post.
+     */
+    editPost(): void {
+        const modal = this.modalCtrl.create('AddonModForumEditPostPage', {
+            post: this.post,
+            component: this.component,
+            componentId:  this.componentId,
+            forum: this.forum
+        });
+
+        modal.present();
+        modal.onDidDismiss((data) => {
+            if (typeof data != 'undefined') {
+                // Add some HTML to the message if needed.
+                const message = this.textUtils.formatHtmlLines(data.message);
+                const files = data.files || [];
+                const sendingModal = this.domUtils.showModalLoading('core.sending', true);
+                let promise;
+
+                // Upload attachments first if any.
+                if (files.length) {
+                    promise = this.forumHelper.uploadOrStoreReplyFiles(this.forum.id, this.post.id, files, false);
+                } else {
+                    promise = Promise.resolve();
+                }
+
+                promise.then((attach) => {
+                    const options: any = {};
+
+                    if (attach) {
+                        options.attachmentsid = attach;
+                    }
+
+                    // Try to send it to server.
+                    return this.forumProvider.updatePost(this.post.id, data.subject, message, options);
+                }).then((sent) => {
+                    if (sent && this.forum.id) {
+                        // Data sent to server, delete stored files (if any).
+                        this.forumHelper.deleteReplyStoredFiles(this.forum.id, this.post.id);
+
+                        this.onPostChange.emit();
+                        this.post.subject = data.subject;
+                        this.post.message = message;
+                        this.post.attachments = data.files;
+                    }
+                }).catch((message) => {
+                    this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.couldnotupdate', true);
+                }).finally(() => {
+                    sendingModal.dismiss();
+                });
+            }
+        });
+    }
+
+    /**
      * Set this post as being replied to.
      */
-    showReply(): void {
+    showReplyForm(): void {
         if (this.replyData.isEditing) {
             // User is editing a post, data needs to be resetted. Ask confirm if there is unsaved data.
             this.confirmDiscard().then(() => {
-                this.setReplyData(this.post.id);
+                this.setReplyFormData(this.post.id);
 
                 if (this.content) {
                     setTimeout(() => {
@@ -137,10 +281,17 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             return;
         } else if (!this.replyData.replyingTo) {
             // User isn't replying, it's a brand new reply. Initialize the data.
-            this.setReplyData(this.post.id);
+            this.setReplyFormData(this.post.id);
         } else {
             // The post being replied has changed but the data will be kept.
             this.replyData.replyingTo = this.post.id;
+
+            if (this.replyData.subject == this.originalData.subject) {
+                // Update subject only if it hadn't been modified
+                this.replyData.subject = this.defaultReplySubject;
+                this.originalData.subject = this.defaultReplySubject;
+            }
+
             this.messageControl.setValue(this.replyData.message);
         }
 
@@ -156,13 +307,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     /**
      * Set this post as being edited to.
      */
-    editReply(): void {
+    editOfflineReply(): void {
         // Ask confirm if there is unsaved data.
         this.confirmDiscard().then(() => {
             this.syncId = this.forumSync.getDiscussionSyncId(this.discussionId);
             this.syncProvider.blockOperation(AddonModForumProvider.COMPONENT, this.syncId);
 
-            this.setReplyData(this.post.parent, true, this.post.subject, this.post.message, this.post.attachments,
+            this.setReplyFormData(this.post.parent, true, this.post.subject, this.post.message, this.post.attachments,
                     this.post.isprivatereply);
         }).catch(() => {
             // Cancelled.
@@ -172,7 +323,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     /**
      * Message changed.
      *
-     * @param {string} text The new text.
+     * @param text The new text.
      */
     onMessageChange(text: string): void {
         this.replyData.message = text;
@@ -253,7 +404,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
             }
 
             // Reset data.
-            this.setReplyData();
+            this.setReplyFormData();
 
             this.onPostChange.emit();
 
@@ -273,7 +424,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     cancel(): void {
         this.confirmDiscard().then(() => {
             // Reset data.
-            this.setReplyData();
+            this.setReplyFormData();
 
             if (this.syncId) {
                 this.syncProvider.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
@@ -286,8 +437,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     /**
      * Discard offline reply.
      */
-    discard(): void {
-        this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
+    discardOfflineReply(): void {
+        this.domUtils.showDeleteConfirm().then(() => {
             const promises = [];
 
             promises.push(this.forumOffline.deleteReply(this.post.parent));
@@ -299,7 +450,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
             return Promise.all(promises).finally(() => {
                 // Reset data.
-                this.setReplyData();
+                this.setReplyFormData();
 
                 this.onPostChange.emit();
 
@@ -316,7 +467,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
      * Function called when rating is updated online.
      */
     ratingUpdated(): void {
-        this.forumProvider.invalidateDiscussionPosts(this.discussionId);
+        this.forumProvider.invalidateDiscussionPosts(this.discussionId, this.forum.id);
     }
 
     /**
@@ -338,7 +489,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     /**
      * Confirm discard changes if any.
      *
-     * @return {Promise<void>} Promise resolved if the user confirms or data was not changed and rejected otherwise.
+     * @return Promise resolved if the user confirms or data was not changed and rejected otherwise.
      */
     protected confirmDiscard(): Promise<void> {
         if (this.forumHelper.hasPostDataChanged(this.replyData, this.originalData)) {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { AddonCourseCompletionProvider } from '../../providers/coursecompletion';
+import { AddonCourseCompletionProvider, AddonCourseCompletionCourseCompletionStatus } from '../../providers/coursecompletion';
 
 /**
  * Component that displays the course completion report.
@@ -29,9 +29,10 @@ export class AddonCourseCompletionReportComponent implements OnInit {
     @Input() userId: number;
 
     completionLoaded = false;
-    completion: any;
+    completion: AddonCourseCompletionCourseCompletionStatus;
     showSelfComplete: boolean;
     tracked = true; // Whether completion is tracked.
+    statusText: string;
 
     constructor(
         private sitesProvider: CoreSitesProvider,
@@ -54,12 +55,12 @@ export class AddonCourseCompletionReportComponent implements OnInit {
     /**
      * Fetch compleiton data.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCompletion(): Promise<any> {
         return this.courseCompletionProvider.getCompletion(this.courseId, this.userId).then((completion) => {
 
-            completion.statusText = this.courseCompletionProvider.getCompletedStatusText(completion);
+            this.statusText = this.courseCompletionProvider.getCompletedStatusText(completion);
 
             this.completion = completion;
             this.showSelfComplete = this.courseCompletionProvider.canMarkSelfCompleted(this.userId, completion);
@@ -77,7 +78,7 @@ export class AddonCourseCompletionReportComponent implements OnInit {
     /**
      * Refresh completion data on PTR.
      *
-     * @param {any} [refresher] Refresher instance.
+     * @param refresher Refresher instance.
      */
     refreshCompletion(refresher?: any): void {
         this.courseCompletionProvider.invalidateCourseCompletion(this.courseId, this.userId).finally(() => {

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnDestroy, NgZone } from '@angular/core';
-import { IonicPage, Content, NavParams, NavController } from 'ionic-angular';
-import { AddonCalendarProvider } from '../../providers/calendar';
+import { IonicPage, Content, NavParams, NavController, PopoverController } from 'ionic-angular';
+import { AddonCalendarProvider, AddonCalendarGetEventsEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
-import { AddonCalendarHelperProvider } from '../../providers/helper';
+import { AddonCalendarHelperProvider, AddonCalendarFilter } from '../../providers/helper';
 import { AddonCalendarSyncProvider } from '../../providers/calendar-sync';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
@@ -31,6 +31,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import * as moment from 'moment';
 import { Network } from '@ionic-native/network';
 import { CoreConstants } from '@core/constants';
+import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
 
 /**
  * Page that displays the list of calendar events.
@@ -51,8 +52,14 @@ export class AddonCalendarListPage implements OnDestroy {
     protected getCategories = false;
     protected categories = {};
     protected siteHomeId: number;
-    protected obsDefaultTimeChange: any;
     protected eventId: number;
+    protected currentSiteId: string;
+    protected onlineEvents: AddonCalendarGetEventsEvent[] = [];
+    protected offlineEvents = [];
+    protected deletedEvents = [];
+
+    // Observers.
+    protected obsDefaultTimeChange: any;
     protected newEventObserver: any;
     protected discardedObserver: any;
     protected editEventObserver: any;
@@ -61,32 +68,49 @@ export class AddonCalendarListPage implements OnDestroy {
     protected syncObserver: any;
     protected manualSyncObserver: any;
     protected onlineObserver: any;
-    protected currentSiteId: string;
-    protected onlineEvents = [];
-    protected offlineEvents = [];
-    protected deletedEvents = [];
+    protected filterChangedObserver: any;
 
     courses: any[];
     eventsLoaded = false;
     events = []; // Events (both online and offline).
     notificationsEnabled = false;
-    filteredEvents = [];
+    filteredEvents: AddonCalendarGetEventsEvent[] = [];
     canLoadMore = false;
     loadMoreError = false;
-    courseId: number;
-    categoryId: number;
     canCreate = false;
     hasOffline = false;
     isOnline = false;
     syncIcon: string; // Sync icon.
+    filter: AddonCalendarFilter = {
+        filtered: false,
+        courseId: null,
+        categoryId: null,
+        course: false,
+        group: false,
+        site: false,
+        user: false,
+        category: false
+    };
 
-    constructor(private calendarProvider: AddonCalendarProvider, navParams: NavParams,
-            private domUtils: CoreDomUtilsProvider, private coursesProvider: CoreCoursesProvider, private utils: CoreUtilsProvider,
-            private calendarHelper: AddonCalendarHelperProvider, sitesProvider: CoreSitesProvider, zone: NgZone,
-            localNotificationsProvider: CoreLocalNotificationsProvider, private coursesHelper: CoreCoursesHelperProvider,
-            private eventsProvider: CoreEventsProvider, private navCtrl: NavController, private appProvider: CoreAppProvider,
-            private calendarOffline: AddonCalendarOfflineProvider, private calendarSync: AddonCalendarSyncProvider,
-            network: Network, private timeUtils: CoreTimeUtilsProvider) {
+    constructor(
+            navParams: NavParams,
+            sitesProvider: CoreSitesProvider,
+            network: Network,
+            zone: NgZone,
+            localNotificationsProvider: CoreLocalNotificationsProvider,
+            private calendarProvider: AddonCalendarProvider,
+            private domUtils: CoreDomUtilsProvider,
+            private coursesProvider: CoreCoursesProvider,
+            private utils: CoreUtilsProvider,
+            private calendarHelper: AddonCalendarHelperProvider,
+            private coursesHelper: CoreCoursesHelperProvider,
+            private eventsProvider: CoreEventsProvider,
+            private navCtrl: NavController,
+            private appProvider: CoreAppProvider,
+            private calendarOffline: AddonCalendarOfflineProvider,
+            private calendarSync: AddonCalendarSyncProvider,
+            private timeUtils: CoreTimeUtilsProvider,
+            private popoverCtrl: PopoverController) {
 
         this.siteHomeId = sitesProvider.getCurrentSite().getSiteHomeId();
         this.notificationsEnabled = localNotificationsProvider.isAvailable();
@@ -100,7 +124,11 @@ export class AddonCalendarListPage implements OnDestroy {
         }
 
         this.eventId = navParams.get('eventId') || false;
-        this.courseId = navParams.get('courseId');
+
+        AddonCalendarProvider.ALL_TYPES.forEach((name) => {
+            this.filter[name] = true;
+        });
+        this.filter['courseId'] = navParams.get('courseId');
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = eventsProvider.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
@@ -198,6 +226,19 @@ export class AddonCalendarListPage implements OnDestroy {
             }
         }, this.currentSiteId);
 
+        this.filterChangedObserver = this.eventsProvider.on(AddonCalendarProvider.FILTER_CHANGED_EVENT, (data) => {
+            this.filter = data;
+
+            // Course viewed has changed, check if the user can create events for this course calendar.
+            this.calendarHelper.canEditEvents(this.filter['courseId']).then((canEdit) => {
+                this.canCreate = canEdit;
+            });
+
+            this.filterEvents();
+
+            this.domUtils.scrollToTop(this.content);
+        });
+
         // Refresh online status when changes.
         this.onlineObserver = network.onchange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -233,10 +274,10 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Fetch all the data required for the view.
      *
-     * @param {boolean} [refresh] Empty events array first.
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Empty events array first.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     fetchData(refresh?: boolean, sync?: boolean, showErrors?: boolean): Promise<any> {
         this.initialTime = this.timeUtils.timestamp();
@@ -274,14 +315,13 @@ export class AddonCalendarListPage implements OnDestroy {
 
             this.hasOffline = false;
 
-            promises.push(this.calendarHelper.canEditEvents(this.courseId).then((canEdit) => {
+            promises.push(this.calendarHelper.canEditEvents(this.filter['courseId']).then((canEdit) => {
                 this.canCreate = canEdit;
             }));
 
             // Load courses for the popover.
-            promises.push(this.coursesHelper.getCoursesForPopover(this.courseId).then((result) => {
+            promises.push(this.coursesHelper.getCoursesForPopover(this.filter['courseId']).then((result) => {
                 this.courses = result.courses;
-                this.categoryId = result.categoryId;
 
                 return this.fetchEvents(refresh);
             }));
@@ -314,8 +354,8 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Fetches the events and updates the view.
      *
-     * @param {boolean} [refresh] Empty events array first.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Empty events array first.
+     * @return Promise resolved when done.
      */
     fetchEvents(refresh?: boolean): Promise<any> {
         this.loadMoreError = false;
@@ -354,7 +394,7 @@ export class AddonCalendarListPage implements OnDestroy {
                     this.onlineEvents = this.utils.mergeArraysWithoutDuplicates(this.onlineEvents, onlineEvents, 'id');
                     this.events = this.utils.mergeArraysWithoutDuplicates(this.events, events, 'id');
                 }
-                this.filteredEvents = this.getFilteredEvents();
+                this.filterEvents();
 
                 // Calculate which evemts need to display the date.
                 this.filteredEvents.forEach((event, index): any => {
@@ -388,8 +428,8 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Function to load more events.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
     loadMoreEvents(infiniteComplete?: any): Promise<any> {
         return this.fetchEvents().finally(() => {
@@ -397,26 +437,14 @@ export class AddonCalendarListPage implements OnDestroy {
         });
     }
 
-    /**
-     * Get filtered events.
-     *
-     * @return {any[]} Filtered events.
-     */
-    protected getFilteredEvents(): any[] {
-        if (!this.courseId) {
-            // No filter, display everything.
-            return this.events;
-        }
-
-        return this.events.filter((event) => {
-            return this.calendarHelper.shouldDisplayEvent(event, this.courseId, this.categoryId, this.categories);
-        });
+    protected filterEvents(): void {
+        this.filteredEvents = this.calendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**
      * Returns if the current state should load categories or not.
-     * @param {any[]} events Events to parse.
-     * @return {boolean}  True if categories should be loaded.
+     * @param events Events to parse.
+     * @return True if categories should be loaded.
      */
     protected shouldLoadCategories(events: any[]): boolean {
         if (this.categoriesRetrieved || this.getCategories) {
@@ -433,7 +461,7 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Load categories to be able to filter events.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected loadCategories(): Promise<any> {
         return this.coursesProvider.getCategories(0, true).then((cats) => {
@@ -451,8 +479,8 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Merge a period of online events with the offline events of that period.
      *
-     * @param {any[]} onlineEvents Online events.
-     * @return {any[]} Merged events.
+     * @param onlineEvents Online events.
+     * @return Merged events.
      */
     protected mergeEvents(onlineEvents: any[]): any[] {
         if (!this.offlineEvents.length && !this.deletedEvents.length) {
@@ -501,7 +529,7 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Sort events by timestart.
      *
-     * @param {any[]} events List to sort.
+     * @param events List to sort.
      */
     protected sortEvents(events: any[]): any[] {
         return events.sort((a, b) => {
@@ -516,10 +544,10 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Refresh the data.
      *
-     * @param {any} [refresher] Refresher.
-     * @param {Function} [done] Function to call when done.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     doRefresh(refresher?: any, done?: () => void, showErrors?: boolean): Promise<any> {
         if (this.eventsLoaded) {
@@ -535,9 +563,9 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Refresh the events.
      *
-     * @param {boolean} [sync] Whether it should try to synchronize offline events.
-     * @param {boolean} [showErrors] Whether to show sync errors to the user.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param sync Whether it should try to synchronize offline events.
+     * @param showErrors Whether to show sync errors to the user.
+     * @return Promise resolved when done.
      */
     refreshEvents(sync?: boolean, showErrors?: boolean): Promise<any> {
         this.syncIcon = 'spinner';
@@ -561,9 +589,9 @@ export class AddonCalendarListPage implements OnDestroy {
      * Check date should be shown on event list for the current event.
      * If date has changed from previous to current event it should be shown.
      *
-     * @param {any} event       Current event where to show the date.
-     * @param {any} [prevEvent] Previous event where to compare the date with.
-     * @return {boolean}  If date has changed and should be shown.
+     * @param event Current event where to show the date.
+     * @param prevEvent Previous event where to compare the date with.
+     * @return If date has changed and should be shown.
      */
     protected showDate(event: any, prevEvent?: any): boolean {
         if (!prevEvent) {
@@ -578,10 +606,10 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Check if event ends the same date or not.
      *
-     * @param {any} event Event info.
-     * @return {boolean}  If date has changed and should be shown.
+     * @param event Event info.
+     * @return If date has changed and should be shown.
      */
-    protected endsSameDay(event: any): boolean {
+    protected endsSameDay(event: AddonCalendarGetEventsEvent): boolean {
         if (!event.timeduration) {
             // No duration.
             return true;
@@ -594,30 +622,23 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Show the context menu.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
-    openCourseFilter(event: MouseEvent): void {
-        this.coursesHelper.selectCourse(event, this.courses, this.courseId).then((result) => {
-            if (typeof result.courseId != 'undefined') {
-                this.courseId = result.courseId > 0 ? result.courseId : undefined;
-                this.categoryId = result.courseId > 0 ? result.categoryId : undefined;
+    openFilter(event: MouseEvent): void {
+        const popover = this.popoverCtrl.create(AddonCalendarFilterPopoverComponent, {
+            courses: this.courses,
+            filter: this.filter
+        });
 
-                // Course viewed has changed, check if the user can create events for this course calendar.
-                this.calendarHelper.canEditEvents(this.courseId).then((canEdit) => {
-                    this.canCreate = canEdit;
-                });
-
-                this.filteredEvents = this.getFilteredEvents();
-
-                this.domUtils.scrollToTop(this.content);
-            }
+        popover.present({
+            ev: event
         });
     }
 
     /**
      * Open page to create/edit an event.
      *
-     * @param {number} [eventId] Event ID to edit.
+     * @param eventId Event ID to edit.
      */
     openEdit(eventId?: number): void {
         this.eventId = undefined;
@@ -627,8 +648,8 @@ export class AddonCalendarListPage implements OnDestroy {
         if (eventId) {
             params.eventId = eventId;
         }
-        if (this.courseId) {
-            params.courseId = this.courseId;
+        if (this.filter['courseId']) {
+            params.courseId = this.filter['courseId'];
         }
 
         this.splitviewCtrl.push('AddonCalendarEditEventPage', params);
@@ -644,7 +665,7 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Navigate to a particular event.
      *
-     * @param {number} eventId Event to load.
+     * @param eventId Event to load.
      */
     gotoEvent(eventId: number): void {
         this.eventId = eventId;
@@ -662,8 +683,8 @@ export class AddonCalendarListPage implements OnDestroy {
     /**
      * Find an event and mark it as deleted.
      *
-     * @param {number} eventId Event ID.
-     * @param {boolean} deleted Whether to mark it as deleted or not.
+     * @param eventId Event ID.
+     * @param deleted Whether to mark it as deleted or not.
      */
     protected markAsDeleted(eventId: number, deleted: boolean): void {
         const event = this.onlineEvents.find((event) => {
@@ -687,6 +708,7 @@ export class AddonCalendarListPage implements OnDestroy {
         this.undeleteEventObserver && this.undeleteEventObserver.off();
         this.syncObserver && this.syncObserver.off();
         this.manualSyncObserver && this.manualSyncObserver.off();
+        this.filterChangedObserver && this.filterChangedObserver.off();
         this.onlineObserver && this.onlineObserver.unsubscribe();
     }
 }

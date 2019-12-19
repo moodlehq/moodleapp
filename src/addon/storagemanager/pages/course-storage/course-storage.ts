@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ export class AddonStorageManagerCourseStoragePage {
      *
      * (This works by deleting data for each module in the section that has data.)
      *
-     * @param {any} section Section object with information about section and modules
+     * @param section Section object with information about section and modules
      */
     deleteForSection(section: any): void {
         const modules = [];
@@ -127,7 +127,7 @@ export class AddonStorageManagerCourseStoragePage {
     /**
      * The user has requested a delete for a module's data
      *
-     * @param {any} module Module details
+     * @param module Module details
      */
     deleteForModule(module: any): void {
         if (module.totalSize > 0) {
@@ -138,7 +138,7 @@ export class AddonStorageManagerCourseStoragePage {
     /**
      * Deletes the specified modules, showing the loading overlay while it happens.
      *
-     * @param {any[]} modules Modules to delete
+     * @param modules Modules to delete
      * @return Promise<void> Once deleting has finished
      */
     protected deleteModules(modules: any[]): Promise<void> {

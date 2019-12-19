@@ -5,9 +5,8 @@
         <ion-icon name="person"></ion-icon>
     </button>
 
-    <!-- Go to "home". -->
-    <button ion-button icon-only *ngIf="showHomeButton" (click)="goToWikiHome()" [attr.aria-label]="'addon.mod_wiki.gowikihome' | translate">
-        <ion-icon name="home"></ion-icon>
+    <button *ngIf="loaded && currentPageObj" ion-button icon-only (click)="openMap($event)"[attr.aria-label]="'addon.mod_wiki.map' | translate" aria-haspopup="true">
+        <ion-icon name="map"></ion-icon>
     </button>
 
     <core-context-menu>
@@ -19,64 +18,39 @@
         <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate" iconAction="create" (action)="goToEditPage()"></core-context-menu-item>
         <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="add" (action)="goToNewPage()"></core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="400" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.removefiles' | translate:{$a: size}" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
+    <div padding *ngIf="description || pageIsOffline || hasOffline || pageWarning">
+        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
-    <core-tabs [hideUntil]="loaded" [selectedIndex]="selectedTab">
-        <!-- Page contents. -->
-        <core-tab [title]="'addon.mod_wiki.viewpage' | translate" icon="document">
-            <ng-template>
-                <div padding class="addon-mod_wiki-page-content">
-                    <core-course-module-description *ngIf="isMainPage" [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description>
+        <!-- Wiki has something offline. -->
+        <div class="core-warning-card" icon-start *ngIf="pageIsOffline || hasOffline">
+            <ion-icon name="warning"></ion-icon>
+            <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+            <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+        </div>
 
-                    <!-- Wiki has something offline. -->
-                    <div class="core-warning-card" icon-start *ngIf="pageIsOffline || hasOffline">
-                        <ion-icon name="warning"></ion-icon>
-                        <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
-                        <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
-                    </div>
+        <!-- Page warning. -->
+        <div class="core-warning-card" icon-start *ngIf="pageWarning">
+            <ion-icon name="warning"></ion-icon>
+            {{ pageWarning }}
+        </div>
+    </div>
+    <div padding class="addon-mod_wiki-page-content">
+        <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
+            <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
+            <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate" [inline]="true"></core-empty-box>
+        </article>
 
-                    <!-- Page warning. -->
-                    <div class="core-warning-card" icon-start *ngIf="pageWarning">
-                        <ion-icon name="warning"></ion-icon>
-                        {{ pageWarning }}
-                    </div>
-
-                    <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
-                        <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"></core-format-text>
-                        <core-empty-box *ngIf="!pageContent" icon="document" [message]="'addon.mod_wiki.nocontent' | translate" [inline]="true"></core-empty-box>
-                    </article>
-
-                    <div margin-top *ngIf="tagsEnabled && currentPageObj && currentPageObj.tags && currentPageObj.tags.length > 0">
-                        <b>{{ 'core.tag.tags' | translate }}:</b>
-                        <core-tag-list [tags]="currentPageObj.tags"></core-tag-list>
-                    </div>
-                </div>
-            </ng-template>
-        </core-tab>
-
-        <!-- Map. -->
-        <core-tab [title]="'addon.mod_wiki.map' | translate" icon="map">
-            <ng-template>
-                <ion-list>
-                    <ng-container *ngFor="let letter of map">
-                        <ion-item-divider *ngIf="letter.label">
-                            {{ letter.label }}
-                        </ion-item-divider>
-                        <a ion-item text-wrap *ngFor="let page of letter.pages" (click)="goToPage(page)">
-                            {{ page.title }}
-                            <ion-note *ngIf="!page.id" item-end color="danger">{{ 'core.offline' | translate }}</ion-note>
-                        </a>
-                    </ng-container>
-                </ion-list>
-            </ng-template>
-        </core-tab>
-    </core-tabs>
-
+        <div margin-top *ngIf="tagsEnabled && currentPageObj && currentPageObj.tags && currentPageObj.tags.length > 0">
+            <b>{{ 'core.tag.tags' | translate }}:</b>
+            <core-tag-list [tags]="currentPageObj.tags"></core-tag-list>
+        </div>
+    </div>
 </core-loading>
 
 <ion-fab core-fab bottom end *ngIf="canEdit">

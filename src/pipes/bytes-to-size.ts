@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ export class CoreBytesToSizePipe implements PipeTransform {
     /**
      * Takes a number and turns it to a human readable size.
      *
-     * @param {number|string} value The bytes to convert.
-     * @return {string} Readable bytes.
+     * @param value The bytes to convert.
+     * @return Readable bytes.
      */
     transform(value: number | string): string {
         if (typeof value == 'string') {

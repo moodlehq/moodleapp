@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,8 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
                     if (this.text) {
                         // Open a new state with the text.
-                        this.textUtils.expandText(this.plugin.name, this.text, this.component, this.assign.cmid);
+                        this.textUtils.expandText(this.plugin.name, this.text, this.component, this.assign.cmid, undefined, true,
+                                'module', this.assign.cmid, this.assign.course);
                     }
                 });
             } else if (this.edit) {
@@ -98,7 +99,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     /**
      * Get the text for the plugin.
      *
-     * @return {Promise<string>} Promise resolved with the text.
+     * @return Promise resolved with the text.
      */
     protected getText(): Promise<string> {
         // Check if the user already modified the comment.
@@ -133,8 +134,8 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     /**
      * Replace @@PLUGINFILE@@ wildcards with the real URL of embedded files.
      *
-     * @param {string} Text to treat.
-     * @return {string} Treated text.
+     * @param Text to treat.
+     * @return Treated text.
      */
     replacePluginfileUrls(text: string): string {
         const files = this.plugin.fileareas && this.plugin.fileareas[0] && this.plugin.fileareas[0].files;

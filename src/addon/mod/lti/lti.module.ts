@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ import { AddonModLtiModuleHandler } from './providers/module-handler';
 import { AddonModLtiProvider } from './providers/lti';
 import { AddonModLtiLinkHandler } from './providers/link-handler';
 import { AddonModLtiListLinkHandler } from './providers/list-link-handler';
+import { AddonModLtiPrefetchHandler } from './providers/prefetch-handler';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 
 // List of providers (without handlers).
 export const ADDON_MOD_LTI_PROVIDERS: any[] = [
@@ -36,16 +38,22 @@ export const ADDON_MOD_LTI_PROVIDERS: any[] = [
         AddonModLtiProvider,
         AddonModLtiModuleHandler,
         AddonModLtiLinkHandler,
-        AddonModLtiListLinkHandler
+        AddonModLtiListLinkHandler,
+        AddonModLtiPrefetchHandler
     ]
 })
 export class AddonModLtiModule {
-    constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModLtiModuleHandler,
-            contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModLtiLinkHandler,
-            listLinkHandler: AddonModLtiListLinkHandler) {
+    constructor(moduleDelegate: CoreCourseModuleDelegate,
+            moduleHandler: AddonModLtiModuleHandler,
+            contentLinksDelegate: CoreContentLinksDelegate,
+            linkHandler: AddonModLtiLinkHandler,
+            listLinkHandler: AddonModLtiListLinkHandler,
+            prefetchDelegate: CoreCourseModulePrefetchDelegate,
+            prefetchHandler: AddonModLtiPrefetchHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
+        prefetchDelegate.registerHandler(prefetchHandler);
     }
 }

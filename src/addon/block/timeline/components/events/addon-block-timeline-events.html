@@ -4,10 +4,10 @@
     </ion-item-divider>
     <ng-container *ngFor="let event of dayEvents.events">
         <a ion-item text-wrap detail-none class="core-course-module-handler item-media" (click)="action($event, event.url)" [title]="event.name">
-            <img item-start [src]="event.iconUrl" core-external-content alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
-            <h2><core-format-text [text]="event.name"></core-format-text></h2>
+            <img item-start [src]="event.iconUrl" alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
+            <h2><core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id" [courseId]="event.course.id"></core-format-text></h2>
             <p *ngIf="showCourse">
-                <core-format-text [text]="event.course.fullnamedisplay"></core-format-text>
+                <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course" [contextInstanceId]="event.course.id"></core-format-text>
             </p>
 
             <button ion-button clear class="hidden-tablet" (click)="action($event, event.action.url)" [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">

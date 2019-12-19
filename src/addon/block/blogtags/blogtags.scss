@@ -1,6 +1,7 @@
 .addon-block-blog-tags core-block-pre-rendered {
     .core-block-content {
         ul.inline-list {
+            font-size: 80%;
             list-style: none;
             @include margin-horizontal(0);
             -webkit-padding-start: 0;

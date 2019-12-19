@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@ import { IonicPage, NavParams, NavController, Content, ModalController } from 'i
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { AddonMessagesProvider } from '../../providers/messages';
+import {
+    AddonMessagesProvider, AddonMessagesConversationFormatted, AddonMessagesConversationMember, AddonMessagesConversationMessage,
+    AddonMessagesGetMessagesMessage
+} from '../../providers/messages';
 import { AddonMessagesOfflineProvider } from '../../providers/messages-offline';
 import { AddonMessagesSyncProvider } from '../../providers/sync';
 import { CoreUserProvider } from '@core/user/providers/user';
@@ -54,7 +57,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected messagesBeingSent = 0;
     protected pagesLoaded = 1;
     protected lastMessage = {text: '', timecreated: 0};
-    protected keepMessageMap = {};
+    protected keepMessageMap: {[hash: string]: boolean} = {};
     protected syncObserver: any;
     protected oldContentHeight = 0;
     protected keyboardObserver: any;
@@ -64,7 +67,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
 
     conversationId: number; // Conversation ID. Undefined if it's a new individual conversation.
-    conversation: any; // The conversation object (if it exists).
+    conversation: AddonMessagesConversationFormatted; // The conversation object (if it exists).
     userId: number; // User ID you're talking to (only if group messaging not enabled or it's a new individual conversation).
     currentUserId: number;
     title: string;
@@ -74,18 +77,18 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     showKeyboard = false;
     canLoadMore = false;
     loadMoreError = false;
-    messages = [];
+    messages: (AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted)[] = [];
     showDelete = false;
     canDelete = false;
     groupMessagingEnabled: boolean;
     isGroup = false;
-    members: any = {}; // Members that wrote a message, indexed by ID.
+    members: {[id: number]: AddonMessagesConversationMember} = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fa-star';
     favouriteIconSlash = false;
     deleteIcon = 'trash';
     blockIcon = 'close-circle';
     addRemoveIcon = 'person';
-    otherMember: any; // Other member information (individual conversations only).
+    otherMember: AddonMessagesConversationMember; // Other member information (individual conversations only).
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable';
     requestContactSent = false;
     requestContactReceived = false;
@@ -136,10 +139,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Adds a new message to the message list.
      *
-     * @param {any} message Message to be added.
-     * @param {boolean} [keep=true] If set the keep flag or not.
+     * @param message Message to be added.
+     * @param keep If set the keep flag or not.
      */
-    protected addMessage(message: any, keep: boolean = true): void {
+    protected addMessage(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted,
+            keep: boolean = true): void {
+
         /* Create a hash to identify the message. The text of online messages isn't reliable because it can have random data
            like VideoJS ID. Try to use id and fallback to text for offline messages. */
         message.hash = Md5.hashAsciiStr(String(message.id || message.text || '')) + '#' + message.timecreated + '#' +
@@ -156,9 +161,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Remove a message if it shouldn't be in the list anymore.
      *
-     * @param {string} hash Hash of the message to be removed.
+     * @param hash Hash of the message to be removed.
      */
-    protected removeMessage(hash: any): void {
+    protected removeMessage(hash: string): void {
         if (this.keepMessageMap[hash]) {
             // Selected to keep it, clear the flag.
             this.keepMessageMap[hash] = false;
@@ -197,7 +202,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Convenience function to fetch the conversation data.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected fetchData(): Promise<any> {
         let loader;
@@ -261,10 +266,11 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     if (!this.title && this.messages.length) {
                         // Didn't receive the fullname via argument. Try to get it from messages.
                         // It's possible that name cannot be resolved when no messages were yet exchanged.
-                        if (this.messages[0].useridto != this.currentUserId) {
-                            this.title = this.messages[0].usertofullname || '';
+                        const firstMessage = <AddonMessagesGetMessagesMessageFormatted> this.messages[0];
+                        if (firstMessage.useridto != this.currentUserId) {
+                            this.title = firstMessage.usertofullname || '';
                         } else {
-                            this.title = this.messages[0].userfromfullname || '';
+                            this.title = firstMessage.userfromfullname || '';
                         }
                     }
                 });
@@ -300,9 +306,9 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Convenience function to fetch messages.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
-    protected fetchMessages(): Promise<any> {
+    protected fetchMessages(): Promise<void> {
         this.loadMoreError = false;
 
         if (this.messagesBeingSent > 0) {
@@ -341,7 +347,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     return this.getDiscussionMessages(this.pagesLoaded);
                 });
             }
-        }).then((messages) => {
+        }).then((messages: (AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted)[]) => {
             this.loadMessages(messages);
         }).finally(() => {
             this.fetching = false;
@@ -351,9 +357,11 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Format and load a list of messages into the view.
      *
-     * @param {any[]} messages Messages to load.
+     * @param messages Messages to load.
      */
-    protected loadMessages(messages: any[]): void {
+    protected loadMessages(messages: (AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted)[])
+            : void {
+
         if (this.viewDestroyed) {
             return;
         }
@@ -382,7 +390,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.messagesProvider.sortMessages(this.messages);
 
         // Calculate which messages need to display the date or user data.
-        this.messages.forEach((message, index): any => {
+        this.messages.forEach((message, index) => {
             message.showDate = this.showDate(message, this.messages[index - 1]);
             message.showUserData = this.showUserData(message, this.messages[index - 1]);
             message.showTail = this.showTail(message, this.messages[index + 1]);
@@ -406,25 +414,27 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Get the conversation.
      *
-     * @param {number} conversationId Conversation ID.
-     * @param {number} userId User ID.
-     * @return {Promise<boolean>} Promise resolved with a boolean: whether the conversation exists or not.
+     * @param conversationId Conversation ID.
+     * @param userId User ID.
+     * @return Promise resolved with a boolean: whether the conversation exists or not.
      */
     protected getConversation(conversationId: number, userId: number): Promise<boolean> {
-        let promise,
-            fallbackConversation;
+        let promise: Promise<number>,
+            fallbackConversation: AddonMessagesConversationFormatted;
 
         // Try to get the conversationId if we don't have it.
         if (conversationId) {
             promise = Promise.resolve(conversationId);
         } else {
+            let subPromise: Promise<AddonMessagesConversationFormatted>;
+
             if (userId == this.currentUserId && this.messagesProvider.isSelfConversationEnabled()) {
-                promise = this.messagesProvider.getSelfConversation();
+                subPromise = this.messagesProvider.getSelfConversation();
             } else {
-                promise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true);
+                subPromise = this.messagesProvider.getConversationBetweenUsers(userId, undefined, true);
             }
 
-            promise = promise.then((conversation) => {
+            promise = subPromise.then((conversation) => {
                 fallbackConversation = conversation;
 
                 return conversation.id;
@@ -437,14 +447,14 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 // Ignore errors.
             }).then(() => {
                 return this.messagesProvider.getConversation(conversationId, undefined, true);
-            }).catch((error) => {
+            }).catch((error): any => {
                 // Get conversation failed, use the fallback one if we have it.
                 if (fallbackConversation) {
                     return fallbackConversation;
                 }
 
                 return Promise.reject(error);
-            }).then((conversation) => {
+            }).then((conversation: AddonMessagesConversationFormatted) => {
                 this.conversation = conversation;
 
                 if (conversation) {
@@ -491,11 +501,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Get the messages of the conversation. Used if group messaging is supported.
      *
-     * @param {number} pagesToLoad Number of "pages" to load.
-     * @param  {number} [offset=0] Offset for message list.
-     * @return {Promise<any[]>} Promise resolved with the list of messages.
+     * @param pagesToLoad Number of "pages" to load.
+     * @param offset Offset for message list.
+     * @return Promise resolved with the list of messages.
      */
-    protected getConversationMessages(pagesToLoad: number, offset: number = 0): Promise<any[]> {
+    protected getConversationMessages(pagesToLoad: number, offset: number = 0)
+            : Promise<AddonMessagesConversationMessageFormatted[]> {
+
         const excludePending = offset > 0;
 
         return this.messagesProvider.getConversationMessages(this.conversationId, excludePending, offset).then((result) => {
@@ -527,15 +539,15 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Get a discussion. Can load several "pages".
      *
-     * @param  {number}  pagesToLoad          Number of pages to load.
-     * @param  {number}  [lfReceivedUnread=0] Number of unread received messages already fetched, so fetch will be done from this.
-     * @param  {number}  [lfReceivedRead=0]   Number of read received messages already fetched, so fetch will be done from this.
-     * @param  {number}  [lfSentUnread=0]     Number of unread sent messages already fetched, so fetch will be done from this.
-     * @param  {number}  [lfSentRead=0]       Number of read sent messages already fetched, so fetch will be done from this.
-     * @return {Promise<any>}  Resolved when done.
+     * @param pagesToLoad Number of pages to load.
+     * @param lfReceivedUnread Number of unread received messages already fetched, so fetch will be done from this.
+     * @param lfReceivedRead Number of read received messages already fetched, so fetch will be done from this.
+     * @param lfSentUnread Number of unread sent messages already fetched, so fetch will be done from this.
+     * @param lfSentRead Number of read sent messages already fetched, so fetch will be done from this.
+     * @return Resolved when done.
      */
     protected getDiscussionMessages(pagesToLoad: number, lfReceivedUnread: number = 0, lfReceivedRead: number = 0,
-            lfSentUnread: number = 0, lfSentRead: number = 0): Promise<any> {
+            lfSentUnread: number = 0, lfSentRead: number = 0): Promise<AddonMessagesGetMessagesMessageFormatted[]> {
 
         // Only get offline messages if we're loading the first "page".
         const excludePending = lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0;
@@ -547,7 +559,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             pagesToLoad--;
             if (pagesToLoad > 0 && result.canLoadMore) {
                 // More pages to load. Calculate new limit froms.
-                result.messages.forEach((message) => {
+                result.messages.forEach((message: AddonMessagesGetMessagesMessageFormatted) => {
                     if (!message.pending) {
                         if (message.useridfrom == this.userId) {
                             if (message.read) {
@@ -598,7 +610,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 for (const x in this.messages) {
                     const message = this.messages[x];
                     // If an unread message is found, mark all messages as read.
-                    if (message.useridfrom != this.currentUserId && message.read == 0) {
+                    if (message.useridfrom != this.currentUserId &&
+                            (<AddonMessagesGetMessagesMessageFormatted> message).read == 0) {
                         messageUnreadFound = true;
                         break;
                     }
@@ -616,7 +629,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     promise = this.messagesProvider.markAllMessagesRead(this.userId).then(() => {
                         // Mark all messages as read.
                         this.messages.forEach((message) => {
-                            message.read = 1;
+                            (<AddonMessagesGetMessagesMessageFormatted> message).read = 1;
                         });
                     });
                 }
@@ -630,10 +643,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             // Mark each message as read one by one.
             this.messages.forEach((message) => {
                 // If the message is unread, call this.messagesProvider.markMessageRead.
-                if (message.useridfrom != this.currentUserId && message.read == 0) {
+                if (message.useridfrom != this.currentUserId && (<AddonMessagesGetMessagesMessageFormatted> message).read == 0) {
                     promises.push(this.messagesProvider.markMessageRead(message.id).then(() => {
                         readChanged = true;
-                        message.read = 1;
+                        (<AddonMessagesGetMessagesMessageFormatted> message).read = 1;
                     }));
                 }
             });
@@ -703,7 +716,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                     if (!message.pending && message.useridfrom != this.currentUserId) {
                         found++;
                         if (found == this.conversation.unreadcount) {
-                            this.unreadMessageFrom = parseInt(message.id, 10);
+                            this.unreadMessageFrom = Number(message.id);
                             break;
                         }
                     }
@@ -713,13 +726,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             let previousMessageRead = false;
 
             for (const x in this.messages) {
-                const message = this.messages[x];
+                const message = <AddonMessagesGetMessagesMessageFormatted> this.messages[x];
                 if (message.useridfrom != this.currentUserId) {
                     const unreadFrom = message.read == 0 && previousMessageRead;
 
                     if (unreadFrom) {
                         // Save where the label is placed.
-                        this.unreadMessageFrom = parseInt(message.id, 10);
+                        this.unreadMessageFrom = Number(message.id);
                         break;
                     }
 
@@ -755,7 +768,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
     /**
      * Wait until fetching is false.
-     * @return {Promise<void>} Resolved when done.
+     * @return Resolved when done.
      */
     protected waitForFetch(): Promise<void> {
         if (!this.fetching) {
@@ -806,20 +819,23 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Copy message to clipboard.
      *
-     * @param {any} message Message to be copied.
+     * @param message Message to be copied.
      */
-    copyMessage(message: any): void {
-        const text = this.textUtils.decodeHTMLEntities(message.smallmessage || message.text || '');
+    copyMessage(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted): void {
+        const text = this.textUtils.decodeHTMLEntities(
+                (<AddonMessagesGetMessagesMessageFormatted> message).smallmessage || message.text || '');
         this.utils.copyToClipboard(text);
     }
 
     /**
      * Function to delete a message.
      *
-     * @param {any} message  Message object to delete.
-     * @param {number} index Index where the message is to delete it from the view.
+     * @param message Message object to delete.
+     * @param index Index where the message is to delete it from the view.
      */
-    deleteMessage(message: any, index: number): void {
+    deleteMessage(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted, index: number)
+            : void {
+
         const canDeleteAll = this.conversation && this.conversation.candeletemessagesforallusers,
             langKey = message.pending || canDeleteAll || this.isSelf ? 'core.areyousure' :
                     'addon.messages.deletemessageconfirmation',
@@ -857,10 +873,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Function to load previous messages.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Resolved when done.
      */
-    loadPrevious(infiniteComplete?: any): Promise<any> {
+    loadPrevious(infiniteComplete?: any): Promise<void> {
         let infiniteHeight = this.infinite ? this.infinite.getHeight() : 0;
         const scrollHeight = this.domUtils.getScrollHeight(this.content);
 
@@ -959,10 +975,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Sends a message to the server.
      *
-     * @param {string} text Message text.
+     * @param text Message text.
      */
     sendMessage(text: string): void {
-        let message;
+        let message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted;
 
         this.hideUnreadLabel();
 
@@ -970,6 +986,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.scrollBottom = true;
 
         message = {
+            id: null,
             pending: true,
             sending: true,
             useridfrom: this.currentUserId,
@@ -985,7 +1002,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         // If there is an ongoing fetch, wait for it to finish.
         // Otherwise, if a message is sent while fetching it could disappear until the next fetch.
         this.waitForFetch().finally(() => {
-            let promise;
+            let promise: Promise<{sent: boolean, message: any}>;
 
             if (this.conversationId) {
                 promise = this.messagesProvider.sendMessageToConversation(this.conversation, text);
@@ -1046,11 +1063,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * Check date should be shown on message list for the current message.
      * If date has changed from previous to current message it should be shown.
      *
-     * @param {any} message       Current message where to show the date.
-     * @param {any} [prevMessage] Previous message where to compare the date with.
-     * @return {boolean}  If date has changed and should be shown.
+     * @param message Current message where to show the date.
+     * @param prevMessage Previous message where to compare the date with.
+     * @return If date has changed and should be shown.
      */
-    showDate(message: any, prevMessage?: any): boolean {
+    showDate(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted,
+            prevMessage?: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted): boolean {
+
         if (!prevMessage) {
             // First message, show it.
             return true;
@@ -1064,11 +1083,13 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * Check if the user info should be displayed for the current message.
      * User data is only displayed for group conversations if the previous message was from another user.
      *
-     * @param {any} message Current message where to show the user info.
-     * @param {any} [prevMessage] Previous message.
-     * @return {boolean} Whether user data should be shown.
+     * @param message Current message where to show the user info.
+     * @param prevMessage Previous message.
+     * @return Whether user data should be shown.
      */
-    showUserData(message: any, prevMessage?: any): boolean {
+    showUserData(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted,
+            prevMessage?: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted): boolean {
+
         return this.isGroup && message.useridfrom != this.currentUserId && this.members[message.useridfrom] &&
             (!prevMessage || prevMessage.useridfrom != message.useridfrom || message.showDate);
     }
@@ -1076,11 +1097,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Check if a css tail should be shown.
      *
-     * @param {any} message Current message where to show the user info.
-     * @param {any} [nextMessage] Next message.
-     * @return {boolean} Whether user data should be shown.
+     * @param message Current message where to show the user info.
+     * @param nextMessage Next message.
+     * @return Whether user data should be shown.
      */
-    showTail(message: any, nextMessage?: any): boolean {
+    showTail(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted,
+            nextMessage?: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted): boolean {
         return !nextMessage || nextMessage.useridfrom != message.useridfrom || nextMessage.showDate;
     }
 
@@ -1125,7 +1147,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Change the favourite state of the current conversation.
      *
-     * @param {Function} [done] Function to call when done.
+     * @param done Function to call when done.
      */
     changeFavourite(done?: () => void): void {
         this.favouriteIcon = 'spinner';
@@ -1153,7 +1175,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Change the mute state of the current conversation.
      *
-     * @param {Function} [done] Function to call when done.
+     * @param done Function to call when done.
      */
     changeMute(done?: () => void): void {
         this.muteIcon = 'spinner';
@@ -1218,7 +1240,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Displays a confirmation modal to block the user of the individual conversation.
      *
-     * @return {Promise<any>} Promise resolved when user is blocked or dialog is cancelled.
+     * @return Promise resolved when user is blocked or dialog is cancelled.
      */
     blockUser(): Promise<any> {
         if (!this.otherMember) {
@@ -1249,12 +1271,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Delete the conversation.
      *
-     * @param {Function} [done] Function to call when done.
+     * @param done Function to call when done.
      */
     deleteConversation(done?: () => void): void {
         const confirmMessage = 'addon.messages.' + (this.isSelf ? 'deleteallselfconfirm' : 'deleteallconfirm');
 
-        this.domUtils.showConfirm(this.translate.instant(confirmMessage)).then(() => {
+        this.domUtils.showDeleteConfirm(confirmMessage).then(() => {
             this.deleteIcon = 'spinner';
 
             return this.messagesProvider.deleteConversation(this.conversation.id).then(() => {
@@ -1276,7 +1298,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Displays a confirmation modal to unblock the user of the individual conversation.
      *
-     * @return {Promise<any>} Promise resolved when user is unblocked or dialog is cancelled.
+     * @return Promise resolved when user is unblocked or dialog is cancelled.
      */
     unblockUser(): Promise<any> {
         if (!this.otherMember) {
@@ -1307,7 +1329,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Displays a confirmation modal to send a contact request to the other user of the individual conversation.
      *
-     * @return {Promise<any>} Promise resolved when the request is sent or the dialog is cancelled.
+     * @return Promise resolved when the request is sent or the dialog is cancelled.
      */
     createContactRequest(): Promise<any> {
         if (!this.otherMember) {
@@ -1338,7 +1360,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Confirms the contact request of the other user of the individual conversation.
      *
-     * @return {Promise<any>} Promise resolved when the request is confirmed.
+     * @return Promise resolved when the request is confirmed.
      */
     confirmContactRequest(): Promise<any> {
         if (!this.otherMember) {
@@ -1360,7 +1382,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Declines the contact request of the other user of the individual conversation.
      *
-     * @return {Promise<any>} Promise resolved when the request is confirmed.
+     * @return Promise resolved when the request is confirmed.
      */
     declineContactRequest(): Promise<any> {
         if (!this.otherMember) {
@@ -1382,7 +1404,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Displays a confirmation modal to remove the other user of the conversation from contacts.
      *
-     * @return {Promise<any>} Promise resolved when the request is sent or the dialog is cancelled.
+     * @return Promise resolved when the request is sent or the dialog is cancelled.
      */
     removeContact(): Promise<any> {
         if (!this.otherMember) {
@@ -1422,3 +1444,26 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         this.viewDestroyed = true;
     }
 }
+
+/**
+ * Conversation message with some calculated data.
+ */
+type AddonMessagesConversationMessageFormatted = AddonMessagesConversationMessage & {
+    pending?: boolean; // Calculated in the app. Whether the message is pending to be sent.
+    sending?: boolean; // Calculated in the app. Whether the message is being sent right now.
+    hash?: string; // Calculated in the app. A hash to identify the message.
+    showDate?: boolean; // Calculated in the app. Whether to show the date before the message.
+    showUserData?: boolean; // Calculated in the app. Whether to show the user data in the message.
+    showTail?: boolean; // Calculated in the app. Whether to show a "tail" in the message.
+};
+
+/**
+ * Message with some calculated data.
+ */
+type AddonMessagesGetMessagesMessageFormatted = AddonMessagesGetMessagesMessage & {
+    sending?: boolean; // Calculated in the app. Whether the message is being sent right now.
+    hash?: string; // Calculated in the app. A hash to identify the message.
+    showDate?: boolean; // Calculated in the app. Whether to show the date before the message.
+    showUserData?: boolean; // Calculated in the app. Whether to show the user data in the message.
+    showTail?: boolean; // Calculated in the app. Whether to show a "tail" in the message.
+};

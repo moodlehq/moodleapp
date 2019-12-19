@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ export class CoreDbProvider {
      *
      * The database objects are cached statically.
      *
-     * @param {string} name DB name.
-     * @param {boolean} forceNew True if it should always create a new instance.
-     * @return {SQLiteDB} DB.
+     * @param name DB name.
+     * @param forceNew True if it should always create a new instance.
+     * @return DB.
      */
     getDB(name: string, forceNew?: boolean): SQLiteDB {
         if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
@@ -52,8 +52,8 @@ export class CoreDbProvider {
     /**
      * Delete a DB.
      *
-     * @param {string} name DB name.
-     * @return {Promise<any>} Promise resolved when the DB is deleted.
+     * @param name DB name.
+     * @return Promise resolved when the DB is deleted.
      */
     deleteDB(name: string): Promise<any> {
         let promise;

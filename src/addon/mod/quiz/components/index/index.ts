@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,10 +148,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get the quiz data.
      *
-     * @param {boolean} [refresh=false] If it's refreshing content.
-     * @param {boolean} [sync=false] If it should try to sync.
-     * @param {boolean} [showErrors=false] If show errors to the user of hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh If it's refreshing content.
+     * @param sync If it should try to sync.
+     * @param showErrors If show errors to the user of hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
 
@@ -224,18 +224,17 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             });
 
         }).then(() => {
-            // All data obtained, now fill the context menu.
-            this.fillContextMenu(refresh);
-
             // Quiz is ready to be shown, move it to the variable that is displayed.
             this.quiz = this.quizData;
+        }).finally(() => {
+            this.fillContextMenu(refresh);
         });
     }
 
     /**
      * Get the user attempts in the quiz and the result info.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected getAttempts(): Promise<void> {
 
@@ -314,7 +313,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get result info to show.
      *
-     * @return {Promise<void>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected getResultInfo(): Promise<void> {
 
@@ -370,7 +369,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Go to review an attempt that has just been finished.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected goToAutoReview(): Promise<any> {
         // If we go to auto review it means an attempt was finished. Check completion status.
@@ -393,8 +392,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param {any} result Data returned on the sync function.
-     * @return {boolean} If suceed or not.
+     * @param result Data returned on the sync function.
+     * @return If suceed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         if (result.attemptFinished) {
@@ -459,7 +458,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -482,8 +481,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param {any} syncEventData Data receiven on sync observer.
-     * @return {boolean} True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         if (syncEventData.attemptFinished) {
@@ -510,8 +509,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Displays some data based on the current status.
      *
-     * @param {string} status The current status.
-     * @param {string} [previousStatus] The previous status. If not defined, there is no previous status.
+     * @param status The current status.
+     * @param previousStatus The previous status. If not defined, there is no previous status.
      */
     protected showStatus(status: string, previousStatus?: string): void {
         this.showStatusSpinner = status == CoreConstants.DOWNLOADING;
@@ -526,7 +525,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<any> {
         return this.quizSync.syncQuiz(this.quizData, true);
@@ -535,8 +534,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Treat user attempts.
      *
-     * @param {any} attempts The attempts to treat.
-     * @return {Promise<void>} Promise resolved when done.
+     * @param attempts The attempts to treat.
+     * @return Promise resolved when done.
      */
     protected treatAttempts(attempts: any): Promise<any> {
         if (!attempts || !attempts.length) {

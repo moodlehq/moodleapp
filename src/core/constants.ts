@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,6 +11,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+/**
+ * Context levels enumeration.
+ */
+export const enum ContextLevel {
+    SYSTEM = 'system',
+    USER = 'user',
+    COURSECAT = 'coursecat',
+    COURSE = 'course',
+    MODULE = 'module',
+    BLOCK = 'block',
+}
 
 /**
  * Static class to contain all the core constants.
@@ -36,6 +48,7 @@ export class CoreConstants {
     static SETTINGS_REPORT_IN_BACKGROUND = 'CoreSettingsReportInBackground'; // @deprecated since 3.5.0
     static SETTINGS_SEND_ON_ENTER = 'CoreSettingsSendOnEnter';
     static SETTINGS_FONT_SIZE = 'CoreSettingsFontSize';
+    static SETTINGS_COLOR_SCHEME = 'CoreSettingsColorScheme';
     static SETTINGS_ANALYTICS_ENABLED = 'CoreSettingsAnalyticsEnabled';
 
     // WS constants.

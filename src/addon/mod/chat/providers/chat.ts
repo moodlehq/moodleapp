@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
+import { AddonModChatMessageForView, AddonModChatSessionMessageForView } from './helper';
 
 /**
  * Service that provides some features for chats.
@@ -36,12 +38,12 @@ export class AddonModChatProvider {
     /**
      * Get a chat.
      *
-     * @param {number} courseId Course ID.
-     * @param {number} cmId Course module ID.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>} Promise resolved when the chat is retrieved.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the chat is retrieved.
      */
-    getChat(courseId: number, cmId: number, siteId?: string): Promise<any> {
+    getChat(courseId: number, cmId: number, siteId?: string): Promise<AddonModChatChat> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 courseids: [courseId]
@@ -51,7 +53,9 @@ export class AddonModChatProvider {
                 updateFrequency: CoreSite.FREQUENCY_RARELY
             };
 
-            return site.read('mod_chat_get_chats_by_courses', params, preSets).then((response) => {
+            return site.read('mod_chat_get_chats_by_courses', params, preSets)
+                    .then((response: AddonModChatGetChatsByCoursesResult): any => {
+
                 if (response.chats) {
                     const chat = response.chats.find((chat) => chat.coursemodule == cmId);
                     if (chat) {
@@ -67,15 +71,17 @@ export class AddonModChatProvider {
     /**
      * Log the user into a chat room.
      *
-     * @param  {number} chatId Chat instance ID.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param chatId Chat instance ID.
+     * @return Promise resolved when the WS is executed.
      */
-    loginUser(chatId: number): Promise<any> {
+    loginUser(chatId: number): Promise<string> {
         const params = {
             chatid: chatId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_chat_login_user', params).then((response) => {
+        return this.sitesProvider.getCurrentSite().write('mod_chat_login_user', params)
+                .then((response: AddonModChatLoginUserResult): any => {
+
             if (response.chatsid) {
                 return response.chatsid;
             }
@@ -87,10 +93,10 @@ export class AddonModChatProvider {
     /**
      * Report a chat as being viewed.
      *
-     * @param  {number} id Chat instance ID.
-     * @param {string} [name] Name of the chat.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any>}  Promise resolved when the WS call is successful.
+     * @param id Chat instance ID.
+     * @param name Name of the chat.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<any> {
         const params = {
@@ -103,19 +109,21 @@ export class AddonModChatProvider {
     /**
      * Send a message to a chat.
      *
-     * @param  {number} sessionId  Chat sessiond ID.
-     * @param  {string} message    Message text.
-     * @param  {number} beepUserId Beep user ID.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param sessionId Chat sessiond ID.
+     * @param message Message text.
+     * @param beepUserId Beep user ID.
+     * @return Promise resolved when the WS is executed.
      */
-    sendMessage(sessionId: number, message: string, beepUserId: number): Promise<any> {
+    sendMessage(sessionId: string, message: string, beepUserId: number): Promise<number> {
         const params = {
             chatsid: sessionId,
             messagetext: message,
             beepid: beepUserId
         };
 
-        return this.sitesProvider.getCurrentSite().write('mod_chat_send_chat_message', params).then((response) => {
+        return this.sitesProvider.getCurrentSite().write('mod_chat_send_chat_message', params)
+                .then((response: AddonModChatSendChatMessageResult): any => {
+
             if (response.messageid) {
                 return response.messageid;
             }
@@ -127,11 +135,11 @@ export class AddonModChatProvider {
     /**
      * Get the latest messages from a chat session.
      *
-     * @param  {number} sessionId Chat sessiond ID.
-     * @param  {number} lastTime  Last time when messages were retrieved.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param sessionId Chat sessiond ID.
+     * @param lastTime Last time when messages were retrieved.
+     * @return Promise resolved when the WS is executed.
      */
-    getLatestMessages(sessionId: number, lastTime: number): Promise<any> {
+    getLatestMessages(sessionId: string, lastTime: number): Promise<AddonModChatGetChatLatestMessagesResult> {
         const params = {
             chatsid: sessionId,
             chatlasttime: lastTime
@@ -145,12 +153,14 @@ export class AddonModChatProvider {
     /**
      * Get user data for messages since they only have userid.
      *
-     * @param  {any[]}  messages Messages to get the user data for.
-     * @param  {number} courseId ID of the course the messages belong to.
-     * @return {Promise<any>} Promise always resolved with the formatted messages.
+     * @param messages Messages to get the user data for.
+     * @param courseId ID of the course the messages belong to.
+     * @return Promise always resolved with the formatted messages.
      */
-    getMessagesUserData(messages: any[], courseId: number): Promise<any> {
-        const promises = messages.map((message) => {
+    getMessagesUserData(messages: (AddonModChatMessage | AddonModChatSessionMessage)[], courseId: number)
+            : Promise<(AddonModChatMessageForView | AddonModChatSessionMessageForView)[]> {
+
+        const promises = messages.map((message: AddonModChatMessageForView | AddonModChatSessionMessageForView) => {
             return this.userProvider.getProfile(message.userid, courseId, true).then((user) => {
                 message.userfullname = user.fullname;
                 message.userprofileimageurl = user.profileimageurl;
@@ -168,10 +178,10 @@ export class AddonModChatProvider {
     /**
      * Get the actives users of a current chat.
      *
-     * @param  {number} sessionId Chat sessiond ID.
-     * @return {Promise<any>} Promise resolved when the WS is executed.
+     * @param sessionId Chat sessiond ID.
+     * @return Promise resolved when the WS is executed.
      */
-    getChatUsers(sessionId: number): Promise<any> {
+    getChatUsers(sessionId: string): Promise<AddonModChatGetChatUsersResult> {
         const params = {
             chatsid: sessionId
         };
@@ -185,8 +195,8 @@ export class AddonModChatProvider {
     /**
      * Return whether WS for passed sessions are available.
      *
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<boolean>} Promise resolved with a boolean.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with a boolean.
      */
     areSessionsAvailable(siteId?: string): Promise<boolean> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -197,16 +207,17 @@ export class AddonModChatProvider {
     /**
      * Get chat sessions.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @param {boolean} [showAll=false] Whether to include incomplete sessions or not.
-     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of sessions.
+     * @param chatId Chat ID.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param showAll Whether to include incomplete sessions or not.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of sessions.
      * @since 3.5
      */
     getSessions(chatId: number, groupId: number = 0, showAll: boolean = false, ignoreCache: boolean = false, siteId?: string):
-            Promise<any[]> {
+            Promise<AddonModChatSession[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 chatid: chatId,
@@ -222,7 +233,7 @@ export class AddonModChatProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_chat_get_sessions', params, preSets).then((response) => {
+            return site.read('mod_chat_get_sessions', params, preSets).then((response: AddonModChatGetSessionsResult): any => {
                 if (!response || !response.sessions) {
                     return Promise.reject(null);
                 }
@@ -235,17 +246,18 @@ export class AddonModChatProvider {
     /**
      * Get chat session messages.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} sessionStart Session start time.
-     * @param {number} sessionEnd Session end time.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @param {boolean} [ignoreCache=false] True if it should ignore cached data (it will always fail in offline or server down).
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {Promise<any[]>} Promise resolved with the list of messages.
+     * @param chatId Chat ID.
+     * @param sessionStart Session start time.
+     * @param sessionEnd Session end time.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of messages.
      * @since 3.5
      */
     getSessionMessages(chatId: number, sessionStart: number, sessionEnd: number, groupId: number = 0, ignoreCache: boolean = false,
-            siteId?: string): Promise<any[]> {
+            siteId?: string): Promise<AddonModChatSessionMessage[]> {
+
         return this.sitesProvider.getSite(siteId).then((site) => {
             const params = {
                 chatid: chatId,
@@ -262,7 +274,9 @@ export class AddonModChatProvider {
                 preSets.emergencyCache = false;
             }
 
-            return site.read('mod_chat_get_session_messages', params, preSets).then((response) => {
+            return site.read('mod_chat_get_session_messages', params, preSets)
+                    .then((response: AddonModChatGetSessionMessagesResult): any => {
+
                 if (!response || !response.messages) {
                     return Promise.reject(null);
                 }
@@ -275,8 +289,8 @@ export class AddonModChatProvider {
     /**
      * Invalidate chats.
      *
-     * @param {number} courseId Course ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param courseId Course ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateChats(courseId: number): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -287,10 +301,10 @@ export class AddonModChatProvider {
     /**
      * Invalidate chat sessions.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @param {boolean} [showAll=false] Whether to include incomplete sessions or not.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param showAll Whether to include incomplete sessions or not.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateSessions(chatId: number, groupId: number = 0, showAll: boolean = false): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -301,8 +315,8 @@ export class AddonModChatProvider {
     /**
      * Invalidate all chat sessions.
      *
-     * @param {number} chatId Chat ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllSessions(chatId: number): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -313,10 +327,10 @@ export class AddonModChatProvider {
     /**
      * Invalidate chat session messages.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} sessionStart Session start time.
-     * @param {number} [groupId=0] Group ID, 0 means that the function will determine the user group.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @param sessionStart Session start time.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateSessionMessages(chatId: number, sessionStart: number, groupId: number = 0): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -327,8 +341,8 @@ export class AddonModChatProvider {
     /**
      * Invalidate all chat session messages.
      *
-     * @param {number} chatId Chat ID.
-     * @return {Promise<any>} Promise resolved when the data is invalidated.
+     * @param chatId Chat ID.
+     * @return Promise resolved when the data is invalidated.
      */
     invalidateAllSessionMessages(chatId: number): Promise<any> {
         const site = this.sitesProvider.getCurrentSite();
@@ -339,8 +353,8 @@ export class AddonModChatProvider {
     /**
      * Get cache key for chats WS call.
      *
-     * @param {number} courseId Course ID.
-     * @return {string} Cache key.
+     * @param courseId Course ID.
+     * @return Cache key.
      */
     protected getChatsCacheKey(courseId: number): string {
         return  this.ROOT_CACHE_KEY + 'chats:' + courseId;
@@ -349,10 +363,10 @@ export class AddonModChatProvider {
     /**
      * Get cache key for sessions WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} groupId Goup ID, 0 means that the function will determine the user group.
-     * @param {boolean} showAll Whether to include incomplete sessions or not.
-     * @return {string} Cache key.
+     * @param chatId Chat ID.
+     * @param groupId Goup ID, 0 means that the function will determine the user group.
+     * @param showAll Whether to include incomplete sessions or not.
+     * @return Cache key.
      */
     protected getSessionsCacheKey(chatId: number, groupId: number, showAll: boolean): string {
         return  this.getSessionsCacheKeyPrefix(chatId) + groupId + ':' + (showAll ? 1 : 0);
@@ -361,8 +375,8 @@ export class AddonModChatProvider {
     /**
      * Get cache key prefix for sessions WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @return {string} Cache key prefix.
+     * @param chatId Chat ID.
+     * @return Cache key prefix.
      */
     protected getSessionsCacheKeyPrefix(chatId: number): string {
         return  this.ROOT_CACHE_KEY + 'sessions:' + chatId + ':';
@@ -371,10 +385,10 @@ export class AddonModChatProvider {
     /**
      * Get cache key for session messages WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @param {number} sessionStart Session start time.
-     * @param {number} groupId Group ID, 0 means that the function will determine the user group.
-     * @return {string} Cache key.
+     * @param chatId Chat ID.
+     * @param sessionStart Session start time.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @return Cache key.
      */
     protected getSessionMessagesCacheKey(chatId: number, sessionStart: number, groupId: number): string {
         return this.getSessionMessagesCacheKeyPrefix(chatId) + sessionStart + ':' + groupId;
@@ -383,10 +397,159 @@ export class AddonModChatProvider {
     /**
      * Get cache key prefix for session messages WS call.
      *
-     * @param {number} chatId Chat ID.
-     * @return {string} Cache key prefix.
+     * @param chatId Chat ID.
+     * @return Cache key prefix.
      */
     protected getSessionMessagesCacheKeyPrefix(chatId: number): string {
         return this.ROOT_CACHE_KEY + 'sessionsMessages:' + chatId + ':';
     }
 }
+
+/**
+ * Chat returned by mod_chat_get_chats_by_courses.
+ */
+export type AddonModChatChat = {
+    id: number; // Chat id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Chat name.
+    intro: string; // The Chat intro.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    chatmethod?: string; // Chat method (sockets, ajax, header_js).
+    keepdays?: number; // Keep days.
+    studentlogs?: number; // Student logs visible to everyone.
+    chattime?: number; // Chat time.
+    schedule?: number; // Schedule type.
+    timemodified?: number; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: boolean; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+};
+
+/**
+ * Chat user returned by mod_chat_get_chat_users.
+ */
+export type AddonModChatUser = {
+    id: number; // User id.
+    fullname: string; // User full name.
+    profileimageurl: string; // User picture URL.
+};
+
+/**
+ * Meessage returned by mod_chat_get_chat_latest_messages.
+ */
+export type AddonModChatMessage = {
+    id: number; // Message id.
+    userid: number; // User id.
+    system: boolean; // True if is a system message (like user joined).
+    message: string; // Message text.
+    timestamp: number; // Timestamp for the message.
+};
+
+/**
+ * Message with user data.
+ */
+export type AddonModChatMessageWithUserData = AddonModChatMessage & AddonModChatMessageUserData;
+
+/**
+ * Chat session.
+ */
+export type AddonModChatSession = {
+    sessionstart: number; // Session start time.
+    sessionend: number; // Session end time.
+    sessionusers: AddonModChatSessionUser[]; // Session users.
+    iscomplete: boolean; // Whether the session is completed or not.
+};
+
+/**
+ * Chat user returned by mod_chat_get_sessions.
+ */
+export type AddonModChatSessionUser = {
+    userid: number; // User id.
+    messagecount: number; // Number of messages in the session.
+};
+
+/**
+ * Message returned by mod_chat_get_session_messages.
+ */
+export type AddonModChatSessionMessage = {
+    id: number; // The message record id.
+    chatid: number; // The chat id.
+    userid: number; // The user who wrote the message.
+    groupid: number; // The group this message belongs to.
+    issystem: boolean; // Whether is a system message or not.
+    message: string; // The message text.
+    timestamp: number; // The message timestamp (indicates when the message was sent).
+};
+
+/**
+ * Session message with user data.
+ */
+export type AddonModChatSessionMessageWithUserData = AddonModChatSessionMessage & AddonModChatMessageUserData;
+
+/**
+ * Result of WS mod_chat_get_chats_by_courses.
+ */
+export type AddonModChatGetChatsByCoursesResult = {
+    chats: AddonModChatChat[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_chat_users.
+ */
+export type AddonModChatGetChatUsersResult = {
+    users: AddonModChatUser[]; // List of users.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_sessions.
+ */
+export type AddonModChatGetSessionsResult = {
+    sessions: AddonModChatSession[]; // List of sessions.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_session_messages.
+ */
+export type AddonModChatGetSessionMessagesResult = {
+    messages: AddonModChatSessionMessage[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_send_chat_message.
+ */
+export type AddonModChatSendChatMessageResult = {
+    messageid: number; // Message sent id.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_get_chat_latest_messages.
+ */
+export type AddonModChatGetChatLatestMessagesResult = {
+    messages: AddonModChatMessage[]; // List of messages.
+    chatnewlasttime: number; // New last time.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_chat_login_user.
+ */
+export type AddonModChatLoginUserResult = {
+    chatsid: string; // Unique chat session id.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * User data added to messages.
+ */
+type AddonModChatMessageUserData = {
+    userfullname?: string; // Calculated in the app. Full name of the user who wrote the message.
+    userprofileimageurl?: string; // Calculated in the app. Full name of the user who wrote the message.
+};

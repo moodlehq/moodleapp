@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,11 +32,11 @@ export class CoreFormatDatePipe implements PipeTransform {
     /**
      * Format a date.
      *
-     * @param {string|number} timestamp Timestamp to format (in milliseconds). If not defined, use current time.
-     * @param {string} [format] Format to use. It should be a string code to handle i18n (e.g. core.strftimetime).
-     *                          Defaults to strftimedaydatetime.
-     * @param {boolean} [convert] If true, convert the format from PHP to Moment. Set it to false for Moment formats.
-     * @return {string} Formatted date.
+     * @param timestamp Timestamp to format (in milliseconds). If not defined, use current time.
+     * @param format Format to use. It should be a string code to handle i18n (e.g. core.strftimetime).
+     *               Defaults to strftimedaydatetime.
+     * @param convert If true, convert the format from PHP to Moment. Set it to false for Moment formats.
+     * @return Formatted date.
      */
     transform(timestamp: string | number, format?: string, convert?: boolean): string {
         timestamp = timestamp || Date.now();

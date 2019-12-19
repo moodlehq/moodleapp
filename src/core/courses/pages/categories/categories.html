@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-title><core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory.id"></core-format-text></ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content>
@@ -10,10 +10,10 @@
     <core-loading [hideUntil]="categoriesLoaded">
         <ion-item *ngIf="currentCategory" text-wrap>
             <ion-icon name="folder" item-start></ion-icon>
-            <h2><core-format-text [text]="currentCategory.name"></core-format-text></h2>
+            <h2><core-format-text [text]="currentCategory.name" contextLevel="coursecat" [contextInstanceId]="currentCategory.id"></core-format-text></h2>
         </ion-item>
         <ion-item text-wrap *ngIf="currentCategory && currentCategory.description">
-            <core-format-text [text]="currentCategory.description" maxHeight="60"></core-format-text>
+            <core-format-text [text]="currentCategory.description" maxHeight="60" contextLevel="coursecat" [contextInstanceId]="currentCategory.id"></core-format-text>
         </ion-item>
 
         <div *ngIf="categories.length > 0">
@@ -21,7 +21,7 @@
             <section *ngFor="let category of categories">
                 <a ion-item text-wrap (click)="openCategory(category.id)" [title]="category.name">
                     <ion-icon name="folder" item-start></ion-icon>
-                    <h2><core-format-text [text]="category.name"></core-format-text></h2>
+                    <h2><core-format-text [text]="category.name" contextLevel="coursecat" [contextInstanceId]="category.id"></core-format-text></h2>
                     <ion-badge item-end *ngIf="category.coursecount > 0" color="light">{{category.coursecount}}</ion-badge>
                 </a>
             </section>

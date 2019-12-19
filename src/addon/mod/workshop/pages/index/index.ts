@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ export class AddonModWorkshopIndexPage {
     /**
      * Update some data based on the workshop instance.
      *
-     * @param {any} workshop Workshop instance.
+     * @param workshop Workshop instance.
      */
     updateData(workshop: any): void {
         this.title = workshop.name || this.title;

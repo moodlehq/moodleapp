@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ export class CoreGradesCourseComponent {
     /**
      * Fetch all the data required for the view.
      *
-     * @param {boolean} [refresh] Empty events array first.
-     * @return {Promise<any>}     Resolved when done.
+     * @param refresh Empty events array first.
+     * @return Resolved when done.
      */
     fetchData(refresh: boolean = false): Promise<any> {
         return this.gradesProvider.getCourseGradesTable(this.courseId, this.userId).then((table) => {
@@ -78,7 +78,7 @@ export class CoreGradesCourseComponent {
     /**
      * Refresh data.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshGrades(refresher: any): void {
         this.gradesProvider.invalidateCourseGradesData(this.courseId, this.userId).finally(() => {
@@ -90,7 +90,7 @@ export class CoreGradesCourseComponent {
 
     /**
      * Navigate to the grade of the selected item.
-     * @param {number} gradeId  Grade item ID where to navigate.
+     * @param gradeId Grade item ID where to navigate.
      */
     gotoGrade(gradeId: number): void {
         if (gradeId) {

@@ -1,5 +1,5 @@
 
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ export class AddonUserProfileFieldCheckboxHandler implements CoreUserProfileFiel
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -40,11 +40,11 @@ export class AddonUserProfileFieldCheckboxHandler implements CoreUserProfileFiel
     /**
      * Get the data to send for the field based on the input data.
      *
-     * @param  {any}     field          User field to get the data for.
-     * @param  {boolean} signup         True if user is in signup page.
-     * @param  {string}  [registerAuth] Register auth method. E.g. 'email'.
-     * @param  {any}     formValues     Form Values.
-     * @return {CoreUserProfileFieldHandlerData}  Data to send for the field.
+     * @param field User field to get the data for.
+     * @param signup True if user is in signup page.
+     * @param registerAuth Register auth method. E.g. 'email'.
+     * @param formValues Form Values.
+     * @return Data to send for the field.
      */
     getData(field: any, signup: boolean, registerAuth: string, formValues: any): CoreUserProfileFieldHandlerData {
         const name = 'profile_field_' + field.shortname;
@@ -62,8 +62,8 @@ export class AddonUserProfileFieldCheckboxHandler implements CoreUserProfileFiel
      * Return the Component to use to display the user profile field.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector): any | Promise<any> {
         return AddonUserProfileFieldCheckboxComponent;

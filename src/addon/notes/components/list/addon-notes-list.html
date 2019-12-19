@@ -53,9 +53,7 @@
                         <ion-icon name="trash"></ion-icon>
                     </button>
                 </ion-item>
-                <ion-item text-wrap>
-                    <core-format-text [clean]="true" [text]="note.content"></core-format-text>
-                </ion-item>
+                <ion-item text-wrap><core-format-text [text]="note.content" [filter]="false"></core-format-text></ion-item>
             </ion-card>
         </ion-list>
 

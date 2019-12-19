@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
     protected dropZones: any[]; // The drop zones received in the init object of the question.
     protected imgSrc: string; // Background image URL.
     protected destroyed = false;
+    protected textIsRendered = false;
+    protected ddAreaisRendered = false;
 
     constructor(protected loggerProvider: CoreLoggerProvider, injector: Injector, element: ElementRef,
             protected sitesProvider: CoreSitesProvider, protected urlUtils: CoreUrlUtilsProvider,
@@ -102,9 +104,29 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
     }
 
     /**
+     * The question ddArea has been rendered.
+     */
+    ddAreaRendered(): void {
+        this.ddAreaisRendered = true;
+        if (this.textIsRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
+     * The question text has been rendered.
+     */
+    textRendered(): void {
+        this.textIsRendered = true;
+        if (this.ddAreaisRendered) {
+            this.questionRendered();
+        }
+    }
+
+    /**
      * The question has been rendered.
      */
-    questionRendered(): void {
+    protected questionRendered(): void {
         if (!this.destroyed) {
             // Download background image (3.6+ sites).
             let promise = null;

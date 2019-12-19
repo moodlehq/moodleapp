@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return {boolean|Promise<boolean>} True or promise resolved with true if enabled.
+     * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
         return true;
@@ -42,9 +42,9 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * Return the Component to use to display the question.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @param {any} question The question to render.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @param question The question to render.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(injector: Injector, question: any): any | Promise<any> {
         // There is no default component for questions.
@@ -54,9 +54,9 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * Return the name of the behaviour to use for the question.
      * If the question should use the default behaviour you shouldn't implement this function.
      *
-     * @param {any} question The question.
-     * @param {string} behaviour The default behaviour.
-     * @return {string} The behaviour to use.
+     * @param question The question.
+     * @param behaviour The default behaviour.
+     * @return The behaviour to use.
      */
     getBehaviour(question: any, behaviour: string): string {
         return behaviour;
@@ -66,8 +66,8 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * Check if a question can be submitted.
      * If a question cannot be submitted it should return a message explaining why (translated or not).
      *
-     * @param {any} question The question.
-     * @return {string} Prevent submit message. Undefined or empty if can be submitted.
+     * @param question The question.
+     * @return Prevent submit message. Undefined or empty if can be submitted.
      */
     getPreventSubmitMessage(question: any): string {
         // Never prevent by default.
@@ -77,9 +77,9 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
     /**
      * Check if a response is complete.
      *
-     * @param {any} question The question.
-     * @param {any} answers Object with the question answers (without prefix).
-     * @return {number} 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @param question The question.
+     * @param answers Object with the question answers (without prefix).
+     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any): number {
         return -1;
@@ -89,9 +89,9 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * Check if a student has provided enough of an answer for the question to be graded automatically,
      * or whether it must be considered aborted.
      *
-     * @param {any} question The question.
-     * @param {any} answers Object with the question answers (without prefix).
-     * @return {number} 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @param question The question.
+     * @param answers Object with the question answers (without prefix).
+     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse(question: any, answers: any): number {
         return -1;
@@ -100,10 +100,10 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
     /**
      * Check if two responses are the same.
      *
-     * @param {any} question Question.
-     * @param {any} prevAnswers Object with the previous question answers.
-     * @param {any} newAnswers Object with the new question answers.
-     * @return {boolean} Whether they're the same.
+     * @param question Question.
+     * @param prevAnswers Object with the previous question answers.
+     * @param newAnswers Object with the new question answers.
+     * @return Whether they're the same.
      */
     isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
         return false;
@@ -112,11 +112,11 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
     /**
      * Prepare and add to answers the data to send to server based in the input. Return promise if async.
      *
-     * @param {any} question Question.
-     * @param {any} answers The answers retrieved from the form. Prepared answers must be stored in this object.
-     * @param {boolean} [offline] Whether the data should be saved in offline.
-     * @param {string} [siteId] Site ID. If not defined, current site.
-     * @return {void|Promise<any>} Return a promise resolved when done if async, void if sync.
+     * @param question Question.
+     * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param offline Whether the data should be saved in offline.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Return a promise resolved when done if async, void if sync.
      */
     prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
         // Nothing to do.
@@ -126,9 +126,9 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * Validate if an offline sequencecheck is valid compared with the online one.
      * This function only needs to be implemented if a specific compare is required.
      *
-     * @param {any} question The question.
-     * @param {string} offlineSequenceCheck Sequence check stored in offline.
-     * @return {boolean} Whether sequencecheck is valid.
+     * @param question The question.
+     * @param offlineSequenceCheck Sequence check stored in offline.
+     * @return Whether sequencecheck is valid.
      */
     validateSequenceCheck(question: any, offlineSequenceCheck: string): boolean {
         return question.sequencecheck == offlineSequenceCheck;

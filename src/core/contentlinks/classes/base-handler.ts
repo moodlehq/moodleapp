@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,34 +23,29 @@ import { CoreContentLinksHandler, CoreContentLinksAction } from '../providers/de
 export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
     /**
      * A name to identify the handler.
-     * @type {string}
      */
     name = 'CoreContentLinksHandlerBase';
 
     /**
      * Handler's priority. The highest priority is treated first.
-     * @type {number}
      */
     priority = 0;
 
     /**
      * Whether the isEnabled function should be called for all the users in a site. It should be true only if the isEnabled call
      * can return different values for different users in same site.
-     * @type {boolean}
      */
     checkAllUsers = false;
 
     /**
      * Name of the feature this handler is related to.
      * It will be used to check if the feature is disabled (@see CoreSite.isFeatureDisabled).
-     * @type {string}
      */
     featureName = '';
 
     /**
      * A pattern to use to detect if the handler handles a URL and to get its site URL. Required if "handles" and
      * "getSiteUrl" functions aren't overridden.
-     * @type {RexExp}
      */
     pattern?: RegExp;
 
@@ -61,11 +56,11 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
     /**
      * Get the list of actions for a link (url).
      *
-     * @param {string[]} siteIds List of sites the URL belongs to.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {CoreContentLinksAction[]|Promise<CoreContentLinksAction[]>} List of (or promise resolved with list of) actions.
+     * @param siteIds List of sites the URL belongs to.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return List of (or promise resolved with list of) actions.
      */
     getActions(siteIds: string[], url: string, params: any, courseId?: number):
             CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
@@ -75,8 +70,8 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
     /**
      * Check if a URL is handled by this handler.
      *
-     * @param {string} url The URL to check.
-     * @return {boolean} Whether the URL is handled by this handler
+     * @param url The URL to check.
+     * @return Whether the URL is handled by this handler
      */
     handles(url: string): boolean {
         return this.pattern && url.search(this.pattern) >= 0;
@@ -85,8 +80,8 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
     /**
      * If the URL is handled by this handler, return the site URL.
      *
-     * @param {string} url The URL to check.
-     * @return {string} Site URL if it is handled, undefined otherwise.
+     * @param url The URL to check.
+     * @return Site URL if it is handled, undefined otherwise.
      */
     getSiteUrl(url: string): string {
         if (this.pattern) {
@@ -101,11 +96,11 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * Check if the handler is enabled for a certain site (site + user) and a URL.
      * If not defined, defaults to true.
      *
-     * @param {string} siteId The site ID.
-     * @param {string} url The URL to treat.
-     * @param {any} params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param {number} [courseId] Course ID related to the URL. Optional but recommended.
-     * @return {boolean|Promise<boolean>} Whether the handler is enabled for the URL and site.
+     * @param siteId The site ID.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string, url: string, params: any, courseId?: number): boolean | Promise<boolean> {
         return true;

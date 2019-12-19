@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,19 +32,16 @@ import { SQLiteDB } from '@classes/sqlitedb';
 export interface CoreUpdateManagerMigrateTable {
     /**
      * Current name of the store/table.
-     * @type {string}
      */
     name: string;
 
     /**
      * New name of the table. If not defined, "name" will be used.
-     * @type {string}
      */
     newName?: string;
 
     /**
      * An object to rename and convert some fields of the table/store.
-     * @type {object}
      */
     fields?: {
         name: string, // Field name in the old app.
@@ -77,8 +74,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     /**
      * Tables to migrate from app DB ('MoodleMobile'). Include all the core ones to decrease the dependencies.
-     *
-     * @type {CoreUpdateManagerMigrateTable[]}
      */
     protected appDBTables: CoreUpdateManagerMigrateTable[] = [
         {
@@ -177,8 +172,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     /**
      * Tables to migrate from each site DB. Include all the core ones to decrease the dependencies.
-     *
-     * @type {CoreUpdateManagerMigrateTable[]}
      */
     protected siteDBTables: CoreUpdateManagerMigrateTable[] = [
         {
@@ -331,7 +324,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      * Check if the app has been updated and performs the needed processes.
      * This function shouldn't be used outside of core.
      *
-     * @return {Promise<any>} Promise resolved when the update process finishes.
+     * @return Promise resolved when the update process finishes.
      */
     load(): Promise<any> {
         const promises = [],
@@ -379,7 +372,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Register several app tables to be migrated to the new schema.
      *
-     * @param {CoreUpdateManagerMigrateTable[]} tables The tables to migrate.
+     * @param tables The tables to migrate.
      */
     registerAppTablesMigration(tables: CoreUpdateManagerMigrateTable[]): void {
         tables.forEach((table) => {
@@ -390,7 +383,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Register an app table to be migrated to the new schema.
      *
-     * @param {CoreUpdateManagerMigrateTable} table The table to migrate.
+     * @param table The table to migrate.
      */
     registerAppTableMigration(table: CoreUpdateManagerMigrateTable): void {
         this.appDBTables.push(table);
@@ -399,7 +392,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Register several site tables to be migrated to the new schema.
      *
-     * @param {CoreUpdateManagerMigrateTable[]} tables The tables to migrate.
+     * @param tables The tables to migrate.
      */
     registerSiteTablesMigration(tables: CoreUpdateManagerMigrateTable[]): void {
         tables.forEach((table) => {
@@ -410,7 +403,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Register a site table to be migrated to the new schema.
      *
-     * @param {CoreUpdateManagerMigrateTable} table The table to migrate.
+     * @param table The table to migrate.
      */
     registerSiteTableMigration(table: CoreUpdateManagerMigrateTable): void {
         this.siteDBTables.push(table);
@@ -419,8 +412,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Register a migration of component name for local notifications.
      *
-     * @param {string} oldName The old name.
-     * @param {string} newName The new name.
+     * @param oldName The old name.
+     * @param newName The new name.
      */
     registerLocalNotifComponentMigration(oldName: string, newName: string): void {
         this.localNotificationsComponentsMigrate[oldName] = newName;
@@ -429,7 +422,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Migrate all DBs and tables from the old format to SQLite.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected migrateAllDBs(): Promise<any> {
         if (!(<any> window).ydn) {
@@ -455,7 +448,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Migrate the app DB.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected migrateAppDB(): Promise<any> {
         const oldDb = new (<any> window).ydn.db.Storage('MoodleMobile'),
@@ -467,8 +460,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Migrate the DB of a certain site.
      *
-     * @param {string} siteId The site ID.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param siteId The site ID.
+     * @return Promise resolved when done.
      */
     protected migrateSiteDB(siteId: string): Promise<any> {
         // Get the site DB.
@@ -482,10 +475,10 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Migrate all the tables of a certain DB to the SQLite DB.
      *
-     * @param {any} oldDb The old DB (created using ydn-db).
-     * @param {SQLiteDB} newDb The new DB.
-     * @param {CoreUpdateManagerMigrateTable[]} tables The tables to migrate.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param oldDb The old DB (created using ydn-db).
+     * @param newDb The new DB.
+     * @param tables The tables to migrate.
+     * @return Promise resolved when done.
      */
     protected migrateDB(oldDb: any, newDb: SQLiteDB, tables: CoreUpdateManagerMigrateTable[]): Promise<any> {
         if (!oldDb || !newDb) {
@@ -557,7 +550,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Migrates files filling extensions.
      *
-     * @return {Promise<any>} Promise resolved when the site migration is finished.
+     * @return Promise resolved when the site migration is finished.
      */
     protected migrateFileExtensions(): Promise<any> {
         return this.sitesProvider.getSitesIds().then((sites) => {
@@ -574,7 +567,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Migrate local notifications components from the old nomenclature to the new one.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected migrateLocalNotificationsComponents(): Promise<any> {
         if (!this.notifProvider.isAvailable()) {
@@ -599,7 +592,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      * Calendar default notification time is configurable from version 3.2.1, and a new option "Default" is added.
      * All events that were configured to use the fixed default time should now be configured to use "Default" option.
      *
-     * @return {Promise<any>} Promise resolved when the events are configured.
+     * @return Promise resolved when the events are configured.
      */
     protected setCalendarDefaultNotifTime(): Promise<any> {
         if (!this.notifProvider.isAvailable()) {
@@ -643,7 +636,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      * In version 3.2.1 we want the site config to be stored in each site if available.
      * Since it can be slow, we'll only block retrieving the config of current site, the rest will be in background.
      *
-     * @return {Promise<any>} Promise resolved when the config is loaded for the current site (if any).
+     * @return Promise resolved when the config is loaded for the current site (if any).
      */
     protected setSitesConfig(): Promise<any> {
         return this.sitesProvider.getSitesIds().then((siteIds) => {
@@ -675,8 +668,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Store the config of a site.
      *
-     * @param {String} siteId Site ID.
-     * @return {Promise<any>} Promise resolved when the config is loaded for the site.
+     * @param siteId Site ID.
+     * @return Promise resolved when the config is loaded for the site.
      */
     protected setSiteConfig(siteId: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -698,7 +691,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     /**
      * Logout from legacy sites.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected logoutLegacySites(): Promise<any> {
         return this.sitesProvider.getSitesIds().then((siteIds) => {

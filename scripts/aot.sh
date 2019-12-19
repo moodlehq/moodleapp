@@ -51,7 +51,7 @@ if [ ! -z $GIT_ORG ] && [ ! -z $GIT_TOKEN ] ; then
 
     git checkout $TRAVIS_BRANCH
 
-    rm -Rf assets build index.html templates www destkop
+    rm -Rf assets build index.html templates www destkop lib
 
     if [ $TRAVIS_BRANCH == 'desktop' ] ; then
         cp -Rf ../$gitfolder/desktop ./

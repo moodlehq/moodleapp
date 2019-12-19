@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ export class CoreNoTagsPipe implements PipeTransform {
     /**
      * Takes a text and removes HTML tags.
      *
-     * @param {string} text The text to treat.
-     * @return {string} Treated text.
+     * @param text The text to treat.
+     * @return Treated text.
      */
     transform(text: string): string {
         return text.replace(/(<([^>]+)>)/ig, '');

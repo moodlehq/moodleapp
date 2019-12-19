@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import { CoreSitesProvider } from '@providers/sites';
 export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHandler {
     /**
      * The name of the assessment strategy. E.g. 'accumulative'.
-     * @type {string}
      */
     strategyName: string;
 
@@ -32,35 +31,35 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
      * Return the Component to render the plugin.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param {Injector} injector Injector.
-     * @return {any|Promise<any>} The component (or promise resolved with component) to use, undefined if not found.
+     * @param injector Injector.
+     * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent?(injector: Injector): any | Promise<any>;
 
     /**
      * Prepare original values to be shown and compared.
      *
-     * @param  {any}    form       Original data of the form.
-     * @param  {number} workshopId WorkShop Id
-     * @return {Promise<any[]>}    Promise resolved with original values sorted.
+     * @param form Original data of the form.
+     * @param workshopId WorkShop Id
+     * @return Promise resolved with original values sorted.
      */
      getOriginalValues?(form: any, workshopId: number): Promise<any[]>;
 
     /**
      * Check if the assessment data has changed for a certain submission and workshop for a this strategy plugin.
      *
-     * @param  {any[]} originalValues Original values of the form.
-     * @param  {any[]} currentValues  Current values of the form.
-     * @return {boolean}              True if data has changed, false otherwise.
+     * @param originalValues Original values of the form.
+     * @param currentValues Current values of the form.
+     * @return True if data has changed, false otherwise.
      */
     hasDataChanged?(originalValues: any[], currentValues: any[]): boolean;
 
     /**
      * Prepare assessment data to be sent to the server depending on the strategy selected.
      *
-     * @param  {any{}} currentValues Current values of the form.
-     * @param  {any}   form          Assessment form data.
-     * @return {Promise<any>}        Promise resolved with the data to be sent. Or rejected with the input errors object.
+     * @param currentValues Current values of the form.
+     * @param form Assessment form data.
+     * @return Promise resolved with the data to be sent. Or rejected with the input errors object.
      */
     prepareAssessmentData(currentValues: any[], form: any): Promise<any>;
 }
@@ -82,8 +81,8 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
     /**
      * Check if an assessment strategy plugin is supported.
      *
-     * @param  {string} workshopStrategy Assessment strategy name.
-     * @return {boolean}                 True if supported, false otherwise.
+     * @param workshopStrategy Assessment strategy name.
+     * @return True if supported, false otherwise.
      */
     isPluginSupported(workshopStrategy: string): boolean {
         return this.hasHandler(workshopStrategy, true);
@@ -92,9 +91,9 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
     /**
      * Get the directive to use for a certain assessment strategy plugin.
      *
-     * @param {Injector} injector Injector.
-     * @param  {string} workshopStrategy Assessment strategy name.
-     * @return {any}                     The component, undefined if not found.
+     * @param injector Injector.
+     * @param workshopStrategy Assessment strategy name.
+     * @return The component, undefined if not found.
      */
     getComponentForPlugin(injector: Injector, workshopStrategy: string): Promise<any> {
         return this.executeFunctionOnEnabled(workshopStrategy, 'getComponent', [injector]);
@@ -103,10 +102,10 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
     /**
      * Prepare original values to be shown and compared depending on the strategy selected.
      *
-     * @param  {string} workshopStrategy Workshop strategy.
-     * @param  {any}    form             Original data of the form.
-     * @param  {number} workshopId       Workshop ID.
-     * @return {Promise<any[]>}          Resolved with original values sorted.
+     * @param workshopStrategy Workshop strategy.
+     * @param form Original data of the form.
+     * @param workshopId Workshop ID.
+     * @return Resolved with original values sorted.
      */
     getOriginalValues(workshopStrategy: string, form: any, workshopId: number): Promise<any[]> {
         return Promise.resolve(this.executeFunctionOnEnabled(workshopStrategy, 'getOriginalValues', [form, workshopId]) || []);
@@ -115,10 +114,10 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
     /**
      * Check if the assessment data has changed for a certain submission and workshop for a this strategy plugin.
      *
-     * @param  {any}   workshop       Workshop.
-     * @param  {any[]} originalValues Original values of the form.
-     * @param  {any[]} currentValues  Current values of the form.
-     * @return {boolean}              True if data has changed, false otherwise.
+     * @param workshop Workshop.
+     * @param originalValues Original values of the form.
+     * @param currentValues Current values of the form.
+     * @return True if data has changed, false otherwise.
      */
     hasDataChanged(workshop: any, originalValues: any[], currentValues: any[]): boolean {
         return this.executeFunctionOnEnabled(workshop.strategy, 'hasDataChanged', [originalValues, currentValues]) || false;
@@ -127,10 +126,10 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
     /**
      * Prepare assessment data to be sent to the server depending on the strategy selected.
      *
-     * @param  {string} workshopStrategy Workshop strategy to follow.
-     * @param  {any{}}  currentValues    Current values of the form.
-     * @param  {any}    form             Assessment form data.
-     * @return {Promise<any>}            Promise resolved with the data to be sent. Or rejected with the input errors object.
+     * @param workshopStrategy Workshop strategy to follow.
+     * @param currentValues Current values of the form.
+     * @param form Assessment form data.
+     * @return Promise resolved with the data to be sent. Or rejected with the input errors object.
      */
     prepareAssessmentData(workshopStrategy: string, currentValues: any, form: any): Promise<any> {
         return Promise.resolve(this.executeFunctionOnEnabled(workshopStrategy, 'prepareAssessmentData', [currentValues, form]));

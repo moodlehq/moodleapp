@@ -13,7 +13,7 @@ var gulp = require('gulp'),
     File = gutil.File,
     exec = require('child_process').exec,
     license = '' +
-        '// (C) Copyright 2015 Martin Dougiamas\n' +
+        '// (C) Copyright 2015 Moodle Pty Ltd.\n' +
         '//\n' +
         '// Licensed under the Apache License, Version 2.0 (the "License");\n' +
         '// you may not use this file except in compliance with the License.\n' +

@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ export class CoreLinkDirective implements OnInit {
     /**
      * Convenience function to correctly navigate, open file or url in the browser.
      *
-     * @param {string} href HREF to be opened.
+     * @param href HREF to be opened.
      */
     protected navigate(href: string): void {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';

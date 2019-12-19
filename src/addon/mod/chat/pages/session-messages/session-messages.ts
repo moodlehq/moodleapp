@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModChatProvider } from '../../providers/chat';
-import * as moment from 'moment';
+import { AddonModChatHelperProvider, AddonModChatSessionMessageForView } from '../../providers/helper';
 
 /**
  * Page that displays list of chat session messages.
@@ -28,20 +30,26 @@ import * as moment from 'moment';
 })
 export class AddonModChatSessionMessagesPage {
 
+    currentUserId: number;
+    cmId: number;
+    messages: AddonModChatSessionMessageForView[] = [];
+    loaded = false;
+
     protected courseId: number;
     protected chatId: number;
     protected sessionStart: number;
     protected sessionEnd: number;
     protected groupId: number;
-    protected loaded = false;
-    protected messages = [];
 
-    constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private chatProvider: AddonModChatProvider) {
+    constructor(navParams: NavParams, private domUtils: CoreDomUtilsProvider, private chatProvider: AddonModChatProvider,
+        sitesProvider: CoreSitesProvider, private chatHelper: AddonModChatHelperProvider, private userProvider: CoreUserProvider) {
         this.courseId = navParams.get('courseId');
         this.chatId = navParams.get('chatId');
         this.groupId = navParams.get('groupId');
         this.sessionStart = navParams.get('sessionStart');
         this.sessionEnd = navParams.get('sessionEnd');
+        this.cmId = navParams.get('cmId');
+        this.currentUserId = sitesProvider.getCurrentSiteUserId();
 
         this.fetchMessages();
     }
@@ -49,13 +57,31 @@ export class AddonModChatSessionMessagesPage {
     /**
      * Fetch session messages.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchMessages(): Promise<any> {
         return this.chatProvider.getSessionMessages(this.chatId, this.sessionStart, this.sessionEnd, this.groupId)
                 .then((messages) => {
             return this.chatProvider.getMessagesUserData(messages, this.courseId).then((messages) => {
-                this.messages = messages;
+                this.messages = <AddonModChatSessionMessageForView[]> messages;
+
+                if (messages.length) {
+                    // Calculate which messages need to display the date or user data.
+                    for (let index = 0 ; index < this.messages.length; index++) {
+                        const message = this.messages[index];
+                        const prevMessage = index > 0 ? this.messages[index - 1] : null;
+
+                        this.chatHelper.formatMessage(this.currentUserId, message, prevMessage);
+
+                        if (message.beep && message.beep != this.currentUserId + '') {
+                            this.getUserFullname(message.beep).then((fullname) => {
+                                message.beepWho = fullname;
+                            });
+                        }
+                    }
+
+                    this.messages[this.messages.length - 1].showTail = true;
+                }
             });
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
@@ -65,9 +91,28 @@ export class AddonModChatSessionMessagesPage {
     }
 
     /**
+     * Get the user fullname for a beep.
+     *
+     * @param  id User Id before parsing.
+     * @return User fullname.
+     */
+    protected getUserFullname(id: string): Promise<string> {
+        if (isNaN(parseInt(id, 10))) {
+            return Promise.resolve(id);
+        }
+
+        return this.userProvider.getProfile(parseInt(id, 10), this.courseId, true).then((user) => {
+            return user.fullname;
+        }).catch(() => {
+            // Error getting profile.
+            return  id;
+        });
+    }
+
+    /**
      * Refresh session messages.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshMessages(refresher: any): void {
         this.chatProvider.invalidateSessionMessages(this.chatId, this.sessionStart, this.groupId).finally(() => {
@@ -77,19 +122,4 @@ export class AddonModChatSessionMessagesPage {
         });
     }
 
-   /**
-    * Check if the date should be displayed between messages (when the day changes at midnight for example).
-    *
-    * @param  {any} message     New message object.
-    * @param  {any} prevMessage Previous message object.
-    * @return {boolean} True if messages are from diferent days, false othetwise.
-    */
-   showDate(message: any, prevMessage: any): boolean {
-       if (!prevMessage) {
-           return true;
-       }
-
-       // Check if day has changed.
-       return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
-   }
 }

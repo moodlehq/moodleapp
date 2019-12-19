@@ -12,7 +12,7 @@
     <core-loading [hideUntil]="usersLoaded">
         <ion-item text-wrap *ngFor="let user of users" [class.addon-mod-chat-user]="currentUserId != user.id && isOnline">
             <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
-            <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
+            <h2>{{ user.fullname }}</h2>
             <ng-container *ngIf="currentUserId != user.id && isOnline">
                 <button ion-button clear icon-left (click)="talkTo(user)">
                     <ion-icon name="chatboxes"></ion-icon>

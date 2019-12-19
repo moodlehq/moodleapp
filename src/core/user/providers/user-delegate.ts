@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import { Subject, BehaviorSubject } from 'rxjs';
 export interface CoreUserProfileHandler extends CoreDelegateHandler {
     /**
      * The highest priority is displayed first.
-     * @type {number}
      */
     priority: number;
 
@@ -38,25 +37,24 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * - TYPE_NEW_PAGE: will be displayed as a list of items. Should have icon. Spinner not used.
      *     Default value if none is specified.
      * - TYPE_ACTION: will be displayed as a button and should not redirect to any state. Spinner use is recommended.
-     * @type {string}
      */
     type: string;
 
     /**
      * Whether or not the handler is enabled for a user.
-     * @param  {any}     user       User object.
-     * @param  {number}  courseId   Course ID where to show.
-     * @param  {any}     [navOptions] Navigation options for the course.
-     * @param  {any}     [admOptions] Admin options for the course.
-     * @return {boolean|Promise<boolean>}            Whether or not the handler is enabled for a user.
+     * @param user User object.
+     * @param courseId Course ID where to show.
+     * @param navOptions Navigation options for the course.
+     * @param admOptions Admin options for the course.
+     * @return Whether or not the handler is enabled for a user.
      */
     isEnabledForUser(user: any, courseId: number, navOptions?: any, admOptions?: any): boolean | Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.
-     * @param  {any}     user       User object.
-     * @param  {number}  courseId   Course ID where to show.
-     * @return {CoreUserProfileHandlerData}    Data to be shown.
+     * @param user User object.
+     * @param courseId Course ID where to show.
+     * @return Data to be shown.
      */
     getDisplayData(user: any, courseId: number): CoreUserProfileHandlerData;
 }
@@ -67,41 +65,36 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
 export interface CoreUserProfileHandlerData {
     /**
      * Title to display.
-     * @type {string}
      */
     title: string;
 
     /**
      * Name of the icon to display. Mandatory for TYPE_COMMUNICATION.
-     * @type {string}
      */
     icon?: string;
 
     /**
      * Additional class to add to the HTML.
-     * @type {string}
      */
     class?: string;
 
     /**
      * If enabled, element will be hidden. Only for TYPE_NEW_PAGE and TYPE_ACTION.
-     * @type {boolean}
      */
     hidden?: boolean;
 
     /**
      * If enabled will show an spinner. Only for TYPE_ACTION.
-     * @type {boolean}
      */
     spinner?: boolean;
 
     /**
      * Action to do when clicked.
      *
-     * @param {Event} event Click event.
-     * @param {NavController} Nav controller to use to navigate.
-     * @param {any} user User object.
-     * @param {number} [courseId] Course ID being viewed. If not defined, site context.
+     * @param event Click event.
+     * @param Nav controller to use to navigate.
+     * @param user User object.
+     * @param courseId Course ID being viewed. If not defined, site context.
      */
     action?(event: Event, navCtrl: NavController, user: any, courseId?: number): void;
 }
@@ -112,25 +105,21 @@ export interface CoreUserProfileHandlerData {
 export interface CoreUserProfileHandlerToDisplay {
     /**
      * Name of the handler.
-     * @type {string}
      */
     name?: string;
 
     /**
      * Data to display.
-     * @type {CoreUserProfileHandlerData}
      */
     data: CoreUserProfileHandlerData;
 
     /**
      * The highest priority is displayed first.
-     * @type {number}
      */
     priority?: number;
 
     /**
      * The type of the handler. See CoreUserProfileHandler.
-     * @type {string}
      */
     type: string;
 }
@@ -143,23 +132,19 @@ export interface CoreUserProfileHandlerToDisplay {
 export class CoreUserDelegate extends CoreDelegate {
     /**
      * User profile handler type for communication.
-     * @type {string}
      */
     static TYPE_COMMUNICATION = 'communication';
     /**
      * User profile handler type for new page.
-     * @type {string}
      */
     static TYPE_NEW_PAGE = 'newpage';
     /**
      * User profile handler type for actions.
-     * @type {string}
      */
     static TYPE_ACTION = 'action';
 
     /**
      * Update handler information event.
-     * @type {string}
      */
     static UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
 
@@ -198,7 +183,7 @@ export class CoreUserDelegate extends CoreDelegate {
     /**
      * Check if handlers are loaded.
      *
-     * @return {boolean} True if handlers are loaded, false otherwise.
+     * @return True if handlers are loaded, false otherwise.
      */
     areHandlersLoaded(userId: number): boolean {
         return this.userHandlers[userId] && this.userHandlers[userId].loaded;
@@ -207,7 +192,7 @@ export class CoreUserDelegate extends CoreDelegate {
     /**
      * Clear current user handlers.
      *
-     * @param {number} userId The user to clear.
+     * @param userId The user to clear.
      */
     clearUserHandlers(userId: number): void {
         const userData = this.userHandlers[userId];
@@ -222,9 +207,9 @@ export class CoreUserDelegate extends CoreDelegate {
     /**
      * Get the profile handlers for a user.
      *
-     * @param {any} user The user object.
-     * @param {number} courseId The course ID.
-     * @return {Subject<CoreUserProfileHandlerToDisplay[]>} Resolved with the handlers.
+     * @param user The user object.
+     * @param courseId The course ID.
+     * @return Resolved with the handlers.
      */
     getProfileHandlersFor(user: any, courseId: number): Subject<CoreUserProfileHandlerToDisplay[]> {
         let promise,

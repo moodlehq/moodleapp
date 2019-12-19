@@ -1,65 +1,32 @@
 ion-app.app-root page-core-login-reconnect {
-    .scroll-content {
-        background: $core-login-page-background-color;
-    }
-
-    img {
-        max-width: 100%;
-    }
-
-    img.login-logo {
-        width: 90%;
-        max-width: 300px;
-    }
-
     .box {
-        padding: 16px;
-        margin: 8px;
-        background: $core-login-box-background-color;
-        border: 1px solid $core-login-box-background-border;
-        color: $core-login-box-text-color;
-
         .core-login-form .item {
             background-color: $core-login-item-background-color;
-            @include padding-horizontal(0);
+            @include darkmode() {
+                background-color: $core-dark-login-item-background-color;
+            }
         }
 
         .core-login-form .item-inner {
             background-color: $core-login-item-inner-background-color;
-            @include padding-horizontal(0);
-        }
-    }
-
-    .core-sitename, .core-siteurl {
-        @if $core-fixed-url { display: none; }
-    }
-
-    @if $core-login-button-outline {
-        .button-md.button-default-md, .button-ios.button-default-ios {
-            @extend .button-md-light;
-        }
-    }
-
-    @if $core-login-loading-color {
-        .core-loading-container {
-            color: $core-login-loading-color;
-
-            .spinner circle, .spinner line {
-                stroke: $core-login-loading-color;
+            @include darkmode() {
+                background-color: $core-dark-login-item-inner-background-color;
             }
         }
     }
 
-    .list .core-username {
-        &.item {
-            @include padding-horizontal(0);
-        }
-        .item-heading {
-            margin-top: 0;
-        }
+    form .core-username.item p {
+        @include padding-horizontal(8px);
+        font-size: 16px;
+    }
+    form .item:first-child {
+        margin-bottom: 20px;
+    }
 
-        .item-inner {
-            @include padding(null, null, null, 8px);
+    ion-col {
+        @include padding-horizontal(10px !important, 0);
+        &:first-child {
+            @include padding-horizontal(0 !important);
         }
     }
 

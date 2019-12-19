@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, Injector, ViewChild } from '@angular/core';
-import { Content, ModalController, NavController } from 'ionic-angular';
+import { Content, ModalController, PopoverController } from 'ionic-angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -27,6 +27,7 @@ import { AddonModForumHelperProvider } from '../../providers/helper';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumSyncProvider } from '../../providers/sync';
 import { AddonModForumPrefetchHandler } from '../../providers/prefetch-handler';
+import { AddonForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 
 /**
  * Component that displays a forum entry page.
@@ -61,6 +62,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected page = 0;
     protected trackPosts = false;
     protected usesGroups = false;
+    protected canPin = false;
     protected syncManualObserver: any; // It will observe the sync manual event.
     protected replyObserver: any;
     protected newDiscObserver: any;
@@ -73,7 +75,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     constructor(injector: Injector,
             @Optional() protected content: Content,
-            protected navCtrl: NavController,
             protected modalCtrl: ModalController,
             protected groupsProvider: CoreGroupsProvider,
             protected userProvider: CoreUserProvider,
@@ -83,7 +84,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             protected forumSync: AddonModForumSyncProvider,
             protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
             protected prefetchHandler: AddonModForumPrefetchHandler,
-            protected ratingOffline: CoreRatingOfflineProvider) {
+            protected ratingOffline: CoreRatingOfflineProvider,
+            protected popoverCtrl: PopoverController) {
         super(injector);
 
         this.sortingAvailable = this.forumProvider.isDiscussionListSortingAvailable();
@@ -106,8 +108,40 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 this.eventReceived.bind(this, true));
         this.replyObserver = this.eventsProvider.on(AddonModForumProvider.REPLY_DISCUSSION_EVENT,
                 this.eventReceived.bind(this, false));
-        this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT,
-                this.eventReceived.bind(this, false));
+        this.changeDiscObserver = this.eventsProvider.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data) => {
+            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module.id) {
+                this.forumProvider.invalidateDiscussionsList(this.forum.id).finally(() => {
+                    if (data.discussionId) {
+                        // Discussion changed, search it in the list of discussions.
+                        const discussion = this.discussions.find((disc) => {
+                            return data.discussionId == disc.discussion;
+                        });
+
+                        if (discussion) {
+                            if (typeof data.locked != 'undefined') {
+                                discussion.locked = data.locked;
+                            }
+                            if (typeof data.pinned != 'undefined') {
+                                discussion.pinned = data.pinned;
+                            }
+                            if (typeof data.starred != 'undefined') {
+                                discussion.starred = data.starred;
+                            }
+
+                            this.showLoadingAndRefresh(false);
+                        }
+                    }
+
+                    if (typeof data.deleted != 'undefined' && data.deleted) {
+                        if (data.post.parent == 0 && this.splitviewCtrl && this.splitviewCtrl.isOn()) {
+                            // Discussion deleted, clear details page.
+                            this.splitviewCtrl.emptyDetails();
+                        }
+                        this.showLoadingAndRefresh(false);
+                    }
+                });
+            }
+        });
 
         // Select the current opened discussion.
         this.viewDiscObserver = this.eventsProvider.on(AddonModForumProvider.VIEW_DISCUSSION_EVENT, (data) => {
@@ -163,10 +197,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Download the component contents.
      *
-     * @param  {boolean} [refresh=false]    Whether we're refreshing data.
-     * @param  {boolean} [sync=false]       If the refresh needs syncing.
-     * @param  {boolean} [showErrors=false] Wether to show errors to the user or hide them.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @param sync If the refresh needs syncing.
+     * @param showErrors Wether to show errors to the user or hide them.
+     * @return Promise resolved when done.
      */
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         this.loadMoreError = false;
@@ -211,18 +245,30 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 });
             }
         }).then(() => {
-            return Promise.all([
-                // Check if the activity uses groups.
-                this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
-                    this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
-                }),
-                this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
-                    // Disallow adding discussions if cut-off date is reached and the user has not the capability to override it.
-                    // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
-                    const cutoffDateReached = this.forumHelper.isCutoffDateReached(this.forum) && !accessInfo.cancanoverridecutoff;
-                    this.canAddDiscussion = this.forum.cancreatediscussions && !cutoffDateReached;
-                }),
-            ]);
+            const promises = [];
+            // Check if the activity uses groups.
+            promises.push(this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
+                this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
+            }));
+            promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+                // Disallow adding discussions if cut-off date is reached and the user has not the capability to override it.
+                // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
+                const cutoffDateReached = this.forumHelper.isCutoffDateReached(this.forum) && !accessInfo.cancanoverridecutoff;
+                this.canAddDiscussion = this.forum.cancreatediscussions && !cutoffDateReached;
+            }));
+
+            if (this.forumProvider.isSetPinStateAvailableForSite()) {
+                // Use the canAddDiscussion WS to check if the user can pin discussions.
+                promises.push(this.forumProvider.canAddDiscussionToAll(this.forum.id).then((response) => {
+                    this.canPin = !!response.canpindiscussions;
+                }).catch(() => {
+                    this.canPin = false;
+                }));
+            } else {
+                this.canPin = false;
+            }
+
+            return Promise.all(promises);
         }));
 
         promises.push(this.fetchSortOrderPreference());
@@ -244,8 +290,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.errorgetforum', true);
 
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-        }).then(() => {
-            // All data obtained, now fill the context menu.
+        }).finally(() => {
             this.fillContextMenu(refresh);
         });
     }
@@ -253,7 +298,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to fetch offline discussions.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchOfflineDiscussion(): Promise<any> {
         return this.forumOffline.getNewDiscussions(this.forum.id).then((offlineDiscussions) => {
@@ -299,8 +344,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to get forum discussions.
      *
-     * @param  {boolean} refresh Whether we're refreshing data.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param refresh Whether we're refreshing data.
+     * @return Promise resolved when done.
      */
     protected fetchDiscussions(refresh: boolean): Promise<any> {
         this.loadMoreError = false;
@@ -371,8 +416,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to load more forum discussions.
      *
-     * @param {any} [infiniteComplete] Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return {Promise<any>} Promise resolved when done.
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @return Promise resolved when done.
      */
     fetchMoreDiscussions(infiniteComplete?: any): Promise<any> {
         return this.fetchDiscussions(false).catch((message) => {
@@ -387,7 +432,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to fetch the sort order preference.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchSortOrderPreference(): Promise<any> {
         let promise;
@@ -408,7 +453,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Perform the invalidate content function.
      *
-     * @return {Promise<any>} Resolved when done.
+     * @return Resolved when done.
      */
     protected invalidateContent(): Promise<any> {
         const promises = [];
@@ -431,7 +476,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Performs the sync of the activity.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected sync(): Promise<boolean> {
         return this.prefetchHandler.sync(this.module, this.courseId);
@@ -440,8 +485,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Checks if sync has succeed from result sync data.
      *
-     * @param  {any} result Data returned on the sync function.
-     * @return {boolean} Whether it succeed or not.
+     * @param result Data returned on the sync function.
+     * @return Whether it succeed or not.
      */
     protected hasSyncSucceed(result: any): boolean {
         return result.updated;
@@ -450,8 +495,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Compares sync event data with current data to check if refresh content is needed.
      *
-     * @param  {any} syncEventData Data receiven on sync observer.
-     * @return {boolean} True if refresh is needed, false otherwise.
+     * @param syncEventData Data receiven on sync observer.
+     * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: any): boolean {
         return this.forum && syncEventData.source != 'index' && syncEventData.forumId == this.forum.id &&
@@ -461,8 +506,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Function called when we receive an event of new discussion or reply to discussion.
      *
-     * @param {boolean} isNewDiscussion Whether it's a new discussion event.
-     * @param {any} data Event data.
+     * @param isNewDiscussion Whether it's a new discussion event.
+     * @param data Event data.
      */
     protected eventReceived(isNewDiscussion: boolean, data: any): void {
         if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module.id) {
@@ -499,7 +544,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Opens a discussion.
      *
-     * @param {any} discussion Discussion object.
+     * @param discussion Discussion object.
      */
     openDiscussion(discussion: any): void {
         const params = {
@@ -515,7 +560,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Opens the new discussion form.
      *
-     * @param {number} [timeCreated=0] Creation time of the offline discussion.
+     * @param timeCreated Creation time of the offline discussion.
      */
     openNewDiscussion(timeCreated: number = 0): void {
         const params = {
@@ -532,7 +577,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Display the sort order selector modal.
      *
-     * @param {MouseEvent} event Event.
+     * @param event Event.
      */
     showSortOrderSelector(event: MouseEvent): void {
         if (!this.sortingAvailable) {
@@ -558,6 +603,42 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         modal.present({ev: event});
         this.sortOrderSelectorExpanded = true;
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param e Click Event.
+     */
+    showOptionsMenu(e: Event, discussion: any): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const popover = this.popoverCtrl.create(AddonForumDiscussionOptionsMenuComponent, {
+            discussion: discussion,
+            forumId: this.forum.id,
+            cmId: this.module.id
+        });
+        popover.onDidDismiss((data) => {
+            if (data && data.action) {
+                switch (data.action) {
+                    case 'lock':
+                        discussion.locked = data.value;
+                        break;
+                    case 'pin':
+                        discussion.pinned = data.value;
+                        break;
+                    case 'star':
+                        discussion.starred = data.value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        popover.present({
+            ev: e
+        });
     }
 
     /**

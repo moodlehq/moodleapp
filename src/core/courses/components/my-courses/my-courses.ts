@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     /**
      * Fetch the user courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     protected fetchCourses(): Promise<any> {
         return this.coursesProvider.getUserCourses().then((courses) => {
@@ -121,7 +121,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     /**
      * Refresh the courses.
      *
-     * @param {any} refresher Refresher.
+     * @param refresher Refresher.
      */
     refreshCourses(refresher: any): void {
         const promises = [];
@@ -158,7 +158,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     /**
      * The filter has changed.
      *
-     * @param {any} Received Event.
+     * @param Received Event.
      */
     filterChanged(event: any): void {
         const newValue = event.target.value && event.target.value.trim().toLowerCase();
@@ -181,7 +181,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     /**
      * Prefetch all the courses.
      *
-     * @return {Promise<any>} Promise resolved when done.
+     * @return Promise resolved when done.
      */
     prefetchCourses(): Promise<any> {
         const initialIcon = this.prefetchCoursesData.icon;

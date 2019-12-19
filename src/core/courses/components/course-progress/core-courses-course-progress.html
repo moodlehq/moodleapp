@@ -1,13 +1,17 @@
-<ion-card [attr.course-color]="course.id % 10">
-    <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage">
+<ion-card [attr.course-color]="course.color ? null : course.colorNumber">
+    <div (click)="openCourse(course)" class="core-course-thumb" [class.core-course-color-img]="course.courseImage" [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
     </div>
     <ion-item tappable text-wrap detail-none (click)="openCourse(course)" [title]="course.displayname || course.fullname" class="core-course-link" [class.item-disabled]="course.visible == 0" [class.core-course-more-than-title]="(course.progress != null && course.progress >= 0)">
         <div class="core-course-title" [class.core-course-with-buttons]="courseOptionMenuEnabled || (downloadCourseEnabled && showDownload)">
-            <p *ngIf="course.displayname && course.shortname && course.fullname != course.displayname" class="core-course-shortname"><core-format-text [text]="course.shortname"></core-format-text></p>
+            <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)" class="core-course-additional-info">
+                <span *ngIf="course.categoryname" class="core-course-category"><core-format-text [text]="course.categoryname"></core-format-text></span>
+                <span *ngIf="course.categoryname && course.displayname && course.shortname && course.fullname != course.displayname" class="core-course-category"> | </span>
+                <span *ngIf="course.displayname && course.shortname && course.fullname != course.displayname" class="core-course-shortname"><core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></span>
+            </p>
             <h2>
                 <core-icon name="fa-star" *ngIf="course.isfavourite"></core-icon>
-                <core-format-text [text]="course.fullname"></core-format-text>
+                <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
             </h2>
         </div>
 

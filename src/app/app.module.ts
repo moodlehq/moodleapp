@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,6 +82,8 @@ import { CoreCommentsModule } from '@core/comments/comments.module';
 import { CoreBlockModule } from '@core/block/block.module';
 import { CoreRatingModule } from '@core/rating/rating.module';
 import { CoreTagModule } from '@core/tag/tag.module';
+import { CoreFilterModule } from '@core/filter/filter.module';
+import { CoreH5PModule } from '@core/h5p/h5p.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -147,6 +149,7 @@ import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
 import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
+import { AddonFilterModule } from '@addon/filter/filter.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -227,6 +230,8 @@ export const WP_PROVIDER: any = null;
         CoreRatingModule,
         CorePushNotificationsModule,
         CoreTagModule,
+        CoreFilterModule,
+        CoreH5PModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
@@ -288,7 +293,8 @@ export const WP_PROVIDER: any = null;
         AddonRemoteThemesModule,
         AddonQbehaviourModule,
         AddonQtypeModule,
-        AddonStorageManagerModule
+        AddonStorageManagerModule,
+        AddonFilterModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

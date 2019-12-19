@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 Moodle Pty Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,10 +27,12 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 export class AddonModWorkshopPhaseInfoPage {
     phases: any;
     workshopPhase: number;
+    showSubmit: boolean;
 
     constructor(params: NavParams, private viewCtrl: ViewController, private utils: CoreUtilsProvider) {
         this.phases = params.get('phases');
         this.workshopPhase = params.get('workshopPhase');
+        this.showSubmit = params.get('showSubmit');
         const externalUrl = params.get('externalUrl');
 
         // Treat phases.
@@ -58,7 +60,7 @@ export class AddonModWorkshopPhaseInfoPage {
     /**
      * Open task.
      *
-     * @param {any} task Task to be done.
+     * @param task Task to be done.
      */
     runTask(task: any): void {
         if (task.code == 'submit') {

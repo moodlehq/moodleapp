@@ -4,22 +4,52 @@ $addon-mod-wiki-toc-title-color:      $gray-darker !default;
 $addon-mod-wiki-toc-border-color:     $gray-dark !default;
 $addon-mod-wiki-toc-background-color: $gray-light !default;
 
+$addon-mod-wiki-dark-toc-title-color:      $white !default;
+$addon-mod-wiki-dark-toc-border-color:     $gray-dark !default;
+$addon-mod-wiki-dark-toc-background-color: $gray-darker !default;
+$addon-mod-wiki-dark-newentry-link-color: $red-light !default;
+
 ion-app.app-root addon-mod-wiki-index {
     background-color: $white;
+    @include darkmode() {
+        background-color: $black;
+    }
 
     .addon-mod_wiki-page-content {
         background-color: $white;
+        border-top: 1px solid $gray;
+        @include safe-area-padding-horizontal(10px, 10px);
+        @include darkmode() {
+            background-color: $black;
+        }
     }
 
     .wiki-toc {
         border: 1px solid $addon-mod-wiki-toc-border-color;
         background: $addon-mod-wiki-toc-background-color;
+        p {
+            color: $text-color !important;
+        }
+        a {
+            color: $link-color;
+        }
+
+        @include darkmode() {
+            border: 1px solid $addon-mod-wiki-dark-toc-border-color;
+            background: $addon-mod-wiki-dark-toc-background-color;
+            p {
+                color: $core-dark-text-color !important;
+            }
+            a {
+                color: $core-dark-link-color;
+            }
+        }
         margin: 16px;
         padding: 8px;
     }
 
     .wiki-toc-title {
-        color: $addon-mod-wiki-toc-title-color;
+        color: $addon-mod-wiki-toc-title-color !important;
         font-size: 1.1em;
         font-variant: small-caps;
         text-align: center;
@@ -41,6 +71,9 @@ ion-app.app-root addon-mod-wiki-index {
     .wiki_newentry {
         color: $addon-mod-wiki-newentry-link-color;
         font-style: italic;
+        @include darkmode() {
+            color: $addon-mod-wiki-dark-newentry-link-color !important;
+        }
     }
 
     /* Hide edit section links */
