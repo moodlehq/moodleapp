@@ -179,6 +179,11 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
+        // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
+        if (!this.isPluginFileUrl(url) || url.indexOf(this.textUtils.addEndingSlash(siteUrl)) !== 0) {
+            return url;
+        }
+      
         if (canUseTokenPluginFile) {
             // Use tokenpluginfile.php.
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);

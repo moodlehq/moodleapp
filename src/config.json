@@ -3,7 +3,7 @@
     "appname": "Moodle Mobile",
     "desktopappname": "Moodle Desktop",
     "versioncode": 3800,
-    "versionname": "3.8.0-dev",
+    "versionname": "3.8.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
