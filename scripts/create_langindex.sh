@@ -3,8 +3,8 @@ source "functions.sh"
 
 #Saves or updates a key on langindex_old.json
 function save_key {
-    key=$1
-    found=$2
+    local key=$1
+    local found=$2
 
     print_ok "$key=$found"
     echo "{\"$key\": \"$found\"}" > langindex_old.json
@@ -14,19 +14,17 @@ function save_key {
 
 #Removes a key on langindex_old.json
 function remove_key {
-    key=$1
-    found=$2
+    local key=$1
 
-    print_ok "$key=$found"
-    echo "{\"$key\": \"$found\"}" > langindex_old.json
-    jq -s '.[0] - .[1]' langindex.json langindex_old.json > langindex_new.json
+    cat langindex.json | jq 'del(."'$key'")' > langindex_new.json
     mv langindex_new.json langindex.json
+    print_ok "Deleted unused key $key"
 }
 
 #Check if and i exists in php file
 function exists_in_file {
-    file=$1
-    id=$2
+    local file=$1
+    local id=$2
 
     file=`echo $file | sed s/^mod_workshop_assessment/workshopform/1`
     file=`echo $file | sed s/^mod_assign_/assign/1`
@@ -45,7 +43,7 @@ function exists_in_file {
 
 #Checks if a key exists on the original local_moodlemobileapp.php
 function exists_in_mobile {
-    file='local_moodlemobileapp'
+    local file='local_moodlemobileapp'
     exists_in_file $file $key
 }
 
@@ -114,12 +112,12 @@ function find_single_matches {
 
 #Tries to gues the file where the id will be found.
 function guess_file {
-    key=$1
-    value=$2
+    local key=$1
+    local value=$2
 
-    type=`echo $key | cut -d'.' -f1`
-    component=`echo $key | cut -d'.' -f2`
-    plainid=`echo $key | cut -d'.' -f3-`
+    local type=`echo $key | cut -d'.' -f1`
+    local component=`echo $key | cut -d'.' -f2`
+    local plainid=`echo $key | cut -d'.' -f3-`
 
     if [ -z "$plainid" ]; then
         plainid=$component
@@ -161,23 +159,52 @@ function guess_file {
     fi
 }
 
+function current_translation_exists {
+    local key=$1
+    local current=$2
+    local file=$3
+
+    plainid=`echo $key | cut -d'.' -f3-`
+
+    if [ -z "$plainid" ]; then
+        plainid=`echo $key | cut -d'.' -f2`
+    fi
+
+    local currentFile=`echo $current | cut -d'/' -f1`
+    local currentStr=`echo $current | cut -d'/' -f2-`
+    if [ $currentFile == $current ]; then
+        currentStr=$plainid
+    fi
+
+    exists_in_file $currentFile $currentStr
+    if [ $found == 0 ]; then
+        # Translation not found.
+        exec="jq -r .\"$key\" $file"
+        value=`$exec`
+
+        print_error "Translation of '$currentStr' not found in '$currentFile'"
+
+        guess_file $key "$value"
+    fi
+}
+
 #Finds if there's a better file where to get the id from.
 function find_better_file {
-    key=$1
-    value=$2
-    current=$3
+    local key=$1
+    local value=$2
+    local current=$3
 
-    type=`echo $key | cut -d'.' -f1`
-    component=`echo $key | cut -d'.' -f2`
-    plainid=`echo $key | cut -d'.' -f3-`
+    local type=`echo $key | cut -d'.' -f1`
+    local component=`echo $key | cut -d'.' -f2`
+    local plainid=`echo $key | cut -d'.' -f3-`
 
     if [ -z "$plainid" ]; then
         plainid=$component
         component='moodle'
     fi
 
-    currentFile=`echo $current | cut -d'/' -f1`
-    currentStr=`echo $current | cut -d'/' -f2-`
+    local currentFile=`echo $current | cut -d'/' -f1`
+    local currentStr=`echo $current | cut -d'/' -f2-`
     if [ $currentFile == $current ]; then
         currentStr=$plainid
     fi
@@ -217,7 +244,7 @@ function find_better_file {
     fi
 }
 
-#Parses the file.
+# Parses the file.
 function parse_file {
     findbetter=$2
     keys=`jq -r 'keys[]' $1`
@@ -226,12 +253,43 @@ function parse_file {
         exec="jq -r .\"$key\" langindex.json"
         found=`$exec`
 
-        exec="jq -r .\"$key\" $1"
-        value=`$exec`
         if [ -z "$found" ] || [ "$found" == 'null' ]; then
+            exec="jq -r .\"$key\" $1"
+            value=`$exec`
             guess_file $key "$value"
-        elif [ ! -z "$findbetter" ]; then
-            find_better_file "$key" "$value" "$found"
+        else
+            if [ ! -z "$findbetter" ]; then
+                exec="jq -r .\"$key\" $1"
+                value=`$exec`
+                find_better_file "$key" "$value" "$found"
+            elif [ "$found" != 'local_moodlemobileapp' ]; then
+                current_translation_exists "$key" "$found" "$1"
+            fi
+        fi
+    done
+
+    # Do some cleanup
+    langkeys=`jq -r 'keys[]' langindex.json`
+    findkeys="${keys[@]}"
+    for key in $langkeys; do
+        # Check if already used.
+        array_contains "$key" "$findkeys"
+
+        if [ -z "$found" ] || [ "$found" == 'null' ]; then
+            remove_key $key
+        fi
+    done
+}
+
+# Checks if an array contains an string.
+function array_contains {
+    local hayjack=$2
+    local needle=$1
+    found=''
+    for i in $hayjack; do
+        if [ "$i" == "$needle" ] ; then
+            found=$i
+            return
         fi
     done
 }

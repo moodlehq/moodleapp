@@ -208,7 +208,7 @@ function build_lang($lang, $keys) {
         // Apply translations.
         if (!$string) {
             if (TOTRANSLATE) {
-                echo "\n\t\To translate $value->string on $value->file";
+                echo "\n\t\tTo translate $value->string on $value->file";
             }
             continue;
         }
@@ -217,9 +217,12 @@ function build_lang($lang, $keys) {
             // Not yet translated. Do not override.
             if ($langFile && is_array($langFile) && isset($langFile[$key])) {
                 $translations[$key] = $langFile[$key];
-                $local++;
+
+                if ($value->file == 'local_moodlemobileapp') {
+                    $local++;
+                }
             }
-            if (TOTRANSLATE) {
+            if (TOTRANSLATE && !isset($string[$value->string])) {
                 echo "\n\t\tTo translate $value->string on $value->file";
             }
             continue;
@@ -265,7 +268,7 @@ function build_lang($lang, $keys) {
 }
 
 function progressbar($percentage) {
-    $done = $percentage/10;
+    $done = floor($percentage/10);
     return "\t".str_repeat('=', $done) . str_repeat('-', 10-$done);
 }
 
