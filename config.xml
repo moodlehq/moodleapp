@@ -181,6 +181,9 @@
     <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
         <application android:usesCleartextTraffic="true" />
     </edit-config>
+    <edit-config file="AndroidManifest.xml" mode="overwrite" target="/manifest/uses-feature[@android:name='android.hardware.location.gps']">
+        <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    </edit-config>
     <config-file parent="/manifest/application" target="AndroidManifest.xml">
         <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
     </config-file>
