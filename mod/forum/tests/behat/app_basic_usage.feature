@@ -11,16 +11,18 @@ Feature: Test basic usage in app
     And the following "users" exist:
       | username |
       | student1 |
+      | student2 |
       | teacher1 |
       | teacher2 |
     And the following "course enrolments" exist:
       | user     | course | role    |
       | student1 | C1     | student |
+      | student2 | C1     | student |
       | teacher1 | C1     | editingteacher |
       | teacher2 | C1     | editingteacher |
     And the following "activities" exist:
-      | activity   | name            | intro       | course | idnumber | groupmode |
-      | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 
+      | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale[modgrade_type] |
+      | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 5        | Point                |
 
   Scenario: Student starts a discussion
     When I enter the app
@@ -83,7 +85,7 @@ Feature: Test basic usage in app
     And I close the browser tab opened by the app
     And I press the back button in the app
 
-  @mobile @latest
+  @app @mobile @3.8.0
   Scenario: Student star a discussion
     When I enter the app
     And I log in as "student1"
@@ -115,7 +117,7 @@ Feature: Test basic usage in app
     And I pause
 
 
-    @mobile @latest
+    @app @mobile @3.8.0
     Scenario: Teacher star and pin a discussion
     When I enter the app
     And I log in as "teacher1"
@@ -161,7 +163,7 @@ Feature: Test basic usage in app
     And I should see "Auto-test pin"
     And I pause
 
-@mobile @3.6 @OK
+    @app @mobile @3.6 @OK
     Scenario: Teacher checks pin and star in 3.6
     When I enter the app
     And I log in as "teacher1"
@@ -178,10 +180,10 @@ Feature: Test basic usage in app
     And I should not see "Pin this discussion"
 
 
-    @mobile
+    @app @mobile @3.8.0
     Scenario: Edit a forum post (only online)
     When I enter the app
-    And I log in as "teacher1"
+    And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "close" in the app
@@ -189,21 +191,21 @@ Feature: Test basic usage in app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     Then I should see "Auto-test"
-    And I should see "Auto-test message"
-    And I press "Auto-test" in the app
-    And I press "Auto-test message" in the app
+    And I press "arrow back" in the app
     And I press "Information" in the app
+    And I press "Show download options" in the app
+    And I press "cloud download" near "Test forum name" in the app
+    And I press "Test forum name" in the app
+    And I press "Auto-test" in the app
+    And I wait "2" seconds
     And I pause
-        And I pause
-    And I press "Information" near "Test forum name" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "admin"
-    And I press "Actions menu"
-    And I follow "Edit settings"
-    And I press "Ratings"
+    And I press "More" in the app
+    And I should see "Edit"
+    And I pause
+    And I switch offline mode to "true"
+    And I pause
 
-
-    @mobile @latest
+    @app @mobile @3.8.0
     Scenario: Add/view ratings
     When I enter the app
     And I log in as "student1"
@@ -213,23 +215,211 @@ Feature: Test basic usage in app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
-    And I pause
-    And I press "Information" near "Test forum name" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "admin"
-    And I press "Actions menu"
-    And I follow "Edit settings"
-    And I press "Ratings"
-    And I press "No ratings"
-    And I press "Average of ratings"
-    And I press "None"
-    And I press "Point"
-    And I press "Save and display"
-    And I pause
+    And I press "Auto-test" in the app
+    And I press "Reply" in the app
+    And I set the field "Write your reply..." to "test" in the app
+    And I press "Post to forum" in the app
     When I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
+    And I pause
+
+  @app @3.8.0 @mobile @OK
+  Scenario: Student replies a post offline mobile
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    And I press "arrow back" in the app
+    And I press "Information" in the app
+    And I press "Show download options" in the app
+    And I press "cloud download" near "Test forum name" in the app
+    And I press "Test forum name" in the app
+    And I press "DiscussionSubject" in the app
+    And I switch offline mode to "true"
+    And I press "Reply" in the app
+    And I set the field "Write your reply" to "ReplyMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionMessage"
+    And I should see "ReplyMessage"
+    And I should see "Not sent"
+    And I press "arrow back" in the app
+    And I switch offline mode to "false"
+    And I press "DiscussionSubject" in the app
+    Then I should see "DiscussionMessage"
+    And I should see "ReplyMessage"
+    And I should not see "Not sent"
+
+    @app @3.8.0 @tablet @OK
+  Scenario: Student replies a post offline tablet 
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    And I press "arrow back" in the app
+    And I press "Information" in the app
+    And I press "Show download options" in the app
+    And I press "cloud download" near "Test forum name" in the app
+    And I press "Test forum name" in the app
+    And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
+    And I switch offline mode to "true"
+    And I press "Reply" in the app
+    And I set the field "Write your reply" to "ReplyMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionMessage"
+    And I should see "ReplyMessage"
+    And I should see "Not sent"
+    And I press "arrow back" in the app
+    And I switch offline mode to "false"
+    And I press "Test forum name" in the app
+    And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
+    Then I should see "DiscussionMessage"
+    And I should see "ReplyMessage"
+    And I should not see "Not sent"
+
+    @app @3.8.0 @OK
+    Scenario: Student creates a new discussion offline and sync forum
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I switch offline mode to "true"
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "Not sent"
+    And I switch offline mode to "false"
+    And I press "arrow back" in the app
+    And I press "Test forum name" in the app
+    And I press "Information" in the app
+    And I press "Refresh discussions" in the app
+    And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionMessage"
+    And I should not see "Not sent"
+
+    @app @3.8.0 @OK
+    Scenario: Student creates a new discussion offline and auto-sync forum
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I switch offline mode to "true"
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "Not sent"
+    And I switch offline mode to "false"
+    And I wait "600" seconds
+    And I should not see "Not sent"
+    And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionMessage"
+    And I should not see "Not sent"
+
+    @app @3.8.0 @mobile @OK
+    Scenario: Prefetch mobile
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I press "arrow back" in the app
+    And I press "Information" in the app
+    And I press "Show download options" in the app
+    And I press "cloud download" near "Test forum name" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject 2" in the app
+    And I set the field "Message" to "DiscussionMessage 2" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionSubject 2"
+    And I press "arrow back" in the app
+    And I switch offline mode to "true"
+    And I press "Test forum name" in the app
+    And I press "DiscussionSubject 2" in the app
+    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+    And I press "OK" in the app
+    And I press "arrow back" in the app
+    And I press "DiscussionSubject" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionMessage"
+    And I should not see "There was a problem connecting to the site. Please check your connection and try again."
+
+
+    @app @3.8.0 @tablet 
+    Scenario: Prefetch tablet
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I press "arrow back" in the app
+    And I press "Information" in the app
+    And I press "Show download options" in the app
+    And I press "cloud download" near "Test forum name" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject 2" in the app
+    And I set the field "Message" to "DiscussionMessage 2" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionSubject 2"
+    And I press "arrow back" in the app
+    And I switch offline mode to "true"
+    And I press "Test forum name" in the app
+    And I pause
+    And I press "DiscussionSubject 2" in the app
+    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+    And I press "OK" in the app
+    And I press "DiscussionSubject" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionMessage"
+   
+    @app @3.8.0
+    Scenario: Student sorts a forum discussion
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject" in the app
+    And I set the field "Message" to "DiscussionMessage" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "DiscussionSubject more replies" in the app
+    And I set the field "Message" to "DiscussionMessage more replies" in the app
+    And I press "Post to forum" in the app
+    Then I should see "DiscussionSubject"
+    And I should see "DiscussionSubject more replies"
+    And I press "DiscussionSubject more replies" in the app
+    And I press "Reply" in the app
+    And I set the field "Write your reply" to "ReplyMessage" in the app
+    And I press "Post to forum" in the app
     And I pause
