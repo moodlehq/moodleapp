@@ -85,7 +85,7 @@ Feature: Test basic usage in app
     And I close the browser tab opened by the app
     And I press the back button in the app
 
-  @app @mobile @3.8.0
+  @app @3.8.0
   Scenario: Student star a discussion
     When I enter the app
     And I log in as "student1"
@@ -117,7 +117,7 @@ Feature: Test basic usage in app
     And I pause
 
 
-    @app @mobile @3.8.0
+    @app @3.8.0
     Scenario: Teacher star and pin a discussion
     When I enter the app
     And I log in as "teacher1"
@@ -163,7 +163,7 @@ Feature: Test basic usage in app
     And I should see "Auto-test pin"
     And I pause
 
-    @app @mobile @3.6 @OK
+    @app @3.6 @OK
     Scenario: Teacher checks pin and star in 3.6
     When I enter the app
     And I log in as "teacher1"
@@ -180,7 +180,7 @@ Feature: Test basic usage in app
     And I should not see "Pin this discussion"
 
 
-    @app @mobile @3.8.0
+    @app @3.8.0
     Scenario: Edit a forum post (only online)
     When I enter the app
     And I log in as "student1"
@@ -199,13 +199,13 @@ Feature: Test basic usage in app
     And I press "Auto-test" in the app
     And I wait "2" seconds
     And I pause
-    And I press "More" in the app
+    And I press "" in the app
     And I should see "Edit"
     And I pause
     And I switch offline mode to "true"
     And I pause
 
-    @app @mobile @3.8.0
+    @app @3.8.0
     Scenario: Add/view ratings
     When I enter the app
     And I log in as "student1"
@@ -367,7 +367,7 @@ Feature: Test basic usage in app
     And I should not see "There was a problem connecting to the site. Please check your connection and try again."
 
 
-    @app @3.8.0 @tablet 
+    @app @3.8.0 @tablet @OK
     Scenario: Prefetch tablet
     When I enter the app
     And I change viewport size to "1280x1080"
@@ -392,15 +392,18 @@ Feature: Test basic usage in app
     And I should see "DiscussionSubject 2"
     And I press "arrow back" in the app
     And I switch offline mode to "true"
-    And I press "Test forum name" in the app
-    And I pause
-    And I press "DiscussionSubject 2" in the app
+    And I press "refresh" near "Test forum name" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
     And I press "OK" in the app
+    And I press "Test forum name" in the app
     And I press "DiscussionSubject" in the app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionMessage"
-   
+    And I press "arrow back" in the app
+    And I switch offline mode to "false"
+    And I press "refresh" near "Test forum name" in the app
+    Then I should not see "There was a problem connecting to the site. Please check your connection and try again."
+
     @app @3.8.0
     Scenario: Student sorts a forum discussion
     When I enter the app

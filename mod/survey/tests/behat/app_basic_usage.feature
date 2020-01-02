@@ -20,8 +20,8 @@ Feature: Test basic usage in app
       | activity   | name            | intro       | course | idnumber | groupmode |
       | survey      | Test survey name | Test survey  | C1     | survey    | 0         | 
 
-  @Mobile @3.8.0 @OK
-  Scenario: Student answer a survey and see results
+  @app @3.8.0 @mobile @OK
+  Scenario: Student answers a survey ATTLS and see results mobile
   When I enter the app
   And I log in as "student1"
   And I press "Course 1" near "Course overview" in the app
@@ -74,13 +74,83 @@ Feature: Test basic usage in app
   Then I should see "You've completed this survey.  The graph below shows a summary of your results compared to the class averages."
   And I should see "1 people have completed this survey so far"
 
-  @Tablet @3.8.0
-  Scenario: Student answer a survey and see results tablet
+  @app @3.8.0 @tablet
+  Scenario: Student answer a survey ATTLS and see results tablet
   When I enter the app
   And I change viewport size to "1280x1080"
   And I log in as "student1"
   And I press "Course 1" near "Course overview" in the app
   And I press "Test survey name" in the app
+  And I pause
+
+  @app @3.8.0
+  Scenario: Student answers a survey of critical incidents and see results
+  Given the following "activities" exist:
+  | activity   | name            | intro       | template |course | idnumber | groupmode |
+  | survey      | Test survey critical incidents | Test survey1  |   5   | C1     | survey1    | 0         | 
+  When I enter the app
+  And I log in as "student1"
+  And I press "Course 1" near "Course overview" in the app
+  And I press "Test survey critical incidents" in the app
+  And I press "Submit" in the app
+  And I press "OK" in the app
+  Then I should see "Results"
+  And I press "Results" in the app
+  And I switch to the browser tab opened by the app
+  And I log in as "student1"
+  Then I should see "Test survey critical incidents"
+  And I pause
+
+  @app @3.8.0 @OK
+  Scenario: Sync survey
+  Given the following "activities" exist:
+  | activity   | name            | intro       | template |course | idnumber | groupmode |
+  | survey      | Test survey critical incidents | Test survey1  |   5   | C1     | survey1    | 0         |
+  When I enter the app
+  And I log in as "student1"
+  And I press "Course 1" near "Course overview" in the app
+  And I press "Test survey critical incidents" in the app
+  And I switch offline mode to "true"
+  And I press "Submit" in the app
+  And I press "OK" in the app
+  And I switch offline mode to "false"
+  And I press "arrow back" in the app
+  And I press "Test survey critical incidents" in the app
+  And I press "Information" in the app
+  And I press "Refresh" in the app
+  Then I should see "Results"
+
+
+  @app @3.8.0 @OK
+  Scenario: Prefetch and auto-sync
+  Given the following "activities" exist:
+  | activity   | name            | intro       | template |course | idnumber | groupmode |
+  | survey      | Test survey critical incidents | Test survey1  |   5   | C1     | survey1    | 0         |
+  When I enter the app
+  And I log in as "student1"
+  And I press "Course 1" near "Course overview" in the app
+  And I press "Information" in the app
+  And I press "Show download options" in the app
+  And I press "cloud download" near "Test survey critical incidents" in the app
+  And I switch offline mode to "true"
+  And I press "Test survey name" in the app
+  Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+  And I press "OK" in the app
+  And I press "arrow back" in the app
+  And I press "Test survey critical incidents" in the app
+  And I press "Submit" in the app 
+  And I press "OK" in the app
+  Then I should see "This Survey has offline data to be synchronised."
+  And I switch offline mode to "false"
+  And I wait "600" seconds
+  Then I should not see "This Survey has offline data to be synchronised."
+  And I should see "You have completed this survey."
+
+
+  @app @3.8.0
+  Scenario: Student answers a survey offline
+  When I enter the app
+  And I log in as "student1"
   And I pause
 	
 
