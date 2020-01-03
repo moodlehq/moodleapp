@@ -3,7 +3,7 @@
     "appname": "Odectu Mobile App",
     "desktopappname": "Moodle Desktop",
     "versioncode": 3800,
-    "versionname": "3.8.0",
+    "versionname": "3.8.0.1",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -56,26 +56,15 @@
     },
     "wsservice": "moodle_mobile_app",
     "wsextservice": "local_mobile",
-    "demo_sites": {
-        "student": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "student",
-            "password": "moodle"
-        },
-        "teacher": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle"
-        }
-    },
+    "demo_sites": "",
     "font_sizes": [
         62.5,
         75.89,
         93.75
     ],
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
-    "sitename": "",
+    "siteurl": "https://elearning.odectu.edu.np/",
+    "sitename": "Open and Distance Education Centre, TU",
     "multisitesdisplay": "",
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
