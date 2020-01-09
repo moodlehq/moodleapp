@@ -1,5 +1,5 @@
 @mod @mod_survey @app @javascript
-Feature: Test basic usage in app
+Feature: Test basic usage of survey activity in app
   In order to participate in surveys while using the mobile app
   As a student
   I need basic survey functionality to work
@@ -562,13 +562,15 @@ Feature: Test basic usage in app
   And I switch offline mode to "true"
   And I press "Submit" in the app
   And I press "OK" in the app
+  Then I should see "This Survey has offline data to be synchronised."
   And I switch offline mode to "false"
   And I press "arrow back" in the app
   And I press "Test survey critical incidents" in the app
   And I press "Information" in the app
   And I press "Refresh" in the app
   Then I should see "Results"
-
+  And I should not see "This Survey has offline data to be synchronised."
+  And I should see "You have completed this survey."
 
   @app @3.8.0 @OK
   Scenario: Prefetch and auto-sync

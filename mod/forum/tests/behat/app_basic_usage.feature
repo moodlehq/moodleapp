@@ -1,5 +1,5 @@
 @mod @mod_forum @app @javascript
-Feature: Test basic usage in app
+Feature: Test basic usage of forum activity in app
   In order to participate in the forum while using the mobile app
   As a student
   I need basic forum functionality to work
@@ -24,6 +24,7 @@ Feature: Test basic usage in app
       | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale[modgrade_type] |
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 5        | Point                |
 
+  @app @3.8.0 @OK
   Scenario: Student starts a discussion
     When I enter the app
     And I log in as "student1"
@@ -34,7 +35,9 @@ Feature: Test basic usage in app
     And I set the field "Message" to "An awesome message" in the app
     And I press "Post to forum" in the app
     Then I should see "My happy subject"
+    And I press "My happy subject" in the app
     And I should see "An awesome message"
+
 
   @app_upto3.6.1
   Scenario: Student posts a reply
@@ -70,6 +73,7 @@ Feature: Test basic usage in app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
 
+  @OK
   Scenario: Test that 'open in browser' works for forum
     When I enter the app
     And I change viewport size to "360x640"
@@ -85,7 +89,7 @@ Feature: Test basic usage in app
     And I close the browser tab opened by the app
     And I press the back button in the app
 
-  @app @3.8.0
+  @app @mobile @3.8.0
   Scenario: Student star a discussion
     When I enter the app
     And I log in as "student1"
@@ -104,7 +108,7 @@ Feature: Test basic usage in app
     And I press "Information" in the app
     And I press "Star this discussion" in the app
     And I press "arrow back" in the app
-    And I should see "Auto-test star"
+    Then I should see "Auto-test star"
     And I should see "Auto-test"
     And I pause 
     And I press "Auto-test star" in the app
@@ -117,7 +121,7 @@ Feature: Test basic usage in app
     And I pause
 
 
-    @app @3.8.0
+    @app @mobile @3.8.0
     Scenario: Teacher star and pin a discussion
     When I enter the app
     And I log in as "teacher1"
@@ -163,7 +167,7 @@ Feature: Test basic usage in app
     And I should see "Auto-test pin"
     And I pause
 
-    @app @3.6 @OK
+    @app @mobile @3.6 @OK
     Scenario: Teacher checks pin and star in 3.6
     When I enter the app
     And I log in as "teacher1"
@@ -180,7 +184,7 @@ Feature: Test basic usage in app
     And I should not see "Pin this discussion"
 
 
-    @app @3.8.0
+    @app @mobile @3.8.0
     Scenario: Edit a forum post (only online)
     When I enter the app
     And I log in as "student1"
@@ -199,13 +203,14 @@ Feature: Test basic usage in app
     And I press "Auto-test" in the app
     And I wait "2" seconds
     And I pause
-    And I press "" in the app
+    And I press "Auto-test" near "Information" in the app
+    And I pause
     And I should see "Edit"
     And I pause
     And I switch offline mode to "true"
     And I pause
 
-    @app @3.8.0
+    @app @mobile @3.8.0
     Scenario: Add/view ratings
     When I enter the app
     And I log in as "student1"
@@ -220,7 +225,7 @@ Feature: Test basic usage in app
     And I set the field "Write your reply..." to "test" in the app
     And I press "Post to forum" in the app
     When I enter the app
-    And I log in as "teacher1"
+    And I log in as "student2"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
@@ -301,6 +306,7 @@ Feature: Test basic usage in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
     And I should see "Not sent"
+    And I should see "This Forum has offline data to be synchronised."
     And I switch offline mode to "false"
     And I press "arrow back" in the app
     And I press "Test forum name" in the app
@@ -310,6 +316,7 @@ Feature: Test basic usage in app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionMessage"
     And I should not see "Not sent"
+    And I should not see "This Forum has offline data to be synchronised."
 
     @app @3.8.0 @OK
     Scenario: Student creates a new discussion offline and auto-sync forum
@@ -324,6 +331,7 @@ Feature: Test basic usage in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
     And I should see "Not sent"
+    And I should see "This Forum has offline data to be synchronised."
     And I switch offline mode to "false"
     And I wait "600" seconds
     And I should not see "Not sent"
@@ -331,6 +339,7 @@ Feature: Test basic usage in app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionMessage"
     And I should not see "Not sent"
+    And I should not see "This Forum has offline data to be synchronised."
 
     @app @3.8.0 @mobile @OK
     Scenario: Prefetch mobile
