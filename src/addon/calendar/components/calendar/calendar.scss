@@ -89,6 +89,7 @@ ion-app.app-root addon-calendar-calendar {
         @include border-end(1px, solid, $calendar-border-color);
         overflow: hidden;
         min-height: 60px;
+        cursor: pointer;
 
         &:first-child {
             @include padding(null, null, null, 10px);
@@ -131,6 +132,7 @@ ion-app.app-root addon-calendar-calendar {
             border-radius: 50%;
         }
         &.dayblank {
+            cursor: auto;
             background-color: $gray-lighter;
             @include darkmode() {
                 background-color: $black;

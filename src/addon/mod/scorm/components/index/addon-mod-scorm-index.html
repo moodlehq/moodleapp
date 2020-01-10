@@ -98,7 +98,7 @@
                     <div *ngFor="let sco of toc" class="core-padding-{{sco.level}} addon-mod_scorm-type-{{sco.scormtype}}">
                         <p *ngIf="sco.isvisible">
                             <core-icon [name]="sco.image.icon" [label]="sco.image.description" item-start></core-icon>
-                            <a *ngIf="sco.prereq && sco.launch" (click)="open($event, sco.id)"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></a>
+                            <a *ngIf="sco.prereq && sco.launch" (click)="open($event, sco.id)" class="core-clickable"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></a>
                             <span *ngIf="!sco.prereq || !sco.launch"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></span>
                             <span *ngIf="accessInfo && accessInfo.canviewscores && sco.score_raw">({{ 'addon.mod_scorm.score' | translate }}: {{sco.score_raw}})</span>
                         </p>

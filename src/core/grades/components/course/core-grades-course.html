@@ -16,7 +16,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let row of gradesTable.rows" (click)="row.itemtype != 'category' && gotoGrade(row.id)" [class]="row.rowclass">
+                    <tr *ngFor="let row of gradesTable.rows" (click)="row.itemtype != 'category' && gotoGrade(row.id)" [class]="row.rowclass" [ngClass]='{"core-grades-grade-clickable": row.itemtype != "category"}'>
                         <ng-container *ngIf="row.itemtype">
                             <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
                             </td>
