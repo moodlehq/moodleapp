@@ -43,7 +43,7 @@
                 </div>
 
                 <ng-container *ngFor="let discussion of offlineDiscussions">
-                    <ion-item text-wrap (click)="openNewDiscussion(discussion.timecreated)" [attr.no-lines]="discussion.groupname" [class.core-split-item-selected]="discussion.timecreated == -selectedDiscussion" class="addon-mod-forum-discussion">
+                    <a ion-item text-wrap (click)="openNewDiscussion(discussion.timecreated)" [attr.no-lines]="discussion.groupname" [class.core-split-item-selected]="discussion.timecreated == -selectedDiscussion" class="addon-mod-forum-discussion">
                         <div class="addon-mod-forum-discussion-title">
                             <h2>
                                 <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
@@ -57,10 +57,10 @@
                                 <p><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
                             </div>
                         </div>
-                    </ion-item>
+                    </a>
                 </ng-container>
                 <ng-container *ngFor="let discussion of discussions">
-                    <ion-item (click)="openDiscussion(discussion)" [class.core-split-item-selected]="discussion.discussion == selectedDiscussion" class="addon-mod-forum-discussion">
+                    <a ion-item (click)="openDiscussion(discussion)" [class.core-split-item-selected]="discussion.discussion == selectedDiscussion" class="addon-mod-forum-discussion">
                         <div class="addon-mod-forum-discussion-title">
                             <h2 text-wrap>
                                 <core-icon name="fa-map-pin" *ngIf="discussion.pinned"></core-icon>
@@ -94,7 +94,7 @@
                                 </ion-note>
                             </ion-col>
                         </ion-row>
-                    </ion-item>
+                    </a>
                 </ng-container>
 
                 <core-infinite-loading [enabled]="canLoadMore" (action)="fetchMoreDiscussions($event)" [error]="loadMoreError"></core-infinite-loading>

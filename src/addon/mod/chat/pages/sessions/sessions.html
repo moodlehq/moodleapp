@@ -20,7 +20,7 @@
                 <ion-label id="addon-chat-showalllabel">{{ 'addon.mod_chat.showincompletesessions' | translate }}</ion-label>
                 <ion-toggle [(ngModel)]="showAll" (ionChange)="fetchSessions(true)" aria-labelledby="addon-chat-showalllabel"></ion-toggle>
             </ion-item>
-            <ion-card *ngFor="let session of sessions" (click)="openSession(session)"
+            <ion-card *ngFor="let session of sessions" (click)="openSession(session)" class="core-clickable"
                     [class.addon-mod-chat-session-selected]="session.sessionstart == selectedSessionStart && groupId == selectedSessionGroupId"
                     [class.addon-mod-chat-session-show-more]="session.sessionusers.length < session.allsessionusers.length">
                 <ion-item text-wrap>
