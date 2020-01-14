@@ -1,5 +1,5 @@
 sudo: required
-dist: xenial
+dist: bionic
 group: edge
 
 language: node_js
@@ -19,8 +19,8 @@ before_script:
   - gulp
 
 script:
-  - npm run build
+  - npm run build --bailOnLintError true --typeCheckOnLint true
 
 after_success:
-  - chmod +x scripts/aot.sh
-  - scripts/aot.sh
+  - scripts/ci.sh
+  
