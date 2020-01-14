@@ -83,6 +83,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected firstSelectedTab: number;
     protected unregisterBackButtonAction: any;
     protected languageChangedSubscription: Subscription;
+    protected isInTransition = false; // Weather Slides is in transition.
 
     constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider,
             protected appProvider: CoreAppProvider, platform: Platform, translate: TranslateService) {
@@ -319,6 +320,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      */
     slideChanged(): void {
         const currentIndex = this.slides.getActiveIndex();
+        this.isInTransition = false;
         if (this.slidesShown >= this.numTabsShown) {
             this.showPrevButton = false;
             this.showNextButton = false;
@@ -391,20 +393,61 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     }
 
     /**
-     * Method that shows the next slide.
+     * Method that shows the next page.
      */
     slideNext(): void {
         if (this.showNextButton) {
-            this.slides.slideNext();
+            // Stop if slides are in transition.
+            if (this.isInTransition)
+                return;
+
+            if (this.slides.isBeginning()) {
+                // Slide to the second page.
+                this.slides.slideTo(this.maxSlides);
+            } else {
+                const currentIndex = this.slides.getActiveIndex();
+                if (typeof currentIndex !== 'undefined') {
+                    const nextSlideIndex = currentIndex + this.maxSlides;
+                    this.isInTransition = true;
+                    if (nextSlideIndex < this.numTabsShown) {
+                        // Slide to the next page.
+                        this.slides.slideTo(nextSlideIndex);
+                    } else {
+                        // Slide to the latest slide.
+                        this.slides.slideTo(this.numTabsShown - 1);
+                    }
+                }
+
+            }
         }
     }
 
     /**
-     * Method that shows the previous slide.
+     * Method that shows the previous page.
      */
     slidePrev(): void {
         if (this.showPrevButton) {
-            this.slides.slidePrev();
+            // Stop if slides are in transition.
+            if (this.isInTransition)
+                return;
+
+            if (this.slides.isEnd()) {
+                this.slides.slideTo(this.numTabsShown - this.maxSlides * 2);
+                // Slide to the previous of the latest page.
+            } else {
+                const currentIndex = this.slides.getActiveIndex();
+                if (typeof currentIndex !== 'undefined') {
+                    const prevSlideIndex = currentIndex - this.maxSlides;
+                    this.isInTransition = true;
+                    if (prevSlideIndex >= 0) {
+                        // Slide to the previous page.
+                        this.slides.slideTo(prevSlideIndex);
+                    } else {
+                        // Slide to the first page.
+                        this.slides.slideTo(0);
+                    }
+                }
+            }
         }
     }
 
