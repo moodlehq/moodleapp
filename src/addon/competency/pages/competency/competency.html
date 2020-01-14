@@ -25,7 +25,7 @@
                 <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ competency.competency.comppath.framework.name }}</ng-container>
                 &nbsp;/&nbsp;
                 <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
-                    <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)">{{ ancestor.name }}</a>
+                    <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)" class="core-clickable">{{ ancestor.name }}</a>
                     <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
                     <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
                 </span>
@@ -35,7 +35,7 @@
                 <div *ngIf="!competency.competency.hasrelatedcompetencies">{{ 'addon.competency.nocrossreferencedcompetencies' | translate }}</div>
                 <div *ngIf="competency.competency.hasrelatedcompetencies">
                     <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
-                        <a (click)="openCompetencySummary(relatedcomp.id)">
+                        <a (click)="openCompetencySummary(relatedcomp.id)" class="core-clickable">
                             {{ relatedcomp.shortname }} - {{ relatedcomp.idnumber }}
                         </a>
                     </p>

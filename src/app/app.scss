@@ -333,6 +333,10 @@ ion-app.app-root {
         width: 100%;
     }
 
+    &[fullonclick="true"] {
+      cursor: pointer;
+    }
+
     audio, video, a, iframe {
       pointer-events: auto;
     }
@@ -371,6 +375,7 @@ ion-app.app-root {
       background-color: rgba(0, 0, 0, .5);
     }
     text-align: center;
+    cursor: pointer;
 
     width: 32px;
     height: 32px;
@@ -1081,6 +1086,7 @@ ion-app.app-root {
   }
 
   .core-expandable {
+    cursor: pointer;
     ion-icon[item-start] + .item-inner {
       @include margin-horizontal(0px, null);
     }
@@ -1100,6 +1106,12 @@ ion-app.app-root {
   ion-backdrop {
     transition: opacity 100ms ease-in-out;
     opacity: .1;
+  }
+
+  a.item,
+  .core-clickable,
+  select {
+    cursor: pointer;
   }
 }
 

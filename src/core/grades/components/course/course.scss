@@ -85,6 +85,10 @@ ion-app.app-root core-grades-course {
         font-size: 0.85em;
       }
     }
+
+    .core-grades-grade-clickable {
+      cursor: pointer;
+    }
   }
 }
 
