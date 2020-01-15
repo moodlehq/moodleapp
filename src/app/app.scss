@@ -668,6 +668,9 @@ ion-app.app-root {
   .action-sheet-wrapper {
     .action-sheet-button.action-sheet-cancel {
       color: $core-action-sheet-cancel-color;
+      @include darkmode() {
+        color: $core-dark-action-sheet-cancel-color;
+      }
     }
     .action-sheet-selected {
       color: $core-color;
