@@ -73,7 +73,6 @@ Feature: Test basic usage of forum activity in app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
 
-  @OK
   Scenario: Test that 'open in browser' works for forum
     When I enter the app
     And I change viewport size to "360x640"
@@ -90,7 +89,7 @@ Feature: Test basic usage of forum activity in app
     And I press the back button in the app
 
   @app @mobile @3.8.0
-  Scenario: Student star a discussion
+  Scenario: Student stars a discussion
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -99,27 +98,32 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "Auto-test star" in the app
     And I set the field "Message" to "Auto-test star message" in the app
     And I press "Post to forum" in the app
+    And I wait "60" seconds
     And I press "close" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I set the field "Subject" to "Auto-test star" in the app
+    And I set the field "Message" to "Auto-test no star message" in the app
     And I press "Post to forum" in the app
-    And I press "Auto-test star" in the app
-    And I wait "1" seconds
+    And I press "Auto-test star" near "Last post a minute ago" in the app
+    Then I should see "Auto-test star message"
     And I press "Information" in the app
     And I press "Star this discussion" in the app
-    And I press "arrow back" in the app
-    Then I should see "Auto-test star"
-    And I should see "Auto-test"
-    And I pause 
-    And I press "Auto-test star" in the app
+    And I press the back button in the app
+    And I press "Auto-test star" near "Last post a minute ago" in the app
+    Then I should see "Auto-test star message"
+    And I press the back button in the app
+    And I press "Auto-test star" near "Last post a few seconds ago" in the app
+    Then I should see "Auto-test no star message"
+    And I press the back button in the app
+    And I press "Auto-test star" near "Last post a minute ago" in the app
     And I wait "1" seconds
     And I press "Information" in the app
     And I press "Unstar this discussion" in the app
-    And I press "arrow back" in the app
-    Then I should see "Auto-test star"
-    And I should see "Auto-test"
-    And I pause
-
+    And I press the back button in the app
+    And I press "Auto-test star" near "Last post a few seconds ago" in the app
+    Then I should see "Auto-test no star message"
+    And I press the back button in the app
+    And I press "Auto-test star" near "Last post a minute ago" in the app
+    Then I should see "Auto-test star message"
 
     @app @mobile @3.8.0
     Scenario: Teacher star and pin a discussion
@@ -143,12 +147,12 @@ Feature: Test basic usage of forum activity in app
     And I wait "1" seconds
     And I press "Information" in the app
     And I press "Star this discussion" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Auto-test pin" in the app
     And I wait "1" seconds
     And I press "Information" in the app
     And I press "Pin this discussion" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I should see "Auto-test pin"
     And I should see "Auto-test star"
     And I should see "Auto-test"
@@ -157,12 +161,12 @@ Feature: Test basic usage of forum activity in app
     And I wait "1" seconds
     And I press "Information" in the app
     And I press "Unpin this discussion" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Auto-test star" in the app
     And I wait "1" seconds
     And I press "Information" in the app
     And I press "Unstar this discussion" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     Then I should see "Auto-test star"
     And I should see "Auto-test pin"
     And I pause
@@ -195,7 +199,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     Then I should see "Auto-test"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Information" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
@@ -241,7 +245,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Information" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
@@ -254,7 +258,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
     And I should see "Not sent"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I switch offline mode to "false"
     And I press "DiscussionSubject" in the app
     Then I should see "DiscussionMessage"
@@ -262,7 +266,7 @@ Feature: Test basic usage of forum activity in app
     And I should not see "Not sent"
 
     @app @3.8.0 @tablet @OK
-  Scenario: Student replies a post offline tablet 
+  Scenario: Student replies a post offline tablet
     When I enter the app
     And I change viewport size to "1280x1080"
     And I log in as "student1"
@@ -272,7 +276,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Information" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
@@ -285,7 +289,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
     And I should see "Not sent"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I switch offline mode to "false"
     And I press "Test forum name" in the app
     And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
@@ -308,7 +312,7 @@ Feature: Test basic usage of forum activity in app
     And I should see "Not sent"
     And I should see "This Forum has offline data to be synchronised."
     And I switch offline mode to "false"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test forum name" in the app
     And I press "Information" in the app
     And I press "Refresh discussions" in the app
@@ -352,7 +356,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Information" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
@@ -363,13 +367,13 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionSubject 2"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I switch offline mode to "true"
     And I press "Test forum name" in the app
     And I press "DiscussionSubject 2" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
     And I press "OK" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "DiscussionSubject" in the app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionMessage"
@@ -388,7 +392,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Information" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
@@ -399,7 +403,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionSubject 2"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I switch offline mode to "true"
     And I press "refresh" near "Test forum name" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
@@ -408,7 +412,7 @@ Feature: Test basic usage of forum activity in app
     And I press "DiscussionSubject" in the app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionMessage"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I switch offline mode to "false"
     And I press "refresh" near "Test forum name" in the app
     Then I should not see "There was a problem connecting to the site. Please check your connection and try again."

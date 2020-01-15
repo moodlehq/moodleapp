@@ -252,6 +252,7 @@ Feature: Test basic usage of survey activity in app
   And I log in as "student1"
   And I press "Course 1" near "Course overview" in the app
   And I press "Test survey Colles (preferred)" in the app
+  And I pause
   And I press "Choose" near "1. my learning focuses on issues that interest me." in the app
   And I press "Sometimes" near "Often" in the app
   And I press "Choose" near "2. what I learn is important for my professional practice." in the app
@@ -564,7 +565,7 @@ Feature: Test basic usage of survey activity in app
   And I press "OK" in the app
   Then I should see "This Survey has offline data to be synchronised."
   And I switch offline mode to "false"
-  And I press "arrow back" in the app
+  And I press the back button in the app
   And I press "Test survey critical incidents" in the app
   And I press "Information" in the app
   And I press "Refresh" in the app
@@ -587,7 +588,7 @@ Feature: Test basic usage of survey activity in app
   And I press "Test survey name" in the app
   Then I should see "There was a problem connecting to the site. Please check your connection and try again."
   And I press "OK" in the app
-  And I press "arrow back" in the app
+  And I press the back button in the app
   And I press "Test survey critical incidents" in the app
   And I press "Submit" in the app 
   And I press "OK" in the app

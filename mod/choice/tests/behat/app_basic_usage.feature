@@ -38,7 +38,7 @@ Feature: Test basic usage of choice activity in app
     And I should see "Option 2: 1"
     And I should see "Option 3: 0"
     And I should not see "Remove my choice"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test single choice name" in the app
     And I should see "Option 1: 0"
     And I should see "Option 2: 1"
@@ -87,14 +87,14 @@ Feature: Test basic usage of choice activity in app
     And I press "Save my choice" in the app
     Then I should see "Are you sure"
     And I press "OK" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test single choice name" in the app
     Then I should not see "Option 1: 0"
     And I should not see "Option 2: 1"
     And I should not see "Option 3: 0"
     And I should see "This Choice has offline data to be synchronised."
     And I switch offline mode to "false"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test single choice name" in the app
     And I press "Information" in the app
     And I press "Refresh" in the app
@@ -144,21 +144,21 @@ Feature: Test basic usage of choice activity in app
     And I press "Choice name" in the app
     And I should see "There was a problem connecting to the site. Please check your connection and try again."
     And I press "OK" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test single choice name" in the app
     And I press "Option 1" in the app
     And I press "Option 2" in the app
     And I press "Save my choice" in the app
     And I should see "Are you sure"
     And I press "OK" in the app
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test single choice name" in the app
     And I should not see "Option 1: 0"
     And I should not see "Option 2: 1"
     And I should not see "Option 3: 0"
     And I should see "This Choice has offline data to be synchronised."
     And I switch offline mode to "false"
-    And I press "arrow back" in the app
+    And I press the back button in the app
     And I press "Test single choice name" in the app
     Then I should see "Option 1: 0"
     And I should see "Option 2: 1"
