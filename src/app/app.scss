@@ -1179,6 +1179,16 @@ ion-app.platform-desktop {
     white-space: normal !important;
   }
 
+  audio, video {
+    &::-webkit-media-controls-overlay-play-button,
+    &::-webkit-media-controls-play-button,
+    &::-webkit-media-controls-timeline,
+    &::-webkit-media-controls-mute-button,
+    &::-webkit-media-controls-fullscreen-button {
+      cursor: pointer;
+    }
+  }
+
   &.platform-windows {
     video::-webkit-media-text-track-display {
       font-size: 0.6em;
