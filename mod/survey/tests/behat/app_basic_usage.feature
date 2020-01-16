@@ -597,3 +597,12 @@ Feature: Test basic usage of survey activity in app
   And I wait "600" seconds
   Then I should not see "This Survey has offline data to be synchronised."
   And I should see "You have completed this survey."
+
+  
+
+
+
+
+
+	
+

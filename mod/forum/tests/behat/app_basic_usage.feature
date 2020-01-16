@@ -439,3 +439,4 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Write your reply" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
     And I pause
+
