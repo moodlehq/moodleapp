@@ -85,8 +85,8 @@ export class ZipMock extends Zip {
             }
 
             // First of all, create the directory where the files will be unzipped.
-            const destParent = destination.substring(0, source.lastIndexOf('/')),
-                destFolderName = destination.substr(source.lastIndexOf('/') + 1);
+            const destParent = destination.substring(0, destination.lastIndexOf('/')),
+                destFolderName = destination.substr(destination.lastIndexOf('/') + 1);
 
             return this.file.createDir(destParent, destFolderName, true);
         }).then(() => {
