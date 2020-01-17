@@ -37,6 +37,7 @@ addon-qtype-ddimageortext {
 
     .drag {
         border: 1px solid $gray-darker;
+        color: $text-color;
         cursor: pointer;
         z-index: 2;
     }
