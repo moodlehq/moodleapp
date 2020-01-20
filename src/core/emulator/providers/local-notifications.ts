@@ -565,7 +565,7 @@ export class LocalNotificationsMock extends LocalNotifications {
         const notifications = await this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE);
         notifications.forEach((notification) => {
             notification.trigger = {
-                at: new Date(notification.at)
+                at: new Date(notification.at),
             };
             notification.data = this.textUtils.parseJSON(notification.data);
             notification.triggered = !!notification.triggered;

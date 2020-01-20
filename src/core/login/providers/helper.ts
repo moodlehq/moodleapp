@@ -62,6 +62,11 @@ export interface CoreLoginSSOData {
      * Params to page to the page.
      */
     pageParams?: any;
+
+    /**
+     * Other params added to the login url.
+     */
+    ssoUrlParams?: {[name: string]: any};
 }
 
 /**
@@ -180,7 +185,8 @@ export class CoreLoginHelperProvider {
         }).then((data) => {
             siteData = data;
 
-            return this.handleSSOLoginAuthentication(siteData.siteUrl, siteData.token, siteData.privateToken);
+            return this.handleSSOLoginAuthentication(siteData.siteUrl, siteData.token, siteData.privateToken,
+                    this.getOAuthIdFromParams(data.ssoUrlParams));
         }).then(() => {
             if (siteData.pageName) {
                 // State defined, go to that state instead of site initial page.
@@ -397,6 +403,16 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Get the OAuth ID of some URL params (if it has an OAuth ID).
+     *
+     * @param params Params.
+     * @return OAuth ID.
+     */
+    getOAuthIdFromParams(params: {[name: string]: any}): number {
+        return params && typeof params.oauthsso != 'undefined' ? Number(params.oauthsso) : undefined;
+    }
+
+    /**
      * Get the site policy.
      *
      * @param siteId Site ID. If not defined, current site.
@@ -548,11 +564,12 @@ export class CoreLoginHelperProvider {
      * @param siteUrl Site's URL.
      * @param token User's token.
      * @param privateToken User's private token.
+     * @param oauthId OAuth ID. Only if the authentication was using an OAuth method.
      * @return Promise resolved when the user is authenticated with the token.
      */
-    handleSSOLoginAuthentication(siteUrl: string, token: string, privateToken?: string): Promise<any> {
+    handleSSOLoginAuthentication(siteUrl: string, token: string, privateToken?: string, oauthId?: number): Promise<any> {
         // Always create a new site to prevent overriding data if another user credentials were introduced.
-        return this.sitesProvider.newSite(siteUrl, token, privateToken);
+        return this.sitesProvider.newSite(siteUrl, token, privateToken, true, oauthId);
     }
 
     /**
@@ -778,15 +795,16 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const service = this.sitesProvider.determineService(siteUrl),
-            params = this.urlUtils.extractUrlParams(provider.url);
-        let loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageParams);
+        const params = this.urlUtils.extractUrlParams(provider.url);
 
         if (!params.id) {
             return false;
         }
 
-        loginUrl += '&oauthsso=' + params.id;
+        const service = this.sitesProvider.determineService(siteUrl);
+        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageParams, {
+            oauthsso: params.id,
+        });
 
         if (this.appProvider.isLinux()) {
             // In Linux desktop app, always use embedded browser.
@@ -924,8 +942,12 @@ export class CoreLoginHelperProvider {
      * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
      * @param pageParams Params of the state to go once authenticated.
+     * @param urlParams Other params to add to the URL.
+     * @return Login Url.
      */
-    prepareForSSOLogin(siteUrl: string, service?: string, launchUrl?: string, pageName?: string, pageParams?: any): string {
+    prepareForSSOLogin(siteUrl: string, service?: string, launchUrl?: string, pageName?: string, pageParams?: any,
+            urlParams?: {[name: string]: any}): string {
+
         service = service || CoreConfigConstants.wsextservice;
         launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
 
@@ -935,13 +957,18 @@ export class CoreLoginHelperProvider {
         loginUrl += '&passport=' + passport;
         loginUrl += '&urlscheme=' + CoreConfigConstants.customurlscheme;
 
+        if (urlParams) {
+            loginUrl = this.urlUtils.addParamsToUrl(loginUrl, urlParams);
+        }
+
         // Store the siteurl and passport in CoreConfigProvider for persistence.
         // We are "configuring" the app to wait for an SSO. CoreConfigProvider shouldn't be used as a temporary storage.
         this.configProvider.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify({
             siteUrl: siteUrl,
             passport: passport,
             pageName: pageName || '',
-            pageParams: pageParams || {}
+            pageParams: pageParams || {},
+            ssoUrlParams: urlParams || {},
         }));
 
         return loginUrl;
@@ -1331,7 +1358,8 @@ export class CoreLoginHelperProvider {
                     token: params[1],
                     privateToken: params[2],
                     pageName: data.pageName,
-                    pageParams: data.pageParams
+                    pageParams: data.pageParams,
+                    ssoUrlParams: data.ssoUrlParams,
                 };
             } else {
                 this.logger.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '

@@ -115,9 +115,9 @@ export class CoreAppProvider {
             },
             {
                 name: 'version',
-                type: 'INTEGER'
-            }
-        ]
+                type: 'INTEGER',
+            },
+        ],
     };
 
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,

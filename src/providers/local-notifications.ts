@@ -56,8 +56,8 @@ export class CoreLocalNotificationsProvider {
                         name: 'code',
                         type: 'INTEGER',
                         notNull: true
-                    }
-                ]
+                    },
+                ],
             },
             {
                 name: this.COMPONENTS_TABLE,
@@ -71,8 +71,8 @@ export class CoreLocalNotificationsProvider {
                         name: 'code',
                         type: 'INTEGER',
                         notNull: true
-                    }
-                ]
+                    },
+                ],
             },
             {
                 name: this.TRIGGERED_TABLE,
@@ -86,10 +86,10 @@ export class CoreLocalNotificationsProvider {
                         name: 'at',
                         type: 'INTEGER',
                         notNull: true
-                    }
-                ]
-            }
-        ]
+                    },
+                ],
+            },
+        ],
     };
 
     protected logger;

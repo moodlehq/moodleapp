@@ -38,6 +38,7 @@ export class CoreLoginReconnectPage {
     site: any;
     showForgottenPassword = true;
     showSiteAvatar = false;
+    isOAuth = false;
 
     protected infoSiteUrl: string;
     protected pageName: string;
@@ -87,6 +88,7 @@ export class CoreLoginReconnectPage {
             this.username = site.infos.username;
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
+            this.isOAuth = site.isOAuth();
 
             // Show logo instead of avatar if it's a fixed site.
             this.showSiteAvatar = this.site.avatar && !this.loginHelper.getFixedSites();

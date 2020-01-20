@@ -109,9 +109,9 @@ export class CorePushNotificationsProvider {
                     {
                         name: 'number',
                         type: 'INTEGER'
-                    }
+                    },
                 ],
-                primaryKeys: ['siteid', 'addon']
+                primaryKeys: ['siteid', 'addon'],
             },
             {
                 name: CorePushNotificationsProvider.PENDING_UNREGISTER_TABLE,
@@ -132,10 +132,10 @@ export class CorePushNotificationsProvider {
                     {
                         name: 'info',
                         type: 'TEXT'
-                    }
-                ]
-            }
-        ]
+                    },
+                ],
+            },
+        ],
     };
     protected siteSchema: CoreSiteSchema = {
         name: 'AddonPushNotificationsProvider', // The name still contains "Addon" for backwards compatibility.
@@ -583,7 +583,7 @@ export class CorePushNotificationsProvider {
                     siteid: site.id,
                     siteurl: site.getURL(),
                     token: site.getToken(),
-                    info: JSON.stringify(site.getInfo())
+                    info: JSON.stringify(site.getInfo()),
                 });
             }
 

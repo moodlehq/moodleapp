@@ -107,8 +107,8 @@ export class CoreCronDelegate {
                     {
                         name: 'value',
                         type: 'INTEGER'
-                    }
-                ]
+                    },
+                ],
             },
         ],
     };

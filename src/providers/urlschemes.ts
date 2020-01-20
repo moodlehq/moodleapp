@@ -22,7 +22,7 @@ import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreLoginHelperProvider, CoreLoginSSOData } from '@core/login/providers/helper';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
@@ -32,21 +32,7 @@ import { CoreConstants } from '@core/constants';
 /**
  * All params that can be in a custom URL scheme.
  */
-export interface CoreCustomURLSchemesParams {
-    /**
-     * The site's URL.
-     */
-    siteUrl: string;
-
-    /**
-     * User's token. If set, user will be authenticated.
-     */
-    token?: string;
-
-    /**
-     * User's private token.
-     */
-    privateToken?: string;
+export interface CoreCustomURLSchemesParams extends CoreLoginSSOData {
 
     /**
      * Username.
@@ -57,16 +43,6 @@ export interface CoreCustomURLSchemesParams {
      * URL to open once authenticated.
      */
     redirect?: any;
-
-    /**
-     * Name of the page to go once authenticated.
-     */
-    pageName?: string;
-
-    /**
-     * Params to pass to the page.
-     */
-    pageParams?: any;
 }
 
 /*
@@ -162,7 +138,8 @@ export class CoreCustomURLSchemesProvider {
                     }
 
                     return promise.then(() => {
-                        return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, isSSOToken);
+                        return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, isSSOToken,
+                                this.loginHelper.getOAuthIdFromParams(data.ssoUrlParams));
                     });
                 } else {
                     // Token belongs to current site, no need to create it.

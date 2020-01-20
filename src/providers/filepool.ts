@@ -274,11 +274,11 @@ export class CoreFilepoolProvider {
                     {
                         name: 'links',
                         type: 'TEXT'
-                    }
+                    },
                 ],
-                primaryKeys: ['siteId', 'fileId']
-            }
-        ]
+                primaryKeys: ['siteId', 'fileId'],
+            },
+        ],
     };
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreFilepoolProvider',
