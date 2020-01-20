@@ -1086,6 +1086,41 @@ export class CoreLoginHelperProvider {
                     });
                 }
             } else {
+                if (currentSite.isOAuth()) {
+                    // User authenticated using an OAuth method. Check if it's still valid.
+                    const identityProviders = this.getValidIdentityProviders(result.config);
+                    const providerToUse = identityProviders.find((provider) => {
+                        const params = this.urlUtils.extractUrlParams(provider.url);
+
+                        return params.id == currentSite.getOAuthId();
+                    });
+
+                    if (providerToUse) {
+                        if (!this.appProvider.isSSOAuthenticationOngoing() && !this.isSSOConfirmShown && !this.waitingForBrowser) {
+                            // Open browser to perform the OAuth.
+                            this.isSSOConfirmShown = true;
+
+                            const confirmMessage = this.translate.instant('core.login.' +
+                                    (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription'));
+
+                            this.domUtils.showConfirm(confirmMessage).then(() => {
+                                this.waitingForBrowser = true;
+                                this.sitesProvider.unsetCurrentSite(); // Unset current site to make authentication work fine.
+
+                                this.openBrowserForOAuthLogin(siteUrl, providerToUse, result.config.launchurl, data.pageName,
+                                        data.params);
+                            }).catch(() => {
+                                // User cancelled, logout him.
+                                this.sitesProvider.logout();
+                            }).finally(() => {
+                                this.isSSOConfirmShown = false;
+                            });
+                        }
+
+                        return;
+                    }
+                }
+
                 const info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined') {
                     const rootNavCtrl = this.appProvider.getRootNavController(),

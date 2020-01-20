@@ -88,6 +88,8 @@ export class CoreLoginReconnectPage {
             this.username = site.infos.username;
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
+
+            // If login was OAuth we should only reach this page if the OAuth method ID has changed.
             this.isOAuth = site.isOAuth();
 
             // Show logo instead of avatar if it's a fixed site.
