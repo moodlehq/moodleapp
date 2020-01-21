@@ -116,13 +116,13 @@ export class CoreLoginSitePage {
 
                 // Attempt parsing the domain after initial check failed
                 .catch((error) => {
-                    const domain = CoreUrl.parseDomain(url);
+                    const urlParts = CoreUrl.parse(url, 'http');
 
-                    if (!domain) {
+                    if (!urlParts || !urlParts.domain) {
                         throw error;
                     }
 
-                    return this.sitesProvider.checkSite(domain);
+                    return this.sitesProvider.checkSite(urlParts.domain);
                 })
 
                 .then((result) => this.login(result))
@@ -170,6 +170,13 @@ export class CoreLoginSitePage {
         modal.present();
     }
 
+    /**
+     * Process login to a site.
+     *
+     * @param response Response obtained from the site check request.
+     *
+     * @return Promise resolved after logging in.
+     */
     private async login(response: CoreSiteCheckResponse): Promise<void> {
         return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
             if (response.warning) {
