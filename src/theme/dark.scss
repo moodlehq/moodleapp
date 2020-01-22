@@ -16,109 +16,130 @@ $core-dark-login-item-background-color: $core-dark-login-box-background-color !d
 $core-dark-login-button-outline: $core-login-button-outline !default;
 $core-dark-login-loading-color: $core-dark-text-color !default;
 
-ion-app.app-root .ion-page {
+ion-app.app-root {
   @include darkmode() {
-    color: $core-dark-text-color;
-    background-color: $core-dark-item-bg-color;
+    ion-action-sheet .action-sheet-container .action-sheet-group .action-sheet-button {
+      color: $core-dark-text-color;
 
-    a:not(.button) {
-      color: $core-dark-link-color;
+      &.action-sheet-selected {
+        color: $core-color;
+      }
+      &.activated {
+        background-color: $black;
+      }
     }
 
-    .core-tabs-bar,
-    .core-tabs-bar *,
-    .core-tabs-bar .tab-slide,
     .ion-page,
-    .item,
-    .item-select,
-    ion-card,
-    .card-header,
-    .card-content {
-        color: $core-dark-text-color;
-        background-color: $core-dark-item-bg-color;
+    ion-popover .popover-content,
+    ion-alert .alert-wrapper,
+    ion-action-sheet .action-sheet-container .action-sheet-group,
+    ion-loading .loading-wrapper {
+      color: $core-dark-text-color;
+      background-color: $core-dark-item-bg-color;
 
-        h1, h2, h3, h4, h5, h6,
-        ion-icon,
-        .label {
+      a:not(.button) {
+        color: $core-dark-link-color;
+      }
+
+      .alert-message {
+        color: $core-dark-text-color;
+      }
+
+      .core-tabs-bar,
+      .core-tabs-bar *,
+      .core-tabs-bar .tab-slide,
+      .ion-page,
+      .item,
+      .item-select,
+      ion-card,
+      .card-header,
+      .card-content {
+          color: $core-dark-text-color;
+          background-color: $core-dark-item-bg-color;
+
+          h1, h2, h3, h4, h5, h6,
+          ion-icon,
+          .label {
+            color: $core-dark-text-color;
+          }
+
+          @each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
+            .icon-md-#{$color-name},
+            .icon-ios-#{$color-name},
+            .icon-wp-#{$color-name} {
+              color: $color-base;
+            }
+          }
+          p {
+            color: $core-dark-text-secondary-color;
+          }
+      }
+
+      .item-divider,
+      .item-divider .item-inner {
+        color: $core-dark-text-color;
+        background-color: $core-dark-item-divider-bg-color;
+      }
+
+      .item.item-ios:active,
+      .item.item-ios.activated,
+      .item.item-md:active,
+      .item.item-md.activated,
+      .item.item-wp:active,
+      .item.item-wp.activated {
+        background-color: $core-dark-background-color;
+      }
+
+      .content,
+      .content-md,
+      .content-ios,
+      .content-wp {
+        color: $core-dark-text-color;
+        background-color: $core-dark-background-color;
+      }
+
+      .button,
+      .button-md-light,
+      .button-ios-light,
+      .button-wp-light,
+      .button-outline {
+        ion-icon {
+          color: inherit;
+        }
+      }
+
+      .toolbar-md-light .toolbar-background,
+      .toolbar-ios-light .toolbar-background,
+      .toolbar-wp-light .toolbar-background {
+        background-color: $core-dark-item-divider-bg-color;
+        color: $core-dark-text-color;
+      }
+
+      .button.button-clear-md-dark,
+      .button.button-clear-ios-dark,
+      .button.button-clear-wp-dark {
+        .button-inner ion-icon {
           color: $core-dark-text-color;
         }
+      }
 
-        @each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
-          .icon-md-#{$color-name},
-          .icon-ios-#{$color-name},
-          .icon-wp-#{$color-name} {
-            color: $color-base;
-          }
+      .button-outline {
+        background-color: $core-dark-item-bg-color;
+      }
+
+      ion-refresher {
+        .refresher-pulling-icon,
+        .refresher-refreshing-icon,
+        .refresher-pulling-icon ion-icon,
+        .refresher-refreshing-icon ion-icon,
+        ion-icon {
+          color: $refresher-icon-color;
         }
-        p {
-          color: $core-dark-text-secondary-color;
+
+        .refresher-pulling-text,
+        .refresher-refreshing-text {
+          color: $core-dark-text-color;
         }
-    }
-
-    .item-divider,
-    .item-divider .item-inner {
-      color: $core-dark-text-color;
-      background-color: $core-dark-item-divider-bg-color;
-    }
-
-    .item.item-ios:active,
-    .item.item-ios.activated,
-    .item.item-md:active,
-    .item.item-md.activated,
-    .item.item-wp:active,
-    .item.item-wp.activated {
-      background-color: $core-dark-background-color;
-    }
-
-    .content,
-    .content-md,
-    .content-ios,
-    .content-wp {
-      color: $core-dark-text-color;
-      background-color: $core-dark-background-color;
-    }
-
-    .button,
-    .button-md-light,
-    .button-ios-light,
-    .button-wp-light,
-    .button-outline {
-      ion-icon {
-        color: inherit;
-      }
-    }
-
-    .toolbar-md-light .toolbar-background,
-    .toolbar-ios-light .toolbar-background,
-    .toolbar-wp-light .toolbar-background {
-      background-color: $core-dark-item-divider-bg-color;
-      color: $core-dark-text-color;
-    }
-
-    .button.button-clear-md-dark,
-    .button.button-clear-ios-dark,
-    .button.button-clear-wp-dark {
-      .button-inner ion-icon {
-        color: $core-dark-text-color;
-      }
-    }
-
-    .button-outline {
-      background-color: $core-dark-item-bg-color;
-    }
-
-    ion-refresher {
-      .refresher-pulling-icon,
-      .refresher-refreshing-icon,
-      .refresher-pulling-icon ion-icon,
-      .refresher-refreshing-icon ion-icon,
-      ion-icon {
-        color: $refresher-icon-color;
-      }
-
-      .refresher-pulling-text,
-      .refresher-refreshing-text {
-        color: $core-dark-text-color;
       }
     }
   }

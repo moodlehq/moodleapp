@@ -68,6 +68,9 @@ ion-app.app-root.md {
     .action-sheet-title,
     .action-sheet-container > .action-sheet-group:first-child {
       box-shadow: 0 3px 5px $gray;
+      @include darkmode() {
+        box-shadow: 0 3px 5px $black;
+      }
     }
 
     .action-sheet-title {
