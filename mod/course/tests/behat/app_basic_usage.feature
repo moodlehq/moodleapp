@@ -315,3 +315,76 @@ Feature: Test basic usage of one course in app
   And I press "Test glossary" in the app
   Then the header should be "Test glossary" in the app
   And I press the back button in the app
+  
+  @app @3.8.0 @OK
+  Scenario: Navigation between sections using the bottom arrows
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  Then the header should be "Course 1" in the app
+  And I should see "Choice course 1"
+  And I should see "assignment"
+  And I should see "Test forum name"
+  And I should see "Test chat name"
+  And I should see "Web links"
+  And I should see "Test external name"
+  And I should see "Test feedback name"
+  And I should see "Test glossary"
+  And I should see "Quiz 1"
+  And I should see "Test survey name"
+  And I should see "Test wiki name"
+  And I should see "Test lesson name"
+  And I should see "Test scorm name"
+  And I should see "Test workshop name"
+  And I press "arrow dropdown" in the app
+  And I press "General" near "Sections" in the app
+  Then I should see "General"
+  And I should not see "Topic 1"
+  And I should not see "Topic 2"
+  And I should not see "Topic 3"
+  And I should not see "Topic 4"
+  And I should not see "Topic 5"
+  And I press "arrow forward" near "Test wiki name" in the app
+  Then I should not see "General"
+  And I should see "Topic 1"
+  And I should not see "Topic 2"
+  And I should not see "Topic 3"
+  And I should not see "Topic 4"
+  And I should not see "Topic 5"
+  And I press "arrow forward" near "Test survey name" in the app
+  Then I should not see "General"
+  And I should not see "Topic 1"
+  And I should see "Topic 2"
+  And I should not see "Topic 3"
+  And I should not see "Topic 4"
+  And I should not see "Topic 5"
+  And I press "arrow forward" near "Test scorm name" in the app
+  Then I should not see "General"
+  And I should not see "Topic 1"
+  And I should not see "Topic 2"
+  And I should see "Topic 3"
+  And I should not see "Topic 4"
+  And I should not see "Topic 5"
+  And I press "arrow forward" near "Test workshop name" in the app
+  Then I should not see "General"
+  And I should not see "Topic 1"
+  And I should not see "Topic 2"
+  And I should not see "Topic 3"
+  And I should see "Topic 4"
+  And I should not see "Topic 5"
+  And I press "arrow forward" near "Web links" in the app
+  Then I should not see "General"
+  And I should not see "Topic 1"
+  And I should not see "Topic 2"
+  And I should not see "Topic 3"
+  And I should not see "Topic 4"
+  And I should see "Topic 5"
+  And I press "arrow back" near "Test glossary" in the app
+  Then I should not see "General"
+  And I should not see "Topic 1"
+  And I should not see "Topic 2"
+  And I should not see "Topic 3"
+  And I should see "Topic 4"
+  And I should not see "Topic 5"
