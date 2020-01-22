@@ -430,16 +430,25 @@ export class CoreLoginHelperProvider {
      * Get the valid identity providers from a site config.
      *
      * @param siteConfig Site's public config.
+     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @return Valid identity providers.
      */
-    getValidIdentityProviders(siteConfig: any): any[] {
+    getValidIdentityProviders(siteConfig: any, disabledFeatures?: string): any[] {
+        if (this.isFeatureDisabled('NoDelegate_IdentityProviders', siteConfig, disabledFeatures)) {
+            // Identity providers are disabled, return an empty list.
+            return [];
+        }
+
         const validProviders = [],
             httpUrl = this.textUtils.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/'),
             httpsUrl = this.textUtils.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
 
         if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
             siteConfig.identityproviders.forEach((provider) => {
-                if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1)) {
+                const urlParams = this.urlUtils.extractUrlParams(provider.url);
+
+                if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
+                        !this.isFeatureDisabled('NoDelegate_IdentityProvider_' + urlParams.id, siteConfig, disabledFeatures)) {
                     validProviders.push(provider);
                 }
             });
