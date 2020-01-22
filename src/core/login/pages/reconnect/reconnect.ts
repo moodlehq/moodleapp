@@ -74,8 +74,7 @@ export class CoreLoginReconnectPage {
      */
     ionViewDidLoad(): void {
         if (this.siteConfig) {
-            this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
-            this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig);
+            this.getDataFromConfig(this.siteConfig);
         }
 
         this.sitesProvider.getSite(this.siteId).then((site) => {
@@ -100,7 +99,7 @@ export class CoreLoginReconnectPage {
                         this.logoUrl = config.logourl || config.compactlogourl;
                     }
 
-                    this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(config);
+                    this.getDataFromConfig(this.siteConfig);
                 }).catch(() => {
                     this.cancel();
                 });
@@ -111,7 +110,18 @@ export class CoreLoginReconnectPage {
             // Shouldn't happen. Just leave the view.
             this.cancel();
         });
+    }
 
+    /**
+     * Get some data (like identity providers) from the site config.
+     *
+     * @param config Config to use.
+     */
+    protected getDataFromConfig(config: any): void {
+        const disabledFeatures = this.loginHelper.getDisabledFeatures(config);
+
+        this.identityProviders = this.loginHelper.getValidIdentityProviders(config, disabledFeatures);
+        this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(config);
     }
 
     /**

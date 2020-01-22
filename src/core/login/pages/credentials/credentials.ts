@@ -155,9 +155,9 @@ export class CoreLoginCredentialsPage {
             this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
             this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
-            this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
 
             const disabledFeatures = this.loginHelper.getDisabledFeatures(this.siteConfig);
+            this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
             this.canSignup = this.siteConfig.registerauth == 'email' &&
                     !this.loginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
             this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
