@@ -141,6 +141,12 @@ export interface CoreSiteSchema {
     canBeCleared?: string[];
 
     /**
+     * If true, the schema will only be applied to the current site. Otherwise it will be applied to all sites.
+     * If you're implementing a site plugin, please set it to true.
+     */
+    onlyCurrentSite?: boolean;
+
+    /**
      * Tables to create when installing or upgrading the schema.
      */
     tables?: SQLiteDBTableSchema[];
@@ -156,6 +162,16 @@ export interface CoreSiteSchema {
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
+}
+
+/**
+ * Registered site schema.
+ */
+export interface CoreRegisteredSiteSchema extends CoreSiteSchema {
+    /**
+     * Site ID to apply the schema to. If not defined, all sites.
+     */
+    siteId?: string;
 }
 
 export const enum CoreSitesReadingStrategy {
@@ -252,7 +268,7 @@ export class CoreSitesProvider {
     protected siteSchemasMigration: { [siteId: string]: Promise<any> } = {};
 
     // Schemas for site tables. Other providers can add schemas in here.
-    protected siteSchemas: { [name: string]: CoreSiteSchema } = {};
+    protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
     protected siteTablesSchemas: SQLiteDBTableSchema[] = [
         {
             name: this.SCHEMA_VERSIONS_TABLE,
@@ -1626,16 +1642,39 @@ export class CoreSitesProvider {
 
     /**
      * Register a site schema.
+     *
+     * @param schema The schema to register.
+     * @return Promise resolved when done.
      */
-    registerSiteSchema(schema: CoreSiteSchema): void {
-
+    async registerSiteSchema(schema: CoreSiteSchema): Promise<void> {
         if (this.currentSite) {
-            // Site has already been created, it's a schema probably added by site plugins. Add it only to current site.
-            const schemas: {[name: string]: CoreSiteSchema} = {};
-            schemas[schema.name] = schema;
+            try {
+                // Site has already been created, apply the schema directly.
+                const schemas: {[name: string]: CoreRegisteredSiteSchema} = {};
+                schemas[schema.name] = schema;
 
-            this.applySiteSchemas(this.currentSite, schemas);
-        } else {
+                if (!schema.onlyCurrentSite) {
+                    // Apply it to all sites.
+                    const siteIds = await this.getSitesIds();
+
+                    await Promise.all(siteIds.map(async (siteId) => {
+                        const site = await this.getSite(siteId);
+
+                        return this.applySiteSchemas(site, schemas);
+                    }));
+                } else {
+                    // Apply it to the specified site only.
+                    (schema as CoreRegisteredSiteSchema).siteId = this.currentSite.getId();
+
+                    await this.applySiteSchemas(this.currentSite, schemas);
+                }
+            } finally {
+                // Add the schema to the list. It's done in the end to prevent a schema being applied twice.
+                this.siteSchemas[schema.name] = schema;
+            }
+
+        } else if (!schema.onlyCurrentSite) {
+            // Add the schema to the list, it will be applied when the sites are created.
             this.siteSchemas[schema.name] = schema;
         }
     }
@@ -1673,7 +1712,7 @@ export class CoreSitesProvider {
      * @param schemas Schemas to migrate.
      * @return Promise resolved when done.
      */
-    protected applySiteSchemas(site: CoreSite, schemas: {[name: string]: CoreSiteSchema}): Promise<any> {
+    protected applySiteSchemas(site: CoreSite, schemas: {[name: string]: CoreRegisteredSiteSchema}): Promise<any> {
         const db = site.getDb();
 
         // Fetch installed versions of the schema.
@@ -1687,7 +1726,8 @@ export class CoreSitesProvider {
             for (const name in schemas) {
                 const schema = schemas[name];
                 const oldVersion = versions[name] || 0;
-                if (oldVersion >= schema.version) {
+                if (oldVersion >= schema.version || (schema.siteId && site.getId() != schema.siteId)) {
+                    // Version already applied or the schema shouldn't be registered to this site.
                     continue;
                 }
 
@@ -1748,12 +1788,15 @@ export class CoreSitesProvider {
     /**
      * Returns the Site Schema names that can be cleared on space storage.
      *
+     * @param site The site that will be cleared.
      * @return Name of the site schemas.
      */
-    getSiteTableSchemasToClear(): string[] {
+    getSiteTableSchemasToClear(site: CoreSite): string[] {
         let reset = [];
         for (const name in this.siteSchemas) {
-            if (this.siteSchemas[name].canBeCleared) {
+            const schema = this.siteSchemas[name];
+
+            if (schema.canBeCleared && (!schema.siteId || site.getId() == schema.siteId)) {
                 reset = reset.concat(this.siteSchemas[name].canBeCleared);
             }
         }
