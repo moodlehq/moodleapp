@@ -1628,7 +1628,16 @@ export class CoreSitesProvider {
      * Register a site schema.
      */
     registerSiteSchema(schema: CoreSiteSchema): void {
-        this.siteSchemas[schema.name] = schema;
+
+        if (this.currentSite) {
+            // Site has already been created, it's a schema probably added by site plugins. Add it only to current site.
+            const schemas: {[name: string]: CoreSiteSchema} = {};
+            schemas[schema.name] = schema;
+
+            this.applySiteSchemas(this.currentSite, schemas);
+        } else {
+            this.siteSchemas[schema.name] = schema;
+        }
     }
 
     /**
@@ -1638,7 +1647,6 @@ export class CoreSitesProvider {
      * @return Promise resolved when done.
      */
     migrateSiteSchemas(site: CoreSite): Promise<any> {
-        const db = site.getDb();
 
         if (this.siteSchemasMigration[site.id]) {
             return this.siteSchemasMigration[site.id];
@@ -1647,46 +1655,59 @@ export class CoreSitesProvider {
         this.logger.debug(`Migrating all schemas of ${site.id}`);
 
         // First create tables not registerd with name/version.
-        const promise = db.createTablesFromSchema(this.siteTablesSchemas).then(() => {
-            // Fetch installed versions of the schema.
-            return db.getAllRecords(this.SCHEMA_VERSIONS_TABLE).then((records) => {
-                const versions = {};
-                records.forEach((record) => {
-                    versions[record.name] = record.version;
-                });
-
-                const promises = [];
-                for (const name in this.siteSchemas) {
-                    const schema = this.siteSchemas[name];
-                    const oldVersion = versions[name] || 0;
-                    if (oldVersion >= schema.version) {
-                        continue;
-                    }
-
-                    this.logger.debug(`Migrating schema '${name}' of ${site.id} from version ${oldVersion} to ${schema.version}`);
-
-                    let promise: Promise<any> = Promise.resolve();
-                    if (schema.tables) {
-                        promise = promise.then(() => db.createTablesFromSchema(schema.tables));
-                    }
-                    if (schema.migrate) {
-                        promise = promise.then(() => schema.migrate(db, oldVersion, site.id));
-                    }
-
-                    // Set installed version.
-                    promise = promise.then(() => db.insertRecord(this.SCHEMA_VERSIONS_TABLE, {name, version: schema.version}));
-
-                    promises.push(promise);
-                }
-
-                return Promise.all(promises);
-            });
+        const promise = site.getDb().createTablesFromSchema(this.siteTablesSchemas).then(() => {
+            return this.applySiteSchemas(site, this.siteSchemas);
         });
 
         this.siteSchemasMigration[site.id] = promise;
 
         return promise.finally(() => {
             delete this.siteSchemasMigration[site.id];
+        });
+    }
+
+    /**
+     * Install and upgrade the supplied schemas for a certain site.
+     *
+     * @param site Site.
+     * @param schemas Schemas to migrate.
+     * @return Promise resolved when done.
+     */
+    protected applySiteSchemas(site: CoreSite, schemas: {[name: string]: CoreSiteSchema}): Promise<any> {
+        const db = site.getDb();
+
+        // Fetch installed versions of the schema.
+        return db.getAllRecords(this.SCHEMA_VERSIONS_TABLE).then((records) => {
+            const versions = {};
+            records.forEach((record) => {
+                versions[record.name] = record.version;
+            });
+
+            const promises = [];
+            for (const name in schemas) {
+                const schema = schemas[name];
+                const oldVersion = versions[name] || 0;
+                if (oldVersion >= schema.version) {
+                    continue;
+                }
+
+                this.logger.debug(`Migrating schema '${name}' of ${site.id} from version ${oldVersion} to ${schema.version}`);
+
+                let promise: Promise<any> = Promise.resolve();
+                if (schema.tables) {
+                    promise = promise.then(() => db.createTablesFromSchema(schema.tables));
+                }
+                if (schema.migrate) {
+                    promise = promise.then(() => schema.migrate(db, oldVersion, site.id));
+                }
+
+                // Set installed version.
+                promise = promise.then(() => db.insertRecord(this.SCHEMA_VERSIONS_TABLE, {name, version: schema.version}));
+
+                promises.push(promise);
+            }
+
+            return Promise.all(promises);
         });
     }
 
