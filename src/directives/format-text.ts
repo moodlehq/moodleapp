@@ -413,7 +413,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.contextInstanceId = site.getSiteHomeId();
             }
 
-            this.filter = typeof this.filter == 'undefined' ? !!(this.contextLevel && this.contextInstanceId) : !!this.filter;
+            this.filter = typeof this.filter == 'undefined' ?
+                    !!(this.contextLevel && typeof this.contextInstanceId != 'undefined') : !!this.filter;
 
             result.options = {
                 clean: this.utils.isTrueOrOne(this.clean),
