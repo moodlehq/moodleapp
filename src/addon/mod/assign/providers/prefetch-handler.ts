@@ -443,7 +443,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
         // Prefetch grade items.
         if (userId) {
-            promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
+            promises.push(this.courseProvider.getModuleBasicGradeInfo(moduleId, siteId).then((gradeInfo) => {
+                if (gradeInfo) {
+                    promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
+                }
+            }));
         }
 
         // Prefetch feedback.
