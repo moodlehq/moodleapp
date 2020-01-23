@@ -81,13 +81,12 @@ ion-app.app-root {
         background-color: $core-dark-item-divider-bg-color;
       }
 
-      .item.item-ios:active,
-      .item.item-ios.activated,
-      .item.item-md:active,
-      .item.item-md.activated,
-      .item.item-wp:active,
-      .item.item-wp.activated {
-        background-color: $core-dark-background-color;
+      .item.activated {
+        &.item-ios,
+        &.item-md,
+        &.item-wp {
+          background-color: $core-dark-background-color;
+        }
       }
 
       .content,
