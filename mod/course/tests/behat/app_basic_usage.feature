@@ -9,6 +9,7 @@ Feature: Test basic usage of one course in app
       | username | firstname | lastname | email |
       | teacher1 | Teacher | teacher | teacher1@example.com |
       | student1 | Student | student | student1@example.com |
+      | student2 | Student2 | student2 | student2@example.com |
 
     And the following "courses" exist:
       | fullname | shortname | category |
@@ -315,7 +316,7 @@ Feature: Test basic usage of one course in app
   And I press "Test glossary" in the app
   Then the header should be "Test glossary" in the app
   And I press the back button in the app
-  
+
   @app @3.8.0 @OK
   Scenario: Navigation between sections using the bottom arrows
   When I enter the app
@@ -388,3 +389,48 @@ Feature: Test basic usage of one course in app
   And I should not see "Topic 3"
   And I should see "Topic 4"
   And I should not see "Topic 5"
+
+  @app @3.8.0 @OK
+  Scenario: Self enrol
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Information" in the app
+  And I press "Course summary" in the app
+  And I press "Open in browser" in the app
+  And I switch to the browser tab opened by the app
+  And I log in as "teacher1"
+  And I press "Actions menu"
+  And I follow "More..."
+  And I follow "Users"
+  And I follow "Enrolment methods"
+  And I follow "Delete"
+  And I press "Continue"
+  And I follow "Enable"
+  And I close the browser tab opened by the app
+  When I enter the app
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app
+  And I press "Site home" in the app
+  And I press "Available courses" in the app
+  And I press "Course 1" in the app
+  And I press "Enrol me" in the app
+  And I press "OK" in the app
+  And I press "Contents" in the app
+  Then the header should be "Course 1" in the app
+  And I should see "Choice course 1"
+  And I should see "assignment"
+  And I should see "Test forum name"
+  And I should see "Test chat name"
+  And I should see "Web links"
+  And I should see "Test external name"
+  And I should see "Test feedback name"
+  And I should see "Test glossary"
+  And I should see "Quiz 1"
+  And I should see "Test survey name"
+  And I should see "Test wiki name"
+  And I should see "Test lesson name"
+  And I should see "Test scorm name"
+  And I should see "Test workshop name"
