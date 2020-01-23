@@ -87,6 +87,8 @@ export class CoreLoginSitePage {
             return;
         }
 
+        url = url.trim();
+
         const modal = this.domUtils.showModalLoading(),
             siteData = this.sitesProvider.getDemoSiteData(url);
 
@@ -113,18 +115,12 @@ export class CoreLoginSitePage {
         } else {
             // Not a demo site.
             this.sitesProvider.checkSite(url)
-
-                // Attempt parsing the domain after initial check failed
                 .catch((error) => {
-                    const urlParts = CoreUrl.parse(url, 'http');
+                    // Attempt guessing the domain if the initial check failed
+                    const domain = CoreUrl.guessMoodleDomain(url);
 
-                    if (!urlParts || !urlParts.domain) {
-                        throw error;
-                    }
-
-                    return this.sitesProvider.checkSite(urlParts.domain);
+                    return domain ? this.sitesProvider.checkSite(domain) : Promise.reject(error);
                 })
-
                 .then((result) => this.login(result))
                 .catch((error) => this.showLoginIssue(url, error))
                 .finally(() => modal.dismiss());
@@ -177,7 +173,7 @@ export class CoreLoginSitePage {
      *
      * @return Promise resolved after logging in.
      */
-    private async login(response: CoreSiteCheckResponse): Promise<void> {
+    protected async login(response: CoreSiteCheckResponse): Promise<void> {
         return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
             if (response.warning) {
                 this.domUtils.showErrorModal(response.warning, true, 4000);

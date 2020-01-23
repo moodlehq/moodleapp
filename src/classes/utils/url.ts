@@ -28,6 +28,11 @@ interface UrlParts {
     domain?: string;
 
     /**
+     * Url port.
+     */
+    port?: string;
+
+    /**
      * Url path.
      */
     path?: string;
@@ -49,39 +54,69 @@ interface UrlParts {
  */
 export class CoreUrl {
 
-    // Avoid creating singleton instances
+    // Avoid creating singleton instances.
     private constructor() {}
 
     /**
      * Parse parts of a url, using an implicit protocol if it is missing from the url.
      *
      * @param url Url.
-     * @param implicitProtocol Protocol to be used if the url doesn't have any.
      * @return Url parts.
      */
-    static parse(url: string, implicitProtocol?: string): UrlParts | null {
-        // Prepare url before parsing
-        url = url.trim();
-
-        if (implicitProtocol && !url.match(/^[a-zA-Z]+:\/\//)) {
-            url = `${implicitProtocol}://${url}`;
-        }
-
-        // Regular expression taken from RFC 3986: https://tools.ietf.org/html/rfc3986#appendix-B
+    static parse(url: string): UrlParts | null {
+        // Parse url with regular expression taken from RFC 3986: https://tools.ietf.org/html/rfc3986#appendix-B.
         const match = url.trim().match(/^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/);
 
         if (!match) {
             return null;
         }
 
-        // Prepare parts replacing empty strings with undefined
+        // Split host into domain and port.
+        const host = match[4] || '';
+        const [domain, port]: string[] = host.indexOf(':') === -1 ? [host] : host.split(':');
+
+        // Prepare parts replacing empty strings with undefined.
         return {
             protocol: match[2] || undefined,
-            domain: match[4] || undefined,
+            domain: domain || undefined,
+            port: port || undefined,
             path: match[5] || undefined,
             query: match[7] || undefined,
             fragment: match[9] || undefined,
         };
+    }
+
+    /**
+     * Guess the Moodle domain from a site url.
+     *
+     * @param url Site url.
+     * @return Guessed Moodle domain.
+     */
+    static guessMoodleDomain(url: string): string | null {
+        // Add protocol if it was missing. Moodle can only be served through http or https, so this is a fair assumption to make.
+        if (!url.match(/^https?:\/\//)) {
+            url = `https://${url}`;
+        }
+
+        // Match using common suffixes.
+        const knownSuffixes = [
+            '\/my\/?',
+            '\/\\\?redirect=0',
+            '\/index\\\.php',
+            '\/course\/view\\\.php',
+            '\/login\/index\\\.php',
+            '\/mod\/page\/view\\\.php',
+        ];
+        const match = url.match(new RegExp(`^https?:\/\/(.*?)(${knownSuffixes.join('|')})`));
+
+        if (match) {
+            return match[1];
+        }
+
+        // If nothing else worked, parse the domain.
+        const urlParts = CoreUrl.parse(url);
+
+        return urlParts && urlParts.domain ? urlParts.domain : null;
     }
 
 }
