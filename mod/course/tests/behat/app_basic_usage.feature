@@ -434,3 +434,45 @@ Feature: Test basic usage of one course in app
   And I should see "Test lesson name"
   And I should see "Test scorm name"
   And I should see "Test workshop name"
+  
+  @app @3.8.0 @OK
+  Scenario: Guest access
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Information" in the app
+  And I press "Course summary" in the app
+  And I press "Open in browser" in the app
+  And I switch to the browser tab opened by the app
+  And I log in as "teacher1"
+  And I press "Actions menu"
+  And I follow "More..."
+  And I follow "Users"
+  And I follow "Enrolment methods"
+  And I follow "Enable"
+  And I close the browser tab opened by the app
+  When I enter the app
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app
+  And I press "Site home" in the app
+  And I press "Available courses" in the app
+  And I press "Course 1" in the app
+  Then I should see "Download course"
+  And I should see "Contents"
+  And I press "Contents" in the app
+  Then the header should be "Course 1" in the app
+  And I should see "Choice course 1"
+  And I should see "assignment"
+  And I should see "Test forum name"
+  And I should see "Test chat name"
+  And I should see "Web links"
+  And I should see "Test feedback name"
+  And I should see "Test glossary"
+  And I should see "Quiz 1"
+  And I should see "Test survey name"
+  And I should see "Test wiki name"
+  And I should see "Test lesson name"
+  And I should see "Test scorm name"
+  And I should see "Test workshop name"
