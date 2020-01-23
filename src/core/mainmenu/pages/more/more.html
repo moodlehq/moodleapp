@@ -8,8 +8,8 @@
         <a ion-item core-user-link [userId]="siteInfo.userid" text-wrap>
             <ion-avatar core-user-avatar [user]="siteInfo" item-start></ion-avatar>
             <h2>{{siteInfo.fullname}}</h2>
-            <ion-note><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true"></core-format-text></ion-note>
-            <ion-note>{{ siteUrl }}</ion-note>
+            <ion-note class="core-note-block"><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true"></core-format-text></ion-note>
+            <ion-note class="core-note-block">{{ siteUrl }}</ion-note>
         </a>
         <ion-item-divider></ion-item-divider>
         <ion-item text-center *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
