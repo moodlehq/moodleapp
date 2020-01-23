@@ -33,7 +33,7 @@
              <ion-icon *ngIf="downloadCourseEnabled && prefetchCourseData.downloadSucceeded && !showSpinner" class="core-icon-downloaded" name="cloud-done" color="success" [attr.aria-label]="'core.downloaded' | translate" role="status"></ion-icon>
 
             <!-- Options menu. -->
-            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner">
+            <button ion-button icon-only clear color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner" [attr.aria-label]="('core.displayoptions' | translate)">
                 <core-icon name="more"></core-icon>
             </button>
         </div>

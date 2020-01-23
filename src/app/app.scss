@@ -679,6 +679,7 @@ ion-app.app-root {
 
   .alert-message {
       overflow-y: auto;
+      user-select: text;
   }
   ion-alert.core-nohead {
 

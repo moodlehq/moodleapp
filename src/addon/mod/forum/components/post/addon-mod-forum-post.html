@@ -10,7 +10,7 @@
                 <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                     <core-icon name="fa-circle" color="primary"></core-icon>
                 </ion-note>
-                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled" [attr.aria-label]="('core.displayoptions' | translate)">
                     <core-icon name="more"></core-icon>
                 </button>
             </div>
@@ -26,7 +26,7 @@
                     <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                         <core-icon name="fa-circle" color="primary"></core-icon>
                     </ion-note>
-                    <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                    <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled" [attr.aria-label]="('core.displayoptions' | translate)">
                         <core-icon name="more"></core-icon>
                     </button>
                 </ng-container>

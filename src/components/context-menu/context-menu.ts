@@ -70,7 +70,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.icon = this.icon || 'more';
-        this.ariaLabel = this.ariaLabel || this.title || this.translate.instant('core.info');
+        this.ariaLabel = this.ariaLabel || this.title || this.translate.instant('core.displayoptions');
     }
 
     /**
