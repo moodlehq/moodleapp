@@ -476,3 +476,103 @@ Feature: Test basic usage of one course in app
   And I should see "Test lesson name"
   And I should see "Test scorm name"
   And I should see "Test workshop name"
+
+  @app @3.8.0 @mobile @OK
+  Scenario: View blocks bellow/beside contents also when All sections selected (mobile)
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Information" in the app
+  And I press "Course summary" in the app
+  And I press "Open in browser" in the app
+  And I switch to the browser tab opened by the app
+  And I log in as "teacher1"
+  And I press "Actions menu"
+  And I follow "Turn editing on"
+  And I click on "Side panel" "button"
+  And I follow "Add a block"
+  And I follow "HTML"
+  And I click on "Side panel" "button"
+  And I follow "Add a block"
+  And I follow "Activities"
+  And I click on "Actions menu" "icon" in the "#dropdown-0" "css_element"
+  And I follow "Configure (new HTML block) block"
+  And I set the field "HTML block title" to "HTML title test"
+  And I set the field "Content" to "body test"
+  And I press "Save changes"
+  And I close the browser tab opened by the app
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  Then the header should be "Course 1" in the app
+  And I should see "Choice course 1"
+  And I should see "assignment"
+  And I should see "Test forum name"
+  And I should see "Test chat name"
+  And I should see "Web links"
+  And I should see "Test external name"
+  And I should see "Test feedback name"
+  And I should see "Test glossary"
+  And I should see "Quiz 1"
+  And I should see "Test survey name"
+  And I should see "Test wiki name"
+  And I should see "Test lesson name"
+  And I should see "Test scorm name"
+  And I should see "Test workshop name"
+  Then I should see "HTML title test"
+  And I should see "body test"
+  And I should see "Activities"
+
+  @app @3.8.0 @tablet @OK
+  Scenario: View blocks bellow/beside contents also when All sections selected (tablet)
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Information" in the app
+  And I press "Course summary" in the app
+  And I press "Open in browser" in the app
+  And I switch to the browser tab opened by the app
+  And I log in as "teacher1"
+  And I press "Actions menu"
+  And I follow "Turn editing on"
+  And I follow "Add a block"
+  And I follow "HTML"
+  And I follow "Add a block"
+  And I follow "Activities"
+  And I click on "Actions menu" "icon" in the "#dropdown-0" "css_element"
+  And I follow "Configure (new HTML block) block"
+  And I set the field "HTML block title" to "HTML title test"
+  And I set the field "Content" to "body test"
+  And I press "Save changes"
+  And I close the browser tab opened by the app
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  Then the header should be "Course 1" in the app
+  And I should see "Choice course 1"
+  And I should see "assignment"
+  And I should see "Test forum name"
+  And I should see "Test chat name"
+  And I should see "Web links"
+  And I should see "Test external name"
+  And I should see "Test feedback name"
+  And I should see "Test glossary"
+  And I should see "Quiz 1"
+  And I should see "Test survey name"
+  And I should see "Test wiki name"
+  And I should see "Test lesson name"
+  And I should see "Test scorm name"
+  And I should see "Test workshop name"
+  Then I should see "HTML title test"
+  And I should see "body test"
+  And I should see "Activities"
