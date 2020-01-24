@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreAppProvider } from './app';
 import { CoreConfigProvider } from './config';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreInitHandler, CoreInitDelegate } from './init';
@@ -24,7 +23,6 @@ import { CoreUtilsProvider } from './utils/utils';
 import { CoreTimeUtilsProvider } from './utils/time';
 import { CoreConfigConstants } from '../configconstants';
 import { AddonCalendarProvider } from '@addon/calendar/providers/calendar';
-import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Data to migrate a store of Ionic 1 app to the SQLite DB.
@@ -315,7 +313,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider, private sitesProvider: CoreSitesProvider,
             private filepoolProvider: CoreFilepoolProvider, private notifProvider: CoreLocalNotificationsProvider,
-            private utils: CoreUtilsProvider, private appProvider: CoreAppProvider, private timeUtils: CoreTimeUtilsProvider,
+            private utils: CoreUtilsProvider, private timeUtils: CoreTimeUtilsProvider,
             private calendarProvider: AddonCalendarProvider) {
         this.logger = logger.getInstance('CoreUpdateManagerProvider');
     }
@@ -330,20 +328,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         const promises = [],
             versionCode = CoreConfigConstants.versioncode;
 
-        return this.configProvider.get(this.VERSION_APPLIED, 0).then((versionApplied) => {
-            if (!versionApplied) {
-                // No version applied, either the app was just installed or it's being updated from Ionic 1.
-                return this.migrateAllDBs().then(() => {
-                    // Now that the DBs have been migrated, migrate the local notification components names.
-                    return this.migrateLocalNotificationsComponents();
-                }).then(() => {
-                    // DBs migrated, get the version applied again.
-                    return this.configProvider.get(this.VERSION_APPLIED, 0);
-                });
-            } else {
-                return versionApplied;
-            }
-        }).then((versionApplied: number) => {
+        return this.configProvider.get(this.VERSION_APPLIED, 0).then((versionApplied: number) => {
 
             if (versionCode >= 2013 && versionApplied < 2013 && versionApplied > 0) {
                 promises.push(this.migrateFileExtensions());
@@ -420,134 +405,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     }
 
     /**
-     * Migrate all DBs and tables from the old format to SQLite.
-     *
-     * @return Promise resolved when done.
-     */
-    protected migrateAllDBs(): Promise<any> {
-        if (!(<any> window).ydn) {
-            // The ydn-db library is not loaded, stop.
-            return Promise.resolve();
-        }
-
-        // First migrate the app DB.
-        return this.migrateAppDB().then(() => {
-            // Now migrate all site DBs.
-            return this.sitesProvider.getSitesIds();
-        }).then((ids) => {
-            const promises = [];
-
-            ids.forEach((id) => {
-                promises.push(this.migrateSiteDB(id));
-            });
-
-            return this.utils.allPromises(promises);
-        });
-    }
-
-    /**
-     * Migrate the app DB.
-     *
-     * @return Promise resolved when done.
-     */
-    protected migrateAppDB(): Promise<any> {
-        const oldDb = new (<any> window).ydn.db.Storage('MoodleMobile'),
-            newDb = this.appProvider.getDB();
-
-        return this.migrateDB(oldDb, newDb, this.appDBTables);
-    }
-
-    /**
-     * Migrate the DB of a certain site.
-     *
-     * @param siteId The site ID.
-     * @return Promise resolved when done.
-     */
-    protected migrateSiteDB(siteId: string): Promise<any> {
-        // Get the site DB.
-        return this.sitesProvider.getSiteDb(siteId).then((newDb) => {
-            const oldDb = new (<any> window).ydn.db.Storage('Site-' + siteId);
-
-            return this.migrateDB(oldDb, newDb, this.siteDBTables);
-        });
-    }
-
-    /**
-     * Migrate all the tables of a certain DB to the SQLite DB.
-     *
-     * @param oldDb The old DB (created using ydn-db).
-     * @param newDb The new DB.
-     * @param tables The tables to migrate.
-     * @return Promise resolved when done.
-     */
-    protected migrateDB(oldDb: any, newDb: SQLiteDB, tables: CoreUpdateManagerMigrateTable[]): Promise<any> {
-        if (!oldDb || !newDb) {
-            // Some of the DBs doesn't exist, stop.
-            return Promise.resolve();
-        }
-
-        const promises = [];
-
-        tables.forEach((table) => {
-
-            // Get current values.
-            promises.push(Promise.resolve(oldDb.values(table.name, undefined, 99999999)).then((entries) => {
-                const fields = table.fields || [],
-                    filterFields = table.filterFields || [];
-
-                // Treat the entries.
-                for (let i = 0; i < entries.length; i++) {
-                    const entry = entries[i];
-
-                    // Convert and rename the fields to match the new schema.
-                    fields.forEach((field) => {
-                        const value = entry[field.name];
-
-                        // Convert the field to the right format.
-                        if (field.type == 'object' || (field.type == 'any' && typeof value == 'object')) {
-                            entry[field.name] = JSON.stringify(value);
-                        } else if (field.type == 'date' && value) {
-                            entry[field.name] = value.getTime();
-                        } else if (field.type == 'boolean' || (field.type == 'any' && typeof value == 'boolean')) {
-                            entry[field.name] = value ? 1 : 0;
-                        }
-
-                        if (field.newName) {
-                            // Rename the field.
-                            entry[field.newName] = entry[field.name];
-                            delete entry[field.name];
-                        }
-
-                        if (field.delete) {
-                            // Delete the field.
-                            delete entry[field.name];
-                        }
-                    });
-
-                    // Remove invalid and unneeded properties.
-                    for (const name in entry) {
-                        if (name.indexOf('$') === 0) {
-                            // Property not valid, remove.
-                            delete entry[name];
-
-                        } else if (filterFields.length && filterFields.indexOf(name) == -1) {
-                            // The property isn't present in filterFields, remove it.
-                            delete entry[name];
-                        }
-                    }
-                }
-
-                // Now store the entries in the new DB.
-                return newDb.insertRecords(table.newName || table.name, entries);
-            }).catch((error) => {
-                this.logger.error('Error migrating table ' + table.name + ' to ' + (table.newName || table.name) + ': ', error);
-            }));
-        });
-
-        return this.utils.allPromises(promises);
-    }
-
-    /**
      * Migrates files filling extensions.
      *
      * @return Promise resolved when the site migration is finished.
@@ -562,30 +419,6 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
 
             return Promise.all(promises);
         });
-    }
-
-    /**
-     * Migrate local notifications components from the old nomenclature to the new one.
-     *
-     * @return Promise resolved when done.
-     */
-    protected migrateLocalNotificationsComponents(): Promise<any> {
-        if (!this.notifProvider.isAvailable()) {
-            // Local notifications not available, nothing to do.
-            return Promise.resolve();
-        }
-
-        const promises = [];
-
-        for (const oldName in this.localNotificationsComponentsMigrate) {
-            const newName = this.localNotificationsComponentsMigrate[oldName];
-
-            promises.push(this.notifProvider.updateComponentName(oldName, newName).catch((error) => {
-                this.logger.error('Error migrating local notif component from ' + oldName + ' to ' + newName + ': ', error);
-            }));
-        }
-
-        return Promise.all(promises);
     }
 
     /**
