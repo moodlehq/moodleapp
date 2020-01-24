@@ -7,10 +7,10 @@
     <ion-item text-wrap>
         <h2>{{ appName }} {{ versionName }}</h2>
     </ion-item>
-    <ion-item text-wrap detail-push>
+    <a ion-item text-wrap (click)="openPage('CoreSettingsLicensesPage')" [title]="'core.settings.opensourcelicenses' | translate">
         <core-icon name="fa-copyright" item-start></core-icon>
         {{ 'core.settings.opensourcelicenses' | translate }}
-    </ion-item>
+    </a>
     <a ion-item text-wrap *ngIf="privacyPolicy" [href]="privacyPolicy" core-link auto-login="no">
         <core-icon name="fa-user-secret" item-start></core-icon>
         {{ 'core.settings.privacypolicy' | translate }}
