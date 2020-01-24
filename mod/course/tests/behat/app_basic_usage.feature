@@ -2,7 +2,7 @@
 Feature: Test basic usage of one course in app
   In order to participate in one course while using the mobile app
   As a student
-  I need basic courses functionality to work
+  I need basic course functionality to work
 
   Background:
     Given the following "users" exist:
@@ -406,9 +406,7 @@ Feature: Test basic usage of one course in app
   And I follow "More..."
   And I follow "Users"
   And I follow "Enrolment methods"
-  And I follow "Delete"
-  And I press "Continue"
-  And I follow "Enable"
+  And I click on "Enable" "icon" in the "Self enrolment (Student)" "table_row"
   And I close the browser tab opened by the app
   When I enter the app
   And I log in as "student2"
@@ -434,7 +432,7 @@ Feature: Test basic usage of one course in app
   And I should see "Test lesson name"
   And I should see "Test scorm name"
   And I should see "Test workshop name"
-  
+
   @app @3.8.0 @OK
   Scenario: Guest access
   When I enter the app
@@ -451,7 +449,7 @@ Feature: Test basic usage of one course in app
   And I follow "More..."
   And I follow "Users"
   And I follow "Enrolment methods"
-  And I follow "Enable"
+  And I click on "Enable" "icon" in the "Guest access" "table_row"
   And I close the browser tab opened by the app
   When I enter the app
   And I log in as "student2"
