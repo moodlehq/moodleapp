@@ -93,3 +93,18 @@ Feature: Test basic usage of messages in app
   And I press the back button in the app
   And I press "Teacher teacher" in the app
   And I should see "heeey student"
+
+  @app @3.8.0 @OK
+  Scenario: Search users
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student2" in the app
+  And I press "search" in the app
+  Then I should see "Student2 student2"
+  And I set the field "Search" to "Teacher" in the app
+  And I press "search" in the app
+  Then I should see "Teacher teacher"
