@@ -1347,28 +1347,6 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Fill Missing Extension In Files, used to migrate from previous file handling.
-     * Reserved for core use, please do not call.
-     *
-     * @param siteId SiteID to get migrated
-     * @return Promise resolved when done.
-     */
-    fillMissingExtensionInFiles(siteId: string): Promise<any> {
-        this.logger.debug('Fill missing extensions in files of ' + siteId);
-
-        return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.FILES_TABLE).then((entries) => {
-                const promises = [];
-                entries.forEach((entry) => {
-                    promises.push(this.fillExtensionInFile(entry, siteId));
-                });
-
-                return Promise.all(promises);
-            });
-        });
-    }
-
-    /**
      * Fix a component ID to always be a Number if possible.
      *
      * @param componentId The component ID.
@@ -3016,33 +2994,6 @@ export class CoreFilepoolProvider {
         }).then(() => {
             return cssCode;
         });
-    }
-
-    /**
-     * Remove extension from fileId in queue, used to migrate from previous file handling.
-     *
-     * @return Promise resolved when done.
-     */
-    async treatExtensionInQueue(): Promise<any> {
-        await this.dbReady;
-
-        this.logger.debug('Treat extensions in queue');
-
-        const entries = await this.appDB.getAllRecords(this.QUEUE_TABLE);
-
-        return Promise.all(entries.map((entry) => {
-
-            // For files in the queue, we only need to remove the extension from the fileId.
-            // After downloading, additional info will be added.
-            const fileId = entry.fileId;
-            entry.fileId = this.mimeUtils.removeExtension(fileId);
-
-            if (fileId == entry.fileId) {
-                return;
-            }
-
-            return this.appDB.updateRecords(this.QUEUE_TABLE, { fileId: entry.fileId }, { fileId: fileId });
-        }));
     }
 
     /**

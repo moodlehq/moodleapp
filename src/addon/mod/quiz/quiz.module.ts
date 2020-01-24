@@ -32,7 +32,6 @@ import { AddonModQuizReviewLinkHandler } from './providers/review-link-handler';
 import { AddonModQuizListLinkHandler } from './providers/list-link-handler';
 import { AddonModQuizPushClickHandler } from './providers/push-click-handler';
 import { AddonModQuizComponentsModule } from './components/components.module';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // Access rules.
 import { AddonModQuizAccessDelayBetweenAttemptsModule } from './accessrules/delaybetweenattempts/delaybetweenattempts.module';
@@ -90,7 +89,7 @@ export class AddonModQuizModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModQuizPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModQuizSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModQuizIndexLinkHandler, gradeHandler: AddonModQuizGradeLinkHandler,
-            reviewHandler: AddonModQuizReviewLinkHandler, updateManager: CoreUpdateManagerProvider,
+            reviewHandler: AddonModQuizReviewLinkHandler,
             listLinkHandler: AddonModQuizListLinkHandler,
             pushNotificationsDelegate: CorePushNotificationsDelegate, pushClickHandler: AddonModQuizPushClickHandler) {
 
@@ -102,21 +101,5 @@ export class AddonModQuizModule {
         linksDelegate.registerHandler(reviewHandler);
         linksDelegate.registerHandler(listLinkHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTableMigration({
-            name: 'mod_quiz_attempts',
-            newName: AddonModQuizOfflineProvider.ATTEMPTS_TABLE,
-            fields: [
-                {
-                    name: 'quizAndUser',
-                    delete: true
-                },
-                {
-                    name: 'finished',
-                    type: 'boolean'
-                }
-            ]
-        });
     }
 }

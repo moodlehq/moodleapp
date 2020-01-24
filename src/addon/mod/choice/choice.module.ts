@@ -26,7 +26,6 @@ import { AddonModChoicePrefetchHandler } from './providers/prefetch-handler';
 import { AddonModChoiceSyncProvider } from './providers/sync';
 import { AddonModChoiceSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModChoiceOfflineProvider } from './providers/offline';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_CHOICE_PROVIDERS: any[] = [
@@ -56,7 +55,7 @@ export class AddonModChoiceModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModChoiceModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModChoicePrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModChoiceLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModChoiceSyncCronHandler, updateManager: CoreUpdateManagerProvider,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModChoiceSyncCronHandler,
             listLinkHandler: AddonModChoiceListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
@@ -64,21 +63,5 @@ export class AddonModChoiceModule {
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTableMigration({
-            name: 'mma_mod_choice_offline_responses',
-            newName: AddonModChoiceOfflineProvider.CHOICE_TABLE,
-            fields: [
-                {
-                    name: 'responses',
-                    type: 'object'
-                },
-                {
-                    name: 'deleting',
-                    type: 'boolean'
-                }
-            ]
-        });
     }
 }
