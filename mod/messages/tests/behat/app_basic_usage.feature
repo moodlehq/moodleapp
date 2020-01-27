@@ -86,7 +86,7 @@ Feature: Test basic usage of messages in app
   And I press "Contacts" in the app
   And I press "Requests" in the app
   And I press "Teacher teacher" in the app
-  And I press "Accept and add to contacts" in the appa
+  And I press "Accept and add to contacts" in the app
   And I press "Contacts" near "Requests" in the app
   Then the header should be "Contacts" in the app
   And I should see "Teacher teacher"
