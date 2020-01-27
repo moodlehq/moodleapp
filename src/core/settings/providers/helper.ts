@@ -24,6 +24,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreConfigConstants } from '../../../configconstants';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreSite } from '@classes/site';
 
 /**
  * Settings helper service.
@@ -38,6 +39,28 @@ export class CoreSettingsHelper {
             private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
             private configProvider: CoreConfigProvider) {
         this.logger = loggerProvider.getInstance('CoreSettingsHelper');
+
+        if (!CoreConfigConstants.forceColorScheme) {
+            // Update color scheme when a user enters or leaves a site, or when the site info is updated.
+            const applySiteScheme = (): void => {
+                if (this.isColorSchemeDisabledInSite()) {
+                    // Dark mode is disabled, force light mode.
+                    this.setColorScheme('light');
+                } else {
+                    // Reset color scheme settings.
+                    this.initColorScheme();
+                }
+            };
+
+            eventsProvider.on(CoreEventsProvider.LOGIN, applySiteScheme.bind(this));
+
+            eventsProvider.on(CoreEventsProvider.SITE_UPDATED, applySiteScheme.bind(this));
+
+            eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
+                // Reset color scheme settings.
+                this.initColorScheme();
+            });
+        }
     }
 
     /**
@@ -189,6 +212,13 @@ export class CoreSettingsHelper {
             this.setFontSize(fontSize);
         });
 
+        this.initColorScheme();
+    }
+
+    /**
+     * Init the color scheme.
+     */
+    initColorScheme(): void {
         if (!!CoreConfigConstants.forceColorScheme) {
             this.setColorScheme(CoreConfigConstants.forceColorScheme);
         } else {
@@ -203,6 +233,30 @@ export class CoreSettingsHelper {
                 this.setColorScheme(scheme);
             });
         }
+    }
+
+    /**
+     * Check if color scheme is disabled in a site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with whether color scheme is disabled.
+     */
+    async isColorSchemeDisabled(siteId?: string): Promise<boolean> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        return this.isColorSchemeDisabledInSite(site);
+    }
+
+    /**
+     * Check if color scheme is disabled in a site.
+     *
+     * @param site Site instance. If not defined, current site.
+     * @return Whether color scheme is disabled.
+     */
+    isColorSchemeDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site ? site.isFeatureDisabled('NoDelegate_DarkMode') : false;
     }
 
     /**

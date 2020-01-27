@@ -1927,6 +1927,7 @@
     "core.settings.filesystemroot": "File system root",
     "core.settings.fontsize": "Text size",
     "core.settings.fontsizecharacter": "A",
+    "core.settings.forcedsetting": "This setting has been forced by your site configuration.",
     "core.settings.general": "General",
     "core.settings.language": "Language",
     "core.settings.license": "Licence",

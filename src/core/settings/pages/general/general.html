@@ -21,8 +21,11 @@
         </ion-segment>
     </ion-item>
     <ion-item text-wrap class="core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0">
-        <ion-label><h2>{{ 'core.settings.colorscheme' | translate }}</h2></ion-label>
-        <ion-select [(ngModel)]="selectedScheme" (ngModelChange)="colorSchemeChanged()" interface="action-sheet">
+        <ion-label>
+            <h2>{{ 'core.settings.colorscheme' | translate }}</h2>
+            <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
+        </ion-label>
+        <ion-select [(ngModel)]="selectedScheme" (ngModelChange)="colorSchemeChanged()" interface="action-sheet" [disabled]="colorSchemeDisabled">
             <ion-option *ngFor="let scheme of colorSchemes" [value]="scheme">{{ 'core.settings.colorscheme-' + scheme | translate }}</ion-option>
         </ion-select>
     </ion-item>
