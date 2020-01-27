@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, Platform } from 'ionic-angular';
 import { Device } from '@ionic-native/device';
+import { Network } from '@ionic-native/network';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreInitDelegate } from '@providers/init';
@@ -71,8 +72,12 @@ export class CoreSettingsDeviceInfoPage {
     fsClickable: boolean;
     deviceOSTranslatable: boolean;
 
+    protected onlineObserver: any;
+
     constructor(platform: Platform,
             device: Device,
+            network: Network,
+            zone: NgZone,
             appProvider: CoreAppProvider,
             fileProvider: CoreFileProvider,
             initDelegate: CoreInitDelegate,
@@ -186,6 +191,14 @@ export class CoreSettingsDeviceInfoPage {
         this.deviceInfo.isPrefixedUrl = !!CoreConfigConstants.siteurl;
         this.deviceInfo.siteId = currentSite && currentSite.getId();
         this.deviceInfo.siteVersion = currentSite && currentSite.getInfo().release;
+
+        // Refresh online status when changes.
+        this.onlineObserver = network.onchange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this.deviceInfo.networkStatus = appProvider.isOnline() ? 'online' : 'offline';
+            });
+        });
     }
 
     /**
@@ -195,4 +208,10 @@ export class CoreSettingsDeviceInfoPage {
         this.utils.copyToClipboard(JSON.stringify(this.deviceInfo));
     }
 
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        this.onlineObserver && this.onlineObserver.unsubscribe();
+    }
 }
