@@ -86,7 +86,7 @@ Feature: Test basic usage of messages in app
   And I press "Contacts" in the app
   And I press "Requests" in the app
   And I press "Teacher teacher" in the app
-  And I press "Accept and add to contacts" in the app
+  And I press "Accept and add to contacts" in the appa
   And I press "Contacts" near "Requests" in the app
   Then the header should be "Contacts" in the app
   And I should see "Teacher teacher"
@@ -108,3 +108,51 @@ Feature: Test basic usage of messages in app
   And I set the field "Search" to "Teacher" in the app
   And I press "search" in the app
   Then I should see "Teacher teacher"
+
+  @app @3.8.0 @OK
+  Scenario: Send/receive messages in existing conversations
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  Then I should see "No contacts"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "heeey student" in the app
+  And I press "Send" in the app
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  Then I should see "No contacts"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "teacher" in the app
+  And I press "search" in the app
+  And I press "Teacher teacher" in the app
+  Then I should see "heeey student"
+  And I set the field "New message" to "hi" in the app
+  And I press "Send" in the app
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  Then I should see "No contacts"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  Then I should see "heeey student"
+  And I should see "hi"
+  And I set the field "New message" to "byee" in the app
+  And I press "Send" in the app
+  Then I should see "heeey student"
+  And I should see "hi"
+  And I should see "byee"
