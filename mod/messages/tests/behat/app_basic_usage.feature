@@ -156,3 +156,97 @@ Feature: Test basic usage of messages in app
   Then I should see "heeey student"
   And I should see "hi"
   And I should see "byee"
+
+  @app @3.8.0 @OK
+  Scenario: User profile, send message, add/remove contact (mobile)
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  Then I should see "No contacts"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "heeey student" in the app
+  And I press "Send" in the app
+  And I press "Conversation actions menu" in the app
+  And I press "Add to contacts" in the app
+  And I press "Add" in the app
+  Then I should see "Contact request sent"
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  And I press "Requests" in the app
+  And I press "Teacher teacher" in the app
+  Then I should see "Teacher teacher would like to contact you"
+  And I press "Accept and add to contacts" in the app
+  And I should not see "Teacher teacher would like to contact you"
+  And I press "Teacher teacher" in the app
+  And I press "Message" in the app
+  And I set the field "New message" to "hi" in the app
+  And I press "Send" in the app
+  Then I should see "heeey student"
+  And I should see "hi"
+  And I press the back button in the app
+  And I press "Remove from contacts" in the app
+  And I press "Remove" in the app
+  Then I should see "Add to contacts"
+  And I press the back button in the app
+  And I press "Conversation actions menu" in the app
+  Then I should see "Add to contacts"
+  And I press "Delete conversation" in the app
+  And I press "Delete" in the app
+  And I should not see "heeey student"
+  And I should not see "hi"
+
+  @app @3.8.0 @OK
+  Scenario: User profile, send message, add/remove contact (tablet)
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  Then I should see "No contacts"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "heeey student" in the app
+  And I press "Send" in the app
+  And I press "Information" in the app
+  And I press "Add to contacts" in the app
+  And I press "Add" in the app
+  Then I should see "Contact request sent"
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  And I press "Requests" in the app
+  And I press "Teacher teacher" in the app
+  Then I should see "Teacher teacher would like to contact you"
+  And I press "Accept and add to contacts" in the app
+  And I should not see "Teacher teacher would like to contact you"
+  And I set the field "New message" to "hi" in the app
+  And I press "Send" in the app
+  Then I should see "heeey student"
+  And I should see "hi"
+  And I press "Information" in the app
+  And I press "Remove from contacts" in the app
+  And I press "Remove" in the app
+  And I press "Information" in the app
+  Then I should see "Add to contacts"
+  And I press "Delete conversation" in the app
+  And I press "Delete" in the app
+  And I should not see "heeey student"
+  And I should not see "hi"
