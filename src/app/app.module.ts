@@ -61,6 +61,9 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
+// Handlers.
+import { CoreSiteInfoCronHandler } from '@providers/handlers/site-info-cron-handler';
+
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
@@ -329,6 +332,7 @@ export const WP_PROVIDER: any = null;
         CoreSyncProvider,
         CoreFileHelperProvider,
         CoreCustomURLSchemesProvider,
+        CoreSiteInfoCronHandler,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
@@ -341,8 +345,17 @@ export const WP_PROVIDER: any = null;
     ]
 })
 export class AppModule {
-    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider, config: Config,
-            sitesProvider: CoreSitesProvider, fileProvider: CoreFileProvider, private eventsProvider: CoreEventsProvider) {
+    constructor(
+            platform: Platform,
+            initDelegate: CoreInitDelegate,
+            updateManager: CoreUpdateManagerProvider,
+            config: Config,
+            sitesProvider: CoreSitesProvider,
+            fileProvider: CoreFileProvider,
+            private eventsProvider: CoreEventsProvider,
+            cronDelegate: CoreCronDelegate,
+            siteInfoCronHandler: CoreSiteInfoCronHandler,
+            ) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
             name: 'CorePlatformReady',
@@ -372,6 +385,9 @@ export class AppModule {
 
         // Execute the init processes.
         initDelegate.executeInitProcesses();
+
+        // Register handlers.
+        cronDelegate.register(siteInfoCronHandler);
 
         // Set transition animation.
         config.setTransition('core-page-transition', CorePageTransition);
