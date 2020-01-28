@@ -35,6 +35,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
     isModal: boolean;
     manage: boolean;
     pick: boolean; // To pick a file you MUST use a modal.
+    showSitePicker: boolean;
     path = '';
     title: string;
     filesLoaded: boolean;
@@ -52,6 +53,7 @@ export class CoreSharedFilesListPage implements OnInit, OnDestroy {
         this.manage = !!navParams.get('manage');
         this.pick = !!navParams.get('pick');
         this.path = navParams.get('path') || '';
+        this.showSitePicker = !navParams.get('hideSitePicker');
     }
 
     /**

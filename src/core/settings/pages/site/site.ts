@@ -15,11 +15,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/delegate';
-import { CoreSite } from '@classes/site';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSharedFilesProvider } from '@core/sharedfiles/providers/sharedfiles';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../providers/helper';
 
 /**
@@ -36,7 +36,7 @@ export class CoreSiteSettingsPage {
     handlers: CoreSettingsHandlerData[];
     isIOS: boolean;
     selectedPage: string;
-    currentSite: CoreSite;
+    siteId: string;
     siteInfo: CoreSiteBasicInfo[] = [];
     siteName: string;
     siteUrl: string;
@@ -45,7 +45,8 @@ export class CoreSiteSettingsPage {
         spaceUsage: 0
     };
     loaded = false;
-     protected sitesObserver: any;
+    iosSharedFiles: number;
+    protected sitesObserver: any;
     protected isDestroyed = false;
 
     constructor(protected settingsDelegate: CoreSettingsDelegate,
@@ -53,6 +54,7 @@ export class CoreSiteSettingsPage {
             protected sitesProvider: CoreSitesProvider,
             protected domUtils: CoreDomUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
+            protected sharedFilesProvider: CoreSharedFilesProvider,
             platorm: Platform,
             navParams: NavParams) {
 
@@ -61,7 +63,7 @@ export class CoreSiteSettingsPage {
         this.selectedPage = navParams.get('page') || false;
 
         this.sitesObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
-            if (data.siteId == this.currentSite.id) {
+            if (data.siteId == this.siteId) {
                 this.refreshData();
             }
         });
@@ -87,14 +89,21 @@ export class CoreSiteSettingsPage {
         const promises = [];
 
         this.handlers = this.settingsDelegate.getHandlers();
-        this.currentSite = this.sitesProvider.getCurrentSite();
-        this.siteInfo = this.currentSite.getInfo();
-        this.siteName = this.currentSite.getSiteName();
-        this.siteUrl = this.currentSite.getURL();
+        const currentSite = this.sitesProvider.getCurrentSite();
+        this.siteId = currentSite.id;
+        this.siteInfo = currentSite.getInfo();
+        this.siteName = currentSite.getSiteName();
+        this.siteUrl = currentSite.getURL();
 
-        promises.push(this.settingsHelper.getSiteSpaceUsage(this.sitesProvider.getCurrentSiteId()).then((spaceUsage) => {
+        promises.push(this.settingsHelper.getSiteSpaceUsage(this.siteId).then((spaceUsage) => {
             this.spaceUsage = spaceUsage;
         }));
+
+        if (this.isIOS) {
+            promises.push(this.sharedFilesProvider.getSiteSharedFiles(this.siteId).then((files) => {
+                this.iosSharedFiles = files.length;
+            }));
+        }
 
         return Promise.all(promises);
     }
@@ -104,7 +113,7 @@ export class CoreSiteSettingsPage {
      */
     synchronize(siteId: string): void {
         // Using syncOnlyOnWifi false to force manual sync.
-        this.settingsHelper.synchronizeSite(false, this.currentSite.id).catch((error) => {
+        this.settingsHelper.synchronizeSite(false, this.siteId).catch((error) => {
             if (this.isDestroyed) {
                 return;
             }
@@ -118,7 +127,7 @@ export class CoreSiteSettingsPage {
      * @return True if site is beeing synchronized, false otherwise.
      */
     isSynchronizing(): boolean {
-        return this.currentSite && !!this.settingsHelper.getSiteSyncPromise(this.currentSite.id);
+        return this.siteId && !!this.settingsHelper.getSiteSyncPromise(this.siteId);
     }
 
     /**
@@ -138,7 +147,7 @@ export class CoreSiteSettingsPage {
      * @param siteData Site object with space usage.
      */
     deleteSiteStorage(): void {
-        this.settingsHelper.deleteSiteStorage(this.currentSite.getSiteName(), this.currentSite.getId()).then((newInfo) => {
+        this.settingsHelper.deleteSiteStorage(this.siteName, this.siteId).then((newInfo) => {
             this.spaceUsage = newInfo;
         }).catch(() => {
             // Ignore cancelled confirmation modal.

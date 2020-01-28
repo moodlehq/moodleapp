@@ -20,7 +20,7 @@
             </button>
         </ion-item>
         <ion-item-divider *ngIf="totals">
-            <p>{{ 'core.settings.total' | translate }}</p>
+            <h2>{{ 'core.settings.total' | translate }}</h2>
             <div item-end>
                 <p>{{ totals.spaceUsage | coreBytesToSize }}</p>
                 <p>{{ 'core.settings.entriesincache' | translate: { $a: totals.cacheEntries } }}</p>

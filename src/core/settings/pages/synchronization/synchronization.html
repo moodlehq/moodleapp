@@ -6,7 +6,7 @@
 <ion-content>
     <core-loading [hideUntil]="sitesLoaded">
         <ion-item-divider>
-            <p>{{ 'core.settings.syncsettings' | translate }}</p>
+            <h2>{{ 'core.settings.syncsettings' | translate }}</h2>
         </ion-item-divider>
         <ion-item text-wrap>
             <ion-label>{{ 'core.settings.enablesyncwifi' | translate }}</ion-label>
@@ -14,7 +14,7 @@
             </ion-toggle>
         </ion-item>
         <ion-item-divider>
-            <p>{{ 'core.settings.sites' | translate }}</p>
+            <h2>{{ 'core.settings.sites' | translate }}</h2>
         </ion-item-divider>
         <ion-item *ngFor="let site of sites" [class.core-primary-selected-item]="site.id == currentSiteId" text-wrap>
             <h2><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></h2>
