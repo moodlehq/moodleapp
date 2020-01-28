@@ -14,14 +14,25 @@
 
 import { NgModule } from '@angular/core';
 import { CoreEditorComponentsModule } from './components/components.module';
+import { CoreEditorOfflineProvider } from './providers/editor-offline';
+
+// List of providers (without handlers).
+export const CORE_GRADES_PROVIDERS: any[] = [
+    CoreEditorOfflineProvider,
+];
 
 @NgModule({
     declarations: [
     ],
     imports: [
-        CoreEditorComponentsModule
+        CoreEditorComponentsModule,
     ],
     providers: [
-    ]
+        CoreEditorOfflineProvider,
+    ],
 })
-export class CoreEditorModule {}
+export class CoreEditorModule {
+    constructor(editorOffline: CoreEditorOfflineProvider) {
+        // Inject the helper even if it isn't used here it's instantiated.
+    }
+}
