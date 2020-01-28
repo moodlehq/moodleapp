@@ -18,13 +18,25 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreConfigConstants } from '../../../configconstants';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSite } from '@classes/site';
+
+/**
+ * Object with space usage and cache entries that can be erased.
+ */
+export interface CoreSiteSpaceUsage {
+    cacheEntries?: number; // Number of cached entries that can be cleared.
+    spaceUsage?: number; // Space used in this site.
+}
 
 /**
  * Settings helper service.
@@ -34,10 +46,18 @@ export class CoreSettingsHelper {
     protected logger;
     protected syncPromises = {};
 
-    constructor(loggerProvider: CoreLoggerProvider, private appProvider: CoreAppProvider, private cronDelegate: CoreCronDelegate,
-            private eventsProvider: CoreEventsProvider, private filePoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
-            private configProvider: CoreConfigProvider) {
+    constructor(loggerProvider: CoreLoggerProvider,
+            protected appProvider: CoreAppProvider,
+            protected cronDelegate: CoreCronDelegate,
+            protected domUtils: CoreDomUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected filePoolProvider: CoreFilepoolProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected utils: CoreUtilsProvider,
+            protected translate: TranslateService,
+            protected configProvider: CoreConfigProvider,
+            protected filterProvider: CoreFilterProvider,
+            protected courseProvider: CoreCourseProvider) {
         this.logger = loggerProvider.getInstance('CoreSettingsHelper');
 
         if (!CoreConfigConstants.forceColorScheme) {
@@ -61,6 +81,120 @@ export class CoreSettingsHelper {
                 this.initColorScheme();
             });
         }
+    }
+
+    /**
+     * Deletes files of a site and the tables that can be cleared.
+     *
+     * @param siteName Site Name.
+     * @param siteId: Site ID.
+     * @return Resolved with detailed new info when done.
+     */
+    async deleteSiteStorage(siteName: string, siteId: string): Promise<CoreSiteSpaceUsage> {
+        const siteInfo: CoreSiteSpaceUsage = {
+            cacheEntries: 0,
+            spaceUsage: 0
+        };
+
+        return this.filterProvider.formatText(siteName, {clean: true, singleLine: true, filter: false}, [], siteId)
+                .then((siteName) => {
+
+            const title = this.translate.instant('core.settings.deletesitefilestitle');
+            const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
+
+            return this.domUtils.showConfirm(message, title).then(() => {
+                return this.sitesProvider.getSite(siteId);
+            }).then((site) => {
+
+                // Clear cache tables.
+                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear();
+                const promises = cleanSchemas.map((name) => {
+                    return site.getDb().deleteRecords(name);
+                });
+
+                promises.push(site.deleteFolder().then(() => {
+                    this.filePoolProvider.clearAllPackagesStatus(site.id);
+                    this.filePoolProvider.clearFilepool(site.id);
+                    this.courseProvider.clearAllCoursesStatus(site.id);
+
+                    siteInfo.spaceUsage = 0;
+                }).catch((error) => {
+                    if (error && error.code === FileError.NOT_FOUND_ERR) {
+                        // Not found, set size 0.
+                        this.filePoolProvider.clearAllPackagesStatus(site.id);
+                        siteInfo.spaceUsage = 0;
+                    } else {
+                        // Error, recalculate the site usage.
+                        this.domUtils.showErrorModal('core.settings.errordeletesitefiles', true);
+
+                        return site.getSpaceUsage().then((size) => {
+                            siteInfo.spaceUsage = size;
+                        });
+                    }
+                }).then(() => {
+                    this.eventsProvider.trigger(CoreEventsProvider.SITE_STORAGE_DELETED, {}, site.getId());
+
+                    return this.calcSiteClearRows(site).then((rows) => {
+                        siteInfo.cacheEntries = rows;
+                    });
+                }));
+
+                return Promise.all(promises).then(() => {
+                    return siteInfo;
+                });
+            });
+        });
+    }
+
+    /**
+     * Calculates each site's usage, and the total usage.
+     *
+     * @param  siteId ID of the site. Current site if undefined.
+     * @return Resolved with detailed info when done.
+     */
+    async getSiteSpaceUsage(siteId?: string): Promise<CoreSiteSpaceUsage> {
+        return this.sitesProvider.getSite(siteId).then((site) => {
+            // Get space usage.
+            const promises = [];
+            const siteInfo: CoreSiteSpaceUsage = {
+                cacheEntries: 0,
+                spaceUsage: 0
+            };
+
+            promises.push(this.calcSiteClearRows(site).then((rows) => {
+                siteInfo.cacheEntries = rows;
+            }));
+
+            promises.push(site.getSpaceUsage().then((size) => {
+                siteInfo.spaceUsage = size;
+            }));
+
+            return Promise.all(promises).then(() => {
+                return siteInfo;
+            });
+        });
+    }
+
+    /**
+     * Calculate the number of rows to be deleted on a site.
+     *
+     * @param site Site object.
+     * @return If there are rows to delete or not.
+     */
+    protected async calcSiteClearRows(site: CoreSite): Promise<number> {
+        const clearTables = this.sitesProvider.getSiteTableSchemasToClear();
+
+        let totalEntries = 0;
+
+        const promises = clearTables.map((name) => {
+            return site.getDb().countRecords(name).then((rows) => {
+                totalEntries += rows;
+            });
+        });
+
+        return Promise.all(promises).then(() => {
+            return totalEntries;
+        });
     }
 
     /**

@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreSiteSettingsPage } from './site';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
         IonicPageModule.forChild(CoreSiteSettingsPage),
         TranslateModule.forChild()
     ],

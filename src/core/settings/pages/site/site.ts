@@ -15,6 +15,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/delegate';
+import { CoreSite } from '@classes/site';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
@@ -31,24 +34,78 @@ export class CoreSiteSettingsPage {
     handlers: CoreSettingsHandlerData[];
     isIOS: boolean;
     selectedPage: string;
+    currentSite: CoreSite;
+    siteInfo: any;
+    siteName: string;
+    siteUrl: string;
+    spaceUsage: CoreSiteSpaceUsage = {
+        cacheEntries: 0,
+        spaceUsage: 0
+    };
+    loaded = false;
 
-    constructor(private settingsDelegate: CoreSettingsDelegate, platorm: Platform, navParams: NavParams) {
+    constructor(protected settingsDelegate: CoreSettingsDelegate,
+            protected settingsHelper: CoreSettingsHelper,
+            protected sitesProvider: CoreSitesProvider,
+            platorm: Platform,
+            navParams: NavParams) {
+
         this.isIOS = platorm.is('ios');
 
         this.selectedPage = navParams.get('page') || false;
+
     }
 
     /**
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.handlers = this.settingsDelegate.getHandlers();
+        this.fetchData().finally(() => {
+            this.loaded = true;
+        });
+
         if (this.selectedPage) {
             this.openHandler(this.selectedPage);
-        } else if (this.splitviewCtrl.isOn()) {
-            this.openHandler('CoreSettingsGeneralPage');
         }
+    }
 
+    /**
+     * View loaded.
+     */
+    protected async fetchData(): Promise<void> {
+        this.handlers = this.settingsDelegate.getHandlers();
+        this.currentSite = this.sitesProvider.getCurrentSite();
+        this.siteInfo = this.currentSite.getInfo();
+        this.siteName = this.currentSite.getSiteName();
+        this.siteUrl = this.currentSite.getURL();
+
+        return this.settingsHelper.getSiteSpaceUsage(this.sitesProvider.getCurrentSiteId()).then((spaceUsage) => {
+            this.spaceUsage = spaceUsage;
+        });
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param refresher Refresher.
+     */
+    refreshData(refresher: any): void {
+        this.fetchData().finally(() => {
+            refresher.complete();
+        });
+    }
+
+    /**
+     * Deletes files of a site and the tables that can be cleared.
+     *
+     * @param siteData Site object with space usage.
+     */
+    deleteSiteStorage(): void {
+        this.settingsHelper.deleteSiteStorage(this.currentSite.getSiteName(), this.currentSite.getId()).then((newInfo) => {
+            this.spaceUsage = newInfo;
+        }).catch(() => {
+            // Ignore cancelled confirmation modal.
+        });
     }
 
     /**
