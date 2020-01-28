@@ -209,6 +209,18 @@ export class CoreSettingsDeviceInfoPage {
     }
 
     /**
+     * Copies device info item into the clipboard.
+     *
+     * @param e Event.
+     */
+    copyItemInfo(e: Event): void {
+        e.preventDefault();
+
+        const el = <Element> e.target;
+        this.utils.copyToClipboard(el.closest('ion-item').textContent.trim());
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
