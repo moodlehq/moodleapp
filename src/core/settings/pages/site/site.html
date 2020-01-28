@@ -12,12 +12,12 @@
         </ion-refresher>
         <core-loading [hideUntil]="loaded">
             <ion-list>
-                 <a  *ngIf="siteInfo" ion-item core-user-link [userId]="siteInfo.userid" text-wrap>
+                 <ion-item *ngIf="siteInfo" text-wrap>
                     <ion-avatar core-user-avatar [user]="siteInfo" item-start></ion-avatar>
                     <h2>{{siteInfo.fullname}}</h2>
                     <ion-note class="core-note-block"><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true"></core-format-text></ion-note>
                     <ion-note class="core-note-block">{{ siteUrl }}</ion-note>
-                </a>
+                </ion-item>
 
                 <ion-item text-wrap *ngIf="spaceUsage">
                     <ion-icon name="stats" item-start></ion-icon>
@@ -30,10 +30,14 @@
                         <ion-icon name="trash"></ion-icon>
                     </button>
                 </ion-item>
-                <a ion-item (click)="openHandler('CoreSettingsSynchronizationPage')" [title]="'core.settings.synchronization' | translate" [class.core-split-item-selected]="'CoreSettingsSynchronizationPage' == selectedPage" detail-push>
+                <ion-item text-wrap>
                     <ion-icon name="sync" item-start></ion-icon>
-                    <p>{{ 'core.settings.synchronization' | translate }}</p>
-                </a>
+                    <h2>{{ 'core.settings.synchronization' | translate }}</h2>
+                    <button ion-button icon-only clear item-end *ngIf="!isSynchronizing()" (click)="synchronize()" [title]="siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                        <ion-icon name="sync"></ion-icon>
+                    </button>
+                    <ion-spinner item-end *ngIf="isSynchronizing()"></ion-spinner>
+                </ion-item>
                 <a ion-item *ngIf="isIOS" (click)="openHandler('CoreSharedFilesListPage', {manage: true})" [title]="'core.sharedfiles.sharedfiles' | translate" [class.core-split-item-selected]="'CoreSharedFilesListPage' == selectedPage" detail-push>
                     <ion-icon name="folder" item-start></ion-icon>
                     <p>{{ 'core.sharedfiles.sharedfiles' | translate }}</p>

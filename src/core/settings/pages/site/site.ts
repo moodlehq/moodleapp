@@ -16,9 +16,11 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
 import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/delegate';
 import { CoreSite } from '@classes/site';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../providers/helper';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../providers/helper';
 
 /**
  * Page that displays the list of site settings pages.
@@ -35,7 +37,7 @@ export class CoreSiteSettingsPage {
     isIOS: boolean;
     selectedPage: string;
     currentSite: CoreSite;
-    siteInfo: any;
+    siteInfo: CoreSiteBasicInfo[] = [];
     siteName: string;
     siteUrl: string;
     spaceUsage: CoreSiteSpaceUsage = {
@@ -43,10 +45,14 @@ export class CoreSiteSettingsPage {
         spaceUsage: 0
     };
     loaded = false;
+     protected sitesObserver: any;
+    protected isDestroyed = false;
 
     constructor(protected settingsDelegate: CoreSettingsDelegate,
             protected settingsHelper: CoreSettingsHelper,
             protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
             platorm: Platform,
             navParams: NavParams) {
 
@@ -54,6 +60,11 @@ export class CoreSiteSettingsPage {
 
         this.selectedPage = navParams.get('page') || false;
 
+        this.sitesObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
+            if (data.siteId == this.currentSite.id) {
+                this.refreshData();
+            }
+        });
     }
 
     /**
@@ -70,18 +81,44 @@ export class CoreSiteSettingsPage {
     }
 
     /**
-     * View loaded.
+     * Fetch Data.
      */
-    protected async fetchData(): Promise<void> {
+    protected async fetchData(): Promise<void[]> {
+        const promises = [];
+
         this.handlers = this.settingsDelegate.getHandlers();
         this.currentSite = this.sitesProvider.getCurrentSite();
         this.siteInfo = this.currentSite.getInfo();
         this.siteName = this.currentSite.getSiteName();
         this.siteUrl = this.currentSite.getURL();
 
-        return this.settingsHelper.getSiteSpaceUsage(this.sitesProvider.getCurrentSiteId()).then((spaceUsage) => {
+        promises.push(this.settingsHelper.getSiteSpaceUsage(this.sitesProvider.getCurrentSiteId()).then((spaceUsage) => {
             this.spaceUsage = spaceUsage;
+        }));
+
+        return Promise.all(promises);
+    }
+
+    /**
+     * Syncrhonizes the site.
+     */
+    synchronize(siteId: string): void {
+        // Using syncOnlyOnWifi false to force manual sync.
+        this.settingsHelper.synchronizeSite(false, this.currentSite.id).catch((error) => {
+            if (this.isDestroyed) {
+                return;
+            }
+            this.domUtils.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
         });
+    }
+
+    /**
+     * Returns true if site is beeing synchronized.
+     *
+     * @return True if site is beeing synchronized, false otherwise.
+     */
+    isSynchronizing(): boolean {
+        return this.currentSite && !!this.settingsHelper.getSiteSyncPromise(this.currentSite.id);
     }
 
     /**
@@ -89,9 +126,9 @@ export class CoreSiteSettingsPage {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher: any): void {
+    refreshData(refresher?: any): void {
         this.fetchData().finally(() => {
-            refresher.complete();
+            refresher && refresher.complete();
         });
     }
 
@@ -119,4 +156,11 @@ export class CoreSiteSettingsPage {
         this.splitviewCtrl.push(page, params);
     }
 
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        this.isDestroyed = true;
+        this.sitesObserver && this.sitesObserver.off();
+    }
 }

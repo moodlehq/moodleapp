@@ -36,11 +36,13 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
     sitesObserver: any;
     currentSiteId = '';
     syncOnlyOnWifi = false;
-    isDestroyed = false;
+    protected isDestroyed = false;
 
-    constructor(private configProvider: CoreConfigProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
-            private settingsHelper: CoreSettingsHelper) {
+    constructor(protected configProvider: CoreConfigProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected settingsHelper: CoreSettingsHelper) {
 
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
 
@@ -85,7 +87,8 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
      * @param siteId Site ID.
      */
     synchronize(siteId: string): void {
-        this.settingsHelper.synchronizeSite(this.syncOnlyOnWifi, siteId).catch((error) => {
+        // Using syncOnlyOnWifi false to force manual sync.
+        this.settingsHelper.synchronizeSite(false, siteId).catch((error) => {
             if (this.isDestroyed) {
                 return;
             }
