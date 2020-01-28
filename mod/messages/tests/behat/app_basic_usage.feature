@@ -340,3 +340,87 @@ Feature: Test basic usage of messages in app
   And I press "search this message" near "Teacher teacher" in the app
   Then I should see "test message"
   And I should see "search this message"
+
+  @app @3.8.0 @mobile @OK
+  Scenario: Star/Unstar (mobile)
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "star message" in the app
+  And I press "Send" in the app
+  When I enter the app
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "test message student2" in the app
+  And I press "Send" in the app
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  Then I should see "Private (2)"
+  And I should see "Starred (1)"
+  And I press "star message" in the app
+  And I press "Conversation actions menu" in the app
+  And I press "Star conversation" in the app
+  And I press the back button in the app
+  Then I should see "Private (1)"
+  And I should see "Starred (2)"
+  And I press "Starred (2)" in the app
+  Then I should see "Teacher teacher"
+  And I should see "Student1 student1"
+
+  @app @3.8.0 @tablet @OK
+  Scenario: Star/Unstar (tablet)
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "star message" in the app
+  And I press "Send" in the app
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "test message student2" in the app
+  And I press "Send" in the app
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  Then I should see "Private (2)"
+  And I should see "Starred (1)"
+  And I press "star message" in the app
+  And I press "Information" in the app
+  And I press "Star conversation" in the app
+  Then I should see "Private (1)"
+  And I should see "Starred (2)"
+  And I press "Starred (2)" in the app
+  Then I should see "Teacher teacher"
+  And I should see "Student1 student1"
