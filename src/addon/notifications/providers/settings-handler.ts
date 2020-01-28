@@ -49,7 +49,7 @@ export class AddonNotificationsSettingsHandler implements CoreSettingsHandler {
     getDisplayData(): CoreSettingsHandlerData {
         return {
             icon: 'notifications',
-            title: 'addon.notifications.notificationpreferences',
+            title: 'addon.notifications.notifications',
             page: 'AddonNotificationsSettingsPage',
             class: 'addon-notifications-settings-handler'
         };

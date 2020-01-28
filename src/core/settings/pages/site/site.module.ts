@@ -15,21 +15,21 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreSiteSettingsPage } from './site';
+import { CoreSitePreferencesPage } from './site';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [
-        CoreSiteSettingsPage
+        CoreSitePreferencesPage
     ],
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
-        IonicPageModule.forChild(CoreSiteSettingsPage),
+        IonicPageModule.forChild(CoreSitePreferencesPage),
         TranslateModule.forChild()
     ],
 })
-export class CoreSiteSettingsPageModule {}
+export class CoreSitePreferencesPageModule {}

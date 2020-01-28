@@ -14,6 +14,7 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/delegate';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
@@ -25,12 +26,12 @@ import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../providers/helper';
 /**
  * Page that displays the list of site settings pages.
  */
-@IonicPage({segment: 'core-settings-site'})
+@IonicPage({segment: 'core-site-preferences'})
 @Component({
-    selector: 'page-core-settings-site',
+    selector: 'page-core-site-preferences',
     templateUrl: 'site.html',
 })
-export class CoreSiteSettingsPage {
+export class CoreSitePreferencesPage {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     handlers: CoreSettingsHandlerData[];
@@ -55,6 +56,7 @@ export class CoreSiteSettingsPage {
             protected domUtils: CoreDomUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
             protected sharedFilesProvider: CoreSharedFilesProvider,
+            protected translate: TranslateService,
             platorm: Platform,
             navParams: NavParams) {
 
@@ -75,11 +77,17 @@ export class CoreSiteSettingsPage {
     ionViewDidLoad(): void {
         this.fetchData().finally(() => {
             this.loaded = true;
-        });
 
-        if (this.selectedPage) {
-            this.openHandler(this.selectedPage);
-        }
+            if (this.selectedPage) {
+                this.openHandler(this.selectedPage);
+            } else if (this.splitviewCtrl.isOn()) {
+                if (this.isIOS) {
+                    this.openHandler('CoreSharedFilesListPage', {manage: true, siteId: this.siteId, hideSitePicker: true});
+                } else if (this.handlers.length > 0) {
+                    this.openHandler(this.handlers[0].page, this.handlers[0].params);
+                }
+            }
+        });
     }
 
     /**
@@ -163,6 +171,22 @@ export class CoreSiteSettingsPage {
     openHandler(page: string, params?: any): void {
         this.selectedPage = page;
         this.splitviewCtrl.push(page, params);
+    }
+
+    /**
+     * Show information about space usage actions.
+     */
+    showSpaceInfo(): void {
+        this.domUtils.showAlert(this.translate.instant('core.help'),
+            this.translate.instant('core.settings.spaceusagehelp'));
+    }
+
+    /**
+     * Show information about sync actions.
+     */
+    showSyncInfo(): void {
+        this.domUtils.showAlert(this.translate.instant('core.help'),
+            this.translate.instant('core.settings.synchelp'));
     }
 
     /**

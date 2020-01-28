@@ -106,6 +106,9 @@ ion-app.app-root {
   .item h2 {
     text-overflow: inherit;
     overflow: inherit;
+    ion-icon, core-icon {
+      vertical-align: bottom;
+    }
   }
 
   .core-nav-item-selected, .item.core-nav-item-selected {

@@ -14,7 +14,9 @@
 
 import { Component, } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../providers/helper';
 
 /**
@@ -36,7 +38,9 @@ export class CoreSettingsSpaceUsagePage {
     };
 
     constructor(protected sitesProvider: CoreSitesProvider,
-            protected settingsHelper: CoreSettingsHelper) {
+            protected settingsHelper: CoreSettingsHelper,
+            protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
     }
 
@@ -103,6 +107,14 @@ export class CoreSettingsSpaceUsagePage {
         }).catch(() => {
             // Ignore cancelled confirmation modal.
         });
+    }
+
+    /**
+     * Show information about space usage actions.
+     */
+    showInfo(): void {
+        this.domUtils.showAlert(this.translate.instant('core.help'),
+            this.translate.instant('core.settings.spaceusagehelp'));
     }
 }
 

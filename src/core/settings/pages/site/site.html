@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title>{{ 'core.settings.sitesettings' | translate}}</ion-title>
+        <ion-title>{{ 'core.settings.preferences' | translate}}</ion-title>
         <ion-buttons end>
         </ion-buttons>
     </ion-navbar>
@@ -18,23 +18,6 @@
                     <ion-note class="core-note-block">{{ siteUrl }}</ion-note>
                 </ion-item>
                 <ion-item-divider></ion-item-divider>
-                <ion-item text-wrap *ngIf="spaceUsage">
-                    <ion-icon name="stats" item-start></ion-icon>
-                    <h2 text-wrap>{{ 'core.settings.spaceusage' | translate }}</h2>
-                    <p *ngIf="spaceUsage.spaceUsage != null">{{ spaceUsage.spaceUsage | coreBytesToSize }}</p>
-                    <p *ngIf="spaceUsage.cacheEntries != null">{{ 'core.settings.entriesincache' | translate: { $a: spaceUsage.cacheEntries } }}</p>
-                    <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteStorage()" [hidden]="!spaceUsage.spaceUsage > '0' && !spaceUsage.cacheEntries > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
-                        <ion-icon name="trash"></ion-icon>
-                    </button>
-                </ion-item>
-                <ion-item text-wrap>
-                    <ion-icon name="sync" item-start></ion-icon>
-                    <h2>{{ 'core.settings.synchronization' | translate }}</h2>
-                    <button ion-button icon-only clear item-end *ngIf="!isSynchronizing()" (click)="synchronize()" [title]="siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
-                        <ion-icon name="sync"></ion-icon>
-                    </button>
-                    <ion-spinner item-end *ngIf="isSynchronizing()"></ion-spinner>
-                </ion-item>
                 <a ion-item *ngIf="isIOS" (click)="openHandler('CoreSharedFilesListPage', {manage: true, siteId: siteId, hideSitePicker: true})" [title]="'core.sharedfiles.sharedfiles' | translate" [class.core-split-item-selected]="'CoreSharedFilesListPage' == selectedPage" detail-push>
                     <ion-icon name="folder" item-start></ion-icon>
                     <h2>{{ 'core.sharedfiles.sharedfiles' | translate }}</h2>
@@ -45,6 +28,24 @@
                     <core-icon [name]="handler.icon" item-start *ngIf="handler.icon"></core-icon>
                     <h2>{{ handler.title | translate}}</h2>
                 </a>
+
+                <ion-card class="with-borders">
+                    <ion-item text-wrap *ngIf="spaceUsage">
+                        <h2 text-wrap>{{ 'core.settings.spaceusage' | translate }} <ion-icon name="information-circle" color="info" [attr.aria-label]="'core.info' | translate" (click)="showSpaceInfo()"></ion-icon></h2>
+                        <p *ngIf="spaceUsage.spaceUsage != null">{{ spaceUsage.spaceUsage | coreBytesToSize }}</p>
+                        <p *ngIf="spaceUsage.cacheEntries != null">{{ 'core.settings.entriesincache' | translate: { $a: spaceUsage.cacheEntries } }}</p>
+                        <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteStorage()" [hidden]="!spaceUsage.spaceUsage > '0' && !spaceUsage.cacheEntries > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
+                            <ion-icon name="trash"></ion-icon>
+                        </button>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <h2>{{ 'core.settings.synchronizenow' | translate }} <ion-icon name="information-circle" color="info" [attr.aria-label]="'core.info' | translate" (click)="showSyncInfo()"></ion-icon></h2>
+                        <button ion-button icon-only clear item-end *ngIf="!isSynchronizing()" (click)="synchronize()" [title]="siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                            <ion-icon name="sync"></ion-icon>
+                        </button>
+                        <ion-spinner item-end *ngIf="isSynchronizing()"></ion-spinner>
+                    </ion-item>
+                </ion-card>
             </ion-list>
         </core-loading>
     </ion-content>

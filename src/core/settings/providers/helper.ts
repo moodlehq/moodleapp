@@ -28,7 +28,6 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreConfigConstants } from '../../../configconstants';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSite } from '@classes/site';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -107,7 +106,7 @@ export class CoreSettingsHelper {
             }).then((site) => {
 
                 // Clear cache tables.
-                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear();
+                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear(site);
                 const promises = cleanSchemas.map((name) => {
                     return site.getDb().deleteRecords(name);
                 });
@@ -182,7 +181,7 @@ export class CoreSettingsHelper {
      * @return If there are rows to delete or not.
      */
     protected async calcSiteClearRows(site: CoreSite): Promise<number> {
-        const clearTables = this.sitesProvider.getSiteTableSchemasToClear();
+        const clearTables = this.sitesProvider.getSiteTableSchemasToClear(site);
 
         let totalEntries = 0;
 
