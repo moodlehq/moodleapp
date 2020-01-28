@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title>{{ 'core.settings.settings' | translate}}</ion-title>
+        <ion-title>{{ 'core.settings.appsettings' | translate}}</ion-title>
         <ion-buttons end>
         </ion-buttons>
     </ion-navbar>
@@ -24,12 +24,6 @@
                 <ion-icon name="folder" item-start></ion-icon>
                 <p>{{ 'core.sharedfiles.sharedfiles' | translate }}</p>
             </a>
-
-            <a ion-item *ngFor="let handler of handlers" [ngClass]="['core-settings-handler', handler.class]" (click)="openHandler(handler.page, handler.params)" [title]="handler.title | translate" detail-push [class.core-split-item-selected]="handler.page == selectedPage">
-                <core-icon [name]="handler.icon" item-start *ngIf="handler.icon"></core-icon>
-                <p>{{ handler.title | translate}}</p>
-            </a>
-
             <a ion-item (click)="openHandler('CoreSettingsAboutPage')" [title]="'core.settings.about' | translate" [class.core-split-item-selected]="'CoreSettingsAboutPage' == selectedPage" detail-push>
                 <ion-icon name="contacts" item-start></ion-icon>
                 <p>{{ 'core.settings.about' | translate }}</p>

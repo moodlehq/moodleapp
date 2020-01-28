@@ -1,5 +1,6 @@
 {
     "about": "About",
+    "appsettings": "App settings",
     "appversion": "App version",
     "cannotsyncoffline": "Cannot synchronise offline.",
     "cannotsyncwithoutwifi": "Cannot synchronise because the current settings only allow to synchronise when connected to Wi-Fi. Please connect to a Wi-Fi network.",
@@ -56,6 +57,7 @@
     "entriesincache": "{{$a}} entries in cache",
     "screen": "Screen information",
     "settings": "Settings",
+    "sitesettings": "Site settings",
     "showdownloadoptions": "Show download options",
     "siteinfo": "Site info",
     "sites": "Sites",

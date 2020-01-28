@@ -39,9 +39,13 @@
             <ion-icon name="help-buoy" item-start aria-hidden="true"></ion-icon>
             <p>{{ 'core.mainmenu.help' | translate }}</p>
         </a>
-        <a ion-item (click)="openSettings()" title="{{ 'core.mainmenu.appsettings' | translate }}">
-            <ion-icon name="cog" item-start aria-hidden="true"></ion-icon>
-            <p>{{ 'core.mainmenu.appsettings' | translate }}</p>
+        <a ion-item (click)="openSiteSettings()" title="{{ 'core.settings.sitesettings' | translate }}">
+            <core-icon name="fa-cog" item-start></core-icon>
+            <p>{{ 'core.settings.sitesettings' | translate }}</p>
+        </a>
+        <a ion-item (click)="openAppSettings()" title="{{ 'core.settings.appsettings' | translate }}">
+            <core-icon name="fa-cogs" item-start></core-icon>
+            <p>{{ 'core.settings.appsettings' | translate }}</p>
         </a>
         <a ion-item (click)="logout()" title="{{ logoutLabel | translate }}">
             <ion-icon name="log-out" item-start aria-hidden="true"></ion-icon>

@@ -18,14 +18,14 @@ import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/d
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
- * Page that displays the list of settings pages.
+ * Page that displays the list of site settings pages.
  */
-@IonicPage({segment: 'core-settings-list'})
+@IonicPage({segment: 'core-settings-site'})
 @Component({
-    selector: 'page-core-settings-list',
-    templateUrl: 'list.html',
+    selector: 'page-core-settings-site',
+    templateUrl: 'site.html',
 })
-export class CoreSettingsListPage {
+export class CoreSiteSettingsPage {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     handlers: CoreSettingsHandlerData[];

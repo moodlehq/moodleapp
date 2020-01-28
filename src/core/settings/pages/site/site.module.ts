@@ -15,22 +15,19 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreLoginSitesPage } from './sites';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSiteSettingsPage } from './site';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
-        CoreLoginSitesPage,
+        CoreSiteSettingsPage
     ],
     imports: [
-        CoreDirectivesModule,
         CoreComponentsModule,
-        IonicPageModule.forChild(CoreLoginSitesPage),
+        CoreDirectivesModule,
+        IonicPageModule.forChild(CoreSiteSettingsPage),
         TranslateModule.forChild()
     ],
-    entryComponents: [
-        CoreLoginSitesPage
-    ]
 })
-export class CoreLoginSitesPageModule {}
+export class CoreSiteSettingsPageModule {}
