@@ -26,6 +26,7 @@ import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
 import { AddonForumDiscussionOptionsMenuComponent } from './discussion-options-menu/discussion-options-menu';
 import { AddonForumPostOptionsMenuComponent } from './post-options-menu/post-options-menu';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -43,7 +44,8 @@ import { AddonForumPostOptionsMenuComponent } from './post-options-menu/post-opt
         CorePipesModule,
         CoreCourseComponentsModule,
         CoreRatingComponentsModule,
-        CoreTagComponentsModule
+        CoreTagComponentsModule,
+        CoreEditorComponentsModule,
     ],
     providers: [
     ],

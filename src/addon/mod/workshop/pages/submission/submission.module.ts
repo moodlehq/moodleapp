@@ -19,6 +19,7 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonModWorkshopComponentsModule } from '../../components/components.module';
 import { AddonModWorkshopSubmissionPage } from './submission';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { AddonModWorkshopSubmissionPage } from './submission';
         CoreDirectivesModule,
         CoreComponentsModule,
         AddonModWorkshopComponentsModule,
+        CoreEditorComponentsModule,
         IonicPageModule.forChild(AddonModWorkshopSubmissionPage),
         TranslateModule.forChild()
     ],

@@ -87,6 +87,7 @@ import { CoreTagModule } from '@core/tag/tag.module';
 import { CoreFilterModule } from '@core/filter/filter.module';
 import { CoreH5PModule } from '@core/h5p/h5p.module';
 import { CoreSearchModule } from '@core/search/search.module';
+import { CoreEditorModule } from '@core/editor/editor.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -235,6 +236,7 @@ export const WP_PROVIDER: any = null;
         CoreFilterModule,
         CoreH5PModule,
         CoreSearchModule,
+        CoreEditorModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,

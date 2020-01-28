@@ -13,23 +13,29 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { CoreEditorRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { AddonModForumNewDiscussionPage } from './new-discussion';
-import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
-        AddonModForumNewDiscussionPage,
+        CoreEditorRichTextEditorComponent
     ],
     imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule,
-        CoreEditorComponentsModule,
-        IonicPageModule.forChild(AddonModForumNewDiscussionPage),
-        TranslateModule.forChild()
     ],
+    providers: [
+    ],
+    exports: [
+        CoreEditorRichTextEditorComponent
+    ],
+    entryComponents: [
+        CoreEditorRichTextEditorComponent
+    ]
 })
-export class AddonModForumNewDiscussionPageModule {}
+export class CoreEditorComponentsModule {}

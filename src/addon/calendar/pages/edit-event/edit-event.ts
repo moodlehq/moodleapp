@@ -25,7 +25,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-text-editor.ts';
+import { CoreEditorRichTextEditorComponent } from '@core/editor/components/rich-text-editor/rich-text-editor.ts';
 import { AddonCalendarProvider, AddonCalendarGetAccessInfoResult, AddonCalendarEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
@@ -43,7 +43,7 @@ import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 })
 export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreRichTextEditorComponent) descriptionEditor: CoreRichTextEditorComponent;
+    @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor: CoreEditorRichTextEditorComponent;
 
     title: string;
     dateFormat: string;

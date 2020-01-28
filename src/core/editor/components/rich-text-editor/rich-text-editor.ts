@@ -25,24 +25,18 @@ import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 /**
- * Directive to display a rich text editor if enabled.
+ * Component to display a rich text editor if enabled.
  *
- * If enabled, this directive will show a rich text editor. Otherwise it'll show a regular textarea.
- *
- * This directive requires an OBJECT model. The text written in the editor or textarea will be stored inside
- * a "text" property in that object. This is to ensure 2-way data-binding, since using a string as a model
- * could be easily broken.
+ * If enabled, this component will show a rich text editor. Otherwise it'll show a regular textarea.
  *
  * Example:
  * <core-rich-text-editor item-content [control]="control" [placeholder]="field.name"></core-rich-text-editor>
- *
- * In the example above, the text written in the editor will be stored in newpost.text.
  */
 @Component({
     selector: 'core-rich-text-editor',
-    templateUrl: 'core-rich-text-editor.html'
+    templateUrl: 'core-editor-rich-text-editor.html'
 })
-export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy {
+export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDestroy {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Anchor button, fullscreen...
     // @todo: Textarea height is not being updated when editor is resized. Height is calculated if any css is changed.
