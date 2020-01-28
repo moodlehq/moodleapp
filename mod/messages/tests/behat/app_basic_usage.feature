@@ -424,3 +424,119 @@ Feature: Test basic usage of messages in app
   And I press "Starred (2)" in the app
   Then I should see "Teacher teacher"
   And I should see "Student1 student1"
+
+    @app @3.8.0 @mobile @OK
+  Scenario: User blocking feature (mobile)
+  When I enter the app
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student1 student1" in the app
+  Then I should see "Block user"
+  And I press "Block user" in the app
+  And I should see "Are you sure you want to block Student1 student1?"
+  And I press "Cancel" in the app
+  And I should see "Block user"
+  And I press "Block user" in the app
+  And I press "Block user" near "Cancel" in the app
+  Then I should not see "Block user"
+  And I should see "Unblock user"
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student2 student2" in the app
+  And I press "Message" in the app
+  Then I should see "You are unable to message this user"
+  When I enter the app
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student1 student1" in the app
+  Then I should see "Unblock user"
+  And I should not see "Block user"
+  And I press "Unblock user" in the app
+  And I press "Cancel" in the app
+  Then I should see "Unblock user"
+  And I should not see "Block user"
+  And I press "Unblock user" in the app
+  And I press "Unblock user" near "Cancel" in the app
+  Then I should see "Block user"
+  And I should not see "Unblock user"
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student2 student2" in the app
+  And I press "Message" in the app
+  And I set the field "New message" to "test message" in the app
+  And I press "Send" in the app
+  Then I should see "test message"
+  And I should not see "You are unable to message this user"
+
+  @app @3.8.0 @tablet @OK
+  Scenario: User blocking feature (tablet)
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  Then I should see "Block user"
+  And I press "Block user" in the app
+  And I should see "Are you sure you want to block Student1 student1?"
+  And I press "Cancel" in the app
+  And I should see "Block user"
+  And I press "Block user" in the app
+  And I press "Block user" near "Cancel" in the app
+  Then I should not see "Block user"
+  And I should see "Unblock user"
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student2 student2" in the app
+  And I press "Message" in the app
+  Then I should see "You are unable to message this user"
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student2"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  Then I should see "Unblock user"
+  And I should not see "Block user"
+  And I press "Unblock user" in the app
+  And I press "Cancel" in the app
+  Then I should see "Unblock user"
+  And I should not see "Block user"
+  And I press "Unblock user" in the app
+  And I press "Unblock user" near "Cancel" in the app
+  Then I should see "Block user"
+  And I should not see "Unblock user"
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student2 student2" in the app
+  And I press "Message" in the app
+  And I set the field "New message" to "test message" in the app
+  And I press "Send" in the app
+  Then I should see "test message"
+  And I should not see "You are unable to message this user"
