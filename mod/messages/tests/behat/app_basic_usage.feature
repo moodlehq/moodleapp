@@ -540,3 +540,64 @@ Feature: Test basic usage of messages in app
   And I press "Send" in the app
   Then I should see "test message"
   And I should not see "You are unable to message this user"
+
+  @app @3.8.0 @mobile @OK
+  Scenario: Mute Unmute conversations (mobile)
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student2 student2" in the app
+  And I press "Message" in the app
+  And I set the field "New message" to "test message" in the app
+  And I press "Send" in the app
+  And I press "Conversation actions menu" in the app
+  And I press "Mute" in the app
+  And I press "Muted conversation" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should see "Unmute"
+  And I should not see "Mute"
+  And I press "Unmute" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should not see "Unmute"
+  And I should see "Mute"
+  And I press "Mute" in the app
+  And I press "Messages" in the app
+  And I press "Private (1)" in the app
+  And I press "Student2 student2" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should see "Unmute"
+  And I should not see "Mute"
+
+  @app @3.8.0 @tablet @OK
+  Scenario: Mute Unmute conversations (tablet)
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I press "Participants" in the app
+  And I press "Student2 student2" in the app
+  And I press "Message" in the app
+  And I set the field "New message" to "test message" in the app
+  And I press "Send" in the app
+  And I press "Conversation actions menu" in the app
+  And I press "Mute" in the app
+  And I press "Muted conversation" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should see "Unmute"
+  And I should not see "Mute"
+  And I press "Unmute" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should not see "Unmute"
+  And I should see "Mute"
+  And I press "Mute" in the app
+  And I press "Messages" in the app
+  And I press "Private (1)" in the app
+  And I press "Student2 student2" in the app
+  And I press "Information" in the app
+  Then I should see "Unmute"
+  And I should not see "Mute"
