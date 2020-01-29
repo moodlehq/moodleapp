@@ -28,7 +28,6 @@ import { AddonModScormGradeLinkHandler } from './providers/grade-link-handler';
 import { AddonModScormListLinkHandler } from './providers/list-link-handler';
 import { AddonModScormSyncProvider } from './providers/scorm-sync';
 import { AddonModScormComponentsModule } from './components/components.module';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_SCORM_PROVIDERS: any[] = [
@@ -62,7 +61,7 @@ export class AddonModScormModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModScormPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModScormSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModScormIndexLinkHandler, gradeHandler: AddonModScormGradeLinkHandler,
-            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModScormListLinkHandler) {
+            listLinkHandler: AddonModScormListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
@@ -70,41 +69,5 @@ export class AddonModScormModule {
         linksDelegate.registerHandler(indexHandler);
         linksDelegate.registerHandler(gradeHandler);
         linksDelegate.registerHandler(listLinkHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTablesMigration([
-            {
-                name: 'mod_scorm_offline_attempts',
-                newName: AddonModScormOfflineProvider.ATTEMPTS_TABLE,
-                fields: [
-                    {
-                        name: 'snapshot',
-                        type: 'object'
-                    },
-                    {
-                        name: 'scormAndUser',
-                        delete: true
-                    }
-                ]
-            },
-            {
-                name: 'mod_scorm_offline_scos_tracks',
-                newName: AddonModScormOfflineProvider.TRACKS_TABLE,
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'object'
-                    },
-                    {
-                        name: 'scormUserAttempt',
-                        delete: true
-                    },
-                    {
-                        name: 'scormUserAttemptSynced',
-                        delete: true
-                    }
-                ]
-            }
-        ]);
     }
 }

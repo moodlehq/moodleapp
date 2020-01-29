@@ -22,7 +22,6 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const CORE_PUSHNOTIFICATIONS_PROVIDERS: any[] = [
@@ -45,7 +44,7 @@ export const CORE_PUSHNOTIFICATIONS_PROVIDERS: any[] = [
 export class CorePushNotificationsModule {
     constructor(platform: Platform, pushNotificationsProvider: CorePushNotificationsProvider, eventsProvider: CoreEventsProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider, loggerProvider: CoreLoggerProvider,
-            updateManager: CoreUpdateManagerProvider, cronDelegate: CoreCronDelegate,
+            cronDelegate: CoreCronDelegate,
             registerCronHandler: CorePushNotificationsRegisterCronHandler,
             unregisterCronHandler: CorePushNotificationsUnregisterCronHandler) {
 
@@ -92,20 +91,5 @@ export class CorePushNotificationsModule {
             // Log notification dismissed event.
             pushNotificationsProvider.logEvent('moodle_notification_dismiss', notification, true);
         });
-
-        // Allow migrating the table from the old app to the new schema.
-        updateManager.registerAppTableMigration({
-            name: 'mma_pushnotifications_badge',
-            newName: CorePushNotificationsProvider.BADGE_TABLE,
-            fields: [
-                {
-                    name: 'siteid',
-                    newName: 'siteId'
-                }
-            ]
-        });
-
-        // Migrate the component name.
-        updateManager.registerLocalNotifComponentMigration('mmaPushNotifications', CorePushNotificationsProvider.COMPONENT);
     }
 }

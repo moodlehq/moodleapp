@@ -33,7 +33,6 @@ import { AddonModForumPostLinkHandler } from './providers/post-link-handler';
 import { AddonModForumPushClickHandler } from './providers/push-click-handler';
 import { AddonModForumTagAreaHandler } from './providers/tag-area-handler';
 import { AddonModForumComponentsModule } from './components/components.module';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_FORUM_PROVIDERS: any[] = [
@@ -70,7 +69,7 @@ export class AddonModForumModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModForumPrefetchHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModForumSyncCronHandler, linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModForumIndexLinkHandler, discussionHandler: AddonModForumDiscussionLinkHandler,
-            updateManager: CoreUpdateManagerProvider, listLinkHandler: AddonModForumListLinkHandler,
+            listLinkHandler: AddonModForumListLinkHandler,
             pushNotificationsDelegate: CorePushNotificationsDelegate, pushClickHandler: AddonModForumPushClickHandler,
             postLinkHandler: AddonModForumPostLinkHandler, tagAreaDelegate: CoreTagAreaDelegate,
             tagAreaHandler: AddonModForumTagAreaHandler) {
@@ -84,41 +83,5 @@ export class AddonModForumModule {
         linksDelegate.registerHandler(postLinkHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
         tagAreaDelegate.registerHandler(tagAreaHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTablesMigration([
-            {
-                name: 'mma_mod_forum_offline_discussions',
-                newName: AddonModForumOfflineProvider.DISCUSSIONS_TABLE,
-                fields: [
-                    {
-                        name: 'forumAndUser',
-                        delete: true
-                    },
-                    {
-                        name: 'options',
-                        type: 'object'
-                    }
-                ]
-            },
-            {
-                name: 'mma_mod_forum_offline_replies',
-                newName: AddonModForumOfflineProvider.REPLIES_TABLE,
-                fields: [
-                    {
-                        name: 'forumAndUser',
-                        delete: true
-                    },
-                    {
-                        name: 'discussionAndUser',
-                        delete: true
-                    },
-                    {
-                        name: 'options',
-                        type: 'object'
-                    }
-                ]
-            }
-        ]);
     }
 }

@@ -38,7 +38,6 @@ import { CoreSettingsDelegate } from '@core/settings/providers/delegate';
 import { AddonMessagesSettingsHandler } from './providers/settings-handler';
 import { CorePushNotificationsDelegate } from '@core/pushnotifications/providers/delegate';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MESSAGES_PROVIDERS: any[] = [
@@ -75,7 +74,7 @@ export class AddonMessagesModule {
             userDelegate: CoreUserDelegate, cronDelegate: CoreCronDelegate, syncHandler: AddonMessagesSyncCronHandler,
             network: Network, zone: NgZone, messagesSync: AddonMessagesSyncProvider, appProvider: CoreAppProvider,
             localNotifications: CoreLocalNotificationsProvider, messagesProvider: AddonMessagesProvider,
-            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider, updateManager: CoreUpdateManagerProvider,
+            sitesProvider: CoreSitesProvider, linkHelper: CoreContentLinksHelperProvider,
             settingsHandler: AddonMessagesSettingsHandler, settingsDelegate: CoreSettingsDelegate,
             pushNotificationsDelegate: CorePushNotificationsDelegate, utils: CoreUtilsProvider,
             addContactHandler: AddonMessagesAddContactUserHandler, blockContactHandler: AddonMessagesBlockContactUserHandler,
@@ -136,21 +135,5 @@ export class AddonMessagesModule {
             // Listen for clicks in simulated push notifications.
             localNotifications.registerClick(AddonMessagesProvider.PUSH_SIMULATION_COMPONENT, notificationClicked);
         }
-
-        // Allow migrating the table from the old app to the new schema.
-        updateManager.registerSiteTableMigration({
-            name: 'mma_messages_offline_messages',
-            newName: AddonMessagesOfflineProvider.MESSAGES_TABLE,
-            fields: [
-                {
-                    name: 'textformat',
-                    delete: true
-                }
-            ]
-        });
-
-        // Migrate the component name.
-        updateManager.registerLocalNotifComponentMigration('mmaMessagesPushSimulation',
-                AddonMessagesProvider.PUSH_SIMULATION_COMPONENT);
     }
 }
