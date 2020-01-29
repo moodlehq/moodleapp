@@ -420,14 +420,18 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
 
         const scroll = parseInt(scrollElement.scrollTop, 10);
-        if (scroll == this.lastScroll) {
-            if (scroll == 0) {
-                // Ensure tabbar is shown.
-                this.topTabsElement.style.transform = '';
-                this.originalTabsContainer.style.transform = '';
-                this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
-            }
+        if (scroll == 0) {
+            // Ensure tabbar is shown.
+            this.topTabsElement.style.transform = '';
+            this.originalTabsContainer.style.transform = '';
+            this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
+            this.tabBarElement.classList.remove('tabs-hidden');
+            this.tabsShown = true;
 
+            return;
+        }
+
+        if (scroll == this.lastScroll) {
             // Ensure scroll has been modified to avoid flicks.
             return;
         }
