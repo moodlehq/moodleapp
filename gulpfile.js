@@ -5,12 +5,11 @@ var gulp = require('gulp'),
     path = require('path'),
     slash = require('gulp-slash'),
     clipEmptyFiles = require('gulp-clip-empty-files'),
-    gutil = require('gulp-util'),
+    File = require('vinyl'),
     flatten = require('gulp-flatten'),
     npmPath = require('path'),
     concat = require('gulp-concat'),
     bufferFrom = require('buffer-from')
-    File = gutil.File,
     exec = require('child_process').exec,
     license = '' +
         '// (C) Copyright 2015 Moodle Pty Ltd.\n' +
