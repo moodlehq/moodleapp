@@ -19,6 +19,40 @@ if [ "$TRAVIS_BRANCH" == 'master' ] && [ ! -z $GIT_TOKEN ] && [ "$TRAVIS_REPO_SL
     git add */en.json
     git add src/config.json
     git commit -m 'Update lang files [ci skip]'
+
+    print_title "Update Licenses"
+    npm install -g license-checker
+
+    jq --version
+    license-checker --json --production --relativeLicensePath > licenses.json
+    jq 'del(.[].path)' licenses.json > licenses_old.json
+    mv licenses_old.json licenses.json
+    licenses=`jq -r 'keys[]' licenses.json`
+    echo "{" > licensesurl.json
+    first=1
+    for license in $licenses; do
+        obj=`jq --arg lic $license '.[$lic]' licenses.json`
+        licensePath=`echo $obj | jq -r '.licenseFile'`
+        file=""
+        if [[ ! -z "$licensePath" ]] || [[ "$licensePath" != "null" ]]; then
+            file=$(basename $licensePath)
+            if [ $first -eq 1 ] ; then
+                first=0
+                echo "\"$license\" : { \"licenseFile\" : \"$file\"}" >> licensesurl.json
+            else
+                echo ",\"$license\" : { \"licenseFile\" : \"$file\"}" >> licensesurl.json
+            fi
+        fi
+    done
+    echo "}" >> licensesurl.json
+
+    jq -s '.[0] * .[1]' licenses.json licensesurl.json > licenses_old.json
+    mv licenses_old.json licenses.json
+    rm licensesurl.json
+
+    git add licenses.json
+    git commit -m 'Update licenses [ci skip]'
+
     git push origin HEAD:$TRAVIS_BRANCH
 fi
 
