@@ -21,7 +21,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
 import { CoreEventsProvider } from './events';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConfigConstants } from '../configconstants';
 
 /**
@@ -50,6 +50,37 @@ export interface CoreRedirectData {
 }
 
 /**
+ * App DB schema and migration function.
+ */
+export interface CoreAppSchema {
+    /**
+     * Name of the schema.
+     */
+    name: string;
+
+    /**
+     * Latest version of the schema (integer greater than 0).
+     */
+    version: number;
+
+    /**
+     * Tables to create when installing or upgrading the schema.
+     */
+    tables?: SQLiteDBTableSchema[];
+
+    /**
+     * Migrates the schema to the latest version.
+     *
+     * Called when installing and upgrading the schema, after creating the defined tables.
+     *
+     * @param db The affected DB.
+     * @param oldVersion Old version of the schema or 0 if not installed.
+     * @return Promise resolved when done.
+     */
+    migrate?(db: SQLiteDB, oldVersion: number): Promise<any>;
+}
+
+/**
  * Factory to provide some global functionalities, like access to the global app database.
  * @description
  * Each service or component should be responsible of creating their own database tables. Example:
@@ -71,11 +102,32 @@ export class CoreAppProvider {
     protected mainMenuOpen: number;
     protected forceOffline = false;
 
+    // Variables for DB.
+    protected createVersionsTableReady: Promise<any>;
+    protected SCHEMA_VERSIONS_TABLE = 'schema_versions';
+    protected versionsTableSchema: SQLiteDBTableSchema = {
+        name: this.SCHEMA_VERSIONS_TABLE,
+        columns: [
+            {
+                name: 'name',
+                type: 'TEXT',
+                primaryKey: true,
+            },
+            {
+                name: 'version',
+                type: 'INTEGER',
+            },
+        ],
+    };
+
     constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
             private network: Network, logger: CoreLoggerProvider, private events: CoreEventsProvider, zone: NgZone,
             private menuCtrl: MenuController, private statusBar: StatusBar) {
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
+
+        // Create the schema versions table.
+        this.createVersionsTableReady = this.db.createTableFromSchema(this.versionsTableSchema);
 
         this.keyboard.onKeyboardShow().subscribe((data) => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -131,6 +183,47 @@ export class CoreAppProvider {
         if (this.isMobile()) {
             this.keyboard.hide();
         }
+    }
+
+    /**
+     * Install and upgrade a certain schema.
+     *
+     * @param schema The schema to create.
+     * @return Promise resolved when done.
+     */
+    async createTablesFromSchema(schema: CoreAppSchema): Promise<any> {
+        this.logger.debug(`Apply schema to app DB: ${schema.name}`);
+
+        let oldVersion;
+
+        try {
+            // Wait for the schema versions table to be created.
+            await this.createVersionsTableReady;
+
+            // Fetch installed version of the schema.
+            const entry = await this.db.getRecord(this.SCHEMA_VERSIONS_TABLE, {name: schema.name});
+            oldVersion = entry.version;
+        } catch (error) {
+            // No installed version yet.
+            oldVersion = 0;
+        }
+
+        if (oldVersion >= schema.version) {
+            // Version already installed, nothing else to do.
+            return;
+        }
+
+        this.logger.debug(`Migrating schema '${schema.name}' of app DB from version ${oldVersion} to ${schema.version}`);
+
+        if (schema.tables) {
+            await this.db.createTablesFromSchema(schema.tables);
+        }
+        if (schema.migrate) {
+            await schema.migrate(this.db, oldVersion);
+        }
+
+        // Set installed version.
+        await this.db.insertRecord(this.SCHEMA_VERSIONS_TABLE, {name: schema.name, version: schema.version});
     }
 
     /**

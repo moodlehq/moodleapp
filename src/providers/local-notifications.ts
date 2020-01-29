@@ -17,13 +17,13 @@ import { Platform, Alert, AlertController } from 'ionic-angular';
 import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { Push } from '@ionic-native/push';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from './app';
+import { CoreAppProvider, CoreAppSchema } from './app';
 import { CoreConfigProvider } from './config';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { Subject, Subscription } from 'rxjs';
@@ -40,56 +40,61 @@ export class CoreLocalNotificationsProvider {
     protected SITES_TABLE = 'notification_sites'; // Store to asigne unique codes to each site.
     protected COMPONENTS_TABLE = 'notification_components'; // Store to asigne unique codes to each component.
     protected TRIGGERED_TABLE = 'notifications_triggered'; // Store to prevent re-triggering notifications.
-    protected tablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: this.SITES_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'TEXT',
-                    primaryKey: true
-                },
-                {
-                    name: 'code',
-                    type: 'INTEGER',
-                    notNull: true
-                }
-            ]
-        },
-        {
-            name: this.COMPONENTS_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'TEXT',
-                    primaryKey: true
-                },
-                {
-                    name: 'code',
-                    type: 'INTEGER',
-                    notNull: true
-                }
-            ]
-        },
-        {
-            name: this.TRIGGERED_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'INTEGER',
-                    primaryKey: true
-                },
-                {
-                    name: 'at',
-                    type: 'INTEGER',
-                    notNull: true
-                }
-            ]
-        }
-    ];
+    protected tablesSchema: CoreAppSchema = {
+        name: 'CoreLocalNotificationsProvider',
+        version: 1,
+        tables: [
+            {
+                name: this.SITES_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'code',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                ],
+            },
+            {
+                name: this.COMPONENTS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'code',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                ],
+            },
+            {
+                name: this.TRIGGERED_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'at',
+                        type: 'INTEGER',
+                        notNull: true
+                    },
+                ],
+            },
+        ],
+    };
 
     protected logger;
     protected appDB: SQLiteDB;
+    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
     protected codes: { [s: string]: number } = {};
     protected codeRequestsQueue = {};
     protected observables = {};
@@ -114,7 +119,9 @@ export class CoreLocalNotificationsProvider {
 
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.appDB = appProvider.getDB();
-        this.appDB.createTablesFromSchema(this.tablesSchema);
+        this.dbReady = appProvider.createTablesFromSchema(this.tablesSchema).catch(() => {
+            // Ignore errors.
+        });
 
         platform.ready().then(() => {
             // Listen to events.
@@ -242,34 +249,35 @@ export class CoreLocalNotificationsProvider {
      * @param id ID of the element to get its code.
      * @return Promise resolved when the code is retrieved.
      */
-    protected getCode(table: string, id: string): Promise<number> {
+    protected async getCode(table: string, id: string): Promise<number> {
+        await this.dbReady;
+
         const key = table + '#' + id;
 
         // Check if the code is already in memory.
         if (typeof this.codes[key] != 'undefined') {
-            return Promise.resolve(this.codes[key]);
+            return this.codes[key];
         }
 
-        // Check if we already have a code stored for that ID.
-        return this.appDB.getRecord(table, { id: id }).then((entry) => {
+        try {
+            // Check if we already have a code stored for that ID.
+            const entry = await this.appDB.getRecord(table, { id: id });
             this.codes[key] = entry.code;
 
             return entry.code;
-        }).catch(() => {
+        } catch (err) {
             // No code stored for that ID. Create a new code for it.
-            return this.appDB.getRecords(table, undefined, 'code DESC').then((entries) => {
-                let newCode = 0;
-                if (entries.length > 0) {
-                    newCode = entries[0].code + 1;
-                }
+            const entries = await this.appDB.getRecords(table, undefined, 'code DESC');
+            let newCode = 0;
+            if (entries.length > 0) {
+                newCode = entries[0].code + 1;
+            }
 
-                return this.appDB.insertRecord(table, { id: id, code: newCode }).then(() => {
-                    this.codes[key] = newCode;
+            await this.appDB.insertRecord(table, { id: id, code: newCode });
+            this.codes[key] = newCode;
 
-                    return newCode;
-                });
-            });
-        });
+            return newCode;
+        }
     }
 
     /**
@@ -352,8 +360,11 @@ export class CoreLocalNotificationsProvider {
      * @param notification Notification to check.
      * @return Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
-    isTriggered(notification: ILocalNotification): Promise<any> {
-        return this.appDB.getRecord(this.TRIGGERED_TABLE, { id: notification.id }).then((stored) => {
+    async isTriggered(notification: ILocalNotification): Promise<boolean> {
+        await this.dbReady;
+
+        try {
+            const stored = await this.appDB.getRecord(this.TRIGGERED_TABLE, { id: notification.id });
             let triggered = (notification.trigger && notification.trigger.at) || 0;
 
             if (typeof triggered != 'number') {
@@ -361,9 +372,9 @@ export class CoreLocalNotificationsProvider {
             }
 
             return stored.at === triggered;
-        }).catch(() => {
+        } catch (err) {
             return this.localNotifications.isTriggered(notification.id);
-        });
+        }
     }
 
     /**
@@ -477,7 +488,9 @@ export class CoreLocalNotificationsProvider {
      * @param id Notification ID.
      * @return Promise resolved when it is removed.
      */
-    removeTriggered(id: number): Promise<any> {
+    async removeTriggered(id: number): Promise<any> {
+        await this.dbReady;
+
         return this.appDB.deleteRecords(this.TRIGGERED_TABLE, { id: id });
     }
 
@@ -714,7 +727,9 @@ export class CoreLocalNotificationsProvider {
      * @param notification Triggered notification.
      * @return Promise resolved when stored, rejected otherwise.
      */
-    trigger(notification: ILocalNotification): Promise<any> {
+    async trigger(notification: ILocalNotification): Promise<any> {
+        await this.dbReady;
+
         const entry = {
             id: notification.id,
             at: notification.trigger && notification.trigger.at ? notification.trigger.at : Date.now()
@@ -730,7 +745,9 @@ export class CoreLocalNotificationsProvider {
      * @param newName The new name.
      * @return Promise resolved when done.
      */
-    updateComponentName(oldName: string, newName: string): Promise<any> {
+    async updateComponentName(oldName: string, newName: string): Promise<any> {
+        await this.dbReady;
+
         const oldId = this.COMPONENTS_TABLE + '#' + oldName,
             newId = this.COMPONENTS_TABLE + '#' + newName;
 

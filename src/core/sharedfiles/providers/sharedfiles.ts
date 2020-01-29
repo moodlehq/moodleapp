@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreAppProvider } from '@providers/app';
+import { CoreAppProvider, CoreAppSchema } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -21,7 +21,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { Md5 } from 'ts-md5/dist/md5';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Service to share files with the app.
@@ -32,19 +32,26 @@ export class CoreSharedFilesProvider {
 
     // Variables for the database.
     protected SHARED_FILES_TABLE = 'shared_files';
-    protected tableSchema: SQLiteDBTableSchema = {
-        name: this.SHARED_FILES_TABLE,
-        columns: [
+    protected tableSchema: CoreAppSchema = {
+        name: 'CoreSharedFilesProvider',
+        version: 1,
+        tables: [
             {
-                name: 'id',
-                type: 'TEXT',
-                primaryKey: true
-            }
-        ]
+                name: this.SHARED_FILES_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'TEXT',
+                        primaryKey: true
+                    },
+                ],
+            },
+        ],
     };
 
     protected logger;
     protected appDB: SQLiteDB;
+    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
 
     constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, appProvider: CoreAppProvider,
         private textUtils: CoreTextUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider,
@@ -52,7 +59,9 @@ export class CoreSharedFilesProvider {
         this.logger = logger.getInstance('CoreSharedFilesProvider');
 
         this.appDB = appProvider.getDB();
-        this.appDB.createTableFromSchema(this.tableSchema);
+        this.dbReady = appProvider.createTablesFromSchema(this.tableSchema).catch(() => {
+            // Ignore errors.
+        });
     }
 
     /**
@@ -189,7 +198,9 @@ export class CoreSharedFilesProvider {
      * @param fileId File ID.
      * @return Resolved if treated, rejected otherwise.
      */
-    protected isFileTreated(fileId: string): Promise<any> {
+    protected async isFileTreated(fileId: string): Promise<any> {
+        await this.dbReady;
+
         return this.appDB.getRecord(this.SHARED_FILES_TABLE, { id: fileId });
     }
 
@@ -199,12 +210,16 @@ export class CoreSharedFilesProvider {
      * @param fileId File ID.
      * @return Promise resolved when marked.
      */
-    protected markAsTreated(fileId: string): Promise<any> {
-        // Check if it's already marked.
-        return this.isFileTreated(fileId).catch(() => {
+    protected async markAsTreated(fileId: string): Promise<void> {
+        await this.dbReady;
+
+        try {
+            // Check if it's already marked.
+            await this.isFileTreated(fileId);
+        } catch (err) {
             // Doesn't exist, insert it.
-            return this.appDB.insertRecord(this.SHARED_FILES_TABLE, { id: fileId });
-        });
+            await this.appDB.insertRecord(this.SHARED_FILES_TABLE, { id: fileId });
+        }
     }
 
     /**
@@ -243,7 +258,9 @@ export class CoreSharedFilesProvider {
      * @param fileId File ID.
      * @return Resolved when unmarked.
      */
-    protected unmarkAsTreated(fileId: string): Promise<any> {
+    protected async unmarkAsTreated(fileId: string): Promise<any> {
+        await this.dbReady;
+
         return this.appDB.deleteRecords(this.SHARED_FILES_TABLE, { id: fileId });
     }
 }

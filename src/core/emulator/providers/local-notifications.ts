@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { LocalNotifications, ILocalNotification, ILocalNotificationAction } from '@ionic-native/local-notifications';
-import { CoreAppProvider } from '@providers/app';
+import { CoreAppProvider, CoreAppSchema } from '@providers/app';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../../../configconstants';
 import * as moment from 'moment';
@@ -43,41 +43,48 @@ export class LocalNotificationsMock extends LocalNotifications {
 
     // Variables for database.
     protected DESKTOP_NOTIFS_TABLE = 'desktop_local_notifications';
-    protected tableSchema: SQLiteDBTableSchema = {
-        name: this.DESKTOP_NOTIFS_TABLE,
-        columns: [
+    protected tableSchema: CoreAppSchema = {
+        name: 'LocalNotificationsMock',
+        version: 1,
+        tables: [
             {
-                name: 'id',
-                type: 'INTEGER',
-                primaryKey: true
+                name: this.DESKTOP_NOTIFS_TABLE,
+                columns: [
+                    {
+                        name: 'id',
+                        type: 'INTEGER',
+                        primaryKey: true
+                    },
+                    {
+                        name: 'title',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'text',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'at',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'data',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'triggered',
+                        type: 'INTEGER'
+                    }
+                ],
             },
-            {
-                name: 'title',
-                type: 'TEXT'
-            },
-            {
-                name: 'text',
-                type: 'TEXT'
-            },
-            {
-                name: 'at',
-                type: 'INTEGER'
-            },
-            {
-                name: 'data',
-                type: 'TEXT'
-            },
-            {
-                name: 'triggered',
-                type: 'INTEGER'
-            }
-        ]
+        ],
     };
 
     protected appDB: SQLiteDB;
     protected scheduled: { [i: number]: any } = {};
     protected triggered: { [i: number]: any } = {};
     protected observers: {[event: string]: Subject<any>};
+    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
     protected defaults = {
         actions       : [],
         attachments   : [],
@@ -117,7 +124,9 @@ export class LocalNotificationsMock extends LocalNotifications {
         super();
 
         this.appDB = appProvider.getDB();
-        this.appDB.createTableFromSchema(this.tableSchema);
+        this.dbReady = appProvider.createTablesFromSchema(this.tableSchema).catch(() => {
+            // Ignore errors.
+        });
 
         // Initialize observers.
         this.observers = {
@@ -550,20 +559,21 @@ export class LocalNotificationsMock extends LocalNotifications {
      *
      * @return Promise resolved with the notifications.
      */
-    protected getAllNotifications(): Promise<any> {
-        return this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE).then((notifications) => {
-            notifications.forEach((notification) => {
-                notification.trigger = {
-                    at: new Date(notification.at)
-                };
-                notification.data = this.textUtils.parseJSON(notification.data);
-                notification.triggered = !!notification.triggered;
+    protected async getAllNotifications(): Promise<any> {
+        await this.dbReady;
 
-                this.mergeWithDefaults(notification);
-            });
+        const notifications = await this.appDB.getAllRecords(this.DESKTOP_NOTIFS_TABLE);
+        notifications.forEach((notification) => {
+            notification.trigger = {
+                at: new Date(notification.at),
+            };
+            notification.data = this.textUtils.parseJSON(notification.data);
+            notification.triggered = !!notification.triggered;
 
-            return notifications;
+            this.mergeWithDefaults(notification);
         });
+
+        return notifications;
     }
 
     /**
@@ -889,7 +899,9 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param id ID of the notification.
      * @return Promise resolved when done.
      */
-    protected removeNotification(id: number): Promise<any> {
+    protected async removeNotification(id: number): Promise<any> {
+        await this.dbReady;
+
         return this.appDB.deleteRecords(this.DESKTOP_NOTIFS_TABLE, { id: id });
     }
 
@@ -979,7 +991,9 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @param triggered Whether the notification has been triggered.
      * @return Promise resolved when stored.
      */
-    protected storeNotification(notification: ILocalNotification, triggered: boolean): Promise<any> {
+    protected async storeNotification(notification: ILocalNotification, triggered: boolean): Promise<any> {
+        await this.dbReady;
+
         // Only store some of the properties.
         const entry = {
             id : notification.id,
