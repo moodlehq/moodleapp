@@ -67,7 +67,7 @@
                                 <core-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></core-icon>
                                 <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
                             </h2>
-                            <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event, discussion)" *ngIf="canPin || discussion.canlock || discussion.canfavourite">
+                            <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event, discussion)" *ngIf="canPin || discussion.canlock || discussion.canfavourite" [attr.aria-label]="('core.displayoptions' | translate)">
                                 <core-icon name="more"></core-icon>
                             </button>
                         </div>
