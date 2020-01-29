@@ -15,11 +15,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, ModalController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteCheckResponse } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoreUrl } from '@classes/utils/url';
 
 /**
  * Page to enter or select the site URL to connect to.
@@ -86,6 +87,8 @@ export class CoreLoginSitePage {
             return;
         }
 
+        url = url.trim();
+
         const modal = this.domUtils.showModalLoading(),
             siteData = this.sitesProvider.getDemoSiteData(url);
 
@@ -111,27 +114,16 @@ export class CoreLoginSitePage {
 
         } else {
             // Not a demo site.
-            this.sitesProvider.checkSite(url).then((result) => {
-                return this.sitesProvider.checkRequiredMinimumVersion(result.config).then(() => {
-                    if (result.warning) {
-                        this.domUtils.showErrorModal(result.warning, true, 4000);
-                    }
+            this.sitesProvider.checkSite(url)
+                .catch((error) => {
+                    // Attempt guessing the domain if the initial check failed
+                    const domain = CoreUrl.guessMoodleDomain(url);
 
-                    if (this.loginHelper.isSSOLoginNeeded(result.code)) {
-                        // SSO. User needs to authenticate in a browser.
-                        this.loginHelper.confirmAndOpenBrowserForSSOLogin(
-                            result.siteUrl, result.code, result.service, result.config && result.config.launchurl);
-                    } else {
-                        this.navCtrl.push('CoreLoginCredentialsPage', { siteUrl: result.siteUrl, siteConfig: result.config });
-                    }
-                }).catch(() => {
-                    // Ignore errors.
-                });
-            }, (error) => {
-                this.showLoginIssue(url, error);
-            }).finally(() => {
-                modal.dismiss();
-            });
+                    return domain ? this.sitesProvider.checkSite(domain) : Promise.reject(error);
+                })
+                .then((result) => this.login(result))
+                .catch((error) => this.showLoginIssue(url, error))
+                .finally(() => modal.dismiss());
         }
     }
 
@@ -173,4 +165,30 @@ export class CoreLoginSitePage {
 
         modal.present();
     }
+
+    /**
+     * Process login to a site.
+     *
+     * @param response Response obtained from the site check request.
+     *
+     * @return Promise resolved after logging in.
+     */
+    protected async login(response: CoreSiteCheckResponse): Promise<void> {
+        return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
+            if (response.warning) {
+                this.domUtils.showErrorModal(response.warning, true, 4000);
+            }
+
+            if (this.loginHelper.isSSOLoginNeeded(response.code)) {
+                // SSO. User needs to authenticate in a browser.
+                this.loginHelper.confirmAndOpenBrowserForSSOLogin(
+                    response.siteUrl, response.code, response.service, response.config && response.config.launchurl);
+            } else {
+                this.navCtrl.push('CoreLoginCredentialsPage', { siteUrl: response.siteUrl, siteConfig: response.config });
+            }
+        }).catch(() => {
+            // Ignore errors.
+        });
+    }
+
 }
