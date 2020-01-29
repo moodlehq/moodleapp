@@ -313,6 +313,35 @@ Feature: Test basic usage of messages in app
   And I should see "byee"
 
   @app @3.8.0 @OK
+  Scenario: Auto-sync messages
+  When I enter the app
+  And I log in as "teacher1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Contacts" in the app
+  Then I should see "No contacts"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I switch offline mode to "true"
+  And I set the field "New message" to "heeey student" in the app
+  And I press "Send" in the app
+  And I set the field "New message" to "byee" in the app
+  And I press "Send" in the app
+  And I switch offline mode to "false"
+  And I wait "600" seconds
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  And I press "Teacher teacher" in the app
+  Then I should see "heeey student"
+  And I should see "byee"
+
+  @app @3.8.0 @OK
   Scenario: Search for messages
   When I enter the app
   And I log in as "teacher1"
@@ -425,7 +454,7 @@ Feature: Test basic usage of messages in app
   Then I should see "Teacher teacher"
   And I should see "Student1 student1"
 
-    @app @3.8.0 @mobile @OK
+  @app @3.8.0 @mobile @OK
   Scenario: User blocking feature (mobile)
   When I enter the app
   And I log in as "student2"
@@ -602,7 +631,7 @@ Feature: Test basic usage of messages in app
   Then I should see "Unmute"
   And I should not see "Mute"
 
-    @app @3.8.0 @mobile @OK
+  @app @3.8.0 @mobile @OK
   Scenario: Self conversations (mobile)
   When I enter the app
   And I log in as "student1"
