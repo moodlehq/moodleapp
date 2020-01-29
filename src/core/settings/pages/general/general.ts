@@ -47,6 +47,7 @@ export class CoreSettingsGeneralPage {
     analyticsEnabled: boolean;
     colorSchemes = [];
     selectedScheme: string;
+    colorSchemeDisabled: boolean;
 
     constructor(private appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
             private eventsProvider: CoreEventsProvider, private langProvider: CoreLangProvider,
@@ -63,20 +64,27 @@ export class CoreSettingsGeneralPage {
         }
 
         if (!CoreConfigConstants.forceColorScheme) {
-            let defaultColorScheme = 'light';
+            this.colorSchemeDisabled = this.settingsHelper.isColorSchemeDisabledInSite();
 
-            // Auto is not working on iOS right now until we update Webkit.
-            if (!this.appProvider.isIOS() && (window.matchMedia('(prefers-color-scheme: dark)').matches ||
-                                window.matchMedia('(prefers-color-scheme: light)').matches)) {
-                this.colorSchemes.push('auto');
-                defaultColorScheme = 'auto';
+            if (this.colorSchemeDisabled) {
+                this.colorSchemes.push('light');
+                this.selectedScheme = this.colorSchemes[0];
+            } else {
+                let defaultColorScheme = 'light';
+
+                // Auto is not working on iOS right now until we update Webkit.
+                if (!this.appProvider.isIOS() && (window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                                    window.matchMedia('(prefers-color-scheme: light)').matches)) {
+                    this.colorSchemes.push('auto');
+                    defaultColorScheme = 'auto';
+                }
+                this.colorSchemes.push('light');
+                this.colorSchemes.push('dark');
+
+                this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, defaultColorScheme).then((scheme) => {
+                    this.selectedScheme = scheme;
+                });
             }
-            this.colorSchemes.push('light');
-            this.colorSchemes.push('dark');
-
-            this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, defaultColorScheme).then((scheme) => {
-                this.selectedScheme = scheme;
-            });
         }
 
         // Sort them by name.

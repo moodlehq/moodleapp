@@ -36,6 +36,7 @@
     "filesystemroot": "File system root",
     "fontsize": "Text size",
     "fontsizecharacter": "A",
+    "forcedsetting": "This setting has been forced by your site configuration.",
     "general": "General",
     "language": "Language",
     "license": "Licence",
