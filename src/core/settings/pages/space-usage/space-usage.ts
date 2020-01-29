@@ -22,6 +22,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreSite } from '@classes/site';
 
 /**
  * Page that displays the space usage settings.
@@ -145,8 +146,8 @@ export class CoreSettingsSpaceUsagePage {
      * @param site Site object.
      * @return If there are rows to delete or not.
      */
-    protected calcSiteClearRows(site: any): Promise<number> {
-        const clearTables = this.sitesProvider.getSiteTableSchemasToClear();
+    protected calcSiteClearRows(site: CoreSite): Promise<number> {
+        const clearTables = this.sitesProvider.getSiteTableSchemasToClear(site);
 
         let totalEntries = 0;
 
@@ -178,7 +179,7 @@ export class CoreSettingsSpaceUsagePage {
             }).then((site) => {
 
                 // Clear cache tables.
-                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear();
+                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear(site);
                 const promises = cleanSchemas.map((name) => {
                     return site.getDb().deleteRecords(name);
                 });
