@@ -710,6 +710,13 @@ export class CoreSitesProvider {
             }
 
             return this.treatInvalidAppVersion(result, siteUrl);
+        }).catch((error) => {
+            // Error invaliddevice is returned by Workplace server meaning the same as connecttoworkplaceapp.
+            if (error && error.errorcode == 'invaliddevice') {
+                return this.treatInvalidAppVersion(this.WORKPLACE_APP, siteUrl);
+            }
+
+            return Promise.reject(error);
         });
     }
 
