@@ -16,6 +16,7 @@ import { Component, NgZone } from '@angular/core';
 import { IonicPage, Platform } from 'ionic-angular';
 import { Device } from '@ionic-native/device';
 import { Network } from '@ionic-native/network';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreInitDelegate } from '@providers/init';
@@ -68,9 +69,9 @@ interface CoreSettingsDeviceInfo {
 export class CoreSettingsDeviceInfoPage {
 
     deviceInfo: CoreSettingsDeviceInfo;
+    deviceOsTranslated: string;
     currentLangName: string;
     fsClickable: boolean;
-    deviceOSTranslatable: boolean;
 
     protected onlineObserver: any;
 
@@ -85,7 +86,8 @@ export class CoreSettingsDeviceInfoPage {
             sitesProvider: CoreSitesProvider,
             localNotificationsProvider: CoreLocalNotificationsProvider,
             pushNotificationsProvider: CorePushNotificationsProvider,
-            protected utils: CoreUtilsProvider) {
+            protected utils: CoreUtilsProvider,
+            protected translate: TranslateService) {
 
         this.deviceInfo = {
             versionName: CoreConfigConstants.versionname,
@@ -132,37 +134,43 @@ export class CoreSettingsDeviceInfoPage {
             }
         }
 
-        this.deviceOSTranslatable = true;
         if (appProvider.isMobile()) {
             this.deviceInfo.deviceType = platform.is('tablet') ? 'tablet' : 'phone';
             if (appProvider.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';
+                this.deviceOsTranslated = 'Android';
             } else if (appProvider.isIOS()) {
                 this.deviceInfo.deviceOs = 'ios';
+                this.deviceOsTranslated = 'iOS';
             } else {
                 const matches = navigator.userAgent.match(/\(([^\)]*)\)/);
                 if (matches && matches.length > 1) {
-                    this.deviceOSTranslatable = false;
                     this.deviceInfo.deviceOs = matches[1];
+                    this.deviceOsTranslated = matches[1];
                 } else {
                     this.deviceInfo.deviceOs = 'unknown';
+                    this.deviceOsTranslated = this.translate.instant('core.unknown');
                 }
             }
         } else {
             this.deviceInfo.deviceType = appProvider.isDesktop() ? 'desktop' : 'browser';
             if (appProvider.isLinux()) {
                 this.deviceInfo.deviceOs = 'linux';
+                this.deviceOsTranslated = 'Linux';
             } else if (appProvider.isMac()) {
                 this.deviceInfo.deviceOs = 'mac';
+                this.deviceOsTranslated = 'MacOS';
             } else if (appProvider.isWindows()) {
                 this.deviceInfo.deviceOs = 'windows';
+                this.deviceOsTranslated = 'Windows';
             } else {
                 const matches = navigator.userAgent.match(/\(([^\)]*)\)/);
                 if (matches && matches.length > 1) {
-                    this.deviceOSTranslatable = false;
                     this.deviceInfo.deviceOs = matches[1];
+                    this.deviceOsTranslated = matches[1];
                 } else {
                     this.deviceInfo.deviceOs = 'unknown';
+                    this.deviceOsTranslated = this.translate.instant('core.unknown');
                 }
             }
         }
