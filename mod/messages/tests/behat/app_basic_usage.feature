@@ -601,3 +601,103 @@ Feature: Test basic usage of messages in app
   And I press "Information" in the app
   Then I should see "Unmute"
   And I should not see "Mute"
+
+    @app @3.8.0 @mobile @OK
+  Scenario: Self conversations (mobile)
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  Then I should see "Starred (1)"
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "self conversation" in the app
+  And I press "Send" in the app
+  And I switch offline mode to "true"
+  And I set the field "New message" to "self conversation offline" in the app
+  And I press "Send" in the app
+  And I switch offline mode to "false"
+  And I press the back button in the app
+  And I press "Student1 student1" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should see "Unstar conversation"
+  And I should see "Show delete messages"
+  And I should see "Delete conversation"
+  And I press "Unstar conversation" in the app
+  And I press "Conversation actions menu" in the app
+  Then I should see "Star conversation"
+  And I should see "Show delete messages"
+  And I should see "Delete conversation"
+  And I press "Show delete messages" in the app
+  And I should see "self conversation"
+  And I should see "self conversation offline"
+  And I press "Delete message" near "self conversation offline" in the app
+  And I press "OK" in the app
+  Then I should see "self conversation"
+  And I should not see "self conversation offline"
+  And I press "Conversation actions menu" in the app
+  And I press "Delete conversation" in the app
+  And I press "Delete" in the app
+  Then I should not see "self conversation"
+  And I should not see "self conversation offline"
+  And I press the back button in the app
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "Student1 student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "auto search test" in the app
+  And I press "Send" in the app
+  And I press the back button in the app
+  And I press the back button in the app
+  And I press "Private" in the app
+  And I press "Student1 student1" in the app
+  Then I should see "auto search test"
+
+  @app @3.8.0 @tablet @OK
+  Scenario: Self conversations (tablet)
+  When I enter the app
+  And I change viewport size to "1280x1080"
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Messages" in the app
+  Then I should see "Starred (1)"
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "self conversation" in the app
+  And I press "Send" in the app
+  And I switch offline mode to "true"
+  And I set the field "New message" to "self conversation offline" in the app
+  And I press "Send" in the app
+  And I switch offline mode to "false"
+  And I press "Student1 student1" in the app
+  And I press "Information" in the app
+  Then I should see "Unstar conversation"
+  And I should see "Show delete messages"
+  And I should see "Delete conversation"
+  And I press "Unstar conversation" in the app
+  And I press "Information" in the app
+  Then I should see "Star conversation"
+  And I should see "Show delete messages"
+  And I should see "Delete conversation"
+  And I press "Show delete messages" in the app
+  And I should see "self conversation"
+  And I should see "self conversation offline"
+  And I press "Delete message" near "self conversation offline" in the app
+  And I press "OK" in the app
+  Then I should see "self conversation"
+  And I should not see "self conversation offline"
+  And I press "Information" in the app
+  And I press "Delete conversation" in the app
+  And I press "Delete" in the app
+  Then I should not see "self conversation"
+  And I should not see "self conversation offline"
+  And I press "addon.messages.search" in the app
+  And I set the field "Search" to "Student1 student1" in the app
+  And I press "search" in the app
+  And I press "Student1 student1" in the app
+  And I set the field "New message" to "auto search test" in the app
+  And I press "Send" in the app
+  And I press the back button in the app
+  And I press "Private" in the app
+  And I press "Student1 student1" in the app
+  Then I should see "auto search test"
