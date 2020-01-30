@@ -3,7 +3,7 @@
         <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button ion-button icon-only [navPush]="'CoreAppSettingsPage'" [attr.aria-label]="'core.settings.appsettings' | translate">
+            <button ion-button icon-only navPush="CoreAppSettingsPage" [attr.aria-label]="'core.settings.appsettings' | translate">
                 <core-icon name="fa-cogs"></core-icon>
             </button>
             <button ion-button icon-only (click)="showHelp()" [attr.aria-label]="'core.help' | translate">

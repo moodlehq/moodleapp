@@ -52,7 +52,7 @@
                 </ion-row>
             </ion-item>
             <!-- List of attempts. -->
-            <a ion-item text-wrap *ngFor="let attempt of attempts" [ngClass]='{"addon-mod_quiz-highlighted core-white-push-arrow": attempt.highlightGrade}' [navPush]="'AddonModQuizAttemptPage'" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}" [attr.aria-label]="'core.seemoredetail' | translate">
+            <a ion-item text-wrap *ngFor="let attempt of attempts" [ngClass]='{"addon-mod_quiz-highlighted core-white-push-arrow": attempt.highlightGrade}' navPush="AddonModQuizAttemptPage" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}" [attr.aria-label]="'core.seemoredetail' | translate">
                 <ion-row align-items-center>
                     <ion-col text-center *ngIf="quiz.showAttemptColumn && attempt.preview">{{ 'addon.mod_quiz.preview' | translate }}</ion-col>
                     <ion-col text-center *ngIf="quiz.showAttemptColumn && !attempt.preview">{{ attempt.attempt }}</ion-col>
