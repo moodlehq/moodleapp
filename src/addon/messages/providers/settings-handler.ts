@@ -46,7 +46,7 @@ export class AddonMessagesSettingsHandler implements CoreSettingsHandler {
             icon: 'chatbubbles',
             title: 'addon.messages.messages',
             page: 'AddonMessagesSettingsPage',
-            class: 'addon-messages-settings-handler'
+            class: 'addon-messages-settings-handler',
         };
     }
 

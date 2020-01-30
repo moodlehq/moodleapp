@@ -56,7 +56,8 @@ export class CoreSettingsHelper {
             protected translate: TranslateService,
             protected configProvider: CoreConfigProvider,
             protected filterProvider: CoreFilterProvider,
-            protected courseProvider: CoreCourseProvider) {
+            protected courseProvider: CoreCourseProvider,
+    ) {
         this.logger = loggerProvider.getInstance('CoreSettingsHelper');
 
         if (!CoreConfigConstants.forceColorScheme) {
@@ -95,54 +96,45 @@ export class CoreSettingsHelper {
             spaceUsage: 0
         };
 
-        return this.filterProvider.formatText(siteName, {clean: true, singleLine: true, filter: false}, [], siteId)
-                .then((siteName) => {
+        siteName = await this.filterProvider.formatText(siteName, {clean: true, singleLine: true, filter: false}, [], siteId);
 
-            const title = this.translate.instant('core.settings.deletesitefilestitle');
-            const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
+        const title = this.translate.instant('core.settings.deletesitefilestitle');
+        const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
 
-            return this.domUtils.showConfirm(message, title).then(() => {
-                return this.sitesProvider.getSite(siteId);
-            }).then((site) => {
+        await this.domUtils.showConfirm(message, title);
 
-                // Clear cache tables.
-                const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear(site);
-                const promises = cleanSchemas.map((name) => {
-                    return site.getDb().deleteRecords(name);
-                });
+        const site = await this.sitesProvider.getSite(siteId);
 
-                promises.push(site.deleteFolder().then(() => {
-                    this.filePoolProvider.clearAllPackagesStatus(site.id);
-                    this.filePoolProvider.clearFilepool(site.id);
-                    this.courseProvider.clearAllCoursesStatus(site.id);
+        // Clear cache tables.
+        const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear(site);
+        const promises = cleanSchemas.map((name) => site.getDb().deleteRecords(name));
 
-                    siteInfo.spaceUsage = 0;
-                }).catch((error) => {
-                    if (error && error.code === FileError.NOT_FOUND_ERR) {
-                        // Not found, set size 0.
-                        this.filePoolProvider.clearAllPackagesStatus(site.id);
-                        siteInfo.spaceUsage = 0;
-                    } else {
-                        // Error, recalculate the site usage.
-                        this.domUtils.showErrorModal('core.settings.errordeletesitefiles', true);
+        promises.push(site.deleteFolder().then(() => {
+            this.filePoolProvider.clearAllPackagesStatus(site.id);
+            this.filePoolProvider.clearFilepool(site.id);
+            this.courseProvider.clearAllCoursesStatus(site.id);
 
-                        return site.getSpaceUsage().then((size) => {
-                            siteInfo.spaceUsage = size;
-                        });
-                    }
-                }).then(() => {
-                    this.eventsProvider.trigger(CoreEventsProvider.SITE_STORAGE_DELETED, {}, site.getId());
+            siteInfo.spaceUsage = 0;
+        }).catch(async (error) => {
+            if (error && error.code === FileError.NOT_FOUND_ERR) {
+                // Not found, set size 0.
+                this.filePoolProvider.clearAllPackagesStatus(site.id);
+                siteInfo.spaceUsage = 0;
+            } else {
+                // Error, recalculate the site usage.
+                this.domUtils.showErrorModal('core.settings.errordeletesitefiles', true);
 
-                    return this.calcSiteClearRows(site).then((rows) => {
-                        siteInfo.cacheEntries = rows;
-                    });
-                }));
+                siteInfo.spaceUsage = await site.getSpaceUsage();
+            }
+        }).then(async () => {
+            this.eventsProvider.trigger(CoreEventsProvider.SITE_STORAGE_DELETED, {}, site.getId());
 
-                return Promise.all(promises).then(() => {
-                    return siteInfo;
-                });
-            });
-        });
+            siteInfo.cacheEntries = await this.calcSiteClearRows(site);
+        }));
+
+        await Promise.all(promises);
+
+        return siteInfo;
     }
 
     /**
@@ -152,26 +144,20 @@ export class CoreSettingsHelper {
      * @return Resolved with detailed info when done.
      */
     async getSiteSpaceUsage(siteId?: string): Promise<CoreSiteSpaceUsage> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            // Get space usage.
-            const promises = [];
-            const siteInfo: CoreSiteSpaceUsage = {
-                cacheEntries: 0,
-                spaceUsage: 0
-            };
+        const site = await this.sitesProvider.getSite(siteId);
 
-            promises.push(this.calcSiteClearRows(site).then((rows) => {
-                siteInfo.cacheEntries = rows;
-            }));
+        // Get space usage.
+        const siteInfo: CoreSiteSpaceUsage = {
+            cacheEntries: 0,
+            spaceUsage: 0,
+        };
 
-            promises.push(site.getSpaceUsage().then((size) => {
-                siteInfo.spaceUsage = size;
-            }));
+        await Promise.all([
+            this.calcSiteClearRows(site).then((rows) => siteInfo.cacheEntries = rows),
+            site.getSpaceUsage().then((size) => siteInfo.spaceUsage = size),
+        ]);
 
-            return Promise.all(promises).then(() => {
-                return siteInfo;
-            });
-        });
+        return siteInfo;
     }
 
     /**
@@ -185,15 +171,11 @@ export class CoreSettingsHelper {
 
         let totalEntries = 0;
 
-        const promises = clearTables.map((name) => {
-            return site.getDb().countRecords(name).then((rows) => {
-                totalEntries += rows;
-            });
-        });
+        await Promise.all(clearTables.map(async (name) =>
+            totalEntries += await site.getDb().countRecords(name)
+        ));
 
-        return Promise.all(promises).then(() => {
-            return totalEntries;
-        });
+        return totalEntries;
     }
 
     /**

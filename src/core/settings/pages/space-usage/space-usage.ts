@@ -40,7 +40,8 @@ export class CoreSettingsSpaceUsagePage {
     constructor(protected sitesProvider: CoreSitesProvider,
             protected settingsHelper: CoreSettingsHelper,
             protected domUtils: CoreDomUtilsProvider,
-            protected translate: TranslateService) {
+            protected translate: TranslateService,
+    ) {
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
     }
 
@@ -48,38 +49,36 @@ export class CoreSettingsSpaceUsagePage {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.calculateSizeUsage().finally(() => {
+        this.loadSiteData().finally(() => {
             this.loaded = true;
         });
     }
 
     /**
-     * Convenience function to calculate each site's usage, and the total usage.
+     * Convenience function to load site data/usage and calculate the totals.
      *
      * @return Resolved when done.
      */
-    protected async calculateSizeUsage(): Promise<void> {
+    protected async loadSiteData(): Promise<void> {
         // Calculate total usage.
-        let totalSize = 0,
-            totalEntries = 0;
+        let totalSize = 0;
+        let totalEntries = 0;
 
-        return this.sitesProvider.getSortedSites().then((sites) => {
-            this.sites = sites;
+        this.sites = await this.sitesProvider.getSortedSites();
 
-            // Get space usage.
-            return Promise.all(this.sites.map((site) => {
-                return this.settingsHelper.getSiteSpaceUsage(site.id).then((siteInfo) => {
-                    site.cacheEntries = siteInfo.cacheEntries;
-                    site.spaceUsage = siteInfo.spaceUsage;
+        // Get space usage.
+        await Promise.all(this.sites.map(async (site) => {
+            const siteInfo = await this.settingsHelper.getSiteSpaceUsage(site.id);
 
-                    totalSize += (site.spaceUsage ? parseInt(site.spaceUsage, 10) : 0);
-                    totalEntries += (site.cacheEntries ? parseInt(site.cacheEntries, 10) : 0);
-                });
-            }));
-        }).then(() => {
-            this.totals.spaceUsage = totalSize;
-            this.totals.cacheEntries = totalEntries;
-        });
+            site.cacheEntries = siteInfo.cacheEntries;
+            site.spaceUsage = siteInfo.spaceUsage;
+
+            totalSize += (site.spaceUsage ? parseInt(site.spaceUsage, 10) : 0);
+            totalEntries += (site.cacheEntries ? parseInt(site.cacheEntries, 10) : 0);
+        }));
+
+        this.totals.spaceUsage = totalSize;
+        this.totals.cacheEntries = totalEntries;
     }
 
     /**
@@ -88,7 +87,7 @@ export class CoreSettingsSpaceUsagePage {
      * @param refresher Refresher.
      */
     refreshData(refresher: any): void {
-        this.calculateSizeUsage().finally(() => {
+        this.loadSiteData().finally(() => {
             refresher.complete();
         });
     }

@@ -63,9 +63,9 @@
     "sites": "Sites",
     "spaceusage": "Space usage",
     "spaceusagehelp": "Deleting the stored information of the site will remove all the site offline data. This information allows you to use the app when offline. ",
-    "synchelp": "Synchronising a site will send pending changes and all offline activity stored in the device and will synchronise some data like messages and notifications.",
     "synchronization": "Synchronisation",
     "synchronizenow": "Synchronise now",
+    "synchronizenowhelp": "Synchronising a site will send pending changes and all offline activity stored in the device and will synchronise some data like messages and notifications.",
     "syncsettings": "Synchronisation settings",
     "total": "Total",
     "wificonnection": "Wi-Fi connection"

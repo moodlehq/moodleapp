@@ -58,7 +58,8 @@ export class CoreSitePreferencesPage {
             protected sharedFilesProvider: CoreSharedFilesProvider,
             protected translate: TranslateService,
             platorm: Platform,
-            navParams: NavParams) {
+            navParams: NavParams,
+    ) {
 
         this.isIOS = platorm.is('ios');
 
@@ -93,9 +94,7 @@ export class CoreSitePreferencesPage {
     /**
      * Fetch Data.
      */
-    protected async fetchData(): Promise<void[]> {
-        const promises = [];
-
+    protected async fetchData(): Promise<void> {
         this.handlers = this.settingsDelegate.getHandlers();
         const currentSite = this.sitesProvider.getCurrentSite();
         this.siteId = currentSite.id;
@@ -103,17 +102,17 @@ export class CoreSitePreferencesPage {
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
 
-        promises.push(this.settingsHelper.getSiteSpaceUsage(this.siteId).then((spaceUsage) => {
-            this.spaceUsage = spaceUsage;
-        }));
+        const promises = [];
+
+        promises.push(this.settingsHelper.getSiteSpaceUsage(this.siteId).then((spaceUsage) => this.spaceUsage = spaceUsage));
 
         if (this.isIOS) {
-            promises.push(this.sharedFilesProvider.getSiteSharedFiles(this.siteId).then((files) => {
-                this.iosSharedFiles = files.length;
-            }));
+            promises.push(this.sharedFilesProvider.getSiteSharedFiles(this.siteId).then((files) =>
+                this.iosSharedFiles = files.length
+            ));
         }
 
-        return Promise.all(promises);
+        await Promise.all(promises);
     }
 
     /**
@@ -186,7 +185,7 @@ export class CoreSitePreferencesPage {
      */
     showSyncInfo(): void {
         this.domUtils.showAlert(this.translate.instant('core.help'),
-            this.translate.instant('core.settings.synchelp'));
+            this.translate.instant('core.settings.synchronizenowhelp'));
     }
 
     /**

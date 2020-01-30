@@ -44,7 +44,8 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
             protected sitesProvider: CoreSitesProvider,
             protected domUtils: CoreDomUtilsProvider,
             protected settingsHelper: CoreSettingsHelper,
-            protected translate: TranslateService) {
+            protected translate: TranslateService,
+    ) {
 
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
 
@@ -113,7 +114,7 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
      */
     showInfo(): void {
         this.domUtils.showAlert(this.translate.instant('core.help'),
-            this.translate.instant('core.settings.synchelp'));
+            this.translate.instant('core.settings.synchronizenowhelp'));
     }
 
     /**

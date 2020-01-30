@@ -51,7 +51,7 @@ export class AddonNotificationsSettingsHandler implements CoreSettingsHandler {
             icon: 'notifications',
             title: 'addon.notifications.notifications',
             page: 'AddonNotificationsSettingsPage',
-            class: 'addon-notifications-settings-handler'
+            class: 'addon-notifications-settings-handler',
         };
     }
 }

@@ -22,14 +22,14 @@ import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [
-        CoreSitePreferencesPage
+        CoreSitePreferencesPage,
     ],
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
         IonicPageModule.forChild(CoreSitePreferencesPage),
-        TranslateModule.forChild()
+        TranslateModule.forChild(),
     ],
 })
 export class CoreSitePreferencesPageModule {}
