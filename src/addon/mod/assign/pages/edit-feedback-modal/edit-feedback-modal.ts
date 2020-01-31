@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonModAssignFeedbackDelegate } from '../../providers/feedback-delegate';
 import {
@@ -36,10 +38,17 @@ export class AddonModAssignEditFeedbackModalPage {
     @Input() plugin: AddonModAssignPlugin; // The plugin object.
     @Input() userId: number; // The user ID of the submission.
 
+    @ViewChild('editFeedbackForm') formElement: ElementRef;
+
     protected forceLeave = false; // To allow leaving the page without checking for changes.
 
-    constructor(params: NavParams, protected viewCtrl: ViewController, protected domUtils: CoreDomUtilsProvider,
-            protected translate: TranslateService, protected feedbackDelegate: AddonModAssignFeedbackDelegate) {
+    constructor(params: NavParams,
+            protected viewCtrl: ViewController,
+            protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService,
+            protected feedbackDelegate: AddonModAssignFeedbackDelegate,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) {
 
         this.assign = params.get('assign');
         this.submission = params.get('submission');
@@ -81,6 +90,11 @@ export class AddonModAssignEditFeedbackModalPage {
     done(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
+
+        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+            form: this.formElement.nativeElement,
+            online: false,
+        }, this.sitesProvider.getCurrentSiteId());
 
         // Close the modal, sending the input data.
         this.forceLeave = true;

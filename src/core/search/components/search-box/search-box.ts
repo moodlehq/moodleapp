@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSearchHistoryProvider, CoreSearchHistoryItem } from '../../providers/search-history';
 
@@ -47,6 +50,8 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear: EventEmitter<void>; // Send event when clearing the search form.
 
+    @ViewChild('searchForm') formElement: ElementRef;
+
     searched = ''; // Last search emitted.
     searchText = '';
     history: CoreSearchHistoryItem[];
@@ -58,6 +63,9 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
     constructor(protected translate: TranslateService,
             protected utils: CoreUtilsProvider,
             protected searchHistoryProvider: CoreSearchHistoryProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
     ) {
         this.onSubmit = new EventEmitter<string>();
         this.onClear = new EventEmitter<void>();
@@ -94,6 +102,8 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
         if (this.searchArea) {
             this.saveSearchToHistory(this.searchText);
         }
+
+        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
 
         this.searched = this.searchText;
         this.onSubmit.emit(this.searchText);

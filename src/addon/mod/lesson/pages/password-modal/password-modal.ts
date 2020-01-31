@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Modal that asks the password for a lesson.
@@ -24,8 +26,11 @@ import { IonicPage, ViewController } from 'ionic-angular';
     templateUrl: 'password-modal.html',
 })
 export class AddonModLessonPasswordModalPage {
+    @ViewChild('passwordForm') formElement: ElementRef;
 
-    constructor(protected viewCtrl: ViewController) { }
+    constructor(protected viewCtrl: ViewController,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) { }
 
     /**
      * Send the password back.
@@ -36,6 +41,11 @@ export class AddonModLessonPasswordModalPage {
     submitPassword(e: Event, password: HTMLInputElement): void {
         e.preventDefault();
         e.stopPropagation();
+
+        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+            form: this.formElement.nativeElement,
+            online: false,
+        }, this.sitesProvider.getCurrentSiteId());
 
         this.viewCtrl.dismiss(password.value);
     }

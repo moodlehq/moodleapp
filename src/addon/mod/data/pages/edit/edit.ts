@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Content, IonicPage, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { FormGroup } from '@angular/forms';
@@ -40,6 +40,7 @@ import { CoreTagProvider } from '@core/tag/providers/tag';
 })
 export class AddonModDataEditPage {
     @ViewChild(Content) content: Content;
+    @ViewChild('editFormEl') formElement: ElementRef;
 
     protected module: any;
     protected courseId: number;
@@ -216,6 +217,12 @@ export class AddonModDataEditPage {
 
                 // This is done if entry is updated when editing or creating if not.
                 if ((this.entryId && result.updated) || (!this.entryId && result.newentryid)) {
+
+                    this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                        form: this.formElement.nativeElement,
+                        online: result.sent,
+                    }, this.siteId);
+
                     const promises = [];
 
                     this.entryId = this.entryId || result.newentryid;

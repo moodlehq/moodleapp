@@ -1,6 +1,6 @@
 <h3 padding>{{ 'addon.mod_workshop.assessmentform' | translate }}</h3>
 
-<form name="mma-mod_workshop-assessment-form">
+<form name="mma-mod_workshop-assessment-form" #assessmentForm>
     <core-loading [hideUntil]="assessmentStrategyLoaded">
         <ng-container *ngIf="componentClass && assessmentStrategyLoaded">
             <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>

@@ -9,7 +9,7 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="eventForm" *ngIf="!error">
+        <form ion-list [formGroup]="eventForm" *ngIf="!error" #editEventForm>
             <!-- Event name. -->
             <ion-item text-wrap>
                 <ion-label stacked><h2 [core-mark-required]="true">{{ 'addon.calendar.eventname' | translate }}</h2></ion-label>

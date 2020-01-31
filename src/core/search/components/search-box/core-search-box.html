@@ -1,5 +1,5 @@
 <ion-card>
-    <form #f="ngForm" (ngSubmit)="submitForm($event)" role="search">
+    <form #f="ngForm" (ngSubmit)="submitForm($event)" role="search" #searchForm>
         <ion-item>
             <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder" [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus" [disabled]="disabled" role="searchbox" (focus)="showHistory()" (blur)="hideHistory()"></ion-input>
             <button item-end ion-button clear icon-only type="submit" class="button-small" [attr.aria-label]="searchLabel" [disabled]="disabled || !searchText || (searchText.length < lengthCheck)">

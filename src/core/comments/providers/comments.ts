@@ -54,7 +54,7 @@ export class CoreCommentsProvider {
         // Convenience function to store a comment to be synchronized later.
         const storeOffline = (): Promise<any> => {
             return this.commentsOffline.saveComment(content, contextLevel, instanceId, component, itemId, area, siteId).then(() => {
-                return Promise.resolve(false);
+                return false;
             });
         };
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -34,6 +34,9 @@ import { AddonModAssignHelperProvider } from '../../providers/helper';
     templateUrl: 'edit.html',
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy {
+
+    @ViewChild('editSubmissionForm') formElement: ElementRef;
+
     title: string; // Title to display.
     assign: AddonModAssignAssign; // Assignment.
     courseId: number; // Course ID the assignment belongs to.
@@ -265,69 +268,77 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      *
      * @return Promise resolved when done.
      */
-    protected saveSubmission(): Promise<any> {
+    protected async saveSubmission(): Promise<void> {
         const inputData = this.getInputData();
 
         if (this.submissionStatement && (!inputData.submissionstatement || inputData.submissionstatement === 'false')) {
-            return Promise.reject(this.translate.instant('addon.mod_assign.acceptsubmissionstatement'));
+            throw this.translate.instant('addon.mod_assign.acceptsubmissionstatement');
         }
 
         let modal = this.domUtils.showModalLoading();
+        let size;
 
         // Get size to ask for confirmation.
-        return this.assignHelper.getSubmissionSizeForEdit(this.assign, this.userSubmission, inputData).catch(() => {
+        try {
+            size = await this.assignHelper.getSubmissionSizeForEdit(this.assign, this.userSubmission, inputData);
+        } catch (error) {
             // Error calculating size, return -1.
-            return -1;
-        }).then((size) => {
-            modal.dismiss();
+            size = -1;
+        }
 
+        modal.dismiss();
+
+        try {
             // Confirm action.
-            return this.fileUploaderHelper.confirmUploadFile(size, true, this.allowOffline);
-        }).then(() => {
+            await this.fileUploaderHelper.confirmUploadFile(size, true, this.allowOffline);
+
             modal = this.domUtils.showModalLoading('core.sending', true);
 
-            return this.prepareSubmissionData(inputData).then((pluginData) => {
-                if (!Object.keys(pluginData).length) {
-                    // Nothing to save.
-                    return;
-                }
+            const pluginData = await this.prepareSubmissionData(inputData);
+            if (!Object.keys(pluginData).length) {
+                // Nothing to save.
+                return;
+            }
 
-                let promise;
+            let sent: boolean;
 
-                if (this.saveOffline) {
-                    // Save submission in offline.
-                    promise = this.assignOfflineProvider.saveSubmission(this.assign.id, this.courseId, pluginData,
-                            this.userSubmission.timemodified, !this.assign.submissiondrafts, this.userId);
-                } else {
-                    // Try to send it to server.
-                    promise = this.assignProvider.saveSubmission(this.assign.id, this.courseId, pluginData, this.allowOffline,
-                            this.userSubmission.timemodified, !!this.assign.submissiondrafts, this.userId);
-                }
+            if (this.saveOffline) {
+                // Save submission in offline.
+                sent = false;
+                await this.assignOfflineProvider.saveSubmission(this.assign.id, this.courseId, pluginData,
+                        this.userSubmission.timemodified, !this.assign.submissiondrafts, this.userId);
+            } else {
+                // Try to send it to server.
+                sent = await this.assignProvider.saveSubmission(this.assign.id, this.courseId, pluginData, this.allowOffline,
+                        this.userSubmission.timemodified, !!this.assign.submissiondrafts, this.userId);
+            }
 
-                return promise.then(() => {
-                    // Clear temporary data from plugins.
-                    return this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, inputData);
-                }).then(() => {
-                    // Submission saved, trigger event.
-                    const params = {
-                        assignmentId: this.assign.id,
-                        submissionId: this.userSubmission.id,
-                        userId: this.userId,
-                    };
+            // Clear temporary data from plugins.
+            await this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, inputData);
 
-                    this.eventsProvider.trigger(AddonModAssignProvider.SUBMISSION_SAVED_EVENT, params,
-                            this.sitesProvider.getCurrentSiteId());
+            // Submission saved, trigger events.
+            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                form: this.formElement.nativeElement,
+                online: sent,
+            }, this.sitesProvider.getCurrentSiteId());
 
-                    if (!this.assign.submissiondrafts) {
-                        // No drafts allowed, so it was submitted. Trigger event.
-                        this.eventsProvider.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, params,
-                                this.sitesProvider.getCurrentSiteId());
-                    }
-                });
-            });
-        }).finally(() => {
+            const params = {
+                assignmentId: this.assign.id,
+                submissionId: this.userSubmission.id,
+                userId: this.userId,
+            };
+
+            this.eventsProvider.trigger(AddonModAssignProvider.SUBMISSION_SAVED_EVENT, params,
+                    this.sitesProvider.getCurrentSiteId());
+
+            if (!this.assign.submissiondrafts) {
+                // No drafts allowed, so it was submitted. Trigger event.
+                this.eventsProvider.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, params,
+                        this.sitesProvider.getCurrentSiteId());
+            }
+        } finally {
             modal.dismiss();
-        });
+        }
     }
 
     /**

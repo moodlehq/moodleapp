@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -36,6 +36,8 @@ import { AddonModWikiSyncProvider, AddonModWikiSyncSubwikiResult } from '../../p
     templateUrl: 'edit.html',
 })
 export class AddonModWikiEditPage implements OnInit, OnDestroy {
+
+    @ViewChild('editPageForm') formElement: ElementRef;
 
     title: string; // Title to display.
     pageForm: FormGroup; // The form group.
@@ -423,6 +425,12 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
         if (this.editing) {
             // Edit existing page.
             promise = this.wikiProvider.editPage(this.pageId, text, this.section).then(() => {
+
+                this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                    form: this.formElement.nativeElement,
+                    online: true,
+                }, this.sitesProvider.getCurrentSiteId());
+
                 // Invalidate page since it changed.
                 return this.wikiProvider.invalidatePage(this.pageId).then(() => {
                     return this.gotoPage(title);
@@ -456,6 +464,12 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 let wikiId = this.wikiId || (this.module && this.module.instance);
 
                 return this.wikiProvider.newPage(title, text, this.subwikiId, wikiId, this.userId, this.groupId).then((id) => {
+
+                    this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                        form: this.formElement.nativeElement,
+                        online: id > 0,
+                    }, this.sitesProvider.getCurrentSiteId());
+
                     if (id > 0) {
                         // Page was created, get its data and go to the page.
                         this.pageId = id;

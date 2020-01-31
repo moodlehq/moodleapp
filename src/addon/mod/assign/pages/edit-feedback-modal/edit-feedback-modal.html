@@ -9,7 +9,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <form name="addon-mod_assign-edit-feedback-form" *ngIf="userId && plugin">
+    <form name="addon-mod_assign-edit-feedback-form" *ngIf="userId && plugin" #editFeedbackForm>
         <addon-mod-assign-feedback-plugin [assign]="assign" [submission]="submission" [userId]="userId" [plugin]="plugin" [edit]="true"></addon-mod-assign-feedback-plugin>
         <button ion-button block (click)="done($event)">{{ 'core.done' | translate }}</button>
     </form>

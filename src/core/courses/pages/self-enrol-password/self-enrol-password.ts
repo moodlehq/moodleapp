@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays a form to enter a password to self enrol in a course.
@@ -24,7 +26,12 @@ import { IonicPage, ViewController } from 'ionic-angular';
     templateUrl: 'self-enrol-password.html',
 })
 export class CoreCoursesSelfEnrolPasswordPage {
-    constructor(private viewCtrl: ViewController) { }
+
+    @ViewChild('enrolPasswordForm') formElement: ElementRef;
+
+    constructor(protected viewCtrl: ViewController,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) { }
 
     /**
      * Close help modal.
@@ -42,6 +49,11 @@ export class CoreCoursesSelfEnrolPasswordPage {
     submitPassword(e: Event, password: string): void {
         e.preventDefault();
         e.stopPropagation();
+
+        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+            form: this.formElement.nativeElement,
+            online: false,
+        }, this.sitesProvider.getCurrentSiteId());
 
         this.viewCtrl.dismiss(password);
     }

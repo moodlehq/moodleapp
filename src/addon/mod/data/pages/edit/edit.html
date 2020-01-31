@@ -21,7 +21,7 @@
         <div class="addon-data-contents addon-data-entries-{{data.id}}" *ngIf="data">
             <core-style [css]="data.csstemplate" prefix=".addon-data-entries-{{data.id}}"></core-style>
 
-            <form (ngSubmit)="save($event)" [formGroup]="editForm">
+            <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
                 <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
             </form>
         </div>

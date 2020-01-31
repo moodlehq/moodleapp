@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="editForm" *ngIf="workshop">
+        <form ion-list [formGroup]="editForm" *ngIf="workshop" #editFormEl>
             <ion-item text-wrap>
                 <ion-label stacked core-mark-required="true">{{ 'addon.mod_workshop.submissiontitle' | translate }}</ion-label>
                 <ion-input name="title" type="text" [placeholder]="'addon.mod_workshop.submissiontitle' | translate" formControlName="title"></ion-input>

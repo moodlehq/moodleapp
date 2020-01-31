@@ -3089,6 +3089,7 @@ export class AddonModLessonProvider {
                 result.warnings = [];
                 result.displaymenu = pageData.displaymenu; // Keep the same value since we can't calculate it in offline.
                 result.messages = this.getPageProcessMessages(lesson, accessInfo, result, review, jumps);
+                result.sent = false;
                 Object.assign(result, calculatedData);
 
                 return result;
@@ -3103,6 +3104,8 @@ export class AddonModLessonProvider {
                 pageId: pageId,
                 review: review
             }, this.sitesProvider.getCurrentSiteId());
+
+            response.sent = true;
 
             return response;
         });

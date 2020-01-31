@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -36,6 +36,8 @@ import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
     templateUrl: 'edit-submission.html',
 })
 export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
+
+    @ViewChild('editFormEl') formElement: ElementRef;
 
     module: any;
     courseId: number;
@@ -352,7 +354,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                     // Save submission in offline.
                     return this.workshopOffline.saveSubmission(this.workshopId, this.courseId, inputData.title,
                             inputData.content, attachmentsId, submissionId, 'update').then(() => {
-                        // Don't return anything.
+                        return false;
                     });
                 }
 
@@ -365,8 +367,8 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             if (saveOffline) {
                 // Save submission in offline.
                 return this.workshopOffline.saveSubmission(this.workshopId, this.courseId, inputData.title, inputData.content,
-                    attachmentsId, submissionId, 'add').then(() => {
-                    // Don't return anything.
+                        attachmentsId, submissionId, 'add').then(() => {
+                    return false;
                 });
             }
 
@@ -375,6 +377,12 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             return this.workshopProvider.addSubmission(this.workshopId, this.courseId, inputData.title, inputData.content,
                 attachmentsId, undefined, submissionId, allowOffline);
         }).then((newSubmissionId) => {
+
+            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                form: this.formElement.nativeElement,
+                online: !!newSubmissionId,
+            }, this.siteId);
+
             const data = {
                 workshopId: this.workshopId,
                 cmId: this.module.cmid

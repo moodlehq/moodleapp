@@ -67,7 +67,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
 
     protected valueChangeSubscription: Subscription;
     protected keyboardObs: any;
-    protected initHeightInterval;
+    protected resetObs: any;
+    protected initHeightInterval: NodeJS.Timer;
 
     rteEnabled = false;
     editorSupported = true;
@@ -175,11 +176,11 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
         }
 
         if (this.shouldAutoSaveDrafts()) {
-            // Recover drafts.
             this.restoreDraft();
 
-            // Auto save drafts every certain time.
             this.autoSaveDrafts();
+
+            this.deleteDraftOnSubmit();
         }
     }
 
@@ -781,6 +782,25 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     }
 
     /**
+     * Delete the draft when the form is submitted.
+     */
+    protected deleteDraftOnSubmit(): void {
+
+        this.resetObs = this.events.on(CoreEventsProvider.FORM_SUBMITTED, async (data) => {
+            const form = this.element.closest('form');
+
+            if (data.form && form && data.form == form) {
+                try {
+                    await this.editorOffline.deleteDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                            this.draftExtraParams);
+                } catch (error) {
+                    // Error deleting draft. Shouldn't happen.
+                }
+            }
+        }, this.sitesProvider.getCurrentSiteId());
+    }
+
+    /**
      * Show a message.
      *
      * @param message Identifier of the message to display.
@@ -824,5 +844,6 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
         this.keyboardObs && this.keyboardObs.off();
         clearInterval(this.autoSaveInterval);
         clearTimeout(this.hideMessageTimeout);
+        this.resetObs && this.resetObs.off();
     }
 }

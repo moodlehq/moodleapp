@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { Content, IonicPage, NavParams, NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -41,6 +41,7 @@ import { AddonModWorkshopSyncProvider } from '../../providers/sync';
 export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
 
     @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy: AddonModWorkshopAssessmentStrategyComponent;
+    @ViewChild('feedbackFormEl') formElement: ElementRef;
 
     module: any;
     workshop: any;
@@ -444,7 +445,13 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
 
         // Try to send it to server.
         return this.workshopProvider.evaluateSubmission(this.workshopId, this.submissionId, this.courseId, inputData.text,
-                inputData.published, inputData.grade).then(() => {
+                inputData.published, inputData.grade).then((result) => {
+
+            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                form: this.formElement.nativeElement,
+                online: !!result,
+            }, this.siteId);
+
             const data = {
                 workshopId: this.workshopId,
                 cmId: this.module.cmid,

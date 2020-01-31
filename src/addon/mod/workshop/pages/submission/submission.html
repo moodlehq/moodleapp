@@ -65,7 +65,7 @@
             <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId" summary="true" [workshop]="workshop" [access]="access"></addon-mod-workshop-assessment>
         </ion-list>
 
-        <form ion-list [formGroup]="feedbackForm" *ngIf="canAddFeedback">
+        <form ion-list [formGroup]="feedbackForm" *ngIf="canAddFeedback" #feedbackFormEl>
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
             </ion-item>

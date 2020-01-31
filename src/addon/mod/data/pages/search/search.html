@@ -13,7 +13,7 @@
         <a class="tab-slide" [attr.aria-selected]="!search.searchingAdvanced" (click)="changeAdvanced(false)">{{ 'addon.mod_data.search' | translate}}</a>
         <a class="tab-slide" [attr.aria-selected]="search.searchingAdvanced" (click)="changeAdvanced(true)">{{ 'addon.mod_data.advancedsearch' | translate }}</a>
     </div>
-    <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm">
+    <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm" #searchFormEl>
         <ion-list no-margin>
             <ion-item [hidden]="search.searchingAdvanced">
                 <ion-input type="text" placeholder="{{ 'addon.mod_data.search' | translate}}" [(ngModel)]="search.text" name="text" formControlName="text"></ion-input>

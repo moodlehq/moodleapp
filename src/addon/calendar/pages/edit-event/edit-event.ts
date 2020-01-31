@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -44,6 +44,7 @@ import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor: CoreEditorRichTextEditorComponent;
+    @ViewChild('editEventForm') formElement: ElementRef;
 
     title: string;
     dateFormat: string;
@@ -495,6 +496,11 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             event = result.event;
+
+            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                form: this.formElement.nativeElement,
+                online: result.sent,
+            }, this.currentSite.getId());
 
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.

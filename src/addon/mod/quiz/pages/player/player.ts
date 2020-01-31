@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -41,6 +41,7 @@ import { Subscription } from 'rxjs';
 export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     @ViewChild(Content) content: Content;
     @ViewChildren(CoreQuestionComponent) questionComponents: QueryList<CoreQuestionComponent>;
+    @ViewChild('quizForm') formElement: ElementRef;
 
     quiz: any; // The quiz the attempt belongs to.
     attempt: any; // The attempt being attempted.
@@ -585,6 +586,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             // Answers saved, cancel auto save.
             this.autoSave.cancelAutoSave();
             this.autoSave.hideAutoSaveError();
+
+            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                form: this.formElement.nativeElement,
+                online: !this.offline,
+            }, this.sitesProvider.getCurrentSiteId());
         });
     }
 

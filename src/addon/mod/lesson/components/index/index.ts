@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Injector, Input, ViewChild } from '@angular/core';
+import { Component, Optional, Injector, Input, ViewChild, ElementRef } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -35,6 +36,7 @@ import { CoreTabsComponent } from '@components/tabs/tabs';
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent {
     @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
+    @ViewChild('passwordForm') formElement: ElementRef;
 
     @Input() group: number; // The group to display.
     @Input() action: string; // The "action" to display first.
@@ -584,6 +586,11 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.loaded = true;
             this.refreshIcon = 'refresh';
             this.syncIcon = 'sync';
+
+            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
+                form: this.formElement.nativeElement,
+                online: true,
+            }, this.siteId);
         });
     }
 
