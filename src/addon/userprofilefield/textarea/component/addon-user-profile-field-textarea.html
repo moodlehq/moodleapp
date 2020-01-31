@@ -9,5 +9,5 @@
         <span [core-mark-required]="field.required">{{ field.name }}</span>
         <core-input-errors [control]="control"></core-input-errors>
     </ion-label>
-    <core-rich-text-editor item-content [control]="control" [placeholder]="field.name"></core-rich-text-editor>
+    <core-rich-text-editor item-content [control]="control" [placeholder]="field.name" [autoSave]="true" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [elementId]="'profile_field_' + field.shortname"></core-rich-text-editor>
 </ion-item>

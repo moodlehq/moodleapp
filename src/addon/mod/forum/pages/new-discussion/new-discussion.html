@@ -19,7 +19,7 @@
             </ion-item>
             <ion-item>
                 <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.message' | translate" name="addon_mod_forum_new_discussion" [component]="component" [componentId]="forum.cmid"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.message' | translate" name="addon_mod_forum_new_discussion" [component]="component" [componentId]="forum.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="forum.cmid" elementId="message"></core-rich-text-editor>
             </ion-item>
             <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
                 <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>

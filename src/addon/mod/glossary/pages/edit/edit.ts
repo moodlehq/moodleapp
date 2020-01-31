@@ -51,6 +51,7 @@ export class AddonModGlossaryEditPage implements OnInit {
     attachments = [];
     definitionControl = new FormControl();
     categories = [];
+    editorExtraParams: {[name: string]: any} = {};
 
     protected courseId: number;
     protected module: any;
@@ -112,6 +113,10 @@ export class AddonModGlossaryEditPage implements OnInit {
                     this.attachments = files;
                     this.originalData.files = files.slice();
                 });
+            }
+
+            if (entry.id) {
+                this.editorExtraParams.id = entry.id;
             }
         }
 

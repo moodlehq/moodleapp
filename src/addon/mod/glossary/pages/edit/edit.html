@@ -15,7 +15,7 @@
             </ion-item>
             <ion-item>
                 <ion-label stacked>{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="definitionControl" (contentChanged)="onDefinitionChange($event)" [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component" [componentId]="glossary.cmid"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="definitionControl" (contentChanged)="onDefinitionChange($event)" [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component" [componentId]="glossary.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="definition_editor" [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
                 <ion-label stacked id="addon-mod-glossary-categories-label">{{ 'addon.mod_glossary.categories' | translate }}</ion-label>

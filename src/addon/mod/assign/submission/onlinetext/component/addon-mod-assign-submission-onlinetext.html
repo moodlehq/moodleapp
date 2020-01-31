@@ -15,6 +15,6 @@
         <p>{{ 'core.numwords' | translate: {'$a': words + ' / ' + configs.wordlimit} }}</p>
     </ion-item>
     <ion-item text-wrap>
-        <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text" (contentChanged)="onChange($event)" [component]="component" [componentId]="assign.cmid"></core-rich-text-editor>
+        <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text" (contentChanged)="onChange($event)" [component]="component" [componentId]="assign.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="assign.cmid" elementId="onlinetext_editor" [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}"></core-rich-text-editor>
     </ion-item>
 </div>

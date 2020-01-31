@@ -49,10 +49,10 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginC
      * Initialize field.
      */
     protected init(): void {
-        if (this.isShowOrListMode()) {
-            this.component = AddonModDataProvider.COMPONENT;
-            this.componentId = this.database.coursemodule;
+        this.component = AddonModDataProvider.COMPONENT;
+        this.componentId = this.database.coursemodule;
 
+        if (this.isShowOrListMode()) {
             return;
         }
 

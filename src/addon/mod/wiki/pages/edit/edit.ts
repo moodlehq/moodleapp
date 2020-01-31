@@ -45,6 +45,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
     component = AddonModWikiProvider.COMPONENT; // Component to link the files to.
     componentId: number; // Component ID to link the files to.
     wrongVersionLock: boolean; // Whether the page lock doesn't match the initial one.
+    editorExtraParams: {[name: string]: any} = {};
 
     protected module: any; // Wiki module instance.
     protected courseId: number; // Course the wiki belongs to.
@@ -101,6 +102,20 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
 
         // Block the wiki so it cannot be synced.
         this.syncProvider.blockOperation(this.component, this.blockId);
+
+        if (!this.module.id) {
+            this.editorExtraParams.type = 'wiki';
+        }
+
+        if (this.pageId) {
+            this.editorExtraParams.pageid = this.pageId;
+
+            if (this.section) {
+                this.editorExtraParams.section = this.section;
+            }
+        } else if (pageTitle) {
+            this.editorExtraParams.pagetitle = pageTitle;
+        }
     }
 
     /**

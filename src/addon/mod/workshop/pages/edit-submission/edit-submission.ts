@@ -51,6 +51,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     component = AddonModWorkshopProvider.COMPONENT;
     componentId: number;
     editForm: FormGroup; // The form group.
+    editorExtraParams: {[name: string]: any} = {};
 
     protected workshopId: number;
     protected submissionId: number;
@@ -86,6 +87,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         this.editForm = new FormGroup({});
         this.editForm.addControl('title', this.fb.control('', Validators.required));
         this.editForm.addControl('content', this.fb.control(''));
+
+        if (this.submissionId) {
+            this.editorExtraParams.id = this.submissionId;
+        }
     }
 
     /**

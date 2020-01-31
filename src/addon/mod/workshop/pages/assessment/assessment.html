@@ -60,7 +60,7 @@
             </ion-item>
             <ion-item *ngIf="access.canoverridegrades">
                 <ion-label stacked>{{ 'addon.mod_workshop.feedbackreviewer' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="evaluateForm.controls['text']" formControlName="text"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="evaluateForm.controls['text']" formControlName="text" [autoSave]="true" contextLevel="module" [contextInstanceId]="workshop.coursemodule" elementId="feedbackreviewer_editor" [draftExtraParams]="{asid: assessmentId}"></core-rich-text-editor>
             </ion-item>
         </form>
         <ion-list *ngIf="!evaluating && evaluate && evaluate.text">

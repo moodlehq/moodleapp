@@ -1482,6 +1482,8 @@
   "core.downloaded": "local_moodlemobileapp",
   "core.downloading": "local_moodlemobileapp",
   "core.edit": "moodle",
+  "core.editor.autosavesucceeded": "editor_atto",
+  "core.editor.textrecovered": "editor_atto",
   "core.emptysplit": "local_moodlemobileapp",
   "core.error": "moodle",
   "core.errorchangecompletion": "local_moodlemobileapp",

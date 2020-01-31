@@ -1482,6 +1482,8 @@
     "core.downloaded": "Downloaded",
     "core.downloading": "Downloading",
     "core.edit": "Edit",
+    "core.editor.autosavesucceeded": "Draft saved.",
+    "core.editor.textrecovered": "A draft version of this text was automatically restored.",
     "core.emptysplit": "This page will appear blank if the left panel is empty or is loading.",
     "core.error": "Error",
     "core.errorchangecompletion": "An error occurred while changing the completion status. Please try again.",

@@ -10,6 +10,23 @@ ion-app.app-root core-rich-text-editor {
         background-color: $gray-darker;
     }
 
+    .core-rte-editor-container {
+        height: 100%;
+        position: relative;
+
+        .core-rte-info-message {
+            position: absolute;
+            bottom: 0;
+            padding: 3px;
+            border: 1px solid $info;
+            border-radius: 5px;
+
+            .icon {
+                color: $info;
+            }
+        }
+    }
+
     .core-rte-editor, .core-textarea {
         padding: 2px;
         margin: 2px;
@@ -147,7 +164,6 @@ ion-app.app-root core-rich-text-editor {
             border: none;
         }
     }
-
 }
 
 body.keyboard-is-open ion-app.app-root core-rich-text-editor {
