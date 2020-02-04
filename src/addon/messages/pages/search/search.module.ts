@@ -19,6 +19,7 @@ import { AddonMessagesSearchPage } from './search';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSearchComponentsModule } from '@core/search/components/components.module';
 import { AddonMessagesComponentsModule } from '../../components/components.module';
 
 @NgModule({
@@ -29,9 +30,10 @@ import { AddonMessagesComponentsModule } from '../../components/components.modul
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
+        CoreSearchComponentsModule,
         AddonMessagesComponentsModule,
         IonicPageModule.forChild(AddonMessagesSearchPage),
-        TranslateModule.forChild()
+        TranslateModule.forChild(),
     ],
 })
 export class AddonMessagesSearchPageModule {}
