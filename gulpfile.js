@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     flatten = require('gulp-flatten'),
     npmPath = require('path'),
     concat = require('gulp-concat'),
-    bufferFrom = require('buffer-from')
+    htmlmin = require('gulp-htmlmin'),
+    bufferFrom = require('buffer-from'),
     exec = require('child_process').exec,
     license = '' +
         '// (C) Copyright 2015 Moodle Pty Ltd.\n' +
@@ -293,6 +294,12 @@ gulp.task('copy-component-templates', function(done) {
 
     gulp.src(templatesSrc, { allowEmpty: true })
         .pipe(flatten())
+        // Check options here: https://github.com/kangax/html-minifier
+        .pipe(htmlmin({
+          collapseWhitespace: true,
+          removeComments: true,
+          caseSensitive: true
+        }))
         .pipe(gulp.dest(templatesDest))
         .on('end', done);
 });
