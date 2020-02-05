@@ -193,3 +193,45 @@ Feature: Test basic usage of glossary in app
   And I press "Comments" in the app
   And I should see "teacherComment"
   And I should see "teacherComment2"
+  
+  @app @3.8.0 @OK
+  Scenario: Prefetch
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  Then the header should be "Course 1" in the app
+  And I press "Test glossary" in the app
+  And I press "close" in the app
+  And I set the field "Concept" to "potato" in the app
+  And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+  And I press "Save" in the app
+  And I press "close" in the app
+  And I set the field "Concept" to "car" in the app
+  And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+  And I press "Save" in the app
+  And I press "close" in the app
+  And I set the field "Concept" to "mountain" in the app
+  And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+  And I press "Save" in the app
+  Then the header should be "Test glossary" in the app 
+  And I should see "car"
+  And I should see "mountain"
+  And I should see "potato"
+  And I press "Display options" in the app
+  And I press "Download" in the app
+  And I press the back button in the app
+  And I press the back button in the app
+  And I press "Course 1" near "Recently accessed courses" in the app
+  And I switch offline mode to "true"
+  And I press "Test glossary" in the app
+  Then the header should be "Test glossary" in the app 
+  And I should see "car"
+  And I should see "mountain"
+  And I should see "potato"
+  And I press "mountain" in the app
+  Then I should see "mountain"
+  And I should see "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak."
+  And I should not see "Comments cannot be retrieved"
+  And I should see "Comments (0)"
