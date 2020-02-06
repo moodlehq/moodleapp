@@ -78,11 +78,13 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let downloadFailed = false;
+        let downloadFailError;
 
         // Download content. This function also loads module contents if needed.
-        return this.pagePrefetch.download(this.module, this.courseId).catch(() => {
+        return this.pagePrefetch.download(this.module, this.courseId).catch((error) => {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
+            downloadFailError = error;
         }).then(() => {
             if (!this.module.contents.length) {
                 // Try to load module contents for offline usage.
@@ -132,7 +134,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
 
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
-                    this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
+                    this.showErrorDownloadingSomeFiles(downloadFailError);
                 }
             }));
 

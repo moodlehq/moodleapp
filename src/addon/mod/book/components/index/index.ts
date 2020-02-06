@@ -119,6 +119,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     protected fetchContent(refresh?: boolean): Promise<any> {
         const promises = [];
         let downloadFailed = false;
+        let downloadFailError;
 
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
@@ -129,9 +130,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         }));
 
         // Download content. This function also loads module contents if needed.
-        promises.push(this.prefetchDelegate.download(this.module, this.courseId).catch(() => {
+        promises.push(this.prefetchDelegate.download(this.module, this.courseId).catch((error) => {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
+            downloadFailError = error;
 
             if (!this.module.contents.length) {
                 // Try to load module contents for offline usage.
@@ -163,7 +165,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             return this.loadChapter(this.currentChapter).then(() => {
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
-                    this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
+                    this.showErrorDownloadingSomeFiles(downloadFailError);
                 }
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.

@@ -17,7 +17,7 @@ import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreTextUtilsProvider, CoreTextErrorObject } from '@providers/utils/text';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseModuleMainComponent, CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseSectionPage } from '@core/course/pages/section/section.ts';
@@ -263,6 +263,20 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     removeFiles(): void {
         this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    }
+
+    /**
+     * Show an error occurred while downloading files.
+     *
+     * @param error The specific error.
+     */
+    protected showErrorDownloadingSomeFiles(error: string | CoreTextErrorObject): void {
+        const errorMessage = this.textUtils.buildSeveralParagraphsMessage([
+            this.translate.instant('core.errordownloadingsomefiles'),
+            error,
+        ]);
+
+        this.domUtils.showErrorModal(errorMessage);
     }
 
     /**

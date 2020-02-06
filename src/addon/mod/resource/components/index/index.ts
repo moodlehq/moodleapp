@@ -110,10 +110,12 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
             if (this.resourceHelper.isDisplayedInIframe(this.module)) {
                 let downloadFailed = false;
+                let downloadFailError;
 
-                return this.prefetchHandler.download(this.module, this.courseId).catch(() => {
+                return this.prefetchHandler.download(this.module, this.courseId).catch((error) => {
                     // Mark download as failed but go on since the main files could have been downloaded.
                     downloadFailed = true;
+                    downloadFailError = error;
                 }).then(() => {
                     return this.resourceHelper.getIframeSrc(this.module).then((src) => {
                         this.mode = 'iframe';
@@ -131,7 +133,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
                         if (downloadFailed && this.appProvider.isOnline()) {
                             // We could load the main file but the download failed. Show error message.
-                            this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
+                            this.showErrorDownloadingSomeFiles(downloadFailError);
                         }
                     });
                 });

@@ -18,6 +18,16 @@ import { ModalController, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 
+/**
+ * Different type of errors the app can treat.
+ */
+export type CoreTextErrorObject = {
+    message?: string;
+    error?: string;
+    content?: string;
+    body?: string;
+};
+
 /*
  * "Utils" service with helper functions for text.
 */
@@ -120,6 +130,38 @@ export class CoreTextUtilsProvider {
         });
 
         return result;
+    }
+
+    /**
+     * Build a message with several paragraphs.
+     *
+     * @param paragraphs List of paragraphs.
+     * @return Built message.
+     */
+    buildSeveralParagraphsMessage(paragraphs: (string | CoreTextErrorObject)[]): string {
+        // Filter invalid messages, and convert them to messages in case they're errors.
+        const messages: string[] = [];
+
+        paragraphs.forEach((paragraph) => {
+            // If it's an error, get its message.
+            const message = this.getErrorMessageFromError(paragraph);
+
+            if (paragraph) {
+                messages.push(message);
+            }
+        });
+
+        if (messages.length < 2) {
+            return messages[0] || '';
+        }
+
+        let builtMessage = messages[0];
+
+        for (let i = 1; i < messages.length; i++) {
+            builtMessage = this.translate.instant('core.twoparagraphs', { p1: builtMessage, p2: messages[i] });
+        }
+
+        return builtMessage;
     }
 
     /**
@@ -449,7 +491,7 @@ export class CoreTextUtilsProvider {
      * @param error Error object.
      * @return Error message, undefined if not found.
      */
-    getErrorMessageFromError(error: any): string {
+    getErrorMessageFromError(error: string | CoreTextErrorObject): string {
         if (typeof error == 'string') {
             return error;
         }
