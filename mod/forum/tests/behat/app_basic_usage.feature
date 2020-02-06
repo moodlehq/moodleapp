@@ -21,8 +21,8 @@ Feature: Test basic usage of forum activity in app
       | teacher1 | C1     | editingteacher |
       | teacher2 | C1     | editingteacher |
     And the following "activities" exist:
-      | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale[modgrade_type] |
-      | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 5        | Point                |
+      | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale |
+      | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 1        | 1     |
 
   @app @3.8.0 @OK
   Scenario: Student starts a discussion
@@ -207,15 +207,15 @@ Feature: Test basic usage of forum activity in app
     And I press "Auto-test" in the app
     And I wait "2" seconds
     And I pause
-    And I press "Auto-test" near "Information" in the app
+    And I press "more" in the app
     And I pause
     And I should see "Edit"
     And I pause
     And I switch offline mode to "true"
     And I pause
 
-    @app @mobile @3.8.0
-    Scenario: Add/view ratings
+    @app @3.8.0 @mobile @OK
+    Scenario: Add/view ratings (mobile)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -226,14 +226,83 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
     And I press "Reply" in the app
-    And I set the field "Write your reply..." to "test" in the app
+    And I set the field "Write your reply..." to "test2" in the app
     And I press "Post to forum" in the app
     When I enter the app
-    And I log in as "student2"
+    And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
-    And I pause
+    And I press "None" near "Auto-test message" in the app
+    And I press "1" near "Cancel" in the app
+    And I switch offline mode to "true"
+    And I press "None" near "test2" in the app
+    And I press "0" near "Cancel" in the app
+    Then I should see "Data stored in the device because it couldn't be sent. It will be sent automatically later."
+    And I should see "Average of ratings: -"
+    And I should see "Average of ratings: 1"
+    And I switch offline mode to "false"
+    And I press the back button in the app
+    Then I should see "This Forum has offline data to be synchronised."
+    And I press "Display options" near "Test forum name" in the app
+    And I press "Synchronise now" in the app
+    And I should not see "This Forum has offline data to be synchronised."
+    And I press "Auto-test" in the app
+    Then I should see "Average of ratings: 1"
+    And I should see "Average of ratings: 0"
+    And I should not see "Average of ratings: -"
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "Auto-test" in the app
+    Then I should see "Average of ratings: 1"
+    And I should see "Average of ratings: 0"
+    And I should not see "Average of ratings: -"
+
+    @app @3.8.0 @tablet @OK
+    Scenario: Add/view ratings (tablet)
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "close" in the app
+    And I set the field "Subject" to "Auto-test" in the app
+    And I set the field "Message" to "Auto-test message" in the app
+    And I press "Post to forum" in the app
+    And I press "Reply" in the app
+    And I set the field "Write your reply..." to "test2" in the app
+    And I press "Post to forum" in the app
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "teacher1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "None" near "Auto-test message" in the app
+    And I press "1" near "Cancel" in the app
+    And I switch offline mode to "true"
+    And I press "None" near "test2" in the app
+    And I press "0" near "Cancel" in the app
+    Then I should see "Data stored in the device because it couldn't be sent. It will be sent automatically later."
+    And I should see "Average of ratings: -"
+    And I should see "Average of ratings: 1"
+    And I switch offline mode to "false"
+    Then I should see "This Forum has offline data to be synchronised."
+    And I press "Display options" near "Test forum name" in the app
+    And I press "Synchronise now" in the app
+    And I should not see "This Forum has offline data to be synchronised."
+    Then I should see "Average of ratings: 1"
+    And I should see "Average of ratings: 0"
+    And I should not see "Average of ratings: -"
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    Then I should see "Average of ratings: 1"
+    And I should see "Average of ratings: 0"
+    And I should not see "Average of ratings: -"
 
   @app @3.8.0 @mobile @OK
   Scenario: Student replies a post offline mobile
@@ -438,4 +507,4 @@ Feature: Test basic usage of forum activity in app
     And I press "Reply" in the app
     And I set the field "Write your reply" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
-    And I pause
+    And I pauses
