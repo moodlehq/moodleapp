@@ -1,4 +1,4 @@
-<div class="core-rte-editor-container">
+<div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
     <div [hidden]="!rteEnabled" #editor contenteditable="true" class="core-rte-editor" tappable (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" [attr.data-placeholder-text]="placeholder" role="textbox">
     </div>
 

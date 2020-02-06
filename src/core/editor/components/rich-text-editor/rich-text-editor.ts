@@ -230,7 +230,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
                 }
 
                 if (height > this.minHeight) {
-                    this.element.style.height = this.domUtils.formatPixelsSize(height);
+                    this.element.style.height = this.domUtils.formatPixelsSize(height - 1);
                 } else {
                     this.element.style.height = '';
                 }
@@ -584,9 +584,22 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     }
 
     /**
+     * Focus editor when click the area.
+     *
+     * @param e Event
+     */
+    focusRTE(e?: Event): void {
+        if (this.rteEnabled) {
+            this.editorElement.focus();
+        } else {
+            this.textarea.setFocus();
+        }
+    }
+
+    /**
      * Hide the toolbar in phone mode.
      */
-    hideToolbar($event: any): void {
+    hideToolbar($event: Event): void {
         this.stopBubble($event);
 
         if (this.isPhone) {

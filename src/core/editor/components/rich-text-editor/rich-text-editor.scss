@@ -11,15 +11,20 @@ ion-app.app-root core-rich-text-editor {
     }
 
     .core-rte-editor-container {
-        height: 100%;
-        position: relative;
+        max-height: calc(100% - 46px);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        &.toolbar-hidden {
+            max-height: 100%;
+        }
 
         .core-rte-info-message {
-            position: absolute;
-            bottom: 0;
-            padding: 3px;
-            border: 1px solid $info;
-            border-radius: 5px;
+            padding: 5px;
+            border-top: 1px solid $info;
+            background: white;
+            flex-shrink: 1;
+            font-size: 1.4rem;
 
             .icon {
                 color: $info;
@@ -33,6 +38,7 @@ ion-app.app-root core-rich-text-editor {
         width: 100%;
         resize: none;
         background-color: $white;
+        flex-grow: 1;
         @include darkmode() {
             background-color: $gray-darker;
             color: $white;
