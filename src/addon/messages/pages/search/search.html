@@ -9,7 +9,7 @@
 </ion-header>
 <core-split-view>
     <ion-content>
-        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"></core-search-box>
+        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"  searchArea="AddonMessagesSearch"></core-search-box>
         <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">
             <ion-list *ngIf="displayResults">
                 <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: contacts}"></ng-container>

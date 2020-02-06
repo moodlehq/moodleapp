@@ -3,7 +3,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.contactname' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded"></core-search-box>
+    <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.contactname' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded" searchArea="AddonMessagesContacts"></core-search-box>
 
     <core-loading [hideUntil]="loaded" [message]="loadingMessage">
         <core-empty-box *ngIf="!hasContacts && searchString == ''" icon="person" [message]="'addon.messages.contactlistempty' | translate"></core-empty-box>

@@ -3,7 +3,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-search-box *ngIf="search.enabled" (onSubmit)="searchMessage($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.message' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded"></core-search-box>
+    <core-search-box *ngIf="search.enabled" (onSubmit)="searchMessage($event)" (onClear)="clearSearch($event)" [placeholder]=" 'addon.messages.message' | translate" autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded" searchArea="AddonMessagesDiscussions"></core-search-box>
 
     <core-loading [hideUntil]="loaded" [message]="loadingMessage">
 
