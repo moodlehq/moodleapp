@@ -2386,6 +2386,23 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Check whether a file is downloadable.
+     *
+     * @param siteId The site ID.
+     * @param fileUrl File URL.
+     * @param timemodified The time this file was modified.
+     * @param filePath Filepath to download the file to. If defined, no extension will be added.
+     * @param revision File revision. If not defined, it will be calculated using the URL.
+     * @return Promise resolved with a boolean: whether a file is downloadable.
+     */
+    async isFileDownloadable(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string, revision?: number)
+            : Promise<boolean> {
+        const state = await this.getFileStateByUrl(siteId, fileUrl, timemodified, filePath, revision);
+
+        return state != CoreConstants.NOT_DOWNLOADABLE;
+    }
+
+    /**
      * Check if a file is downloading.
      *
      * @param siteId The site ID.

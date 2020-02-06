@@ -22,6 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreH5PProvider } from './h5p';
 import { CoreWSExternalFile } from '@providers/ws';
 import { FileEntry } from '@ionic-native/file';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Handler to treat H5P files.
@@ -35,7 +36,8 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
             protected textUtils: CoreTextUtilsProvider,
             protected utils: CoreUtilsProvider,
             protected fileProvider: CoreFileProvider,
-            protected h5pProvider: CoreH5PProvider) { }
+            protected h5pProvider: CoreH5PProvider,
+            protected translate: TranslateService) { }
 
     /**
      * React to a file being deleted.
@@ -110,6 +112,28 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.h5pProvider.canGetTrustedH5PFileInSite();
+    }
+
+    /**
+     * Check if a file is downloadable.
+     *
+     * @param file The file data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
+     */
+    async isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<{downloadable: boolean, reason?: string}> {
+        const offlineDisabled = await this.h5pProvider.isOfflineDisabled(siteId);
+
+        if (offlineDisabled) {
+            return {
+                downloadable: false,
+                reason: this.translate.instant('core.h5p.offlinedisabled'),
+            };
+        } else {
+            return {
+                downloadable: true,
+            };
+        }
     }
 
     /**

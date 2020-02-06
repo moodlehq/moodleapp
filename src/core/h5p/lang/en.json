@@ -64,6 +64,7 @@
     "offlineDialogRetryButtonLabel": "Retry now",
     "offlineDialogRetryMessage": "Retrying in :num....",
     "offlineSuccessfulSubmit": "Successfully submitted results.",
+    "offlinedisabled": "The site doesn't allow downloading H5P packages.",
     "originator": "Originator",
     "pd": "Public Domain",
     "pddl": "Public Domain Dedication and Licence",

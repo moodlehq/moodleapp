@@ -1619,6 +1619,7 @@
   "core.h5p.offlineDialogRetryButtonLabel": "h5p",
   "core.h5p.offlineDialogRetryMessage": "h5p",
   "core.h5p.offlineSuccessfulSubmit": "h5p",
+  "core.h5p.offlinedisabled": "local_moodlemobileapp",
   "core.h5p.originator": "h5p",
   "core.h5p.pd": "h5p",
   "core.h5p.pddl": "h5p",
