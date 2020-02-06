@@ -1,7 +1,10 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons end>
-    <button *ngIf="glossary" ion-button icon-only (click)="openModePicker($event)" [attr.aria-label]="'addon.mod_glossary.browsemode' | translate">
-        <ion-icon name="funnel"></ion-icon>
+    <button *ngIf="glossary && glossary.browsemodes && glossary.browsemodes.length > 1" ion-button icon-only (click)="openModePicker($event)" [attr.aria-label]="'addon.mod_glossary.browsemode' | translate">
+        <core-icon name="fa-sort"></core-icon>
+    </button>
+    <button *ngIf="glossary" ion-button icon-only (click)="toggleSearch()" [attr.aria-label]="'addon.mod_glossary.bysearch' | translate">
+        <ion-icon name="search"></ion-icon>
     </button>
     <core-context-menu>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
@@ -29,11 +32,11 @@
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
         </ion-card>
 
-        <core-search-box *ngIf="viewMode == 'search'" (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true" [lengthCheck]="2" [showClear]="false" searchArea="AddonModGlossary-{{module.id}}"></core-search-box>
+        <core-search-box *ngIf="isSearch" (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true" [lengthCheck]="2" [showClear]="false" searchArea="AddonModGlossary-{{module.id}}"></core-search-box>
 
         <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-            <ion-list *ngIf="viewMode != 'search' && offlineEntries.length > 0">
+            <ion-list *ngIf="!isSearch && offlineEntries.length > 0">
                 <ion-item-divider>
                     {{ 'addon.mod_glossary.entriestobesynced' | translate }}
                 </ion-item-divider>

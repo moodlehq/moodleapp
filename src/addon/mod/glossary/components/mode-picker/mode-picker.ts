@@ -27,14 +27,10 @@ export class AddonModGlossaryModePickerPopoverComponent {
     selectedMode: string;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
-        this.selectedMode = navParams.get('selectedMode');
-        const glossary = navParams.get('glossary');
+        this.selectedMode = navParams.get('selectedMode') || '';
+        const browsemodes = navParams.get('browsemodes');
 
-        // Preparing browse modes.
-        this.modes = [
-            {key: 'search', langkey: 'addon.mod_glossary.bysearch'}
-        ];
-        glossary.browsemodes.forEach((mode) => {
+        browsemodes.forEach((mode) => {
             switch (mode) {
                 case 'letter' :
                     this.modes.push({key: 'letter_all', langkey: 'addon.mod_glossary.byalphabet'});
