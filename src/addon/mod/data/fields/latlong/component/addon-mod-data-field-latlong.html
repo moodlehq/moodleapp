@@ -10,7 +10,7 @@
         <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" maxlength="10"></ion-input>
         <span class="placeholder-icon" item-right>°E</span>
     </div>
-    <div *ngIf="mode == 'edit'" class="addon-data-lantlong">
+    <div *ngIf="mode == 'edit' && showGeolocation" class="addon-data-lantlong">
         <button ion-button icon-left (click)="getLocation($event)">
             <ion-icon name="locate"></ion-icon>
             {{ 'addon.mod_data.mylocation' | translate }}
