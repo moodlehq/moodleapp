@@ -103,6 +103,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     protected hideMessageTimeout: NodeJS.Timer;
     protected lastDraft = '';
     protected draftWasRestored = false;
+    protected originalContent: string;
 
     constructor(
             protected domUtils: CoreDomUtilsProvider,
@@ -133,6 +134,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
         // Setup the editor.
         this.editorElement = this.editor.nativeElement as HTMLDivElement;
         this.setContent(this.control.value);
+        this.originalContent = this.control.value;
+        this.lastDraft = this.control.value;
         this.editorElement.onchange = this.onChange.bind(this);
         this.editorElement.onkeyup = this.onChange.bind(this);
         this.editorElement.onpaste = this.onChange.bind(this);
@@ -141,8 +144,19 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
 
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
-            if (!this.draftWasRestored) {
+            if (!this.draftWasRestored || this.originalContent != param) {
+                // Apply the new content.
                 this.setContent(param);
+                this.originalContent = param;
+                this.infoMessage = null;
+
+                // Save a draft so the original content is saved.
+                this.lastDraft = param;
+                this.editorOffline.saveDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                        this.draftExtraParams, this.pageInstance, param, param);
+            } else {
+                // A draft was restored and the content hasn't changed in the site. Use the draft value instead of this one.
+                this.control.setValue(this.lastDraft, {emitEvent: false});
             }
         });
 
@@ -740,13 +754,15 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
      */
     protected async restoreDraft(): Promise<void> {
         try {
-            let draftText = await this.editorOffline.resumeDraft(this.contextLevel, this.contextInstanceId, this.elementId,
-                    this.draftExtraParams, this.pageInstance);
+            const entry = await this.editorOffline.resumeDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                    this.draftExtraParams, this.pageInstance, this.originalContent);
 
-            if (typeof draftText == 'undefined') {
+            if (typeof entry == 'undefined') {
                 // No draft found.
                 return;
             }
+
+            let draftText = entry.drafttext;
 
             // Revert untouched editor contents to an empty string.
             if (draftText == '<p></p>' || draftText == '<p><br></p>' || draftText == '<br>' ||
@@ -760,9 +776,12 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
                 this.setContent(draftText);
                 this.lastDraft = draftText;
                 this.draftWasRestored = true;
+                this.originalContent = entry.originalcontent;
 
-                // Notify the user.
-                this.showMessage('core.editor.textrecovered', this.RESTORE_MESSAGE_CLEAR_TIME);
+                if (entry.drafttext != entry.originalcontent) {
+                    // Notify the user.
+                    this.showMessage('core.editor.textrecovered', this.RESTORE_MESSAGE_CLEAR_TIME);
+                }
             }
         } catch (error) {
             // Ignore errors, shouldn't happen.
@@ -783,7 +802,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
 
             try {
                 await this.editorOffline.saveDraft(this.contextLevel, this.contextInstanceId, this.elementId,
-                        this.draftExtraParams, this.pageInstance, newText);
+                        this.draftExtraParams, this.pageInstance, newText, this.originalContent);
 
                 // Draft saved, notify the user.
                 this.lastDraft = newText;

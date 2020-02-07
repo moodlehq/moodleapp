@@ -53,25 +53,29 @@ export class CoreEditorOfflineProvider {
                     {
                         name: 'drafttext',
                         type: 'TEXT',
-                        notNull: true
+                        notNull: true,
                     },
                     {
                         name: 'pageinstance',
                         type: 'TEXT',
-                        notNull: true
+                        notNull: true,
                     },
                     {
                         name: 'timecreated',
                         type: 'INTEGER',
-                        notNull: true
+                        notNull: true,
                     },
                     {
                         name: 'timemodified',
                         type: 'INTEGER',
-                        notNull: true
+                        notNull: true,
+                    },
+                    {
+                        name: 'originalcontent',
+                        type: 'TEXT',
                     },
                 ],
-                primaryKeys: ['contextlevel', 'contextinstanceid', 'elementid', 'extraparams']
+                primaryKeys: ['contextlevel', 'contextinstanceid', 'elementid', 'extraparams'],
             },
         ],
     };
@@ -158,11 +162,12 @@ export class CoreEditorOfflineProvider {
      * @param elementId Element ID.
      * @param extraParams Object with extra params to identify the draft.
      * @param pageInstance Unique identifier to prevent storing data from several sources at the same time.
+     * @param originalContent Original content of the editor.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the draft text. Undefined if no draft stored.
+     * @return Promise resolved with the draft data. Undefined if no draft stored.
      */
     async resumeDraft(contextLevel: string, contextInstanceId: number, elementId: string, extraParams: {[name: string]: any},
-            pageInstance: string, siteId?: string): Promise<string> {
+            pageInstance: string, originalContent?: string, siteId?: string): Promise<CoreEditorDraft> {
 
         try {
             // Check if there is a draft stored.
@@ -175,15 +180,21 @@ export class CoreEditorOfflineProvider {
                 entry.pageinstance = pageInstance;
                 entry.timemodified = Date.now();
 
+                if (originalContent && entry.originalcontent != originalContent) {
+                    entry.originalcontent = originalContent;
+                    entry.drafttext = ''; // "Discard" the draft.
+                }
+
                 await db.insertRecord(this.DRAFT_TABLE, entry);
             } catch (error) {
                 // Ignore errors saving the draft. It shouldn't happen.
             }
 
-            return entry.drafttext;
+            return entry;
         } catch (error) {
             // No draft stored. Store an empty draft to save the pageinstance.
-            await this.saveDraft(contextLevel, contextInstanceId, elementId, extraParams, pageInstance, '', siteId);
+            await this.saveDraft(contextLevel, contextInstanceId, elementId, extraParams, pageInstance, '', originalContent,
+                    siteId);
         }
     }
 
@@ -196,11 +207,12 @@ export class CoreEditorOfflineProvider {
      * @param extraParams Object with extra params to identify the draft.
      * @param pageInstance Unique identifier to prevent storing data from several sources at the same time.
      * @param draftText The text to store.
+     * @param originalContent Original content of the editor.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
     async saveDraft(contextLevel: string, contextInstanceId: number, elementId: string, extraParams: {[name: string]: any},
-            pageInstance: string, draftText: string, siteId?: string): Promise<void> {
+            pageInstance: string, draftText: string, originalContent?: string, siteId?: string): Promise<void> {
 
         let timecreated = Date.now();
         let entry: CoreEditorDraft;
@@ -214,10 +226,17 @@ export class CoreEditorOfflineProvider {
             // No draft already stored.
         }
 
-        if (entry && entry.pageinstance != pageInstance) {
-            this.logger.warning(`Discarding draft because of pageinstance. Context '${contextLevel}' '${contextInstanceId}', ` +
-                    `element '${elementId}'`);
-            throw null;
+        if (entry) {
+            if (entry.pageinstance != pageInstance) {
+                this.logger.warning(`Discarding draft because of pageinstance. Context '${contextLevel}' '${contextInstanceId}', ` +
+                        `element '${elementId}'`);
+                throw null;
+            }
+
+            if (!originalContent) {
+                // Original content not set, use the one in the entry.
+                originalContent = entry.originalcontent;
+            }
         }
 
         const db = await this.sitesProvider.getSiteDb(siteId);
@@ -228,6 +247,9 @@ export class CoreEditorOfflineProvider {
         data.pageinstance = pageInstance;
         data.timecreated = timecreated;
         data.timemodified = Date.now();
+        if (originalContent) {
+            data.originalcontent = originalContent;
+        }
 
         await db.insertRecord(this.DRAFT_TABLE, data);
     }
@@ -251,4 +273,5 @@ type CoreEditorDraft = CoreEditorDraftPrimaryData & {
     pageinstance?: string; // Unique identifier to prevent storing data from several sources at the same time.
     timecreated?: number; // Time created.
     timemodified?: number; // Time modified.
+    originalcontent?: string; // Original content of the editor.
 };
