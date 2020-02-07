@@ -17,6 +17,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
+import { CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -30,13 +31,17 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
 
     north: number;
     east: number;
+    showGeolocation: boolean;
 
     constructor(protected fb: FormBuilder,
             protected platform: Platform,
             protected geolocation: Geolocation,
             protected domUtils: CoreDomUtilsProvider,
-            protected sanitizer: DomSanitizer) {
+            protected sanitizer: DomSanitizer,
+            protected appProvider: CoreAppProvider) {
         super(fb);
+
+        this.showGeolocation = !this.appProvider.isDesktop();
     }
 
     /**
