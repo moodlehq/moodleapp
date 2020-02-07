@@ -1121,6 +1121,10 @@ ion-app.app-root {
   select {
     cursor: pointer;
   }
+
+  a.autolink.glossary:hover {
+    cursor: help;
+  }
 }
 
 @each $color-name, $color-base, $color-contrast in get-colors($colors) {
