@@ -567,7 +567,7 @@ Feature: Test basic usage of survey activity in app
   And I switch offline mode to "false"
   And I press the back button in the app
   And I press "Test survey critical incidents" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Refresh" in the app
   Then I should see "Results"
   And I should not see "This Survey has offline data to be synchronised."
@@ -581,7 +581,7 @@ Feature: Test basic usage of survey activity in app
   When I enter the app
   And I log in as "student1"
   And I press "Course 1" near "Course overview" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Show download options" in the app
   And I press "cloud download" near "Test survey critical incidents" in the app
   And I switch offline mode to "true"

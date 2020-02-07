@@ -96,7 +96,7 @@ Feature: Test basic usage of choice activity in app
     And I switch offline mode to "false"
     And I press the back button in the app
     And I press "Test single choice name" in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Refresh" in the app
     Then I should see "Option 1: 0"
     And I should see "Option 2: 1"
@@ -137,7 +137,7 @@ Feature: Test basic usage of choice activity in app
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test single choice name" in the app
     And I switch offline mode to "true"
@@ -180,7 +180,7 @@ Feature: Test basic usage of choice activity in app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Choice name" in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"

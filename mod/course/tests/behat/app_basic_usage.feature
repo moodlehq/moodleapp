@@ -397,7 +397,7 @@ Feature: Test basic usage of one course in app
   Then the header should be "Acceptance test site" in the app 
   And I should see "Course 1"
   And I press "Course 1" near "Recently accessed courses" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Course summary" in the app
   And I press "Open in browser" in the app
   And I switch to the browser tab opened by the app
@@ -440,7 +440,7 @@ Feature: Test basic usage of one course in app
   Then the header should be "Acceptance test site" in the app 
   And I should see "Course 1"
   And I press "Course 1" near "Recently accessed courses" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Course summary" in the app
   And I press "Open in browser" in the app
   And I switch to the browser tab opened by the app
@@ -482,7 +482,7 @@ Feature: Test basic usage of one course in app
   Then the header should be "Acceptance test site" in the app 
   And I should see "Course 1"
   And I press "Course 1" near "Recently accessed courses" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Course summary" in the app
   And I press "Open in browser" in the app
   And I switch to the browser tab opened by the app
@@ -533,7 +533,7 @@ Feature: Test basic usage of one course in app
   Then the header should be "Acceptance test site" in the app 
   And I should see "Course 1"
   And I press "Course 1" near "Recently accessed courses" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Course summary" in the app
   And I press "Open in browser" in the app
   And I switch to the browser tab opened by the app

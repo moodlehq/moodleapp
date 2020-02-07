@@ -114,7 +114,7 @@ Feature: Test basic usage of courses in app
   And I should see "Timeline"
   And I press "Course 1" near "Recently accessed courses" in the app
   And I press "assignment" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Open in browser" in the app
   And I switch to the browser tab opened by the app
   And I log in as "teacher1"

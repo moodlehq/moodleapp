@@ -74,7 +74,7 @@ Feature: Test basic usage of messages in app
   And I press "Student1 student1" in the app
   And I set the field "New message" to "heeey student" in the app
   And I press "Send" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Add to contacts" in the app
   And I press "Add" in the app
   When I enter the app
@@ -221,7 +221,7 @@ Feature: Test basic usage of messages in app
   And I press "Student1 student1" in the app
   And I set the field "New message" to "heeey student" in the app
   And I press "Send" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Add to contacts" in the app
   And I press "Add" in the app
   Then I should see "Contact request sent"
@@ -241,10 +241,10 @@ Feature: Test basic usage of messages in app
   And I press "Send" in the app
   Then I should see "heeey student"
   And I should see "hi"
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Remove from contacts" in the app
   And I press "Remove" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   Then I should see "Add to contacts"
   And I press "Delete conversation" in the app
   And I press "Delete" in the app
@@ -446,7 +446,7 @@ Feature: Test basic usage of messages in app
   Then I should see "Private (2)"
   And I should see "Starred (1)"
   And I press "star message" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Star conversation" in the app
   Then I should see "Private (1)"
   And I should see "Starred (2)"
@@ -627,7 +627,7 @@ Feature: Test basic usage of messages in app
   And I press "Messages" in the app
   And I press "Private (1)" in the app
   And I press "Student2 student2" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   Then I should see "Unmute"
   And I should not see "Mute"
 
@@ -699,12 +699,12 @@ Feature: Test basic usage of messages in app
   And I press "Send" in the app
   And I switch offline mode to "false"
   And I press "Student1 student1" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   Then I should see "Unstar conversation"
   And I should see "Show delete messages"
   And I should see "Delete conversation"
   And I press "Unstar conversation" in the app
-  And I press "Information" in the app
+  And I press "Display options" in the app
   Then I should see "Star conversation"
   And I should see "Show delete messages"
   And I should see "Delete conversation"
@@ -715,7 +715,7 @@ Feature: Test basic usage of messages in app
   And I press "OK" in the app
   Then I should see "self conversation"
   And I should not see "self conversation offline"
-  And I press "Information" in the app
+  And I press "Display options" in the app
   And I press "Delete conversation" in the app
   And I press "Delete" in the app
   Then I should not see "self conversation"

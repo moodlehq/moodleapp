@@ -105,7 +105,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press "Auto-test star" near "Last post a minute ago" in the app
     Then I should see "Auto-test star message"
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Star this discussion" in the app
     And I press the back button in the app
     And I press "Auto-test star" near "Last post a minute ago" in the app
@@ -116,7 +116,7 @@ Feature: Test basic usage of forum activity in app
     And I press the back button in the app
     And I press "Auto-test star" near "Last post a minute ago" in the app
     And I wait "1" seconds
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Unstar this discussion" in the app
     And I press the back button in the app
     And I press "Auto-test star" near "Last post a few seconds ago" in the app
@@ -145,12 +145,12 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press "Auto-test star" in the app
     And I wait "1" seconds
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Star this discussion" in the app
     And I press the back button in the app
     And I press "Auto-test pin" in the app
     And I wait "1" seconds
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Pin this discussion" in the app
     And I press the back button in the app
     And I should see "Auto-test pin"
@@ -159,12 +159,12 @@ Feature: Test basic usage of forum activity in app
     And I pause
     And I press "Auto-test pin" in the app
     And I wait "1" seconds
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Unpin this discussion" in the app
     And I press the back button in the app
     And I press "Auto-test star" in the app
     And I wait "1" seconds
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Unstar this discussion" in the app
     And I press the back button in the app
     Then I should see "Auto-test star"
@@ -183,7 +183,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
     And I wait "1" seconds
-    And I press "Information" in the app
+    And I press "Display options" in the app
     Then I should not see "Star this discussion"
     And I should not see "Pin this discussion"
 
@@ -200,7 +200,8 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "Auto-test"
     And I press the back button in the app
-    And I press "Information" in the app
+    And I pause
+    And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
@@ -315,7 +316,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     And I press the back button in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
@@ -346,7 +347,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     And I press the back button in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
@@ -383,7 +384,7 @@ Feature: Test basic usage of forum activity in app
     And I switch offline mode to "false"
     And I press the back button in the app
     And I press "Test forum name" in the app
-    And I press "Information" in the app
+    And I press "Display options" near "Test forum name" in the app
     And I press "Refresh discussions" in the app
     And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
     Then I should see "DiscussionSubject"
@@ -426,7 +427,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
     And I press the back button in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
@@ -462,7 +463,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionSubject"
     And I press the back button in the app
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
@@ -507,4 +508,4 @@ Feature: Test basic usage of forum activity in app
     And I press "Reply" in the app
     And I set the field "Write your reply" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
-    And I pauses
+    And I pause
