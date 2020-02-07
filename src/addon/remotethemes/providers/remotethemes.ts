@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { CoreWSProvider } from '@providers/ws';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -34,9 +34,13 @@ export class AddonRemoteThemesProvider {
     protected logger;
     protected stylesEls: {[siteId: string]: {element: HTMLStyleElement, hash: string}} = {};
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private fileProvider: CoreFileProvider,
-            private filepoolProvider: CoreFilepoolProvider, private http: Http, private utils: CoreUtilsProvider,
-            private appProvider: CoreAppProvider) {
+    constructor(logger: CoreLoggerProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected fileProvider: CoreFileProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected wsProvider: CoreWSProvider,
+            protected utils: CoreUtilsProvider,
+            protected appProvider: CoreAppProvider) {
         this.logger = logger.getInstance('AddonRemoteThemesProvider');
     }
 
@@ -174,18 +178,13 @@ export class AddonRemoteThemesProvider {
                 return;
             }
 
-            return promise.then((url) => {
+            return promise.then(async (url) => {
                 this.logger.debug('Loading styles from: ', url);
 
                 // Get the CSS content using HTTP because we will treat the styles before saving them in the file.
-                return this.http.get(url).toPromise();
-            }).then((response): any => {
-                const text = response && response.text();
-                if (typeof text == 'string') {
-                    return {fileUrl: fileUrl, styles: this.get35Styles(text)};
-                } else {
-                    return Promise.reject(null);
-                }
+                const text = await this.wsProvider.getText(url);
+
+                return {fileUrl: fileUrl, styles: this.get35Styles(text)};
             });
         });
     }
@@ -263,23 +262,18 @@ export class AddonRemoteThemesProvider {
             return Promise.resolve();
         }
 
-        return this.http.get(url).toPromise().then((response) => {
-            let text = response && response.text();
-            if (typeof text == 'string') {
-                text = this.get35Styles(text);
+        return this.wsProvider.getText(url).then((text) => {
+            text = this.get35Styles(text);
 
-                const styleEl = document.createElement('style');
-                styleEl.setAttribute('id', 'mobilecssurl-tmpsite');
-                styleEl.innerHTML = text;
+            const styleEl = document.createElement('style');
+            styleEl.setAttribute('id', 'mobilecssurl-tmpsite');
+            styleEl.innerHTML = text;
 
-                document.head.appendChild(styleEl);
-                this.stylesEls.tmpsite = {
-                    element: styleEl,
-                    hash: ''
-                };
-            } else {
-                return Promise.reject(null);
-            }
+            document.head.appendChild(styleEl);
+            this.stylesEls.tmpsite = {
+                element: styleEl,
+                hash: ''
+            };
         });
     }
 

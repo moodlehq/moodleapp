@@ -17,7 +17,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, COMPILER_OPTIONS } from '@angular/core';
 import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config, Refresher } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
-import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { LocationStrategy } from '@angular/common';
@@ -202,7 +201,6 @@ export const WP_PROVIDER: any = null;
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
-        HttpModule,
         IonicModule.forRoot(MoodleMobileApp, {
             pageTransition: 'core-page-transition'
         }),
