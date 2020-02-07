@@ -107,10 +107,7 @@ export class CoreLoginSitePage {
             this.sitesProvider.getUserToken(siteData.url, siteData.username, siteData.password).then((data) => {
                 return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken).then(() => {
 
-                    this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                        form: this.formElement.nativeElement,
-                        online: true,
-                    });
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
 
                     return this.loginHelper.goToSiteInitialPage();
                 }, (error) => {
@@ -192,10 +189,7 @@ export class CoreLoginSitePage {
     protected async login(response: CoreSiteCheckResponse): Promise<void> {
         return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: true,
-            });
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
 
             if (response.warning) {
                 this.domUtils.showErrorModal(response.warning, true, 4000);

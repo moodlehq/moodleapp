@@ -112,27 +112,23 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
-
-        let promise;
 
         // Check if data has changed.
-        if (!this.hasDataChanged()) {
-            promise = Promise.resolve();
-        } else {
+        if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            promise = this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        return promise.then(() => {
-            if (this.submission.attachmentfiles) {
-                // Delete the local files from the tmp folder.
-                this.fileUploaderProvider.clearTmpFiles(this.submission.attachmentfiles);
-            }
-        });
+        if (this.submission.attachmentfiles) {
+            // Delete the local files from the tmp folder.
+            this.fileUploaderProvider.clearTmpFiles(this.submission.attachmentfiles);
+        }
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
     }
 
     /**
@@ -378,10 +374,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                 attachmentsId, undefined, submissionId, allowOffline);
         }).then((newSubmissionId) => {
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: !!newSubmissionId,
-            }, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!newSubmissionId, this.siteId);
 
             const data = {
                 workshopId: this.workshopId,

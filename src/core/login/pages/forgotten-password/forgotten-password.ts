@@ -82,10 +82,7 @@ export class CoreLoginForgottenPasswordPage {
                 this.domUtils.showErrorModal(response.notice);
             } else {
                 // Success.
-                this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                    form: this.formElement.nativeElement,
-                    online: true,
-                });
+                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
 
                 this.domUtils.showAlert(this.translate.instant('core.success'), response.notice);
                 this.navCtrl.pop();

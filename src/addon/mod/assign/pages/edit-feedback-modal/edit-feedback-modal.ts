@@ -61,16 +61,17 @@ export class AddonModAssignEditFeedbackModalPage {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
-        return this.hasDataChanged().then((changed) => {
-            if (changed) {
-                return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-            }
-        });
+        const changed = await this.hasDataChanged();
+        if (changed) {
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        }
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -91,10 +92,7 @@ export class AddonModAssignEditFeedbackModalPage {
         e.preventDefault();
         e.stopPropagation();
 
-        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-            form: this.formElement.nativeElement,
-            online: false,
-        }, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
 
         // Close the modal, sending the input data.
         this.forceLeave = true;

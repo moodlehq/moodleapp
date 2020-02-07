@@ -194,7 +194,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
 
             this.autoSaveDrafts();
 
-            this.deleteDraftOnSubmit();
+            this.deleteDraftOnSubmitOrCancel();
         }
     }
 
@@ -814,11 +814,11 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     }
 
     /**
-     * Delete the draft when the form is submitted.
+     * Delete the draft when the form is submitted or cancelled.
      */
-    protected deleteDraftOnSubmit(): void {
+    protected deleteDraftOnSubmitOrCancel(): void {
 
-        this.resetObs = this.events.on(CoreEventsProvider.FORM_SUBMITTED, async (data) => {
+        this.resetObs = this.events.on(CoreEventsProvider.FORM_ACTION, async (data) => {
             const form = this.element.closest('form');
 
             if (data.form && form && data.form == form) {

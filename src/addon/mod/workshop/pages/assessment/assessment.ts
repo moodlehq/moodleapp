@@ -120,17 +120,19 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave || !this.evaluating) {
-            return true;
+            return;
         }
 
         if (!this.hasEvaluationChanged()) {
-            return Promise.resolve();
+            return;
         }
 
         // Show confirmation if some data has been modified.
-        return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
     }
 
     /**
@@ -344,10 +346,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
         return this.workshopProvider.evaluateAssessment(this.workshopId, this.assessmentId, this.courseId, inputData.text,
                 inputData.weight, inputData.grade).then((result) => {
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: !!result,
-            }, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!result, this.siteId);
 
             const data = {
                 workshopId: this.workshopId,

@@ -16,6 +16,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
  * Page that displays a form to enter a password to self enrol in a course.
@@ -31,12 +32,14 @@ export class CoreCoursesSelfEnrolPasswordPage {
 
     constructor(protected viewCtrl: ViewController,
             protected eventsProvider: CoreEventsProvider,
-            protected sitesProvider: CoreSitesProvider) { }
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider) { }
 
     /**
      * Close help modal.
      */
     close(): void {
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
         this.viewCtrl.dismiss();
     }
 
@@ -50,10 +53,7 @@ export class CoreCoursesSelfEnrolPasswordPage {
         e.preventDefault();
         e.stopPropagation();
 
-        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-            form: this.formElement.nativeElement,
-            online: false,
-        }, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
 
         this.viewCtrl.dismiss(password);
     }

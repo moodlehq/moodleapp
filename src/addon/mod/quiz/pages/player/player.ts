@@ -137,26 +137,28 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         if (this.questions && this.questions.length && !this.showSummary) {
             // Save answers.
             const modal = this.domUtils.showModalLoading('core.sending', true);
 
-            return this.processAttempt(false, false).catch(() => {
+            try {
+                await this.processAttempt(false, false);
+            } catch (error) {
                 // Save attempt failed. Show confirmation.
                 modal.dismiss();
 
-                return this.domUtils.showConfirm(this.translate.instant('addon.mod_quiz.confirmleavequizonerror'));
-            }).finally(() => {
-                modal.dismiss();
-            });
-        }
+                await this.domUtils.showConfirm(this.translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
-        return Promise.resolve();
+                this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+            } finally {
+                modal.dismiss();
+            }
+        }
     }
 
     /**
@@ -587,10 +589,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.autoSave.cancelAutoSave();
             this.autoSave.hideAutoSaveError();
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: !this.offline,
-            }, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !this.offline,
+                    this.sitesProvider.getCurrentSiteId());
         });
     }
 

@@ -137,19 +137,19 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         if (this.question && !this.eolData && !this.processData && this.originalData) {
             // Question shown. Check if there is any change.
             if (!this.utils.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
-                 return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+                 await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
             }
         }
 
-        return Promise.resolve();
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -552,10 +552,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
 
         return this.callFunction(this.lessonProvider.processPage.bind(this.lessonProvider), args, 6, 8).then((result) => {
             if (formSubmitted) {
-                this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                    form: this.formElement.nativeElement,
-                    online: result.sent,
-                }, this.sitesProvider.getCurrentSiteId());
+                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, result.sent,
+                        this.sitesProvider.getCurrentSiteId());
             }
 
             if (!this.offline && !this.review && this.lessonProvider.isLessonOffline(this.lesson)) {

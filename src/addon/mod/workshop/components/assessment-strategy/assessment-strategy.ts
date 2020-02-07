@@ -304,10 +304,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
                 assessmentData, false, allowOffline);
         }).then((grade) => {
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: !!grade,
-            }, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!grade, this.sitesProvider.getCurrentSiteId());
 
             const promises = [];
 

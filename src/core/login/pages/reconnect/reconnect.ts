@@ -181,10 +181,7 @@ export class CoreLoginReconnectPage {
         this.sitesProvider.getUserToken(siteUrl, username, password).then((data) => {
             return this.sitesProvider.updateSiteToken(this.infoSiteUrl, username, data.token, data.privateToken).then(() => {
 
-                this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                    form: this.formElement.nativeElement,
-                    online: true,
-                });
+                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
 
                 // Update site info too because functions might have changed (e.g. unisntall local_mobile).
                 return this.sitesProvider.updateSiteInfoByUrl(this.infoSiteUrl, username).then(() => {

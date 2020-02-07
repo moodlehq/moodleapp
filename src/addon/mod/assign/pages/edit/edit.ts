@@ -85,20 +85,21 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         // Check if data has changed.
-        return this.hasDataChanged().then((changed) => {
-            if (changed) {
-                return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-            }
-        }).then(() => {
-            // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
-            this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, this.getInputData());
-        });
+        const changed = await this.hasDataChanged();
+        if (changed) {
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        }
+
+        // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
+        this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, this.getInputData());
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -317,10 +318,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
             await this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, inputData);
 
             // Submission saved, trigger events.
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: sent,
-            }, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, sent, this.sitesProvider.getCurrentSiteId());
 
             const params = {
                 assignmentId: this.assign.id,

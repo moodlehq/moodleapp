@@ -277,10 +277,7 @@ export class CoreLoginEmailSignupPage {
                 }).then((result) => {
                     if (result.success) {
 
-                        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                            form: this.signupFormElement.nativeElement,
-                            online: true,
-                        });
+                        this.domUtils.triggerFormSubmittedEvent(this.signupFormElement.nativeElement, true);
 
                         // Show alert and ho back.
                         const message = this.translate.instant('core.login.emailconfirmsent', { $a: params.email });
@@ -352,10 +349,7 @@ export class CoreLoginEmailSignupPage {
 
         this.wsProvider.callAjax('core_auth_is_minor', params, {siteUrl: this.siteUrl}).then((result) => {
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.ageFormElement.nativeElement,
-                online: true,
-            });
+            this.domUtils.triggerFormSubmittedEvent(this.ageFormElement.nativeElement, true);
 
             if (!result.status) {
                 if (this.countryControl.value) {

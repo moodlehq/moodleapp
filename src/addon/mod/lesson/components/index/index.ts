@@ -14,7 +14,6 @@
 
 import { Component, Optional, Injector, Input, ViewChild, ElementRef } from '@angular/core';
 import { Content, NavController } from 'ionic-angular';
-import { CoreEventsProvider } from '@providers/events';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -587,10 +586,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.refreshIcon = 'refresh';
             this.syncIcon = 'sync';
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: true,
-            }, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true, this.siteId);
         });
     }
 

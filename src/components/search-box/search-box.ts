@@ -16,6 +16,7 @@ import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef }
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 
 /**
@@ -53,7 +54,8 @@ export class CoreSearchBoxComponent implements OnInit {
     constructor(protected translate: TranslateService,
             protected utils: CoreUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
-            protected sitesProvider: CoreSitesProvider) {
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider) {
         this.onSubmit = new EventEmitter<string>();
         this.onClear = new EventEmitter<void>();
     }
@@ -80,10 +82,7 @@ export class CoreSearchBoxComponent implements OnInit {
             return;
         }
 
-        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-            form: this.formElement.nativeElement,
-            online: false,
-        }, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
 
         this.searched = true;
         this.onSubmit.emit(this.searchText);

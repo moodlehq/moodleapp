@@ -186,6 +186,12 @@ export class AddonModDataSearchPage {
      * @param data Data to return to the page.
      */
     closeModal(data?: any): void {
+        if (typeof data == 'undefined') {
+            this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        } else {
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
+        }
+
         this.viewCtrl.dismiss(data);
     }
 
@@ -219,11 +225,6 @@ export class AddonModDataSearchPage {
 
         this.search.sortBy = searchedData.sortBy;
         this.search.sortDirection = searchedData.sortDirection;
-
-        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-            form: this.formElement.nativeElement,
-            online: false,
-        }, this.sitesProvider.getCurrentSiteId());
 
         this.closeModal(this.search);
     }

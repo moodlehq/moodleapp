@@ -19,6 +19,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -52,7 +53,8 @@ export class CoreSendMessageFormComponent implements OnInit {
             configProvider: CoreConfigProvider,
             protected eventsProvider: CoreEventsProvider,
             protected sitesProvider: CoreSitesProvider,
-            protected appProvider: CoreAppProvider) {
+            protected appProvider: CoreAppProvider,
+            protected domUtils: CoreDomUtilsProvider) {
 
         this.onSubmit = new EventEmitter();
         this.onResize = new EventEmitter();
@@ -88,10 +90,7 @@ export class CoreSendMessageFormComponent implements OnInit {
 
         this.message = ''; // Reset the form.
 
-        this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-            form: this.formElement.nativeElement,
-            online: false,
-        }, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
 
         value = this.textUtils.replaceNewLines(value, '<br>');
         this.onSubmit.emit(value);

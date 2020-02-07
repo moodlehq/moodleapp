@@ -65,10 +65,7 @@ export class AddonNotesAddPage {
         this.processing = true;
         this.notesProvider.addNote(this.userId, this.courseId, this.type, this.text).then((sent) => {
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: sent,
-            }, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, sent, this.sitesProvider.getCurrentSiteId());
 
             this.viewCtrl.dismiss({type: this.type, sent: true}).finally(() => {
                 this.domUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, 3000);
@@ -85,6 +82,8 @@ export class AddonNotesAddPage {
      * Close modal.
      */
     closeModal(): void {
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+
         this.viewCtrl.dismiss({type: this.type});
     }
 }

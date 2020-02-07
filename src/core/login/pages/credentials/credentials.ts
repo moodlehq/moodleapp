@@ -246,10 +246,7 @@ export class CoreLoginCredentialsPage {
         }).finally(() => {
             modal.dismiss();
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: true,
-            });
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
         });
     }
 

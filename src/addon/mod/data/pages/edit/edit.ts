@@ -96,28 +96,25 @@ export class AddonModDataEditPage {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave || !this.entry) {
-            return true;
+            return;
         }
 
         const inputData = this.editForm.value;
 
-        return this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id,
-                this.entry.contents).then((changed) => {
-            if (!changed) {
-                return Promise.resolve();
-            }
+        const changed = await this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id, this.entry.contents);
 
+        if (changed) {
             // Show confirmation if some data has been modified.
-            return  this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-        }).then(() => {
-            // Delete the local files from the tmp folder.
-            return this.dataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.data.id,
-                    this.entry.contents).then((files) => {
-                this.fileUploaderProvider.clearTmpFiles(files);
-            });
-        });
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        }
+
+        // Delete the local files from the tmp folder.
+        const files = await this.dataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.data.id, this.entry.contents);
+        this.fileUploaderProvider.clearTmpFiles(files);
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
     }
 
     /**
@@ -218,10 +215,7 @@ export class AddonModDataEditPage {
                 // This is done if entry is updated when editing or creating if not.
                 if ((this.entryId && result.updated) || (!this.entryId && result.newentryid)) {
 
-                    this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                        form: this.formElement.nativeElement,
-                        online: result.sent,
-                    }, this.siteId);
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, result.sent, this.siteId);
 
                     const promises = [];
 

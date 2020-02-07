@@ -497,10 +497,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             event = result.event;
 
-            this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                form: this.formElement.nativeElement,
-                online: result.sent,
-            }, this.currentSite.getId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, result.sent, this.currentSite.getId());
 
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
@@ -563,6 +560,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     discard(): void {
         this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
             this.calendarOffline.deleteEvent(this.eventId).then(() => {
+
+                this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.currentSite.getId());
+
                 this.returnToList();
             }).catch(() => {
                 // Shouldn't happen.
@@ -578,16 +578,18 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
-
+    async ionViewCanLeave(): Promise<void> {
         if (this.calendarHelper.hasEventDataChanged(this.eventForm.value, this.originalData)) {
             // Show confirmation if some data has been modified.
-            return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-        } else {
-            return Promise.resolve();
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.currentSite.getId());
     }
 
+    /**
+     * Unblock sync.
+     */
     protected unblockSync(): void {
         if (this.eventId) {
             this.syncProvider.unblockOperation(AddonCalendarProvider.COMPONENT, this.eventId);

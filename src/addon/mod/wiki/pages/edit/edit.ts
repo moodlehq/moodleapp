@@ -346,17 +346,17 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         // Check if data has changed.
         if (this.hasDataChanged()) {
-            return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        return true;
+        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -426,10 +426,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
             // Edit existing page.
             promise = this.wikiProvider.editPage(this.pageId, text, this.section).then(() => {
 
-                this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                    form: this.formElement.nativeElement,
-                    online: true,
-                }, this.sitesProvider.getCurrentSiteId());
+                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true,
+                        this.sitesProvider.getCurrentSiteId());
 
                 // Invalidate page since it changed.
                 return this.wikiProvider.invalidatePage(this.pageId).then(() => {
@@ -465,10 +463,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
 
                 return this.wikiProvider.newPage(title, text, this.subwikiId, wikiId, this.userId, this.groupId).then((id) => {
 
-                    this.eventsProvider.trigger(CoreEventsProvider.FORM_SUBMITTED, {
-                        form: this.formElement.nativeElement,
-                        online: id > 0,
-                    }, this.sitesProvider.getCurrentSiteId());
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, id > 0,
+                            this.sitesProvider.getCurrentSiteId());
 
                     if (id > 0) {
                         // Page was created, get its data and go to the page.
