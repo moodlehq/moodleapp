@@ -14,6 +14,7 @@
 
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { CoreConstants } from '@core/constants';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteBasicInfo } from '@providers/sites';
@@ -36,11 +37,15 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
     sitesObserver: any;
     currentSiteId = '';
     syncOnlyOnWifi = false;
-    isDestroyed = false;
+    protected isDestroyed = false;
 
-    constructor(private configProvider: CoreConfigProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
-            private settingsHelper: CoreSettingsHelper) {
+    constructor(protected configProvider: CoreConfigProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected settingsHelper: CoreSettingsHelper,
+            protected translate: TranslateService,
+    ) {
 
         this.currentSiteId = this.sitesProvider.getCurrentSiteId();
 
@@ -85,7 +90,8 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
      * @param siteId Site ID.
      */
     synchronize(siteId: string): void {
-        this.settingsHelper.synchronizeSite(this.syncOnlyOnWifi, siteId).catch((error) => {
+        // Using syncOnlyOnWifi false to force manual sync.
+        this.settingsHelper.synchronizeSite(false, siteId).catch((error) => {
             if (this.isDestroyed) {
                 return;
             }
@@ -101,6 +107,14 @@ export class CoreSettingsSynchronizationPage implements OnDestroy {
      */
     isSynchronizing(siteId: string): boolean {
         return !!this.settingsHelper.getSiteSyncPromise(siteId);
+    }
+
+    /**
+     * Show information about sync actions.
+     */
+    showInfo(): void {
+        this.domUtils.showAlert(this.translate.instant('core.help'),
+            this.translate.instant('core.settings.synchronizenowhelp'));
     }
 
     /**

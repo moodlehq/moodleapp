@@ -14,25 +14,24 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams, Platform } from 'ionic-angular';
-import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../providers/delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
- * Page that displays the list of settings pages.
+ * Page that displays the list of app settings pages.
  */
-@IonicPage({segment: 'core-settings-list'})
+@IonicPage({segment: 'core-settings-app'})
 @Component({
-    selector: 'page-core-settings-list',
-    templateUrl: 'list.html',
+    selector: 'page-core-settings-app',
+    templateUrl: 'app.html',
 })
-export class CoreSettingsListPage {
+export class CoreAppSettingsPage {
     @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
-    handlers: CoreSettingsHandlerData[];
     isIOS: boolean;
     selectedPage: string;
 
-    constructor(private settingsDelegate: CoreSettingsDelegate, platorm: Platform, navParams: NavParams) {
+    constructor(platorm: Platform,
+            navParams: NavParams) {
         this.isIOS = platorm.is('ios');
 
         this.selectedPage = navParams.get('page') || false;
@@ -42,7 +41,6 @@ export class CoreSettingsListPage {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.handlers = this.settingsDelegate.getHandlers();
         if (this.selectedPage) {
             this.openHandler(this.selectedPage);
         } else if (this.splitviewCtrl.isOn()) {

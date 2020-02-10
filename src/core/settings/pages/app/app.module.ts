@@ -15,19 +15,19 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreSettingsListPage } from './list';
+import { CoreAppSettingsPage } from './app';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
 @NgModule({
     declarations: [
-        CoreSettingsListPage
+        CoreAppSettingsPage
     ],
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
-        IonicPageModule.forChild(CoreSettingsListPage),
+        IonicPageModule.forChild(CoreAppSettingsPage),
         TranslateModule.forChild()
     ],
 })
-export class CoreSettingsListPageModule {}
+export class CoreAppSettingsPageModule {}

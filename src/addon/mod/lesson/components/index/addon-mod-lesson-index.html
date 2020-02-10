@@ -244,7 +244,7 @@
                             {{ 'addon.mod_lesson.overview' | translate }}
                         </ion-card-header>
 
-                        <a ion-item text-wrap *ngFor="let student of overview.students" [navPush]="'AddonModLessonUserRetakePage'" [navParams]="{courseId: courseId, lessonId: lesson.id, userId: student.id}">
+                        <a ion-item text-wrap *ngFor="let student of overview.students" navPush="AddonModLessonUserRetakePage" [navParams]="{courseId: courseId, lessonId: lesson.id, userId: student.id}">
                             <ion-avatar core-user-avatar [user]="student" item-start [userId]="student.id" [courseId]="courseId"></ion-avatar>
                             <h2>{{ student.fullname }}</h2>
                             <core-progress-bar [progress]="student.bestgrade"></core-progress-bar>

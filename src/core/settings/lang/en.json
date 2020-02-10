@@ -1,5 +1,6 @@
 {
     "about": "About",
+    "appsettings": "App settings",
     "appversion": "App version",
     "cannotsyncoffline": "Cannot synchronise offline.",
     "cannotsyncwithoutwifi": "Cannot synchronise because the current settings only allow to synchronise when connected to Wi-Fi. Please connect to a Wi-Fi network.",
@@ -56,12 +57,15 @@
     "entriesincache": "{{$a}} entries in cache",
     "screen": "Screen information",
     "settings": "Settings",
+    "preferences": "Preferences",
     "showdownloadoptions": "Show download options",
     "siteinfo": "Site info",
     "sites": "Sites",
     "spaceusage": "Space usage",
+    "spaceusagehelp": "Deleting the stored information of the site will remove all the site offline data. This information allows you to use the app when offline. ",
     "synchronization": "Synchronisation",
     "synchronizenow": "Synchronise now",
+    "synchronizenowhelp": "Synchronising a site will send pending changes and all offline activity stored in the device and will synchronise some data like messages and notifications.",
     "syncsettings": "Synchronisation settings",
     "total": "Total",
     "wificonnection": "Wi-Fi connection"

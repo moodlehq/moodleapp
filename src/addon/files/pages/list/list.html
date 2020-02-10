@@ -23,7 +23,7 @@
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                <a *ngIf="file.isdir" ion-item class="item-media" [navPush]="'AddonFilesListPage'" [navParams]="{path: file.link, title: file.filename}">
+                <a *ngIf="file.isdir" ion-item class="item-media" navPush="AddonFilesListPage" [navParams]="{path: file.link, title: file.filename}">
                     <img [src]="file.imgPath" alt="" role="presentation" item-start>
                     <p>{{file.filename}}</p>
                 </a>
