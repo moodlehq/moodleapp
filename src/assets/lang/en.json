@@ -1619,6 +1619,7 @@
     "core.h5p.offlineDialogRetryButtonLabel": "Retry now",
     "core.h5p.offlineDialogRetryMessage": "Retrying in :num....",
     "core.h5p.offlineSuccessfulSubmit": "Successfully submitted results.",
+    "core.h5p.offlinedisabled": "The site doesn't allow downloading H5P packages.",
     "core.h5p.originator": "Originator",
     "core.h5p.pd": "Public Domain",
     "core.h5p.pddl": "Public Domain Dedication and Licence",

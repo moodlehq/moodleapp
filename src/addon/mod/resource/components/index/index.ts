@@ -14,6 +14,7 @@
 
 import { Component, Injector } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -38,10 +39,15 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     contentText: string;
     displayDescription = true;
 
-    constructor(injector: Injector, private resourceProvider: AddonModResourceProvider, private courseProvider: CoreCourseProvider,
-            private appProvider: CoreAppProvider, private prefetchHandler: AddonModResourcePrefetchHandler,
-            private resourceHelper: AddonModResourceHelperProvider, private sitesProvider: CoreSitesProvider,
-            private utils: CoreUtilsProvider) {
+    constructor(injector: Injector,
+            protected resourceProvider: AddonModResourceProvider,
+            protected courseProvider: CoreCourseProvider,
+            protected appProvider: CoreAppProvider,
+            protected prefetchHandler: AddonModResourcePrefetchHandler,
+            protected resourceHelper: AddonModResourceHelperProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected utils: CoreUtilsProvider,
+            protected filepoolProvider: CoreFilepoolProvider) {
         super(injector);
     }
 
@@ -104,10 +110,12 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
             if (this.resourceHelper.isDisplayedInIframe(this.module)) {
                 let downloadFailed = false;
+                let downloadFailError;
 
-                return this.prefetchHandler.download(this.module, this.courseId).catch(() => {
+                return this.prefetchHandler.download(this.module, this.courseId).catch((error) => {
                     // Mark download as failed but go on since the main files could have been downloaded.
                     downloadFailed = true;
+                    downloadFailError = error;
                 }).then(() => {
                     return this.resourceHelper.getIframeSrc(this.module).then((src) => {
                         this.mode = 'iframe';
@@ -125,7 +133,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
                         if (downloadFailed && this.appProvider.isOnline()) {
                             // We could load the main file but the download failed. Show error message.
-                            this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
+                            this.showErrorDownloadingSomeFiles(downloadFailError);
                         }
                     });
                 });
@@ -147,15 +155,23 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
     /**
      * Opens a file.
+     *
+     * @return Promise resolved when done.
      */
-    open(): void {
-        this.prefetchHandler.isDownloadable(this.module, this.courseId).then((downloadable) => {
+    async open(): Promise<void> {
+        let downloadable = await this.prefetchHandler.isDownloadable(this.module, this.courseId);
+
+        if (downloadable) {
+            // Check if the main file is downloadle.
+            // This isn't done in "isDownloadable" to prevent extra WS calls in the course page.
+            downloadable = await this.resourceHelper.isMainFileDownloadable(this.module);
+
             if (downloadable) {
-                this.resourceHelper.openModuleFile(this.module, this.courseId);
-            } else {
-                // The resource cannot be downloaded, open the activity in browser.
-                return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(this.module.url);
+                return this.resourceHelper.openModuleFile(this.module, this.courseId);
             }
-        });
+        }
+
+        // The resource cannot be downloaded, open the activity in browser.
+        return this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(this.module.url);
     }
 }

@@ -178,8 +178,9 @@ export class CoreCoursesCourseLinkHandler extends CoreContentLinksHandlerBase {
                         error = this.translate.instant('core.courses.notenroled');
                     }
 
-                    const body = this.translate.instant('core.twoparagraphs',
-                        { p1: error, p2: this.translate.instant('core.confirmopeninbrowser') });
+                    const body = this.textUtils.buildSeveralParagraphsMessage(
+                            [error, this.translate.instant('core.confirmopeninbrowser')]);
+
                     this.domUtils.showConfirm(body).then(() => {
                         this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(url);
                     }).catch(() => {

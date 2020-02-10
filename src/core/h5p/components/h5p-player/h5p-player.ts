@@ -73,7 +73,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         this.logger = loggerProvider.getInstance('CoreH5PPlayerComponent');
         this.site = sitesProvider.getCurrentSite();
         this.siteId = this.site.getId();
-        this.siteCanDownload = this.sitesProvider.getCurrentSite().canDownloadFiles();
+        this.siteCanDownload = this.sitesProvider.getCurrentSite().canDownloadFiles() &&
+                !this.h5pProvider.isOfflineDisabledInSite();
     }
 
     /**
