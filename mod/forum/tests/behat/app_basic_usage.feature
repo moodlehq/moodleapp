@@ -186,6 +186,63 @@ Feature: Test basic usage of forum activity in app
     Then I should not see "Star this discussion"
     And I should not see "Pin this discussion"
 
+    @app @3.8.0 @mobile @OK
+    Scenario: Edit a not sent reply offline (mobile)
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "close" in the app
+    And I set the field "Subject" to "Auto-test" in the app
+    And I set the field "Message" to "Auto-test message" in the app
+    And I press "Post to forum" in the app
+    And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    And I switch offline mode to "true"
+    And I press "Reply" in the app
+    And I set the field "Write your reply..." to "not sent reply" in the app
+    And I press "Post to forum" in the app
+    And I press "Display options" near "not sent reply" in the app
+    Then I should see "Edit"
+    And I press "Edit" in the app
+    And I set the field "Write your reply..." to "not sent reply edited" in the app
+    And I press "Post to forum" in the app
+    Then I should see "Not sent"
+    And I should see "This Discussion has offline data to be synchronised"
+    And I switch offline mode to "false"
+    And I press the back button in the app
+    And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    Then I should not see "Not sent"
+    And I should not see "This Discussion has offline data to be synchronised"
+
+    @app @3.8.0 @tablet @OK
+    Scenario: Edit a not sent reply offline (tablet)
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "close" in the app
+    And I set the field "Subject" to "Auto-test" in the app
+    And I set the field "Message" to "Auto-test message" in the app
+    And I press "Post to forum" in the app
+    And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    And I switch offline mode to "true"
+    And I press "Reply" in the app
+    And I set the field "Write your reply..." to "not sent reply" in the app
+    And I press "Post to forum" in the app
+    And I press "Display options" near "not sent reply" in the app
+    Then I should see "Edit"
+    And I press "Edit" in the app
+    And I set the field "Write your reply..." to "not sent reply edited" in the app
+    And I press "Post to forum" in the app
+    Then I should see "Not sent"
+    And I should see "This Discussion has offline data to be synchronised"
+    And I switch offline mode to "false"
+    And I press the back button in the app
+    And I press "Test forum name" in the app
+    Then I should not see "Not sent"
+    And I should not see "This Discussion has offline data to be synchronised"
+
     @app @3.8.0 @OK
     Scenario: Edit a forum post (only online)
     When I enter the app
