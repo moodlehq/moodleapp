@@ -244,6 +244,28 @@ Feature: Test basic usage of forum activity in app
     And I should not see "This Discussion has offline data to be synchronised"
 
     @app @3.8.0 @OK
+    Scenario: Edit a not sent new discussion offline
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I switch offline mode to "true"
+    And I press "close" in the app
+    And I set the field "Subject" to "Auto-test" in the app
+    And I set the field "Message" to "Auto-test message" in the app
+    And I press "Post to forum" in the app
+    And I press "Auto-test" in the app
+    And I set the field "Message" to "Auto-test message edited" in the app
+    And I press "Post to forum" in the app
+    Then I should see "This Forum has offline data to be synchronised."
+    And I switch offline mode to "false"
+    And I press "Auto-test" in the app
+    And I press "Post to forum" in the app
+    Then I should not see "This Forum has offline data to be synchronised."
+    And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    And I should see "Auto-test message edited"
+
+    @app @3.8.0 @OK
     Scenario: Edit a forum post (only online)
     When I enter the app
     And I log in as "student1"
@@ -264,7 +286,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "Edit"
     And I press "Edit" in the app
     And I set the field "Write your reply..." to "Auto-test message edited" in the app
-    And I press "Save changes"
+    And I press "Save changes" in the app
     And I switch offline mode to "true"
     And I press "Display options" near "Reply" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
@@ -302,7 +324,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Delete" in the app
     And I press "Delete" in the app
     Then I should not see "Auto-test"
-    
+
     @app @3.8.0 @mobile @OK
     Scenario: Add/view ratings (mobile)
     When I enter the app
