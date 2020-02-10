@@ -38,7 +38,6 @@ Feature: Test basic usage of forum activity in app
     And I press "My happy subject" in the app
     And I should see "An awesome message"
 
-
   @app_upto3.6.1
   Scenario: Student posts a reply
     When I enter the app
@@ -187,8 +186,7 @@ Feature: Test basic usage of forum activity in app
     Then I should not see "Star this discussion"
     And I should not see "Pin this discussion"
 
-
-    @app @mobile @3.8.0
+    @app @3.8.0 @OK
     Scenario: Edit a forum post (only online)
     When I enter the app
     And I log in as "student1"
@@ -200,20 +198,21 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "Auto-test"
     And I press the back button in the app
-    And I pause
     And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
-    And I press "Auto-test" in the app
-    And I wait "2" seconds
-    And I pause
-    And I press "more" in the app
-    And I pause
-    And I should see "Edit"
-    And I pause
+    And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    And I press "Display options" near "Reply" in the app
+    Then I should see "Edit"
+    And I press "Edit" in the app
+    And I set the field "Write your reply..." to "Auto-test message edited" in the app
+    And I press "Save changes"
     And I switch offline mode to "true"
-    And I pause
+    And I press "Display options" near "Reply" in the app
+    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+    And I press "OK" in the app
+    And I should not see "Edit"
 
     @app @3.8.0 @mobile @OK
     Scenario: Add/view ratings (mobile)
@@ -448,7 +447,6 @@ Feature: Test basic usage of forum activity in app
     Then I should see "DiscussionSubject"
     And I should see "DiscussionMessage"
     And I should not see "There was a problem connecting to the site. Please check your connection and try again."
-
 
     @app @3.8.0 @tablet @OK
     Scenario: Prefetch tablet
