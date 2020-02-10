@@ -13,25 +13,18 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreCoursesSearchPage } from './search';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreSearchComponentsModule } from '@core/search/components/components.module';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
+import { CoreSearchComponentsModule } from './components/components.module';
+import { CoreSearchHistoryProvider } from './providers/search-history';
 
 @NgModule({
     declarations: [
-        CoreCoursesSearchPage,
     ],
     imports: [
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CoreCoursesComponentsModule,
         CoreSearchComponentsModule,
-        IonicPageModule.forChild(CoreCoursesSearchPage),
-        TranslateModule.forChild(),
+    ],
+    providers: [
+        CoreSearchComponentsModule,
+        CoreSearchHistoryProvider,
     ],
 })
-export class CoreCoursesSearchPageModule {}
+export class CoreSearchModule {}

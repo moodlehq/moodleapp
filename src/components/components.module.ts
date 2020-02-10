@@ -25,7 +25,6 @@ import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreIframeComponent } from './iframe/iframe';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
-import { CoreSearchBoxComponent } from './search-box/search-box';
 import { CoreFileComponent } from './file/file';
 import { CoreFilesComponent } from './files/files';
 import { CoreIconComponent } from './icon/icon';
@@ -66,7 +65,6 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
-        CoreSearchBoxComponent,
         CoreFileComponent,
         CoreFilesComponent,
         CoreIconComponent,
@@ -118,7 +116,6 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreIframeComponent,
         CoreProgressBarComponent,
         CoreEmptyBoxComponent,
-        CoreSearchBoxComponent,
         CoreFileComponent,
         CoreFilesComponent,
         CoreIconComponent,

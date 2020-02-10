@@ -10,7 +10,7 @@
     <ion-grid class="safe-area-page">
         <ion-row>
             <ion-col col-12 [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
-                <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query" [disabled]="searching" autocorrect="off" [spellcheck]="false" [autoFocus]="false" [lengthCheck]="0"></core-search-box>
+                <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query" [disabled]="searching" autocorrect="off" [spellcheck]="false" [autoFocus]="false" [lengthCheck]="0" searchArea="CoreTag"></core-search-box>
             </ion-col>
             <ion-col col-12 col-sm-6 *ngIf="collections && collections.length > 1">
                 <ion-select text-start [(ngModel)]="collectionId" (ngModelChange)="searchTags(query)" [disabled]="searching" interface="popover" class="core-button-select">

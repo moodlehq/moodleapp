@@ -112,13 +112,15 @@ ion-app.app-root {
     @include core-selected-item($core-splitview-selected);
   }
 
-  // Recover borders on items inside cards.
+  // Recover borders on items inside cards and lists.
   .card.with-borders .core-as-item,
+  .list.with-borders .core-as-item,
   .core-as-item {
     @include core-as-items();
   }
 
-  .card.with-borders .item {
+  .card.with-borders .item,
+  .list.with-borders .item {
     @include core-items();
   }
 
