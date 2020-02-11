@@ -24,8 +24,8 @@ Feature: Test basic usage of forum activity in app
       | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale |
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 1        | 1     |
 
-  @app @3.8.0 @OK
-  Scenario: Student starts a discussion
+    @app @3.8.0 @OK
+    Scenario: Student starts a discussion
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -38,8 +38,8 @@ Feature: Test basic usage of forum activity in app
     And I press "My happy subject" in the app
     And I should see "An awesome message"
 
-  @app_upto3.6.1
-  Scenario: Student posts a reply
+    @app_upto3.6.1
+    Scenario: Student posts a reply
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -55,8 +55,8 @@ Feature: Test basic usage of forum activity in app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
 
-  @app_from3.7
-  Scenario: Student posts a reply
+    @app_from3.7
+    Scenario: Student posts a reply
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -72,7 +72,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
 
-  Scenario: Test that 'open in browser' works for forum
+    Scenario: Test that 'open in browser' works for forum
     When I enter the app
     And I change viewport size to "360x640"
     And I log in as "student1"
@@ -87,8 +87,8 @@ Feature: Test basic usage of forum activity in app
     And I close the browser tab opened by the app
     And I press the back button in the app
 
-  @app @mobile @3.8.0
-  Scenario: Student stars a discussion
+    @app @3.8.0 @mobile @OK
+    Scenario: Student stars a discussion (mobile)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -104,27 +104,55 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press "Auto-test star" near "Last post a minute ago" in the app
     Then I should see "Auto-test star message"
-    And I press "Display options" in the app
-    And I press "Star this discussion" in the app
     And I press the back button in the app
+    And I press "Display options" near "Last post a minute ago" in the app
+    And I press "Star this discussion" in the app
     And I press "Auto-test star" near "Last post a minute ago" in the app
     Then I should see "Auto-test star message"
     And I press the back button in the app
     And I press "Auto-test star" near "Last post a few seconds ago" in the app
     Then I should see "Auto-test no star message"
     And I press the back button in the app
-    And I press "Auto-test star" near "Last post a minute ago" in the app
-    And I wait "1" seconds
-    And I press "Display options" in the app
+    And I press "Display options" near "Last post a minute ago" in the app
     And I press "Unstar this discussion" in the app
-    And I press the back button in the app
     And I press "Auto-test star" near "Last post a few seconds ago" in the app
     Then I should see "Auto-test no star message"
     And I press the back button in the app
     And I press "Auto-test star" near "Last post a minute ago" in the app
     Then I should see "Auto-test star message"
 
-    @app @mobile @3.8.0
+    @app @3.8.0 @tablet @OK
+    Scenario: Student stars a discussion (tablet)
+    When I enter the app
+    And I change viewport size to "1280x1080"
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Test forum name" in the app
+    And I press "close" in the app
+    And I set the field "Subject" to "Auto-test star" in the app
+    And I set the field "Message" to "Auto-test star message" in the app
+    And I press "Post to forum" in the app
+    And I wait "60" seconds
+    And I press "close" in the app
+    And I set the field "Subject" to "Auto-test star" in the app
+    And I set the field "Message" to "Auto-test no star message" in the app
+    And I press "Post to forum" in the app
+    And I press "Auto-test star" near "Last post a minute ago" in the app
+    Then I should see "Auto-test star message"
+    And I press "Display options" near "Last post a minute ago" in the app
+    And I press "Star this discussion" in the app
+    And I press "Auto-test star" near "Last post a minute ago" in the app
+    Then I should see "Auto-test star message"
+    And I press "Auto-test star" near "Last post a few seconds ago" in the app
+    Then I should see "Auto-test no star message"
+    And I press "Display options" near "Last post a minute ago" in the app
+    And I press "Unstar this discussion" in the app
+    And I press "Auto-test star" near "Last post a few seconds ago" in the app
+    Then I should see "Auto-test no star message"
+    And I press "Auto-test star" near "Last post a minute ago" in the app
+    Then I should see "Auto-test star message"
+
+    @app @3.8.0 @OK
     Scenario: Teacher star and pin a discussion
     When I enter the app
     And I log in as "teacher1"
@@ -142,33 +170,19 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
-    And I press "Auto-test star" in the app
-    And I wait "1" seconds
-    And I press "Display options" in the app
+    And I press "Display options" near "Auto-test star" in the app
     And I press "Star this discussion" in the app
-    And I press the back button in the app
-    And I press "Auto-test pin" in the app
-    And I wait "1" seconds
-    And I press "Display options" in the app
+    And I press "Display options" near "Auto-test pin" in the app
     And I press "Pin this discussion" in the app
-    And I press the back button in the app
     And I should see "Auto-test pin"
     And I should see "Auto-test star"
     And I should see "Auto-test"
-    And I pause
-    And I press "Auto-test pin" in the app
-    And I wait "1" seconds
-    And I press "Display options" in the app
+    And I press "Display options" near "Auto-test pin" in the app
     And I press "Unpin this discussion" in the app
-    And I press the back button in the app
-    And I press "Auto-test star" in the app
-    And I wait "1" seconds
-    And I press "Display options" in the app
+    And I press "Display options" near "Auto-test star" in the app
     And I press "Unstar this discussion" in the app
-    And I press the back button in the app
     Then I should see "Auto-test star"
     And I should see "Auto-test pin"
-    And I pause
 
     @app @mobile @3.6 @OK
     Scenario: Teacher checks pin and star in 3.6
@@ -595,26 +609,3 @@ Feature: Test basic usage of forum activity in app
     And I switch offline mode to "false"
     And I press "refresh" near "Test forum name" in the app
     Then I should not see "There was a problem connecting to the site. Please check your connection and try again."
-
-    @app @3.8.0
-    Scenario: Student sorts a forum discussion
-    When I enter the app
-    And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
-    And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
-    And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject"
-    And I press "Add a new discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject more replies" in the app
-    And I set the field "Message" to "DiscussionMessage more replies" in the app
-    And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject"
-    And I should see "DiscussionSubject more replies"
-    And I press "DiscussionSubject more replies" in the app
-    And I press "Reply" in the app
-    And I set the field "Write your reply" to "ReplyMessage" in the app
-    And I press "Post to forum" in the app
-    And I pause
