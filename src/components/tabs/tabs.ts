@@ -22,6 +22,9 @@ import { Subscription } from 'rxjs';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTabComponent } from './tab';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreConstants } from '@core/constants';
+import { CoreConfigConstants } from '../../configconstants';
 
 /**
  * This component displays some tabs that usually share data between them.
@@ -46,6 +49,10 @@ import { CoreTabComponent } from './tab';
     templateUrl: 'core-tabs.html'
 })
 export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+
+    // Minimum tab's width to display fully the word "Competencies" which is the longest tab in the app.
+    static MIN_TAB_WIDTH = 107;
+
     @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = true; // Determine when should the contents be shown.
     @Input() parentScrollable = false; // Determine if the scroll should be in the parent content or the tab itself.
@@ -85,7 +92,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected languageChangedSubscription: Subscription;
 
     constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider,
-            protected appProvider: CoreAppProvider, platform: Platform, translate: TranslateService) {
+            protected appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, platform: Platform,
+            translate: TranslateService) {
         this.tabBarElement = element.nativeElement;
 
         this.direction = platform.isRTL ? 'rtl' : 'ltr';
@@ -223,8 +231,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             return;
         }
 
-        this.calculateMaxSlides();
-        this.updateSlides();
+        this.calculateMaxSlides().then(() => {
+            this.updateSlides();
+        });
     }
 
     /**
@@ -376,18 +385,25 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }, 400);
     }
 
-    protected calculateMaxSlides(): void {
-        if (this.slides) {
-            const width = this.domUtils.getElementWidth(this.slides.getNativeElement()) || this.slides.renderedWidth;
-
-            if (width) {
-                this.maxSlides = Math.floor(width / 100);
-
-                return;
+    protected calculateMaxSlides(): Promise<void> {
+        return new Promise<void>((resolve, reject): void => {
+            this.maxSlides = 3;
+            if (this.slides) {
+                const width = this.domUtils.getElementWidth(this.slides.getNativeElement()) || this.slides.renderedWidth;
+                if (width) {
+                    this.configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0].toString()).
+                        then((fontSize) => {
+                            this.maxSlides = Math.floor(width / (fontSize / CoreConfigConstants.font_sizes[0] *
+                                CoreTabsComponent.MIN_TAB_WIDTH));
+                            resolve();
+                        });
+                } else {
+                    resolve();
+                }
+            } else {
+                resolve();
             }
-        }
-
-        this.maxSlides = 3;
+        });
     }
 
     /**
