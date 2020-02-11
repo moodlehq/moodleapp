@@ -414,8 +414,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     slideNext(): void {
         if (this.showNextButton) {
             // Stop if slides are in transition.
-            if (this.isInTransition)
+            if (this.isInTransition) {
                 return;
+            }
 
             if (this.slides.isBeginning()) {
                 // Slide to the second page.
@@ -444,8 +445,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     slidePrev(): void {
         if (this.showPrevButton) {
             // Stop if slides are in transition.
-            if (this.isInTransition)
+            if (this.isInTransition) {
                 return;
+            }
 
             if (this.slides.isEnd()) {
                 this.slides.slideTo(this.numTabsShown - this.maxSlides * 2);
