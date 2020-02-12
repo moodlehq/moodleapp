@@ -38,23 +38,6 @@ Feature: Test basic usage of forum activity in app
     And I press "My happy subject" in the app
     And I should see "An awesome message"
 
-    @app_upto3.6.1
-    Scenario: Student posts a reply
-    When I enter the app
-    And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
-    And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
-    And I press "Post to forum" in the app
-    And I press "DiscussionSubject" in the app
-    And I press "Reply" in the app
-    And I set the field "Message" to "ReplyMessage" in the app
-    And I press "Post to forum" in the app
-    Then I should see "DiscussionMessage"
-    And I should see "ReplyMessage"
-
     @app_from3.7
     Scenario: Student posts a reply
     When I enter the app
@@ -71,21 +54,6 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should see "DiscussionMessage"
     And I should see "ReplyMessage"
-
-    Scenario: Test that 'open in browser' works for forum
-    When I enter the app
-    And I change viewport size to "360x640"
-    And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
-    And I press "Test forum name" in the app
-    And I press the page menu button in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "student1"
-    Then I should see "Test forum name"
-    And I should see "Add a new discussion topic"
-    And I close the browser tab opened by the app
-    And I press the back button in the app
 
     @app @3.8.0 @mobile @OK
     Scenario: Student stars a discussion (mobile)
@@ -184,7 +152,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "Auto-test star"
     And I should see "Auto-test pin"
 
-    @app @mobile @3.6 @OK
+    @app_upto3.6.0 @OK
     Scenario: Teacher checks pin and star in 3.6
     When I enter the app
     And I log in as "teacher1"
@@ -195,8 +163,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
-    And I wait "1" seconds
-    And I press "Display options" in the app
+    And I press "Information" in the app
     Then I should not see "Star this discussion"
     And I should not see "Pin this discussion"
 

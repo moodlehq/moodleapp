@@ -242,7 +242,6 @@ Feature: Test basic usage of survey activity in app
   Then I should see "You've completed this survey.  The graph below shows a summary of your results compared to the class averages."
   And I should see "1 people have completed this survey so far"
 
-
   @app @3.8.0 @mobile @OK
   Scenario: Student answers a survey of Colles (preferred) and see results mobile
   Given the following "activities" exist:
@@ -252,7 +251,6 @@ Feature: Test basic usage of survey activity in app
   And I log in as "student1"
   And I press "Course 1" near "Course overview" in the app
   And I press "Test survey Colles (preferred)" in the app
-  And I pause
   And I press "Choose" near "1. my learning focuses on issues that interest me." in the app
   And I press "Sometimes" near "Often" in the app
   And I press "Choose" near "2. what I learn is important for my professional practice." in the app
@@ -312,7 +310,6 @@ Feature: Test basic usage of survey activity in app
   And I log in as "student1"
   Then I should see "You've completed this survey.  The graph below shows a summary of your results compared to the class averages."
   And I should see "1 people have completed this survey so far"
-
 
   @app @3.8.0 @tablet @OK
   Scenario: Student answers a survey of Colles (preferred) and see results tablet
@@ -549,8 +546,7 @@ Feature: Test basic usage of survey activity in app
   And I log in as "student1"
   Then I should see "You've completed this survey.  The graph below shows a summary of your results compared to the class averages."
   And I should see "1 people have completed this survey so far"
-
-
+  
   @app @3.8.0 @OK
   Scenario: Student answers a survey offline and sync survey
   Given the following "activities" exist:
