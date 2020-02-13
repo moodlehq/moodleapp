@@ -96,6 +96,50 @@ Feature: Test basic usage of glossary in app
   And I should see "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae."
 
   @app @3.8.0 @OK
+  Scenario: Navigate to glossary terms by link (auto-linking)
+  And the "glossary" filter is "on"
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  Then the header should be "Course 1" in the app
+  And I press "Test glossary" in the app
+  And I press "close" in the app
+  And I set the field "Concept" to "potato" in the app
+  And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+  And I press "This entry should be automatically linked" in the app
+  And I press "Save" in the app
+  And I press "close" in the app
+  And I set the field "Concept" to "car" in the app
+  And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+  And I press "This entry should be automatically linked" in the app
+  And I press "Save" in the app
+  And I press "close" in the app
+  And I set the field "Concept" to "mountain" in the app
+  And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+  And I press "This entry should be automatically linked" in the app
+  And I press "Save" in the app
+  Then the header should be "Test glossary" in the app 
+  And I should see "car"
+  And I should see "mountain"
+  And I should see "potato"
+  And I press the back button in the app
+  And I press "Test forum name" in the app
+  And I press "add" in the app
+  And I set the field "Subject" to "Testing auto-link glossary"
+  And I set the field "Message" to "Glossary terms auto-linked: potato car mountain" in the app
+  And I press "Post to forum" in the app
+  And I press "Testing auto-link glossary" near "Last post a few seconds ago" in the app
+  And I press "car" in the app
+  Then the header should be "car" in the app
+  And I should see "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods."
+  And I press the back button in the app
+  And I press "mountain" in the app
+  Then the header should be "mountain" in the app
+  And I should see "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak."
+
+  @app @3.8.0 @OK
   Scenario: See comments
   When I enter the app
   And I log in as "student1"
