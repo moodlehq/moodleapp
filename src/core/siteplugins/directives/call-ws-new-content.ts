@@ -87,7 +87,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
         if (this.utils.isTrueOrOne(this.samePage)) {
             // Update the parent content (if it exists).
             if (this.parentContent) {
-                this.parentContent.updateContent(args, this.component, this.method, this.jsData);
+                this.parentContent.updateContent(args, this.component, this.method, this.jsData, this.newContentPreSets);
             }
         } else {
             let jsData = this.jsData;
