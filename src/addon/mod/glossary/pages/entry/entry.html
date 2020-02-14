@@ -9,7 +9,7 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <ng-container *ngIf="entry">
+        <ng-container *ngIf="entry && loaded">
             <ion-item text-wrap *ngIf="showAuthor">
                 <ion-avatar core-user-avatar [user]="entry" (click)="openUserProfile(post.userid)" item-start></ion-avatar>
                 <h2><core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary && glossary.coursemodule" [courseId]="courseId"></core-format-text></h2>
