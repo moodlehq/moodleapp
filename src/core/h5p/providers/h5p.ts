@@ -2602,7 +2602,7 @@ export class CoreH5PProvider {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }
 
-        return url;
+        return this.urlUtils.removeUrlParams(url);
     }
 
     /**
