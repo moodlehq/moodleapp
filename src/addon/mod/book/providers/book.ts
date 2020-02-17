@@ -28,6 +28,16 @@ import { CoreTagItem } from '@core/tag/providers/tag';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
+ * Constants to define how the chapters and subchapters of a book should be displayed in that table of contents.
+ */
+export const enum AddonModBookNumbering {
+    NONE = 0,
+    NUMBERS = 1,
+    BULLETS = 2,
+    INDENTED = 3,
+}
+
+/**
  * Service that provides some features for books.
  */
 @Injectable()
