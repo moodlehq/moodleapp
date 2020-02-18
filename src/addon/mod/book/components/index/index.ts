@@ -17,7 +17,7 @@ import { Content, ModalController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
-import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
+import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter, AddonModBookBook } from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
@@ -40,6 +40,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     protected chapters: AddonModBookTocChapter[];
     protected currentChapter: string;
     protected contentsMap: AddonModBookContentsMap;
+    protected book: AddonModBookBook;
 
     constructor(injector: Injector, private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
@@ -69,7 +70,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             moduleId: this.module.id,
             chapters: this.chapters,
             selected: this.currentChapter,
-            courseId: this.courseId
+            courseId: this.courseId,
+            book: this.book,
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,
@@ -123,6 +125,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
+            this.book = book;
             this.dataRetrieved.emit(book);
             this.description = book.intro;
         }).catch(() => {
