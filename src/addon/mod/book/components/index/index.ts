@@ -97,7 +97,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         if (chapterId && chapterId != this.currentChapter) {
             this.loaded = false;
             this.refreshIcon = 'spinner';
-            this.loadChapter(chapterId);
+            this.loadChapter(chapterId, true);
         }
     }
 
@@ -162,7 +162,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             }
 
             // Show chapter.
-            return this.loadChapter(this.currentChapter).then(() => {
+            return this.loadChapter(this.currentChapter, refresh).then(() => {
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
                     this.showErrorDownloadingSomeFiles(downloadFailError);
@@ -179,9 +179,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * Load a book chapter.
      *
      * @param chapterId Chapter to load.
+     * @param logChapterId Whether chapter ID should be passed to the log view function.
      * @return Promise resolved when done.
      */
-    protected loadChapter(chapterId: string): Promise<void> {
+    protected loadChapter(chapterId: string, logChapterId: boolean): Promise<void> {
         this.currentChapter = chapterId;
         this.domUtils.scrollToTop(this.content);
 
@@ -191,7 +192,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.nextChapter = this.bookProvider.getNextChapter(this.chapters, chapterId);
 
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
-            this.bookProvider.logView(this.module.instance, chapterId, this.module.name).then(() => {
+            this.bookProvider.logView(this.module.instance, logChapterId ? chapterId : undefined, this.module.name).then(() => {
                 // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
                 if (this.nextChapter == '0') {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
