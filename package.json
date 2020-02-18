@@ -105,7 +105,7 @@
     "font-awesome": "^4.7.0",
     "ionic-angular": "3.9.9",
     "ionicons": "^3.0.0",
-    "jszip": "^3.2.2",
+    "jszip": "~3.1.5",
     "mathjax": "2.7.7",
     "moment": "^2.24.0",
     "nl.kingsquare.cordova.background-audio": "^1.0.1",
