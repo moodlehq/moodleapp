@@ -14,6 +14,7 @@
 
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { AddonModAssignProvider } from '../../../providers/assign';
@@ -35,16 +36,23 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     text: string;
     loaded: boolean;
     wordLimitEnabled: boolean;
+    currentUserId: number;
 
     protected wordCountTimeout: any;
     protected element: HTMLElement;
 
-    constructor(protected fb: FormBuilder, protected domUtils: CoreDomUtilsProvider, protected textUtils: CoreTextUtilsProvider,
-            protected assignProvider: AddonModAssignProvider, protected assignOfflineProvider: AddonModAssignOfflineProvider,
-            element: ElementRef) {
+    constructor(
+            protected fb: FormBuilder,
+            protected domUtils: CoreDomUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected assignProvider: AddonModAssignProvider,
+            protected assignOfflineProvider: AddonModAssignOfflineProvider,
+            element: ElementRef,
+            sitesProvider: CoreSitesProvider) {
 
         super();
         this.element = element.nativeElement;
+        this.currentUserId = sitesProvider.getCurrentSiteUserId();
     }
 
     /**

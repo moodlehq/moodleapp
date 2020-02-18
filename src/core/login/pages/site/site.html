@@ -17,7 +17,7 @@
         <div text-center padding>
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
         </div>
-        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'">
+        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->
             <ng-container *ngIf="!fixedSites">
                 <p padding>{{ 'core.login.newsitedescription' | translate }}</p>

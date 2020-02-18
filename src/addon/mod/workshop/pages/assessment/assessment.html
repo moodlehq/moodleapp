@@ -38,7 +38,7 @@
 
         <addon-mod-workshop-assessment-strategy *ngIf="assessment && assessmentId && showGrade(assessment.grade) && workshop && access" [workshop]="workshop" [access]="access" [assessmentId]="assessmentId" [userId]="profile && profile.id" [strategy]="strategy"></addon-mod-workshop-assessment-strategy>
 
-        <form ion-list [formGroup]="evaluateForm" *ngIf="evaluating">
+        <form ion-list [formGroup]="evaluateForm" *ngIf="evaluating" #evaluateFormEl>
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h2>
             </ion-item>
@@ -60,7 +60,7 @@
             </ion-item>
             <ion-item *ngIf="access.canoverridegrades">
                 <ion-label stacked>{{ 'addon.mod_workshop.feedbackreviewer' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="evaluateForm.controls['text']" formControlName="text"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="evaluateForm.controls['text']" formControlName="text" [autoSave]="true" contextLevel="module" [contextInstanceId]="workshop.coursemodule" elementId="feedbackreviewer_editor" [draftExtraParams]="{asid: assessmentId}"></core-rich-text-editor>
             </ion-item>
         </form>
         <ion-list *ngIf="!evaluating && evaluate && evaluate.text">

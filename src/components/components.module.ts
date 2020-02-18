@@ -39,7 +39,6 @@ import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabComponent } from './tabs/tab';
-import { CoreRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
@@ -79,7 +78,6 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreSitePickerComponent,
         CoreTabsComponent,
         CoreTabComponent,
-        CoreRichTextEditorComponent,
         CoreNavBarButtonsComponent,
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
@@ -128,7 +126,6 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreSitePickerComponent,
         CoreTabsComponent,
         CoreTabComponent,
-        CoreRichTextEditorComponent,
         CoreNavBarButtonsComponent,
         CoreDynamicComponent,
         CoreSendMessageFormComponent,

@@ -1,6 +1,6 @@
 <h3 padding>{{ 'addon.mod_workshop.assessmentform' | translate }}</h3>
 
-<form name="mma-mod_workshop-assessment-form">
+<form name="mma-mod_workshop-assessment-form" #assessmentForm>
     <core-loading [hideUntil]="assessmentStrategyLoaded">
         <ng-container *ngIf="componentClass && assessmentStrategyLoaded">
             <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
@@ -16,7 +16,7 @@
             </ion-item>
             <ion-item stacked *ngIf="edit">
                 <ion-label stacked [core-mark-required]="overallFeedkbackRequired">{{ 'addon.mod_workshop.feedbackauthor' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="feedbackControl" [component]="component" [componentId]="workshop.coursemodule" (contentChanged)="onFeedbackChange($event)"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="feedbackControl" [component]="component" [componentId]="workshop.coursemodule" [autoSave]="true" contextLevel="module" [contextInstanceId]="workshop.coursemodule" elementId="feedbackauthor_editor" [draftExtraParams]="{asid: assessmentId}" (contentChanged)="onFeedbackChange($event)"></core-rich-text-editor>
                 <core-input-errors item-content *ngIf="overallFeedkbackRequired && fieldErrors && fieldErrors['feedbackauthor']" [errorText]="fieldErrors['feedbackauthor']"></core-input-errors>
             </ion-item>
             <core-attachments *ngIf="edit && workshop.overallfeedbackfiles" [files]="data.assessment.feedbackattachmentfiles" [maxSize]="workshop.overallfeedbackmaxbytes"

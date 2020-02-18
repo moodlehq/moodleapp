@@ -134,11 +134,6 @@ $link-color:                 $blue !default;
 $background-color:           $gray-light !default;
 $subdued-text-color:         $gray-darker !default;
 
-$core-warning-color: colors($colors, warning) !default; // yellow.
-$core-success-color: colors($colors, success) !default; // green.
-$core-info-color: colors($colors, info) !default; // / blue.
-$core-error-color: colors($colors, alert) !default; // Red.
-
 $list-background-color:      $white !default;
 
 $tabs-background:            $gray-darker !default;

@@ -20,6 +20,7 @@ import { AddonModDataFieldsDelegate } from '../../providers/fields-delegate';
 import { AddonModDataFieldTextareaComponent } from './component/textarea';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,8 @@ import { CoreDirectivesModule } from '@directives/directives.module';
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule
+        CoreDirectivesModule,
+        CoreEditorComponentsModule,
     ],
     providers: [
         AddonModDataFieldTextareaHandler

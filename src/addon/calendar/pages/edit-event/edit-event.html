@@ -9,7 +9,7 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="eventForm" *ngIf="!error">
+        <form ion-list [formGroup]="eventForm" *ngIf="!error" #editEventForm>
             <!-- Event name. -->
             <ion-item text-wrap>
                 <ion-label stacked><h2 [core-mark-required]="true">{{ 'addon.calendar.eventname' | translate }}</h2></ion-label>
@@ -86,7 +86,7 @@
                 <!-- Description. -->
                 <ion-item text-wrap>
                     <ion-label stacked><h2>{{ 'core.description' | translate }}</h2></ion-label>
-                    <core-rich-text-editor item-content [control]="descriptionControl" [placeholder]="'core.description' | translate" name="description" [component]="component" [componentId]="eventId"></core-rich-text-editor>
+                    <core-rich-text-editor item-content [control]="descriptionControl" [placeholder]="'core.description' | translate" name="description" [component]="component" [componentId]="eventId" [autoSave]="false"></core-rich-text-editor>
                 </ion-item>
 
                 <!-- Location. -->

@@ -29,7 +29,7 @@
                 <ion-icon padding name="alert"></ion-icon> {{ 'core.login.reconnectdescription' | translate }}
             </p>
         </div>
-        <form ion-list *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form">
+        <form ion-list *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
             <ion-item text-wrap class="core-username">
                 <p>{{username}}</p>
             </ion-item>

@@ -13,23 +13,26 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { AddonModForumNewDiscussionPage } from './new-discussion';
-import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
+import { CoreEditorComponentsModule } from './components/components.module';
+import { CoreEditorOfflineProvider } from './providers/editor-offline';
+
+// List of providers (without handlers).
+export const CORE_GRADES_PROVIDERS: any[] = [
+    CoreEditorOfflineProvider,
+];
 
 @NgModule({
     declarations: [
-        AddonModForumNewDiscussionPage,
     ],
     imports: [
-        CoreComponentsModule,
-        CoreDirectivesModule,
         CoreEditorComponentsModule,
-        IonicPageModule.forChild(AddonModForumNewDiscussionPage),
-        TranslateModule.forChild()
+    ],
+    providers: [
+        CoreEditorOfflineProvider,
     ],
 })
-export class AddonModForumNewDiscussionPageModule {}
+export class CoreEditorModule {
+    constructor(editorOffline: CoreEditorOfflineProvider) {
+        // Inject the helper even if it isn't used here it's instantiated.
+    }
+}

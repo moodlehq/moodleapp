@@ -24,6 +24,7 @@ import { AddonModWorkshopIndexComponent } from './index/index';
 import { AddonModWorkshopSubmissionComponent } from './submission/submission';
 import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
 import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strategy/assessment-strategy';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strate
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
-        CoreCourseComponentsModule
+        CoreCourseComponentsModule,
+        CoreEditorComponentsModule,
     ],
     providers: [
     ],

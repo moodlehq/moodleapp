@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreLoginHelperProvider } from '../../providers/helper';
@@ -29,6 +30,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     templateUrl: 'reconnect.html',
 })
 export class CoreLoginReconnectPage {
+
+    @ViewChild('reconnectForm') formElement: ElementRef;
+
     credForm: FormGroup;
     siteUrl: string;
     username: string;
@@ -47,13 +51,14 @@ export class CoreLoginReconnectPage {
     protected isLoggedOut: boolean;
     protected siteId: string;
 
-    constructor(private navCtrl: NavController,
+    constructor(protected navCtrl: NavController,
             navParams: NavParams,
             fb: FormBuilder,
-            private appProvider: CoreAppProvider,
-            private sitesProvider: CoreSitesProvider,
-            private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            protected appProvider: CoreAppProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected loginHelper: CoreLoginHelperProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected eventsProvider: CoreEventsProvider) {
 
         const currentSite = this.sitesProvider.getCurrentSite();
 
@@ -175,6 +180,9 @@ export class CoreLoginReconnectPage {
         // Start the authentication process.
         this.sitesProvider.getUserToken(siteUrl, username, password).then((data) => {
             return this.sitesProvider.updateSiteToken(this.infoSiteUrl, username, data.token, data.privateToken).then(() => {
+
+                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
+
                 // Update site info too because functions might have changed (e.g. unisntall local_mobile).
                 return this.sitesProvider.updateSiteInfoByUrl(this.infoSiteUrl, username).then(() => {
                     // Reset fields so the data is not in the view anymore.

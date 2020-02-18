@@ -11,7 +11,7 @@
         <!-- Plain text textarea. -->
         <ion-textarea *ngIf="question.isPlainText" class="core-question-textarea" [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.textarea.name" aria-multiline="true" [ngModel]="question.textarea.text"></ion-textarea>
         <!-- Rich text editor. -->
-        <core-rich-text-editor item-content *ngIf="!question.isPlainText" placeholder="{{ 'core.question.answer' | translate }}" [control]="formControl" [name]="question.textarea.name" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+        <core-rich-text-editor item-content *ngIf="!question.isPlainText" placeholder="{{ 'core.question.answer' | translate }}" [control]="formControl" [name]="question.textarea.name" [component]="component" [componentId]="componentId" [autoSave]="false"></core-rich-text-editor>
     </ion-item>
 
     <!-- Draft files not supported. -->

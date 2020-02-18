@@ -17,6 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 import { AddonCalendarEditEventPage } from './edit-event';
 
 @NgModule({
@@ -26,6 +27,7 @@ import { AddonCalendarEditEventPage } from './edit-event';
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
+        CoreEditorComponentsModule,
         IonicPageModule.forChild(AddonCalendarEditEventPage),
         TranslateModule.forChild()
     ],

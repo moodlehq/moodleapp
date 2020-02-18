@@ -9,7 +9,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <form name="itemEdit" (ngSubmit)="addNote($event)">
+    <form name="itemEdit" (ngSubmit)="addNote($event)" #itemEdit>
         <ion-item>
             <ion-label>{{ 'addon.notes.publishstate' | translate }}</ion-label>
             <ion-select [(ngModel)]="type" name="publishState" interface="popover">

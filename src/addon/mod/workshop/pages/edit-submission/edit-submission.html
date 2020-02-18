@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="editForm" *ngIf="workshop">
+        <form ion-list [formGroup]="editForm" *ngIf="workshop" #editFormEl>
             <ion-item text-wrap>
                 <ion-label stacked core-mark-required="true">{{ 'addon.mod_workshop.submissiontitle' | translate }}</ion-label>
                 <ion-input name="title" type="text" [placeholder]="'addon.mod_workshop.submissiontitle' | translate" formControlName="title"></ion-input>
@@ -18,7 +18,7 @@
 
             <ion-item *ngIf="textAvailable">
                 <ion-label stacked [core-mark-required]="textRequired">{{ 'addon.mod_workshop.submissioncontent' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="editForm.controls['content']" formControlName="content" [placeholder]="'addon.mod_workshop.submissioncontent' | translate"  name="content" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="editForm.controls['content']" formControlName="content" [placeholder]="'addon.mod_workshop.submissioncontent' | translate"  name="content" [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="content_editor" [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
             </ion-item>
 
             <core-attachments *ngIf="fileAvailable" [files]="submission.attachmentfiles" [maxSize]="workshop.maxbytes" [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule" allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired"></core-attachments>

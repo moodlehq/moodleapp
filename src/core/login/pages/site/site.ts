@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, ModalController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteCheckResponse } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreConfigConstants } from '../../../../configconstants';
@@ -31,6 +32,9 @@ import { CoreUrl } from '@classes/utils/url';
     templateUrl: 'site.html',
 })
 export class CoreLoginSitePage {
+
+    @ViewChild('siteFormEl') formElement: ElementRef;
+
     siteForm: FormGroup;
     fixedSites: any[];
     filteredSites: any[];
@@ -38,9 +42,15 @@ export class CoreLoginSitePage {
     showKeyboard = false;
     filter = '';
 
-    constructor(navParams: NavParams, private navCtrl: NavController, fb: FormBuilder, private appProvider: CoreAppProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private modalCtrl: ModalController, private domUtils: CoreDomUtilsProvider) {
+    constructor(navParams: NavParams,
+            protected navCtrl: NavController,
+            fb: FormBuilder,
+            protected appProvider: CoreAppProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected loginHelper: CoreLoginHelperProvider,
+            protected modalCtrl: ModalController,
+            protected domUtils: CoreDomUtilsProvider,
+            protected eventsProvider: CoreEventsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
 
@@ -96,6 +106,9 @@ export class CoreLoginSitePage {
             // It's a demo site.
             this.sitesProvider.getUserToken(siteData.url, siteData.username, siteData.password).then((data) => {
                 return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken).then(() => {
+
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
+
                     return this.loginHelper.goToSiteInitialPage();
                 }, (error) => {
                     this.loginHelper.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
@@ -175,6 +188,9 @@ export class CoreLoginSitePage {
      */
     protected async login(response: CoreSiteCheckResponse): Promise<void> {
         return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
+
             if (response.warning) {
                 this.domUtils.showErrorModal(response.warning, true, 4000);
             }

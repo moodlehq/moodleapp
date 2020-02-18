@@ -1,7 +1,14 @@
-<div [hidden]="!rteEnabled" #editor contenteditable="true" class="core-rte-editor" tappable (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" [attr.data-placeholder-text]="placeholder" role="textbox">
-</div>
+<div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
+    <div [hidden]="!rteEnabled" #editor contenteditable="true" class="core-rte-editor" tappable (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" [attr.data-placeholder-text]="placeholder" role="textbox">
+    </div>
 
-<ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)" (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" role="textbox"></ion-textarea>
+    <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)" (focus)="showToolbar()" (longPress)="showToolbar()" (blur)="hideToolbar($event)" role="textbox"></ion-textarea>
+
+    <div class="core-rte-info-message" *ngIf="infoMessage">
+        <ion-icon name="information-circle"></ion-icon>
+        {{ infoMessage | translate }}
+    </div>
+</div>
 
 <div #toolbar class="core-rte-toolbar" [class.toolbar-hidden]="toolbarHidden">
     <button *ngIf="toolbarArrows" class="toolbar-arrow" [class.toolbar-arrow-hidden]="toolbarPrevHidden" (click)="toolbarPrev($event)" (mousedown)="stopBubble($event)">

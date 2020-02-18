@@ -17,7 +17,7 @@
     <core-loading [hideUntil]="settingsLoaded" *ngIf="!isMinor">
 
         <!-- Age verification. -->
-        <form ion-list *ngIf="settingsLoaded && settings && ageDigitalConsentVerification" [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)">
+        <form ion-list *ngIf="settingsLoaded && settings && ageDigitalConsentVerification" [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
             <ion-item-divider text-wrap>
                 <p class="item-heading">{{ 'core.agelocationverification' | translate }}</p>
             </ion-item-divider>
@@ -47,7 +47,7 @@
         </form>
 
         <!-- Signup form. -->
-        <form ion-list *ngIf="settingsLoaded && settings && !ageDigitalConsentVerification" [formGroup]="signupForm" (ngSubmit)="create($event)">
+        <form ion-list *ngIf="settingsLoaded && settings && !ageDigitalConsentVerification" [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
             <ion-item text-wrap text-center>
                 <!-- If no sitename show big siteurl. -->
                 <p *ngIf="!siteName" padding class="item-heading">{{siteUrl}}</p>

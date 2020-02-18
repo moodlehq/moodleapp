@@ -25,7 +25,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-text-editor.ts';
+import { CoreEditorRichTextEditorComponent } from '@core/editor/components/rich-text-editor/rich-text-editor.ts';
 import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumHelperProvider } from '../../providers/helper';
@@ -41,7 +41,7 @@ import { AddonModForumSyncProvider } from '../../providers/sync';
 })
 export class AddonModForumNewDiscussionPage implements OnDestroy {
 
-    @ViewChild(CoreRichTextEditorComponent) messageEditor: CoreRichTextEditorComponent;
+    @ViewChild(CoreEditorRichTextEditorComponent) messageEditor: CoreEditorRichTextEditorComponent;
 
     component = AddonModForumProvider.COMPONENT;
     messageControl = new FormControl();

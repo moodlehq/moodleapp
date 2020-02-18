@@ -10,12 +10,35 @@ ion-app.app-root core-rich-text-editor {
         background-color: $gray-darker;
     }
 
+    .core-rte-editor-container {
+        max-height: calc(100% - 46px);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        &.toolbar-hidden {
+            max-height: 100%;
+        }
+
+        .core-rte-info-message {
+            padding: 5px;
+            border-top: 1px solid $info;
+            background: white;
+            flex-shrink: 1;
+            font-size: 1.4rem;
+
+            .icon {
+                color: $info;
+            }
+        }
+    }
+
     .core-rte-editor, .core-textarea {
         padding: 2px;
         margin: 2px;
         width: 100%;
         resize: none;
         background-color: $white;
+        flex-grow: 1;
         @include darkmode() {
             background-color: $gray-darker;
             color: $white;
@@ -147,7 +170,6 @@ ion-app.app-root core-rich-text-editor {
             border: none;
         }
     }
-
 }
 
 body.keyboard-is-open ion-app.app-root core-rich-text-editor {

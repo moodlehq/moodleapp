@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonModWorkshopEditSubmissionPage } from './edit-submission';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { AddonModWorkshopEditSubmissionPage } from './edit-submission';
     imports: [
         CoreDirectivesModule,
         CoreComponentsModule,
+        CoreEditorComponentsModule,
         IonicPageModule.forChild(AddonModWorkshopEditSubmissionPage),
         TranslateModule.forChild()
     ],
