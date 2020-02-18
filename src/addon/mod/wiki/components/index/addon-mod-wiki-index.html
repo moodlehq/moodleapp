@@ -2,7 +2,8 @@
 <core-navbar-buttons end>
     <!-- Select subwiki. -->
     <button ion-button icon-only *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [attr.aria-label]="'addon.mod_wiki.subwiki' | translate">
-        <ion-icon name="person"></ion-icon>
+        <ion-icon *ngIf="!groupWiki" name="person"></ion-icon>
+        <ion-icon *ngIf="groupWiki" name="people"></ion-icon>
     </button>
 
     <button *ngIf="loaded && currentPageObj" ion-button icon-only (click)="openMap($event)"[attr.aria-label]="'addon.mod_wiki.map' | translate" aria-haspopup="true">
