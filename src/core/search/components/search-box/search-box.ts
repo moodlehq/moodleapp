@@ -54,7 +54,7 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
 
     searched = ''; // Last search emitted.
     searchText = '';
-    history: CoreSearchHistoryItem[];
+    history: CoreSearchHistoryItem[] = [];
     historyShown = false;
 
     protected elementClicked = '';
