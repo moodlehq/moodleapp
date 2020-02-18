@@ -7,4 +7,9 @@ com-darryncampbell-cordova-plugin-intent 2.0.0 onwards needs Android X Support. 
 
 typescript is needed to be less than 2.7 for @angular/compiler-cli
 
-cordova-plugin-ionic-keyboard has problems on greater verisons than 2.1.3
+cordova-plugin-ionic-keyboard has problems on greater versions than 2.1.3
+
+jszip has problems with "lie" dependency on greater versions than 3.1
+
+promise.prototype.finally has problems on greater versions than 3.1
+
