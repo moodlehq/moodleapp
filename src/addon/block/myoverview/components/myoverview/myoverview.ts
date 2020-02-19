@@ -218,7 +218,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.showFilters.favourite = this.getShowFilterValue(
                 this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined' &&
-                    (!config || config.displaygroupingstarred.value == '1'),
+                    (!config || (config.displaygroupingstarred && config.displaygroupingstarred.value == '1') ||
+                        (config.displaygroupingfavourites && config.displaygroupingfavourites.value == '1')),
                 this.courses.favourite.length === 0);
 
             this.showFilters.custom = this.getShowFilterValue(this.showSelectorFilter && config &&
