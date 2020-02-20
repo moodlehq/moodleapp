@@ -68,7 +68,7 @@ else
         if [ "$TRAVIS_BRANCH" == 'integration' ] || [ "$TRAVIS_BRANCH" == 'master' ] || [ "$TRAVIS_BRANCH" == 'desktop' ] ; then
             print_title "Mirror repository"
             git remote add mirror https://$GIT_TOKEN@github.com/$GIT_ORG_PRIVATE/moodleapp.git
-            git fetch -q mirror
+            git fetch -q --unshallow mirror
             git push -f mirror HEAD:$TRAVIS_BRANCH
             git push mirror --tags
         fi
