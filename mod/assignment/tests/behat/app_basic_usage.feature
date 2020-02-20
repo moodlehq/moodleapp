@@ -134,7 +134,7 @@ Feature: Test basic usage of assignment activity in app
   And I should see "Submission test 2 attempt"
 
   @app @3.8.0 @OK
-  Scenario: Add submission offline (online text)
+  Scenario: Add submission offline (online text), submit for grading offline and sync submissions
   When I enter the app
   And I log in as "student1"
   Then the header should be "Acceptance test site" in the app 
@@ -156,6 +156,8 @@ Feature: Test basic usage of assignment activity in app
   And I switch offline mode to "false"
   And I press the back button in the app
   And I press "assignment1" in the app
+  And I press "Display options" in the app
+  And I press "Refresh" in the app
   Then I should not see "This Assignment has offline data to be synchronised."
   And I should see "Submitted for grading"
 
