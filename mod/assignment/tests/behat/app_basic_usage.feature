@@ -132,3 +132,29 @@ Feature: Test basic usage of assignment activity in app
   And I press "Student student" near "assignment1" in the app
   Then I should see "Online text submission"
   And I should see "Submission test 2 attempt"
+
+  @app @3.8.0 @OK
+  Scenario: Add submission offline (online text)
+  When I enter the app
+  And I log in as "student1"
+  Then the header should be "Acceptance test site" in the app 
+  And I should see "Course 1"
+  And I press "Course 1" near "Recently accessed courses" in the app
+  Then the header should be "Course 1" in the app
+  And I press "assignment1" in the app
+  Then the header should be "assignment1" in the app
+  And I should see "Test assignment description1"
+  And I should see "Due date"
+  And I should see "Thursday, 1 January 1970, 1:00 AM"
+  And I press "Add submission" in the app
+  And I switch offline mode to "true"
+  And I set the field "Online text submissions" to "Submission test" in the app
+  And I press "Save" in the app
+  And I press "Submit assignment" in the app
+  And I press "OK" in the app
+  Then I should see "This Assignment has offline data to be synchronised."
+  And I switch offline mode to "false"
+  And I press the back button in the app
+  And I press "assignment1" in the app
+  Then I should not see "This Assignment has offline data to be synchronised."
+  And I should see "Submitted for grading"
