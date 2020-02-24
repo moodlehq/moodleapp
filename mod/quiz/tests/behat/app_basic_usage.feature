@@ -133,3 +133,31 @@ Feature: Attempt a quiz in app
     Then I should see "Review of attempt 1"
     And I should see "Finished"
     And I should see "Not yet graded"
+
+    @app @3.8.0 @OK
+    Scenario: Submit a quiz and review a quiz attempt
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Quiz 1" in the app
+    And I press "Attempt quiz now" in the app
+    And I press "True" in the app
+    And I press "Next" near "Question 1" in the app
+    And I press "False" in the app
+    And I press "Next" near "Question 2" in the app
+    And I press "Submit all and finish" in the app
+    And I press "OK" in the app
+    Then I should see "Review of attempt 1"
+    When I enter the app
+    And I log in as "teacher1"
+    And I press "Course 1" near "Course overview" in the app
+    And I press "Quiz 1" in the app
+    And I press "Display options" in the app
+    And I press "Open in browser" in the app
+    And I switch to the browser tab opened by the app
+    And I log in as "teacher1"
+    And I follow "Attempts: 1"
+    And I follow "Review attempt"
+    Then I should see "Finished"
+    And I should see "1.00/2.00"
+    And I close the browser tab opened by the app
