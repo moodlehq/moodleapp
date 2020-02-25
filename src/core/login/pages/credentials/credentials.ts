@@ -156,7 +156,7 @@ export class CoreLoginCredentialsPage {
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
             this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
-            this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
+            this.logoUrl = this.loginHelper.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
 
             const disabledFeatures = this.loginHelper.getDisabledFeatures(this.siteConfig);

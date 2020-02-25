@@ -390,6 +390,16 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Get logo URL from a site public config.
+     *
+     * @param config Site public config.
+     * @return Logo URL.
+     */
+    getLogoUrl(config: any): string {
+        return config ? (config.logourl || config.compactlogourl) : null;
+    }
+
+    /**
      * Returns the logout label of a site.
      *
      * @param site Site. If not defined, use current site.
