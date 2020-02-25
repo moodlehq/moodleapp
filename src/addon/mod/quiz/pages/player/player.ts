@@ -154,7 +154,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
                 await this.domUtils.showConfirm(this.translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
-                this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+                if (this.formElement) {
+                    this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+                }
             } finally {
                 modal.dismiss();
             }
@@ -589,8 +591,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.autoSave.cancelAutoSave();
             this.autoSave.hideAutoSaveError();
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !this.offline,
-                    this.sitesProvider.getCurrentSiteId());
+            if (this.formElement) {
+                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !this.offline,
+                        this.sitesProvider.getCurrentSiteId());
+            }
         });
     }
 
