@@ -211,7 +211,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.tabs.push(tab);
             this.sortTabs();
 
-            this.calculateSlides();
+            setTimeout(() => {
+                this.calculateSlides();
+            });
 
             if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
                 // Calculate the tabBarHeight again now that there is more than 1 tab and the bar will be seen.
@@ -383,7 +385,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
 
         setTimeout(() => {
-            this.updateAriaHidden(); // Slide's update() sets aria-hidden to true, update it.
+            this.slideChanged(); // Call slide changed again, sometimes the slide active index takes a while to be updated.
         }, 400);
     }
 
