@@ -1,10 +1,10 @@
 {
-  "name": "moodlemobile",
+  "name": "auladigital",
   "integrations": {
     "cordova": {},
     "gulp": {}
   },
   "type": "ionic-angular",
   "watchPatterns": [],
-  "id": "com.moodle.moodlemobile"
+  "id": "cl.colegioalonsodeercilla.alonsoapp"
 }
