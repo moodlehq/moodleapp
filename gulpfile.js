@@ -317,6 +317,11 @@ function getReplace(capture, baseDir, paths, parsedFiles) {
     var parse   = path.parse(path.resolve(baseDir, capture + '.scss'));
     var file    = parse.dir + '/' + parse.name;
 
+    if (file.slice(-3) === '.wp') {
+        console.log('Windows Phone not supported "' + capture);
+        // File was already parsed, leave the import commented.
+        return '// @import "' + capture + '";';
+    }
 
     if (!fs.existsSync(file + '.scss')) {
         // File not found, might be a partial file.
