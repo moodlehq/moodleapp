@@ -79,19 +79,6 @@ ion-app.app-root.ios .core-tabs-bar .tab-slide {
     color: $tabs-ios-tab-text-color;
 }
 
-ion-app.app-root.wp .core-tabs-bar .tab-slide {
-    //@extend .tabs-wp .tab-button;
-    @include border-radius(0);
-
-    min-height: $tabs-wp-tab-min-height;
-
-    border-bottom: $tabs-wp-tab-border;
-    font-size: $tabs-wp-tab-font-size;
-    font-weight: $tabs-wp-tab-font-weight;
-    color: $tabs-wp-tab-color;
-    box-shadow: none;
-}
-
 ion-app.app-root core-tabs {
     .core-tabs-content-container {
         height: 100%;
@@ -157,7 +144,7 @@ ion-app.app-root.md .core-tabs-bar::after {
     @extend .header-md::after;
 }
 
-ion-app.app-root.ios, ion-app.app-root.md, ion-app.app-root.wp {
+ion-app.app-root.ios, ion-app.app-root.md {
     .core-avoid-header ion-content core-tabs core-tab ion-content {
         top: 0 !important;
         height: 100% !important;

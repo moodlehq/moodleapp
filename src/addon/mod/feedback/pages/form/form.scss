@@ -9,9 +9,6 @@ ion-app.app-root page-addon-mod-feedback-form {
     .item-ios .addon-mod_feedback-form-content {
         @include margin($item-ios-padding-media-top, $item-ios-padding-start, $item-ios-padding-media-bottom, 0);
     }
-    .item-wp .addon-mod_feedback-form-content {
-        @include margin($item-wp-padding-media-top, ($item-wp-padding-end / 2), $item-wp-padding-media-bottom, 0);
-    }
     .addon-mod_feedback-postfix {
         font-size: 1.4rem;
     }

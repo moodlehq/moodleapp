@@ -10,9 +10,6 @@ ion-app.app-root page-core-courses-dashboard {
             max-height: $toolbar-ios-height - 24;
         }
 
-        .toolbar-title-wp .core-header-logo {
-            max-height: $toolbar-wp-height - 24;
-        }
         .toolbar-title core-format-text {
             display: none;
         }

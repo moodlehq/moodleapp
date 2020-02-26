@@ -107,14 +107,6 @@ page-addon-mod-data-edit {
             }
         }
 
-        .input-wp input {
-            @include padding-horizontal(null, ($item-wp-padding-end / 2));
-            border-bottom: 1px solid $list-wp-border-color;
-            &:focus {
-                border-color: $text-input-wp-highlight-color;
-            }
-        }
-
         ion-select {
             width: 100%;
             @include position(null, null, null, 0);

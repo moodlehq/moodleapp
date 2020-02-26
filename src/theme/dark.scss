@@ -65,8 +65,7 @@ ion-app.app-root {
 
           @each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
             .icon-md-#{$color-name},
-            .icon-ios-#{$color-name},
-            .icon-wp-#{$color-name} {
+            .icon-ios-#{$color-name} {
               color: $color-base;
             }
           }
@@ -83,16 +82,14 @@ ion-app.app-root {
 
       .item.activated {
         &.item-ios,
-        &.item-md,
-        &.item-wp {
+        &.item-md {
           background-color: $core-dark-background-color;
         }
       }
 
       .content,
       .content-md,
-      .content-ios,
-      .content-wp {
+      .content-ios {
         color: $core-dark-text-color;
         background-color: $core-dark-background-color;
       }
@@ -100,7 +97,6 @@ ion-app.app-root {
       .button,
       .button-md-light,
       .button-ios-light,
-      .button-wp-light,
       .button-outline {
         ion-icon {
           color: inherit;
@@ -108,15 +104,13 @@ ion-app.app-root {
       }
 
       .toolbar-md-light .toolbar-background,
-      .toolbar-ios-light .toolbar-background,
-      .toolbar-wp-light .toolbar-background {
+      .toolbar-ios-light .toolbar-background {
         background-color: $core-dark-item-divider-bg-color;
         color: $core-dark-text-color;
       }
 
       .button.button-clear-md-dark,
-      .button.button-clear-ios-dark,
-      .button.button-clear-wp-dark {
+      .button.button-clear-ios-dark {
         .button-inner ion-icon {
           color: $core-dark-text-color;
         }

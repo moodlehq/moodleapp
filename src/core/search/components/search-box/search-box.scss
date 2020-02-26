@@ -22,11 +22,6 @@ ion-app.app-root core-search-box {
         padding-left: 0 !important;
     }
 
-    .item-wp .text-input {
-        border: 0;
-        margin: 0;
-    }
-
     .core-search-history {
         max-height: calc(-120px + 80vh);
         overflow-y: auto;
