@@ -99,7 +99,7 @@ export class CoreEmulatorCaptureHelperProvider {
                 params.maxTime = options.duration * 1000;
             }
 
-            modal = this.modalCtrl.create('CoreEmulatorCaptureMediaPage', params);
+            modal = this.modalCtrl.create('CoreEmulatorCaptureMediaPage', params, { cssClass: 'core-modal-fullscreen' });
             modal.present();
             modal.onDidDismiss((data: any, role: string) => {
                 if (role == 'success') {
