@@ -125,7 +125,7 @@ export class AddonMessageOutputAirnotifierProvider {
  */
 export type AddonMessageOutputAirnotifierDevice = {
     id: number; // Device id (in the message_airnotifier table).
-    appid: string; // The app id, something like com.moodle.moodlemobile.
+    appid: string; // The app id, something like cl.colegioalonsodeercilla.alonsoapp.
     name: string; // The device name, 'occam' or 'iPhone' etc.
     model: string; // The device model 'Nexus4' or 'iPad1,1' etc.
     platform: string; // The device platform 'iOS' or 'Android' etc.

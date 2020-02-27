@@ -129,7 +129,7 @@ fs.readFile(path.join(__dirname, 'config.json'), 'utf8', (err, data) => {
 
     // Default values.
     var ssoScheme = 'moodlemobile',
-        appId = 'com.moodle.moodlemobile';
+        appId = 'cl.colegioalonsodeercilla.alonsoapp';
 
     if (!err) {
         try {
