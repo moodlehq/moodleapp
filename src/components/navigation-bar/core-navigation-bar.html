@@ -1,17 +1,19 @@
-<ion-grid no-padding *ngIf="previous || info || next">
+<ion-grid no-padding padding-bottom *ngIf="previous || info || next">
     <ion-row>
-        <ion-col text-start>
-            <a ion-button icon-only clear *ngIf="previous" (click)="action.emit(previous)" [title]="'core.previous' | translate">
+        <ion-col text-start col-4>
+            <a class="core-navigation-bar-arrow" *ngIf="previous" ion-button [attr.icon-only]="previousTitle ? null : true" [attr.icon-start]="previousTitle ? true : null" color="light" [title]="previousTitle || ('core.previous' | translate)" padding-end (click)="action.emit(previous)">
                 <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+                <core-format-text *ngIf="previousTitle" [text]="previousTitle" [component]="component" [componentId]="componentId" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
             </a>
         </ion-col>
-        <ion-col text-center>
+        <ion-col text-center col-4>
             <a ion-button icon-only clear *ngIf="info" (click)="showInfo()" [title]="title">
                 <ion-icon name="information-circle"></ion-icon>
             </a>
         </ion-col>
-        <ion-col text-end>
-            <a ion-button icon-only clear *ngIf="next" (click)="action.emit(next)" [title]="'core.next' | translate">
+        <ion-col text-end col-4>
+            <a class="core-navigation-bar-arrow" *ngIf="next" ion-button [attr.icon-only]="nextTitle ? null : true" [attr.icon-end]="nextTitle ? true : null" [title]="nextTitle || ('core.next' | translate)" padding-start (click)="action.emit(next)">
+                <core-format-text *ngIf="nextTitle" [text]="nextTitle" [component]="component" [componentId]="componentId" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text>
                 <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
             </a>
         </ion-col>

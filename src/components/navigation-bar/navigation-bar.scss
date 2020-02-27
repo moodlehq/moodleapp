@@ -1,0 +1,11 @@
+ion-app.app-root core-navigation-bar {
+    .core-navigation-bar-arrow {
+        text-transform: none;
+        max-width: 100%;
+
+        core-format-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}

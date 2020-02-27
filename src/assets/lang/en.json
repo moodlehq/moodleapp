@@ -426,6 +426,8 @@
     "addon.mod_assign_submission_onlinetext.wordlimitexceeded": "The word limit for this assignment is {{$a.limit}} words and you are attempting to submit {{$a.count}} words. Please review your submission and try again.",
     "addon.mod_book.errorchapter": "Error reading chapter of book.",
     "addon.mod_book.modulenameplural": "Books",
+    "addon.mod_book.navnexttitle": "Next: {{$a}}",
+    "addon.mod_book.navprevtitle": "Previous: {{$a}}",
     "addon.mod_book.tagarea_book_chapters": "Book chapters",
     "addon.mod_book.toc": "Table of contents",
     "addon.mod_chat.beep": "Beep",

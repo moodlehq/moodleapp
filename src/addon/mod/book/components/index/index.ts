@@ -17,7 +17,9 @@ import { Content, ModalController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
-import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter, AddonModBookBook } from '../../providers/book';
+import {
+    AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter, AddonModBookBook, AddonModBookNavStyle
+} from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
@@ -33,14 +35,18 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
     component = AddonModBookProvider.COMPONENT;
     chapterContent: string;
-    previousChapter: string;
-    nextChapter: string;
+    previousChapter: AddonModBookTocChapter;
+    nextChapter: AddonModBookTocChapter;
     tagsEnabled: boolean;
+    displayNavBar = true;
+    previousNavBarTitle: string;
+    nextNavBarTitle: string;
 
     protected chapters: AddonModBookTocChapter[];
     protected currentChapter: string;
     protected contentsMap: AddonModBookContentsMap;
     protected book: AddonModBookBook;
+    protected displayTitlesInNavBar = false;
 
     constructor(injector: Injector, private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
@@ -128,6 +134,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.book = book;
             this.dataRetrieved.emit(book);
             this.description = book.intro;
+            this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
+            this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
         }).catch(() => {
             // Ignore errors since this WS isn't available in some Moodle versions.
         }));
@@ -194,10 +202,15 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.previousChapter = this.bookProvider.getPreviousChapter(this.chapters, chapterId);
             this.nextChapter = this.bookProvider.getNextChapter(this.chapters, chapterId);
 
+            this.previousNavBarTitle = this.previousChapter && this.displayTitlesInNavBar ?
+                    this.translate.instant('addon.mod_book.navprevtitle', {$a: this.previousChapter.title}) : '';
+            this.nextNavBarTitle = this.nextChapter && this.displayTitlesInNavBar ?
+                    this.translate.instant('addon.mod_book.navnexttitle', {$a: this.nextChapter.title}) : '';
+
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
             this.bookProvider.logView(this.module.instance, logChapterId ? chapterId : undefined, this.module.name).then(() => {
                 // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
-                if (this.nextChapter == '0') {
+                if (!this.nextChapter) {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }
             }).catch(() => {
