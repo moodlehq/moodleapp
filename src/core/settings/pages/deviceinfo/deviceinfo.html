@@ -49,9 +49,9 @@
         <h2>{{ 'core.settings.displayformat' | translate}}</h2>
         <p>{{ 'core.' + deviceInfo.deviceType | translate }}</p>
     </ion-item>
-    <ion-item text-wrap *ngIf="deviceInfo.deviceOs" (longPress)="copyItemInfo($event)">
+    <ion-item text-wrap *ngIf="deviceInfo.deviceOs && deviceOsTranslated" (longPress)="copyItemInfo($event)">
         <h2>{{ 'core.settings.deviceos' | translate}}</h2>
-        <p>{{ deviceInfo.deviceOsTranslated }}</p>
+        <p>{{ deviceOsTranslated }}</p>
     </ion-item>
     <ion-item text-wrap *ngIf="deviceInfo.screen" (longPress)="copyItemInfo($event)">
         <h2>{{ 'core.settings.screen' | translate}}</h2>
