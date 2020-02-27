@@ -117,7 +117,7 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
      */
     protected async saveSearchToHistory(text: string): Promise<void> {
         try {
-            await this.searchHistoryProvider.insertOrUpdateSearchText(this.searchArea, text);
+            await this.searchHistoryProvider.insertOrUpdateSearchText(this.searchArea, text.toLowerCase());
         } finally {
             this.loadHistory();
         }

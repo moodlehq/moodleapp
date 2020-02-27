@@ -32,7 +32,7 @@
             <ion-icon name="warning"></ion-icon> {{ 'core.hasdatatosync' | translate:{$a: moduleName} }}
         </ion-card>
 
-        <core-search-box *ngIf="isSearch" (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true" [lengthCheck]="2" [showClear]="false" searchArea="AddonModGlossary-{{module.id}}"></core-search-box>
+        <core-search-box *ngIf="isSearch" (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true" [lengthCheck]="2" (onClear)="toggleSearch($event)" searchArea="AddonModGlossary-{{module.id}}"></core-search-box>
 
         <core-loading [hideUntil]="loaded" class="core-loading-center">
 
