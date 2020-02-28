@@ -102,7 +102,7 @@ export class AddonRemoteThemesModule {
 
         // Load temporary styles when site config is checked in login.
         eventsProvider.on(CoreEventsProvider.LOGIN_SITE_CHECKED, (data) => {
-            remoteThemesProvider.loadTmpStyles(data.config.mobilecssurl).catch((error) => {
+            remoteThemesProvider.loadTmpStylesForSiteConfig(data.config).catch((error) => {
                 logger.error('Error loading tmp styles', error);
             });
         });
