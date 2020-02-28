@@ -354,15 +354,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                         }).then(() => {
                             // Participiants already fetched, we don't need to ignore cache now.
                             return this.assignHelper.getParticipants(assign, group.id, false, siteId).then((participants) => {
-                                const promises = [];
-
-                                participants.forEach((participant) => {
-                                    if (participant.profileimageurl) {
-                                        promises.push(this.filepoolProvider.addToQueueByUrl(siteId, participant.profileimageurl));
-                                    }
-                                });
-
-                                return Promise.all(promises);
+                                return this.userProvider.prefetchUserAvatars(participants, 'profileimageurl', siteId);
                             }).catch(() => {
                                 // Fail silently (Moodle < 3.2).
                             });

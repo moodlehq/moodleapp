@@ -522,13 +522,48 @@ export class CoreUserProvider {
 
                 promises.push(this.getProfile(userId, courseId, false, siteId).then((profile) => {
                     if (profile.profileimageurl) {
-                        this.filepoolProvider.addToQueueByUrl(siteId, profile.profileimageurl);
+                        return this.filepoolProvider.addToQueueByUrl(siteId, profile.profileimageurl);
                     }
+                }).catch((error) => {
+                    this.logger.warn(`Ignore error when prefetching user ${userId}`, error);
                 }));
             }
         });
 
         return Promise.all(promises);
+    }
+
+    /**
+     * Prefetch user avatars. It prevents duplicates.
+     *
+     * @param entries List of entries that have the images.
+     * @param propertyName The name of the property that contains the image.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when prefetched.
+     */
+    async prefetchUserAvatars(entries: any[], propertyName: string, siteId?: string): Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const treated = {};
+
+        const promises = entries.map(async (entry) => {
+            const imageUrl = entry[propertyName];
+
+            if (!imageUrl || treated[imageUrl]) {
+                // It doesn't have an image or it has already been treated.
+                return;
+            }
+
+            treated[imageUrl] = true;
+
+            try {
+                await this.filepoolProvider.addToQueueByUrl(siteId, imageUrl);
+            } catch (ex) {
+                this.logger.warn(`Ignore error when prefetching user avatar ${imageUrl}`, entry, ex);
+            }
+        });
+
+        await Promise.all(promises);
     }
 
     /**
