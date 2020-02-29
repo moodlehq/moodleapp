@@ -244,5 +244,8 @@
     "nsis": {
       "deleteAppDataOnUninstall": true
     }
+  },
+  "engines": {
+    "node": "11.x"
   }
 }
