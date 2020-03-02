@@ -366,9 +366,12 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
             return;
         }
 
+        // Don't use domUtils.getScrollHeight because it gives an outdated value after receiving a new message.
+        const scrollHeight = this.content && this.content.getScrollElement() ? this.content.getScrollElement().scrollHeight : 0;
+
         // Check if we are at the bottom to scroll it after render.
         // Use a 5px error margin because in iOS there is 1px difference for some reason.
-        this.scrollBottom = Math.abs(this.domUtils.getScrollHeight(this.content) - this.domUtils.getScrollTop(this.content) -
+        this.scrollBottom = Math.abs(scrollHeight - this.domUtils.getScrollTop(this.content) -
             this.domUtils.getContentHeight(this.content)) < 5;
 
         if (this.messagesBeingSent > 0) {
