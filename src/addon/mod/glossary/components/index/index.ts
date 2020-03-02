@@ -189,6 +189,21 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 Array.prototype.push.apply(this.entries, result.entries);
             } else {
                 this.entries = result.entries;
+
+                if (this.splitviewCtrl.isOn()) {
+                    // Load the first entry.
+                    if (this.entries.length > 0) {
+                        const found = this.selectedEntry && this.entries.some((entry) => entry.id == this.selectedEntry);
+
+                        // The current selected entry is not found in the current list, open first item.
+                        if (!found) {
+                            this.openEntry(this.entries[0].id);
+                        }
+                    } else {
+                        this.selectedEntry = null;
+                        this.splitviewCtrl.emptyDetails();
+                    }
+                }
             }
             this.canLoadMore = this.entries.length < result.count;
         }).catch((error) => {
