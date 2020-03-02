@@ -17,42 +17,42 @@
     <ion-slides [slidesPerView]="numToolbarButtons" (ionSlideDidChange)="updateToolbarArrows()">
         <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.b" (click)="buttonAction($event, 'bold')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.bold' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.b" (click)="buttonAction($event, 'bold', 'b')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.bold' | translate">
                 <core-icon name="fa-bold"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.i" (click)="buttonAction($event, 'italic')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.italic' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.i" (click)="buttonAction($event, 'italic', 'i')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.italic' | translate">
                 <core-icon name="fa-italic"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.u" (click)="buttonAction($event, 'underline')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.underline' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.u" (click)="buttonAction($event, 'underline', 'u')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.underline' | translate">
                 <core-icon name="fa-underline"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" (click)="buttonAction($event, 'strikeThrough')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.strike' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" (click)="buttonAction($event, 'strikethrough', 'strike')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.strike' | translate">
                 <core-icon name="fa-strikethrough"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.p" (click)="buttonAction($event, 'formatBlock|<p>')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.p' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.p" (click)="buttonAction($event, 'p', 'block')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.p' | translate">
                 <core-icon name="fa-paragraph"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h3" (click)="buttonAction($event, 'formatBlock|<h3>')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.h3' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h3" (click)="buttonAction($event, 'h3', 'block')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.h3' | translate">
                 <core-icon name="fa-header"></core-icon>3
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h4" (click)="buttonAction($event, 'formatBlock|<h4>')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.h4' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h4" (click)="buttonAction($event, 'h4', 'block')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.h4' | translate">
                 <core-icon name="fa-header"></core-icon>4
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h5" (click)="buttonAction($event, 'formatBlock|<h5>')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.h5' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h5" (click)="buttonAction($event, 'h5', 'block')" (mousedown)="stopBubble($event)" [title]=" 'core.editor.h5' | translate">
                 <core-icon name="fa-header"></core-icon>5
             </button>
         </ion-slide>
