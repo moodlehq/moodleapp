@@ -291,8 +291,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             return;
         }
 
-        $event.preventDefault();
-        $event.stopPropagation();
+        this.stopBubble($event);
 
         const move = $event['key'] == 'ArrowLeft' ? -1 : +1,
             cursor = this.getCurrentCursorPosition(this.editorElement);
@@ -408,8 +407,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      * @param $event The event.
      */
     toggleEditor($event: Event): void {
-        $event.preventDefault();
-        $event.stopPropagation();
+        this.stopBubble($event);
 
         this.setContent(this.control.value);
 
@@ -533,17 +531,20 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      *
      * @param $event Event data
      * @param command Command to execute.
+     * @param parameters If parameters is set to block, a formatBlock command will be performed. Otherwise it will switch the
+     *                      toolbar styles button when set.
      */
-    buttonAction($event: any, command: string): void {
+    buttonAction($event: any, command: string, parameters: string): void {
         this.stopBubble($event);
 
         if (command) {
-            if (command.includes('|')) {
-                const parameters = command.split('|')[1];
-                command = command.split('|')[0];
-
-                document.execCommand(command, false, parameters);
+            if (parameters == 'block') {
+                document.execCommand('formatBlock', false, '<' + command + '>');
             } else {
+                if (parameters) {
+                    this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
+                }
+
                 document.execCommand(command, false);
             }
         }
