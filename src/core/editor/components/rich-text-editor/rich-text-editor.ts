@@ -625,7 +625,9 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     /**
      * Show the toolbar.
      */
-    showToolbar(): void {
+    showToolbar($event: Event): void {
+        this.stopBubble($event);
+
         this.editorElement.focus();
         this.toolbarHidden = false;
     }
@@ -638,6 +640,19 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     stopBubble(event: Event): void {
         event.preventDefault();
         event.stopPropagation();
+    }
+
+    /**
+     * When a button is clicked first we should stop event propagation, but it has some cases to not.
+     *
+     * @param event Event.
+     */
+    mouseDownAction(event: Event): void {
+        const selection = window.getSelection().toString();
+        // When RTE is focused with a range selection the stopBubble will not fire click.
+        if (!this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
+            this.stopBubble(event);
+        }
     }
 
     /**
@@ -710,7 +725,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
      * Update highlighted toolbar styles.
      */
     updateToolbarStyles = (): void => {
-        const node = document.getSelection().focusNode;
+        const node = window.getSelection().focusNode;
         if (!node) {
             return;
         }
