@@ -83,15 +83,14 @@ Feature: Test basic usage of glossary in app
   And I should see "car"
   And I should see "mountain"
   And I should see "potato"
-  And I press "Browse entries" in the app
   And I press "Search" in the app
   And I set the field "Search query" to "something" in the app
-  And I press "search" in the app
+  And I press "search" near "No entries were found." in the app
   Then I should see "No entries were found."
   And I set the field "Search query" to "potato" in the app
-  And I press "search" in the app
+  And I press "search" near "No entries were found." in the app
   And I set the field "Search query" to " " in the app
-  And I press "potato" in the app
+  And I press "potato" near "glossary description" in the app
   Then I should see "potato"
   And I should see "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae."
 
