@@ -405,6 +405,25 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     }
 
     /**
+     * Download a module.
+     *
+     * @param module Module to download.
+     * @param courseId Course ID the module belongs to.
+     * @param dirPath Path of the directory where to store all the content files.
+     * @return Promise resolved when finished.
+     */
+    async downloadModule(module: any, courseId: number, dirPath?: string): Promise<void> {
+        const handler = this.getPrefetchHandlerFor(module);
+
+        // Check if the module has a prefetch handler.
+        if (handler) {
+            await this.syncModule(module, courseId);
+
+            await handler.download(module, courseId, dirPath);
+        }
+    }
+
+    /**
      * Check for updates in a course.
      *
      * @param modules List of modules.

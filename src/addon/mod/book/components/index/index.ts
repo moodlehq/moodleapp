@@ -16,7 +16,9 @@ import { Component, Optional, Injector, Input } from '@angular/core';
 import { Content, ModalController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
+import {
+    CoreCourseModuleMainResourceComponent, CoreCourseResourceDownloadResult
+} from '@core/course/classes/main-resource-component';
 import {
     AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter, AddonModBookBook, AddonModBookNavStyle
 } from '../../providers/book';
@@ -41,6 +43,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     displayNavBar = true;
     previousNavBarTitle: string;
     nextNavBarTitle: string;
+    warning: string;
 
     protected chapters: AddonModBookTocChapter[];
     protected currentChapter: string;
@@ -48,9 +51,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     protected book: AddonModBookBook;
     protected displayTitlesInNavBar = false;
 
-    constructor(injector: Injector, private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
-            private appProvider: CoreAppProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
-            private modalCtrl: ModalController, private tagProvider: CoreTagProvider, @Optional() private content: Content) {
+    constructor(injector: Injector,
+            protected bookProvider: AddonModBookProvider,
+            protected modalCtrl: ModalController,
+            protected tagProvider: CoreTagProvider,
+            @Optional() protected content: Content) {
         super(injector);
     }
 
@@ -126,8 +131,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         const promises = [];
-        let downloadFailed = false;
-        let downloadFailError;
+        let downloadResult: CoreCourseResourceDownloadResult;
 
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
@@ -140,16 +144,9 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             // Ignore errors since this WS isn't available in some Moodle versions.
         }));
 
-        // Download content. This function also loads module contents if needed.
-        promises.push(this.prefetchDelegate.download(this.module, this.courseId).catch((error) => {
-            // Mark download as failed but go on since the main files could have been downloaded.
-            downloadFailed = true;
-            downloadFailError = error;
-
-            if (!this.module.contents.length) {
-                // Try to load module contents for offline usage.
-                return this.courseProvider.loadModuleContents(this.module, this.courseId);
-            }
+        // Get module status to determine if it needs to be downloaded.
+        promises.push(this.downloadResourceIfNeeded(refresh).then((result) => {
+            downloadResult = result;
         }));
 
         return Promise.all(promises).then(() => {
@@ -174,10 +171,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
             // Show chapter.
             return this.loadChapter(this.currentChapter, refresh).then(() => {
-                if (downloadFailed && this.appProvider.isOnline()) {
-                    // We could load the main file but the download failed. Show error message.
-                    this.showErrorDownloadingSomeFiles(downloadFailError);
-                }
+                this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error) : '';
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.
             });

@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, Injector } from '@angular/core';
-import { CoreAppProvider } from '@providers/app';
-import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModFolderProvider } from '../../providers/folder';
 import { AddonModFolderHelperProvider } from '../../providers/helper';
@@ -36,8 +34,9 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     canGetFolder: boolean;
     contents: any;
 
-    constructor(injector: Injector, private folderProvider: AddonModFolderProvider, private courseProvider: CoreCourseProvider,
-            private appProvider: CoreAppProvider, private folderHelper: AddonModFolderHelperProvider) {
+    constructor(injector: Injector,
+            protected folderProvider: AddonModFolderProvider,
+            protected folderHelper: AddonModFolderHelperProvider) {
         super(injector);
     }
 

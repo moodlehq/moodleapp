@@ -14,11 +14,10 @@
 
 import { Component, Injector } from '@angular/core';
 import { ModalController } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
+import {
+    CoreCourseModuleMainResourceComponent, CoreCourseResourceDownloadResult
+} from '@core/course/classes/main-resource-component';
 import { AddonModImscpProvider } from '../../providers/imscp';
-import { AddonModImscpPrefetchHandler } from '../../providers/prefetch-handler';
 
 /**
  * Component that displays a IMSCP.
@@ -33,14 +32,15 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     items = [];
     currentItem: string;
     src = '';
+    warning: string;
 
     // Initialize empty previous/next to prevent showing arrows for an instant before they're hidden.
     previousItem = '';
     nextItem = '';
 
-    constructor(injector: Injector, private imscpProvider: AddonModImscpProvider, private courseProvider: CoreCourseProvider,
-            private appProvider: CoreAppProvider, private modalCtrl: ModalController,
-            private imscpPrefetch: AddonModImscpPrefetchHandler) {
+    constructor(injector: Injector,
+            protected imscpProvider: AddonModImscpProvider,
+            protected modalCtrl: ModalController) {
         super(injector);
     }
 
@@ -75,8 +75,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      * @return Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
-        let downloadFailed = false;
-        let downloadFailError;
+        let downloadResult: CoreCourseResourceDownloadResult;
         const promises = [];
 
         promises.push(this.imscpProvider.getImscp(this.courseId, this.module.id).then((imscp) => {
@@ -84,17 +83,8 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
             this.dataRetrieved.emit(imscp);
         }));
 
-        promises.push(this.imscpPrefetch.download(this.module, this.courseId).catch((error) => {
-            // Mark download as failed but go on since the main files could have been downloaded.
-            downloadFailed = true;
-            downloadFailError = error;
-
-            return this.courseProvider.loadModuleContents(this.module, this.courseId).catch((error) => {
-                // Error getting module contents, fail.
-                this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
-
-                return Promise.reject(null);
-            });
+        promises.push(this.downloadResourceIfNeeded(refresh).then((result) => {
+            downloadResult = result;
         }));
 
         return Promise.all(promises).then(() => {
@@ -109,10 +99,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
                 return Promise.reject(null);
             });
         }).then(() => {
-            if (downloadFailed && this.appProvider.isOnline()) {
-                // We could load the main file but the download failed. Show error message.
-                this.showErrorDownloadingSomeFiles(downloadFailError);
-            }
+            this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error) : '';
 
         }).finally(() => {
             this.fillContextMenu(refresh);

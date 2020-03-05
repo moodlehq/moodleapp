@@ -13,14 +13,12 @@
 // limitations under the License.
 
 import { Component, Injector } from '@angular/core';
-import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
+import {
+    CoreCourseModuleMainResourceComponent, CoreCourseResourceDownloadResult
+} from '@core/course/classes/main-resource-component';
 import { AddonModResourceProvider } from '../../providers/resource';
-import { AddonModResourcePrefetchHandler } from '../../providers/prefetch-handler';
 import { AddonModResourceHelperProvider } from '../../providers/helper';
 
 /**
@@ -38,14 +36,11 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     src: string;
     contentText: string;
     displayDescription = true;
+    warning: string;
 
     constructor(injector: Injector,
             protected resourceProvider: AddonModResourceProvider,
-            protected courseProvider: CoreCourseProvider,
-            protected appProvider: CoreAppProvider,
-            protected prefetchHandler: AddonModResourcePrefetchHandler,
             protected resourceHelper: AddonModResourceHelperProvider,
-            protected sitesProvider: CoreSitesProvider,
             protected utils: CoreUtilsProvider,
             protected filepoolProvider: CoreFilepoolProvider) {
         super(injector);
@@ -109,13 +104,10 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             }
 
             if (this.resourceHelper.isDisplayedInIframe(this.module)) {
-                let downloadFailed = false;
-                let downloadFailError;
+                let downloadResult: CoreCourseResourceDownloadResult;
 
-                return this.prefetchHandler.download(this.module, this.courseId).catch((error) => {
-                    // Mark download as failed but go on since the main files could have been downloaded.
-                    downloadFailed = true;
-                    downloadFailError = error;
+                return this.downloadResourceIfNeeded(refresh, true).then((result) => {
+                    downloadResult = result;
                 }).then(() => {
                     return this.resourceHelper.getIframeSrc(this.module).then((src) => {
                         this.mode = 'iframe';
@@ -131,14 +123,12 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                             this.src = src;
                         }
 
-                        if (downloadFailed && this.appProvider.isOnline()) {
-                            // We could load the main file but the download failed. Show error message.
-                            this.showErrorDownloadingSomeFiles(downloadFailError);
-                        }
+                        this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error) : '';
                     });
                 });
             } else if (this.resourceHelper.isDisplayedEmbedded(this.module, resource && resource.display)) {
                 this.mode = 'embedded';
+                this.warning = '';
 
                 return this.resourceHelper.getEmbeddedHtml(this.module, this.courseId).then((html) => {
                     this.contentText = html;
@@ -147,6 +137,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 });
             } else {
                 this.mode = 'external';
+                this.warning = '';
             }
         }).finally(() => {
             this.fillContextMenu(refresh);
@@ -159,7 +150,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * @return Promise resolved when done.
      */
     async open(): Promise<void> {
-        let downloadable = await this.prefetchHandler.isDownloadable(this.module, this.courseId);
+        let downloadable = await this.modulePrefetchDelegate.isModuleDownloadable(this.module, this.courseId);
 
         if (downloadable) {
             // Check if the main file is downloadle.
