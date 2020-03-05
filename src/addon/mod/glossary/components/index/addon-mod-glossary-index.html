@@ -41,7 +41,7 @@
                     {{ 'addon.mod_glossary.entriestobesynced' | translate }}
                 </ion-item-divider>
                 <a ion-item *ngFor="let entry of offlineEntries" (click)="openNewEntry(entry)" detail-none>
-                    <p>{{entry.concept}}</p>
+                    <p><core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary.coursemodule" [courseId]="courseId"></core-format-text></p>
                 </a>
             </ion-list>
 
@@ -53,7 +53,7 @@
                     </ion-item-divider>
 
                     <a ion-item (click)="openEntry(entry.id)" [class.core-split-item-selected]="entry.id == selectedEntry" detail-none>
-                        <p>{{entry.concept}}</p>
+                        <p><core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary.coursemodule" [courseId]="courseId"></core-format-text></p>
                     </a>
                 </ng-container>
             </ion-list>

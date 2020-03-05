@@ -320,7 +320,12 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.fetchFunction = this.glossaryProvider.getEntriesByLetter;
                 this.fetchInvalidate = this.glossaryProvider.invalidateEntriesByLetter;
                 this.fetchArguments = [this.glossary.id, 'ALL'];
-                this.getDivider = (entry: any): string => entry.concept.substr(0, 1).toUpperCase();
+                this.getDivider = (entry: any): string => {
+                    // Try to get the first letter without HTML tags.
+                    const noTags = this.textUtils.cleanTags(entry.concept);
+
+                    return (noTags || entry.concept).substr(0, 1).toUpperCase();
+                };
                 this.showDivider = (entry?: any, previous?: any): boolean  => {
                     return !previous || this.getDivider(entry) != this.getDivider(previous);
                 };
