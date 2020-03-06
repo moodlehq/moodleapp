@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -34,7 +34,7 @@ import { CoreSearchHistoryProvider, CoreSearchHistoryItem } from '../../provider
     selector: 'core-search-box',
     templateUrl: 'core-search-box.html'
 })
-export class CoreSearchBoxComponent implements OnInit, OnDestroy {
+export class CoreSearchBoxComponent implements OnInit {
     @Input() searchLabel?: string; // Label to be used on action button.
     @Input() placeholder?: string; // Placeholder text for search text input.
     @Input() autocorrect = 'on'; // Enables/disable Autocorrection on search text input.
@@ -57,9 +57,6 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
     history: CoreSearchHistoryItem[] = [];
     historyShown = false;
 
-    protected elementClicked = '';
-    protected backdropMouseUpFunc;
-
     constructor(protected translate: TranslateService,
             protected utils: CoreUtilsProvider,
             protected searchHistoryProvider: CoreSearchHistoryProvider,
@@ -80,8 +77,6 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
 
         if (this.searchArea) {
             this.loadHistory();
-
-            this.backdropMouseUpFunc = this.backdropMouseUp.bind(this);
         }
     }
 
@@ -133,71 +128,16 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Show search history.
-     */
-    showHistory(): void {
-        if (this.searchArea) {
-            this.historyShown = true;
-            this.elementClicked = '';
-            document.body.addEventListener('mouseup', this.backdropMouseUpFunc);
-        }
-    }
-
-    /**
-     * Hide search history.
-     *
-     * @param force: If force hidding the history without checking the clicked element.
-     */
-    hideHistory(force: boolean = false): void {
-        if (this.searchArea && (force || this.elementClicked == '')) {
-            this.historyShown = false;
-            this.elementClicked = '';
-
-            document.body.removeEventListener('mouseup', this.backdropMouseUpFunc);
-        }
-    }
-
-    /**
-     * Saves the item where you moused down.
-     * It uses mouseup/down because blur will block the click event.
-     *
-     * @param e Event.
-     * @param text Selected text.
-     */
-    itemMouseDown(e: Event, text: string): void {
-        this.elementClicked = text;
-    }
-
-    /**
      * Select an item and use it for search text.
-     * It uses mouseup/down because blur will block the click event.
      *
      * @param e Event.
      * @param text Selected text.
      */
-    itemMouseUp(e: Event, text: string): void {
-        if (this.elementClicked == text) {
-            this.hideHistory(true);
-            if (this.searched != text) {
-                this.searchText = text;
-                this.submitForm(e);
-            }
+    historyClicked(e: Event, text: string): void {
+        if (this.searched != text) {
+            this.searchText = text;
+            this.submitForm(e);
         }
-        this.elementClicked = '';
-    }
-
-    /**
-     * Manages mouseup out of the history.
-     *
-     * @param e Event.
-     */
-    backdropMouseUp(e: Event): void {
-        // Do not hide if the search box is focused.
-        if (document.activeElement['type'] && document.activeElement['type'] == 'search') {
-            return;
-        }
-        this.hideHistory();
-        this.elementClicked = '';
     }
 
     /**
@@ -206,16 +146,6 @@ export class CoreSearchBoxComponent implements OnInit, OnDestroy {
     clearForm(): void {
         this.searched = '';
         this.searchText = '';
-        this.hideHistory(true);
         this.onClear.emit();
-    }
-
-    /**
-     * On destroy of the component, clear up any listeners.
-     */
-    ngOnDestroy(): void {
-        if (this.backdropMouseUpFunc) {
-            document.body.removeEventListener('mouseup', this.backdropMouseUpFunc);
-        }
     }
 }
