@@ -22,12 +22,8 @@ ion-app.app-root core-search-box {
         padding-left: 0 !important;
     }
 
-    .item-wp .text-input {
-        border: 0;
-        margin: 0;
-    }
-
     .core-search-history {
+        display: none;
         max-height: calc(-120px + 80vh);
         overflow-y: auto;
 
@@ -37,6 +33,12 @@ ion-app.app-root core-search-box {
 
         .list .item.item-block:last-child > .item-inner {
             border-bottom: 0;
+        }
+    }
+
+    form:focus-within {
+        .core-search-history {
+            display: block;
         }
     }
 }
