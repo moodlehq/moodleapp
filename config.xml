@@ -82,6 +82,10 @@
         <icon background="@color/background" density="xxhdpi" foreground="resources/android/icon/xxhdpi-foreground.png" src="resources/android/icon/drawable-xxhdpi-icon.png" />
         <icon background="@color/background" density="xxxhdpi" foreground="resources/android/icon/xxxhdpi-foreground.png" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
+           
+            <resource-file src="@xml/opener_paths.xml" target="@xml/opener_paths.xml" />
+            <resource-file src="@xml//camera_provider_paths.xml" target="@xml/camera_provider_paths.xml" />
+            <resource-file src="@xml/provider_paths.xml" target="@xml/provider_paths.xml" />
             <provider android:authorities="${applicationId}.opener.provider" android:exported="false" android:grantUriPermissions="true" android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
                 <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
             </provider>
