@@ -19,13 +19,13 @@
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <div padding class="safe-padding-horizontal">
-        <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
+        <core-navigation-bar *ngIf="displayNavBar" [previous]="previousChapter && previousChapter.id" [previousTitle]="previousNavBarTitle" [next]="nextChapter && nextChapter.id" [nextTitle]="nextNavBarTitle" (action)="changeChapter($event)"></core-navigation-bar>
         <core-format-text [component]="component" [componentId]="componentId" [text]="chapterContent" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         <div margin-top *ngIf="tagsEnabled && contentsMap && contentsMap[currentChapter] && contentsMap[currentChapter].tags && contentsMap[currentChapter].tags.length > 0">
             <b>{{ 'core.tag.tags' | translate }}:</b>
             <core-tag-list [tags]="contentsMap[currentChapter].tags"></core-tag-list>
         </div>
-        <core-navigation-bar [previous]="previousChapter > 0 && previousChapter" [next]="nextChapter > 0 && nextChapter" (action)="changeChapter($event)"></core-navigation-bar>
+        <core-navigation-bar *ngIf="displayNavBar" [previous]="previousChapter && previousChapter.id" [previousTitle]="previousNavBarTitle" [next]="nextChapter && nextChapter.id" [nextTitle]="nextNavBarTitle" (action)="changeChapter($event)"></core-navigation-bar>
     </div>
 
 </core-loading>

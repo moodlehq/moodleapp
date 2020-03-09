@@ -37,6 +37,15 @@ export const enum AddonModBookNumbering {
 }
 
 /**
+ * Constants to define the navigation style used within a book.
+ */
+export const enum AddonModBookNavStyle {
+    TOC_ONLY = 0,
+    IMAGE = 1,
+    TEXT = 2,
+}
+
+/**
  * Service that provides some features for books.
  */
 @Injectable()
@@ -225,15 +234,15 @@ export class AddonModBookProvider {
      *
      * @param chapters The chapters list.
      * @param chapterId The current chapter.
-     * @return The next chapter id.
+     * @return The next chapter.
      */
-    getNextChapter(chapters: AddonModBookTocChapter[], chapterId: string): string {
-        let next = '0';
+    getNextChapter(chapters: AddonModBookTocChapter[], chapterId: string): AddonModBookTocChapter {
+        let next: AddonModBookTocChapter;
 
         for (let i = 0; i < chapters.length; i++) {
             if (chapters[i].id == chapterId) {
                 if (typeof chapters[i + 1] != 'undefined') {
-                    next = chapters[i + 1].id;
+                    next = chapters[i + 1];
                     break;
                 }
             }
@@ -247,16 +256,16 @@ export class AddonModBookProvider {
      *
      * @param chapters The chapters list.
      * @param chapterId The current chapter.
-     * @return The next chapter id.
+     * @return The next chapter.
      */
-    getPreviousChapter(chapters: AddonModBookTocChapter[], chapterId: string): string {
-        let previous = '0';
+    getPreviousChapter(chapters: AddonModBookTocChapter[], chapterId: string): AddonModBookTocChapter {
+        let previous: AddonModBookTocChapter;
 
         for (let i = 0; i < chapters.length; i++) {
             if (chapters[i].id == chapterId) {
                 break;
             }
-            previous = chapters[i].id;
+            previous = chapters[i];
         }
 
         return previous;
