@@ -26,6 +26,7 @@ import { AddonModGlossaryProvider } from './glossary';
 import { AddonModGlossarySyncProvider } from './sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
+import { CoreUserProvider } from '@core/user/providers/user';
 
 /**
  * Handler to prefetch forums.
@@ -48,7 +49,8 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             pluginFileDelegate: CorePluginFileDelegate,
             protected glossaryProvider: AddonModGlossaryProvider,
             protected commentsProvider: CoreCommentsProvider,
-            protected syncProvider: AddonModGlossarySyncProvider) {
+            protected syncProvider: AddonModGlossarySyncProvider,
+            protected userProvider: CoreUserProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
                 pluginFileDelegate);
@@ -165,16 +167,11 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             // Fetch all entries to get information from.
             promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter,
                     [glossary.id, 'ALL'], false, false, siteId).then((entries) => {
-                const promises = [],
-                    commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite(),
-                    avatars = {}; // List of user avatars, preventing duplicates.
+                const promises = [];
+                const commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
 
                 entries.forEach((entry) => {
                     // Don't fetch individual entries, it's too many WS calls.
-
-                    if (entry.userpictureurl) {
-                        avatars[entry.userpictureurl] = true;
-                    }
 
                     if (glossary.allowcomments && commentsEnabled) {
                         promises.push(this.commentsProvider.getComments('module', glossary.coursemodule, 'mod_glossary', entry.id,
@@ -182,18 +179,17 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
                     }
                 });
 
-                // Prefetch intro files, entries files and user avatars.
-                const avatarFiles = Object.keys(avatars).map((url) => {
-                    return { fileurl: url };
-                });
-                const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries).concat(avatarFiles);
+                const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries);
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, files, this.component, module.id));
+
+                // Prefetch user avatars.
+                promises.push(this.userProvider.prefetchUserAvatars(entries, 'userpictureurl', siteId));
 
                 return Promise.all(promises);
             }));
 
             // Get all categories.
-            promises.push(this.glossaryProvider.getAllCategories(glossary.id));
+            promises.push(this.glossaryProvider.getAllCategories(glossary.id, siteId));
 
             // Prefetch data for link handlers.
             promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));
