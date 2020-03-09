@@ -12,7 +12,7 @@
 // default Sass variables, belong in "theme/variables.scss".
 //
 // To declare rules for a specific mode, create a child rule
-// for the .md, .ios, or .wp mode classes. The mode class is
+// for the .md, or .ios mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
 // Alignment
@@ -442,8 +442,7 @@ ion-app.app-root {
     }
     @each $color-name, $color-base, $color-contrast in get-colors($colors) {
       &.select-md-#{$color-name},
-      &.select-ios-#{$color-name},
-      &.select-wp-#{$color-name} {
+      &.select-ios-#{$color-name} {
          color: $color-base;
 
         .select-icon .select-icon-inner {
@@ -482,11 +481,6 @@ ion-app.app-root {
       box-shadow: $card-ios-box-shadow;
     }
 
-    &.select-wp,
-    &.button-wp {
-      background: $card-wp-background-color;
-    }
-
     .select-text {
         white-space: normal;
     }
@@ -520,9 +514,7 @@ ion-app.app-root {
       &.select-md,
       &.button-md,
       &.select-ios,
-      &.button-ios,
-      &.select-wp,
-      &.button-wp {
+      &.button-ios {
         background: $core-dark-item-bg-color;
       }
     }
@@ -698,9 +690,6 @@ ion-app.app-root {
     &.alert-ios .alert-message {
       padding-top: $alert-ios-message-padding-bottom;
     }
-    &.alert-wp .alert-message {
-      padding-top: $alert-wp-message-padding-bottom;
-    }
     .alert-head {
       display: none;
     }
@@ -746,11 +735,6 @@ ion-app.app-root {
   .header .toolbar-ios {
     height: $toolbar-ios-height;
     max-height: $toolbar-ios-height;
-  }
-
-  .header .toolbar-wp {
-    height: $toolbar-wp-height;
-    max-height: $toolbar-wp-height;
   }
 
   .header .toolbar-md {
@@ -818,11 +802,6 @@ ion-app.app-root {
         @include ios-input-highlight($color-base);
       }
 
-      &.item-wp .text-input,
-      &.item-wp.item-input.ng-valid.item-input-has-value:not(.input-has-focus):not(.item-input-has-focus) .text-input,
-      &.item-wp.item-input.ng-valid.input-has-value:not(.input-has-focus):not(.item-input-has-focus) .text-input {
-        border-color: $color-base;
-      }
     }
 
     .core-#{$color-name}-selected-item {
@@ -1140,7 +1119,6 @@ ion-app.app-root {
   }
 
   .item-divider-md-#{$color-name} h2,
-  .item-divider-wp-#{$color-name} h2,
   .item-divider-ios-#{$color-name} h2 {
     color: $color-contrast;
   }

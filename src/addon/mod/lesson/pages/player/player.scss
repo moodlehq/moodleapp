@@ -49,10 +49,6 @@ ion-app.app-root page-addon-mod-lesson-player {
         border-bottom: 1px solid $list-md-border-color;
     }
 
-    .item-wp table td {
-        border-bottom: 1px solid $list-wp-border-color;
-    }
-
     .item-ios table {
         @extend .card-ios;
         @include darkmode() {
@@ -63,14 +59,6 @@ ion-app.app-root page-addon-mod-lesson-player {
 
     .item-md table {
         @extend .card-md;
-        @include darkmode() {
-            color: $white;
-            background-color: $core-dark-item-bg-color;
-        }
-    }
-
-    .item-wp table {
-        @extend .card-wp;
         @include darkmode() {
             color: $white;
             background-color: $core-dark-item-bg-color;

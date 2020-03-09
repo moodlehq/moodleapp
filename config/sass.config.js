@@ -5,5 +5,11 @@ module.exports = {
     'node_modules/ionicons/dist/scss',
     'node_modules/ionic-angular/fonts',
     'node_modules/font-awesome/scss'
+  ],
+  includeFiles: [
+    /\.(s(c|a)ss)$/i
+  ],
+  excludeFiles: [
+      /\.(wp).(scss)$/i
   ]
 };
