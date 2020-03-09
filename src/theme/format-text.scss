@@ -1,4 +1,12 @@
 /** Styles to match web platform */
+ion-app.app-root core-format-text {
+  ul {
+    padding-left: 1rem;
+  }
+  ul, ol {
+    -webkit-padding-start: 15px;
+  }
+}
 ion-app.app-root core-format-text,
 ion-app.app-root .item core-format-text,
 ion-app.app-root core-rich-text-editor .core-rte-editor {
@@ -14,14 +22,10 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
   }
 
   // Fix lists styles in core-format-text.
-  ul {
-    padding-left: 1rem;
-  }
   ol {
     list-style-type: decimal;
   }
   ul, ol {
-    -webkit-padding-start: 15px;
     ol {
       list-style-type: lower-latin;
     }
