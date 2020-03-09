@@ -90,7 +90,8 @@ Feature: Test basic usage of glossary in app
   And I set the field "Search query" to "potato" in the app
   And I press "search" near "No entries were found." in the app
   And I set the field "Search query" to " " in the app
-  And I press "potato" near "something" in the app
+  And I press "Display options" in the app
+  And I press "Refresh" in the app
   And I press "potato" in the app
   Then I should see "potato"
   And I should see "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae."
