@@ -30,6 +30,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 export class AddonRemoteThemesProvider {
     static COMPONENT = 'mmaRemoteStyles';
     protected SEPARATOR_35 = /\/\*\*? *3\.5(\.0)? *styles? *\*\//i; // A comment like "/* 3.5 styles */".
+    protected TMP_SITE_ID = 'tmpsite';
 
     protected logger;
     protected stylesEls: {[siteId: string]: {element: HTMLStyleElement, hash: string}} = {};
@@ -57,15 +58,7 @@ export class AddonRemoteThemesProvider {
         }
 
         // Create the style and add it to the header.
-        const styleEl = document.createElement('style');
-        styleEl.setAttribute('id', 'mobilecssurl-' + siteId);
-        this.disableElement(styleEl, true);
-
-        document.head.appendChild(styleEl);
-        this.stylesEls[siteId] = {
-            element: styleEl,
-            hash: ''
-        };
+        this.initSiteStyleElement(siteId, true);
 
         return this.load(siteId, true).catch((error) => {
             this.logger.error('Error loading site after site init', error);
@@ -77,13 +70,26 @@ export class AddonRemoteThemesProvider {
      */
     clear(): void {
         // Disable all the styles.
-        const styles = <HTMLStyleElement[]> Array.from(document.querySelectorAll('style[id*=mobilecssurl]'));
-        styles.forEach((style) => {
-            this.disableElement(style, true);
-        });
+        this.disableElementsBySelector('style[id*=mobilecssurl]');
 
         // Set StatusBar properties.
         this.appProvider.setStatusBarColor();
+    }
+
+    /**
+     * Create a style element.
+     *
+     * @param id ID to set to the element.
+     * @param disabled Whether the element should be disabled.
+     * @return New element.
+     */
+    protected createStyleElement(id: string, disabled: boolean): HTMLStyleElement {
+        const styleEl = document.createElement('style');
+
+        styleEl.setAttribute('id', id);
+        this.disableElement(styleEl, disabled);
+
+        return styleEl;
     }
 
     /**
@@ -105,6 +111,19 @@ export class AddonRemoteThemesProvider {
                 this.appProvider.resetStatusBarColor();
             }
         }
+    }
+
+    /**
+     * Disable all the style elements based on a query selector.
+     *
+     * @param selector The selector to get the style elements.
+     */
+    protected disableElementsBySelector(selector: string): void {
+        const styles = <HTMLStyleElement[]> Array.from(document.querySelectorAll(selector));
+
+        styles.forEach((style) => {
+            this.disableElement(style, true);
+        });
     }
 
     /**
@@ -205,6 +224,28 @@ export class AddonRemoteThemesProvider {
     }
 
     /**
+     * Init the style element for a site.
+     *
+     * @param siteId Site ID.
+     * @param disabled Whether the element should be disabled.
+     */
+    protected initSiteStyleElement(siteId: string, disabled: boolean): void {
+        if (this.stylesEls[siteId]) {
+            // Already initialized, ignore.
+            return;
+        }
+
+        // Create the style and add it to the header.
+        const styleEl = this.createStyleElement('mobilecssurl-' + siteId, disabled);
+
+        document.head.appendChild(styleEl);
+        this.stylesEls[siteId] = {
+            element: styleEl,
+            hash: ''
+        };
+    }
+
+    /**
      * Load styles for a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
@@ -265,16 +306,19 @@ export class AddonRemoteThemesProvider {
         return this.wsProvider.getText(url).then((text) => {
             text = this.get35Styles(text);
 
-            const styleEl = document.createElement('style');
-            styleEl.setAttribute('id', 'mobilecssurl-tmpsite');
-            styleEl.innerHTML = text;
-
-            document.head.appendChild(styleEl);
-            this.stylesEls.tmpsite = {
-                element: styleEl,
-                hash: ''
-            };
+            this.initSiteStyleElement(this.TMP_SITE_ID, false);
+            this.stylesEls[this.TMP_SITE_ID].element.innerHTML = text;
         });
+    }
+
+    /**
+     * Load styles for a temporary site, given its public config. These styles aren't prefetched.
+     *
+     * @param config Site public config.
+     * @return Promise resolved when loaded.
+     */
+    loadTmpStylesForSiteConfig(config: any): Promise<any> {
+        return this.loadTmpStyles(config.mobilecssurl);
     }
 
     /**
@@ -322,6 +366,6 @@ export class AddonRemoteThemesProvider {
      * Unload styles for a temporary site.
      */
     unloadTmpStyles(): void {
-        return this.removeSite('tmpsite');
+        return this.removeSite(this.TMP_SITE_ID);
     }
 }
