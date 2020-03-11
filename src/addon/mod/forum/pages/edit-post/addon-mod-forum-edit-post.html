@@ -9,10 +9,10 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-list>
+    <form ion-list #editFormEl>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
@@ -36,5 +36,5 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-    </ion-list>
+    </form>
 </ion-content>

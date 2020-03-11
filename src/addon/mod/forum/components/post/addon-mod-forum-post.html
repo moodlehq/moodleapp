@@ -57,10 +57,10 @@
         </ion-item>
     </div>
 
-    <ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)">
+    <form ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)" #replyFormEl>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
@@ -68,7 +68,7 @@
         </ion-item>
         <ion-item text-wrap *ngIf="accessInfo.canpostprivatereply">
             <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
-            <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply"></ion-checkbox>
+            <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
         <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
             <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
@@ -88,5 +88,5 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-    </ion-list>
+    </form>
 </div>

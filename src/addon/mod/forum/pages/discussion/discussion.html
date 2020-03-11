@@ -42,13 +42,13 @@
         </ion-card>
 
         <div *ngIf="discussion" margin-bottom class="highlight">
-            <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+            <addon-mod-forum-post [post]="discussion" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage" (onPostChange)="postListChanged()"></addon-mod-forum-post>
         </div>
 
         <ion-card *ngIf="sort != 'nested'">
             <ng-container *ngFor="let post of posts; first as first">
                 <ion-item-divider *ngIf="!first"></ion-item-divider>
-                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [parentSubject]="postSubjects[post.parent]" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [parentSubject]="postSubjects[post.parent]" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ng-container>
         </ion-card>
 
@@ -60,7 +60,7 @@
 
         <ng-template #nestedPosts let-post="post">
             <ion-card>
-                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [parentSubject]="postSubjects[post.parent]" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" (onPostChange)="postListChanged()"></addon-mod-forum-post>
+                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component" [componentId]="cmId" [replyData]="replyData" [originalData]="originalData" [parentSubject]="postSubjects[post.parent]" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage" (onPostChange)="postListChanged()"></addon-mod-forum-post>
             </ion-card>
             <div padding-left *ngIf="post.children.length && post.children[0].subject">
                 <ng-container *ngFor="let child of post.children">

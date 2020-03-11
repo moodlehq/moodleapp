@@ -81,6 +81,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     cmId: number;
     canPin = false;
     availabilityMessage: string;
+    leavingPage = false;
 
     protected forumId: number;
     protected postId: number;
@@ -251,20 +252,17 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
-        let promise: any;
+    async ionViewCanLeave(): Promise<void> {
 
         if (this.forumHelper.hasPostDataChanged(this.replyData, this.originalData)) {
             // Show confirmation if some data has been modified.
-            promise = this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-        } else {
-            promise = Promise.resolve();
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        return promise.then(() => {
-            // Delete the local files from the tmp folder.
-            this.uploaderProvider.clearTmpFiles(this.replyData.files);
-        });
+        // Delete the local files from the tmp folder.
+        this.uploaderProvider.clearTmpFiles(this.replyData.files);
+
+        this.leavingPage = true;
     }
 
     /**
