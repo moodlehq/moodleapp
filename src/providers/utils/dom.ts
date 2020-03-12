@@ -1056,13 +1056,14 @@ export class CoreDomUtilsProvider {
 
     /**
      * Returns scrollTop of the content.
-     * Checks hidden property _scroll to avoid errors if view is not active.
+     * Checks hidden property _scrollContent to avoid errors if view is not active.
+     * Using navite value of scroll to avoid having non updated values.
      *
      * @param content Content where to execute the function.
      * @return Content scrollTop or 0.
      */
     getScrollTop(content: Content): number {
-        return (content && content._scroll && content.scrollTop) || 0;
+        return (content && content._scrollContent && content._scrollContent.nativeElement.scrollTop) || 0;
     }
 
     /**
