@@ -172,7 +172,7 @@ export class CoreSettingsHelper {
         let totalEntries = 0;
 
         await Promise.all(clearTables.map(async (name) =>
-            totalEntries += await site.getDb().countRecords(name)
+            totalEntries = await site.getDb().countRecords(name) + totalEntries
         ));
 
         return totalEntries;
