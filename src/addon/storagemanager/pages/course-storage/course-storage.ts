@@ -19,6 +19,7 @@ import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -84,6 +85,10 @@ export class AddonStorageManagerCourseStoragePage {
 
             Promise.all(allPromises).then(() => {
                 this.loaded = true;
+
+                if (this.totalSize == 0) {
+                    this.markCourseAsNotDownloaded();
+                }
             });
         });
     }
@@ -162,6 +167,25 @@ export class AddonStorageManagerCourseStoragePage {
             modal.dismiss();
 
             this.domUtils.showErrorModalDefault(error, this.translate.instant('core.errordeletefile'));
+        }).finally(() => {
+            // @TODO This is a workaround that should be more specific solving MOBILE-3305.
+            // Also should take into account all modules are not downloaded.
+
+            // Mark course as not downloaded if course size is 0.
+            if (this.totalSize == 0) {
+                this.markCourseAsNotDownloaded();
+            }
         });
+    }
+
+    /**
+     * Mark course as not downloaded.
+     */
+    protected markCourseAsNotDownloaded(): void {
+        // @TODO This is a workaround that should be more specific solving MOBILE-3305.
+        // Also should take into account all modules are not downloaded.
+        // Check after MOBILE-3188 is integrated.
+
+        this.courseProvider.setCourseStatus(this.course.id, CoreConstants.NOT_DOWNLOADED);
     }
 }
