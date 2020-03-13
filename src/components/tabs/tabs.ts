@@ -490,6 +490,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
             this.tabBarElement.classList.remove('tabs-hidden');
             this.tabsShown = true;
+            this.lastScroll = 0;
 
             return;
         }
