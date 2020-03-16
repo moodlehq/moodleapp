@@ -506,7 +506,8 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.http.head(url, {observe: 'response'}).timeout(this.getRequestTimeout()).toPromise();
+            promise = this.http.head(url, {observe: 'response', responseType: 'blob'}).timeout(this.getRequestTimeout())
+                    .toPromise();
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
