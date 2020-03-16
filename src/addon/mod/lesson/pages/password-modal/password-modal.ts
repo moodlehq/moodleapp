@@ -44,7 +44,7 @@ export class AddonModLessonPasswordModalPage {
         e.preventDefault();
         e.stopPropagation();
 
-        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
         this.viewCtrl.dismiss(password.value);
     }
@@ -53,7 +53,7 @@ export class AddonModLessonPasswordModalPage {
      * Close modal.
      */
     closeModal(): void {
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
 
         this.viewCtrl.dismiss();
     }

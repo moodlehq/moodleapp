@@ -90,7 +90,7 @@ export class CoreSendMessageFormComponent implements OnInit {
 
         this.message = ''; // Reset the form.
 
-        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
         value = this.textUtils.replaceNewLines(value, '<br>');
         this.onSubmit.emit(value);

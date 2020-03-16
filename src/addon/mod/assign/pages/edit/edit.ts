@@ -99,7 +99,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
         this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, this.getInputData());
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -318,7 +318,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
             await this.assignHelper.clearSubmissionPluginTmpData(this.assign, this.userSubmission, inputData);
 
             // Submission saved, trigger events.
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, sent, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, sent, this.sitesProvider.getCurrentSiteId());
 
             const params = {
                 assignmentId: this.assign.id,

@@ -109,9 +109,9 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.leavingPage && this.leavingPage && this.formElement) {
+        if (changes.leavingPage && this.leavingPage) {
             // Download all courses is enabled now, initialize it.
-            this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
         }
     }
 
@@ -423,7 +423,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.onPostChange.emit();
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, sent, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, sent, this.sitesProvider.getCurrentSiteId());
 
             if (this.syncId) {
                 this.syncProvider.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
@@ -443,7 +443,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             // Reset data.
             this.setReplyFormData();
 
-            this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
 
             if (this.syncId) {
                 this.syncProvider.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);

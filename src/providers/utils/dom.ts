@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, SimpleChange } from '@angular/core';
+import { Injectable, SimpleChange, ElementRef } from '@angular/core';
 import {
     LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
     ModalController,
@@ -1635,10 +1635,14 @@ export class CoreDomUtilsProvider {
      * @param form Form element.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    triggerFormCancelledEvent(form: HTMLElement, siteId?: string): void {
+    triggerFormCancelledEvent(formRef: ElementRef, siteId?: string): void {
+        if (!formRef) {
+            return;
+        }
+
         this.eventsProvider.trigger(CoreEventsProvider.FORM_ACTION, {
             action: 'cancel',
-            form: form,
+            form: formRef.nativeElement,
         }, siteId);
     }
 
@@ -1649,10 +1653,14 @@ export class CoreDomUtilsProvider {
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    triggerFormSubmittedEvent(form: HTMLElement, online?: boolean, siteId?: string): void {
+    triggerFormSubmittedEvent(formRef: ElementRef, online?: boolean, siteId?: string): void {
+        if (!formRef) {
+            return;
+        }
+
         this.eventsProvider.trigger(CoreEventsProvider.FORM_ACTION, {
             action: 'submit',
-            form: form,
+            form: formRef.nativeElement,
             online: !!online,
         }, siteId);
     }

@@ -120,7 +120,7 @@ export class AddonModQuizPreflightModalPage implements OnInit {
                 this.domUtils.showErrorModal('core.errorinvalidform', true);
             }
         } else {
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.siteId);
 
             this.viewCtrl.dismiss(this.preflightForm.value);
         }
@@ -130,7 +130,7 @@ export class AddonModQuizPreflightModalPage implements OnInit {
      * Close modal.
      */
     closeModal(): void {
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
 
         this.viewCtrl.dismiss();
     }

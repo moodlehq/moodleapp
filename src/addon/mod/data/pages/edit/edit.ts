@@ -114,7 +114,7 @@ export class AddonModDataEditPage {
         const files = await this.dataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.data.id, this.entry.contents);
         this.fileUploaderProvider.clearTmpFiles(files);
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
     }
 
     /**
@@ -215,7 +215,7 @@ export class AddonModDataEditPage {
                 // This is done if entry is updated when editing or creating if not.
                 if ((this.entryId && result.updated) || (!this.entryId && result.newentryid)) {
 
-                    this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, result.sent, this.siteId);
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.siteId);
 
                     const promises = [];
 

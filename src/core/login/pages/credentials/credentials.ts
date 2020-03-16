@@ -246,7 +246,7 @@ export class CoreLoginCredentialsPage {
         }).finally(() => {
             modal.dismiss();
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, true);
         });
     }
 

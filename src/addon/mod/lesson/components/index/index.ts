@@ -586,7 +586,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.refreshIcon = 'refresh';
             this.syncIcon = 'sync';
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         });
     }
 

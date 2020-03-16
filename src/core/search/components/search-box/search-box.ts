@@ -98,7 +98,7 @@ export class CoreSearchBoxComponent implements OnInit {
             this.saveSearchToHistory(this.searchText);
         }
 
-        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
         this.searched = this.searchText;
         this.onSubmit.emit(this.searchText);

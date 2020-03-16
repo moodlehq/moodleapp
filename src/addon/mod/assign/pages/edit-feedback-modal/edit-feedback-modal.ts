@@ -71,7 +71,7 @@ export class AddonModAssignEditFeedbackModalPage {
             await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -92,7 +92,7 @@ export class AddonModAssignEditFeedbackModalPage {
         e.preventDefault();
         e.stopPropagation();
 
-        this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
         // Close the modal, sending the input data.
         this.forceLeave = true;

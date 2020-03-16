@@ -132,7 +132,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
         // Show confirmation if some data has been modified.
         await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
     }
 
     /**
@@ -346,7 +346,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
         return this.workshopProvider.evaluateAssessment(this.workshopId, this.assessmentId, this.courseId, inputData.text,
                 inputData.weight, inputData.grade).then((result) => {
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!result, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!result, this.siteId);
 
             const data = {
                 workshopId: this.workshopId,

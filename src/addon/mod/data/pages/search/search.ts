@@ -187,9 +187,9 @@ export class AddonModDataSearchPage {
      */
     closeModal(data?: any): void {
         if (typeof data == 'undefined') {
-            this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
         } else {
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
         }
 
         this.viewCtrl.dismiss(data);

@@ -128,7 +128,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             this.fileUploaderProvider.clearTmpFiles(this.submission.attachmentfiles);
         }
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.siteId);
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
     }
 
     /**
@@ -374,7 +374,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                 attachmentsId, undefined, submissionId, allowOffline);
         }).then((newSubmissionId) => {
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!newSubmissionId, this.siteId);
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!newSubmissionId, this.siteId);
 
             const data = {
                 workshopId: this.workshopId,
