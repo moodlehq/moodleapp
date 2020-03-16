@@ -1258,7 +1258,7 @@ export class CoreCourseHelperProvider {
             } else {
                 modal.dismiss();
 
-                return this.getAndOpenCourse(undefined, courseId, params, siteId);
+                return this.getAndOpenCourse(navCtrl, courseId, params, siteId);
             }
         }).catch((error) => {
             modal.dismiss();
