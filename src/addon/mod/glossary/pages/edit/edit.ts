@@ -160,7 +160,7 @@ export class AddonModGlossaryEditPage implements OnInit {
         // Delete the local files from the tmp folder.
         this.uploaderProvider.clearTmpFiles(this.attachments);
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -253,8 +253,7 @@ export class AddonModGlossaryEditPage implements OnInit {
             };
             this.eventsProvider.trigger(AddonModGlossaryProvider.ADD_ENTRY_EVENT, data, this.sitesProvider.getCurrentSiteId());
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!entryId,
-                    this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!entryId, this.sitesProvider.getCurrentSiteId());
 
             this.saved = true;
             this.navCtrl.pop();

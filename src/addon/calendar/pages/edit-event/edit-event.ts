@@ -497,7 +497,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             event = result.event;
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, result.sent, this.currentSite.getId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
 
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
@@ -561,7 +561,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
             this.calendarOffline.deleteEvent(this.eventId).then(() => {
 
-                this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.currentSite.getId());
+                this.domUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
 
                 this.returnToList();
             }).catch(() => {
@@ -584,7 +584,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.currentSite.getId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
     }
 
     /**

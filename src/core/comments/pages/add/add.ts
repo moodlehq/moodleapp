@@ -71,8 +71,7 @@ export class CoreCommentsAddPage {
         this.commentsProvider.addComment(this.content, this.contextLevel, this.instanceId, this.componentName, this.itemId,
                 this.area).then((commentsResponse) => {
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!commentsResponse,
-                    this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!commentsResponse, this.sitesProvider.getCurrentSiteId());
 
             this.viewCtrl.dismiss({comments: commentsResponse}).finally(() => {
                 this.domUtils.showToast(commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline', true,
@@ -90,7 +89,7 @@ export class CoreCommentsAddPage {
      * Close modal.
      */
     closeModal(): void {
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
         this.viewCtrl.dismiss();
     }
 }

@@ -480,8 +480,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                 this.domUtils.showErrorModalDefault(null, 'addon.mod_forum.errorposttoallgroups', true);
             }
 
-            this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, !!discussionIds,
-                    this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!discussionIds, this.sitesProvider.getCurrentSiteId());
 
             this.returnToDiscussions(discussionIds, discTimecreated);
         }).catch((message) => {
@@ -504,7 +503,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             }));
 
             return Promise.all(promises).then(() => {
-                this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+                this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
 
                 this.returnToDiscussions();
             });
@@ -539,7 +538,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
         this.uploaderProvider.clearTmpFiles(this.newDiscussion.files);
 
         if (this.formElement) {
-            this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
         }
     }
 

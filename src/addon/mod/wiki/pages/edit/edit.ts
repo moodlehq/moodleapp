@@ -356,7 +356,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
             await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -426,8 +426,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
             // Edit existing page.
             promise = this.wikiProvider.editPage(this.pageId, text, this.section).then(() => {
 
-                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, true,
-                        this.sitesProvider.getCurrentSiteId());
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, true, this.sitesProvider.getCurrentSiteId());
 
                 // Invalidate page since it changed.
                 return this.wikiProvider.invalidatePage(this.pageId).then(() => {
@@ -463,8 +462,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
 
                 return this.wikiProvider.newPage(title, text, this.subwikiId, wikiId, this.userId, this.groupId).then((id) => {
 
-                    this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, id > 0,
-                            this.sitesProvider.getCurrentSiteId());
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement, id > 0, this.sitesProvider.getCurrentSiteId());
 
                     if (id > 0) {
                         // Page was created, get its data and go to the page.

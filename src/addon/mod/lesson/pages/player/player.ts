@@ -149,7 +149,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
             }
         }
 
-        this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -552,8 +552,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
 
         return this.callFunction(this.lessonProvider.processPage.bind(this.lessonProvider), args, 6, 8).then((result) => {
             if (formSubmitted) {
-                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, result.sent,
-                        this.sitesProvider.getCurrentSiteId());
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.sitesProvider.getCurrentSiteId());
             }
 
             if (!this.offline && !this.review && this.lessonProvider.isLessonOffline(this.lesson)) {

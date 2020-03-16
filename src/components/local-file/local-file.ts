@@ -143,7 +143,7 @@ export class CoreLocalFileComponent implements OnInit {
         if (newName == this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
-            this.domUtils.triggerFormCancelledEvent(this.formElement.nativeElement, this.sitesProvider.getCurrentSiteId());
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
 
             return;
         }
@@ -160,8 +160,7 @@ export class CoreLocalFileComponent implements OnInit {
             // File doesn't exist, move it.
             return this.fileProvider.moveFile(this.relativePath, newPath).then((fileEntry) => {
 
-                this.domUtils.triggerFormSubmittedEvent(this.formElement.nativeElement, false,
-                        this.sitesProvider.getCurrentSiteId());
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
                 this.editMode = false;
                 this.file = fileEntry;
