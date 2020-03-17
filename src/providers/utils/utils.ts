@@ -1105,7 +1105,7 @@ export class CoreUtilsProvider {
      * @param keyPrefix Key prefix if neededs to delete it.
      * @return Object.
      */
-    objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string): object {
+    objectToKeyValueMap(objects: object[], keyName: string, valueName: string, keyPrefix?: string): {[name: string]: any} {
         if (!objects) {
             return;
         }
