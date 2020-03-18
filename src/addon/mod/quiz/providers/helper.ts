@@ -111,9 +111,10 @@ export class AddonModQuizHelperProvider {
      */
     getPreflightData(quiz: any, accessInfo: any, attempt: any, prefetch?: boolean, title?: string, siteId?: string): Promise<any> {
         const notSupported: string[] = [];
+        const rules = accessInfo && accessInfo.activerulenames;
 
         // Check if there is any unsupported rule.
-        accessInfo.activerulenames.forEach((rule) => {
+        rules.forEach((rule) => {
             if (!this.accessRuleDelegate.isAccessRuleSupported(rule)) {
                 notSupported.push(rule);
             }
@@ -131,7 +132,7 @@ export class AddonModQuizHelperProvider {
             attempt: attempt,
             prefetch: !!prefetch,
             siteId: siteId,
-            rules: accessInfo.activerulenames
+            rules: rules
         });
 
         modal.present();
@@ -296,7 +297,7 @@ export class AddonModQuizHelperProvider {
     validatePreflightData(quiz: any, accessInfo: any, preflightData: any, attempt: any, offline?: boolean, prefetch?: boolean,
             siteId?: string): Promise<any> {
 
-        const rules = accessInfo.activerulenames;
+        const rules = accessInfo && accessInfo.activerulenames;
         let promise;
 
         if (attempt) {
