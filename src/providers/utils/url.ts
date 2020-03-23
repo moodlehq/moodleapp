@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLangProvider } from '../lang';
 import { CoreTextUtilsProvider } from './text';
 import { makeSingleton } from '@singletons/core.singletons';
+import { CoreConfigConstants } from '../../configconstants';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -422,6 +423,26 @@ export class CoreUrlUtilsProvider {
      */
     isHttpURL(url: string): boolean {
         return /^https?\:\/\/.+/i.test(url);
+    }
+
+    /**
+     * Check whether an URL belongs to a local file.
+     *
+     * @param url URL to check.
+     * @return Whether the URL belongs to a local file.
+     */
+    isLocalFileUrl(url: string): boolean {
+        return this.isLocalFileUrlScheme(this.getUrlScheme(url));
+    }
+
+    /**
+     * Check whether a URL scheme belongs to a local file.
+     *
+     * @param scheme Scheme to check.
+     * @return Whether the scheme belongs to a local file.
+     */
+    isLocalFileUrlScheme(scheme: string): boolean {
+        return scheme == 'cdvfile' || scheme == 'file' || scheme == 'filesystem' || scheme == CoreConfigConstants.webviewscheme;
     }
 
     /**

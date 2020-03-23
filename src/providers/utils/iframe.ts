@@ -225,7 +225,7 @@ export class CoreIframeUtilsProvider {
                     } else {
                         element.setAttribute('src', url);
                     }
-                } else if (url.indexOf('cdvfile://') === 0 || url.indexOf('file://') === 0) {
+                } else if (this.urlUtils.isLocalFileUrl(url)) {
                     // It's a local file.
                     this.utils.openFile(url).catch((error) => {
                         this.domUtils.showErrorModal(error);
@@ -353,16 +353,14 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
-        if (scheme && scheme != 'file' && scheme != 'filesystem') {
+        if (!this.urlUtils.isLocalFileUrlScheme(scheme)) {
             // Scheme suggests it's an external resource.
             event.preventDefault();
 
-            const frameSrc = (<HTMLFrameElement> element).src || (<HTMLObjectElement> element).data,
-                frameScheme = this.urlUtils.getUrlScheme(frameSrc);
+            const frameSrc = (<HTMLFrameElement> element).src || (<HTMLObjectElement> element).data;
 
             // If the frame is not local, check the target to identify how to treat the link.
-            if (frameScheme && frameScheme != 'file' && frameScheme != 'filesystem' &&
-                    (!link.target || link.target == '_self')) {
+            if (!this.urlUtils.isLocalFileUrl(frameSrc) && (!link.target || link.target == '_self')) {
                 // Load the link inside the frame itself.
                 if (element.tagName.toLowerCase() == 'object') {
                     element.setAttribute('data', link.href);

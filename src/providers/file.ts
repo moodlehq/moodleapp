@@ -20,6 +20,7 @@ import { CoreAppProvider } from './app';
 import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
+import { CoreConfigConstants } from '../configconstants';
 import { Zip } from '@ionic-native/zip';
 import { makeSingleton } from '@singletons/core.singletons';
 
@@ -946,6 +947,7 @@ export class CoreFileProvider {
 
     /**
      * Get the internal URL of a file.
+     * Please notice that with WKWebView these URLs no longer work in mobile. Use fileEntry.toURL() along with convertFileSrc.
      *
      * @param fileEntry File Entry.
      * @return Internal URL.
@@ -1269,6 +1271,31 @@ export class CoreFileProvider {
         }
 
         return window.location.href;
+    }
+
+    /**
+     * Helper function to call Ionic WebView convertFileSrc only in the needed platforms.
+     * This is needed to make files work with the Ionic WebView plugin.
+     *
+     * @param src Source to convert.
+     * @return Converted src.
+     */
+    convertFileSrc(src: string): string {
+        return this.appProvider.isMobile() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
+    }
+
+    /**
+     * Undo the conversion of convertFileSrc.
+     *
+     * @param src Source to unconvert.
+     * @return Unconverted src.
+     */
+    unconvertFileSrc(src: string): string {
+        if (!this.appProvider.isMobile()) {
+            return src;
+        }
+
+        return src.replace(CoreConfigConstants.webviewscheme + '://localhost/_app_file_', 'file://');
     }
 }
 

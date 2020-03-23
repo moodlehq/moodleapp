@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NavController } from 'ionic-angular';
+import { CoreFileProvider } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -49,7 +50,8 @@ export class CoreIframeComponent implements OnInit, OnChanges {
             protected navCtrl: NavController,
             protected urlUtils: CoreUrlUtilsProvider,
             protected utils: CoreUtilsProvider,
-            @Optional() protected svComponent: CoreSplitViewComponent) {
+            @Optional() protected svComponent: CoreSplitViewComponent,
+            protected fileProvider: CoreFileProvider) {
 
         this.logger = logger.getInstance('CoreIframe');
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -93,8 +95,8 @@ export class CoreIframeComponent implements OnInit, OnChanges {
      */
     ngOnChanges(changes: {[name: string]: SimpleChange }): void {
         if (changes.src) {
-            const youtubeUrl = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue);
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(youtubeUrl || changes.src.currentValue);
+            const url = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
+            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.fileProvider.convertFileSrc(url));
         }
     }
 }

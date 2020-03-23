@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CoreFile } from '../file';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
@@ -165,7 +166,7 @@ export class CoreMimetypeUtilsProvider {
         if (this.canBeEmbedded(ext)) {
             file.embedType = this.getExtensionType(ext);
 
-            path = path || file.fileurl || (file.toURL && file.toURL());
+            path = CoreFile.instance.convertFileSrc(path || file.fileurl || (file.toURL && file.toURL()));
 
             if (file.embedType == 'image') {
                 return '<img src="' + path + '">';
