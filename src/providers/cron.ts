@@ -20,6 +20,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Interface that all cron handlers must implement.
@@ -554,3 +555,5 @@ export class CoreCronDelegate {
         delete this.handlers[name].timeout;
     }
 }
+
+export class CoreCron extends makeSingleton(CoreCronDelegate) {}

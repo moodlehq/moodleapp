@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSitesProvider } from './sites';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Helper to store some temporary data for file submission.
@@ -146,3 +147,5 @@ export class CoreFileSessionProvider {
         this.files[siteId][component][id] = newFiles;
     }
 }
+
+export class CoreFileSession extends makeSingleton(CoreFileSessionProvider) {}

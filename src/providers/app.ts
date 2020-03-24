@@ -23,6 +23,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreEventsProvider } from './events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConfigConstants } from '../configconstants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Data stored for a redirect to another page/site.
@@ -703,3 +704,5 @@ export class CoreAppProvider {
         this.forceOffline = !!value;
     }
 }
+
+export class CoreApp extends makeSingleton(CoreAppProvider) {}

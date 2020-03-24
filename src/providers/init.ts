@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { CoreLoggerProvider } from './logger';
 import { CoreUtilsProvider } from './utils/utils';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Interface that all init handlers must implement.
@@ -175,3 +176,5 @@ export class CoreInitDelegate {
         this.initProcesses[handler.name] = handler;
     }
 }
+
+export class CoreInit extends makeSingleton(CoreInitDelegate) {}

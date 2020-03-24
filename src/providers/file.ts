@@ -21,6 +21,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
 import { Zip } from '@ionic-native/zip';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -1270,3 +1271,5 @@ export class CoreFileProvider {
         return window.location.href;
     }
 }
+
+export class CoreFile extends makeSingleton(CoreFileProvider) {}

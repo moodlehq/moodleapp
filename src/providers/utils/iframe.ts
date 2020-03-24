@@ -25,6 +25,7 @@ import { CoreTextUtilsProvider } from './text';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreUtilsProvider } from './utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
@@ -395,6 +396,8 @@ export class CoreIframeUtilsProvider {
         }
     }
 }
+
+export class CoreIframeUtils extends makeSingleton(CoreIframeUtilsProvider) {}
 
 /**
  * Subtype of HTMLAnchorElement, with some calculated data.

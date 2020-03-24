@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreAppProvider, CoreAppSchema } from './app';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.
@@ -102,3 +103,5 @@ export class CoreConfigProvider {
         return this.appDB.insertRecord(this.TABLE_NAME, { name: name, value: value });
     }
 }
+
+export class CoreConfig extends makeSingleton(CoreConfigProvider) {}

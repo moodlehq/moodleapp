@@ -30,6 +30,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 import { WP_PROVIDER } from '@app/app.module';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Response of checking if a site exists and its configuration.
@@ -1925,5 +1926,6 @@ export class CoreSitesProvider {
                 return {};
         }
     }
-
 }
+
+export class CoreSites extends makeSingleton(CoreSitesProvider) {}

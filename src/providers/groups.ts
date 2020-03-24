@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreSitesProvider } from './sites';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Group info for an activity.
@@ -449,3 +450,5 @@ export class CoreGroupsProvider {
         return groupInfo.defaultGroupId;
     }
 }
+
+export class CoreGroups extends makeSingleton(CoreGroupsProvider) {}

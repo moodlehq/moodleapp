@@ -17,6 +17,7 @@ import { CoreConfigProvider } from './config';
 import { CoreInitHandler, CoreInitDelegate } from './init';
 import { CoreLoggerProvider } from './logger';
 import { CoreConfigConstants } from '../configconstants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Factory to handle app updates. This factory shouldn't be used outside of core.
@@ -59,3 +60,5 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         });
     }
 }
+
+export class CoreUpdateManager extends makeSingleton<CoreUpdateManagerProvider>(CoreUpdateManagerProvider) {}

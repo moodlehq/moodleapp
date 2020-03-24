@@ -14,7 +14,7 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, COMPILER_OPTIONS } from '@angular/core';
+import { NgModule, COMPILER_OPTIONS, Injector } from '@angular/core';
 import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config, Refresher } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -154,6 +154,8 @@ import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
 import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
 import { AddonFilterModule } from '@addon/filter/filter.module';
+
+import { setSingletonsInjector } from '@singletons/core.singletons';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -357,6 +359,7 @@ export class AppModule {
             private eventsProvider: CoreEventsProvider,
             cronDelegate: CoreCronDelegate,
             siteInfoCronHandler: CoreSiteInfoCronHandler,
+            injector: Injector,
             ) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
@@ -390,6 +393,9 @@ export class AppModule {
 
         // Register handlers.
         cronDelegate.register(siteInfoCronHandler);
+
+        // Set the injector.
+        setSingletonsInjector(injector);
 
         // Set transition animation.
         config.setTransition('core-page-transition', CorePageTransition);

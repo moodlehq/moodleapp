@@ -17,6 +17,7 @@ import { HttpClient } from '@angular/common/http';
 import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * "Utils" service with helper functions for mimetypes and extensions.
@@ -549,3 +550,5 @@ export class CoreMimetypeUtilsProvider {
         return path;
     }
 }
+
+export class CoreMimetypeUtils extends makeSingleton(CoreMimetypeUtilsProvider) {}

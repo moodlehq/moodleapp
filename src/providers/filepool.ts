@@ -31,6 +31,7 @@ import { CoreUtilsProvider } from './utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Entry from filepool.
@@ -3069,3 +3070,5 @@ export class CoreFilepoolProvider {
         });
     }
 }
+
+export class CoreFilepool extends makeSingleton(CoreFilepoolProvider) {}

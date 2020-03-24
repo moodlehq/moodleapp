@@ -30,6 +30,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject } from 'rxjs';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Interface that defines an extension of the Ionic Alert class, to support multiple listeners.
@@ -1666,3 +1667,5 @@ export class CoreDomUtilsProvider {
         }, siteId);
     }
 }
+
+export class CoreDomUtils extends makeSingleton(CoreDomUtilsProvider) {}

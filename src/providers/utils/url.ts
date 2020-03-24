@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLangProvider } from '../lang';
 import { CoreTextUtilsProvider } from './text';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -498,3 +499,5 @@ export class CoreUrlUtilsProvider {
         return url;
     }
 }
+
+export class CoreUrlUtils extends makeSingleton(CoreUrlUtilsProvider) {}

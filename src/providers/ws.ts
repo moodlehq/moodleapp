@@ -24,6 +24,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { CoreInterceptor } from '@classes/interceptor';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * PreSets accepted by the WS call.
@@ -878,6 +879,8 @@ export class CoreWSProvider {
         return content;
     }
 }
+
+export class CoreWS extends makeSingleton(CoreWSProvider) {}
 
 /**
  * Error returned by a WS call.

@@ -14,6 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * Provider to create sites instances.
@@ -56,3 +57,5 @@ export class CoreSitesFactoryProvider {
         return methods;
     }
 }
+
+export class CoreSitesFactory extends makeSingleton(CoreSitesFactoryProvider) {}

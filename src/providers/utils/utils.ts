@@ -27,6 +27,7 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -1393,3 +1394,5 @@ export class CoreUtilsProvider {
         return filtered;
     }
 }
+
+export class CoreUtils extends makeSingleton(CoreUtilsProvider) {}

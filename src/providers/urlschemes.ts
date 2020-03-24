@@ -28,6 +28,7 @@ import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate'
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreConfigConstants } from '../configconstants';
 import { CoreConstants } from '@core/constants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * All params that can be in a custom URL scheme.
@@ -488,3 +489,5 @@ export class CoreCustomURLSchemesProvider {
         return url.indexOf(CoreConfigConstants.customurlscheme + '://token=') != -1;
     }
 }
+
+export class CoreCustomURLSchemes extends makeSingleton(CoreCustomURLSchemesProvider) {}

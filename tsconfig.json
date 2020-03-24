@@ -21,7 +21,8 @@
       "@providers/*": ["providers/*"],
       "@components/*": ["components/*"],
       "@directives/*": ["directives/*"],
-      "@pipes/*": ["pipes/*"]
+      "@pipes/*": ["pipes/*"],
+      "@singletons/*": ["singletons/*"]
     },
     "typeRoots": [
       "node_modules/@types"

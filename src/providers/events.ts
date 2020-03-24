@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { CoreLoggerProvider } from '@providers/logger';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Observer instance to stop listening to an event.
@@ -173,3 +174,5 @@ export class CoreEventsProvider {
         }
     }
 }
+
+export class CoreEvents extends makeSingleton(CoreEventsProvider) {}
