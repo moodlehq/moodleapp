@@ -399,7 +399,10 @@ export class CoreFileUploaderHelperProvider {
                     // Error, not cancelled.
                     this.logger.error('Error while recording audio/video', error);
 
-                    return Promise.reject(this.translate.instant(defaultMessage));
+                    const message = error.code == 20 ? this.translate.instant('core.fileuploader.errornoapp') :
+                            (error.message || this.translate.instant(defaultMessage));
+
+                    return Promise.reject(message);
                 } else {
                     this.logger.debug('Cancelled');
                 }
