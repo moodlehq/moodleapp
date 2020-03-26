@@ -59,6 +59,7 @@
     "@ionic-native/file-transfer": "4.20.0",
     "@ionic-native/geolocation": "4.20.0",
     "@ionic-native/globalization": "4.20.0",
+    "@ionic-native/http": "^4.20.0",
     "@ionic-native/in-app-browser": "4.20.0",
     "@ionic-native/keyboard": "4.20.0",
     "@ionic-native/local-notifications": "4.20.0",
@@ -81,6 +82,7 @@
     "cordova-android-support-gradle-release": "3.0.1",
     "cordova-clipboard": "1.3.0",
     "cordova-ios": "5.1.1",
+    "cordova-plugin-advanced-http": "2.4.1",
     "cordova-plugin-badge": "0.8.8",
     "cordova-plugin-camera": "4.1.0",
     "cordova-plugin-customurlscheme": "5.0.0",
@@ -187,7 +189,10 @@
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
       },
-      "cordova-plugin-ionic-webview": {}
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-advanced-http": {
+        "OKHTTP_VERSION": "3.10.0"
+      }
     }
   },
   "main": "desktop/electron.js",

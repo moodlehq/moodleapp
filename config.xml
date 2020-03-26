@@ -182,6 +182,7 @@
         <variable name="FCM_VERSION" value="17.5.+" />
     </plugin>
     <plugin name="cordova-plugin-ionic-webview" spec="4.1.3" />
+    <plugin name="cordova-plugin-advanced-http" spec="2.4.1" />
     <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity[@android:name='MainActivity']">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" android:debuggable="true" />
     </edit-config>

@@ -14,7 +14,6 @@
 
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
 import { SQLiteDB } from './sqlitedb';
 import { CoreAppProvider } from '@providers/app';
 import { CoreDbProvider } from '@providers/db';
@@ -190,7 +189,6 @@ export class CoreSite {
     protected domUtils: CoreDomUtilsProvider;
     protected eventsProvider: CoreEventsProvider;
     protected fileProvider: CoreFileProvider;
-    protected http: HttpClient;
     protected textUtils: CoreTextUtilsProvider;
     protected timeUtils: CoreTimeUtilsProvider;
     protected translate: TranslateService;
@@ -256,7 +254,6 @@ export class CoreSite {
         this.domUtils = injector.get(CoreDomUtilsProvider);
         this.eventsProvider = injector.get(CoreEventsProvider);
         this.fileProvider = injector.get(CoreFileProvider);
-        this.http = injector.get(HttpClient);
         this.textUtils = injector.get(CoreTextUtilsProvider);
         this.timeUtils = injector.get(CoreTimeUtilsProvider);
         this.translate = injector.get(TranslateService);
@@ -1357,55 +1354,62 @@ export class CoreSite {
      * @param retrying True if we're retrying the check.
      * @return Promise resolved when the check is done.
      */
-    checkLocalMobilePlugin(retrying?: boolean): Promise<LocalMobileResponse> {
+    async checkLocalMobilePlugin(retrying?: boolean): Promise<LocalMobileResponse> {
         const checkUrl = this.siteUrl + '/local/mobile/check.php',
             service = CoreConfigConstants.wsextservice;
 
         if (!service) {
             // External service not defined.
-            return Promise.resolve({ code: 0 });
+            return { code: 0 };
         }
 
-        const promise = this.http.post(checkUrl, { service: service }).timeout(this.wsProvider.getRequestTimeout()).toPromise();
+        let data;
 
-        return promise.then((data: any) => {
-            if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
-                if (!retrying) {
-                    this.siteUrl = this.urlUtils.addOrRemoveWWW(this.siteUrl);
+        try {
+            const response = await this.wsProvider.sendHTTPRequest(checkUrl, {
+                method: 'post',
+                data: { service: service },
+            });
 
-                    return this.checkLocalMobilePlugin(true);
-                } else {
-                    return Promise.reject(data.error);
-                }
-            } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
-                // The local_mobile returned something we didn't expect. Let's assume it's not installed.
-                return { code: 0, warning: 'core.login.localmobileunexpectedresponse' };
-            }
-
-            const code = parseInt(data.code, 10);
-            if (data.error) {
-                switch (code) {
-                    case 1:
-                        // Site in maintenance mode.
-                        return Promise.reject(this.translate.instant('core.login.siteinmaintenance'));
-                    case 2:
-                        // Web services not enabled.
-                        return Promise.reject(this.translate.instant('core.login.webservicesnotenabled'));
-                    case 3:
-                        // Extended service not enabled, but the official is enabled.
-                        return { code: 0 };
-                    case 4:
-                        // Neither extended or official services enabled.
-                        return Promise.reject(this.translate.instant('core.login.mobileservicesnotenabled'));
-                    default:
-                        return Promise.reject(this.translate.instant('core.unexpectederror'));
-                }
-            } else {
-                return { code: code, service: service, coreSupported: !!data.coresupported };
-            }
-        }, () => {
+            data = response.body;
+        } catch (ex) {
             return { code: 0 };
-        });
+        }
+
+        if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
+            if (!retrying) {
+                this.siteUrl = this.urlUtils.addOrRemoveWWW(this.siteUrl);
+
+                return this.checkLocalMobilePlugin(true);
+            } else {
+                throw data.error;
+            }
+        } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
+            // The local_mobile returned something we didn't expect. Let's assume it's not installed.
+            return { code: 0, warning: 'core.login.localmobileunexpectedresponse' };
+        }
+
+        const code = parseInt(data.code, 10);
+        if (data.error) {
+            switch (code) {
+                case 1:
+                    // Site in maintenance mode.
+                    throw this.translate.instant('core.login.siteinmaintenance');
+                case 2:
+                    // Web services not enabled.
+                    throw this.translate.instant('core.login.webservicesnotenabled');
+                case 3:
+                    // Extended service not enabled, but the official is enabled.
+                    return { code: 0 };
+                case 4:
+                    // Neither extended or official services enabled.
+                    throw this.translate.instant('core.login.mobileservicesnotenabled');
+                default:
+                    throw this.translate.instant('core.unexpectederror');
+            }
+        } else {
+            return { code: code, service: service, coreSupported: !!data.coresupported };
+        }
     }
 
     /**
@@ -1970,7 +1974,7 @@ export class CoreSite {
         url = this.fixPluginfileURL(url);
 
         this.tokenPluginFileWorksPromise = this.wsProvider.performHead(url).then((result) => {
-            return result.ok;
+            return result.status >= 200 && result.status < 300;
         }).catch((error) => {
             // Error performing head request.
             return false;
