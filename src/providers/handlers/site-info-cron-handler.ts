@@ -48,7 +48,7 @@ export class CoreSiteInfoCronHandler implements CoreCronHandler {
      * @return Interval time (in milliseconds).
      */
     getInterval(): number {
-        return 3600000; // 1 hour.
+        return 10800000; // 3 hours.
     }
 
     /**
