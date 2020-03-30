@@ -1,184 +1,178 @@
 {
-  "@angular/animations@5.2.10": {
+  "@angular/animations@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@angular/common@5.2.10": {
+  "@angular/common@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@angular/compiler-cli@5.2.10": {
+  "@angular/compiler-cli@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "licenseFile": "README.md"
   },
-  "@angular/compiler@5.2.10": {
-    "licenses": "MIT",
-    "repository": "https://github.com/angular/angular",
-    "publisher": "angular",
-    "licenseFile": "README.md"
-  },
-  "@angular/core@5.2.10": {
+  "@angular/compiler@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@angular/forms@5.2.10": {
+  "@angular/core@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@angular/http@5.2.10": {
+  "@angular/forms@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@angular/platform-browser-dynamic@5.2.10": {
+  "@angular/platform-browser-dynamic@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@angular/platform-browser@5.2.10": {
+  "@angular/platform-browser@5.2.11": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/angular",
     "publisher": "angular",
     "licenseFile": "README.md"
   },
-  "@ionic-native/badge@4.17.0": {
+  "@ionic-native/badge@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/camera@4.17.0": {
+  "@ionic-native/camera@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/clipboard@4.17.0": {
+  "@ionic-native/clipboard@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/core@4.11.0": {
+  "@ionic-native/core@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/device@4.17.0": {
+  "@ionic-native/device@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/file-opener@4.17.0": {
+  "@ionic-native/file-opener@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/file-transfer@4.17.0": {
+  "@ionic-native/file-transfer@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/file@4.17.0": {
+  "@ionic-native/file@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/geolocation@4.17.0": {
+  "@ionic-native/geolocation@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/globalization@4.17.0": {
+  "@ionic-native/globalization@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/in-app-browser@4.17.0": {
+  "@ionic-native/in-app-browser@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/keyboard@4.17.0": {
+  "@ionic-native/keyboard@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/local-notifications@4.17.0": {
+  "@ionic-native/local-notifications@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/media-capture@4.17.0": {
+  "@ionic-native/media-capture@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/network@4.17.0": {
+  "@ionic-native/network@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/push@4.17.0": {
+  "@ionic-native/push@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/screen-orientation@4.17.0": {
+  "@ionic-native/screen-orientation@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/splash-screen@4.17.0": {
+  "@ionic-native/splash-screen@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/sqlite@4.17.0": {
+  "@ionic-native/sqlite@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/status-bar@4.17.0": {
+  "@ionic-native/status-bar@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/web-intent@4.17.0": {
+  "@ionic-native/web-intent@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@ionic-native/zip@4.17.0": {
+  "@ionic-native/zip@4.20.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ionic-team/ionic-native",
     "publisher": "ionic",
@@ -223,7 +217,7 @@
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "LICENSE"
   },
-  "@types/node@8.10.19": {
+  "@types/node@8.10.59": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "LICENSE"
@@ -240,7 +234,7 @@
     "repository": "https://github.com/jshttp/accepts",
     "licenseFile": "LICENSE"
   },
-  "ajv@6.10.2": {
+  "ajv@6.11.0": {
     "licenses": "MIT",
     "repository": "https://github.com/epoberezkin/ajv",
     "publisher": "Evgeny Poberezkin",
@@ -376,6 +370,14 @@
     "email": "hello@blakeembrey.com",
     "url": "http://blakeembrey.me",
     "licenseFile": "LICENSE"
+  },
+  "array-ify@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/stevemao/array-ify",
+    "publisher": "Steve Mao",
+    "email": "maochenyan@gmail.com",
+    "url": "https://github.com/stevemao",
+    "licenseFile": "README.md"
   },
   "array-union@1.0.2": {
     "licenses": "MIT",
@@ -663,7 +665,7 @@
     "email": "deadrunk@gmail.com",
     "licenseFile": "LICENSE"
   },
-  "chart.js@2.7.2": {
+  "chart.js@2.9.3": {
     "licenses": "MIT",
     "repository": "https://github.com/chartjs/Chart.js",
     "licenseFile": "LICENSE.md"
@@ -790,6 +792,14 @@
     "url": "http://debuggable.com/",
     "licenseFile": "License"
   },
+  "compare-func@1.3.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/stevemao/compare-func",
+    "publisher": "Steve Mao",
+    "email": "maochenyan@gmail.com",
+    "url": "https://github.com/stevemao",
+    "licenseFile": "README.md"
+  },
   "component-emitter@1.2.1": {
     "licenses": "MIT",
     "repository": "https://github.com/component/emitter",
@@ -883,7 +893,7 @@
     "publisher": "Dave Alden",
     "licenseFile": "README.md"
   },
-  "cordova-android@8.0.0": {
+  "cordova-android@8.1.0": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/apache/cordova-android",
     "publisher": "Apache Software Foundation",
@@ -921,7 +931,7 @@
     "publisher": "Apache Software Foundation",
     "licenseFile": "README.md"
   },
-  "cordova-ios@5.0.1": {
+  "cordova-ios@5.1.1": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/apache/cordova-ios",
     "publisher": "Apache Software Foundation",
@@ -948,7 +958,7 @@
     "licenseFile": "LICENSE",
     "noticeFile": "node_modules/cordova-plugin-camera/NOTICE"
   },
-  "cordova-plugin-customurlscheme@4.4.0": {
+  "cordova-plugin-customurlscheme@5.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/EddyVerbruggen/Custom-URL-scheme",
     "publisher": "Eddy Verbruggen",
@@ -963,7 +973,7 @@
     "licenseFile": "LICENSE",
     "noticeFile": "node_modules/cordova-plugin-device/NOTICE"
   },
-  "cordova-plugin-file-opener2@2.2.1": {
+  "cordova-plugin-file-opener2@3.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/pwlin/cordova-plugin-file-opener2",
     "publisher": "pwlin05@gmail.com",
@@ -997,7 +1007,7 @@
     "licenseFile": "LICENSE",
     "noticeFile": "node_modules/cordova-plugin-globalization/NOTICE"
   },
-  "cordova-plugin-inappbrowser@3.1.0": {
+  "cordova-plugin-inappbrowser@3.2.0": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/apache/cordova-plugin-inappbrowser",
     "publisher": "Apache Software Foundation",
@@ -1069,19 +1079,19 @@
     "licenseFile": "LICENSE",
     "noticeFile": "node_modules/cordova-serve/NOTICE"
   },
-  "cordova-sqlite-storage-dependencies@2.1.0": {
+  "cordova-sqlite-storage-dependencies@2.1.1": {
     "licenses": "Unlicense",
     "repository": "https://github.com/litehelpers/Cordova-sqlite-storage-dependencies",
     "publisher": "Christopher J. Brody",
     "licenseFile": "README.md"
   },
-  "cordova-sqlite-storage@3.4.0": {
+  "cordova-sqlite-storage@4.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/xpbrew/cordova-sqlite-storage",
     "publisher": "various",
     "licenseFile": "LICENSE.md"
   },
-  "cordova-support-google-services@1.2.1": {
+  "cordova-support-google-services@1.3.2": {
     "licenses": "MIT",
     "repository": "https://github.com/chemerisuk/cordova-support-google-services",
     "publisher": "Maksim Chemerisuk",
@@ -1292,6 +1302,14 @@
     "publisher": "Kevin Mårtensson",
     "email": "kevinmartensson@gmail.com",
     "url": "github.com/kevva",
+    "licenseFile": "license"
+  },
+  "dot-prop@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/dot-prop",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
     "licenseFile": "license"
   },
   "dot-prop@4.2.0": {
@@ -1506,6 +1524,12 @@
     "licenseFile": "LICENSE"
   },
   "fast-deep-equal@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-deep-equal",
+    "publisher": "Evgeny Poberezkin",
+    "licenseFile": "LICENSE"
+  },
+  "fast-deep-equal@3.1.1": {
     "licenses": "MIT",
     "repository": "https://github.com/epoberezkin/fast-deep-equal",
     "publisher": "Evgeny Poberezkin",
@@ -2029,9 +2053,9 @@
     "email": "bn@cs.stanford.edu",
     "licenseFile": "LICENSE"
   },
-  "ionic-angular@3.9.3": {
+  "ionic-angular@3.9.9": {
     "licenses": "MIT",
-    "repository": "https://github.com/ionic-team/ionic-v3",
+    "repository": "https://github.com/ionic-team/ionic",
     "licenseFile": "README.md"
   },
   "ionicons@3.0.0": {
@@ -2508,6 +2532,13 @@
     "url": "https://github.com/jonschlinkert",
     "licenseFile": "LICENSE"
   },
+  "kind-of@6.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/kind-of",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "licenseFile": "LICENSE"
+  },
   "latest-version@3.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/latest-version",
@@ -2740,7 +2771,7 @@
     "url": "http://substack.net",
     "licenseFile": "LICENSE"
   },
-  "moment@2.22.2": {
+  "moment@2.24.0": {
     "licenses": "MIT",
     "repository": "https://github.com/moment/moment",
     "publisher": "Iskren Ivov Chernev",
@@ -3540,7 +3571,7 @@
     "email": "admin@simonboudrias.com",
     "licenseFile": "LICENSE"
   },
-  "rxjs@5.5.11": {
+  "rxjs@5.5.12": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/ReactiveX/RxJS",
     "publisher": "Ben Lesh",
@@ -3618,6 +3649,11 @@
     "licenseFile": "LICENSE"
   },
   "semver@5.7.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/node-semver",
+    "licenseFile": "LICENSE"
+  },
+  "semver@6.3.0": {
     "licenses": "ISC",
     "repository": "https://github.com/npm/node-semver",
     "licenseFile": "LICENSE"
@@ -4044,7 +4080,7 @@
     "email": "jstash@gmail.com",
     "licenseFile": "LICENSE"
   },
-  "ts-md5@1.2.4": {
+  "ts-md5@1.2.7": {
     "licenses": "MIT",
     "repository": "https://github.com/cotag/ts-md5",
     "licenseFile": "README.md"
@@ -4236,7 +4272,7 @@
     "repository": "https://github.com/davepacheco/node-verror",
     "licenseFile": "LICENSE"
   },
-  "web-animations-js@2.3.1": {
+  "web-animations-js@2.3.2": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/web-animations/web-animations-js",
     "licenseFile": "README.md"
@@ -4347,7 +4383,7 @@
     "url": "http://blog.izs.me/",
     "licenseFile": "LICENSE"
   },
-  "zone.js@0.8.26": {
+  "zone.js@0.8.29": {
     "licenses": "MIT",
     "repository": "https://github.com/angular/zone.js",
     "publisher": "Brian Ford",
