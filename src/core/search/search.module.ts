@@ -16,6 +16,11 @@ import { NgModule } from '@angular/core';
 import { CoreSearchComponentsModule } from './components/components.module';
 import { CoreSearchHistoryProvider } from './providers/search-history';
 
+// List of providers (without handlers).
+export const CORE_SEARCH_PROVIDERS: any[] = [
+    CoreSearchHistoryProvider,
+];
+
 @NgModule({
     declarations: [
     ],
