@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Injector } from '@angular/core';
+import { Component, Input, OnInit, Injector, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncProvider } from '@providers/sync';
@@ -43,6 +43,8 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
     @Input() userId: number;
     @Input() strategy: string;
     @Input() edit?: boolean;
+
+    @ViewChild('assessmentForm') formElement: ElementRef;
 
     componentClass: any;
     data = {
@@ -292,7 +294,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
                 // Save assessment in offline.
                 return this.workshopOffline.saveAssessment(this.workshop.id, this.assessmentId, this.workshop.course,
                         assessmentData).then(() => {
-                    // Don't return anything.
+                    return false;
                 });
             }
 
@@ -301,6 +303,9 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
             return this.workshopProvider.updateAssessment(this.workshop.id, this.assessmentId, this.workshop.course,
                 assessmentData, false, allowOffline);
         }).then((grade) => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!grade, this.sitesProvider.getCurrentSiteId());
+
             const promises = [];
 
             // If sent to the server, invalidate and clean.

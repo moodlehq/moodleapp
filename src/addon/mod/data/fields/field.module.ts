@@ -40,7 +40,7 @@ import { AddonModDataFieldUrlModule } from './url/url.module';
         AddonModDataFieldRadiobuttonModule,
         AddonModDataFieldTextModule,
         AddonModDataFieldTextareaModule,
-        AddonModDataFieldUrlModule
+        AddonModDataFieldUrlModule,
     ],
     providers: [
     ],

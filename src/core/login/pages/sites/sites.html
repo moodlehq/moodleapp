@@ -3,8 +3,8 @@
         <ion-title>{{ 'core.settings.sites' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button ion-button icon-only [navPush]="'CoreSettingsListPage'" [attr.aria-label]="'core.mainmenu.appsettings' | translate">
-                <ion-icon name="cog"></ion-icon>
+            <button ion-button icon-only navPush="CoreAppSettingsPage" [attr.aria-label]="'core.settings.appsettings' | translate">
+                <core-icon name="fa-cogs"></core-icon>
             </button>
             <button *ngIf="sites && sites.length > 0" ion-button icon-only (click)="toggleDelete()" [attr.aria-label]="'core.delete' | translate">
                 <ion-icon name="create" ios="md-create"></ion-icon>

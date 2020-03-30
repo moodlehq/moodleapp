@@ -182,9 +182,7 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
             });
             const userIds = Object.keys(users).map(Number);
 
-            return this.userProvider.prefetchProfiles(userIds, courseId, siteId).catch(() => {
-                // Ignore errors, some users might not exist.
-            });
+            return this.userProvider.prefetchProfiles(userIds, courseId, siteId);
         });
     }
 }

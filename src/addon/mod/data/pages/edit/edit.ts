@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Content, IonicPage, NavParams, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { FormGroup } from '@angular/forms';
@@ -40,6 +40,7 @@ import { CoreTagProvider } from '@core/tag/providers/tag';
 })
 export class AddonModDataEditPage {
     @ViewChild(Content) content: Content;
+    @ViewChild('editFormEl') formElement: ElementRef;
 
     protected module: any;
     protected courseId: number;
@@ -95,28 +96,25 @@ export class AddonModDataEditPage {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave || !this.entry) {
-            return true;
+            return;
         }
 
         const inputData = this.editForm.value;
 
-        return this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id,
-                this.entry.contents).then((changed) => {
-            if (!changed) {
-                return Promise.resolve();
-            }
+        const changed = await this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id, this.entry.contents);
 
+        if (changed) {
             // Show confirmation if some data has been modified.
-            return  this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-        }).then(() => {
-            // Delete the local files from the tmp folder.
-            return this.dataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.data.id,
-                    this.entry.contents).then((files) => {
-                this.fileUploaderProvider.clearTmpFiles(files);
-            });
-        });
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        }
+
+        // Delete the local files from the tmp folder.
+        const files = await this.dataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.data.id, this.entry.contents);
+        this.fileUploaderProvider.clearTmpFiles(files);
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
     }
 
     /**
@@ -216,6 +214,9 @@ export class AddonModDataEditPage {
 
                 // This is done if entry is updated when editing or creating if not.
                 if ((this.entryId && result.updated) || (!this.entryId && result.newentryid)) {
+
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.siteId);
+
                     const promises = [];
 
                     this.entryId = this.entryId || result.newentryid;

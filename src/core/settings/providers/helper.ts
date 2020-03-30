@@ -18,12 +18,24 @@ import { CoreCronDelegate } from '@providers/cron';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSite } from '@classes/site';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
+import { CoreFilterProvider } from '@core/filter/providers/filter';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreConfigConstants } from '../../../configconstants';
 import { TranslateService } from '@ngx-translate/core';
+
+/**
+ * Object with space usage and cache entries that can be erased.
+ */
+export interface CoreSiteSpaceUsage {
+    cacheEntries?: number; // Number of cached entries that can be cleared.
+    spaceUsage?: number; // Space used in this site.
+}
 
 /**
  * Settings helper service.
@@ -33,11 +45,137 @@ export class CoreSettingsHelper {
     protected logger;
     protected syncPromises = {};
 
-    constructor(loggerProvider: CoreLoggerProvider, private appProvider: CoreAppProvider, private cronDelegate: CoreCronDelegate,
-            private eventsProvider: CoreEventsProvider, private filePoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider, private translate: TranslateService,
-            private configProvider: CoreConfigProvider) {
+    constructor(loggerProvider: CoreLoggerProvider,
+            protected appProvider: CoreAppProvider,
+            protected cronDelegate: CoreCronDelegate,
+            protected domUtils: CoreDomUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected filePoolProvider: CoreFilepoolProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected utils: CoreUtilsProvider,
+            protected translate: TranslateService,
+            protected configProvider: CoreConfigProvider,
+            protected filterProvider: CoreFilterProvider,
+            protected courseProvider: CoreCourseProvider,
+    ) {
         this.logger = loggerProvider.getInstance('CoreSettingsHelper');
+
+        if (!CoreConfigConstants.forceColorScheme) {
+            // Update color scheme when a user enters or leaves a site, or when the site info is updated.
+            const applySiteScheme = (): void => {
+                if (this.isColorSchemeDisabledInSite()) {
+                    // Dark mode is disabled, force light mode.
+                    this.setColorScheme('light');
+                } else {
+                    // Reset color scheme settings.
+                    this.initColorScheme();
+                }
+            };
+
+            eventsProvider.on(CoreEventsProvider.LOGIN, applySiteScheme.bind(this));
+
+            eventsProvider.on(CoreEventsProvider.SITE_UPDATED, applySiteScheme.bind(this));
+
+            eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
+                // Reset color scheme settings.
+                this.initColorScheme();
+            });
+        }
+    }
+
+    /**
+     * Deletes files of a site and the tables that can be cleared.
+     *
+     * @param siteName Site Name.
+     * @param siteId: Site ID.
+     * @return Resolved with detailed new info when done.
+     */
+    async deleteSiteStorage(siteName: string, siteId: string): Promise<CoreSiteSpaceUsage> {
+        const siteInfo: CoreSiteSpaceUsage = {
+            cacheEntries: 0,
+            spaceUsage: 0
+        };
+
+        siteName = await this.filterProvider.formatText(siteName, {clean: true, singleLine: true, filter: false}, [], siteId);
+
+        const title = this.translate.instant('core.settings.deletesitefilestitle');
+        const message = this.translate.instant('core.settings.deletesitefiles', {sitename: siteName});
+
+        await this.domUtils.showConfirm(message, title);
+
+        const site = await this.sitesProvider.getSite(siteId);
+
+        // Clear cache tables.
+        const cleanSchemas = this.sitesProvider.getSiteTableSchemasToClear(site);
+        const promises = cleanSchemas.map((name) => site.getDb().deleteRecords(name));
+
+        promises.push(site.deleteFolder().then(() => {
+            this.filePoolProvider.clearAllPackagesStatus(site.id);
+            this.filePoolProvider.clearFilepool(site.id);
+            this.courseProvider.clearAllCoursesStatus(site.id);
+
+            siteInfo.spaceUsage = 0;
+        }).catch(async (error) => {
+            if (error && error.code === FileError.NOT_FOUND_ERR) {
+                // Not found, set size 0.
+                this.filePoolProvider.clearAllPackagesStatus(site.id);
+                siteInfo.spaceUsage = 0;
+            } else {
+                // Error, recalculate the site usage.
+                this.domUtils.showErrorModal('core.settings.errordeletesitefiles', true);
+
+                siteInfo.spaceUsage = await site.getSpaceUsage();
+            }
+        }).then(async () => {
+            this.eventsProvider.trigger(CoreEventsProvider.SITE_STORAGE_DELETED, {}, site.getId());
+
+            siteInfo.cacheEntries = await this.calcSiteClearRows(site);
+        }));
+
+        await Promise.all(promises);
+
+        return siteInfo;
+    }
+
+    /**
+     * Calculates each site's usage, and the total usage.
+     *
+     * @param  siteId ID of the site. Current site if undefined.
+     * @return Resolved with detailed info when done.
+     */
+    async getSiteSpaceUsage(siteId?: string): Promise<CoreSiteSpaceUsage> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        // Get space usage.
+        const siteInfo: CoreSiteSpaceUsage = {
+            cacheEntries: 0,
+            spaceUsage: 0,
+        };
+
+        await Promise.all([
+            this.calcSiteClearRows(site).then((rows) => siteInfo.cacheEntries = rows),
+            site.getSpaceUsage().then((size) => siteInfo.spaceUsage = size),
+        ]);
+
+        return siteInfo;
+    }
+
+    /**
+     * Calculate the number of rows to be deleted on a site.
+     *
+     * @param site Site object.
+     * @return If there are rows to delete or not.
+     */
+    protected async calcSiteClearRows(site: CoreSite): Promise<number> {
+        const clearTables = this.sitesProvider.getSiteTableSchemasToClear(site);
+
+        let totalEntries = 0;
+
+        await Promise.all(clearTables.map(async (name) =>
+            totalEntries = await site.getDb().countRecords(name) + totalEntries
+        ));
+
+        return totalEntries;
     }
 
     /**
@@ -189,6 +327,13 @@ export class CoreSettingsHelper {
             this.setFontSize(fontSize);
         });
 
+        this.initColorScheme();
+    }
+
+    /**
+     * Init the color scheme.
+     */
+    initColorScheme(): void {
         if (!!CoreConfigConstants.forceColorScheme) {
             this.setColorScheme(CoreConfigConstants.forceColorScheme);
         } else {
@@ -203,6 +348,30 @@ export class CoreSettingsHelper {
                 this.setColorScheme(scheme);
             });
         }
+    }
+
+    /**
+     * Check if color scheme is disabled in a site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with whether color scheme is disabled.
+     */
+    async isColorSchemeDisabled(siteId?: string): Promise<boolean> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        return this.isColorSchemeDisabledInSite(site);
+    }
+
+    /**
+     * Check if color scheme is disabled in a site.
+     *
+     * @param site Site instance. If not defined, current site.
+     * @return Whether color scheme is disabled.
+     */
+    isColorSchemeDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site ? site.isFeatureDisabled('NoDelegate_DarkMode') : false;
     }
 
     /**

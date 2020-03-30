@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -35,6 +36,8 @@ import { CoreConfigConstants } from '../../../../configconstants';
 })
 export class CoreLoginEmailSignupPage {
     @ViewChild(Content) content: Content;
+    @ViewChild('ageForm') ageFormElement: ElementRef;
+    @ViewChild('signupFormEl') signupFormElement: ElementRef;
 
     signupForm: FormGroup;
     siteUrl: string;
@@ -66,10 +69,18 @@ export class CoreLoginEmailSignupPage {
     policyErrors: any;
     namefieldsErrors: any;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, private fb: FormBuilder, private wsProvider: CoreWSProvider,
-            private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
-            private textUtils: CoreTextUtilsProvider, private userProfileFieldDelegate: CoreUserProfileFieldDelegate) {
+    constructor(protected navCtrl: NavController,
+            navParams: NavParams,
+            protected fb: FormBuilder,
+            protected wsProvider: CoreWSProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected loginHelper: CoreLoginHelperProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService,
+            protected utils: CoreUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected userProfileFieldDelegate: CoreUserProfileFieldDelegate,
+            protected eventsProvider: CoreEventsProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
 
@@ -265,6 +276,9 @@ export class CoreLoginEmailSignupPage {
                     return this.wsProvider.callAjax('auth_email_signup_user', params, { siteUrl: this.siteUrl });
                 }).then((result) => {
                     if (result.success) {
+
+                        this.domUtils.triggerFormSubmittedEvent(this.signupFormElement, true);
+
                         // Show alert and ho back.
                         const message = this.translate.instant('core.login.emailconfirmsent', { $a: params.email });
                         this.domUtils.showAlert(this.translate.instant('core.success'), message);
@@ -334,6 +348,9 @@ export class CoreLoginEmailSignupPage {
         params.age = parseInt(params.age, 10); // Use just the integer part.
 
         this.wsProvider.callAjax('core_auth_is_minor', params, {siteUrl: this.siteUrl}).then((result) => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.ageFormElement, true);
+
             if (!result.status) {
                 if (this.countryControl.value) {
                     this.signUpCountryControl.setValue(this.countryControl.value);

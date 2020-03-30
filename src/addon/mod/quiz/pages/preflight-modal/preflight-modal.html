@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content padding class="addon-mod_quiz-preflight-modal">
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="preflightForm" (ngSubmit)="sendData($event)">
+        <form ion-list [formGroup]="preflightForm" (ngSubmit)="sendData($event)" #preflightFormEl>
             <!-- Access rules. -->
             <ng-container *ngFor="let data of accessRulesData; let last = last">
                 <core-dynamic-component [component]="data.component" [data]="data.data">

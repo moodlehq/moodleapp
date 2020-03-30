@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -41,6 +41,7 @@ import { AddonModLessonHelperProvider } from '../../providers/helper';
 })
 export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
     @ViewChild(Content) content: Content;
+    @ViewChild('questionFormEl') formElement: ElementRef;
 
     component = AddonModLessonProvider.COMPONENT;
     LESSON_EOL = AddonModLessonProvider.LESSON_EOL;
@@ -136,19 +137,19 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         if (this.question && !this.eolData && !this.processData && this.originalData) {
             // Question shown. Check if there is any change.
             if (!this.utils.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
-                 return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+                 await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
             }
         }
 
-        return Promise.resolve();
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -540,15 +541,20 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
      * Process a page, sending some data.
      *
      * @param data The data to send.
+     * @param formSubmitted Whether a form was submitted.
      * @return Promise resolved when done.
      */
-    protected processPage(data: any): Promise<any> {
+    protected processPage(data: any, formSubmitted?: boolean): Promise<any> {
         this.loaded = false;
 
         const args = [this.lesson, this.courseId, this.pageData, data, this.password, this.review, this.offline, this.accessInfo,
                 this.jumps];
 
         return this.callFunction(this.lessonProvider.processPage.bind(this.lessonProvider), args, 6, 8).then((result) => {
+            if (formSubmitted) {
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.sitesProvider.getCurrentSiteId());
+            }
+
             if (!this.offline && !this.review && this.lessonProvider.isLessonOffline(this.lesson)) {
                 // Lesson allows offline and the user changed some data in server. Update cached data.
                 const retake = this.accessInfo.attemptscount;
@@ -637,7 +643,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
         // Use getRawValue to include disabled values.
         const data = this.lessonHelper.prepareQuestionData(this.question, this.questionForm.getRawValue());
 
-        this.processPage(data).finally(() => {
+        this.processPage(data, true).finally(() => {
             this.loaded = true;
         });
     }

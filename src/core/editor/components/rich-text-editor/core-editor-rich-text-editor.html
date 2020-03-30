@@ -1,0 +1,88 @@
+<div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
+    <div [hidden]="!rteEnabled" #editor contenteditable="true" class="core-rte-editor" tappable (focus)="showToolbar($event)" (longPress)="showToolbar($event)" (blur)="hideToolbar($event)" [attr.data-placeholder-text]="placeholder" role="textbox">
+    </div>
+
+    <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" [placeholder]="placeholder" [attr.name]="name" ngControl="control" (ionChange)="onChange($event)" (focus)="showToolbar($event)" (longPress)="showToolbar($event)" (blur)="hideToolbar($event)" role="textbox"></ion-textarea>
+
+    <div class="core-rte-info-message" *ngIf="infoMessage">
+        <ion-icon name="information-circle"></ion-icon>
+        {{ infoMessage | translate }}
+    </div>
+</div>
+
+<div #toolbar class="core-rte-toolbar" [class.toolbar-hidden]="toolbarHidden">
+    <button *ngIf="toolbarArrows" class="toolbar-arrow" [class.toolbar-arrow-hidden]="toolbarPrevHidden" (click)="toolbarPrev($event)" (mousedown)="mouseDownAction($event)">
+        <ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+    </button>
+    <ion-slides [slidesPerView]="numToolbarButtons" (ionSlideDidChange)="updateToolbarArrows()">
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.b" (click)="buttonAction($event, 'bold', 'b')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.bold' | translate">
+                <core-icon name="fa-bold"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.i" (click)="buttonAction($event, 'italic', 'i')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.italic' | translate">
+                <core-icon name="fa-italic"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.u" (click)="buttonAction($event, 'underline', 'u')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.underline' | translate">
+                <core-icon name="fa-underline"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" (click)="buttonAction($event, 'strikethrough', 'strike')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.strike' | translate">
+                <core-icon name="fa-strikethrough"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.p" (click)="buttonAction($event, 'p', 'block')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.p' | translate">
+                <core-icon name="fa-paragraph"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h3" (click)="buttonAction($event, 'h3', 'block')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.h3' | translate">
+                <core-icon name="fa-header"></core-icon>3
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h4" (click)="buttonAction($event, 'h4', 'block')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.h4' | translate">
+                <core-icon name="fa-header"></core-icon>4
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.h5" (click)="buttonAction($event, 'h5', 'block')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.h5' | translate">
+                <core-icon name="fa-header"></core-icon>5
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ul" (click)="buttonAction($event, 'insertUnorderedList')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.unorderedlist' | translate">
+                <core-icon name="fa-list-ul"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ol" (click)="buttonAction($event, 'insertOrderedList')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.orderedlist' | translate">
+                <core-icon name="fa-list-ol"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'removeFormat')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.clear' | translate">
+                <core-icon name="fa-eraser"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide>
+            <button [attr.aria-pressed]="!rteEnabled" (click)="toggleEditor($event)" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.toggle' | translate">
+                <core-icon name="fa-code"></core-icon>
+            </button>
+        </ion-slide>
+        <ion-slide *ngIf="isPhone">
+            <button (click)="hideToolbar($event)" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.hidetoolbar' | translate">
+                <core-icon name="fa-close"></core-icon>
+            </button>
+        </ion-slide>
+    </ion-slides>
+    <button *ngIf="toolbarArrows" class="toolbar-arrow" [class.toolbar-arrow-hidden]="toolbarNextHidden" (click)="toolbarNext($event)" (mousedown)="mouseDownAction($event)">
+        <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
+    </button>
+</div>

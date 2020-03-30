@@ -126,7 +126,8 @@ export class AddonModDataProvider {
                     .then((entry) => {
                 return {
                     // Return provissional entry Id.
-                    newentryid: entry
+                    newentryid: entry,
+                    sent: false,
                 };
             });
         };
@@ -142,7 +143,11 @@ export class AddonModDataProvider {
             return storeOffline();
         }
 
-        return this.addEntryOnline(dataId, contents, groupId, siteId).catch((error) => {
+        return this.addEntryOnline(dataId, contents, groupId, siteId).then((result) => {
+            result.sent = true;
+
+            return result;
+        }).catch((error) => {
             if (this.utils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 return Promise.reject(error);
@@ -194,7 +199,12 @@ export class AddonModDataProvider {
         const storeOffline = (): Promise<any> => {
             const action = approve ? 'approve' : 'disapprove';
 
-            return this.dataOffline.saveEntry(dataId, entryId, action, courseId, undefined, undefined, undefined, siteId);
+            return this.dataOffline.saveEntry(dataId, entryId, action, courseId, undefined, undefined, undefined, siteId)
+                    .then(() => {
+                return {
+                    sent: false,
+                };
+            });
         };
 
         // Get if the opposite action is not synced.
@@ -210,7 +220,11 @@ export class AddonModDataProvider {
                 return storeOffline();
             }
 
-            return this.approveEntryOnline(entryId, approve, siteId).catch((error) => {
+            return this.approveEntryOnline(entryId, approve, siteId).then(() => {
+                return {
+                    sent: true,
+                };
+            }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
                     return Promise.reject(error);
@@ -288,7 +302,12 @@ export class AddonModDataProvider {
 
         // Convenience function to store a data to be synchronized later.
         const storeOffline = (): Promise<any> => {
-            return this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, undefined, undefined, undefined, siteId);
+            return this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, undefined, undefined, undefined, siteId)
+                    .then(() => {
+                return {
+                    sent: false,
+                };
+            });
         };
 
         let justAdded = false;
@@ -318,7 +337,11 @@ export class AddonModDataProvider {
                 return storeOffline();
             }
 
-            return this.deleteEntryOnline(entryId, siteId).catch((error) => {
+            return this.deleteEntryOnline(entryId, siteId).then(() => {
+                return {
+                    sent: true,
+                };
+            }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
                     return Promise.reject(error);
@@ -368,7 +391,8 @@ export class AddonModDataProvider {
             return this.dataOffline.saveEntry(dataId, entryId, 'edit', courseId, undefined, contents, undefined, siteId)
                     .then(() => {
                 return {
-                    updated: true
+                    updated: true,
+                    sent: false,
                 };
             });
         };
@@ -408,6 +432,7 @@ export class AddonModDataProvider {
                 return this.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline)
                         .then((result) => {
                     result.updated = true;
+                    result.sent = true;
 
                     return result;
                 });
@@ -418,7 +443,11 @@ export class AddonModDataProvider {
                 return storeOffline();
             }
 
-            return this.editEntryOnline(entryId, contents, siteId).catch((error) => {
+            return this.editEntryOnline(entryId, contents, siteId).then((result) => {
+                result.sent = true;
+
+                return result;
+            }).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
                     return Promise.reject(error);

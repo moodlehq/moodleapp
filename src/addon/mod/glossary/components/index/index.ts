@@ -25,7 +25,7 @@ import { AddonModGlossarySyncProvider } from '../../providers/sync';
 import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
 import { AddonModGlossaryPrefetchHandler } from '../../providers/prefetch-handler';
 
-type FetchMode = 'author_all' | 'cat_all' | 'newest_first' | 'recently_updated' | 'search' | 'letter_all';
+type FetchMode = 'author_all' | 'cat_all' | 'newest_first' | 'recently_updated' | 'letter_all';
 
 /**
  * Component that displays a glossary entry page.
@@ -41,8 +41,6 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     component = AddonModGlossaryProvider.COMPONENT;
     moduleName = 'glossary';
 
-    fetchMode: FetchMode;
-    viewMode: string;
     isSearch = false;
     entries = [];
     offlineEntries = [];
@@ -60,6 +58,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     protected showDivider: (entry: any, previous?: any) => boolean;
     protected getDivider: (entry: any) => string;
     protected addEntryObserver: any;
+    protected fetchMode: FetchMode;
+    protected viewMode: string;
+    protected fetchedEntriesCanLoadMore = false;
+    protected fetchedEntries = [];
 
     hasOfflineRatings: boolean;
     protected ratingOfflineObserver: any;
@@ -187,6 +189,21 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 Array.prototype.push.apply(this.entries, result.entries);
             } else {
                 this.entries = result.entries;
+
+                if (this.splitviewCtrl.isOn()) {
+                    // Load the first entry.
+                    if (this.entries.length > 0) {
+                        const found = this.selectedEntry && this.entries.some((entry) => entry.id == this.selectedEntry);
+
+                        // The current selected entry is not found in the current list, open first item.
+                        if (!found) {
+                            this.openEntry(this.entries[0].id);
+                        }
+                    } else {
+                        this.selectedEntry = null;
+                        this.splitviewCtrl.emptyDetails();
+                    }
+                }
             }
             this.canLoadMore = this.entries.length < result.count;
         }).catch((error) => {
@@ -252,6 +269,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     protected switchMode(mode: FetchMode): void {
         this.fetchMode = mode;
+        this.isSearch = false;
 
         switch (mode) {
             case 'author_all':
@@ -294,15 +312,6 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.getDivider = null;
                 this.showDivider = (): boolean => false;
                 break;
-            case 'search':
-                // Search for entries.
-                this.viewMode = 'search';
-                this.fetchFunction = this.glossaryProvider.getEntriesBySearch;
-                this.fetchInvalidate = this.glossaryProvider.invalidateEntriesBySearch;
-                this.fetchArguments = null; // Dynamically set later.
-                this.getDivider = null;
-                this.showDivider = (): boolean => false;
-                break;
             case 'letter_all':
             default:
                 // Consider it is 'letter_all'.
@@ -311,7 +320,12 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.fetchFunction = this.glossaryProvider.getEntriesByLetter;
                 this.fetchInvalidate = this.glossaryProvider.invalidateEntriesByLetter;
                 this.fetchArguments = [this.glossary.id, 'ALL'];
-                this.getDivider = (entry: any): string => entry.concept.substr(0, 1).toUpperCase();
+                this.getDivider = (entry: any): string => {
+                    // Try to get the first letter without HTML tags.
+                    const noTags = this.textUtils.cleanTags(entry.concept);
+
+                    return (noTags || entry.concept).substr(0, 1).toUpperCase();
+                };
                 this.showDivider = (entry?: any, previous?: any): boolean  => {
                     return !previous || this.getDivider(entry) != this.getDivider(previous);
                 };
@@ -341,32 +355,59 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     openModePicker(event: MouseEvent): void {
         const popover = this.popoverCtrl.create(AddonModGlossaryModePickerPopoverComponent, {
-            glossary: this.glossary,
-            selectedMode: this.fetchMode
+            browsemodes: this.glossary.browsemodes,
+            selectedMode: this.isSearch ? '' : this.fetchMode
         });
 
-        popover.onDidDismiss((newMode: FetchMode) => {
-            if (newMode === this.fetchMode) {
-                return;
-            }
-
-            this.loadingMessage = this.translate.instant('core.loading');
-            this.domUtils.scrollToTop(this.content);
-            this.switchMode(newMode);
-
-            if (this.fetchMode === 'search') {
-                // If it's not an instant search, then we reset the values.
-                this.entries = [];
-                this.canLoadMore = false;
-            } else {
-                this.loaded = false;
-                this.loadContent();
+        popover.onDidDismiss((mode: FetchMode) => {
+            if (mode !== this.fetchMode) {
+                this.changeFetchMode(mode);
+            } else if (this.isSearch) {
+                this.toggleSearch();
             }
         });
 
         popover.present({
             ev: event
         });
+    }
+
+    /**
+     * Toggles between search and fetch mode.
+     */
+    toggleSearch(): void {
+        if (this.isSearch) {
+            this.isSearch = false;
+            this.entries = this.fetchedEntries;
+            this.canLoadMore = this.fetchedEntriesCanLoadMore;
+            this.switchMode(this.fetchMode);
+        } else {
+            // Search for entries.
+            this.fetchFunction = this.glossaryProvider.getEntriesBySearch;
+            this.fetchInvalidate = this.glossaryProvider.invalidateEntriesBySearch;
+            this.fetchArguments = null; // Dynamically set later.
+            this.getDivider = null;
+            this.showDivider = (): boolean => false;
+            this.isSearch = true;
+
+            this.fetchedEntries = this.entries;
+            this.fetchedEntriesCanLoadMore = this.canLoadMore;
+            this.canLoadMore = false;
+            this.entries = [];
+        }
+    }
+
+    /**
+     * Change fetch mode
+     * @param {FetchMode} mode [description]
+     */
+    changeFetchMode(mode: FetchMode): void {
+        this.isSearch = false;
+        this.loadingMessage = this.translate.instant('core.loading');
+        this.domUtils.scrollToTop(this.content);
+        this.switchMode(mode);
+        this.loaded = false;
+        this.loadContent();
     }
 
     /**

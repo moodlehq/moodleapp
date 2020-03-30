@@ -19,6 +19,7 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonModForumComponentsModule } from '../../components/components.module';
 import { AddonModForumEditPostPage } from './edit-post';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { AddonModForumEditPostPage } from './edit-post';
         CoreComponentsModule,
         CoreDirectivesModule,
         AddonModForumComponentsModule,
+        CoreEditorComponentsModule,
         IonicPageModule.forChild(AddonModForumEditPostPage),
         TranslateModule.forChild()
     ],

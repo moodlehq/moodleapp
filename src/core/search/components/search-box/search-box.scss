@@ -1,0 +1,44 @@
+ion-app.app-root core-search-box {
+    height: 65px;
+    display: block;
+
+    ion-card {
+        position: absolute;
+        z-index: 4;
+    }
+
+    .button.item-button[icon-only] {
+        margin: 0;
+        padding: ($content-padding / 2) $content-padding;
+    }
+    .item.item-input.item-block .item-inner,
+    .item.item-input.item-block .item-inner ion-input {
+       border-bottom: 0 !important;
+       box-shadow: none;
+    }
+
+    .item-inner {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .core-search-history {
+        display: none;
+        max-height: calc(-120px + 80vh);
+        overflow-y: auto;
+
+        .item:hover {
+            background-color: $gray-lighter;
+        }
+
+        .list .item.item-block:last-child > .item-inner {
+            border-bottom: 0;
+        }
+    }
+
+    form:focus-within {
+        .core-search-history {
+            display: block;
+        }
+    }
+}

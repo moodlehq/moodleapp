@@ -38,10 +38,12 @@ export class CoreFilterHelperProvider {
     protected moduleContextsCache: {
         [siteId: string]: {
             [courseId: number]: {
-                contexts: CoreFilterClassifiedFilters,
-                time: number
-            }
-        }
+                [contextLevel: string]: {
+                    contexts: CoreFilterClassifiedFilters,
+                    time: number,
+                },
+            },
+        },
     } = {};
 
     constructor(logger: CoreLoggerProvider,
@@ -110,7 +112,7 @@ export class CoreFilterHelperProvider {
         return getFilters().then((contexts) => {
 
             return this.filterProvider.getAvailableInContexts(contexts, siteId).then((filters) => {
-                this.storeInMemoryCache(options.courseId, filters, siteId);
+                this.storeInMemoryCache(options.courseId, contextLevel, filters, siteId);
 
                 return filters[contextLevel][instanceId] || [];
             });
@@ -278,14 +280,16 @@ export class CoreFilterHelperProvider {
         const siteId = site.getId();
 
         // Check if we have the context in the memory cache.
-        if (this.moduleContextsCache[siteId] && this.moduleContextsCache[siteId][courseId]) {
-            const cachedCourse = this.moduleContextsCache[siteId][courseId];
+        if (this.moduleContextsCache[siteId] && this.moduleContextsCache[siteId][courseId] &&
+                this.moduleContextsCache[siteId][courseId][contextLevel]) {
+
+            const cachedData = this.moduleContextsCache[siteId][courseId][contextLevel];
 
             if (!this.appProvider.isOnline() ||
-                    Date.now() <= cachedCourse.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
+                    Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
 
                 // We can use cache, return the filters if found.
-                return cachedCourse.contexts[contextLevel] && cachedCourse.contexts[contextLevel][instanceId];
+                return cachedData.contexts[contextLevel] && cachedData.contexts[contextLevel][instanceId];
             }
         }
     }
@@ -316,11 +320,14 @@ export class CoreFilterHelperProvider {
      * @param contexts Filters to store, classified by contextlevel and instanceid
      * @param siteId Site ID.
      */
-    protected storeInMemoryCache(courseId: number, contexts: CoreFilterClassifiedFilters, siteId: string): void {
+    protected storeInMemoryCache(courseId: number, contextLevel: string, contexts: CoreFilterClassifiedFilters, siteId: string)
+            : void {
+
         this.moduleContextsCache[siteId] = this.moduleContextsCache[siteId] || {};
-        this.moduleContextsCache[siteId][courseId] = {
+        this.moduleContextsCache[siteId][courseId] = this.moduleContextsCache[siteId][courseId] || {};
+        this.moduleContextsCache[siteId][courseId][contextLevel] = {
             contexts: contexts,
-            time: Date.now()
+            time: Date.now(),
         };
     }
 }

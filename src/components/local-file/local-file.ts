@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -38,6 +40,8 @@ export class CoreLocalFileComponent implements OnInit {
     @Output() onRename?: EventEmitter<any>; // Will notify when the file is renamed. Receives the FileEntry as the param.
     @Output() onClick?: EventEmitter<void>; // Will notify when the file is clicked. Only if overrideClick is true.
 
+    @ViewChild('nameForm') formElement: ElementRef;
+
     fileName: string;
     fileIcon: string;
     fileExtension: string;
@@ -47,12 +51,14 @@ export class CoreLocalFileComponent implements OnInit {
     editMode: boolean;
     relativePath: string;
 
-    constructor(private mimeUtils: CoreMimetypeUtilsProvider,
-            private utils: CoreUtilsProvider,
-            private textUtils: CoreTextUtilsProvider,
-            private fileProvider: CoreFileProvider,
-            private domUtils: CoreDomUtilsProvider,
-            private timeUtils: CoreTimeUtilsProvider) {
+    constructor(protected mimeUtils: CoreMimetypeUtilsProvider,
+            protected utils: CoreUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected fileProvider: CoreFileProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected eventsProvider: CoreEventsProvider) {
         this.onDelete = new EventEmitter();
         this.onRename = new EventEmitter();
         this.onClick = new EventEmitter();
@@ -137,6 +143,7 @@ export class CoreLocalFileComponent implements OnInit {
         if (newName == this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
 
             return;
         }
@@ -152,6 +159,9 @@ export class CoreLocalFileComponent implements OnInit {
         }).catch(() => {
             // File doesn't exist, move it.
             return this.fileProvider.moveFile(this.relativePath, newPath).then((fileEntry) => {
+
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
+
                 this.editMode = false;
                 this.file = fileEntry;
                 this.loadFileBasicData();

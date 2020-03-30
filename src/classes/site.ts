@@ -170,7 +170,7 @@ interface RequestQueueItem {
 /**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
- * To add tables to the site's database, please use CoreSitesProvider.createTablesFromSchema. This will make sure that
+ * To add tables to the site's database, please use CoreSitesProvider.registerSiteSchema. This will make sure that
  * the tables are created in all the sites, not just the current one.
  */
 export class CoreSite {
@@ -233,6 +233,7 @@ export class CoreSite {
     protected requestQueueTimeout = null;
     protected tokenPluginFileWorks: boolean;
     protected tokenPluginFileWorksPromise: Promise<boolean>;
+    protected oauthId: number;
 
     /**
      * Create a site.
@@ -405,6 +406,15 @@ export class CoreSite {
     }
 
     /**
+     * Get OAuth ID.
+     *
+     * @return OAuth ID.
+     */
+    getOAuthId(): number {
+        return this.oauthId;
+    }
+
+    /**
      * Set site info.
      *
      * @param New info.
@@ -442,6 +452,24 @@ export class CoreSite {
      */
     setLoggedOut(loggedOut: boolean): void {
         this.loggedOut = !!loggedOut;
+    }
+
+    /**
+     * Set OAuth ID.
+     *
+     * @param oauth OAuth ID.
+     */
+    setOAuthId(oauthId: number): void {
+        this.oauthId = oauthId;
+    }
+
+    /**
+     * Check if the user authenticated in the site using an OAuth method.
+     *
+     * @return {boolean} Whether the user authenticated in the site using an OAuth method.
+     */
+    isOAuth(): boolean {
+        return this.oauthId != null && typeof this.oauthId != 'undefined';
     }
 
     /**

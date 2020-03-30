@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreCoursesSearchPage } from './search';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSearchComponentsModule } from '@core/search/components/components.module';
 import { CoreCoursesComponentsModule } from '../../components/components.module';
 
 @NgModule({
@@ -28,8 +29,9 @@ import { CoreCoursesComponentsModule } from '../../components/components.module'
         CoreComponentsModule,
         CoreDirectivesModule,
         CoreCoursesComponentsModule,
+        CoreSearchComponentsModule,
         IonicPageModule.forChild(CoreCoursesSearchPage),
-        TranslateModule.forChild()
+        TranslateModule.forChild(),
     ],
 })
 export class CoreCoursesSearchPageModule {}

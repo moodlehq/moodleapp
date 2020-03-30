@@ -38,7 +38,7 @@
 
                 <!-- Question page. -->
                 <!-- We need to set ngIf loaded to make formGroup directive restart every time a page changes, see MOBILE-2540. -->
-                <form *ngIf="question && loaded" ion-list [formGroup]="questionForm">
+                <form *ngIf="question && loaded" ion-list [formGroup]="questionForm" #questionFormEl>
                     <ion-item-divider text-wrap *ngIf="pageContent">
                         <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent" contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId"></core-format-text>
                     </ion-item-divider>
@@ -57,7 +57,7 @@
                         <!-- Essay. -->
                         <ng-container *ngSwitchCase="'essay'">
                             <ion-item *ngIf="question.textarea">
-                                <core-rich-text-editor item-content placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}" [control]="question.control" [component]="component" [componentId]="lesson.coursemodule"></core-rich-text-editor>
+                                <core-rich-text-editor item-content placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}" [control]="question.control" [component]="component" [componentId]="lesson.coursemodule" [autoSave]="true" contextLevel="module" [contextInstanceId]="lesson.coursemodule" elementId="answer_editor"></core-rich-text-editor>
                             </ion-item>
                             <ion-item text-wrap *ngIf="!question.textarea && question.useranswer">
                                 <p class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</p>

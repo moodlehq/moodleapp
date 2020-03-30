@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { IonicPage, NavParams, Content, PopoverController, ModalController, Modal, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
@@ -41,6 +41,7 @@ import { Subscription } from 'rxjs';
 export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     @ViewChild(Content) content: Content;
     @ViewChildren(CoreQuestionComponent) questionComponents: QueryList<CoreQuestionComponent>;
+    @ViewChild('quizForm') formElement: ElementRef;
 
     quiz: any; // The quiz the attempt belongs to.
     attempt: any; // The attempt being attempted.
@@ -136,26 +137,28 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         if (this.questions && this.questions.length && !this.showSummary) {
             // Save answers.
             const modal = this.domUtils.showModalLoading('core.sending', true);
 
-            return this.processAttempt(false, false).catch(() => {
+            try {
+                await this.processAttempt(false, false);
+            } catch (error) {
                 // Save attempt failed. Show confirmation.
                 modal.dismiss();
 
-                return this.domUtils.showConfirm(this.translate.instant('addon.mod_quiz.confirmleavequizonerror'));
-            }).finally(() => {
-                modal.dismiss();
-            });
-        }
+                await this.domUtils.showConfirm(this.translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
-        return Promise.resolve();
+                this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+            } finally {
+                modal.dismiss();
+            }
+        }
     }
 
     /**
@@ -585,6 +588,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             // Answers saved, cancel auto save.
             this.autoSave.cancelAutoSave();
             this.autoSave.hideAutoSaveError();
+
+            if (this.formElement) {
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, !this.offline, this.sitesProvider.getCurrentSiteId());
+            }
         });
     }
 

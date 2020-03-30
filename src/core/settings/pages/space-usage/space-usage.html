@@ -1,13 +1,20 @@
 <ion-header>
     <ion-navbar core-back-button>
         <ion-title>{{ 'core.settings.spaceusage' | translate }}</ion-title>
+        <ion-buttons end>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
+<core-navbar-buttons>
+    <button ion-button icon-only (click)="showInfo()" [attr.aria-label]="'core.info' | translate">
+        <ion-icon name="information-circle"></ion-icon>
+    </button>
+</core-navbar-buttons>
 <ion-content>
-    <ion-refresher [enabled]="usageLoaded" (ionRefresh)="refreshData($event)">
+    <ion-refresher [enabled]="loaded" (ionRefresh)="refreshData($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="usageLoaded">
+    <core-loading [hideUntil]="loaded">
         <ion-item *ngFor="let site of sites" [class.core-primary-selected-item]="site.id == currentSiteId">
             <h2 text-wrap><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></h2>
             <p text-wrap>{{ site.fullName }}</p>
@@ -19,11 +26,11 @@
                 <ion-icon name="trash"></ion-icon>
             </button>
         </ion-item>
-        <ion-item-divider>
-            <p>{{ 'core.settings.total' | translate }}</p>
+        <ion-item-divider *ngIf="totals">
+            <h2>{{ 'core.settings.total' | translate }}</h2>
             <div item-end>
-                <p>{{ totalUsage | coreBytesToSize }}</p>
-                <p>{{ 'core.settings.entriesincache' | translate: { $a: totalEntries } }}</p>
+                <p>{{ totals.spaceUsage | coreBytesToSize }}</p>
+                <p>{{ 'core.settings.entriesincache' | translate: { $a: totals.cacheEntries } }}</p>
             </div>
         </ion-item-divider>
     </core-loading>

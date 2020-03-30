@@ -48,7 +48,7 @@
 
         <ion-list *ngIf="filteredEvents && filteredEvents.length" no-margin>
             <ng-container *ngFor="let event of filteredEvents">
-                <ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.item-dimmed]="event.ispast" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
+                <a ion-item text-wrap [title]="event.name" (click)="gotoEvent(event.id)" [class.item-dimmed]="event.ispast" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                     <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" item-start class="core-module-icon">
                     <core-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" item-start></core-icon>
                     <h2><core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"></core-format-text></h2>
@@ -61,7 +61,7 @@
                         <ion-icon name="trash"></ion-icon>
                         <span text-wrap>{{ 'core.deletedoffline' | translate }}</span>
                     </ion-note>
-                </ion-item>
+                </a>
             </ng-container>
         </ion-list>
 

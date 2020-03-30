@@ -13,11 +13,6 @@ ion-app.app-root {
         }
     }
 
-    .card-wp core-file + core-file > .item-wp.item-block > .item-inner,
-    core-file + core-file > .item-wp.item-block > .item-inner {
-        border-top: 1px solid $list-wp-border-color;
-    }
-
     core-file > .item.item-block > .item-inner {
         border-bottom: 0;
         @include safe-area-padding(null, 0px, null, null);

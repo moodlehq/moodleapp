@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, Optional, ViewChild } from '@angular/core';
+import { Component, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -25,7 +25,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-text-editor.ts';
+import { CoreEditorRichTextEditorComponent } from '@core/editor/components/rich-text-editor/rich-text-editor.ts';
 import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumOfflineProvider } from '../../providers/offline';
 import { AddonModForumHelperProvider } from '../../providers/helper';
@@ -41,7 +41,8 @@ import { AddonModForumSyncProvider } from '../../providers/sync';
 })
 export class AddonModForumNewDiscussionPage implements OnDestroy {
 
-    @ViewChild(CoreRichTextEditorComponent) messageEditor: CoreRichTextEditorComponent;
+    @ViewChild('newDiscFormEl') formElement: ElementRef;
+    @ViewChild(CoreEditorRichTextEditorComponent) messageEditor: CoreEditorRichTextEditorComponent;
 
     component = AddonModForumProvider.COMPONENT;
     messageControl = new FormControl();
@@ -74,6 +75,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
     protected syncObserver: any;
     protected isDestroyed = false;
     protected originalData: any;
+    protected forceLeave = false;
 
     constructor(navParams: NavParams,
             private navCtrl: NavController,
@@ -408,6 +410,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             this.newDiscussion.postToAllGroups = false;
             this.messageEditor.clearText();
             this.originalData = this.utils.clone(this.newDiscussion);
+            this.forceLeave = true; // Avoid asking for confirmation.
 
             // Trigger view event, to highlight the current opened discussion in the split view.
             this.eventsProvider.trigger(AddonModForumProvider.VIEW_DISCUSSION_EVENT, {
@@ -415,7 +418,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                 discussion: 0
             }, this.sitesProvider.getCurrentSiteId());
         } else {
-            this.originalData = null; // Avoid asking for confirmation.
+            this.forceLeave = true; // Avoid asking for confirmation.
             this.navCtrl.pop();
         }
     }
@@ -477,6 +480,8 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                 this.domUtils.showErrorModalDefault(null, 'addon.mod_forum.errorposttoallgroups', true);
             }
 
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!discussionIds, this.sitesProvider.getCurrentSiteId());
+
             this.returnToDiscussions(discussionIds, discTimecreated);
         }).catch((message) => {
             this.domUtils.showErrorModalDefault(message, 'addon.mod_forum.cannotcreatediscussion', true);
@@ -498,6 +503,8 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             }));
 
             return Promise.all(promises).then(() => {
+                this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+
                 this.returnToDiscussions();
             });
         }).catch(() => {
@@ -517,20 +524,22 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
-        let promise: any;
+    async ionViewCanLeave(): Promise<void> {
+        if (this.forceLeave) {
+            return;
+        }
 
         if (this.forumHelper.hasPostDataChanged(this.newDiscussion, this.originalData)) {
             // Show confirmation if some data has been modified.
-            promise = this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-        } else {
-            promise = Promise.resolve();
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        return promise.then(() => {
-            // Delete the local files from the tmp folder.
-            this.uploaderProvider.clearTmpFiles(this.newDiscussion.files);
-        });
+        // Delete the local files from the tmp folder.
+        this.uploaderProvider.clearTmpFiles(this.newDiscussion.files);
+
+        if (this.formElement) {
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+        }
     }
 
     /**

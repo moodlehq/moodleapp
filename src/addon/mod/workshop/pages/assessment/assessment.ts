@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -38,6 +38,8 @@ import { AddonModWorkshopSyncProvider } from '../../providers/sync';
     templateUrl: 'assessment.html',
 })
 export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
+
+    @ViewChild('evaluateFormEl') formElement: ElementRef;
 
     assessment: any;
     submission: any;
@@ -118,17 +120,19 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave || !this.evaluating) {
-            return true;
+            return;
         }
 
         if (!this.hasEvaluationChanged()) {
-            return Promise.resolve();
+            return;
         }
 
         // Show confirmation if some data has been modified.
-        return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
     }
 
     /**
@@ -340,7 +344,10 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
 
         // Try to send it to server.
         return this.workshopProvider.evaluateAssessment(this.workshopId, this.assessmentId, this.courseId, inputData.text,
-                inputData.weight, inputData.grade).then(() => {
+                inputData.weight, inputData.grade).then((result) => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!result, this.siteId);
+
             const data = {
                 workshopId: this.workshopId,
                 assessmentId: this.assessmentId,

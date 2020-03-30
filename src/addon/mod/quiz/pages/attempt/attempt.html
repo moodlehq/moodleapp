@@ -31,7 +31,7 @@
                 <p><core-format-text [component]="component" [componentId]="componentId" [text]="attempt.feedback" contextLevel="module" [contextInstanceId]="quiz.coursemodule" [courseId]="courseId"></core-format-text></p>
             </ion-item>
             <ion-item *ngIf="quiz.showReviewColumn && attempt.finished">
-                <button ion-button block icon-start [navPush]="'AddonModQuizReviewPage'" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}">
+                <button ion-button block icon-start navPush="AddonModQuizReviewPage" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}">
                     <ion-icon name="search"></ion-icon>
                     {{ 'addon.mod_quiz.review' | translate }}
                 </button>

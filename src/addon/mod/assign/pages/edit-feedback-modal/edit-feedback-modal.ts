@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonModAssignFeedbackDelegate } from '../../providers/feedback-delegate';
 import {
@@ -36,10 +38,17 @@ export class AddonModAssignEditFeedbackModalPage {
     @Input() plugin: AddonModAssignPlugin; // The plugin object.
     @Input() userId: number; // The user ID of the submission.
 
+    @ViewChild('editFeedbackForm') formElement: ElementRef;
+
     protected forceLeave = false; // To allow leaving the page without checking for changes.
 
-    constructor(params: NavParams, protected viewCtrl: ViewController, protected domUtils: CoreDomUtilsProvider,
-            protected translate: TranslateService, protected feedbackDelegate: AddonModAssignFeedbackDelegate) {
+    constructor(params: NavParams,
+            protected viewCtrl: ViewController,
+            protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService,
+            protected feedbackDelegate: AddonModAssignFeedbackDelegate,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) {
 
         this.assign = params.get('assign');
         this.submission = params.get('submission');
@@ -52,16 +61,17 @@ export class AddonModAssignEditFeedbackModalPage {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
-        return this.hasDataChanged().then((changed) => {
-            if (changed) {
-                return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-            }
-        });
+        const changed = await this.hasDataChanged();
+        if (changed) {
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+        }
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -81,6 +91,8 @@ export class AddonModAssignEditFeedbackModalPage {
     done(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
+
+        this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
         // Close the modal, sending the input data.
         this.forceLeave = true;

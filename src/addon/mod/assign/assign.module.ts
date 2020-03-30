@@ -34,7 +34,6 @@ import { AddonModAssignListLinkHandler } from './providers/list-link-handler';
 import { AddonModAssignPushClickHandler } from './providers/push-click-handler';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
@@ -73,7 +72,7 @@ export const ADDON_MOD_ASSIGN_PROVIDERS: any[] = [
 export class AddonModAssignModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModAssignModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModAssignPrefetchHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler, updateManager: CoreUpdateManagerProvider,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModAssignSyncCronHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModAssignIndexLinkHandler,
             listLinkHandler: AddonModAssignListLinkHandler, pushNotificationsDelegate: CorePushNotificationsDelegate,
             pushClickHandler: AddonModAssignPushClickHandler) {
@@ -84,57 +83,5 @@ export class AddonModAssignModule {
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTablesMigration([
-            {
-                name: 'mma_mod_assign_submissions',
-                newName: AddonModAssignOfflineProvider.SUBMISSIONS_TABLE,
-                fields: [
-                    {
-                        name: 'assignmentid',
-                        newName: 'assignid'
-                    },
-                    {
-                        name: 'submitted',
-                        type: 'boolean'
-                    },
-                    {
-                        name: 'submissionstatement',
-                        type: 'boolean'
-                    },
-                    {
-                        name: 'plugindata',
-                        type: 'object'
-                    }
-                ]
-            },
-            {
-                name: 'mma_mod_assign_submissions_grading',
-                newName: AddonModAssignOfflineProvider.SUBMISSIONS_GRADES_TABLE,
-                fields: [
-                    {
-                        name: 'assignmentid',
-                        newName: 'assignid'
-                    },
-                    {
-                        name: 'addattempt',
-                        type: 'boolean'
-                    },
-                    {
-                        name: 'applytoall',
-                        type: 'boolean'
-                    },
-                    {
-                        name: 'outcomes',
-                        type: 'object'
-                    },
-                    {
-                        name: 'plugindata',
-                        type: 'object'
-                    }
-                ]
-            }
-        ]);
     }
 }

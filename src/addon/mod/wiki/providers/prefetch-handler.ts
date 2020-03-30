@@ -24,7 +24,6 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonModWikiProvider } from './wiki';
 import { AddonModWikiSyncProvider } from './wiki-sync';
@@ -55,7 +54,6 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             protected textUtils: CoreTextUtilsProvider,
             protected courseHelper: CoreCourseHelperProvider,
             protected groupsProvider: CoreGroupsProvider,
-            protected gradesHelper: CoreGradesHelperProvider,
             protected syncProvider: AddonModWikiSyncProvider) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,

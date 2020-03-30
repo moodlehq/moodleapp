@@ -4,7 +4,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <core-search-box (onSubmit)="search($event)" [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" autoFocus="true" showClear="false"></core-search-box>
+    <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" autoFocus="true" searchArea="CoreCoursesSearch"></core-search-box>
 
     <div *ngIf="courses">
         <ion-item-divider>{{ 'core.courses.totalcoursesearchresults' | translate:{$a: total} }}</ion-item-divider>

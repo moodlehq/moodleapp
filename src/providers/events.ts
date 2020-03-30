@@ -64,6 +64,7 @@ export class CoreEventsProvider {
     static SELECT_COURSE_TAB = 'select_course_tab';
     static WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
     static SITE_STORAGE_DELETED = 'site_storage_deleted';
+    static FORM_ACTION = 'form_action';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};

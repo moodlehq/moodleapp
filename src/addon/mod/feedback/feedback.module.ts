@@ -34,7 +34,6 @@ import { AddonModFeedbackPushClickHandler } from './providers/push-click-handler
 import { AddonModFeedbackSyncProvider } from './providers/sync';
 import { AddonModFeedbackSyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModFeedbackOfflineProvider } from './providers/offline';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_FEEDBACK_PROVIDERS: any[] = [
@@ -73,7 +72,7 @@ export class AddonModFeedbackModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModFeedbackPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModFeedbackLinkHandler,
             cronDelegate: CoreCronDelegate, syncHandler: AddonModFeedbackSyncCronHandler,
-            analysisLinkHandler: AddonModFeedbackAnalysisLinkHandler, updateManager: CoreUpdateManagerProvider,
+            analysisLinkHandler: AddonModFeedbackAnalysisLinkHandler,
             showEntriesLinkHandler: AddonModFeedbackShowEntriesLinkHandler,
             showNonRespondentsLinkHandler: AddonModFeedbackShowNonRespondentsLinkHandler,
             completeLinkHandler: AddonModFeedbackCompleteLinkHandler,
@@ -91,17 +90,5 @@ export class AddonModFeedbackModule {
         contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTableMigration({
-            name: 'mma_mod_feedback_responses',
-            newName: AddonModFeedbackOfflineProvider.FEEDBACK_TABLE,
-            fields: [
-                {
-                    name: 'responses',
-                    type: 'object'
-                }
-            ]
-        });
     }
 }

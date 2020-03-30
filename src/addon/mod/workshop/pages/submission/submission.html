@@ -65,7 +65,7 @@
             <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId" summary="true" [workshop]="workshop" [access]="access"></addon-mod-workshop-assessment>
         </ion-list>
 
-        <form ion-list [formGroup]="feedbackForm" *ngIf="canAddFeedback">
+        <form ion-list [formGroup]="feedbackForm" *ngIf="canAddFeedback" #feedbackFormEl>
             <ion-item text-wrap>
                 <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
             </ion-item>
@@ -87,7 +87,7 @@
             </ion-item>
             <ion-item>
                 <ion-label stacked>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="feedbackForm.controls['text']" formControlName="text"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="feedbackForm.controls['text']" formControlName="text" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="feedbackauthor_editor" [draftExtraParams]="{id: submissionId}"></core-rich-text-editor>
             </ion-item>
         </form>
 

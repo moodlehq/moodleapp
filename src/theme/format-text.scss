@@ -1,4 +1,12 @@
 /** Styles to match web platform */
+ion-app.app-root core-format-text {
+  ul {
+    padding-left: 1rem;
+  }
+  ul, ol {
+    -webkit-padding-start: 15px;
+  }
+}
 ion-app.app-root core-format-text,
 ion-app.app-root .item core-format-text,
 ion-app.app-root core-rich-text-editor .core-rte-editor {
@@ -14,14 +22,10 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
   }
 
   // Fix lists styles in core-format-text.
-  ul {
-    padding-left: 1rem;
-  }
   ol {
     list-style-type: decimal;
   }
   ul, ol {
-    -webkit-padding-start: 15px;
     ol {
       list-style-type: lower-latin;
     }
@@ -171,6 +175,32 @@ ion-app.app-root core-rich-text-editor .core-rte-editor {
     }
     .alert-#{$color-name} p {
       color: $color-base;
+    }
+  }
+
+  .label {
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    color: $white;
+    background-color: $gray-darker;
+  }
+
+  .label-important {
+    color: $white;
+    background-color: $red;
+  }
+
+  @each $color-name, $color-base, $color-contrast in get-colors($colors) {
+    .label-#{$color-name} {
+      color: $color-contrast;
+      background-color: $color-base;
     }
   }
 }

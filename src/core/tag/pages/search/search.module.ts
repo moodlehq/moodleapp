@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreTagSearchPage } from './search';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSearchComponentsModule } from '@core/search/components/components.module';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
+        CoreSearchComponentsModule,
         IonicPageModule.forChild(CoreTagSearchPage),
         TranslateModule.forChild()
     ],

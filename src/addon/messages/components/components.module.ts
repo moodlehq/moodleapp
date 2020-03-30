@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSearchComponentsModule } from '@core/search/components/components.module';
 import { AddonMessagesDiscussionsComponent } from '../components/discussions/discussions';
 import { AddonMessagesConfirmedContactsComponent } from '../components/confirmed-contacts/confirmed-contacts';
 import { AddonMessagesContactRequestsComponent } from '../components/contact-requests/contact-requests';
@@ -37,7 +38,8 @@ import { AddonMessagesContactsComponent } from '../components/contacts/contacts'
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule
+        CorePipesModule,
+        CoreSearchComponentsModule,
     ],
     providers: [
     ],

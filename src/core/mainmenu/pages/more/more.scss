@@ -2,19 +2,14 @@ ion-app.app-root page-core-mainmenu-more {
     $core-more-icon: $gray-darker !default;
     $core-more-background-ios: $list-ios-background-color !default;
     $core-more-background-md: $list-md-background-color !default;
-    $core-more-background-wp: $item-wp-body-background-color !default;
     $core-more-activated-background-ios: color-shade($core-more-background-ios) !default;
     $core-more-activated-background-md: color-shade($core-more-background-md) !default;
-    $core-more-activated-background-wp: color-shade($core-more-background-wp) !default;
     $core-more-divider-ios: $item-ios-divider-background !default;
     $core-more-divider-md: $item-md-divider-background !default;
-    $core-more-divider-wp: $item-wp-divider-background !default;
     $core-more-border-ios: $list-ios-border-color !default;
     $core-more-border-md: $list-md-border-color !default;
-    $core-more-border-wp: $list-wp-border-color !default;
     $core-more-color-ios: $list-ios-text-color!default;
     $core-more-color-md: $list-md-text-color !default;
-    $core-more-color-wp: $item-wp-body-text-color !default;
 
     .item-block {
         &.item-ios {
@@ -39,17 +34,6 @@ ion-app.app-root page-core-mainmenu-more {
                 border-bottom: 1px solid $core-more-border-md;
             }
         }
-        &.item-wp {
-            background-color: $core-more-background-wp;
-            color: $core-more-color-wp;
-            p {
-                color: $core-more-color-wp;
-            }
-
-            .item-inner {
-                border-bottom: 1px solid $core-more-border-wp;
-            }
-        }
 
         &.activated {
             &.item-ios {
@@ -57,9 +41,6 @@ ion-app.app-root page-core-mainmenu-more {
             }
             &.item-md {
                 background-color: $core-more-activated-background-md;
-            }
-            &.item-wp {
-                background-color: $core-more-activated-background-wp;
             }
         }
     }
@@ -77,10 +58,6 @@ ion-app.app-root page-core-mainmenu-more {
             background-color: $core-more-divider-md;
             border-bottom: $core-more-border-md;
         }
-
-        &.item-wp {
-            background-color: $core-more-divider-wp;
-        }
     }
 
     @include darkmode() {
@@ -90,8 +67,7 @@ ion-app.app-root page-core-mainmenu-more {
 
         .item-divider {
             &.item-ios,
-            &.item-md,
-            &.item-wp {
+            &.item-md {
                 color: $core-dark-text-color;
                 background-color: $core-dark-item-divider-bg-color;
             }
@@ -99,8 +75,7 @@ ion-app.app-root page-core-mainmenu-more {
 
         .item-block {
             &.item-ios,
-            &.item-md,
-            &.item-wp {
+            &.item-md {
                 color: $core-dark-text-color;
                 background-color: $core-dark-item-bg-color;
                 p {
@@ -115,9 +90,6 @@ ion-app.app-root page-core-mainmenu-more {
                 }
                 &.item-md {
                     background-color: $core-more-activated-background-md;
-                }
-                &.item-wp {
-                    background-color: $core-more-activated-background-wp;
                 }
             }
         }

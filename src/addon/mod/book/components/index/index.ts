@@ -17,7 +17,9 @@ import { Content, ModalController } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
-import { AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter } from '../../providers/book';
+import {
+    AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter, AddonModBookBook, AddonModBookNavStyle
+} from '../../providers/book';
 import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
@@ -33,13 +35,18 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
     component = AddonModBookProvider.COMPONENT;
     chapterContent: string;
-    previousChapter: string;
-    nextChapter: string;
+    previousChapter: AddonModBookTocChapter;
+    nextChapter: AddonModBookTocChapter;
     tagsEnabled: boolean;
+    displayNavBar = true;
+    previousNavBarTitle: string;
+    nextNavBarTitle: string;
 
     protected chapters: AddonModBookTocChapter[];
     protected currentChapter: string;
     protected contentsMap: AddonModBookContentsMap;
+    protected book: AddonModBookBook;
+    protected displayTitlesInNavBar = false;
 
     constructor(injector: Injector, private bookProvider: AddonModBookProvider, private courseProvider: CoreCourseProvider,
             private appProvider: CoreAppProvider, private prefetchDelegate: AddonModBookPrefetchHandler,
@@ -69,7 +76,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             moduleId: this.module.id,
             chapters: this.chapters,
             selected: this.currentChapter,
-            courseId: this.courseId
+            courseId: this.courseId,
+            book: this.book,
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,
@@ -97,7 +105,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         if (chapterId && chapterId != this.currentChapter) {
             this.loaded = false;
             this.refreshIcon = 'spinner';
-            this.loadChapter(chapterId);
+            this.loadChapter(chapterId, true);
         }
     }
 
@@ -119,19 +127,24 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     protected fetchContent(refresh?: boolean): Promise<any> {
         const promises = [];
         let downloadFailed = false;
+        let downloadFailError;
 
         // Try to get the book data.
         promises.push(this.bookProvider.getBook(this.courseId, this.module.id).then((book) => {
+            this.book = book;
             this.dataRetrieved.emit(book);
             this.description = book.intro;
+            this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
+            this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
         }).catch(() => {
             // Ignore errors since this WS isn't available in some Moodle versions.
         }));
 
         // Download content. This function also loads module contents if needed.
-        promises.push(this.prefetchDelegate.download(this.module, this.courseId).catch(() => {
+        promises.push(this.prefetchDelegate.download(this.module, this.courseId).catch((error) => {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
+            downloadFailError = error;
 
             if (!this.module.contents.length) {
                 // Try to load module contents for offline usage.
@@ -160,10 +173,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             }
 
             // Show chapter.
-            return this.loadChapter(this.currentChapter).then(() => {
+            return this.loadChapter(this.currentChapter, refresh).then(() => {
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
-                    this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
+                    this.showErrorDownloadingSomeFiles(downloadFailError);
                 }
             }).catch(() => {
                 // Ignore errors, they're handled inside the loadChapter function.
@@ -177,9 +190,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * Load a book chapter.
      *
      * @param chapterId Chapter to load.
+     * @param logChapterId Whether chapter ID should be passed to the log view function.
      * @return Promise resolved when done.
      */
-    protected loadChapter(chapterId: string): Promise<void> {
+    protected loadChapter(chapterId: string, logChapterId: boolean): Promise<void> {
         this.currentChapter = chapterId;
         this.domUtils.scrollToTop(this.content);
 
@@ -188,10 +202,15 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.previousChapter = this.bookProvider.getPreviousChapter(this.chapters, chapterId);
             this.nextChapter = this.bookProvider.getNextChapter(this.chapters, chapterId);
 
+            this.previousNavBarTitle = this.previousChapter && this.displayTitlesInNavBar ?
+                    this.translate.instant('addon.mod_book.navprevtitle', {$a: this.previousChapter.title}) : '';
+            this.nextNavBarTitle = this.nextChapter && this.displayTitlesInNavBar ?
+                    this.translate.instant('addon.mod_book.navnexttitle', {$a: this.nextChapter.title}) : '';
+
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
-            this.bookProvider.logView(this.module.instance, chapterId, this.module.name).then(() => {
+            this.bookProvider.logView(this.module.instance, logChapterId ? chapterId : undefined, this.module.name).then(() => {
                 // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
-                if (this.nextChapter == '0') {
+                if (!this.nextChapter) {
                     this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }
             }).catch(() => {

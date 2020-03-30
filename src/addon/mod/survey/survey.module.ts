@@ -27,7 +27,6 @@ import { AddonModSurveyPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModSurveySyncProvider } from './providers/sync';
 import { AddonModSurveySyncCronHandler } from './providers/sync-cron-handler';
 import { AddonModSurveyOfflineProvider } from './providers/offline';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_SURVEY_PROVIDERS: any[] = [
@@ -59,7 +58,7 @@ export class AddonModSurveyModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModSurveyModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModSurveyPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModSurveyLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModSurveySyncCronHandler, updateManager: CoreUpdateManagerProvider,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModSurveySyncCronHandler,
             listLinkHandler: AddonModSurveyListLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
@@ -67,17 +66,5 @@ export class AddonModSurveyModule {
         contentLinksDelegate.registerHandler(linkHandler);
         contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTableMigration({
-            name: 'mma_mod_survey_answers',
-            newName: AddonModSurveyOfflineProvider.SURVEY_TABLE,
-            fields: [
-                {
-                    name: 'answers',
-                    type: 'object'
-                }
-            ]
-        });
     }
 }

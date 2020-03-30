@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'core.settings.opensourcelicenses' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <a *ngIf="error" ion-item text-wrap [href]="licensesUrl" core-link auto-login="no">
+            {{ 'core.settings.opensourcelicenses' | translate }}
+        </a>
+
+        <ng-container *ngIf="!error">
+            <ion-item *ngFor="let license of licenses" text-wrap>
+                <h2>
+                    <a *ngIf="license.repository" [href]="license.repository" core-link auto-login="no">{{ license.name }}</a>
+                    <ng-container *ngIf="!license.repository">{{ license.name }}</ng-container> - {{ license.version }}
+                </h2>
+                <h3 *ngIf="license.publisher">{{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}</h3>
+                <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
+                <p><a *ngIf="license.url" [href]="license.url" core-link auto-login="no">{{ license.url }}</a></p>
+                <p><a *ngIf="license.email" [href]="'mailto:' +license.email" core-link auto-login="no">{{ license.email }}</a></p>
+                <a *ngIf="license.licenseUrl" [href]="license.licenseUrl" target="_blank" ion-button ion-button clear item-end core-link auto-login="no">{{ 'core.view' | translate }}</a>
+            </ion-item>
+        </ng-container>
+    </core-loading>
+</ion-content>

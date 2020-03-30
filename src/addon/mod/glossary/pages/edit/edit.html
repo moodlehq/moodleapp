@@ -8,24 +8,24 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <ion-list>
+        <form ion-list #editFormEl>
             <ion-item>
                 <ion-label stacked>{{ 'addon.mod_glossary.concept' | translate }}</ion-label>
-                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="entry.concept"></ion-input>
+                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="entry.concept" name="concept"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label stacked>{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
-                <core-rich-text-editor item-content [control]="definitionControl" (contentChanged)="onDefinitionChange($event)" [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component" [componentId]="glossary.cmid"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="definitionControl" (contentChanged)="onDefinitionChange($event)" [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component" [componentId]="glossary.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="definition_editor" [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
                 <ion-label stacked id="addon-mod-glossary-categories-label">{{ 'addon.mod_glossary.categories' | translate }}</ion-label>
-                <ion-select [(ngModel)]="options.categories" multiple="true" aria-labelledby="addon-mod-glossary-categories-label" interface="action-sheet" [placeholder]="'addon.mod_glossary.categories' | translate">
+                <ion-select [(ngModel)]="options.categories" multiple="true" aria-labelledby="addon-mod-glossary-categories-label" interface="action-sheet" [placeholder]="'addon.mod_glossary.categories' | translate" name="categories">
                     <ion-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</ion-option>
                 </ion-select>
             </ion-item>
             <ion-item>
                 <ion-label stacked id="addon-mod-glossary-aliases-label">{{ 'addon.mod_glossary.aliases' | translate }}</ion-label>
-                <ion-textarea [(ngModel)]="options.aliases" rows="1" core-auto-rows aria-labelledby="addon-mod-glossary-aliases-label"></ion-textarea>
+                <ion-textarea [(ngModel)]="options.aliases" rows="1" core-auto-rows aria-labelledby="addon-mod-glossary-aliases-label" name="aliases"></ion-textarea>
             </ion-item>
             <ion-item-divider>{{ 'addon.mod_glossary.attachment' | translate }}</ion-item-divider>
             <core-attachments [files]="attachments" [component]="component" [componentId]="glossary.cmid" [allowOffline]="true"></core-attachments>
@@ -33,17 +33,17 @@
                 <ion-item-divider>{{ 'addon.mod_glossary.linking' | translate }}</ion-item-divider>
                 <ion-item text-wrap>
                     <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="options.usedynalink"></ion-toggle>
+                    <ion-toggle [(ngModel)]="options.usedynalink" name="usedynalink"></ion-toggle>
                 </ion-item>
                 <ion-item text-wrap>
                     <ion-label>{{ 'addon.mod_glossary.casesensitive' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!options.usedynalink" [(ngModel)]="options.casesensitive"></ion-toggle>
+                    <ion-toggle [disabled]="!options.usedynalink" [(ngModel)]="options.casesensitive" name="casesensitive"></ion-toggle>
                 </ion-item>
                 <ion-item text-wrap>
                     <ion-label>{{ 'addon.mod_glossary.fullmatch' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!options.usedynalink" [(ngModel)]="options.fullmatch"></ion-toggle>
+                    <ion-toggle [disabled]="!options.usedynalink" [(ngModel)]="options.fullmatch" name="fullmatch"></ion-toggle>
                 </ion-item>
             </ng-container>
-        </ion-list>
+        </form>
     </core-loading>
 </ion-content>

@@ -469,4 +469,32 @@ export class CoreUrlUtilsProvider {
 
         return matches && matches[0];
     }
+
+    /**
+     * Modifies a pluginfile URL to use the default pluginfile script instead of the webservice one.
+     *
+     * @param url The url to be fixed.
+     * @param siteUrl The URL of the site the URL belongs to.
+     * @return Modified URL.
+     */
+    unfixPluginfileURL(url: string, siteUrl?: string): string {
+        if (!url) {
+            return '';
+        }
+
+        url = url.replace(/&amp;/g, '&');
+
+        // It site URL is supplied, check if the URL belongs to the site.
+        if (siteUrl && url.indexOf(this.textUtils.addEndingSlash(siteUrl)) !== 0) {
+            return url;
+        }
+
+        // Not a pluginfile URL. Treat webservice/pluginfile case.
+        url = url.replace(/\/webservice\/pluginfile\.php\//, '/pluginfile.php/');
+
+        // Make sure the URL doesn't contain the token.
+        url.replace(/([?&])token=[^&]*&?/, '$1');
+
+        return url;
+    }
 }

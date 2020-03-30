@@ -7,120 +7,16 @@
     <ion-item text-wrap>
         <h2>{{ appName }} {{ versionName }}</h2>
     </ion-item>
-    <ion-item-group>
-        <ion-item-divider text-wrap>
-            {{ 'core.settings.license' | translate }}
-        </ion-item-divider>
-        <ion-item text-wrap>
-            <h2>Apache 2.0</h2>
-            <p><a href="http://www.apache.org/licenses/LICENSE-2.0" core-link auto-login="no">http://www.apache.org/licenses/LICENSE-2.0</a></p>
-        </ion-item>
-    </ion-item-group>
-    <ion-item-group *ngIf="privacyPolicy">
-        <ion-item-divider text-wrap>
-            {{ 'core.settings.privacypolicy' | translate }}
-        </ion-item-divider>
-        <ion-item text-wrap>
-            <p><a [href]="privacyPolicy" core-link auto-login="no">{{ privacyPolicy }}</a></p>
-        </ion-item>
-    </ion-item-group>
-    <ion-item-group *ngIf="siteUrl">
-        <ion-item-divider text-wrap>
-            {{ 'core.login.siteurl' | translate }}<ng-container *ngIf="isPrefixedUrl"> *</ng-container>
-        </ion-item-divider>
-        <ion-item text-wrap>
-            <p><a [href]="siteUrl" core-link auto-login="yes">{{ siteUrl }}</a></p>
-        </ion-item>
-    </ion-item-group>
-    <ion-item-group>
-        <ion-item-divider text-wrap>
-            {{ 'core.settings.deviceinfo' | translate }}
-        </ion-item-divider>
-        <ion-item text-wrap *ngIf="versionName">
-            <h2>{{ 'core.settings.versionname' | translate}}</h2>
-            <p>{{ versionName }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="versionCode">
-            <h2>{{ 'core.settings.versioncode' | translate}}</h2>
-            <p>{{ versionCode }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="compilationTime || lastCommit">
-            <h2>{{ 'core.settings.compilationinfo' | translate }}</h2>
-            <p *ngIf="compilationTime">{{ compilationTime | coreFormatDate: "LLL Z": false }}</p>
-            <p *ngIf="lastCommit">{{ lastCommit }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="fileSystemRoot">
-            <h2>{{ 'core.settings.filesystemroot' | translate}}</h2>
-            <p><a *ngIf="fsClickable" [href]="fileSystemRoot" core-link auto-login="no">{{ fileSystemRoot }}</a></p>
-            <p *ngIf="!fsClickable">{{ fileSystemRoot }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="navigator && navigator.userAgent">
-            <h2>{{ 'core.settings.navigatoruseragent' | translate}}</h2>
-            <p>{{ navigator.userAgent }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="navigator && navigator.language">
-            <h2>{{ 'core.settings.navigatorlanguage' | translate}}</h2>
-            <p>{{ navigator.language }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="locationHref">
-            <h2>{{ 'core.settings.locationhref' | translate}}</h2>
-            <p>{{ locationHref }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="appReady">
-            <h2>{{ 'core.settings.appready' | translate}}</h2>
-            <p>{{ appReady | translate }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="deviceType">
-            <h2>{{ 'core.settings.displayformat' | translate}}</h2>
-            <p>{{ deviceType | translate }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="deviceOs">
-            <h2>{{ 'core.settings.deviceos' | translate}}</h2>
-            <p>{{ deviceOs | translate }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="currentLanguage">
-            <h2>{{ 'core.settings.currentlanguage' | translate}}</h2>
-            <p>{{ currentLanguage }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="networkStatus">
-            <h2>{{ 'core.settings.networkstatus' | translate}}</h2>
-            <p>{{ networkStatus | translate }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="wifiConnection">
-            <h2>{{ 'core.settings.wificonnection' | translate}}</h2>
-            <p>{{ wifiConnection | translate }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="deviceWebWorkers">
-            <h2>{{ 'core.settings.devicewebworkers' | translate}}</h2>
-            <p>{{ deviceWebWorkers | translate }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="device && device.cordova">
-            <h2>{{ 'core.settings.cordovaversion' | translate}}</h2>
-            <p>{{ device.cordova }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="device && device.platform">
-            <h2>{{ 'core.settings.cordovadeviceplatform' | translate}}</h2>
-            <p>{{ device.platform }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="device && device.version">
-            <h2>{{ 'core.settings.cordovadeviceosversion' | translate}}</h2>
-            <p>{{ device.version }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="device && device.model">
-            <h2>{{ 'core.settings.cordovadevicemodel' | translate}}</h2>
-            <p>{{ device.model }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="device && device.uuid">
-            <h2>{{ 'core.settings.cordovadeviceuuid' | translate}}</h2>
-            <p>{{ device.uuid }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="pushId">
-            <h2>{{ 'core.settings.pushid' | translate}}</h2>
-            <p>{{ pushId }}</p>
-        </ion-item>
-        <ion-item text-wrap *ngIf="localNotifAvailable">
-            <h2>{{ 'core.settings.localnotifavailable' | translate}}</h2>
-            <p>{{ localNotifAvailable | translate }}</p>
-        </ion-item>
-    </ion-item-group>
+    <a ion-item text-wrap (click)="openPage('CoreSettingsLicensesPage')" [title]="'core.settings.opensourcelicenses' | translate">
+        <core-icon name="fa-copyright" item-start></core-icon>
+        {{ 'core.settings.opensourcelicenses' | translate }}
+    </a>
+    <a ion-item text-wrap *ngIf="privacyPolicy" [href]="privacyPolicy" core-link auto-login="no">
+        <core-icon name="fa-user-secret" item-start></core-icon>
+        {{ 'core.settings.privacypolicy' | translate }}
+    </a>
+    <a ion-item text-wrap (click)="openPage('CoreSettingsDeviceInfoPage')" [title]="'core.settings.deviceinfo' | translate">
+        <ion-icon name="phone-portrait" item-start></ion-icon>
+        {{ 'core.settings.deviceinfo' | translate }}
+    </a>
 </ion-content>

@@ -106,7 +106,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.text) {
+        if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
             this.hideShowMore();
             this.formatAndRenderContents();
         }
@@ -302,7 +302,7 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         } else {
             // Open a new state with the contents.
-            const filter = this.utils.isTrueOrOne(this.filter);
+            const filter = typeof this.filter != 'undefined' ? this.utils.isTrueOrOne(this.filter) : undefined;
 
             this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
                 this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId, this.courseId);
@@ -413,7 +413,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.contextInstanceId = site.getSiteHomeId();
             }
 
-            this.filter = typeof this.filter == 'undefined' ? !!(this.contextLevel && this.contextInstanceId) : !!this.filter;
+            const filter = typeof this.filter == 'undefined' ?
+                    !!(this.contextLevel && typeof this.contextInstanceId != 'undefined') : this.utils.isTrueOrOne(this.filter);
 
             result.options = {
                 clean: this.utils.isTrueOrOne(this.clean),
@@ -423,7 +424,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 wsNotFiltered: this.utils.isTrueOrOne(this.wsNotFiltered)
             };
 
-            if (this.filter) {
+            if (filter) {
                 return this.filterHelper.getFiltersAndFormatText(this.text, this.contextLevel, this.contextInstanceId,
                         result.options, result.siteId).then((res) => {
 

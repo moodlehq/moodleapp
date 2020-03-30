@@ -45,7 +45,7 @@
         </div>
 
         <!-- Questions -->
-        <form name="addon-mod_quiz-player-form" *ngIf="questions && questions.length && !quizAborted && !showSummary">
+        <form name="addon-mod_quiz-player-form" *ngIf="questions && questions.length && !quizAborted && !showSummary" #quizForm>
             <div *ngFor="let question of questions">
                 <ion-card id="addon-mod_quiz-question-{{question.slot}}">
                     <!-- "Header" of the question. -->
@@ -118,8 +118,8 @@
                 <p class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
                 <p *ngFor="let message of preventSubmitMessages">{{message}}</p>
                 <a ion-button block icon-end [href]="moduleUrl" core-link>
-                    <ion-icon name="open"></ion-icon>
                     {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="open"></ion-icon>
                 </a>
             </ion-item>
             <!-- Button to submit the quiz. -->

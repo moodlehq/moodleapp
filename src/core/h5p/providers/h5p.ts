@@ -1877,6 +1877,30 @@ export class CoreH5PProvider {
     }
 
     /**
+     * Check whether H5P offline is disabled.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether is disabled.
+     */
+    async isOfflineDisabled(siteId?: string): Promise<boolean> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        return this.isOfflineDisabledInSite(site);
+    }
+
+    /**
+     * Check whether H5P offline is disabled.
+     *
+     * @param site Site instance. If not defined, current site.
+     * @return Whether is disabled.
+     */
+    isOfflineDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('NoDelegate_H5POffline');
+    }
+
+    /**
      * Performs actions required when a library has been installed.
      *
      * @param libraryId ID of library that was installed.
@@ -2578,7 +2602,7 @@ export class CoreH5PProvider {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }
 
-        return url;
+        return this.urlUtils.removeUrlParams(url);
     }
 
     /**

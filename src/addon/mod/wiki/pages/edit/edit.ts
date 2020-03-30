@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -37,6 +37,8 @@ import { AddonModWikiSyncProvider, AddonModWikiSyncSubwikiResult } from '../../p
 })
 export class AddonModWikiEditPage implements OnInit, OnDestroy {
 
+    @ViewChild('editPageForm') formElement: ElementRef;
+
     title: string; // Title to display.
     pageForm: FormGroup; // The form group.
     contentControl: FormControl; // The FormControl for the page content.
@@ -45,6 +47,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
     component = AddonModWikiProvider.COMPONENT; // Component to link the files to.
     componentId: number; // Component ID to link the files to.
     wrongVersionLock: boolean; // Whether the page lock doesn't match the initial one.
+    editorExtraParams: {[name: string]: any} = {};
 
     protected module: any; // Wiki module instance.
     protected courseId: number; // Course the wiki belongs to.
@@ -101,6 +104,20 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
 
         // Block the wiki so it cannot be synced.
         this.syncProvider.blockOperation(this.component, this.blockId);
+
+        if (!this.module.id) {
+            this.editorExtraParams.type = 'wiki';
+        }
+
+        if (this.pageId) {
+            this.editorExtraParams.pageid = this.pageId;
+
+            if (this.section) {
+                this.editorExtraParams.section = this.section;
+            }
+        } else if (pageTitle) {
+            this.editorExtraParams.pagetitle = pageTitle;
+        }
     }
 
     /**
@@ -329,17 +346,17 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
 
         // Check if data has changed.
         if (this.hasDataChanged()) {
-            return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        return true;
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
@@ -408,6 +425,9 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
         if (this.editing) {
             // Edit existing page.
             promise = this.wikiProvider.editPage(this.pageId, text, this.section).then(() => {
+
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, true, this.sitesProvider.getCurrentSiteId());
+
                 // Invalidate page since it changed.
                 return this.wikiProvider.invalidatePage(this.pageId).then(() => {
                     return this.gotoPage(title);
@@ -441,6 +461,9 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 let wikiId = this.wikiId || (this.module && this.module.instance);
 
                 return this.wikiProvider.newPage(title, text, this.subwikiId, wikiId, this.userId, this.groupId).then((id) => {
+
+                    this.domUtils.triggerFormSubmittedEvent(this.formElement, id > 0, this.sitesProvider.getCurrentSiteId());
+
                     if (id > 0) {
                         // Page was created, get its data and go to the page.
                         this.pageId = id;

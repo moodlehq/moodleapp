@@ -20,6 +20,7 @@ addon-qtype-ddwtos {
         border: 1px solid $gray-darker;
         margin-bottom: 2px;
         border-radius: 5px;
+        cursor: pointer;
     }
     .draghome, .drag {
         display: inline-block;
@@ -41,6 +42,7 @@ addon-qtype-ddwtos {
         z-index: 2;
         border-radius: 5px;
         line-height: 25px;
+        cursor: pointer;
     }
     .drag.selected {
         z-index: 3;
@@ -106,8 +108,4 @@ addon-qtype-ddwtos .item-md .draghome {
 
 addon-qtype-ddwtos .item-ios .draghome {
     max-width: calc(100% - #{($item-ios-padding-start)});
-}
-
-addon-qtype-ddwtos .item-wp .draghome {
-    max-width: calc(100% - #{($item-wp-padding-start)});
 }

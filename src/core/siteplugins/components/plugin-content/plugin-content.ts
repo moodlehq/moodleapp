@@ -102,6 +102,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             this.jsData = Object.assign(this.data, this.sitePluginsProvider.createDataForJS(this.initResult, result));
 
             // Pass some methods as jsData so they can be called from the template too.
+            this.jsData.fetchContent = this.fetchContent.bind(this);
             this.jsData.openContent = this.openContent.bind(this);
             this.jsData.refreshContent = this.refreshContent.bind(this);
             this.jsData.updateContent = this.updateContent.bind(this);
@@ -169,12 +170,14 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @param component New component. If not provided, current component
      * @param method New method. If not provided, current method
      * @param jsData JS variables to pass to the new view so they can be used in the template or JS.
+     * @param preSets New preSets to use. If not provided, use current preSets.
      */
-    updateContent(args: any, component?: string, method?: string, jsData?: any): void {
+    updateContent(args: any, component?: string, method?: string, jsData?: any, preSets?: any): void {
         this.component = component || this.component;
         this.method = method || this.method;
         this.args = args;
         this.dataLoaded = false;
+        this.preSets = preSets || this.preSets;
         if (jsData) {
             Object.assign(this.data, jsData);
         }

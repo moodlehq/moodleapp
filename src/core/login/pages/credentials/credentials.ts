@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -32,6 +32,9 @@ import { CoreConfigConstants } from '../../../../configconstants';
     templateUrl: 'credentials.html',
 })
 export class CoreLoginCredentialsPage {
+
+    @ViewChild('credentialsForm') formElement: ElementRef;
+
     credForm: FormGroup;
     siteUrl: string;
     siteChecked = false;
@@ -153,11 +156,11 @@ export class CoreLoginCredentialsPage {
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
             this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
-            this.logoUrl = this.siteConfig.logourl || this.siteConfig.compactlogourl;
+            this.logoUrl = this.loginHelper.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || this.translate.instant('core.login.loginsteps');
-            this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
 
             const disabledFeatures = this.loginHelper.getDisabledFeatures(this.siteConfig);
+            this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
             this.canSignup = this.siteConfig.registerauth == 'email' &&
                     !this.loginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
             this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
@@ -242,6 +245,8 @@ export class CoreLoginCredentialsPage {
             }
         }).finally(() => {
             modal.dismiss();
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, true);
         });
     }
 

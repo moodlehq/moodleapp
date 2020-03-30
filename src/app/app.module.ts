@@ -17,7 +17,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, COMPILER_OPTIONS } from '@angular/core';
 import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config, Refresher } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
-import { HttpModule } from '@angular/http';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { LocationStrategy } from '@angular/common';
@@ -61,6 +60,9 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
+// Handlers.
+import { CoreSiteInfoCronHandler } from '@providers/handlers/site-info-cron-handler';
+
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
@@ -84,6 +86,8 @@ import { CoreRatingModule } from '@core/rating/rating.module';
 import { CoreTagModule } from '@core/tag/tag.module';
 import { CoreFilterModule } from '@core/filter/filter.module';
 import { CoreH5PModule } from '@core/h5p/h5p.module';
+import { CoreSearchModule } from '@core/search/search.module';
+import { CoreEditorModule } from '@core/editor/editor.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -198,7 +202,6 @@ export const WP_PROVIDER: any = null;
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
-        HttpModule,
         IonicModule.forRoot(MoodleMobileApp, {
             pageTransition: 'core-page-transition'
         }),
@@ -232,6 +235,8 @@ export const WP_PROVIDER: any = null;
         CoreTagModule,
         CoreFilterModule,
         CoreH5PModule,
+        CoreSearchModule,
+        CoreEditorModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
@@ -329,6 +334,7 @@ export const WP_PROVIDER: any = null;
         CoreSyncProvider,
         CoreFileHelperProvider,
         CoreCustomURLSchemesProvider,
+        CoreSiteInfoCronHandler,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
@@ -341,8 +347,17 @@ export const WP_PROVIDER: any = null;
     ]
 })
 export class AppModule {
-    constructor(platform: Platform, initDelegate: CoreInitDelegate, updateManager: CoreUpdateManagerProvider, config: Config,
-            sitesProvider: CoreSitesProvider, fileProvider: CoreFileProvider, private eventsProvider: CoreEventsProvider) {
+    constructor(
+            platform: Platform,
+            initDelegate: CoreInitDelegate,
+            updateManager: CoreUpdateManagerProvider,
+            config: Config,
+            sitesProvider: CoreSitesProvider,
+            fileProvider: CoreFileProvider,
+            private eventsProvider: CoreEventsProvider,
+            cronDelegate: CoreCronDelegate,
+            siteInfoCronHandler: CoreSiteInfoCronHandler,
+            ) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
             name: 'CorePlatformReady',
@@ -372,6 +387,9 @@ export class AppModule {
 
         // Execute the init processes.
         initDelegate.executeInitProcesses();
+
+        // Register handlers.
+        cronDelegate.register(siteInfoCronHandler);
 
         // Set transition animation.
         config.setTransition('core-page-transition', CorePageTransition);

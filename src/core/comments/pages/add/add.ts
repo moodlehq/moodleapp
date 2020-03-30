@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreCommentsProvider } from '../../providers/comments';
 
@@ -27,6 +29,8 @@ import { CoreCommentsProvider } from '../../providers/comments';
     templateUrl: 'add.html',
 })
 export class CoreCommentsAddPage {
+    @ViewChild('commentForm') formElement: ElementRef;
+
     protected contextLevel: string;
     protected instanceId: number;
     protected componentName: string;
@@ -36,8 +40,13 @@ export class CoreCommentsAddPage {
     content = '';
     processing = false;
 
-    constructor(params: NavParams, private viewCtrl: ViewController, private appProvider: CoreAppProvider,
-            private domUtils: CoreDomUtilsProvider, private commentsProvider: CoreCommentsProvider) {
+    constructor(params: NavParams,
+            protected viewCtrl: ViewController,
+            protected appProvider: CoreAppProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected commentsProvider: CoreCommentsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) {
         this.contextLevel = params.get('contextLevel');
         this.instanceId = params.get('instanceId');
         this.componentName = params.get('componentName');
@@ -61,6 +70,9 @@ export class CoreCommentsAddPage {
         this.processing = true;
         this.commentsProvider.addComment(this.content, this.contextLevel, this.instanceId, this.componentName, this.itemId,
                 this.area).then((commentsResponse) => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!commentsResponse, this.sitesProvider.getCurrentSiteId());
+
             this.viewCtrl.dismiss({comments: commentsResponse}).finally(() => {
                 this.domUtils.showToast(commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline', true,
                     3000);
@@ -77,6 +89,7 @@ export class CoreCommentsAddPage {
      * Close modal.
      */
     closeModal(): void {
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
         this.viewCtrl.dismiss();
     }
 }

@@ -8,8 +8,8 @@
         <a ion-item core-user-link [userId]="siteInfo.userid" text-wrap>
             <ion-avatar core-user-avatar [user]="siteInfo" item-start></ion-avatar>
             <h2>{{siteInfo.fullname}}</h2>
-            <ion-note>{{ siteName }}</ion-note>
-            <ion-note>{{ siteUrl }}</ion-note>
+            <ion-note class="core-note-block"><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true"></core-format-text></ion-note>
+            <ion-note class="core-note-block">{{ siteUrl }}</ion-note>
         </a>
         <ion-item-divider></ion-item-divider>
         <ion-item text-center *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
@@ -17,35 +17,41 @@
         </ion-item>
         <a ion-item *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']" (click)="openHandler(handler)" title="{{ handler.title | translate }}" detail-push>
             <core-icon [name]="handler.icon" item-start></core-icon>
-            <p>{{ handler.title | translate}}</p>
+            <h2>{{ handler.title | translate}}</h2>
             <ion-badge item-end *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge">{{handler.badge}}</ion-badge>
             <ion-spinner item-end *ngIf="handler.showBadge && handler.loading"></ion-spinner>
         </a>
         <div *ngFor="let item of customItems" class="core-moremenu-customitem">
             <a ion-item *ngIf="item.type != 'embedded'" [href]="item.url" core-link [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" title="{{item.label}}">
                 <core-icon [name]="item.icon" item-start></core-icon>
-                <p>{{item.label}}</p>
+                <h2>{{item.label}}</h2>
             </a>
             <a ion-item *ngIf="item.type == 'embedded'" (click)="openItem(item)" title="{{item.label}}">
                 <core-icon [name]="item.icon" item-start></core-icon>
-                <p>{{item.label}}</p>
+                <h2>{{item.label}}</h2>
             </a>
         </div>
         <a *ngIf="showWeb" ion-item [href]="siteInfo.siteurl" core-link autoLogin="yes" title="{{ 'core.mainmenu.website' | translate }}">
             <ion-icon name="globe" item-start aria-hidden="true"></ion-icon>
-            <p>{{ 'core.mainmenu.website' | translate }}</p>
+            <h2>{{ 'core.mainmenu.website' | translate }}</h2>
         </a>
         <a *ngIf="showHelp" ion-item [href]="docsUrl" core-link autoLogin="no" title="{{ 'core.mainmenu.help' | translate }}">
             <ion-icon name="help-buoy" item-start aria-hidden="true"></ion-icon>
-            <p>{{ 'core.mainmenu.help' | translate }}</p>
+            <h2>{{ 'core.mainmenu.help' | translate }}</h2>
         </a>
-        <a ion-item (click)="openSettings()" title="{{ 'core.mainmenu.appsettings' | translate }}">
-            <ion-icon name="cog" item-start aria-hidden="true"></ion-icon>
-            <p>{{ 'core.mainmenu.appsettings' | translate }}</p>
+        <a ion-item (click)="openSitePreferences()" title="{{ 'core.settings.preferences' | translate }}">
+            <core-icon name="fa-wrench" item-start></core-icon>
+            <h2>{{ 'core.settings.preferences' | translate }}</h2>
         </a>
-        <a ion-item (click)="logout()" title="{{ logoutLabel | translate }}">
+                <a ion-item (click)="logout()" title="{{ logoutLabel | translate }}">
             <ion-icon name="log-out" item-start aria-hidden="true"></ion-icon>
-            <p>{{ logoutLabel | translate }}</p>
+            <h2>{{ logoutLabel | translate }}</h2>
         </a>
+        <ion-item-divider></ion-item-divider>
+        <a ion-item (click)="openAppSettings()" title="{{ 'core.settings.appsettings' | translate }}">
+            <core-icon name="fa-cogs" item-start></core-icon>
+            <h2>{{ 'core.settings.appsettings' | translate }}</h2>
+        </a>
+
     </ion-list>
 </ion-content>

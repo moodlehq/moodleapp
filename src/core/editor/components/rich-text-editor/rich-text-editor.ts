@@ -21,28 +21,23 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreEditorOfflineProvider } from '../../providers/editor-offline';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 /**
- * Directive to display a rich text editor if enabled.
+ * Component to display a rich text editor if enabled.
  *
- * If enabled, this directive will show a rich text editor. Otherwise it'll show a regular textarea.
- *
- * This directive requires an OBJECT model. The text written in the editor or textarea will be stored inside
- * a "text" property in that object. This is to ensure 2-way data-binding, since using a string as a model
- * could be easily broken.
+ * If enabled, this component will show a rich text editor. Otherwise it'll show a regular textarea.
  *
  * Example:
  * <core-rich-text-editor item-content [control]="control" [placeholder]="field.name"></core-rich-text-editor>
- *
- * In the example above, the text written in the editor will be stored in newpost.text.
  */
 @Component({
     selector: 'core-rich-text-editor',
-    templateUrl: 'core-rich-text-editor.html'
+    templateUrl: 'core-editor-rich-text-editor.html'
 })
-export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy {
+export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDestroy {
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Anchor button, fullscreen...
     // @todo: Textarea height is not being updated when editor is resized. Height is calculated if any css is changed.
@@ -52,11 +47,19 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     @Input() name = 'core-rich-text-editor'; // Name to set to the textarea.
     @Input() component?: string; // The component to link the files to.
     @Input() componentId?: number; // An ID to use in conjunction with the component.
+    @Input() autoSave?: boolean | string; // Whether to auto-save the contents in a draft. Defaults to true.
+    @Input() contextLevel?: string; // The context level of the text.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() elementId?: string; // An ID to set to the element.
+    @Input() draftExtraParams: {[name: string]: any}; // Extra params to identify the draft.
     @Output() contentChanged: EventEmitter<string>;
 
     @ViewChild('editor') editor: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea: TextInput; // Textarea editor.
 
+    protected DRAFT_AUTOSAVE_FREQUENCY = 30000;
+    protected RESTORE_MESSAGE_CLEAR_TIME = 6000;
+    protected SAVE_MESSAGE_CLEAR_TIME = 2000;
     protected element: HTMLDivElement;
     protected editorElement: HTMLDivElement;
     protected kbHeight = 0; // Last known keyboard height.
@@ -64,7 +67,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
     protected valueChangeSubscription: Subscription;
     protected keyboardObs: any;
-    protected initHeightInterval;
+    protected resetObs: any;
+    protected initHeightInterval: NodeJS.Timer;
 
     rteEnabled = false;
     editorSupported = true;
@@ -84,22 +88,37 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         u: 'false',
         strike: 'false',
         p: 'false',
-        h1: 'false',
-        h2: 'false',
         h3: 'false',
+        h4: 'false',
+        h5: 'false',
         ul: 'false',
         ol: 'false',
     };
+    infoMessage: string;
     protected isCurrentView = true;
     protected toolbarButtonWidth = 40;
     protected toolbarArrowWidth = 28;
+    protected pageInstance: string;
+    protected autoSaveInterval: NodeJS.Timer;
+    protected hideMessageTimeout: NodeJS.Timer;
+    protected lastDraft = '';
+    protected draftWasRestored = false;
+    protected originalContent: string;
 
-    constructor(private domUtils: CoreDomUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private filepoolProvider: CoreFilepoolProvider,
-            @Optional() private content: Content, elementRef: ElementRef, private events: CoreEventsProvider,
-            private utils: CoreUtilsProvider, private platform: Platform) {
+    constructor(
+            protected domUtils: CoreDomUtilsProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            @Optional() protected content: Content,
+            elementRef: ElementRef,
+            protected events: CoreEventsProvider,
+            protected utils: CoreUtilsProvider,
+            protected platform: Platform,
+            protected editorOffline: CoreEditorOfflineProvider) {
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
+        this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
     }
 
     /**
@@ -115,6 +134,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         // Setup the editor.
         this.editorElement = this.editor.nativeElement as HTMLDivElement;
         this.setContent(this.control.value);
+        this.originalContent = this.control.value;
+        this.lastDraft = this.control.value;
         this.editorElement.onchange = this.onChange.bind(this);
         this.editorElement.onkeyup = this.onChange.bind(this);
         this.editorElement.onpaste = this.onChange.bind(this);
@@ -123,7 +144,20 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
 
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control.valueChanges.subscribe((param) => {
-            this.setContent(param);
+            if (!this.draftWasRestored || this.originalContent != param) {
+                // Apply the new content.
+                this.setContent(param);
+                this.originalContent = param;
+                this.infoMessage = null;
+
+                // Save a draft so the original content is saved.
+                this.lastDraft = param;
+                this.editorOffline.saveDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                        this.draftExtraParams, this.pageInstance, param, param);
+            } else {
+                // A draft was restored and the content hasn't changed in the site. Use the draft value instead of this one.
+                this.control.setValue(this.lastDraft, {emitEvent: false});
+            }
         });
 
         // Use paragraph on enter.
@@ -148,6 +182,20 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         });
 
         this.updateToolbarButtons();
+
+        if (this.elementId) {
+            // Prepend elementId with 'id_' like in web. Don't use a setter for this because the value shouldn't change.
+            this.elementId = 'id_' + this.elementId;
+            this.element.setAttribute('id', this.elementId);
+        }
+
+        if (this.shouldAutoSaveDrafts()) {
+            this.restoreDraft();
+
+            this.autoSaveDrafts();
+
+            this.deleteDraftOnSubmitOrCancel();
+        }
     }
 
     /**
@@ -196,7 +244,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
                 }
 
                 if (height > this.minHeight) {
-                    this.element.style.height = this.domUtils.formatPixelsSize(height);
+                    this.element.style.height = this.domUtils.formatPixelsSize(height - 1);
                 } else {
                     this.element.style.height = '';
                 }
@@ -291,8 +339,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
             return;
         }
 
-        $event.preventDefault();
-        $event.stopPropagation();
+        this.stopBubble($event);
 
         const move = $event['key'] == 'ArrowLeft' ? -1 : +1,
             cursor = this.getCurrentCursorPosition(this.editorElement);
@@ -408,8 +455,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      * @param $event The event.
      */
     toggleEditor($event: Event): void {
-        $event.preventDefault();
-        $event.stopPropagation();
+        this.stopBubble($event);
 
         this.setContent(this.control.value);
 
@@ -533,26 +579,42 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      *
      * @param $event Event data
      * @param command Command to execute.
+     * @param parameters If parameters is set to block, a formatBlock command will be performed. Otherwise it will switch the
+     *                      toolbar styles button when set.
      */
-    buttonAction($event: any, command: string): void {
+    buttonAction($event: any, command: string, parameters: string): void {
         this.stopBubble($event);
 
         if (command) {
-            if (command.includes('|')) {
-                const parameters = command.split('|')[1];
-                command = command.split('|')[0];
-
-                document.execCommand(command, false, parameters);
+            if (parameters == 'block') {
+                document.execCommand('formatBlock', false, '<' + command + '>');
             } else {
+                if (parameters) {
+                    this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
+                }
+
                 document.execCommand(command, false);
             }
         }
     }
 
     /**
+     * Focus editor when click the area.
+     *
+     * @param e Event
+     */
+    focusRTE(e?: Event): void {
+        if (this.rteEnabled) {
+            this.editorElement.focus();
+        } else {
+            this.textarea.setFocus();
+        }
+    }
+
+    /**
      * Hide the toolbar in phone mode.
      */
-    hideToolbar($event: any): void {
+    hideToolbar($event: Event): void {
         this.stopBubble($event);
 
         if (this.isPhone) {
@@ -563,7 +625,9 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     /**
      * Show the toolbar.
      */
-    showToolbar(): void {
+    showToolbar($event: Event): void {
+        this.stopBubble($event);
+
         this.editorElement.focus();
         this.toolbarHidden = false;
     }
@@ -576,6 +640,19 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
     stopBubble(event: Event): void {
         event.preventDefault();
         event.stopPropagation();
+    }
+
+    /**
+     * When a button is clicked first we should stop event propagation, but it has some cases to not.
+     *
+     * @param event Event.
+     */
+    mouseDownAction(event: Event): void {
+        const selection = window.getSelection().toString();
+        // When RTE is focused with a range selection the stopBubble will not fire click.
+        if (!this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
+            this.stopBubble(event);
+        }
     }
 
     /**
@@ -648,7 +725,7 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
      * Update highlighted toolbar styles.
      */
     updateToolbarStyles = (): void => {
-        const node = document.getSelection().focusNode;
+        const node = window.getSelection().focusNode;
         if (!node) {
             return;
         }
@@ -671,6 +748,121 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         if (element === this.editorElement) {
             Object.assign(this.toolbarStyles, styles);
         }
+    }
+
+    /**
+     * Check if should auto save drafts.
+     *
+     * @return {boolean} Whether it should auto save drafts.
+     */
+    protected shouldAutoSaveDrafts(): boolean {
+        return !!this.sitesProvider.getCurrentSite() &&
+                (typeof this.autoSave == 'undefined' || this.utils.isTrueOrOne(this.autoSave)) &&
+                typeof this.contextLevel != 'undefined' &&
+                typeof this.contextInstanceId != 'undefined' &&
+                typeof this.elementId != 'undefined';
+    }
+
+    /**
+     * Restore a draft if there is any.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async restoreDraft(): Promise<void> {
+        try {
+            const entry = await this.editorOffline.resumeDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                    this.draftExtraParams, this.pageInstance, this.originalContent);
+
+            if (typeof entry == 'undefined') {
+                // No draft found.
+                return;
+            }
+
+            let draftText = entry.drafttext;
+
+            // Revert untouched editor contents to an empty string.
+            if (draftText == '<p></p>' || draftText == '<p><br></p>' || draftText == '<br>' ||
+                    draftText == '<p>&nbsp;</p>' || draftText == '<p><br>&nbsp;</p>') {
+                draftText = '';
+            }
+
+            if (draftText !== '' && draftText != this.control.value) {
+                // Restore the draft.
+                this.control.setValue(draftText, {emitEvent: false});
+                this.setContent(draftText);
+                this.lastDraft = draftText;
+                this.draftWasRestored = true;
+                this.originalContent = entry.originalcontent;
+
+                if (entry.drafttext != entry.originalcontent) {
+                    // Notify the user.
+                    this.showMessage('core.editor.textrecovered', this.RESTORE_MESSAGE_CLEAR_TIME);
+                }
+            }
+        } catch (error) {
+            // Ignore errors, shouldn't happen.
+        }
+    }
+
+    /**
+     * Automatically save drafts every certain time.
+     */
+    protected autoSaveDrafts(): void {
+        this.autoSaveInterval = setInterval(async () => {
+            const newText = this.control.value;
+
+            if (this.lastDraft == newText) {
+                // Text hasn't changed, nothing to save.
+                return;
+            }
+
+            try {
+                await this.editorOffline.saveDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                        this.draftExtraParams, this.pageInstance, newText, this.originalContent);
+
+                // Draft saved, notify the user.
+                this.lastDraft = newText;
+                this.showMessage('core.editor.autosavesucceeded', this.SAVE_MESSAGE_CLEAR_TIME);
+            } catch (error) {
+                // Error saving draft.
+            }
+        }, this.DRAFT_AUTOSAVE_FREQUENCY);
+    }
+
+    /**
+     * Delete the draft when the form is submitted or cancelled.
+     */
+    protected deleteDraftOnSubmitOrCancel(): void {
+
+        this.resetObs = this.events.on(CoreEventsProvider.FORM_ACTION, async (data) => {
+            const form = this.element.closest('form');
+
+            if (data.form && form && data.form == form) {
+                try {
+                    await this.editorOffline.deleteDraft(this.contextLevel, this.contextInstanceId, this.elementId,
+                            this.draftExtraParams);
+                } catch (error) {
+                    // Error deleting draft. Shouldn't happen.
+                }
+            }
+        }, this.sitesProvider.getCurrentSiteId());
+    }
+
+    /**
+     * Show a message.
+     *
+     * @param message Identifier of the message to display.
+     * @param timeout Number of milliseconds when to remove the message.
+     */
+    protected showMessage(message: string, timeout: number): void {
+        clearTimeout(this.hideMessageTimeout);
+
+        this.infoMessage = message;
+
+        this.hideMessageTimeout = setTimeout(() => {
+            this.hideMessageTimeout = null;
+            this.infoMessage = null;
+        }, timeout);
     }
 
     /**
@@ -698,5 +890,8 @@ export class CoreRichTextEditorComponent implements AfterContentInit, OnDestroy 
         document.removeEventListener('selectionchange', this.updateToolbarStyles);
         clearInterval(this.initHeightInterval);
         this.keyboardObs && this.keyboardObs.off();
+        clearInterval(this.autoSaveInterval);
+        clearTimeout(this.hideMessageTimeout);
+        this.resetObs && this.resetObs.off();
     }
 }

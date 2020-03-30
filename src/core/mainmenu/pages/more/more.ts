@@ -142,10 +142,17 @@ export class CoreMainMenuMorePage implements OnDestroy {
     }
 
     /**
-     * Open settings page.
+     * Open app settings page.
      */
-    openSettings(): void {
-        this.navCtrl.push('CoreSettingsListPage');
+    openAppSettings(): void {
+        this.navCtrl.push('CoreAppSettingsPage');
+    }
+
+    /**
+     * Open site settings page.
+     */
+    openSitePreferences(): void {
+        this.navCtrl.push('CoreSitePreferencesPage');
     }
 
     /**

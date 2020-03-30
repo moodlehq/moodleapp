@@ -63,9 +63,11 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Pass on content invalidation by refreshing content in the plugin content component.
+     * Invalidate block data.
+     *
+     * @return Promise resolved when done.
      */
     protected invalidateContent(): Promise<any> {
-        return Promise.resolve(this.content.refreshContent());
+        return this.sitePluginsProvider.invalidateContent(this.component, this.method, this.args);
     }
 }

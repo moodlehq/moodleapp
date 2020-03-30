@@ -9,7 +9,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <form name="itemEdit" (ngSubmit)="addComment($event)">
+    <form name="itemEdit" (ngSubmit)="addComment($event)" #commentForm>
         <ion-item>
             <ion-textarea placeholder="{{ 'core.comments.addcomment' | translate }}" rows="5" [(ngModel)]="content" name="content" required="required"></ion-textarea>
         </ion-item>

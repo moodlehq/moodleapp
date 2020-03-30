@@ -34,7 +34,7 @@
 
                 <!-- Input password for protected lessons. -->
                 <ion-card *ngIf="askPassword">
-                    <form ion-list (ngSubmit)="submitPassword($event, passwordinput)">
+                    <form ion-list (ngSubmit)="submitPassword($event, passwordinput)" #passwordForm>
                         <ion-item text-wrap>
                             <ion-label stacked>{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
                             <core-show-password item-content [name]="'password'">
@@ -244,7 +244,7 @@
                             {{ 'addon.mod_lesson.overview' | translate }}
                         </ion-card-header>
 
-                        <a ion-item text-wrap *ngFor="let student of overview.students" [navPush]="'AddonModLessonUserRetakePage'" [navParams]="{courseId: courseId, lessonId: lesson.id, userId: student.id}">
+                        <a ion-item text-wrap *ngFor="let student of overview.students" navPush="AddonModLessonUserRetakePage" [navParams]="{courseId: courseId, lessonId: lesson.id, userId: student.id}">
                             <ion-avatar core-user-avatar [user]="student" item-start [userId]="student.id" [courseId]="courseId"></ion-avatar>
                             <h2>{{ student.fullname }}</h2>
                             <core-progress-bar [progress]="student.bestgrade"></core-progress-bar>

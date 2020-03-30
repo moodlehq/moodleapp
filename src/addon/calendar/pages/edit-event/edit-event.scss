@@ -14,13 +14,6 @@ ion-app.app-root page-addon-calendar-edit-event {
                 @include padding-horizontal($datetime-md-padding-start - $text-input-md-margin-start, null);
             }
         }
-        &.item-wp {
-            @include padding-horizontal($item-wp-padding-start * 2, null);
-
-            ion-input {
-                @include padding-horizontal($datetime-wp-padding-start - $text-input-wp-margin-start, null);
-            }
-        }
     }
 
     .addon-calendar-eventtype-container.item-select-disabled {

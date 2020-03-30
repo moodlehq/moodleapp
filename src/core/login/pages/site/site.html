@@ -3,8 +3,8 @@
         <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
 
         <ion-buttons end>
-            <button ion-button icon-only [navPush]="'CoreSettingsListPage'" [attr.aria-label]="'core.mainmenu.appsettings' | translate">
-                <ion-icon name="cog"></ion-icon>
+            <button ion-button icon-only navPush="CoreAppSettingsPage" [attr.aria-label]="'core.settings.appsettings' | translate">
+                <core-icon name="fa-cogs"></core-icon>
             </button>
             <button ion-button icon-only (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
                 <ion-icon name="help-circle"></ion-icon>
@@ -17,7 +17,7 @@
         <div text-center padding>
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
         </div>
-        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'">
+        <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->
             <ng-container *ngIf="!fixedSites">
                 <p padding>{{ 'core.login.newsitedescription' | translate }}</p>

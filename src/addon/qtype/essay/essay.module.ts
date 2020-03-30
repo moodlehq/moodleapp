@@ -20,6 +20,7 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { AddonQtypeEssayHandler } from './providers/handler';
 import { AddonQtypeEssayComponent } from './component/essay';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import { AddonQtypeEssayComponent } from './component/essay';
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule
+        CoreDirectivesModule,
+        CoreEditorComponentsModule,
     ],
     providers: [
         AddonQtypeEssayHandler

@@ -37,6 +37,7 @@ export class AddonModForumProvider {
     static VIEW_DISCUSSION_EVENT = 'addon_mod_forum_view_discussion';
     static CHANGE_DISCUSSION_EVENT = 'addon_mod_forum_change_discussion_status';
     static MARK_READ_EVENT = 'addon_mod_forum_mark_read';
+    static LEAVING_POSTS_PAGE = 'addon_mod_forum_leaving_posts_page';
 
     static PREFERENCE_SORTORDER = 'forum_discussionlistsortorder';
     static SORTORDER_LASTPOST_DESC = 1;
@@ -244,13 +245,14 @@ export class AddonModForumProvider {
      * Check if a user can post to all groups.
      *
      * @param forumId Forum ID.
+     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with an object with the following properties:
      *         - status (boolean)
      *         - canpindiscussions (boolean)
      *         - cancreateattachment (boolean)
      */
-    canAddDiscussionToAll(forumId: number): Promise<any> {
-        return this.canAddDiscussion(forumId, AddonModForumProvider.ALL_PARTICIPANTS);
+    canAddDiscussionToAll(forumId: number, siteId?: string): Promise<any> {
+        return this.canAddDiscussion(forumId, AddonModForumProvider.ALL_PARTICIPANTS, siteId);
     }
 
     /**

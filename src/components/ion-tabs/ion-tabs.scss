@@ -76,10 +76,6 @@ ion-app.app-root.md core-ion-tabs .core-ion-tabs-loading {
     min-height: $tabs-md-tab-min-height;
 }
 
-ion-app.app-root.wp core-ion-tabs .core-ion-tabs-loading {
-    min-height: $tabs-wp-tab-min-height;
-}
-
 // Copy some styles from ion-tabs and ion-tab.
 core-ion-tabs, core-ion-tab {
     @include position(0, null, null, 0);
@@ -133,8 +129,4 @@ ion-app.app-root.ios {
 
 ion-app.app-root.md {
    @include core-ion-tabs-statusbar-padding($toolbar-md-height, $toolbar-md-padding, $content-md-padding, $cordova-md-statusbar-padding, $cordova-md-statusbar-padding-modal-max-width);
-}
-
-ion-app.app-root.wp {
-    @include core-ion-tabs-statusbar-padding($toolbar-wp-height, $toolbar-wp-padding, $content-wp-padding, $cordova-wp-statusbar-padding, $cordova-wp-statusbar-padding-modal-max-width);
 }

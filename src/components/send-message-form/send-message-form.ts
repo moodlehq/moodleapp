@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -43,10 +44,17 @@ export class CoreSendMessageFormComponent implements OnInit {
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
+    @ViewChild('messageForm') formElement: ElementRef;
+
     protected sendOnEnter: boolean;
 
-    constructor(private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, configProvider: CoreConfigProvider,
-            eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider) {
+    constructor(protected utils: CoreUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            configProvider: CoreConfigProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected appProvider: CoreAppProvider,
+            protected domUtils: CoreDomUtilsProvider) {
 
         this.onSubmit = new EventEmitter();
         this.onResize = new EventEmitter();
@@ -81,6 +89,8 @@ export class CoreSendMessageFormComponent implements OnInit {
         }
 
         this.message = ''; // Reset the form.
+
+        this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
         value = this.textUtils.replaceNewLines(value, '<br>');
         this.onSubmit.emit(value);

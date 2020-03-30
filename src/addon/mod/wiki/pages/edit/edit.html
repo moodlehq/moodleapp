@@ -11,13 +11,13 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="pageForm">
+        <form ion-list [formGroup]="pageForm" #editPageForm>
             <ion-item text-wrap *ngIf="canEditTitle" class="item-title">
                 <ion-input name="title" type="text" [placeholder]="'addon.mod_wiki.newpagetitle' | translate" [formControlName]="'title'"></ion-input>
             </ion-item>
 
             <ion-item>
-                <core-rich-text-editor item-content [control]="contentControl" [placeholder]="'core.content' | translate" name="wiki_page_content" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+                <core-rich-text-editor item-content [control]="contentControl" [placeholder]="'core.content' | translate" name="wiki_page_content" [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id || 0" elementId="newcontent_editor" [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
             </ion-item>
 
             <ion-item *ngIf="wrongVersionLock" text-center class="addon-mod_wiki-wrongversionlock" >

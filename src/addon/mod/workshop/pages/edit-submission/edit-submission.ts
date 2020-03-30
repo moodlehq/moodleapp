@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -37,6 +37,8 @@ import { AddonModWorkshopOfflineProvider } from '../../providers/offline';
 })
 export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
 
+    @ViewChild('editFormEl') formElement: ElementRef;
+
     module: any;
     courseId: number;
     access: any;
@@ -51,6 +53,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
     component = AddonModWorkshopProvider.COMPONENT;
     componentId: number;
     editForm: FormGroup; // The form group.
+    editorExtraParams: {[name: string]: any} = {};
 
     protected workshopId: number;
     protected submissionId: number;
@@ -86,6 +89,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
         this.editForm = new FormGroup({});
         this.editForm.addControl('title', this.fb.control('', Validators.required));
         this.editForm.addControl('content', this.fb.control(''));
+
+        if (this.submissionId) {
+            this.editorExtraParams.id = this.submissionId;
+        }
     }
 
     /**
@@ -105,27 +112,23 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async ionViewCanLeave(): Promise<void> {
         if (this.forceLeave) {
-            return true;
+            return;
         }
-
-        let promise;
 
         // Check if data has changed.
-        if (!this.hasDataChanged()) {
-            promise = Promise.resolve();
-        } else {
+        if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            promise = this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
 
-        return promise.then(() => {
-            if (this.submission.attachmentfiles) {
-                // Delete the local files from the tmp folder.
-                this.fileUploaderProvider.clearTmpFiles(this.submission.attachmentfiles);
-            }
-        });
+        if (this.submission.attachmentfiles) {
+            // Delete the local files from the tmp folder.
+            this.fileUploaderProvider.clearTmpFiles(this.submission.attachmentfiles);
+        }
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
     }
 
     /**
@@ -347,7 +350,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                     // Save submission in offline.
                     return this.workshopOffline.saveSubmission(this.workshopId, this.courseId, inputData.title,
                             inputData.content, attachmentsId, submissionId, 'update').then(() => {
-                        // Don't return anything.
+                        return false;
                     });
                 }
 
@@ -360,8 +363,8 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             if (saveOffline) {
                 // Save submission in offline.
                 return this.workshopOffline.saveSubmission(this.workshopId, this.courseId, inputData.title, inputData.content,
-                    attachmentsId, submissionId, 'add').then(() => {
-                    // Don't return anything.
+                        attachmentsId, submissionId, 'add').then(() => {
+                    return false;
                 });
             }
 
@@ -370,6 +373,9 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             return this.workshopProvider.addSubmission(this.workshopId, this.courseId, inputData.title, inputData.content,
                 attachmentsId, undefined, submissionId, allowOffline);
         }).then((newSubmissionId) => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, !!newSubmissionId, this.siteId);
+
             const data = {
                 workshopId: this.workshopId,
                 cmId: this.module.cmid

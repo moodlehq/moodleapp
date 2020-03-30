@@ -13,7 +13,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-list>
             <!-- @todo: plagiarism_print_disclosure -->
-            <form name="addon-mod_assign-edit-form" *ngIf="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
+            <form name="addon-mod_assign-edit-form" *ngIf="userSubmission && userSubmission.plugins && userSubmission.plugins.length" #editSubmissionForm>
                 <!-- Submission statement. -->
                 <ion-item text-wrap *ngIf="submissionStatement">
                     <ion-label><core-format-text [text]="submissionStatement" [filter]="false"></core-format-text></ion-label>

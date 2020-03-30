@@ -46,7 +46,6 @@ import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins
 // Import other libraries and providers.
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Http } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
 import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '@core/constants';
@@ -55,6 +54,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreUrl } from '@classes/utils/url';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
@@ -135,7 +135,7 @@ export class CoreCompileProvider {
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected OTHER_PROVIDERS = [
-        TranslateService, Http, HttpClient, Platform, DomSanitizer, ActionSheetController, AlertController, LoadingController,
+        TranslateService, HttpClient, Platform, DomSanitizer, ActionSheetController, AlertController, LoadingController,
         ModalController, PopoverController, ToastController, FormBuilder
     ];
 
@@ -263,6 +263,7 @@ export class CoreCompileProvider {
         instance['moment'] = moment;
         instance['Md5'] = Md5;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
+        instance['CoreUrl'] = CoreUrl;
         instance['CoreCache'] = CoreCache;
         instance['CoreDelegate'] = CoreDelegate;
         instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;

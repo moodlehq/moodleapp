@@ -1,13 +1,19 @@
 <ion-card>
-    <form #f="ngForm" (ngSubmit)="submitForm($event)" role="search">
+    <form #f="ngForm" (ngSubmit)="submitForm($event)" role="search" #searchForm>
         <ion-item>
             <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder" [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus" [disabled]="disabled" role="searchbox"></ion-input>
             <button item-end ion-button clear icon-only type="submit" class="button-small" [attr.aria-label]="searchLabel" [disabled]="disabled || !searchText || (searchText.length < lengthCheck)">
                 <ion-icon name="search"></ion-icon>
             </button>
-            <button *ngIf="showClear" item-end ion-button clear icon-only class="button-small" [attr.aria-label]="'core.clearsearch' | translate" [disabled]="!searched || disabled" (click)="clearForm()">
+            <button *ngIf="showClear" item-end ion-button clear icon-only class="button-small" [attr.aria-label]="'core.clearsearch' | translate" [disabled]="searched == '' || disabled" (click)="clearForm()">
                 <ion-icon name="close"></ion-icon>
             </button>
         </ion-item>
+        <ion-list class="core-search-history with-borders">
+            <a ion-item text-wrap *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)" class="core-clickable" tabindex="1">
+                <core-icon name="fa-history" item-start></core-icon>
+                {{item.searchedtext}}
+            </a>
+        </ion-list>
     </form>
 </ion-card>

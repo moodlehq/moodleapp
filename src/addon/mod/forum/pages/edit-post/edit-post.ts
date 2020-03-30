@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonModForumProvider } from '../../providers/forum';
 import { AddonModForumHelperProvider } from '../../providers/helper';
@@ -30,6 +31,8 @@ import { AddonModForumHelperProvider } from '../../providers/helper';
     templateUrl: 'addon-mod-forum-edit-post.html',
 })
 export class AddonModForumEditPostPage {
+    @ViewChild('editFormEl') formElement: ElementRef;
+
     component: string; // Component this post belong to.
     componentId: number; // Component ID.
     forum: any; // The forum the post belongs to. Required for attachments and offline posts.
@@ -48,7 +51,8 @@ export class AddonModForumEditPostPage {
             protected domUtils: CoreDomUtilsProvider,
             protected uploaderProvider: CoreFileUploaderProvider,
             protected forumHelper: AddonModForumHelperProvider,
-            protected translate: TranslateService) {
+            protected translate: TranslateService,
+            protected sitesProvider: CoreSitesProvider) {
 
         const post = params.get('post');
         this.component = params.get('component');
@@ -114,7 +118,13 @@ export class AddonModForumEditPostPage {
      *
      * @param data Data to return to the page.
      */
-    closeModal(data: any): void {
+    closeModal(data: any, ): void {
+        if (data) {
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
+        } else {
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+        }
+
         this.viewCtrl.dismiss(data);
     }
 

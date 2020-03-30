@@ -14,7 +14,7 @@
 
 import { Injectable, NgZone } from '@angular/core';
 import { Network } from '@ionic-native/network';
-import { CoreAppProvider } from './app';
+import { CoreAppProvider, CoreAppSchema } from './app';
 import { CoreEventsProvider } from './events';
 import { CoreFileProvider } from './file';
 import { CoreInitDelegate } from './init';
@@ -28,7 +28,7 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreTimeUtilsProvider } from './utils/time';
 import { CoreUrlUtilsProvider } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -224,58 +224,62 @@ export class CoreFilepoolProvider {
     protected FILES_TABLE = 'filepool_files'; // Downloaded files.
     protected LINKS_TABLE = 'filepool_files_links'; // Links between downloaded files and components.
     protected PACKAGES_TABLE = 'filepool_packages'; // Downloaded packages (sets of files).
-    protected appTablesSchema: SQLiteDBTableSchema[] = [
-        {
-            name: this.QUEUE_TABLE,
-            columns: [
-                {
-                    name: 'siteId',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'fileId',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'added',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'priority',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'url',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'revision',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'timemodified',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'isexternalfile',
-                    type: 'INTEGER'
-                },
-                {
-                    name: 'repositorytype',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'path',
-                    type: 'TEXT'
-                },
-                {
-                    name: 'links',
-                    type: 'TEXT'
-                }
-            ],
-            primaryKeys: ['siteId', 'fileId']
-        }
-    ];
+    protected appTablesSchema: CoreAppSchema = {
+        name: 'CoreFilepoolProvider',
+        version: 1,
+        tables: [
+            {
+                name: this.QUEUE_TABLE,
+                columns: [
+                    {
+                        name: 'siteId',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'fileId',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'added',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'priority',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'url',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'revision',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'timemodified',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'isexternalfile',
+                        type: 'INTEGER'
+                    },
+                    {
+                        name: 'repositorytype',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'path',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'links',
+                        type: 'TEXT'
+                    },
+                ],
+                primaryKeys: ['siteId', 'fileId'],
+            },
+        ],
+    };
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreFilepoolProvider',
         version: 1,
@@ -392,6 +396,7 @@ export class CoreFilepoolProvider {
 
     protected logger;
     protected appDB: SQLiteDB;
+    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
     protected tokenRegex = new RegExp('(\\?|&)token=([A-Za-z0-9]*)');
     protected queueState: string;
     protected urlAttributes = [
@@ -415,7 +420,9 @@ export class CoreFilepoolProvider {
         this.logger = logger.getInstance('CoreFilepoolProvider');
 
         this.appDB = this.appProvider.getDB();
-        this.appDB.createTablesFromSchema(this.appTablesSchema);
+        this.dbReady = appProvider.createTablesFromSchema(this.appTablesSchema).catch(() => {
+            // Ignore errors.
+        });
 
         this.sitesProvider.registerSiteSchema(this.siteSchema);
 
@@ -567,11 +574,13 @@ export class CoreFilepoolProvider {
      * @param link The link to add for the file.
      * @return Promise resolved when the file is downloaded.
      */
-    protected addToQueue(siteId: string, fileId: string, url: string, priority: number, revision: number, timemodified: number,
-            filePath: string, onProgress?: (event: any) => any, options: any = {}, link?: any): Promise<any> {
+    protected async addToQueue(siteId: string, fileId: string, url: string, priority: number, revision: number,
+            timemodified: number, filePath: string, onProgress?: (event: any) => any, options: any = {}, link?: any): Promise<any> {
+        await this.dbReady;
+
         this.logger.debug(`Adding ${fileId} to the queue`);
 
-        return this.appDB.insertRecord(this.QUEUE_TABLE, {
+        await this.appDB.insertRecord(this.QUEUE_TABLE, {
             siteId: siteId,
             fileId: fileId,
             url: url,
@@ -583,13 +592,13 @@ export class CoreFilepoolProvider {
             repositorytype: options.repositorytype,
             links: JSON.stringify(link ? [link] : []),
             added: Date.now()
-        }).then(() => {
-            // Check if the queue is running.
-            this.checkQueueProcessing();
-            this.notifyFileDownloading(siteId, fileId);
-
-            return this.getQueuePromise(siteId, fileId, true, onProgress);
         });
+
+        // Check if the queue is running.
+        this.checkQueueProcessing();
+        this.notifyFileDownloading(siteId, fileId);
+
+        return this.getQueuePromise(siteId, fileId, true, onProgress);
     }
 
     /**
@@ -608,9 +617,11 @@ export class CoreFilepoolProvider {
      * @param alreadyFixed Whether the URL has already been fixed.
      * @return Resolved on success.
      */
-    addToQueueByUrl(siteId: string, fileUrl: string, component?: string, componentId?: string | number, timemodified: number = 0,
-            filePath?: string, onProgress?: (event: any) => any, priority: number = 0, options: any = {}, revision?: number,
-            alreadyFixed?: boolean): Promise<any> {
+    async addToQueueByUrl(siteId: string, fileUrl: string, component?: string, componentId?: string | number,
+            timemodified: number = 0, filePath?: string, onProgress?: (event: any) => any, priority: number = 0, options: any = {},
+            revision?: number, alreadyFixed?: boolean): Promise<any> {
+        await this.dbReady;
+
         let fileId,
             link,
             queueDeferred;
@@ -1331,28 +1342,6 @@ export class CoreFilepoolProvider {
 
                 // Now update the links.
                 return db.updateRecords(this.LINKS_TABLE, { fileId: entry.fileId }, { fileId: fileId });
-            });
-        });
-    }
-
-    /**
-     * Fill Missing Extension In Files, used to migrate from previous file handling.
-     * Reserved for core use, please do not call.
-     *
-     * @param siteId SiteID to get migrated
-     * @return Promise resolved when done.
-     */
-    fillMissingExtensionInFiles(siteId: string): Promise<any> {
-        this.logger.debug('Fill missing extensions in files of ' + siteId);
-
-        return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return db.getAllRecords(this.FILES_TABLE).then((entries) => {
-                const promises = [];
-                entries.forEach((entry) => {
-                    promises.push(this.fillExtensionInFile(entry, siteId));
-                });
-
-                return Promise.all(promises);
             });
         });
     }
@@ -2309,16 +2298,17 @@ export class CoreFilepoolProvider {
      * @param fileUrl The file URL.
      * @return Resolved with file object from DB on success, rejected otherwise.
      */
-    protected hasFileInQueue(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
-        return this.appDB.getRecord(this.QUEUE_TABLE, { siteId: siteId, fileId: fileId }).then((entry) => {
-            if (typeof entry === 'undefined') {
-                return Promise.reject(null);
-            }
-            // Convert the links to an object.
-            entry.links = this.textUtils.parseJSON(entry.links, []);
+    protected async hasFileInQueue(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
+        await this.dbReady;
 
-            return entry;
-        });
+        const entry = await this.appDB.getRecord(this.QUEUE_TABLE, { siteId: siteId, fileId: fileId });
+        if (typeof entry === 'undefined') {
+            throw null;
+        }
+        // Convert the links to an object.
+        entry.links = this.textUtils.parseJSON(entry.links, []);
+
+        return entry;
     }
 
     /**
@@ -2393,6 +2383,23 @@ export class CoreFilepoolProvider {
                 return db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, whereAndParams[0], whereAndParams[1]);
             });
         });
+    }
+
+    /**
+     * Check whether a file is downloadable.
+     *
+     * @param siteId The site ID.
+     * @param fileUrl File URL.
+     * @param timemodified The time this file was modified.
+     * @param filePath Filepath to download the file to. If defined, no extension will be added.
+     * @param revision File revision. If not defined, it will be calculated using the URL.
+     * @return Promise resolved with a boolean: whether a file is downloadable.
+     */
+    async isFileDownloadable(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string, revision?: number)
+            : Promise<boolean> {
+        const state = await this.getFileStateByUrl(siteId, fileUrl, timemodified, filePath, revision);
+
+        return state != CoreConstants.NOT_DOWNLOADABLE;
     }
 
     /**
@@ -2546,19 +2553,25 @@ export class CoreFilepoolProvider {
      *
      * @return Resolved on success. Rejected on failure.
      */
-    protected processImportantQueueItem(): Promise<any> {
-        return this.appDB.getRecords(this.QUEUE_TABLE, undefined, 'priority DESC, added ASC', undefined, 0, 1).then((items) => {
-            const item = items.pop();
-            if (!item) {
-                return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
-            }
-            // Convert the links to an object.
-            item.links = this.textUtils.parseJSON(item.links, []);
+    protected async processImportantQueueItem(): Promise<any> {
+        await this.dbReady;
 
-            return this.processQueueItem(item);
-        }, () => {
-            return Promise.reject(this.ERR_QUEUE_IS_EMPTY);
-        });
+        let items;
+
+        try {
+            items = await this.appDB.getRecords(this.QUEUE_TABLE, undefined, 'priority DESC, added ASC', undefined, 0, 1);
+        } catch (err) {
+            throw this.ERR_QUEUE_IS_EMPTY;
+        }
+
+        const item = items.pop();
+        if (!item) {
+            throw this.ERR_QUEUE_IS_EMPTY;
+        }
+        // Convert the links to an object.
+        item.links = this.textUtils.parseJSON(item.links, []);
+
+        return this.processQueueItem(item);
     }
 
     /**
@@ -2685,7 +2698,9 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @return Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      */
-    protected removeFromQueue(siteId: string, fileId: string): Promise<any> {
+    protected async removeFromQueue(siteId: string, fileId: string): Promise<any> {
+        await this.dbReady;
+
         return this.appDB.deleteRecords(this.QUEUE_TABLE, { siteId: siteId, fileId: fileId });
     }
 
@@ -2995,34 +3010,6 @@ export class CoreFilepoolProvider {
             }
         }).then(() => {
             return cssCode;
-        });
-    }
-
-    /**
-     * Remove extension from fileId in queue, used to migrate from previous file handling.
-     *
-     * @return Promise resolved when done.
-     */
-    treatExtensionInQueue(): Promise<any> {
-        this.logger.debug('Treat extensions in queue');
-
-        return this.appDB.getAllRecords(this.QUEUE_TABLE).then((entries) => {
-            const promises = [];
-            entries.forEach((entry) => {
-
-                // For files in the queue, we only need to remove the extension from the fileId.
-                // After downloading, additional info will be added.
-                const fileId = entry.fileId;
-                entry.fileId = this.mimeUtils.removeExtension(fileId);
-
-                if (fileId == entry.fileId) {
-                    return;
-                }
-
-                promises.push(this.appDB.updateRecords(this.QUEUE_TABLE, { fileId: entry.fileId }, { fileId: fileId }));
-            });
-
-            return Promise.all(promises);
         });
     }
 

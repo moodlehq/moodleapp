@@ -20,6 +20,7 @@ ion-app.app-root core-block {
 
   .item-divider {
     @include padding-horizontal(null, 0px);
+    min-height: 60px;
   }
 
   .item-divider .core-button-spinner {

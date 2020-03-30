@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { AddonNotesProvider } from '../../providers/notes';
 
@@ -27,14 +29,22 @@ import { AddonNotesProvider } from '../../providers/notes';
     templateUrl: 'add.html',
 })
 export class AddonNotesAddPage {
+
+    @ViewChild('itemEdit') formElement: ElementRef;
+
     userId: number;
     courseId: number;
     type = 'personal';
     text = '';
     processing = false;
 
-    constructor(params: NavParams, private viewCtrl: ViewController, private appProvider: CoreAppProvider,
-            private domUtils: CoreDomUtilsProvider, private notesProvider: AddonNotesProvider) {
+    constructor(params: NavParams,
+            protected viewCtrl: ViewController,
+            protected appProvider: CoreAppProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected notesProvider: AddonNotesProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) {
         this.userId = params.get('userId');
         this.courseId = params.get('courseId');
         this.type = params.get('type') || 'personal';
@@ -54,6 +64,9 @@ export class AddonNotesAddPage {
         // Freeze the add note button.
         this.processing = true;
         this.notesProvider.addNote(this.userId, this.courseId, this.type, this.text).then((sent) => {
+
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, sent, this.sitesProvider.getCurrentSiteId());
+
             this.viewCtrl.dismiss({type: this.type, sent: true}).finally(() => {
                 this.domUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, 3000);
             });
@@ -69,6 +82,8 @@ export class AddonNotesAddPage {
      * Close modal.
      */
     closeModal(): void {
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+
         this.viewCtrl.dismiss({type: this.type});
     }
 }

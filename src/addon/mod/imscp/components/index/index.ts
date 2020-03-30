@@ -76,6 +76,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
         let downloadFailed = false;
+        let downloadFailError;
         const promises = [];
 
         promises.push(this.imscpProvider.getImscp(this.courseId, this.module.id).then((imscp) => {
@@ -83,9 +84,10 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
             this.dataRetrieved.emit(imscp);
         }));
 
-        promises.push(this.imscpPrefetch.download(this.module, this.courseId).catch(() => {
+        promises.push(this.imscpPrefetch.download(this.module, this.courseId).catch((error) => {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
+            downloadFailError = error;
 
             return this.courseProvider.loadModuleContents(this.module, this.courseId).catch((error) => {
                 // Error getting module contents, fail.
@@ -109,7 +111,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         }).then(() => {
             if (downloadFailed && this.appProvider.isOnline()) {
                 // We could load the main file but the download failed. Show error message.
-                this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
+                this.showErrorDownloadingSomeFiles(downloadFailError);
             }
 
         }).finally(() => {

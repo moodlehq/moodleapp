@@ -134,11 +134,6 @@ $link-color:                 $blue !default;
 $background-color:           $gray-light !default;
 $subdued-text-color:         $gray-darker !default;
 
-$core-warning-color: colors($colors, warning) !default; // yellow.
-$core-success-color: colors($colors, success) !default; // green.
-$core-info-color: colors($colors, info) !default; // / blue.
-$core-error-color: colors($colors, alert) !default; // Red.
-
 $list-background-color:      $white !default;
 
 $tabs-background:            $gray-darker !default;
@@ -162,7 +157,6 @@ $alert-input-placeholder-color: $core-placeholder-color !default;
 $core-datetime-ios-placeholder-color: $core-placeholder-color !default;
 $searchbar-ios-input-placeholder-color: $core-placeholder-color !default;
 $searchbar-md-input-placeholder-color: $core-placeholder-color !default;
-$searchbar-wp-input-placeholder-color: $core-placeholder-color !default;
 $text-input-placeholder-color: $core-placeholder-color !default;
 
 $core-select-color: $core-color !default;
@@ -202,6 +196,7 @@ $core-login-item-background-color: $white !default;
 
 $core-action-sheet-color: $core-color !default;
 $core-action-sheet-cancel-color: $danger !default;
+$core-dark-action-sheet-cancel-color: $danger-dark !default;
 
 // App iOS Variables
 // --------------------------------------------------
@@ -253,29 +248,6 @@ $action-sheet-md-button-text-color: $black !default;
 $item-md-divider-background: $item-divider-background;
 $item-md-divider-color: $item-divider-color;
 
-// App Windows Variables
-// --------------------------------------------------
-// Windows only Sass variables can go here
-
-$text-input-wp-show-focus-highlight: true;
-$item-wp-detail-push-show: true;
-$item-wp-avatar-size: $item-avatar-size;
-$loading-wp-spinner-color: $core-loading-spinner-color;
-$spinner-wp-circles-color: $core-spinner-color;
-$tabs-wp-tab-color-inactive: $tabs-tab-color-inactive;
-$button-wp-outline-background-color: $core-button-outline-background-color;
-$select-wp-placeholder-color: $core-select-color !default;
-$datetime-wp-placeholder-color: $core-datetime-ios-placeholder-color !default;
-$label-wp-text-color: $text-color !default;
-$radio-wp-disabled-opacity: $input-select-opacity !default;
-$checkbox-wp-disabled-opacity: $input-select-opacity !default;
-$toggle-wp-disabled-opacity: $input-select-opacity !default;
-$note-wp-color: $note-color;
-$popover-wp-width: $popover-width;
-$action-sheet-wp-title-color: $core-action-sheet-color;
-$action-sheet-wp-button-text-color: $black !default;
-$item-wp-divider-background: $item-divider-background;
-$item-wp-divider-color: $item-divider-color;
 
 // Font sizes
 // ---------------------------------------------------
@@ -495,10 +467,6 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
       height: calc(100% - #{($card-ios-margin-bottom + $card-ios-margin-top)});
       width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
     }
-    &.card-wp, .card-wp {
-      height: calc(100% - #{($card-wp-margin-bottom + $card-wp-margin-top)});
-      width: calc(100% - #{($card-md-margin-end + $card-md-margin-start)});
-    }
     &.card-md {
       margin-top: $card-md-margin-top;
       margin-bottom: $card-md-margin-bottom;
@@ -506,10 +474,6 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
     &.card-ios {
       margin-top: $card-ios-margin-top;
       margin-bottom: $card-ios-margin-bottom;
-    }
-    &.card-wp {
-      margin-top: $card-wp-margin-top;
-      margin-bottom: $card-wp-margin-bottom;
     }
 
     &.card, .card {
@@ -559,10 +523,6 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
     border-bottom: $hairlines-width solid $list-ios-border-color;
   }
 
-  .item-wp.item-block > .item-inner {
-    border-bottom: 1px solid $list-wp-border-color;
-  }
-
   &:last-child .item > .item-inner {
     border-bottom: 0;
   }
@@ -575,10 +535,6 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
 
   &.item-ios.item-block > .item-inner {
     border-bottom: $hairlines-width solid $list-ios-border-color;
-  }
-
-  &.item-wp.item-block > .item-inner {
-    border-bottom: 1px solid $list-wp-border-color;
   }
 
   &:last-child > .item-inner {
@@ -594,9 +550,6 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
   }
   &.item-ios {
       @include padding-horizontal($item-ios-padding-start - 5px, null);
-  }
-  &.item-wp {
-      @include padding-horizontal($item-wp-padding-start - 5px, null);
   }
 }
 

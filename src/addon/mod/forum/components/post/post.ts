@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import {
+    Component, Input, Output, Optional, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef, OnChanges, SimpleChange
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Content, PopoverController, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -37,7 +39,7 @@ import { AddonForumPostOptionsMenuComponent } from '../post-options-menu/post-op
     selector: 'addon-mod-forum-post',
     templateUrl: 'addon-mod-forum-post.html',
 })
-export class AddonModForumPostComponent implements OnInit, OnDestroy {
+export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
     @Input() post: any; // Post.
     @Input() courseId: number; // Post's course ID.
     @Input() discussionId: number; // Post's' discussion ID.
@@ -50,7 +52,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
     @Input() accessInfo: any; // Forum access information.
     @Input() parentSubject?: string; // Subject of parent post.
     @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
+    @Input() leavingPage?: boolean; // Whether the page that contains this post is being left and will be destroyed.
     @Output() onPostChange: EventEmitter<void>; // Event emitted when a reply is posted or modified.
+
+    @ViewChild('replyFormEl') formElement: ElementRef;
 
     messageControl = new FormControl();
 
@@ -98,6 +103,16 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
         this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
                     (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
+    }
+
+    /**
+     * Detect changes on input properties.
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (changes.leavingPage && this.leavingPage) {
+            // Download all courses is enabled now, initialize it.
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+        }
     }
 
     /**
@@ -408,6 +423,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
 
             this.onPostChange.emit();
 
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, sent, this.sitesProvider.getCurrentSiteId());
+
             if (this.syncId) {
                 this.syncProvider.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
             }
@@ -425,6 +442,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy {
         this.confirmDiscard().then(() => {
             // Reset data.
             this.setReplyFormData();
+
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
 
             if (this.syncId) {
                 this.syncProvider.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);

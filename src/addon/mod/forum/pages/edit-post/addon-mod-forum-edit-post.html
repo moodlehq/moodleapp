@@ -9,14 +9,14 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-list>
+    <form ion-list #editFormEl>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
-            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + replyData.id" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + replyData.id" [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="forum.cmid" elementId="message" [draftExtraParams]="{edit: replyData.id}"></core-rich-text-editor>
         </ion-item>
         <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
             <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
@@ -36,5 +36,5 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-    </ion-list>
+    </form>
 </ion-content>

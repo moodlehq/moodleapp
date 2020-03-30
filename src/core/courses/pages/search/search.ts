@@ -53,6 +53,18 @@ export class CoreCoursesSearchPage {
     }
 
     /**
+     * Clear search box.
+     *
+     * @param e The event object.
+     */
+    clearSearch(e: Event): void {
+        this.currentSearch = '';
+        this.courses = undefined;
+        this.page = 0;
+        this.total = 0;
+    }
+
+    /**
      * Load more results.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.

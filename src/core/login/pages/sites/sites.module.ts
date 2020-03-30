@@ -17,6 +17,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreLoginSitesPage } from './sites';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreComponentsModule } from '@components/components.module';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
     ],
     imports: [
         CoreDirectivesModule,
+        CoreComponentsModule,
         IonicPageModule.forChild(CoreLoginSitesPage),
         TranslateModule.forChild()
     ],

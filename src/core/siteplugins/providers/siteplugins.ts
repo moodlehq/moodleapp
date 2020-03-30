@@ -164,7 +164,7 @@ export class CoreSitePluginsProvider {
 
         if (initResult) {
             // First of all, add the data returned by the init JS (if any).
-            data = this.utils.clone(initResult.jsResult || {});
+            data = Object.assign({}, initResult.jsResult || {});
             if (typeof data == 'boolean') {
                 data = {};
             }

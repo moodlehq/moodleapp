@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -25,7 +25,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreRichTextEditorComponent } from '@components/rich-text-editor/rich-text-editor.ts';
+import { CoreEditorRichTextEditorComponent } from '@core/editor/components/rich-text-editor/rich-text-editor.ts';
 import { AddonCalendarProvider, AddonCalendarGetAccessInfoResult, AddonCalendarEvent } from '../../providers/calendar';
 import { AddonCalendarOfflineProvider } from '../../providers/calendar-offline';
 import { AddonCalendarHelperProvider } from '../../providers/helper';
@@ -43,7 +43,8 @@ import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 })
 export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreRichTextEditorComponent) descriptionEditor: CoreRichTextEditorComponent;
+    @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor: CoreEditorRichTextEditorComponent;
+    @ViewChild('editEventForm') formElement: ElementRef;
 
     title: string;
     dateFormat: string;
@@ -496,6 +497,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
         this.calendarProvider.submitEvent(this.eventId, data).then((result) => {
             event = result.event;
 
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
+
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
                 const numberOfRepetitions = formData.repeat ? formData.repeats :
@@ -557,6 +560,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     discard(): void {
         this.domUtils.showConfirm(this.translate.instant('core.areyousure')).then(() => {
             this.calendarOffline.deleteEvent(this.eventId).then(() => {
+
+                this.domUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
+
                 this.returnToList();
             }).catch(() => {
                 // Shouldn't happen.
@@ -572,16 +578,18 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
-
+    async ionViewCanLeave(): Promise<void> {
         if (this.calendarHelper.hasEventDataChanged(this.eventForm.value, this.originalData)) {
             // Show confirmation if some data has been modified.
-            return this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
-        } else {
-            return Promise.resolve();
+            await this.domUtils.showConfirm(this.translate.instant('core.confirmcanceledit'));
         }
+
+        this.domUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
     }
 
+    /**
+     * Unblock sync.
+     */
     protected unblockSync(): void {
         if (this.eventId) {
             this.syncProvider.unblockOperation(AddonCalendarProvider.COMPONENT, this.eventId);

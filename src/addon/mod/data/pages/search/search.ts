@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CoreEventsProvider } from '@providers/events';
+import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -32,6 +34,8 @@ import { CoreTagProvider } from '@core/tag/providers/tag';
     templateUrl: 'search.html',
 })
 export class AddonModDataSearchPage {
+    @ViewChild('searchFormEl') formElement: ElementRef;
+
     search: any;
     fields: any;
     data: any;
@@ -41,10 +45,17 @@ export class AddonModDataSearchPage {
     jsData: any;
     fieldsArray: any;
 
-    constructor(params: NavParams, private viewCtrl: ViewController, fb: FormBuilder, protected utils: CoreUtilsProvider,
-            protected domUtils: CoreDomUtilsProvider, protected fieldsDelegate: AddonModDataFieldsDelegate,
-            protected textUtils: CoreTextUtilsProvider, protected dataHelper: AddonModDataHelperProvider,
-            private tagProvider: CoreTagProvider) {
+    constructor(params: NavParams,
+            protected viewCtrl: ViewController,
+            fb: FormBuilder,
+            protected utils: CoreUtilsProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected fieldsDelegate: AddonModDataFieldsDelegate,
+            protected textUtils: CoreTextUtilsProvider,
+            protected dataHelper: AddonModDataHelperProvider,
+            protected tagProvider: CoreTagProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected sitesProvider: CoreSitesProvider) {
         this.search = params.get('search');
         this.fields = params.get('fields');
         this.data = params.get('data');
@@ -175,6 +186,12 @@ export class AddonModDataSearchPage {
      * @param data Data to return to the page.
      */
     closeModal(data?: any): void {
+        if (typeof data == 'undefined') {
+            this.domUtils.triggerFormCancelledEvent(this.formElement, this.sitesProvider.getCurrentSiteId());
+        } else {
+            this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
+        }
+
         this.viewCtrl.dismiss(data);
     }
 

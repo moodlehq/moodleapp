@@ -160,7 +160,7 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
                     quiz, accessInfo, preflightData, attempt, false, true, title, siteId);
         } else {
             // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-            const rules = accessInfo.activerulenames;
+            const rules = accessInfo && accessInfo.activerulenames;
 
             promise = this.accessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, true, siteId).then(() => {
                 if (!attempt) {

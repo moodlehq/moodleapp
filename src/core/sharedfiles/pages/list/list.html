@@ -14,7 +14,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <!-- Allow selecting the site to view. -->
-    <core-site-picker [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)"></core-site-picker>
+    <core-site-picker *ngIf="showSitePicker" [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)"></core-site-picker>
     <core-loading [hideUntil]="filesLoaded">
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files; let idx = index">

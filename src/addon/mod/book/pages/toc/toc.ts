@@ -14,7 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { AddonModBookTocChapter } from '../../providers/book';
+import { AddonModBookTocChapter, AddonModBookBook, AddonModBookNumbering } from '../../providers/book';
 
 /**
  * Modal to display the TOC of a book.
@@ -29,12 +29,24 @@ export class AddonModBookTocPage {
     chapters: AddonModBookTocChapter[];
     selected: number;
     courseId: number;
+    showNumbers = true;
+    addPadding = true;
+    showBullets = false;
+
+    protected book: AddonModBookBook;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController) {
         this.moduleId = navParams.get('moduleId');
         this.chapters = navParams.get('chapters') || [];
         this.selected = navParams.get('selected');
         this.courseId = navParams.get('courseId');
+        this.book = navParams.get('book');
+
+        if (this.book) {
+            this.showNumbers = this.book.numbering == AddonModBookNumbering.NUMBERS;
+            this.showBullets = this.book.numbering == AddonModBookNumbering.BULLETS;
+            this.addPadding = this.book.numbering != AddonModBookNumbering.NONE;
+        }
     }
 
     /**

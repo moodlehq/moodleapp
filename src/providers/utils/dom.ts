@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, SimpleChange } from '@angular/core';
+import { Injectable, SimpleChange, ElementRef } from '@angular/core';
 import {
     LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
     ModalController,
@@ -22,6 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
 import { CoreAppProvider } from '../app';
 import { CoreConfigProvider } from '../config';
+import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
 import { CoreUrlUtilsProvider } from './url';
 import { CoreFileProvider } from '@providers/file';
@@ -64,20 +65,21 @@ export class CoreDomUtilsProvider {
     protected displayedAlerts = {}; // To prevent duplicated alerts.
     protected logger;
 
-    constructor(private translate: TranslateService,
-            private loadingCtrl: LoadingController,
-            private toastCtrl: ToastController,
-            private alertCtrl: AlertController,
-            private textUtils: CoreTextUtilsProvider,
-            private appProvider: CoreAppProvider,
-            private platform: Platform,
-            private configProvider: CoreConfigProvider,
-            private urlUtils: CoreUrlUtilsProvider,
-            private modalCtrl: ModalController,
-            private sanitizer: DomSanitizer,
-            private popoverCtrl: PopoverController,
-            private fileProvider: CoreFileProvider,
-            loggerProvider: CoreLoggerProvider) {
+    constructor(protected translate: TranslateService,
+            protected loadingCtrl: LoadingController,
+            protected toastCtrl: ToastController,
+            protected alertCtrl: AlertController,
+            protected textUtils: CoreTextUtilsProvider,
+            protected appProvider: CoreAppProvider,
+            protected platform: Platform,
+            protected configProvider: CoreConfigProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected modalCtrl: ModalController,
+            protected sanitizer: DomSanitizer,
+            protected popoverCtrl: PopoverController,
+            protected fileProvider: CoreFileProvider,
+            loggerProvider: CoreLoggerProvider,
+            protected eventsProvider: CoreEventsProvider) {
 
         this.logger = loggerProvider.getInstance('CoreDomUtilsProvider');
 
@@ -1054,13 +1056,14 @@ export class CoreDomUtilsProvider {
 
     /**
      * Returns scrollTop of the content.
-     * Checks hidden property _scroll to avoid errors if view is not active.
+     * Checks hidden property _scrollContent to avoid errors if view is not active.
+     * Using navite value of scroll to avoid having non updated values.
      *
      * @param content Content where to execute the function.
      * @return Content scrollTop or 0.
      */
     getScrollTop(content: Content): number {
-        return (content && content._scroll && content.scrollTop) || 0;
+        return (content && content._scrollContent && content._scrollContent.nativeElement.scrollTop) || 0;
     }
 
     /**
@@ -1624,5 +1627,41 @@ export class CoreDomUtilsProvider {
         el.parentNode.insertBefore(wrapper, el);
         // Now move the element into the wrapper.
         wrapper.appendChild(el);
+    }
+
+    /**
+     * Trigger form cancelled event.
+     *
+     * @param form Form element.
+     * @param siteId The site affected. If not provided, no site affected.
+     */
+    triggerFormCancelledEvent(formRef: ElementRef, siteId?: string): void {
+        if (!formRef) {
+            return;
+        }
+
+        this.eventsProvider.trigger(CoreEventsProvider.FORM_ACTION, {
+            action: 'cancel',
+            form: formRef.nativeElement,
+        }, siteId);
+    }
+
+    /**
+     * Trigger form submitted event.
+     *
+     * @param form Form element.
+     * @param online Whether the action was done in offline or not.
+     * @param siteId The site affected. If not provided, no site affected.
+     */
+    triggerFormSubmittedEvent(formRef: ElementRef, online?: boolean, siteId?: string): void {
+        if (!formRef) {
+            return;
+        }
+
+        this.eventsProvider.trigger(CoreEventsProvider.FORM_ACTION, {
+            action: 'submit',
+            form: formRef.nativeElement,
+            online: !!online,
+        }, siteId);
     }
 }

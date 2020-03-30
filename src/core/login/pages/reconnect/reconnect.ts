@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
+import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreLoginHelperProvider } from '../../providers/helper';
@@ -29,6 +30,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     templateUrl: 'reconnect.html',
 })
 export class CoreLoginReconnectPage {
+
+    @ViewChild('reconnectForm') formElement: ElementRef;
+
     credForm: FormGroup;
     siteUrl: string;
     username: string;
@@ -38,6 +42,7 @@ export class CoreLoginReconnectPage {
     site: any;
     showForgottenPassword = true;
     showSiteAvatar = false;
+    isOAuth = false;
 
     protected infoSiteUrl: string;
     protected pageName: string;
@@ -46,13 +51,14 @@ export class CoreLoginReconnectPage {
     protected isLoggedOut: boolean;
     protected siteId: string;
 
-    constructor(private navCtrl: NavController,
+    constructor(protected navCtrl: NavController,
             navParams: NavParams,
             fb: FormBuilder,
-            private appProvider: CoreAppProvider,
-            private sitesProvider: CoreSitesProvider,
-            private loginHelper: CoreLoginHelperProvider,
-            private domUtils: CoreDomUtilsProvider) {
+            protected appProvider: CoreAppProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected loginHelper: CoreLoginHelperProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected eventsProvider: CoreEventsProvider) {
 
         const currentSite = this.sitesProvider.getCurrentSite();
 
@@ -74,8 +80,7 @@ export class CoreLoginReconnectPage {
      */
     ionViewDidLoad(): void {
         if (this.siteConfig) {
-            this.identityProviders = this.loginHelper.getValidIdentityProviders(this.siteConfig);
-            this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(this.siteConfig);
+            this.getDataFromConfig(this.siteConfig);
         }
 
         this.sitesProvider.getSite(this.siteId).then((site) => {
@@ -89,6 +94,9 @@ export class CoreLoginReconnectPage {
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
 
+            // If login was OAuth we should only reach this page if the OAuth method ID has changed.
+            this.isOAuth = site.isOAuth();
+
             // Show logo instead of avatar if it's a fixed site.
             this.showSiteAvatar = this.site.avatar && !this.loginHelper.getFixedSites();
 
@@ -97,10 +105,10 @@ export class CoreLoginReconnectPage {
                     // Check logoURL if user avatar is not set.
                     if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
                         this.showSiteAvatar = false;
-                        this.logoUrl = config.logourl || config.compactlogourl;
+                        this.logoUrl = this.loginHelper.getLogoUrl(config);
                     }
 
-                    this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(config);
+                    this.getDataFromConfig(this.siteConfig);
                 }).catch(() => {
                     this.cancel();
                 });
@@ -111,7 +119,18 @@ export class CoreLoginReconnectPage {
             // Shouldn't happen. Just leave the view.
             this.cancel();
         });
+    }
 
+    /**
+     * Get some data (like identity providers) from the site config.
+     *
+     * @param config Config to use.
+     */
+    protected getDataFromConfig(config: any): void {
+        const disabledFeatures = this.loginHelper.getDisabledFeatures(config);
+
+        this.identityProviders = this.loginHelper.getValidIdentityProviders(config, disabledFeatures);
+        this.showForgottenPassword = !this.loginHelper.isForgottenPasswordDisabled(config);
     }
 
     /**
@@ -161,6 +180,9 @@ export class CoreLoginReconnectPage {
         // Start the authentication process.
         this.sitesProvider.getUserToken(siteUrl, username, password).then((data) => {
             return this.sitesProvider.updateSiteToken(this.infoSiteUrl, username, data.token, data.privateToken).then(() => {
+
+                this.domUtils.triggerFormSubmittedEvent(this.formElement, true);
+
                 // Update site info too because functions might have changed (e.g. unisntall local_mobile).
                 return this.sitesProvider.updateSiteInfoByUrl(this.infoSiteUrl, username).then(() => {
                     // Reset fields so the data is not in the view anymore.

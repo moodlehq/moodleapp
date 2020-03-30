@@ -10,7 +10,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
 
-        <core-search-box *ngIf="showSearchBox" (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"></core-search-box>
+        <core-search-box *ngIf="showSearchBox" (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off" [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1" searchArea="CoreUserParticipants"></core-search-box>
 
         <core-loading [hideUntil]="participantsLoaded">
             <core-empty-box *ngIf="!displaySearchResults && !participants.length" icon="person" [message]="'core.user.noparticipants' | translate">

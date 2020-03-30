@@ -20,6 +20,7 @@ import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreConstants } from '@core/constants';
@@ -57,16 +58,17 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     protected timemodified: number;
     protected observer;
 
-    constructor(private sitesProvider: CoreSitesProvider,
-            private utils: CoreUtilsProvider,
-            private domUtils: CoreDomUtilsProvider,
-            private filepoolProvider: CoreFilepoolProvider,
-            private appProvider: CoreAppProvider,
-            private fileHelper: CoreFileHelperProvider,
-            private mimeUtils: CoreMimetypeUtilsProvider,
-            private eventsProvider: CoreEventsProvider,
-            private textUtils: CoreTextUtilsProvider,
-            private pluginFileDelegate: CorePluginFileDelegate) {
+    constructor(protected sitesProvider: CoreSitesProvider,
+            protected utils: CoreUtilsProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected appProvider: CoreAppProvider,
+            protected fileHelper: CoreFileHelperProvider,
+            protected mimeUtils: CoreMimetypeUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected pluginFileDelegate: CorePluginFileDelegate,
+            protected urlUtils: CoreUrlUtilsProvider) {
         this.onDelete = new EventEmitter();
     }
 
@@ -104,6 +106,8 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                 this.observer = this.eventsProvider.on(eventName, () => {
                     this.calculateState();
                 });
+            }).catch(() => {
+                // File not downloadable.
             });
         }
     }
@@ -152,14 +156,14 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.canDownload) {
+        if (!this.canDownload || !this.state || this.state == CoreConstants.NOT_DOWNLOADABLE) {
             // File cannot be downloaded, just open it.
             if (this.file.toURL) {
                 // Local file.
                 this.utils.openFile(this.file.toURL());
             } else if (this.fileUrl) {
                 if (this.fileUrl.indexOf('http') === 0) {
-                    this.utils.openOnlineFile(this.fileUrl);
+                    this.utils.openOnlineFile(this.urlUtils.unfixPluginfileURL(this.fileUrl));
                 } else {
                     this.utils.openFile(this.fileUrl);
                 }

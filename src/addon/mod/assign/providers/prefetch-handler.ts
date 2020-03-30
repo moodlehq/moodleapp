@@ -354,15 +354,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                         }).then(() => {
                             // Participiants already fetched, we don't need to ignore cache now.
                             return this.assignHelper.getParticipants(assign, group.id, false, siteId).then((participants) => {
-                                const promises = [];
-
-                                participants.forEach((participant) => {
-                                    if (participant.profileimageurl) {
-                                        promises.push(this.filepoolProvider.addToQueueByUrl(siteId, participant.profileimageurl));
-                                    }
-                                });
-
-                                return Promise.all(promises);
+                                return this.userProvider.prefetchUserAvatars(participants, 'profileimageurl', siteId);
                             }).catch(() => {
                                 // Fail silently (Moodle < 3.2).
                             });
@@ -443,7 +435,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
         // Prefetch grade items.
         if (userId) {
-            promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
+            promises.push(this.courseProvider.getModuleBasicGradeInfo(moduleId, siteId).then((gradeInfo) => {
+                if (gradeInfo) {
+                    promises.push(this.gradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true));
+                }
+            }));
         }
 
         // Prefetch feedback.

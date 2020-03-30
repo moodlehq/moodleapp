@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { FileTransfer, FileUploadOptions } from '@ionic-native/file-transfer';
 import { CoreAppProvider } from './app';
@@ -92,10 +91,14 @@ export class CoreWSProvider {
     protected retryCalls = [];
     protected retryTimeout = 0;
 
-    constructor(private http: HttpClient, private translate: TranslateService, private appProvider: CoreAppProvider,
-            private textUtils: CoreTextUtilsProvider, logger: CoreLoggerProvider,
-            private fileProvider: CoreFileProvider, private fileTransfer: FileTransfer, private commonHttp: Http,
-            private mimeUtils: CoreMimetypeUtilsProvider) {
+    constructor(protected http: HttpClient,
+            protected translate: TranslateService,
+            protected appProvider: CoreAppProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected fileProvider: CoreFileProvider,
+            protected fileTransfer: FileTransfer,
+            protected mimeUtils: CoreMimetypeUtilsProvider,
+            logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreWSProvider');
     }
 
@@ -499,11 +502,12 @@ export class CoreWSProvider {
      * @param url URL to perform the request.
      * @return Promise resolved with the response.
      */
-    performHead(url: string): Promise<any> {
+    performHead(url: string): Promise<HttpResponse<any>> {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.commonHttp.head(url).timeout(this.getRequestTimeout()).toPromise();
+            promise = this.http.head(url, {observe: 'response', responseType: 'blob'}).timeout(this.getRequestTimeout())
+                    .toPromise();
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -827,6 +831,22 @@ export class CoreWSProvider {
 
             return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
         });
+    }
+
+    /**
+     * Perform an HTTP request requesting for a text response.
+     *
+     * @param  url Url to get.
+     * @return Resolved with the text when done.
+     */
+    async getText(url: string): Promise<string> {
+        // Fetch the URL content.
+        const content = await this.http.get(url, { responseType: 'text' }).toPromise();
+        if (typeof content !== 'string') {
+            return Promise.reject(null);
+        }
+
+        return content;
     }
 }
 

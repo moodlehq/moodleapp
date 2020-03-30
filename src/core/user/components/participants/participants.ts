@@ -161,16 +161,10 @@ export class CoreUserParticipantsComponent implements OnInit {
         this.displaySearchResults = false;
         this.participants = [];
         this.searchPage = 0;
-        this.splitviewCtrl.emptyDetails();
 
         // Remove search results and display all participants.
         this.participantsLoaded = false;
-        this.fetchData(true).then(() => {
-            if (this.splitviewCtrl.isOn() && this.participants.length > 0) {
-                // Take first and load it.
-                this.gotoParticipant(this.participants[0].id);
-            }
-        });
+        this.fetchData(true);
     }
 
     /**
@@ -201,9 +195,19 @@ export class CoreUserParticipantsComponent implements OnInit {
             this.canLoadMore = result.canLoadMore;
             this.searchPage++;
 
-            if (!loadMore && this.splitviewCtrl.isOn() && this.participants.length > 0) {
-                // Take first and load it.
-                this.gotoParticipant(this.participants[0].id);
+            if (!loadMore && this.splitviewCtrl.isOn()) {
+                // Load the first entry.
+                if (this.participants.length > 0) {
+                    const found = this.participantId && this.participants.some((user) => user.id == this.participantId);
+
+                    // The current selected user is not found in the current list, open first item.
+                    if (!found) {
+                        this.gotoParticipant(this.participants[0].id);
+                    }
+                } else {
+                    this.participantId = null;
+                    this.splitviewCtrl.emptyDetails();
+                }
             }
 
         }).catch((error) => {

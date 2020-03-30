@@ -36,7 +36,6 @@ import { AddonModDataDefaultFieldHandler } from './providers/default-field-handl
 import { CoreTagAreaDelegate } from '@core/tag/providers/area-delegate';
 import { AddonModDataTagAreaHandler } from './providers/tag-area-handler';
 import { AddonModDataFieldModule } from './fields/field.module';
-import { CoreUpdateManagerProvider } from '@providers/update-manager';
 
 // List of providers (without handlers).
 export const ADDON_MOD_DATA_PROVIDERS: any[] = [
@@ -77,7 +76,7 @@ export class AddonModDataModule {
     constructor(moduleDelegate: CoreCourseModuleDelegate, moduleHandler: AddonModDataModuleHandler,
             prefetchDelegate: CoreCourseModulePrefetchDelegate, prefetchHandler: AddonModDataPrefetchHandler,
             contentLinksDelegate: CoreContentLinksDelegate, linkHandler: AddonModDataLinkHandler,
-            cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler, updateManager: CoreUpdateManagerProvider,
+            cronDelegate: CoreCronDelegate, syncHandler: AddonModDataSyncCronHandler,
             approveLinkHandler: AddonModDataApproveLinkHandler, deleteLinkHandler: AddonModDataDeleteLinkHandler,
             showLinkHandler: AddonModDataShowLinkHandler, editLinkHandler: AddonModDataEditLinkHandler,
             listLinkHandler: AddonModDataListLinkHandler, tagAreaDelegate: CoreTagAreaDelegate,
@@ -93,21 +92,5 @@ export class AddonModDataModule {
         contentLinksDelegate.registerHandler(listLinkHandler);
         cronDelegate.register(syncHandler);
         tagAreaDelegate.registerHandler(tagAreaHandler);
-
-        // Allow migrating the tables from the old app to the new schema.
-        updateManager.registerSiteTableMigration({
-            name: 'mma_mod_data_entry',
-            newName: AddonModDataOfflineProvider.DATA_ENTRY_TABLE,
-            fields: [
-                {
-                    name: 'fields',
-                    type: 'object'
-                },
-                {
-                    name: 'dataAndEntry',
-                    delete: true
-                }
-            ]
-        });
     }
 }

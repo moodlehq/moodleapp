@@ -815,6 +815,11 @@ export class CoreCourseHelperProvider {
                 }
             }
 
+            if (moduleInfo.status == CoreConstants.DOWNLOADING) {
+                // Set this to 0 to prevent "remove file" option showing up while downloading.
+                instance.size = 0;
+            }
+
             if (typeof instance.contextMenuStatusObserver == 'undefined' && component) {
                 instance.contextMenuStatusObserver = this.eventsProvider.on(CoreEventsProvider.PACKAGE_STATUS_CHANGED, (data) => {
                     if (data.componentId == module.id && data.component == component) {
@@ -1253,7 +1258,7 @@ export class CoreCourseHelperProvider {
             } else {
                 modal.dismiss();
 
-                return this.getAndOpenCourse(undefined, courseId, params, siteId);
+                return this.getAndOpenCourse(navCtrl, courseId, params, siteId);
             }
         }).catch((error) => {
             modal.dismiss();

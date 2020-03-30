@@ -29,7 +29,7 @@
                 <ion-icon padding name="alert"></ion-icon> {{ 'core.login.reconnectdescription' | translate }}
             </p>
         </div>
-        <form ion-list [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form">
+        <form ion-list *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
             <ion-item text-wrap class="core-username">
                 <p>{{username}}</p>
             </ion-item>
@@ -51,7 +51,7 @@
         </form>
 
         <!-- Forgotten password button. -->
-        <div *ngIf="showForgottenPassword" padding-top class="core-login-forgotten-password">
+        <div *ngIf="showForgottenPassword && !isOAuth" padding-top class="core-login-forgotten-password">
             <button ion-button block text-wrap color="light" (click)="forgottenPassword()">{{ 'core.login.forgotten' | translate }}</button>
         </div>
 
@@ -62,6 +62,13 @@
                 <img [src]="provider.iconurl" alt="" width="32" height="32" item-start>
                 {{provider.name}}
             </button>
+        </ion-list>
+
+        <!-- If OAuth, display cancel button since the form isn't displayed. -->
+        <ion-list *ngIf="isOAuth">
+            <ion-item>
+                <a ion-button block color="light" (click)="cancel($event)">{{ 'core.login.cancel' | translate }}</a>
+            </ion-item>
         </ion-list>
     </div>
 </ion-content>

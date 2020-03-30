@@ -10,7 +10,7 @@
                 <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                     <core-icon name="fa-circle" color="primary"></core-icon>
                 </ion-note>
-                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled" [attr.aria-label]="('core.displayoptions' | translate)">
                     <core-icon name="more"></core-icon>
                 </button>
             </div>
@@ -26,7 +26,7 @@
                     <ion-note float-end padding-left text-end *ngIf="trackPosts && !post.postread" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                         <core-icon name="fa-circle" color="primary"></core-icon>
                     </ion-note>
-                    <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled">
+                    <button ion-button icon-only clear color="dark" (click)="showOptionsMenu($event)" *ngIf="optionsMenuEnabled" [attr.aria-label]="('core.displayoptions' | translate)">
                         <core-icon name="more"></core-icon>
                     </button>
                 </ng-container>
@@ -57,18 +57,18 @@
         </ion-item>
     </div>
 
-    <ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)">
+    <form ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parent)" #replyFormEl>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"></ion-input>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.message' | translate }}</ion-label>
-            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + post.id" [component]="component" [componentId]="componentId"></core-rich-text-editor>
+            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + post.id" [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="forum && forum.cmid" elementId="message" [draftExtraParams]="{reply: post.id}"></core-rich-text-editor>
         </ion-item>
         <ion-item text-wrap *ngIf="accessInfo.canpostprivatereply">
             <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
-            <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply"></ion-checkbox>
+            <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
         <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
             <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
@@ -88,5 +88,5 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-    </ion-list>
+    </form>
 </div>

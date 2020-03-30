@@ -15,19 +15,21 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreSettingsListPage } from './list';
+import { CoreSettingsLicensesPage } from './licenses';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [
-        CoreSettingsListPage
+        CoreSettingsLicensesPage
     ],
     imports: [
         CoreComponentsModule,
         CoreDirectivesModule,
-        IonicPageModule.forChild(CoreSettingsListPage),
+        CorePipesModule,
+        IonicPageModule.forChild(CoreSettingsLicensesPage),
         TranslateModule.forChild()
     ],
 })
-export class CoreSettingsListPageModule {}
+export class CoreSettingsLicensesPageModule {}

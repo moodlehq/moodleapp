@@ -22,6 +22,9 @@ import { Subscription } from 'rxjs';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreAppProvider } from '@providers/app';
 import { CoreTabComponent } from './tab';
+import { CoreConfigProvider } from '@providers/config';
+import { CoreConstants } from '@core/constants';
+import { CoreConfigConstants } from '../../configconstants';
 
 /**
  * This component displays some tabs that usually share data between them.
@@ -46,6 +49,10 @@ import { CoreTabComponent } from './tab';
     templateUrl: 'core-tabs.html'
 })
 export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+
+    // Minimum tab's width to display fully the word "Competencies" which is the longest tab in the app.
+    static MIN_TAB_WIDTH = 107;
+
     @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = true; // Determine when should the contents be shown.
     @Input() parentScrollable = false; // Determine if the scroll should be in the parent content or the tab itself.
@@ -83,9 +90,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected firstSelectedTab: number;
     protected unregisterBackButtonAction: any;
     protected languageChangedSubscription: Subscription;
+    protected isInTransition = false; // Weather Slides is in transition.
 
     constructor(element: ElementRef, protected content: Content, protected domUtils: CoreDomUtilsProvider,
-            protected appProvider: CoreAppProvider, platform: Platform, translate: TranslateService) {
+            protected appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, platform: Platform,
+            translate: TranslateService) {
         this.tabBarElement = element.nativeElement;
 
         this.direction = platform.isRTL ? 'rtl' : 'ltr';
@@ -202,7 +211,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.tabs.push(tab);
             this.sortTabs();
 
-            this.calculateSlides();
+            setTimeout(() => {
+                this.calculateSlides();
+            });
 
             if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
                 // Calculate the tabBarHeight again now that there is more than 1 tab and the bar will be seen.
@@ -223,8 +234,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             return;
         }
 
-        this.calculateMaxSlides();
-        this.updateSlides();
+        this.calculateMaxSlides().then(() => {
+            this.updateSlides();
+        });
     }
 
     /**
@@ -319,6 +331,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      */
     slideChanged(): void {
         const currentIndex = this.slides.getActiveIndex();
+        this.isInTransition = false;
         if (this.slidesShown >= this.numTabsShown) {
             this.showPrevButton = false;
             this.showNextButton = false;
@@ -372,39 +385,89 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
 
         setTimeout(() => {
-            this.updateAriaHidden(); // Slide's update() sets aria-hidden to true, update it.
+            this.slideChanged(); // Call slide changed again, sometimes the slide active index takes a while to be updated.
         }, 400);
     }
 
-    protected calculateMaxSlides(): void {
-        if (this.slides) {
-            const width = this.domUtils.getElementWidth(this.slides.getNativeElement()) || this.slides.renderedWidth;
-
-            if (width) {
-                this.maxSlides = Math.floor(width / 100);
-
-                return;
+    protected calculateMaxSlides(): Promise<void> {
+        return new Promise<void>((resolve, reject): void => {
+            this.maxSlides = 3;
+            if (this.slides) {
+                const width = this.domUtils.getElementWidth(this.slides.getNativeElement()) || this.slides.renderedWidth;
+                if (width) {
+                    this.configProvider.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConfigConstants.font_sizes[0].toString()).
+                        then((fontSize) => {
+                            this.maxSlides = Math.floor(width / (fontSize / CoreConfigConstants.font_sizes[0] *
+                                CoreTabsComponent.MIN_TAB_WIDTH));
+                            resolve();
+                        });
+                } else {
+                    resolve();
+                }
+            } else {
+                resolve();
             }
-        }
-
-        this.maxSlides = 3;
+        });
     }
 
     /**
-     * Method that shows the next slide.
+     * Method that shows the next page.
      */
     slideNext(): void {
         if (this.showNextButton) {
-            this.slides.slideNext();
+            // Stop if slides are in transition.
+            if (this.isInTransition) {
+                return;
+            }
+
+            if (this.slides.isBeginning()) {
+                // Slide to the second page.
+                this.slides.slideTo(this.maxSlides);
+            } else {
+                const currentIndex = this.slides.getActiveIndex();
+                if (typeof currentIndex !== 'undefined') {
+                    const nextSlideIndex = currentIndex + this.maxSlides;
+                    this.isInTransition = true;
+                    if (nextSlideIndex < this.numTabsShown) {
+                        // Slide to the next page.
+                        this.slides.slideTo(nextSlideIndex);
+                    } else {
+                        // Slide to the latest slide.
+                        this.slides.slideTo(this.numTabsShown - 1);
+                    }
+                }
+
+            }
         }
     }
 
     /**
-     * Method that shows the previous slide.
+     * Method that shows the previous page.
      */
     slidePrev(): void {
         if (this.showPrevButton) {
-            this.slides.slidePrev();
+            // Stop if slides are in transition.
+            if (this.isInTransition) {
+                return;
+            }
+
+            if (this.slides.isEnd()) {
+                this.slides.slideTo(this.numTabsShown - this.maxSlides * 2);
+                // Slide to the previous of the latest page.
+            } else {
+                const currentIndex = this.slides.getActiveIndex();
+                if (typeof currentIndex !== 'undefined') {
+                    const prevSlideIndex = currentIndex - this.maxSlides;
+                    this.isInTransition = true;
+                    if (prevSlideIndex >= 0) {
+                        // Slide to the previous page.
+                        this.slides.slideTo(prevSlideIndex);
+                    } else {
+                        // Slide to the first page.
+                        this.slides.slideTo(0);
+                    }
+                }
+            }
         }
     }
 
@@ -420,14 +483,19 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
 
         const scroll = parseInt(scrollElement.scrollTop, 10);
-        if (scroll == this.lastScroll) {
-            if (scroll == 0) {
-                // Ensure tabbar is shown.
-                this.topTabsElement.style.transform = '';
-                this.originalTabsContainer.style.transform = '';
-                this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
-            }
+        if (scroll == 0) {
+            // Ensure tabbar is shown.
+            this.topTabsElement.style.transform = '';
+            this.originalTabsContainer.style.transform = '';
+            this.originalTabsContainer.style.paddingBottom = this.tabBarHeight + 'px';
+            this.tabBarElement.classList.remove('tabs-hidden');
+            this.tabsShown = true;
+            this.lastScroll = 0;
 
+            return;
+        }
+
+        if (scroll == this.lastScroll) {
             // Ensure scroll has been modified to avoid flicks.
             return;
         }
