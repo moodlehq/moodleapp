@@ -39,6 +39,8 @@ import { CORE_SITEHOME_PROVIDERS } from '@core/sitehome/sitehome.module';
 import { CORE_USER_PROVIDERS } from '@core/user/user.module';
 import { CORE_PUSHNOTIFICATIONS_PROVIDERS } from '@core/pushnotifications/pushnotifications.module';
 import { IONIC_NATIVE_PROVIDERS } from '@core/emulator/emulator.module';
+import { CORE_EDITOR_PROVIDERS } from '@core/editor/editor.module';
+import { CORE_SEARCH_PROVIDERS } from '@core/search/search.module';
 
 // Import only this provider to prevent circular dependencies.
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
@@ -75,6 +77,8 @@ import { CoreSiteHomeComponentsModule } from '@core/sitehome/components/componen
 import { CoreUserComponentsModule } from '@core/user/components/components.module';
 import { CoreQuestionComponentsModule } from '@core/question/components/components.module';
 import { CoreBlockComponentsModule } from '@core/block/components/components.module';
+import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
+import { CoreSearchComponentsModule } from '@core/search/components/components.module';
 
 // Import some components listed in entryComponents so they can be injected dynamically.
 import { CoreCourseUnsupportedModuleComponent } from '@core/course/components/unsupported-module/unsupported-module';
@@ -144,7 +148,7 @@ export class CoreCompileProvider {
         IonicModule, TranslateModule.forChild(), CoreComponentsModule, CoreDirectivesModule, CorePipesModule,
         CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreSiteHomeComponentsModule, CoreUserComponentsModule,
         CoreCourseDirectivesModule, CoreSitePluginsDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
-        AddonModWorkshopComponentsModule, CoreBlockComponentsModule
+        AddonModWorkshopComponentsModule, CoreBlockComponentsModule, CoreEditorComponentsModule, CoreSearchComponentsModule
     ];
 
     constructor(protected injector: Injector, logger: CoreLoggerProvider, compilerFactory: JitCompilerFactory) {
@@ -237,7 +241,8 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_SURVEY_PROVIDERS).concat(ADDON_MOD_URL_PROVIDERS).concat(ADDON_MOD_WIKI_PROVIDERS)
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
                 .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS)
-                .concat(CORE_FILTER_PROVIDERS).concat(CORE_H5P_PROVIDERS);
+                .concat(CORE_FILTER_PROVIDERS).concat(CORE_H5P_PROVIDERS).concat(CORE_EDITOR_PROVIDERS)
+                .concat(CORE_SEARCH_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

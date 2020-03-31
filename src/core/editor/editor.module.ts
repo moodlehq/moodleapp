@@ -17,7 +17,7 @@ import { CoreEditorComponentsModule } from './components/components.module';
 import { CoreEditorOfflineProvider } from './providers/editor-offline';
 
 // List of providers (without handlers).
-export const CORE_GRADES_PROVIDERS: any[] = [
+export const CORE_EDITOR_PROVIDERS: any[] = [
     CoreEditorOfflineProvider,
 ];
 
