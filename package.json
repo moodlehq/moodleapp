@@ -1,6 +1,6 @@
 {
   "name": "moodlemobile",
-  "version": "3.8.1",
+  "version": "3.8.2",
   "description": "The official app for Moodle.",
   "author": {
     "name": "Moodle Pty Ltd.",
@@ -225,7 +225,7 @@
       "category": "public.app-category.education",
       "icon": "resources/desktop/icon.icns",
       "target": "mas",
-      "bundleVersion": "3.8.1",
+      "bundleVersion": "3.8.2",
       "extendInfo": {
         "ElectronTeamID": "2NU57U5PAW"
       }
