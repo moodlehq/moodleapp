@@ -171,6 +171,7 @@ export class CoreWSProvider {
 
     /**
      * Call a Moodle WS using the AJAX API. Please use it if the WS layer is not an option.
+     * It uses a cache to prevent duplicate requests.
      *
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
@@ -181,79 +182,19 @@ export class CoreWSProvider {
      *         - available: 0 if unknown, 1 if available, -1 if not available.
      */
     callAjax(method: string, data: any, preSets: CoreWSAjaxPreSets): Promise<any> {
-        let promise;
+        const cacheParams = {
+            methodname: method,
+            args: data,
+        };
 
-        if (typeof preSets.siteUrl == 'undefined') {
-            return rejectWithError(this.createFakeWSError('core.unexpectederror', true));
-        } else if (!this.appProvider.isOnline()) {
-            return rejectWithError(this.createFakeWSError('core.networkerrormsg', true));
+        let promise = this.getPromiseHttp('ajax', preSets.siteUrl, cacheParams);
+
+        if (!promise) {
+            promise = this.performAjax(method, data, preSets);
+            promise = this.setPromiseHttp(promise, 'ajax', preSets.siteUrl, cacheParams);
         }
 
-        if (typeof preSets.responseExpected == 'undefined') {
-            preSets.responseExpected = true;
-        }
-
-        const script = preSets.noLogin ? 'service-nologin.php' : 'service.php',
-            ajaxData = JSON.stringify([{
-                index: 0,
-                methodname: method,
-                args: this.convertValuesToString(data)
-            }]);
-
-        // The info= parameter has no function. It is just to help with debugging.
-        // We call it info to match the parameter name use by Moodle's AMD ajax module.
-        let siteUrl = preSets.siteUrl + '/lib/ajax/' + script + '?info=' + method;
-
-        if (preSets.noLogin && preSets.useGet) {
-            // Send params using GET.
-            siteUrl += '&args=' + encodeURIComponent(ajaxData);
-            promise = this.http.get(siteUrl).timeout(this.getRequestTimeout()).toPromise();
-        } else {
-            promise = this.http.post(siteUrl, ajaxData).timeout(this.getRequestTimeout()).toPromise();
-        }
-
-        return promise.then((data: any) => {
-            // Some moodle web services return null.
-            // If the responseExpected value is set then so long as no data is returned, we create a blank object.
-            if (!data && !preSets.responseExpected) {
-                data = [{}];
-            }
-
-            // Check if error. Ajax layer should always return an object (if error) or an array (if success).
-            if (!data || typeof data != 'object') {
-                return rejectWithError(this.createFakeWSError('core.serverconnection', true));
-            } else if (data.error) {
-                return rejectWithError(data);
-            }
-
-            // Get the first response since only one request was done.
-            data = data[0];
-
-            if (data.error) {
-                return rejectWithError(data.exception);
-            }
-
-            return data.data;
-        }, (data) => {
-            const available = data.status == 404 ? -1 : 0;
-
-            return rejectWithError(this.createFakeWSError('core.serverconnection', true), available);
-        });
-
-        // Convenience function to return an error.
-        function rejectWithError(exception: any, available?: number): Promise<never> {
-            if (typeof available == 'undefined') {
-                if (exception.errorcode) {
-                    available = exception.errorcode == 'invalidrecord' ? -1 : 1;
-                } else {
-                    available = 0;
-                }
-            }
-
-            exception.available = available;
-
-            return Promise.reject(exception);
-        }
+        return promise;
     }
 
     /**
@@ -494,6 +435,94 @@ export class CoreWSProvider {
         }
 
         return method + '#' + Md5.hashAsciiStr(url);
+    }
+
+    /**
+     * Call a Moodle WS using the AJAX API.
+     *
+     * @param method The WebService method to be called.
+     * @param data Arguments to pass to the method.
+     * @param preSets Extra settings and information. Only some
+     * @return Promise resolved with the response data in success and rejected with an object containing:
+     *         - error: Error message.
+     *         - errorcode: Error code returned by the site (if any).
+     *         - available: 0 if unknown, 1 if available, -1 if not available.
+     */
+    protected performAjax(method: string, data: any, preSets: CoreWSAjaxPreSets): Promise<any> {
+
+        let promise;
+
+        if (typeof preSets.siteUrl == 'undefined') {
+            return rejectWithError(this.createFakeWSError('core.unexpectederror', true));
+        } else if (!this.appProvider.isOnline()) {
+            return rejectWithError(this.createFakeWSError('core.networkerrormsg', true));
+        }
+
+        if (typeof preSets.responseExpected == 'undefined') {
+            preSets.responseExpected = true;
+        }
+
+        const script = preSets.noLogin ? 'service-nologin.php' : 'service.php',
+            ajaxData = JSON.stringify([{
+                index: 0,
+                methodname: method,
+                args: this.convertValuesToString(data)
+            }]);
+
+        // The info= parameter has no function. It is just to help with debugging.
+        // We call it info to match the parameter name use by Moodle's AMD ajax module.
+        let siteUrl = preSets.siteUrl + '/lib/ajax/' + script + '?info=' + method;
+
+        if (preSets.noLogin && preSets.useGet) {
+            // Send params using GET.
+            siteUrl += '&args=' + encodeURIComponent(ajaxData);
+            promise = this.http.get(siteUrl).timeout(this.getRequestTimeout()).toPromise();
+        } else {
+            promise = this.http.post(siteUrl, ajaxData).timeout(this.getRequestTimeout()).toPromise();
+        }
+
+        return promise.then((data: any) => {
+            // Some moodle web services return null.
+            // If the responseExpected value is set then so long as no data is returned, we create a blank object.
+            if (!data && !preSets.responseExpected) {
+                data = [{}];
+            }
+
+            // Check if error. Ajax layer should always return an object (if error) or an array (if success).
+            if (!data || typeof data != 'object') {
+                return rejectWithError(this.createFakeWSError('core.serverconnection', true));
+            } else if (data.error) {
+                return rejectWithError(data);
+            }
+
+            // Get the first response since only one request was done.
+            data = data[0];
+
+            if (data.error) {
+                return rejectWithError(data.exception);
+            }
+
+            return data.data;
+        }, (data) => {
+            const available = data.status == 404 ? -1 : 0;
+
+            return rejectWithError(this.createFakeWSError('core.serverconnection', true), available);
+        });
+
+        // Convenience function to return an error.
+        function rejectWithError(exception: any, available?: number): Promise<never> {
+            if (typeof available == 'undefined') {
+                if (exception.errorcode) {
+                    available = exception.errorcode == 'invalidrecord' ? -1 : 1;
+                } else {
+                    available = 0;
+                }
+            }
+
+            exception.available = available;
+
+            return Promise.reject(exception);
+        }
     }
 
     /**
