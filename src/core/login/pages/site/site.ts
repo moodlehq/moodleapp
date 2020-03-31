@@ -104,7 +104,7 @@ export class CoreLoginSitePage {
         url = url.trim();
 
         if (url.match(/^(https?:\/\/)?campus\.example\.edu/)) {
-            this.showLoginIssue(url, this.translate.instant('core.login.errorexampleurl'));
+            this.showLoginIssue(null, this.translate.instant('core.login.errorexampleurl'));
 
             return;
         }
@@ -179,7 +179,7 @@ export class CoreLoginSitePage {
     /**
      * Hide the login error.
      */
-    hideLoginIssue(): void {
+    protected hideLoginIssue(): void {
         this.errorUrl = null;
         this.errorMessage = null;
     }

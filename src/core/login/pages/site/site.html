@@ -49,25 +49,32 @@
         </div>
 
         <!-- Error. -->
-        <ion-card padding *ngIf="errorMessage">
-            <ion-item>
-                <h3>{{ 'core.whoops' | translate }}</h3>
-                <button ion-button icon-only item-end (click)="hideLoginIssue()" [attr.aria-label]="'core.hide' | translate">
-                    <ion-icon name="close"></ion-icon>
-                </button>
-            </ion-item>
-            <p><core-format-text [text]="errorMessage" [filter]="false"></core-format-text></p>
-            <p>{{ 'core.login.problemconnectingerror' | translate }}</p>
-            <p padding>{{ errorUrl }}</p>
-            <p>{{ 'core.login.problemconnectingerrorcontinue' | translate }}</p>
-            <h3>{{ 'core.login.stillcantconnect' | translate }}</h3>
-            <p>{{ 'core.login.contactyouradministrator' | translate }}</p>
-            <p>{{ 'core.whoissiteadmin' | translate }}</p>
-        </ion-card>
+        <div padding-top *ngIf="errorMessage" >
+            <ion-card class="core-site-error">
+                <ion-card-header>
+                    {{ 'core.whoops' | translate }}
+                </ion-card-header>
+                <ion-card-content>
+                    <p><core-format-text [text]="errorMessage" [filter]="false"></core-format-text></p>
+                    <ng-container *ngIf="errorUrl">
+                        <p>{{ 'core.login.problemconnectingerror' | translate }}</p>
+                        <p padding>{{ errorUrl }}</p>
+                        <p><strong>{{ 'core.login.problemconnectingerrorcontinue' | translate }}</strong></p>
+                    </ng-container>
+                </ion-card-content>
+                <ion-card-header>
+                    {{ 'core.login.stillcantconnect' | translate }}
+                </ion-card-header>
+                <ion-card-content>
+                    <p>{{ 'core.login.contactyouradministrator' | translate }}</p>
+                    <p>{{ 'core.whoissiteadmin' | translate }}</p>
+                </ion-card-content>
+            </ion-card>
+        </div>
 
         <!-- Help. -->
         <ion-list>
-            <a ion-item text-center (click)="showHelp()">
+            <a ion-item text-center (click)="showHelp()" detail-none>
                 {{ 'core.needhelp' | translate }}
             </a>
         </ion-list>

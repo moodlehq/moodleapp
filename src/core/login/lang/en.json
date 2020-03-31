@@ -24,7 +24,7 @@
     "emailnotmatch": "Emails do not match",
     "erroraccesscontrolalloworigin": "The cross-origin call you're trying to perform has been rejected. Please check https://docs.moodle.org/dev/Moodle_Mobile_development_using_Chrome_or_Chromium",
     "errordeletesite": "An error occurred while deleting this site. Please try again.",
-    "errorexampleurl": "The URL https://campus.example.edu is only an example URL, it's not a real site. Please use the URL of your school or organization's site.",
+    "errorexampleurl": "The URL https://campus.example.edu is only an example URL, it's not a real site. <strong>Please use the URL of your school or organization's site.</strong>",
     "errorupdatesite": "An error occurred while updating the site's token.",
     "faqcannotconnectanswer": "Please, contact your site administrator.",
     "faqcannotconnectquestion": "I typed my site address correctly but I still can't connect.",

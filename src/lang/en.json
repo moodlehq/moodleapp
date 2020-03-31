@@ -12,7 +12,7 @@
     "back": "Back",
     "browser": "Browser",
     "cancel": "Cancel",
-    "cannotconnect": "Cannot connect: Verify that you have correctly typed the URL and that your site uses Moodle {{$a}} or later.",
+    "cannotconnect": "<strong>Cannot connect</strong>: Verify that you have correctly typed your site address.",
     "cannotdownloadfiles": "File downloading is disabled. Please contact your site administrator.",
     "captureaudio": "Record audio",
     "capturedimage": "Taken picture.",

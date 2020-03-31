@@ -14,7 +14,9 @@
         <ion-item text-wrap>
             <h2><b>{{ 'core.login.faqwhatisurlquestion' | translate }}</b></h2>
         </ion-item>
-        <ion-item text-wrap [innerHTML]="'core.login.faqwhatisurlanswer' | translate: {$image: urlImageHtml}">
+        <ion-item text-wrap>
+            <div [innerHTML]="'core.login.faqwhatisurlanswer' | translate: {$image: urlImageHtml}">
+            </div>
         </ion-item>
         <ion-item text-wrap>
             <h2><b>{{ 'core.login.faqcannotconnectquestion' | translate }}</b></h2>
