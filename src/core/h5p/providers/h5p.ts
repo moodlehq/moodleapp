@@ -27,6 +27,7 @@ import { CoreH5PUtilsProvider } from './utils';
 import { CoreH5PContentValidator } from '../classes/content-validator';
 import { TranslateService } from '@ngx-translate/core';
 import { FileEntry } from '@ionic-native/file';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Service to provide H5P functionalities.
@@ -410,7 +411,7 @@ export class CoreH5PProvider {
      * @return Promise resolved with all of the files content in one string.
      */
     protected concatenateFiles(assets: CoreH5PDependencyAsset[], type: string): Promise<string> {
-        const basePath = this.fileProvider.getBasePathInstant();
+        const basePath = this.fileProvider.convertFileSrc(this.fileProvider.getBasePathInstant());
         let content = '',
             promise = Promise.resolve(); // Use a chain of promises so the order is kept.
 
@@ -495,7 +496,8 @@ export class CoreH5PProvider {
 
             const contentId = this.getContentId(id),
                 basePath = this.fileProvider.getBasePathInstant(),
-                contentUrl = this.textUtils.concatenatePaths(basePath, this.getContentFolderPath(content.folderName, site.getId()));
+                contentUrl = this.fileProvider.convertFileSrc(this.textUtils.concatenatePaths(
+                        basePath, this.getContentFolderPath(content.folderName, site.getId())));
 
             // Create the settings needed for the content.
             const contentSettings = {
@@ -558,6 +560,40 @@ export class CoreH5PProvider {
                 return fileEntry.toURL();
             });
         });
+    }
+
+    /**
+     * Delete all content indexes of all sites from filesystem.
+     *
+     * @return Promise resolved when done.
+     */
+    async deleteAllContentIndexes(): Promise<void> {
+        const siteIds = await this.sitesProvider.getSitesIds();
+
+        await Promise.all(siteIds.map((siteId) => this.deleteAllContentIndexesForSite(siteId)));
+    }
+
+    /**
+     * Delete all content indexes for a certain site from filesystem.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async deleteAllContentIndexesForSite(siteId?: string): Promise<void> {
+
+        const site = await this.sitesProvider.getSite(siteId);
+
+        const records = await site.getDb().getAllRecords(this.CONTENT_TABLE);
+
+        const promises = records.map(async (record) => {
+            try {
+                await this.fileProvider.removeFile(this.getContentIndexPath(record.foldername, site.getId()));
+            } catch (err) {
+                // Ignore errors, maybe the file doesn't exist.
+            }
+        });
+
+        await Promise.all(promises);
     }
 
     /**
@@ -1033,12 +1069,11 @@ export class CoreH5PProvider {
             settings.loadedJs = [];
             settings.loadedCss = [];
 
-            const libUrl = this.getCoreH5PPath(),
-                relPath = this.urlUtils.removeProtocolAndWWW(libUrl);
+            const libUrl = this.getCoreH5PPath();
 
             // Add core stylesheets.
             CoreH5PProvider.STYLES.forEach((style) => {
-                settings.core.styles.push(relPath + style);
+                settings.core.styles.push(libUrl + style);
                 cssRequires.push(libUrl + style);
             });
 
@@ -1279,8 +1314,10 @@ export class CoreH5PProvider {
 
             return {
                 baseUrl: this.fileProvider.getWWWPath(),
-                url: this.textUtils.concatenatePaths(basePath, this.getExternalH5PFolderPath(site.getId())),
-                urlLibraries: this.textUtils.concatenatePaths(basePath, this.getLibrariesFolderPath(site.getId())),
+                url: this.fileProvider.convertFileSrc(this.textUtils.concatenatePaths(
+                        basePath, this.getExternalH5PFolderPath(site.getId()))),
+                urlLibraries: this.fileProvider.convertFileSrc(this.textUtils.concatenatePaths(
+                        basePath, this.getLibrariesFolderPath(site.getId()))),
                 postUserStatistics: false,
                 ajax: ajaxPaths,
                 saveFreq: false,
@@ -2622,6 +2659,8 @@ export class CoreH5PProvider {
         });
     }
 }
+
+export class CoreH5P extends makeSingleton(CoreH5PProvider) {}
 
 /**
  * Display options behaviour constants.
