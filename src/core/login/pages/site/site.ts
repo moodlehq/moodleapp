@@ -18,10 +18,32 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteCheckResponse } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreUrl } from '@classes/utils/url';
+import { TranslateService } from '@ngx-translate/core';
+
+/**
+ * Data about an error when connecting to a site.
+ */
+type CoreLoginSiteError = {
+    /**
+     * The error message that ocurred.
+     */
+    message: string;
+
+    /**
+     * URL the user entered.
+     */
+    url?: string;
+
+    /**
+     * URL the user entered with protocol added if needed.
+     */
+    fullUrl?: string;
+};
 
 /**
  * Page to enter or select the site URL to connect to.
@@ -41,6 +63,7 @@ export class CoreLoginSitePage {
     fixedDisplay = 'buttons';
     showKeyboard = false;
     filter = '';
+    error: CoreLoginSiteError;
 
     constructor(navParams: NavParams,
             protected navCtrl: NavController,
@@ -50,7 +73,9 @@ export class CoreLoginSitePage {
             protected loginHelper: CoreLoginHelperProvider,
             protected modalCtrl: ModalController,
             protected domUtils: CoreDomUtilsProvider,
-            protected eventsProvider: CoreEventsProvider) {
+            protected eventsProvider: CoreEventsProvider,
+            protected translate: TranslateService,
+            protected urlUtils: CoreUrlUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
 
@@ -98,6 +123,14 @@ export class CoreLoginSitePage {
         }
 
         url = url.trim();
+
+        if (url.match(/^(https?:\/\/)?campus\.example\.edu/)) {
+            this.showLoginIssue(null, this.translate.instant('core.login.errorexampleurl'));
+
+            return;
+        }
+
+        this.hideLoginIssue();
 
         const modal = this.domUtils.showModalLoading(),
             siteData = this.sitesProvider.getDemoSiteData(url);
@@ -165,18 +198,27 @@ export class CoreLoginSitePage {
     }
 
     /**
+     * Hide the login error.
+     */
+    protected hideLoginIssue(): void {
+        this.error = null;
+    }
+
+    /**
      * Show an error that aims people to solve the issue.
      *
      * @param url The URL the user was trying to connect to.
      * @param error Error to display.
      */
     protected showLoginIssue(url: string, error: any): void {
-        const modal = this.modalCtrl.create('CoreLoginSiteErrorPage', {
-            siteUrl: url,
-            issue: this.domUtils.getErrorMessage(error)
-        });
+        this.error = {
+            url: url,
+            message: this.domUtils.getErrorMessage(error),
+        };
 
-        modal.present();
+        if (url) {
+            this.error.fullUrl = this.urlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
+        }
     }
 
     /**

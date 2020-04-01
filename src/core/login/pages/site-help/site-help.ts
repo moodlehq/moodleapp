@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { IonicPage, ViewController } from 'ionic-angular';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Component that displays some help regarding the CoreLoginSitePage.
@@ -24,7 +25,17 @@ import { IonicPage, ViewController } from 'ionic-angular';
     templateUrl: 'site-help.html',
 })
 export class CoreLoginSiteHelpPage {
-    constructor(private viewCtrl: ViewController) { }
+
+    urlImageHtml: string;
+    setupLinkHtml: string;
+
+    constructor(protected viewCtrl: ViewController,
+            protected translate: TranslateService) {
+
+        this.urlImageHtml = '<img src="assets/img/login/faq_url.png" role="presentation">';
+        this.setupLinkHtml = '<a href="https://moodle.com/getstarted/" title="' +
+                this.translate.instant('core.login.faqsetupsitelinktitle') + '">https://moodle.com/getstarted/</a>';
+    }
 
     /**
      * Close help modal.

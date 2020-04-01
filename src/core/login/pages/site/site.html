@@ -6,9 +6,6 @@
             <button ion-button icon-only navPush="CoreAppSettingsPage" [attr.aria-label]="'core.settings.appsettings' | translate">
                 <core-icon name="fa-cogs"></core-icon>
             </button>
-            <button ion-button icon-only (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
-                <ion-icon name="help-circle"></ion-icon>
-            </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
@@ -20,9 +17,9 @@
         <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->
             <ng-container *ngIf="!fixedSites">
-                <p padding>{{ 'core.login.newsitedescription' | translate }}</p>
                 <ion-item>
-                    <ion-input type="url" name="url" placeholder="{{ 'core.login.siteaddress' | translate }}" formControlName="siteUrl" [core-auto-focus]="showKeyboard"></ion-input>
+                    <ion-label stacked><h2>{{ 'core.login.siteaddress' | translate }}</h2></ion-label>
+                    <ion-input type="url" name="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard"></ion-input>
                 </ion-item>
             </ng-container>
 
@@ -50,5 +47,36 @@
             <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
             <a *ngFor="let site of fixedSites" ion-button block (click)="connect($event, site.url)" [title]="site.name" margin-bottom>{{site.name}}</a>
         </div>
+
+        <!-- Error. -->
+        <div padding-top *ngIf="error" >
+            <ion-card class="core-site-error">
+                <ion-card-header>
+                    {{ 'core.whoops' | translate }}
+                </ion-card-header>
+                <ion-card-content>
+                    <p><core-format-text [text]="error.message" [filter]="false"></core-format-text></p>
+                    <ng-container *ngIf="error.url">
+                        <p>{{ 'core.login.problemconnectingerror' | translate }}</p>
+                        <p padding><a [href]="error.fullUrl" core-link>{{ error.url }}</a></p>
+                        <p><strong>{{ 'core.login.problemconnectingerrorcontinue' | translate }}</strong></p>
+                    </ng-container>
+                </ion-card-content>
+                <ion-card-header>
+                    {{ 'core.login.stillcantconnect' | translate }}
+                </ion-card-header>
+                <ion-card-content>
+                    <p>{{ 'core.login.contactyouradministrator' | translate }}</p>
+                    <p>{{ 'core.whoissiteadmin' | translate }}</p>
+                </ion-card-content>
+            </ion-card>
+        </div>
+
+        <!-- Help. -->
+        <ion-list no-lines>
+            <a ion-item text-center class="core-login-need-help" (click)="showHelp()" detail-none>
+                {{ 'core.needhelp' | translate }}
+            </a>
+        </ion-list>
     </div>
 </ion-content>
