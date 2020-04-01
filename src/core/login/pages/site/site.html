@@ -49,16 +49,16 @@
         </div>
 
         <!-- Error. -->
-        <div padding-top *ngIf="errorMessage" >
+        <div padding-top *ngIf="error" >
             <ion-card class="core-site-error">
                 <ion-card-header>
                     {{ 'core.whoops' | translate }}
                 </ion-card-header>
                 <ion-card-content>
-                    <p><core-format-text [text]="errorMessage" [filter]="false"></core-format-text></p>
-                    <ng-container *ngIf="errorUrl">
+                    <p><core-format-text [text]="error.message" [filter]="false"></core-format-text></p>
+                    <ng-container *ngIf="error.url">
                         <p>{{ 'core.login.problemconnectingerror' | translate }}</p>
-                        <p padding>{{ errorUrl }}</p>
+                        <p padding><a [href]="error.fullUrl" core-link>{{ error.url }}</a></p>
                         <p><strong>{{ 'core.login.problemconnectingerrorcontinue' | translate }}</strong></p>
                     </ng-container>
                 </ion-card-content>
@@ -73,8 +73,8 @@
         </div>
 
         <!-- Help. -->
-        <ion-list>
-            <a ion-item text-center (click)="showHelp()" detail-none>
+        <ion-list no-lines>
+            <a ion-item text-center class="core-login-need-help" (click)="showHelp()" detail-none>
                 {{ 'core.needhelp' | translate }}
             </a>
         </ion-list>

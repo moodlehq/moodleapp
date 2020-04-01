@@ -18,11 +18,32 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteCheckResponse } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreUrl } from '@classes/utils/url';
 import { TranslateService } from '@ngx-translate/core';
+
+/**
+ * Data about an error when connecting to a site.
+ */
+type CoreLoginSiteError = {
+    /**
+     * The error message that ocurred.
+     */
+    message: string;
+
+    /**
+     * URL the user entered.
+     */
+    url?: string;
+
+    /**
+     * URL the user entered with protocol added if needed.
+     */
+    fullUrl?: string;
+};
 
 /**
  * Page to enter or select the site URL to connect to.
@@ -42,8 +63,7 @@ export class CoreLoginSitePage {
     fixedDisplay = 'buttons';
     showKeyboard = false;
     filter = '';
-    errorUrl: string;
-    errorMessage: string;
+    error: CoreLoginSiteError;
 
     constructor(navParams: NavParams,
             protected navCtrl: NavController,
@@ -54,7 +74,8 @@ export class CoreLoginSitePage {
             protected modalCtrl: ModalController,
             protected domUtils: CoreDomUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
-            protected translate: TranslateService) {
+            protected translate: TranslateService,
+            protected urlUtils: CoreUrlUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
 
@@ -180,8 +201,7 @@ export class CoreLoginSitePage {
      * Hide the login error.
      */
     protected hideLoginIssue(): void {
-        this.errorUrl = null;
-        this.errorMessage = null;
+        this.error = null;
     }
 
     /**
@@ -191,8 +211,14 @@ export class CoreLoginSitePage {
      * @param error Error to display.
      */
     protected showLoginIssue(url: string, error: any): void {
-        this.errorUrl = url;
-        this.errorMessage = this.domUtils.getErrorMessage(error);
+        this.error = {
+            url: url,
+            message: this.domUtils.getErrorMessage(error),
+        };
+
+        if (url) {
+            this.error.fullUrl = this.urlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
+        }
     }
 
     /**
