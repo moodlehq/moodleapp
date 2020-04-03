@@ -2779,7 +2779,7 @@
     "url": "https://github.com/ichernev",
     "licenseFile": "LICENSE"
   },
-  "moodlemobile@3.8.1": {
+  "moodlemobile@3.8.2": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/moodlehq/moodlemobile2",
     "publisher": "Moodle Pty Ltd.",
