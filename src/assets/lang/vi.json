@@ -125,6 +125,7 @@
     "addon.files.emptyfilelist": "Không có tệp nào để hiển thị.",
     "addon.files.erroruploadnotworking": "Thật không may là hiện nay không thể tải lên các tập tin vào trang web của bạn.",
     "addon.files.files": "Tập tin",
+    "addon.files.privatefiles": "Tập tin riêng tư",
     "addon.files.sitefiles": "Tập tin toàn hệ thống",
     "addon.messageoutput_airnotifier.processorsettingsdesc": "Cấu hình thiết bị",
     "addon.messages.addcontact": "Thêm liên lạc",

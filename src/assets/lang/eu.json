@@ -1871,7 +1871,7 @@
     "core.question.notyetanswered": "Erantzun gabea",
     "core.question.partiallycorrect": "Zuzena zati batean",
     "core.question.questionmessage": "{{$a}} galdera: {{$b}}",
-    "core.question.questionno": "{{$a}} galdera",
+    "core.question.questionno": "{{$a}}. galdera",
     "core.question.requiresgrading": "Kalifikazioa behar du",
     "core.quotausage": "Une honetan {{$a.used}} erabili dituzu, eta zure muga {{$a.total}} da.",
     "core.rating.aggregateavg": "Puntuazioen batez bestekoa",
