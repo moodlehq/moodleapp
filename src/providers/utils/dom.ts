@@ -1561,25 +1561,26 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * View an image in a new page or modal.
+     * View an image in a modal.
      *
      * @param image URL of the image.
      * @param title Title of the page or modal.
      * @param component Component to link the image to if needed.
      * @param componentId An ID to use in conjunction with the component.
+     * @param fullScreen Whether the modal should be full screen.
      */
-    viewImage(image: string, title?: string, component?: string, componentId?: string | number): void {
+    viewImage(image: string, title?: string, component?: string, componentId?: string | number, fullScreen?: boolean): void {
         if (image) {
             const params: any = {
-                    title: title,
-                    image: image,
-                    component: component,
-                    componentId: componentId
-                },
-                modal = this.modalCtrl.create('CoreViewerImagePage', params);
+                title: title,
+                image: image,
+                component: component,
+                componentId: componentId,
+            };
+            const options = fullScreen ? { cssClass: 'core-modal-fullscreen' } : {};
+            const modal = this.modalCtrl.create('CoreViewerImagePage', params, options);
             modal.present();
         }
-
     }
 
     /**

@@ -298,12 +298,18 @@ export class CoreFileUploaderProvider {
      * @return Undefined if file is valid, error message if file is invalid.
      */
     isInvalidMimetype(mimetypes?: string[], path?: string, mimetype?: string): string {
-        let extension;
+        let extension: string;
 
         if (mimetypes) {
             // Verify that the mimetype of the file is supported.
             if (mimetype) {
                 extension = this.mimeUtils.getExtension(mimetype);
+
+                if (mimetypes.indexOf(mimetype) == -1) {
+                    // Get the "main" mimetype of the extension.
+                    // It's possible that the list of accepted mimetypes only includes the "main" mimetypes.
+                    mimetype = this.mimeUtils.getMimeType(extension);
+                }
             } else {
                 extension = this.mimeUtils.getFileExtension(path);
                 mimetype = this.mimeUtils.getMimeType(extension);

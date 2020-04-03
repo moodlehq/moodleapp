@@ -91,16 +91,7 @@ export class CoreLoginInitPage {
                 });
             }
 
-            return this.sitesProvider.getCurrentSite().getPublicConfig().catch(() => {
-                return {};
-            }).then((config) => {
-                return this.sitesProvider.checkRequiredMinimumVersion(config).then(() => {
-                     // User is logged in, go to site initial page.
-                    return this.loginHelper.goToSiteInitialPage();
-                }).catch(() => {
-                    return this.loadPage();
-                });
-            });
+            return this.loginHelper.goToSiteInitialPage();
         }
 
         return this.navCtrl.setRoot('CoreLoginSitesPage');
