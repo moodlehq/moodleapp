@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { File, FileEntry, DirectoryEntry } from '@ionic-native/file';
+import { File, FileEntry, DirectoryEntry, Entry, Metadata } from '@ionic-native/file';
 
 import { CoreAppProvider } from './app';
 import { CoreLoggerProvider } from './logger';
@@ -545,7 +545,7 @@ export class CoreFileProvider {
 
             reader.onloadend = (evt): void => {
                 const target = <any> evt.target; // Convert to <any> to be able to use non-standard properties.
-                if (target.result !== undefined || target.result !== null) {
+                if (target.result !== undefined && target.result !== null) {
                     if (format == CoreFileProvider.FORMATJSON) {
                         // Convert to object.
                         const parsed = this.textUtils.parseJSON(target.result, null);
@@ -558,7 +558,7 @@ export class CoreFileProvider {
                     } else {
                         resolve(target.result);
                     }
-                } else if (target.error !== undefined || target.error !== null) {
+                } else if (target.error !== undefined && target.error !== null) {
                     reject(target.error);
                 } else {
                     reject({ code: null, message: 'READER_ONLOADEND_ERR' });
@@ -602,7 +602,7 @@ export class CoreFileProvider {
      * @param append Whether to append the data to the end of the file.
      * @return Promise to be resolved when the file is written.
      */
-    writeFile(path: string, data: any, append?: boolean): Promise<any> {
+    writeFile(path: string, data: any, append?: boolean): Promise<FileEntry> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -635,15 +635,18 @@ export class CoreFileProvider {
      * @param append Whether to append the data to the end of the file.
      * @return Promise resolved when done.
      */
-    writeFileDataInFile(file: any, path: string, onProgress?: (event: CoreFileProgressEvent) => any, offset: number = 0,
-            append?: boolean): Promise<any> {
+    async writeFileDataInFile(file: Blob, path: string, onProgress?: (event: CoreFileProgressEvent) => void, offset: number = 0,
+            append?: boolean): Promise<FileEntry> {
 
         offset = offset || 0;
 
         // Get the chunk to read.
-        const blob = file.slice(offset, Math.min(offset + this.CHUNK_SIZE, file.size));
+        const readWholeFile = offset === 0 && this.CHUNK_SIZE >= file.size;
+        const chunk = readWholeFile ? file : file.slice(offset, Math.min(offset + this.CHUNK_SIZE, file.size));
 
-        return this.writeFileDataInFileChunk(blob, path, append).then((fileEntry) => {
+        try {
+            const fileEntry = await this.writeFileDataInFileChunk(chunk, path, append);
+
             offset += this.CHUNK_SIZE;
 
             onProgress && onProgress({
@@ -659,7 +662,15 @@ export class CoreFileProvider {
 
             // Read the next chunk.
             return this.writeFileDataInFile(file, path, onProgress, offset, true);
-        });
+        } catch (error) {
+            if (readWholeFile || !error || error.name != 'NotReadableError') {
+                return Promise.reject(error);
+            }
+
+            // Permission error when reading file in chunks. This usually happens with Google Drive files.
+            // Try to read the whole file at once.
+            return this.writeFileDataInFileChunk(file, path, false);
+        }
     }
 
     /**
@@ -670,7 +681,7 @@ export class CoreFileProvider {
      * @param append Whether to append the data to the end of the file.
      * @return Promise resolved when done.
      */
-    protected writeFileDataInFileChunk(chunkData: any, path: string, append?: boolean): Promise<any> {
+    protected writeFileDataInFileChunk(chunkData: any, path: string, append?: boolean): Promise<FileEntry> {
         // Read the chunk data.
         return this.readFileData(chunkData, CoreFileProvider.FORMATARRAYBUFFER).then((fileData) => {
             // Write the data in the file.
@@ -1053,7 +1064,7 @@ export class CoreFileProvider {
      * @param fileEntry FileEntry retrieved from getFile or similar.
      * @return Promise resolved with metadata.
      */
-    getMetadata(fileEntry: Entry): Promise<any> {
+    getMetadata(fileEntry: Entry): Promise<Metadata> {
         if (!fileEntry || !fileEntry.getMetadata) {
             return Promise.reject(null);
         }

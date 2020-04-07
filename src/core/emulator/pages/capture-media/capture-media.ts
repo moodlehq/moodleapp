@@ -18,6 +18,7 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { MediaFile } from '@ionic-native/media-capture';
 
 /**
  * Page to capture media in browser or desktop.
@@ -364,13 +365,21 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
             if (this.isImage && !this.isCaptureImage) {
                 this.dismissWithData(fileEntry.toURL());
             } else {
-                // The capture plugin returns a MediaFile, not a FileEntry.
-                // The only difference is that it supports a new function that won't be supported in desktop.
-                fileEntry.getFormatData = (successFn, errorFn): any => {
-                    // Nothing to do.
-                };
+                // The capture plugin should return a MediaFile, not a FileEntry. Convert it.
+                return this.fileProvider.getMetadata(fileEntry).then((metadata) => {
+                    const mediaFile: MediaFile = {
+                        name: fileEntry.name,
+                        fullPath: fileEntry.fullPath,
+                        type: null,
+                        lastModifiedDate: metadata.modificationTime,
+                        size: metadata.size,
+                        getFormatData: (successFn, errorFn): void => {
+                            // Nothing to do.
+                        }
+                    };
 
-                this.dismissWithData([fileEntry]);
+                    this.dismissWithData([mediaFile]);
+                });
             }
         }).catch((err) => {
             this.domUtils.showErrorModal(err);
