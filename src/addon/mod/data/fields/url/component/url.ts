@@ -24,6 +24,9 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
 })
 export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginComponent {
 
+    protected autoLink = false;
+    protected displayValue = '';
+
     constructor(protected fb: FormBuilder) {
         super(fb);
     }
@@ -42,5 +45,37 @@ export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginCompon
         }
 
         this.addControl('f_' + this.field.id, value);
+    }
+
+    /**
+     * Calculate data for show or list mode.
+     */
+    protected calculateShowListData(): void {
+        if (!this.value || !this.value.content) {
+            return;
+        }
+
+        const url = this.value.content;
+        const text = this.field.param2 || this.value.content1; // Param2 forces the text to display.
+
+        this.autoLink = parseInt(this.field.param1, 10) === 1;
+
+        if (this.autoLink) {
+            this.displayValue = text || url;
+        } else {
+            // No auto link, always display the URL.
+            this.displayValue = url;
+        }
+    }
+
+    /**
+     * Update value being shown.
+     */
+    protected updateValue(value: any): void {
+        super.updateValue(value);
+
+        if (this.isShowOrListMode()) {
+            this.calculateShowListData();
+        }
     }
 }
