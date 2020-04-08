@@ -19,6 +19,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider, CoreFileProgressEvent } from '@providers/file';
+import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -36,11 +37,19 @@ export class CoreFileUploaderHelperProvider {
     protected filePickerDeferred: PromiseDefer;
     protected actionSheet: ActionSheet;
 
-    constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
-            private fileUploaderProvider: CoreFileUploaderProvider, private domUtils: CoreDomUtilsProvider,
-            private textUtils: CoreTextUtilsProvider, private fileProvider: CoreFileProvider, private utils: CoreUtilsProvider,
-            private actionSheetCtrl: ActionSheetController, private uploaderDelegate: CoreFileUploaderDelegate,
-            private camera: Camera, private platform: Platform) {
+    constructor(logger: CoreLoggerProvider,
+            protected appProvider: CoreAppProvider,
+            protected translate: TranslateService,
+            protected fileUploaderProvider: CoreFileUploaderProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected fileProvider: CoreFileProvider,
+            protected utils: CoreUtilsProvider,
+            protected actionSheetCtrl: ActionSheetController,
+            protected uploaderDelegate: CoreFileUploaderDelegate,
+            protected camera: Camera,
+            protected platform: Platform,
+            protected fileHelper: CoreFileHelperProvider) {
         this.logger = logger.getInstance('CoreFileUploaderProvider');
     }
 
@@ -99,14 +108,14 @@ export class CoreFileUploaderHelperProvider {
             const filePath = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
-            return this.fileProvider.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
+            return this.fileHelper.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
                 this.showProgressModal(modal, 'core.fileuploader.readingfileperc', progress);
             });
         }).catch((error) => {
             this.logger.error('Error reading file to upload.', error);
             modal.dismiss();
 
-            return Promise.reject(this.translate.instant('core.fileuploader.errorreadingfile'));
+            return Promise.reject(error);
         }).then((fileEntry) => {
             modal.dismiss();
 
@@ -319,9 +328,7 @@ export class CoreFileUploaderHelperProvider {
                         // Success uploading or picking, return the result.
                         this.fileUploaded(result);
                     }).catch((error) => {
-                        if (error) {
-                            this.domUtils.showErrorModal(error);
-                        }
+                        this.domUtils.showErrorModalDefault(error, this.translate.instant('core.fileuploader.errorreadingfile'));
                     });
 
                     // Do not close the action sheet, it will be closed if success.

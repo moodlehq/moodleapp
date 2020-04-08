@@ -45,6 +45,11 @@ export interface CoreFileProgressEvent {
 }
 
 /**
+ * Progress function.
+ */
+export type CoreFileProgressFunction = (event: CoreFileProgressEvent) => void;
+
+/**
  * Factory to interact with the file system.
  */
 @Injectable()
@@ -60,14 +65,21 @@ export class CoreFileProvider {
     static SITESFOLDER = 'sites';
     static TMPFOLDER = 'tmp';
 
+    static CHUNK_SIZE = 10485760; // 10 MB.
+
     protected logger;
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
-    protected CHUNK_SIZE = 10485760; // 10 MB.
 
-    constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
-            private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
+    constructor(logger: CoreLoggerProvider,
+            protected platform: Platform,
+            protected file: File,
+            protected appProvider: CoreAppProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected zip: Zip,
+            protected mimeUtils: CoreMimetypeUtilsProvider) {
+
         this.logger = logger.getInstance('CoreFileProvider');
 
         if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
@@ -634,20 +646,21 @@ export class CoreFileProvider {
      * @param offset Offset where to start reading from.
      * @param append Whether to append the data to the end of the file.
      * @return Promise resolved when done.
+     * @deprecated since 3.8.3. Please use CoreFileHelperProvider.writeFileDataInFile instead.
      */
-    async writeFileDataInFile(file: Blob, path: string, onProgress?: (event: CoreFileProgressEvent) => void, offset: number = 0,
+    async writeFileDataInFile(file: Blob, path: string, onProgress?: CoreFileProgressFunction, offset: number = 0,
             append?: boolean): Promise<FileEntry> {
 
         offset = offset || 0;
 
-        // Get the chunk to read.
-        const readWholeFile = offset === 0 && this.CHUNK_SIZE >= file.size;
-        const chunk = readWholeFile ? file : file.slice(offset, Math.min(offset + this.CHUNK_SIZE, file.size));
+        // Get the chunk to read and write.
+        const readWholeFile = offset === 0 && CoreFileProvider.CHUNK_SIZE >= file.size;
+        const chunk = readWholeFile ? file : file.slice(offset, Math.min(offset + CoreFileProvider.CHUNK_SIZE, file.size));
 
         try {
             const fileEntry = await this.writeFileDataInFileChunk(chunk, path, append);
 
-            offset += this.CHUNK_SIZE;
+            offset += CoreFileProvider.CHUNK_SIZE;
 
             onProgress && onProgress({
                 lengthComputable: true,
@@ -681,7 +694,7 @@ export class CoreFileProvider {
      * @param append Whether to append the data to the end of the file.
      * @return Promise resolved when done.
      */
-    protected writeFileDataInFileChunk(chunkData: any, path: string, append?: boolean): Promise<FileEntry> {
+    writeFileDataInFileChunk(chunkData: Blob, path: string, append?: boolean): Promise<FileEntry> {
         // Read the chunk data.
         return this.readFileData(chunkData, CoreFileProvider.FORMATARRAYBUFFER).then((fileData) => {
             // Write the data in the file.
