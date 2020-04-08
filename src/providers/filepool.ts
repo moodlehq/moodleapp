@@ -596,7 +596,7 @@ export class CoreFilepoolProvider {
 
         // Check if the queue is running.
         this.checkQueueProcessing();
-        this.notifyFileDownloading(siteId, fileId);
+        this.notifyFileDownloading(siteId, fileId, link ? [link] : []);
 
         return this.getQueuePromise(siteId, fileId, true, onProgress);
     }
@@ -875,6 +875,17 @@ export class CoreFilepoolProvider {
                 }
             });
         });
+    }
+
+    /**
+     * Prepare links from component and componentId.
+     *
+     * @param component The component to link the file to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @return Resolved means yes, rejected means no.
+     */
+    createFileLinks(component: string, componentId: string | number): any[] {
+        return [{ component: component, componentId: this.fixComponentId(componentId) }];
     }
 
     /**
@@ -1197,14 +1208,14 @@ export class CoreFilepoolProvider {
 
                     if (typeof fileObject === 'undefined') {
                         // We do not have the file, download and add to pool.
-                        this.notifyFileDownloading(siteId, fileId);
+                        this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
 
                     } else if (this.isFileOutdated(fileObject, options.revision, options.timemodified) &&
                         this.appProvider.isOnline() && !ignoreStale) {
                         // The file is outdated, force the download and update it.
-                        this.notifyFileDownloading(siteId, fileId);
+                        this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     }
@@ -1220,14 +1231,14 @@ export class CoreFilepoolProvider {
                         return response;
                     }, () => {
                         // The file was not found in the pool, weird.
-                        this.notifyFileDownloading(siteId, fileId);
+                        this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     });
 
                 }, () => {
                     // The file is not in the pool just yet.
-                    this.notifyFileDownloading(siteId, fileId);
+                    this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
 
                     return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
                 }).then((response) => {
@@ -1236,11 +1247,11 @@ export class CoreFilepoolProvider {
                             // Ignore errors.
                         });
                     }
-                    this.notifyFileDownloaded(siteId, fileId);
+                    this.notifyFileDownloaded(siteId, fileId, this.createFileLinks(component, componentId));
 
                     return response;
                 }, (err) => {
-                    this.notifyFileDownloadError(siteId, fileId);
+                    this.notifyFileDownloadError(siteId, fileId, this.createFileLinks(component, componentId));
 
                     return Promise.reject(err);
                 });
@@ -1391,6 +1402,18 @@ export class CoreFilepoolProvider {
                 return file;
             });
         });
+    }
+
+    /**
+     * Get the name of the event used to notify file status to component (CoreEventsProvider).
+     *
+     * @param siteId The site ID.
+     * @param component The component name.
+     * @param componentId The component ID.
+     * @return Event name.
+     */
+    static getComponentEventName(siteId: string, component: string, componentId: string | number): string {
+        return 'ComponentEventFileChangeStatus:' + siteId + ':' + component + ':' + componentId;
     }
 
     /**
@@ -2440,13 +2463,34 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Notify a file has been changed status to Component.
+     *
+     * @param siteId The site ID.
+     * @param fileId The file ID.
+     * @param fileStatus The file status after changed
+     * @param links The links to the Components
+     */
+    protected notifyFileStatusToComponents(siteId: string, fileId: string, fileStatus: any, links: any[]): void {
+        fileStatus.fileId = fileId;
+        links.forEach((link) => {
+            this.eventsProvider.trigger(CoreFilepoolProvider.getComponentEventName(siteId, link.component, link.componentId),
+                fileStatus, siteId);
+        });
+    }
+
+    /**
      * Notify a file has been deleted.
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
+     * @param links The links to components.
      */
-    protected notifyFileDeleted(siteId: string, fileId: string): void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'deleted' });
+    protected notifyFileDeleted(siteId: string, fileId: string, links: any[]): void {
+        const fileStatus = {
+            action: CoreConstants.FILE_DELETED
+        };
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
+        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
     }
 
     /**
@@ -2454,9 +2498,15 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
+     * @param links The links to components.
      */
-    protected notifyFileDownloaded(siteId: string, fileId: string): void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'download', success: true });
+    protected notifyFileDownloaded(siteId: string, fileId: string, links: any[]): void {
+        const fileStatus = {
+            action: CoreConstants.FILE_DOWNLOAD,
+            success: true
+        };
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
+        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
     }
 
     /**
@@ -2464,9 +2514,15 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
+     * @param links The links to components.
      */
-    protected notifyFileDownloadError(siteId: string, fileId: string): void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'download', success: false });
+    protected notifyFileDownloadError(siteId: string, fileId: string, links: any[]): void {
+        const fileStatus = {
+            action: CoreConstants.FILE_DOWNLOAD,
+            success: false
+        };
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
+        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
     }
 
     /**
@@ -2474,9 +2530,15 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
+     * @param links The links to components.
      */
-    protected notifyFileDownloading(siteId: string, fileId: string): void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'downloading' });
+    protected notifyFileDownloading(siteId: string, fileId: string, links: any[]): void {
+        const fileStatus = {
+            action: CoreConstants.FILE_DOWNLOADING
+        };
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
+        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
+
     }
 
     /**
@@ -2484,9 +2546,14 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
+     * @param links The links to components.
      */
-    protected notifyFileOutdated(siteId: string, fileId: string): void {
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), { action: 'outdated' });
+    protected notifyFileOutdated(siteId: string, fileId: string, links: any[]): void {
+        const fileStatus = {
+            action: CoreConstants.FILE_OUTDATE
+        };
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
+        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
     }
 
     /**
@@ -2612,7 +2679,7 @@ export class CoreFilepoolProvider {
                 }).finally(() => {
                     this.treatQueueDeferred(siteId, fileId, true);
                 });
-                this.notifyFileDownloaded(siteId, fileId);
+                this.notifyFileDownloaded(siteId, fileId, links);
 
                 return;
             }
@@ -2627,7 +2694,7 @@ export class CoreFilepoolProvider {
                 });
 
                 this.treatQueueDeferred(siteId, fileId, true);
-                this.notifyFileDownloaded(siteId, fileId);
+                this.notifyFileDownloaded(siteId, fileId, links);
 
                 // Wait for the item to be removed from queue before resolving the promise.
                 // If the item could not be removed from queue we still resolve the promise.
@@ -2677,12 +2744,12 @@ export class CoreFilepoolProvider {
                         // Consider this as a silent error, never reject the promise here.
                     }).then(() => {
                         this.treatQueueDeferred(siteId, fileId, false, errorMessage);
-                        this.notifyFileDownloadError(siteId, fileId);
+                        this.notifyFileDownloadError(siteId, fileId, links);
                     });
                 } else {
                     // We considered the file as legit but did not get it, failure.
                     this.treatQueueDeferred(siteId, fileId, false, errorMessage);
-                    this.notifyFileDownloadError(siteId, fileId);
+                    this.notifyFileDownloadError(siteId, fileId, links);
 
                     return Promise.reject(errorObject);
                 }
@@ -2730,30 +2797,37 @@ export class CoreFilepoolProvider {
                 // If file not found, use the path without extension.
                 return path;
             }).then((path) => {
-                const promises = [];
+                const conditions = {
+                    fileId: fileId
+                };
 
-                // Remove entry from filepool store.
-                promises.push(db.deleteRecords(this.FILES_TABLE, { fileId: fileId }));
+                // Get links to components to notify to them before remove.
+                return db.getRecords(this.LINKS_TABLE, conditions).then((links) => {
+                    const promises = [];
 
-                // Remove links.
-                promises.push(db.deleteRecords(this.LINKS_TABLE, { fileId: fileId }));
+                    // Remove entry from filepool store.
+                    promises.push(db.deleteRecords(this.FILES_TABLE, conditions));
 
-                // Remove the file.
-                if (this.fileProvider.isAvailable()) {
-                    promises.push(this.fileProvider.removeFile(path).catch((error) => {
-                        if (error && error.code == 1) {
-                            // Not found, ignore error since maybe it was deleted already.
-                        } else {
-                            return Promise.reject(error);
-                        }
-                    }));
-                }
+                    // Remove links.
+                    promises.push(db.deleteRecords(this.LINKS_TABLE, conditions));
 
-                return Promise.all(promises).then(() => {
-                    this.notifyFileDeleted(siteId, fileId);
+                    // Remove the file.
+                    if (this.fileProvider.isAvailable()) {
+                        promises.push(this.fileProvider.removeFile(path).catch((error) => {
+                            if (error && error.code == 1) {
+                                // Not found, ignore error since maybe it was deleted already.
+                            } else {
+                                return Promise.reject(error);
+                            }
+                        }));
+                    }
 
-                    return this.pluginFileDelegate.fileDeleted(fileUrl, path, siteId).catch((error) => {
-                        // Ignore errors.
+                    return Promise.all(promises).then(() => {
+                        this.notifyFileDeleted(siteId, fileId, links);
+
+                        return this.pluginFileDelegate.fileDeleted(fileUrl, path, siteId).catch((error) => {
+                            // Ignore errors.
+                        });
                     });
                 });
             });
