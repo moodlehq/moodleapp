@@ -47,6 +47,7 @@ export class CoreEventsProvider {
     static PACKAGE_STATUS_CHANGED = 'package_status_changed';
     static COURSE_STATUS_CHANGED = 'course_status_changed';
     static SECTION_STATUS_CHANGED = 'section_status_changed';
+    static COMPONENT_FILE_ACTION = 'component_file_action';
     static SITE_PLUGINS_LOADED = 'site_plugins_loaded';
     static SITE_PLUGINS_COURSE_RESTRICT_UPDATED = 'site_plugins_course_restrict_updated';
     static LOGIN_SITE_CHECKED = 'login_site_checked';

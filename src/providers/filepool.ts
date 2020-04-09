@@ -212,6 +212,51 @@ export interface CoreFilepoolComponentLink {
     componentId?: string | number;
 }
 
+/**
+ * File actions.
+ */
+export const enum CoreFilepoolFileActions {
+    DOWNLOAD = 'download',
+    DOWNLOADING = 'downloading',
+    DELETED = 'deleted',
+    OUTDATED = 'outdated',
+}
+
+/**
+ * Data sent to file events.
+ */
+export interface CoreFilepoolFileEventData {
+    /**
+     * The file ID.
+     */
+    fileId: string;
+
+    /**
+     * The file ID.
+     */
+    action: CoreFilepoolFileActions;
+
+    /**
+     * Whether the action was a success. Only for DOWNLOAD action.
+     */
+    success?: boolean;
+}
+
+/**
+ * Data sent to component file events.
+ */
+export interface CoreFilepoolComponentFileEventData extends CoreFilepoolFileEventData {
+    /**
+     * The component.
+     */
+    component: string;
+
+    /**
+     * The component ID.
+     */
+    componentId: string | number;
+}
+
 /*
  * Factory for handling downloading files and retrieve downloaded files.
  *
@@ -1218,8 +1263,9 @@ export class CoreFilepoolProvider {
     downloadUrl(siteId: string, fileUrl: string, ignoreStale?: boolean, component?: string, componentId?: string | number,
             timemodified: number = 0, onProgress?: (event: any) => any, filePath?: string, options: any = {}, revision?: number)
             : Promise<any> {
-        let fileId,
-            promise;
+        let fileId;
+        let promise;
+        let alreadyDownloaded = true;
 
         if (this.fileProvider.isAvailable()) {
             return this.fixPluginfileURL(siteId, fileUrl).then((file) => {
@@ -1239,13 +1285,15 @@ export class CoreFilepoolProvider {
                     if (typeof fileObject === 'undefined') {
                         // We do not have the file, download and add to pool.
                         this.notifyFileDownloading(siteId, fileId, links);
+                        alreadyDownloaded = false;
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
 
                     } else if (this.isFileOutdated(fileObject, options.revision, options.timemodified) &&
-                        this.appProvider.isOnline() && !ignoreStale) {
+                            this.appProvider.isOnline() && !ignoreStale) {
                         // The file is outdated, force the download and update it.
                         this.notifyFileDownloading(siteId, fileId, links);
+                        alreadyDownloaded = false;
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     }
@@ -1262,6 +1310,7 @@ export class CoreFilepoolProvider {
                     }, () => {
                         // The file was not found in the pool, weird.
                         this.notifyFileDownloading(siteId, fileId, links);
+                        alreadyDownloaded = false;
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     });
@@ -1269,6 +1318,7 @@ export class CoreFilepoolProvider {
                 }, () => {
                     // The file is not in the pool just yet.
                     this.notifyFileDownloading(siteId, fileId, links);
+                    alreadyDownloaded = false;
 
                     return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
                 }).then((response) => {
@@ -1277,7 +1327,10 @@ export class CoreFilepoolProvider {
                             // Ignore errors.
                         });
                     }
-                    this.notifyFileDownloaded(siteId, fileId, links);
+
+                    if (!alreadyDownloaded) {
+                        this.notifyFileDownloaded(siteId, fileId, links);
+                    }
 
                     return response;
                 }, (err) => {
@@ -1432,18 +1485,6 @@ export class CoreFilepoolProvider {
                 return file;
             });
         });
-    }
-
-    /**
-     * Get the name of the event used to notify file status to component (CoreEventsProvider).
-     *
-     * @param siteId The site ID.
-     * @param component The component name.
-     * @param componentId The component ID.
-     * @return Event name.
-     */
-    static getComponentEventName(siteId: string, component: string, componentId: string | number): string {
-        return 'CoreFilepoolComponentFile:' + siteId + ':' + component + ':' + componentId;
     }
 
     /**
@@ -2451,6 +2492,17 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Whether a file action indicates a file was downloaded or deleted.
+     *
+     * @param data Event data.
+     * @return Whether downloaded or deleted.
+     */
+    isFileEventDownloadedOrDeleted(data: CoreFilepoolFileEventData): boolean {
+        return (data.action == CoreFilepoolFileActions.DOWNLOAD && data.success == true) ||
+                data.action == CoreFilepoolFileActions.DELETED;
+    }
+
+    /**
      * Check whether a file is downloadable.
      *
      * @param siteId The site ID.
@@ -2508,14 +2560,19 @@ export class CoreFilepoolProvider {
      * Notify an action performed on a file to a list of components.
      *
      * @param siteId The site ID.
-     * @param eventData The event data.
+     * @param eventData The file event data.
      * @param links The links to the components.
      */
-    protected notifyFileActionToComponents(siteId: string, eventData: any, links: CoreFilepoolComponentLink[]): void {
+    protected notifyFileActionToComponents(siteId: string, eventData: CoreFilepoolFileEventData,
+            links: CoreFilepoolComponentLink[]): void {
 
         links.forEach((link) => {
-            this.eventsProvider.trigger(CoreFilepoolProvider.getComponentEventName(siteId, link.component, link.componentId),
-                eventData, siteId);
+            const data: CoreFilepoolComponentFileEventData = Object.assign({
+                component: link.component,
+                componentId: link.componentId,
+            }, eventData);
+
+            this.eventsProvider.trigger(CoreEventsProvider.COMPONENT_FILE_ACTION, data, siteId);
         });
     }
 
@@ -2527,9 +2584,9 @@ export class CoreFilepoolProvider {
      * @param links The links to components.
      */
     protected notifyFileDeleted(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
-        const data = {
+        const data: CoreFilepoolFileEventData = {
             fileId: fileId,
-            action: CoreConstants.FILE_ACTION_DELETED
+            action: CoreFilepoolFileActions.DELETED,
         };
 
         this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
@@ -2544,10 +2601,10 @@ export class CoreFilepoolProvider {
      * @param links The links to components.
      */
     protected notifyFileDownloaded(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
-        const data = {
+        const data: CoreFilepoolFileEventData = {
             fileId: fileId,
-            action: CoreConstants.FILE_ACTION_DOWNLOAD,
-            success: true
+            action: CoreFilepoolFileActions.DOWNLOAD,
+            success: true,
         };
 
         this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
@@ -2562,10 +2619,10 @@ export class CoreFilepoolProvider {
      * @param links The links to components.
      */
     protected notifyFileDownloadError(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
-        const data = {
+        const data: CoreFilepoolFileEventData = {
             fileId: fileId,
-            action: CoreConstants.FILE_ACTION_DOWNLOAD,
-            success: false
+            action: CoreFilepoolFileActions.DOWNLOAD,
+            success: false,
         };
 
         this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
@@ -2580,9 +2637,9 @@ export class CoreFilepoolProvider {
      * @param links The links to components.
      */
     protected notifyFileDownloading(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
-        const data = {
+        const data: CoreFilepoolFileEventData = {
             fileId: fileId,
-            action: CoreConstants.FILE_ACTION_DOWNLOADING
+            action: CoreFilepoolFileActions.DOWNLOADING,
         };
 
         this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
@@ -2598,8 +2655,9 @@ export class CoreFilepoolProvider {
      * @param links The links to components.
      */
     protected notifyFileOutdated(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
-        const data = {
-            action: CoreConstants.FILE_ACTION_OUTDATED
+        const data: CoreFilepoolFileEventData = {
+            fileId: fileId,
+            action: CoreFilepoolFileActions.OUTDATED,
         };
 
         this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
@@ -2729,7 +2787,6 @@ export class CoreFilepoolProvider {
                 }).finally(() => {
                     this.treatQueueDeferred(siteId, fileId, true);
                 });
-                this.notifyFileDownloaded(siteId, fileId, links);
 
                 return;
             }

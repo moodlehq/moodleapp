@@ -1390,6 +1390,7 @@
     "core.course.allsections": "All sections",
     "core.course.askadmintosupport": "Contact the site administrator and tell them you want to use this activity with the Moodle Mobile app.",
     "core.course.availablespace": " You currently have about {{available}} free space.",
+    "core.course.cannotdeletewhiledownloading": "Files cannot be deleted while the activity is being downloaded. Please wait for the download to finish.",
     "core.course.confirmdeletemodulefiles": "Are you sure you want to delete these files?",
     "core.course.confirmdownload": "You are about to download {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "core.course.confirmdownloadunknownsize": "It was not possible to calculate the size of the download.{{availableSpace}} Are you sure you want to continue?",

@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Loading } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
-import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreFilepoolProvider, CoreFilepoolComponentFileEventData } from '@providers/filepool';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -408,16 +408,29 @@ export class CoreCourseHelperProvider {
      *
      * @param module Module to remove the files.
      * @param courseId Course ID the module belongs to.
+     * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
      */
-    confirmAndRemoveFiles(module: any, courseId: number): Promise<any> {
-        return this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles').then(() => {
-            return this.prefetchDelegate.removeModuleFiles(module, courseId);
-        }).catch((error) => {
+    async confirmAndRemoveFiles(module: any, courseId: number, done?: () => void): Promise<void> {
+        let modal: Loading;
+
+        try {
+
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+
+            modal = this.domUtils.showModalLoading();
+
+            await this.prefetchDelegate.removeModuleFiles(module, courseId);
+
+            done && done();
+
+        } catch (error) {
             if (error) {
                 this.domUtils.showErrorModal(error);
             }
-        });
+        } finally {
+            modal && modal.dismiss();
+        }
     }
 
     /**
@@ -831,15 +844,27 @@ export class CoreCourseHelperProvider {
             }
 
             if (typeof instance.contextFileStatusObserver == 'undefined' && component) {
-                const componentFileChangeStatusEvent = CoreFilepoolProvider.getComponentEventName(siteId, component, module.id);
+                // Debounce the update size function to prevent too many calls when downloading or deleting a whole activity.
+                const debouncedUpdateSize = this.utils.debounce(() => {
+                    this.prefetchDelegate.getModuleDownloadedSize(module, courseId).then((moduleSize) => {
+                        instance.size = moduleSize > 0 ? this.textUtils.bytesToSize(moduleSize, 2) : 0;
+                    });
+                }, 1000);
 
-                instance.contextFileStatusObserver = this.eventsProvider.on(componentFileChangeStatusEvent, (data) => {
+                instance.contextFileStatusObserver = this.eventsProvider.on(CoreEventsProvider.COMPONENT_FILE_ACTION,
+                        (data: CoreFilepoolComponentFileEventData) => {
 
-                    if (((data.action == CoreConstants.FILE_ACTION_DOWNLOAD && data.success == true) ||
-                            data.action == CoreConstants.FILE_ACTION_DELETED) &&
-                            instance.prefetchStatus != CoreConstants.DOWNLOADING) {
-                        this.fillContextMenu(instance, module, courseId, true, component);
+                    if (data.component != component || data.componentId != module.id) {
+                        // The event doesn't belong to this component, ignore.
+                        return;
                     }
+
+                    if (!this.filepoolProvider.isFileEventDownloadedOrDeleted(data)) {
+                        return;
+                    }
+
+                    // Update the module size.
+                    debouncedUpdateSize();
                 }, siteId);
             }
         });

@@ -1392,4 +1392,27 @@ export class CoreUtilsProvider {
 
         return filtered;
     }
+
+    /**
+     * Debounce a function so consecutive calls are ignored until a certain time has passed since the last call.
+     *
+     * @param context The context to apply to the function.
+     * @param fn Function to debounce.
+     * @param delay Time that must pass until the function is called.
+     * @return Debounced function.
+     */
+    debounce(fn: (...args: any[]) => any, delay: number): (...args: any[]) => void {
+
+        let timeoutID: number;
+
+        const debounced = (...args: any[]): void => {
+            clearTimeout(timeoutID);
+
+            timeoutID = window.setTimeout(() => {
+                fn.apply(null, args);
+            }, delay);
+        };
+
+        return debounced;
+    }
 }

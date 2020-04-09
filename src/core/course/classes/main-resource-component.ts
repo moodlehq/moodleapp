@@ -261,9 +261,17 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
     /**
      * Confirm and remove downloaded files.
+     *
+     * @param done Function to call when done.
      */
-    removeFiles(): void {
-        this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    removeFiles(done?: () => void): void {
+        if (this.prefetchStatus == CoreConstants.DOWNLOADING) {
+            this.domUtils.showAlertTranslated(null, 'core.course.cannotdeletewhiledownloading');
+
+            return;
+        }
+
+        this.courseHelper.confirmAndRemoveFiles(this.module, this.courseId, done);
     }
 
     /**

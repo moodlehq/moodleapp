@@ -1390,6 +1390,7 @@
   "core.course.allsections": "local_moodlemobileapp",
   "core.course.askadmintosupport": "local_moodlemobileapp",
   "core.course.availablespace": "local_moodlemobileapp",
+  "core.course.cannotdeletewhiledownloading": "local_moodlemobileapp",
   "core.course.confirmdeletemodulefiles": "local_moodlemobileapp",
   "core.course.confirmdownload": "local_moodlemobileapp",
   "core.course.confirmdownloadunknownsize": "local_moodlemobileapp",
