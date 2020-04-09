@@ -800,6 +800,8 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     fillContextMenu(instance: any, module: any, courseId: number, invalidateCache?: boolean, component?: string): Promise<any> {
+        const siteId = this.sitesProvider.getCurrentSiteId();
+
         return this.getModulePrefetchInfo(module, courseId, invalidateCache, component).then((moduleInfo) => {
             instance.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             instance.prefetchStatusIcon = moduleInfo.statusIcon;
@@ -825,19 +827,20 @@ export class CoreCourseHelperProvider {
                     if (data.componentId == module.id && data.component == component) {
                         this.fillContextMenu(instance, module, courseId, false, component);
                     }
-                }, this.sitesProvider.getCurrentSiteId());
+                }, siteId);
             }
 
             if (typeof instance.contextFileStatusObserver == 'undefined' && component) {
-                const componentFileChangeStatusEvent = CoreFilepoolProvider.getComponentEventName(
-                    this.sitesProvider.getCurrentSiteId(), component, module.id);
+                const componentFileChangeStatusEvent = CoreFilepoolProvider.getComponentEventName(siteId, component, module.id);
+
                 instance.contextFileStatusObserver = this.eventsProvider.on(componentFileChangeStatusEvent, (data) => {
-                    if (((data.action == CoreConstants.FILE_DOWNLOAD && data.success == true) ||
-                        data.action == CoreConstants.FILE_DELETED) &&
-                        moduleInfo.status != CoreConstants.DOWNLOADING) {
+
+                    if (((data.action == CoreConstants.FILE_ACTION_DOWNLOAD && data.success == true) ||
+                            data.action == CoreConstants.FILE_ACTION_DELETED) &&
+                            instance.prefetchStatus != CoreConstants.DOWNLOADING) {
                         this.fillContextMenu(instance, module, courseId, true, component);
                     }
-                }, this.sitesProvider.getCurrentSiteId());
+                }, siteId);
             }
         });
     }

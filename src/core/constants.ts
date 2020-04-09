@@ -69,10 +69,10 @@ export class CoreConstants {
     static NOT_DOWNLOADABLE = 'notdownloadable';
 
     // File status constants.
-    static FILE_DOWNLOAD = 'download';
-    static FILE_DOWNLOADING = 'downloading';
-    static FILE_DELETED = 'deleted';
-    static FILE_OUTDATE = 'outdated';
+    static FILE_ACTION_DOWNLOAD = 'download';
+    static FILE_ACTION_DOWNLOADING = 'downloading';
+    static FILE_ACTION_DELETED = 'deleted';
+    static FILE_ACTION_OUTDATED = 'outdated';
 
     // Constants from Moodle's resourcelib.
     static RESOURCELIB_DISPLAY_AUTO = 0; // Try the best way.

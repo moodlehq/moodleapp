@@ -144,7 +144,7 @@ export interface CoreFilepoolQueueEntry {
     /**
      * File links (to link the file to components and componentIds).
      */
-    links?: any[];
+    links?: CoreFilepoolComponentLink[];
 }
 
 /**
@@ -195,6 +195,21 @@ export interface CoreFilepoolPackageEntry {
      * Extra data stored by the package.
      */
     extra?: string;
+}
+
+/**
+ * A component link.
+ */
+export interface CoreFilepoolComponentLink {
+    /**
+     * Link's component.
+     */
+    component: string;
+
+    /**
+     * Link's componentId.
+     */
+    componentId?: string | number;
 }
 
 /*
@@ -495,7 +510,7 @@ export class CoreFilepoolProvider {
      * @param links Array of objects containing the component and optionally componentId.
      * @return Promise resolved on success.
      */
-    protected addFileLinks(siteId: string, fileId: string, links: any[]): Promise<any> {
+    protected addFileLinks(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): Promise<any> {
         const promises = [];
         links.forEach((link) => {
             promises.push(this.addFileLink(siteId, fileId, link.component, link.componentId));
@@ -575,7 +590,9 @@ export class CoreFilepoolProvider {
      * @return Promise resolved when the file is downloaded.
      */
     protected async addToQueue(siteId: string, fileId: string, url: string, priority: number, revision: number,
-            timemodified: number, filePath: string, onProgress?: (event: any) => any, options: any = {}, link?: any): Promise<any> {
+            timemodified: number, filePath: string, onProgress?: (event: any) => any, options: any = {},
+            link?: CoreFilepoolComponentLink): Promise<any> {
+
         await this.dbReady;
 
         this.logger.debug(`Adding ${fileId} to the queue`);
@@ -623,7 +640,6 @@ export class CoreFilepoolProvider {
         await this.dbReady;
 
         let fileId,
-            link,
             queueDeferred;
 
         if (!this.fileProvider.isAvailable()) {
@@ -651,12 +667,7 @@ export class CoreFilepoolProvider {
             const primaryKey = { siteId: siteId, fileId: fileId };
 
             // Set up the component.
-            if (typeof component != 'undefined') {
-                link = {
-                    component: component,
-                    componentId: this.fixComponentId(componentId)
-                };
-            }
+            const link = this.createComponentLink(component, componentId);
 
             // Retrieve the queue deferred now if it exists.
             // This is to prevent errors if file is removed from queue while we're checking if the file is in queue.
@@ -866,7 +877,7 @@ export class CoreFilepoolProvider {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             const conditions = {
                 component: component,
-                componentId: componentId || ''
+                componentId: this.fixComponentId(componentId)
             };
 
             return db.countRecords(this.LINKS_TABLE, conditions).then((count) => {
@@ -878,14 +889,31 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Prepare links from component and componentId.
+     * Prepare a component link.
      *
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Resolved means yes, rejected means no.
+     * @return Link, null if nothing to link.
      */
-    createFileLinks(component: string, componentId: string | number): any[] {
-        return [{ component: component, componentId: this.fixComponentId(componentId) }];
+    protected createComponentLink(component: string, componentId?: string | number): CoreFilepoolComponentLink {
+        if (typeof component != 'undefined' && component != null)  {
+            return { component: component, componentId: this.fixComponentId(componentId) };
+        }
+
+        return null;
+    }
+
+    /**
+     * Prepare list of links from component and componentId.
+     *
+     * @param component The component to link the file to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @return Links.
+     */
+    protected createComponentLinks(component: string, componentId?: string | number): CoreFilepoolComponentLink[] {
+        const link = this.createComponentLink(component, componentId);
+
+        return link ? [link] : [];
     }
 
     /**
@@ -1204,18 +1232,20 @@ export class CoreFilepoolProvider {
                 options.revision = revision || this.getRevisionFromUrl(fileUrl);
                 fileId = this.getFileIdByUrl(fileUrl);
 
+                const links = this.createComponentLinks(component, componentId);
+
                 return this.hasFileInPool(siteId, fileId).then((fileObject) => {
 
                     if (typeof fileObject === 'undefined') {
                         // We do not have the file, download and add to pool.
-                        this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
+                        this.notifyFileDownloading(siteId, fileId, links);
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
 
                     } else if (this.isFileOutdated(fileObject, options.revision, options.timemodified) &&
                         this.appProvider.isOnline() && !ignoreStale) {
                         // The file is outdated, force the download and update it.
-                        this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
+                        this.notifyFileDownloading(siteId, fileId, links);
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     }
@@ -1231,14 +1261,14 @@ export class CoreFilepoolProvider {
                         return response;
                     }, () => {
                         // The file was not found in the pool, weird.
-                        this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
+                        this.notifyFileDownloading(siteId, fileId, links);
 
                         return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, fileObject);
                     });
 
                 }, () => {
                     // The file is not in the pool just yet.
-                    this.notifyFileDownloading(siteId, fileId, this.createFileLinks(component, componentId));
+                    this.notifyFileDownloading(siteId, fileId, links);
 
                     return this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
                 }).then((response) => {
@@ -1247,11 +1277,11 @@ export class CoreFilepoolProvider {
                             // Ignore errors.
                         });
                     }
-                    this.notifyFileDownloaded(siteId, fileId, this.createFileLinks(component, componentId));
+                    this.notifyFileDownloaded(siteId, fileId, links);
 
                     return response;
                 }, (err) => {
-                    this.notifyFileDownloadError(siteId, fileId, this.createFileLinks(component, componentId));
+                    this.notifyFileDownloadError(siteId, fileId, links);
 
                     return Promise.reject(err);
                 });
@@ -1413,7 +1443,7 @@ export class CoreFilepoolProvider {
      * @return Event name.
      */
     static getComponentEventName(siteId: string, component: string, componentId: string | number): string {
-        return 'ComponentEventFileChangeStatus:' + siteId + ':' + component + ':' + componentId;
+        return 'CoreFilepoolComponentFile:' + siteId + ':' + component + ':' + componentId;
     }
 
     /**
@@ -1427,10 +1457,16 @@ export class CoreFilepoolProvider {
     protected getComponentFiles(db: SQLiteDB, component: string, componentId?: string | number): Promise<any[]> {
         const conditions = {
             component: component,
-            componentId: componentId || ''
+            componentId: this.fixComponentId(componentId)
         };
 
-        return db.getRecords(this.LINKS_TABLE, conditions);
+        return db.getRecords(this.LINKS_TABLE, conditions).then((items) => {
+            items.forEach((item) => {
+                item.componentId = this.fixComponentId(item.componentId);
+            });
+
+            return items;
+        });
     }
 
     /**
@@ -1539,6 +1575,12 @@ export class CoreFilepoolProvider {
     protected getFileLinks(siteId: string, fileId: string): Promise<any[]> {
         return this.sitesProvider.getSiteDb(siteId).then((db) => {
             return db.getRecords(this.LINKS_TABLE, { fileId: fileId });
+        }).then((items) => {
+            items.forEach((item) => {
+                item.componentId = this.fixComponentId(item.componentId);
+            });
+
+            return items;
         });
     }
 
@@ -2463,18 +2505,17 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Notify a file has been changed status to Component.
+     * Notify an action performed on a file to a list of components.
      *
      * @param siteId The site ID.
-     * @param fileId The file ID.
-     * @param fileStatus The file status after changed
-     * @param links The links to the Components
+     * @param eventData The event data.
+     * @param links The links to the components.
      */
-    protected notifyFileStatusToComponents(siteId: string, fileId: string, fileStatus: any, links: any[]): void {
-        fileStatus.fileId = fileId;
+    protected notifyFileActionToComponents(siteId: string, eventData: any, links: CoreFilepoolComponentLink[]): void {
+
         links.forEach((link) => {
             this.eventsProvider.trigger(CoreFilepoolProvider.getComponentEventName(siteId, link.component, link.componentId),
-                fileStatus, siteId);
+                eventData, siteId);
         });
     }
 
@@ -2485,12 +2526,14 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param links The links to components.
      */
-    protected notifyFileDeleted(siteId: string, fileId: string, links: any[]): void {
-        const fileStatus = {
-            action: CoreConstants.FILE_DELETED
+    protected notifyFileDeleted(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
+        const data = {
+            fileId: fileId,
+            action: CoreConstants.FILE_ACTION_DELETED
         };
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
-        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
+
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
+        this.notifyFileActionToComponents(siteId, data, links);
     }
 
     /**
@@ -2500,13 +2543,15 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param links The links to components.
      */
-    protected notifyFileDownloaded(siteId: string, fileId: string, links: any[]): void {
-        const fileStatus = {
-            action: CoreConstants.FILE_DOWNLOAD,
+    protected notifyFileDownloaded(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
+        const data = {
+            fileId: fileId,
+            action: CoreConstants.FILE_ACTION_DOWNLOAD,
             success: true
         };
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
-        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
+
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
+        this.notifyFileActionToComponents(siteId, data, links);
     }
 
     /**
@@ -2516,13 +2561,15 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param links The links to components.
      */
-    protected notifyFileDownloadError(siteId: string, fileId: string, links: any[]): void {
-        const fileStatus = {
-            action: CoreConstants.FILE_DOWNLOAD,
+    protected notifyFileDownloadError(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
+        const data = {
+            fileId: fileId,
+            action: CoreConstants.FILE_ACTION_DOWNLOAD,
             success: false
         };
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
-        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
+
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
+        this.notifyFileActionToComponents(siteId, data, links);
     }
 
     /**
@@ -2532,12 +2579,14 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param links The links to components.
      */
-    protected notifyFileDownloading(siteId: string, fileId: string, links: any[]): void {
-        const fileStatus = {
-            action: CoreConstants.FILE_DOWNLOADING
+    protected notifyFileDownloading(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
+        const data = {
+            fileId: fileId,
+            action: CoreConstants.FILE_ACTION_DOWNLOADING
         };
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
-        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
+
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
+        this.notifyFileActionToComponents(siteId, data, links);
 
     }
 
@@ -2548,12 +2597,13 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param links The links to components.
      */
-    protected notifyFileOutdated(siteId: string, fileId: string, links: any[]): void {
-        const fileStatus = {
-            action: CoreConstants.FILE_OUTDATE
+    protected notifyFileOutdated(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): void {
+        const data = {
+            action: CoreConstants.FILE_ACTION_OUTDATED
         };
-        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), fileStatus);
-        this.notifyFileStatusToComponents(siteId, fileId, fileStatus, links);
+
+        this.eventsProvider.trigger(this.getFileEventName(siteId, fileId), data);
+        this.notifyFileActionToComponents(siteId, data, links);
     }
 
     /**
@@ -2801,8 +2851,8 @@ export class CoreFilepoolProvider {
                     fileId: fileId
                 };
 
-                // Get links to components to notify to them before remove.
-                return db.getRecords(this.LINKS_TABLE, conditions).then((links) => {
+                // Get links to components to notify them after remove.
+                return this.getFileLinks(siteId, fileId).then((links) => {
                     const promises = [];
 
                     // Remove entry from filepool store.
