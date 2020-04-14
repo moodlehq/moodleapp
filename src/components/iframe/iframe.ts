@@ -16,14 +16,16 @@ import {
     Component, Input, Output, OnInit, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, Optional
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { NavController } from 'ionic-angular';
-import { CoreFileProvider } from '@providers/file';
+import { NavController, Platform } from 'ionic-angular';
+import { CoreFile } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreUrl } from '@singletons/url';
+import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 @Component({
     selector: 'core-iframe',
@@ -51,7 +53,7 @@ export class CoreIframeComponent implements OnInit, OnChanges {
             protected urlUtils: CoreUrlUtilsProvider,
             protected utils: CoreUtilsProvider,
             @Optional() protected svComponent: CoreSplitViewComponent,
-            protected fileProvider: CoreFileProvider) {
+            protected platform: Platform) {
 
         this.logger = logger.getInstance('CoreIframe');
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -93,10 +95,28 @@ export class CoreIframeComponent implements OnInit, OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange }): void {
+    async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
         if (changes.src) {
             const url = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.fileProvider.convertFileSrc(url));
+
+            if (this.platform.is('ios')) {
+                // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
+                try {
+                    const win = <WKWebViewCookiesWindow> window;
+                    const urlParts = CoreUrl.parse(url);
+
+                    await win.WKWebViewCookies.setCookie({
+                        name: 'MoodleAppCookieForWKWebView',
+                        value: '1',
+                        domain: urlParts.domain,
+                    });
+                } catch (err) {
+                    // Ignore errors.
+                    this.logger.error('Error setting cookie', err);
+                }
+            }
+
+            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.instance.convertFileSrc(url));
         }
     }
 }
