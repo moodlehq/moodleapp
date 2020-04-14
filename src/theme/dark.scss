@@ -23,6 +23,7 @@ ion-app.app-root {
 
       &.action-sheet-selected {
         color: $core-color;
+        background-color: $black;
       }
       &.activated {
         background-color: $black;

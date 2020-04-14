@@ -666,11 +666,12 @@ ion-app.app-root {
       overflow: auto;
   }
 
-  .action-sheet-wrapper {
+  ion-action-sheet .action-sheet-wrapper .action-sheet-container {
     .action-sheet-button.action-sheet-cancel {
       color: $core-action-sheet-cancel-color;
       @include darkmode() {
         color: $core-dark-action-sheet-cancel-color;
+        background-color: $black;
       }
     }
     .action-sheet-selected {

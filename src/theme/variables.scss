@@ -90,7 +90,7 @@ $inverted-contrast: $primary !default;
 
 $primary-dark: lighten($primary, 10%) !default;
 $secondary-dark: mix($secondary, white, 20%) !default;
-$danger-dark: mix($danger, white, 20%) !default;
+$danger-dark: mix($danger, white, 80%) !default;
 $warning-dark: mix($warning, white, 20%) !default;
 $success-dark: mix($success, white, 20%) !default;
 $info-dark: mix($info, white, 20%) !default;

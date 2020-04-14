@@ -30,6 +30,12 @@ ion-app.app-root page-core-login-site {
             border-color: $core-dark-login-box-background-border;
             color: $core-dark-login-box-text-color;
         }
+
+        .item {
+            @include darkmode() {
+                background: $core-dark-login-box-background-color;
+            }
+        }
     }
 
     .core-sitename, .core-siteurl {
