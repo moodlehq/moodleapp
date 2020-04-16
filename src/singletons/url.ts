@@ -119,4 +119,36 @@ export class CoreUrl {
         return urlParts && urlParts.domain ? urlParts.domain : null;
     }
 
+    /**
+     * Returns the pattern to check if the URL is a valid Moodle Url.
+     *
+     * @return {RegExp} Desired RegExp.
+     */
+    static getValidMoodleUrlPattern(): RegExp {
+        // Regular expression based on RFC 3986: https://tools.ietf.org/html/rfc3986#appendix-B.
+        // Improved to not admit spaces.
+        return new RegExp(/^(([^:/?# ]+):)?(\/\/([^/?# ]*))?([^?# ]*)(\?([^#]*))?(#(.*))?$/);
+    }
+
+    /**
+     * Check if the given url is valid for the app to connect.
+     *
+     * @param  {string}  url Url to check.
+     * @return {boolean}     True if valid, false otherwise.
+     */
+    static isValidMoodleUrl(url: string): boolean {
+        const patt = CoreUrl.getValidMoodleUrlPattern();
+
+        return patt.test(url.trim());
+    }
+
+    /**
+     * Removes protocol from the url.
+     *
+     * @param url Site url.
+     * @return Url without protocol.
+     */
+    static removeProtocol(url: string): string {
+        return url.replace(/^[a-zA-Z]+:\/\//i, '');
+    }
 }

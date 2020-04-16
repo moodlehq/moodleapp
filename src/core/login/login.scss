@@ -1,11 +1,28 @@
+$core-login-page-background-color: $white !default;
+$core-login-page-text-color: $text-color !default;
+$core-login-button-outline: false !default;
+$core-login-loading-color: false !default;
+$core-login-item-inner-background-color: $white !default;
+$core-login-item-background-color: $white !default;
+
+// Dark.
+$core-dark-login-page-background-color: $black !default;
+$core-dark-login-page-text-color: $core-dark-text-color !default;
+$core-dark-login-item-inner-background-color: $core-dark-login-page-background-color !default;
+$core-dark-login-item-background-color: $core-dark-login-page-background-color !default;
+$core-dark-login-button-outline: $core-login-button-outline !default;
+$core-dark-login-loading-color: $core-dark-text-color !default;
+
 ion-app.app-root page-core-login-credentials,
 ion-app.app-root page-core-login-reconnect,
 ion-app.app-root page-core-login-site {
     .scroll-content {
         background: $core-login-page-background-color;
+        color: $core-login-page-text-color;
 
         @include darkmode() {
             background: $core-dark-login-page-background-color;
+            color: $core-dark-login-page-text-color;
         }
     }
 
@@ -13,33 +30,16 @@ ion-app.app-root page-core-login-site {
         max-width: 100%;
     }
 
-    img.login-logo {
-        width: 90%;
-        max-width: 300px;
-    }
-
-    .box {
-        padding: 16px;
-        margin: 8px;
-        background: $core-login-box-background-color;
-        border: 1px solid $core-login-box-background-border;
-        color: $core-login-box-text-color;
-
-        @include darkmode() {
-            background: $core-dark-login-box-background-color;
-            border-color: $core-dark-login-box-background-border;
-            color: $core-dark-login-box-text-color;
-        }
-
-        .item {
-            @include darkmode() {
-                background: $core-dark-login-box-background-color;
-            }
-        }
-    }
-
     .core-sitename, .core-siteurl {
         @if $core-fixed-url { display: none; }
+    }
+
+    .core-sitename + .core-siteurl  {
+        margin-top: 0;
+    }
+
+    .core-sitename {
+        font-size: 1.8rem;
     }
 
     @if $core-login-button-outline {
@@ -76,5 +76,28 @@ ion-app.app-root page-core-login-site {
 
     .item-input {
         margin-bottom: 20px;
+    }
+
+    ion-list.core-login-forgotten-password {
+        margin-top: 0;
+        margin-bottom: 0;
+
+        a.item {
+            background: transparent;
+            text-decoration: underline;
+
+            @include darkmode() {
+                background: transparent;
+            }
+        }
+    }
+
+    .core-login-site-logo {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        img {
+            width: 90%;
+            max-width: 300px;
+        }
     }
 }

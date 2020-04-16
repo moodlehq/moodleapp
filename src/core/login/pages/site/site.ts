@@ -13,36 +13,26 @@
 // limitations under the License.
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, ModalController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, ModalController, AlertController, NavParams } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
-import { CoreSitesProvider, CoreSiteCheckResponse } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteCheckResponse, CoreLoginSiteInfo } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
 import { CoreUrl } from '@singletons/url';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
- * Data about an error when connecting to a site.
+ * Extended data for UI implementation.
  */
-type CoreLoginSiteError = {
-    /**
-     * The error message that ocurred.
-     */
-    message: string;
-
-    /**
-     * URL the user entered.
-     */
-    url?: string;
-
-    /**
-     * URL the user entered with protocol added if needed.
-     */
-    fullUrl?: string;
+type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
+    fromWS?: boolean; // If the site came from the WS call.
+    noProtocolUrl?: string; // Url wihtout protocol.
+    country?: string; // Based on countrycode.
 };
 
 /**
@@ -58,12 +48,16 @@ export class CoreLoginSitePage {
     @ViewChild('siteFormEl') formElement: ElementRef;
 
     siteForm: FormGroup;
-    fixedSites: any[];
-    filteredSites: any[];
+    fixedSites: CoreLoginSiteInfo[];
+    filteredSites: CoreLoginSiteInfo[];
     fixedDisplay = 'buttons';
     showKeyboard = false;
     filter = '';
-    error: CoreLoginSiteError;
+    sites: CoreLoginSiteInfoExtended[] = [];
+    hasSites = false;
+    loadingSites = false;
+    onlyWrittenSite = false;
+    searchFnc: Function;
 
     constructor(navParams: NavParams,
             protected navCtrl: NavController,
@@ -72,10 +66,12 @@ export class CoreLoginSitePage {
             protected sitesProvider: CoreSitesProvider,
             protected loginHelper: CoreLoginHelperProvider,
             protected modalCtrl: ModalController,
+            protected alertCtrl: AlertController,
+            protected urlUtils: CoreUrlUtilsProvider,
             protected domUtils: CoreDomUtilsProvider,
             protected eventsProvider: CoreEventsProvider,
             protected translate: TranslateService,
-            protected urlUtils: CoreUrlUtilsProvider) {
+            protected utils: CoreUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
 
@@ -94,8 +90,44 @@ export class CoreLoginSitePage {
         }
 
         this.siteForm = fb.group({
-            siteUrl: [url, Validators.required]
+            siteUrl: [url, this.moodleUrlValidator()]
         });
+
+        this.searchFnc = this.utils.debounce(async (search: string, isValid: boolean = false) => {
+            search = search.trim();
+
+            if (search.length >= 3) {
+                this.onlyWrittenSite = false;
+
+                // Update the sites list.
+                this.sites = await this.sitesProvider.findSites(search);
+
+                // UI tweaks.
+                this.sites.forEach((site) => {
+                    site.noProtocolUrl = CoreUrl.removeProtocol(site.url);
+                    site.fromWS = true;
+                    site.country = this.utils.getCountryName(site.countrycode);
+                });
+
+                // If it's a valid URL, add it.
+                if (isValid) {
+                    this.onlyWrittenSite = !!this.sites.length;
+                    this.sites.unshift({
+                        url: search,
+                        fromWS: false,
+                        name: this.translate.instant('core.login.yourenteredsite'),
+                        noProtocolUrl: CoreUrl.removeProtocol(search),
+                    });
+                }
+
+                this.hasSites = !!this.sites.length;
+            } else {
+                // Not reseting the array to allow animation to be displayed.
+                this.hasSites = false;
+            }
+
+            this.loadingSites = false;
+        }, 1000);
     }
 
     /**
@@ -103,8 +135,9 @@ export class CoreLoginSitePage {
      *
      * @param e Event.
      * @param url The URL to connect to.
+     * @param foundSite The site clicked, if any, from the found sites list.
      */
-    connect(e: Event, url: string): void {
+    connect(e: Event, url: string, foundSite?: CoreLoginSiteInfoExtended): void {
         e.preventDefault();
         e.stopPropagation();
 
@@ -129,8 +162,6 @@ export class CoreLoginSitePage {
 
             return;
         }
-
-        this.hideLoginIssue();
 
         const modal = this.domUtils.showModalLoading(),
             siteData = this.sitesProvider.getDemoSiteData(url);
@@ -167,7 +198,7 @@ export class CoreLoginSitePage {
 
                     return domain ? this.sitesProvider.checkSite(domain) : Promise.reject(error);
                 })
-                .then((result) => this.login(result))
+                .then((result) => this.login(result, foundSite))
                 .catch((error) => this.showLoginIssue(url, error))
                 .finally(() => modal.dismiss());
         }
@@ -198,26 +229,66 @@ export class CoreLoginSitePage {
     }
 
     /**
-     * Hide the login error.
-     */
-    protected hideLoginIssue(): void {
-        this.error = null;
-    }
-
-    /**
      * Show an error that aims people to solve the issue.
      *
      * @param url The URL the user was trying to connect to.
      * @param error Error to display.
      */
     protected showLoginIssue(url: string, error: any): void {
-        this.error = {
-            url: url,
-            message: this.domUtils.getErrorMessage(error),
-        };
+        error = this.domUtils.getErrorMessage(error);
 
+        if (error == this.translate.instant('core.cannotconnecttrouble')) {
+            const found = this.sites.find((site) => site.fromWS && site.url == url);
+
+            if (!found) {
+                error += ' ' + this.translate.instant('core.cannotconnectverify');
+            }
+        }
+
+        let message = '<p>' + error + '</p>';
         if (url) {
-            this.error.fullUrl = this.urlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
+            const fullUrl = this.urlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
+            message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
+        }
+
+        const buttons = [
+            {
+                text: this.translate.instant('core.needhelp'),
+                handler: (): void => {
+                    this.showHelp();
+                }
+            },
+            {
+                text: this.translate.instant('core.tryagain'),
+                role: 'cancel'
+            }
+        ];
+
+        this.domUtils.showAlertWithButtons(this.translate.instant('core.cannotconnect'), message, buttons);
+    }
+
+    /**
+     * Find a site on the backend.
+     *
+     * @param e Event.
+     * @param search Text to search.
+     */
+    searchSite(e: Event, search: string): void {
+        this.loadingSites = true;
+
+        this.searchFnc(search.trim(), this.siteForm.valid);
+    }
+
+    /**
+     * Get the demo data for a certain "name" if it is a demo site.
+     *
+     * @param name Name of the site to check.
+     * @return Site data if it's a demo site, undefined otherwise.
+     */
+    getDemoSiteData(name: string): any {
+        const demoSites = CoreConfigConstants.demo_sites;
+        if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
+            return demoSites[name];
         }
     }
 
@@ -225,10 +296,11 @@ export class CoreLoginSitePage {
      * Process login to a site.
      *
      * @param response Response obtained from the site check request.
+     * @param foundSite The site clicked, if any, from the found sites list.
      *
      * @return Promise resolved after logging in.
      */
-    protected async login(response: CoreSiteCheckResponse): Promise<void> {
+    protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
         return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
 
             this.domUtils.triggerFormSubmittedEvent(this.formElement, true);
@@ -242,11 +314,39 @@ export class CoreLoginSitePage {
                 this.loginHelper.confirmAndOpenBrowserForSSOLogin(
                     response.siteUrl, response.code, response.service, response.config && response.config.launchurl);
             } else {
-                this.navCtrl.push('CoreLoginCredentialsPage', { siteUrl: response.siteUrl, siteConfig: response.config });
+                const pageParams = { siteUrl: response.siteUrl, siteConfig: response.config };
+                if (foundSite) {
+                    pageParams['siteName'] = foundSite.name;
+                    pageParams['logoUrl'] = foundSite.imageurl;
+                }
+
+                this.navCtrl.push('CoreLoginCredentialsPage', pageParams);
             }
         }).catch(() => {
             // Ignore errors.
         });
+    }
+
+    /**
+     * Validate Url.
+     *
+     * @return {ValidatorFn} Validation results.
+     */
+    protected moodleUrlValidator(): ValidatorFn {
+      return (control: AbstractControl): {[key: string]: any} | null => {
+        const value = control.value.trim();
+        let valid = value.length >= 3 && CoreUrl.isValidMoodleUrl(value);
+
+        if (!valid) {
+            const demo = !!this.getDemoSiteData(value);
+
+            if (demo) {
+                valid = true;
+            }
+        }
+
+        return valid ? null : {siteUrl: {value: control.value}};
+      };
     }
 
 }

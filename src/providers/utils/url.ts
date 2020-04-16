@@ -225,7 +225,7 @@ export class CoreUrlUtilsProvider {
             url = 'https://' + url;
         }
 
-        // http allways in lowercase.
+        // http always in lowercase.
         url = url.replace(/^http/i, 'http');
         url = url.replace(/^https/i, 'https');
 

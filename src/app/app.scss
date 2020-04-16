@@ -46,19 +46,6 @@ ion-app.app-root {
     text-transform: none;
   }
 
-  @include media-breakpoint-up(sm) {
-    .core-center-view .scroll-content {
-      display: flex!important;
-      align-content: center !important;
-      align-items: center !important;
-      > * {
-        margin: 0 auto;
-        width: 100%;
-        max-width: 600px;
-      }
-    }
-  }
-
   @include media-breakpoint-down(sm) {
     .hidden-phone {
       display: none !important;
