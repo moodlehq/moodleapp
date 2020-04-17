@@ -27,6 +27,7 @@
   "addon.badges.version": "badges",
   "addon.badges.warnexpired": "badges",
   "addon.block_activitymodules.pluginname": "block_activity_modules",
+  "addon.block_activityresults.pluginname": "block_activity_results",
   "addon.block_badges.pluginname": "block_badges",
   "addon.block_blogmenu.pluginname": "block_blog_menu",
   "addon.block_blogrecent.pluginname": "block_blog_recent",

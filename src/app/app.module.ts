@@ -98,6 +98,7 @@ import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompl
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
+import { AddonBlockActivityResultsModule } from '@addon/block/activityresults/activityresults.module';
 import { AddonBlockBadgesModule } from '@addon/block/badges/badges.module';
 import { AddonBlockBlogMenuModule } from '@addon/block/blogmenu/blogmenu.module';
 import { AddonBlockBlogTagsModule } from '@addon/block/blogtags/blogtags.module';
@@ -245,6 +246,7 @@ export const WP_PROVIDER: any = null;
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonBlockActivityModulesModule,
+        AddonBlockActivityResultsModule,
         AddonBlockBadgesModule,
         AddonBlockBlogMenuModule,
         AddonBlockBlogRecentModule,
