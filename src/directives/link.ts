@@ -21,7 +21,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
+import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
 
 /**
  * Directive to open a link in external browser.
@@ -113,7 +113,9 @@ export class CoreLinkDirective implements OnInit {
                 this.domUtils.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');
             }
         } else if (this.urlSchemesProvider.isCustomURL(href)) {
-            this.urlSchemesProvider.handleCustomURL(href);
+            this.urlSchemesProvider.handleCustomURL(href).catch((error: CoreCustomURLSchemesHandleError) => {
+                this.urlSchemesProvider.treatHandleCustomURLError(error);
+            });
         } else {
 
             // It's an external link, we will open with browser. Check if we need to auto-login.

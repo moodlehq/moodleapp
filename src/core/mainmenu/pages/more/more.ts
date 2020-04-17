@@ -16,7 +16,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
+import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
@@ -179,7 +179,9 @@ export class CoreMainMenuMorePage implements OnDestroy {
             if (text) {
                 if (this.urlSchemesProvider.isCustomURL(text)) {
                     // Is a custom URL scheme, handle it.
-                    this.urlSchemesProvider.handleCustomURL(text);
+                    this.urlSchemesProvider.handleCustomURL(text).catch((error: CoreCustomURLSchemesHandleError) => {
+                        this.urlSchemesProvider.treatHandleCustomURLError(error);
+                    });
                 } else if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) { // Check if it's a URL.
                     // Check if the app can handle the URL.
                     this.linkHelper.handleLink(text, undefined, this.navCtrl, true, true).then((treated) => {

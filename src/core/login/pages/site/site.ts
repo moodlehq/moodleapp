@@ -17,10 +17,11 @@ import { IonicPage, NavController, ModalController, AlertController, NavParams }
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteCheckResponse, CoreLoginSiteInfo } from '@providers/sites';
-import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
+import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
@@ -74,7 +75,8 @@ export class CoreLoginSitePage {
             protected eventsProvider: CoreEventsProvider,
             protected translate: TranslateService,
             protected utils: CoreUtilsProvider,
-            private urlSchemesProvider: CoreCustomURLSchemesProvider) {
+            protected urlSchemesProvider: CoreCustomURLSchemesProvider,
+            protected textUtils: CoreTextUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
         this.showScanQR = this.utils.canScanQR();
@@ -363,19 +365,69 @@ export class CoreLoginSitePage {
     /**
      * Scan a QR code and put its text in the URL input.
      */
-    scanQR(): void {
+    async scanQR(): Promise<void> {
         // Scan for a QR code.
-        this.utils.scanQR().then((text) => {
-            if (text) {
-                if (this.urlSchemesProvider.isCustomURL(text)) {
-                    this.urlSchemesProvider.handleCustomURL(text);
-                } else {
-                    // Not a custom URL scheme, put the text in the field.
-                    this.siteForm.controls.siteUrl.setValue(text);
+        const text = await this.utils.scanQR();
 
-                    this.connect(new Event('click'), text);
+        if (text) {
+            if (this.urlSchemesProvider.isCustomURL(text)) {
+                try {
+                    await this.urlSchemesProvider.handleCustomURL(text);
+                } catch (error) {
+                    if (error && error.data && error.data.isAuthenticationURL && error.data.siteUrl) {
+                        // An error ocurred, but it's an authentication URL and we have the site URL.
+                        this.treatErrorInAuthenticationCustomURL(text, error);
+                    } else {
+                        this.urlSchemesProvider.treatHandleCustomURLError(error);
+                    }
                 }
+            } else {
+                // Not a custom URL scheme, put the text in the field.
+                this.siteForm.controls.siteUrl.setValue(text);
+
+                this.connect(new Event('click'), text);
             }
-        });
+        }
+    }
+
+    /**
+     * Treat an error while handling a custom URL meant to perform an authentication.
+     * If the site doesn't use SSO, the user will be sent to the credentials screen.
+     *
+     * @param customURL Custom URL handled.
+     * @param error Error data.
+     * @return Promise resolved when done.
+     */
+    protected async treatErrorInAuthenticationCustomURL(customURL: string, error: CoreCustomURLSchemesHandleError): Promise<void> {
+        const siteUrl = error.data.siteUrl;
+        const modal = this.domUtils.showModalLoading();
+
+        // Set the site URL in the input.
+        this.siteForm.controls.siteUrl.setValue(siteUrl);
+
+        try {
+            // Check if site uses SSO.
+            const response = await this.sitesProvider.checkSite(siteUrl);
+
+            await this.sitesProvider.checkRequiredMinimumVersion(response.config);
+
+            if (!this.loginHelper.isSSOLoginNeeded(response.code)) {
+                // No SSO, go to credentials page.
+                await this.navCtrl.push('CoreLoginCredentialsPage', {
+                    siteUrl: response.siteUrl,
+                    siteConfig: response.config,
+                });
+            }
+        } catch (error) {
+            // Ignore errors.
+        } finally {
+            modal.dismiss();
+        }
+
+        // Now display the error.
+        error.error = this.textUtils.addTextToError(error.error,
+                '<br><br>' + this.translate.instant('core.login.youcanstillconnectwithcredentials'));
+
+        this.urlSchemesProvider.treatHandleCustomURLError(error);
     }
 }

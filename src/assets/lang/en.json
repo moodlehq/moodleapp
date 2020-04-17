@@ -1789,6 +1789,7 @@
     "core.login.usernotaddederror": "User not added - error",
     "core.login.visitchangepassword": "Do you want to visit the site to change the password?",
     "core.login.webservicesnotenabled": "Your host site may not have enabled Web services. Please contact your administrator for help.",
+    "core.login.youcanstillconnectwithcredentials": "You can still connect to the site by entering your username and password.",
     "core.login.yourenteredsite": "Connect to your site",
     "core.lostconnection": "Your authentication token is invalid or has expired. You will have to reconnect to the site.",
     "core.mainmenu.changesite": "Change site",

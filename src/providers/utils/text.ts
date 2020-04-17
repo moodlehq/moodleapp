@@ -105,6 +105,33 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Add some text to an error message.
+     *
+     * @param error Error message or object.
+     * @param text Text to add.
+     * @return Modified error.
+     */
+    addTextToError(error: string | CoreTextErrorObject, text: string): string | CoreTextErrorObject {
+        if (typeof error == 'string') {
+            return error + text;
+        }
+
+        if (error) {
+            if (typeof error.message == 'string') {
+                error.message += text;
+            } else if (typeof error.error == 'string') {
+                error.error += text;
+            } else if (typeof error.content == 'string') {
+                error.content += text;
+            } else if (typeof error.body == 'string') {
+                error.body += text;
+            }
+        }
+
+        return error;
+    }
+
+    /**
      * Given an address as a string, return a URL to open the address in maps.
      *
      * @param address The address.

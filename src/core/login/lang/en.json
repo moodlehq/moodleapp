@@ -100,6 +100,7 @@
     "usernamerequired": "Username required",
     "usernotaddederror": "User not added - error",
     "visitchangepassword": "Do you want to visit the site to change the password?",
-    "yourenteredsite": "Connect to your site",
-    "webservicesnotenabled": "Your host site may not have enabled Web services. Please contact your administrator for help."
+    "webservicesnotenabled": "Your host site may not have enabled Web services. Please contact your administrator for help.",
+    "youcanstillconnectwithcredentials": "You can still connect to the site by entering your username and password.",
+    "yourenteredsite": "Connect to your site"
 }
