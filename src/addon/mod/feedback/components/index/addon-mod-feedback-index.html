@@ -108,18 +108,18 @@
                 </ion-item>
                 <ion-grid>
                     <ion-row align-items-center>
-                        <ion-col>
-                            <button ion-button block outline icon-start (click)="gotoAnswerQuestions(true)">
+                        <ion-col col-12 [attr.col-sm-6]="(access.cancomplete && access.cansubmit && access.isopen) || null">
+                            <button ion-button block outline icon-start (click)="gotoAnswerQuestions(true)" text-wrap>
                                 <ion-icon name="search"></ion-icon>
                                 {{ 'addon.mod_feedback.preview' | translate }}
                             </button>
                         </ion-col>
-                        <ion-col *ngIf="access.cancomplete && access.cansubmit && access.isopen">
-                            <button ion-button block icon-end *ngIf="!goPage" (click)="gotoAnswerQuestions()">
+                        <ion-col *ngIf="access.cancomplete && access.cansubmit && access.isopen" col-12 col-sm-6>
+                            <button ion-button block icon-end *ngIf="!goPage" (click)="gotoAnswerQuestions()" text-wrap>
                                 {{ 'addon.mod_feedback.complete_the_form' | translate }}
                                 <ion-icon name="arrow-forward"></ion-icon>
                             </button>
-                            <button ion-button block icon-end *ngIf="goPage" (click)="gotoAnswerQuestions()">
+                            <button ion-button block icon-end *ngIf="goPage" (click)="gotoAnswerQuestions()" text-wrap>
                                 {{ 'addon.mod_feedback.continue_the_form' | translate }}
                                 <ion-icon name="arrow-forward"></ion-icon>
                             </button>
