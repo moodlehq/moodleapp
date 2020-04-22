@@ -30,13 +30,15 @@ export class AddonModFolderIndexPage {
     title: string;
     module: any;
     courseId: number;
-    path: string;
+    folderInstance: any;
+    subfolder: any;
 
     constructor(navParams: NavParams) {
         this.module = navParams.get('module') || {};
         this.courseId = navParams.get('courseId');
-        this.path = navParams.get('path');
-        this.title = this.module.name;
+        this.folderInstance = navParams.get('folderInstance');
+        this.subfolder = navParams.get('subfolder');
+        this.title = this.subfolder ? this.subfolder.name : this.module.name;
     }
 
     /**

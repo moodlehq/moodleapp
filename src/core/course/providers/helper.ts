@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Loading } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
-import { CoreFilepoolProvider } from '@providers/filepool';
+import { CoreFilepoolProvider, CoreFilepoolComponentFileEventData } from '@providers/filepool';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -408,16 +408,29 @@ export class CoreCourseHelperProvider {
      *
      * @param module Module to remove the files.
      * @param courseId Course ID the module belongs to.
+     * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
      */
-    confirmAndRemoveFiles(module: any, courseId: number): Promise<any> {
-        return this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles').then(() => {
-            return this.prefetchDelegate.removeModuleFiles(module, courseId);
-        }).catch((error) => {
+    async confirmAndRemoveFiles(module: any, courseId: number, done?: () => void): Promise<void> {
+        let modal: Loading;
+
+        try {
+
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+
+            modal = this.domUtils.showModalLoading();
+
+            await this.prefetchDelegate.removeModuleFiles(module, courseId);
+
+            done && done();
+
+        } catch (error) {
             if (error) {
                 this.domUtils.showErrorModal(error);
             }
-        });
+        } finally {
+            modal && modal.dismiss();
+        }
     }
 
     /**
@@ -800,6 +813,8 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     fillContextMenu(instance: any, module: any, courseId: number, invalidateCache?: boolean, component?: string): Promise<any> {
+        const siteId = this.sitesProvider.getCurrentSiteId();
+
         return this.getModulePrefetchInfo(module, courseId, invalidateCache, component).then((moduleInfo) => {
             instance.size = moduleInfo.size > 0 ? moduleInfo.sizeReadable : 0;
             instance.prefetchStatusIcon = moduleInfo.statusIcon;
@@ -825,7 +840,32 @@ export class CoreCourseHelperProvider {
                     if (data.componentId == module.id && data.component == component) {
                         this.fillContextMenu(instance, module, courseId, false, component);
                     }
-                }, this.sitesProvider.getCurrentSiteId());
+                }, siteId);
+            }
+
+            if (typeof instance.contextFileStatusObserver == 'undefined' && component) {
+                // Debounce the update size function to prevent too many calls when downloading or deleting a whole activity.
+                const debouncedUpdateSize = this.utils.debounce(() => {
+                    this.prefetchDelegate.getModuleDownloadedSize(module, courseId).then((moduleSize) => {
+                        instance.size = moduleSize > 0 ? this.textUtils.bytesToSize(moduleSize, 2) : 0;
+                    });
+                }, 1000);
+
+                instance.contextFileStatusObserver = this.eventsProvider.on(CoreEventsProvider.COMPONENT_FILE_ACTION,
+                        (data: CoreFilepoolComponentFileEventData) => {
+
+                    if (data.component != component || data.componentId != module.id) {
+                        // The event doesn't belong to this component, ignore.
+                        return;
+                    }
+
+                    if (!this.filepoolProvider.isFileEventDownloadedOrDeleted(data)) {
+                        return;
+                    }
+
+                    // Update the module size.
+                    debouncedUpdateSize();
+                }, siteId);
             }
         });
     }
