@@ -14,7 +14,7 @@
         <ion-item text-wrap>
             <h2><b>{{ 'core.login.faqwhatisurlquestion' | translate }}</b></h2>
         </ion-item>
-        <ion-item text-wrap>
+        <ion-item text-wrap class="core-login-faqwhatisurlanswer">
             <div [innerHTML]="'core.login.faqwhatisurlanswer' | translate: {$image: urlImageHtml}">
             </div>
         </ion-item>
@@ -35,6 +35,13 @@
         </ion-item>
         <ion-item text-wrap>
             <p>{{ 'core.login.faqtestappanswer' | translate }}</p>
+        </ion-item>
+        <ion-item text-wrap *ngIf="canScanQR">
+            <h2><b>{{ 'core.login.faqwhereisqrcode' | translate }}</b></h2>
+        </ion-item>
+        <ion-item text-wrap *ngIf="canScanQR" class="core-login-faqwhereisqrcodeanswer">
+            <div [innerHTML]="'core.login.faqwhereisqrcodeanswer' | translate: {$image: qrCodeImageHtml}">
+            </div>
         </ion-item>
     </ion-list>
 </ion-content>

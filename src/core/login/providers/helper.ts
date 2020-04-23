@@ -75,6 +75,8 @@ export interface CoreLoginSSOData {
 @Injectable()
 export class CoreLoginHelperProvider {
     static OPEN_COURSE = 'open_course';
+    static FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation">';
+    static FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation">';
 
     protected logger;
     protected isSSOConfirmShown = false;

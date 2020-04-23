@@ -237,7 +237,7 @@ export class CoreLoginSitePage {
      * Show a help modal.
      */
     showHelp(): void {
-        const modal = this.modalCtrl.create('CoreLoginSiteHelpPage');
+        const modal = this.modalCtrl.create('CoreLoginSiteHelpPage', {}, { cssClass: 'core-modal-fullscreen' });
         modal.present();
     }
 
@@ -346,24 +346,51 @@ export class CoreLoginSitePage {
      * @return {ValidatorFn} Validation results.
      */
     protected moodleUrlValidator(): ValidatorFn {
-      return (control: AbstractControl): {[key: string]: any} | null => {
-        const value = control.value.trim();
-        let valid = value.length >= 3 && CoreUrl.isValidMoodleUrl(value);
+        return (control: AbstractControl): {[key: string]: any} | null => {
+            const value = control.value.trim();
+            let valid = value.length >= 3 && CoreUrl.isValidMoodleUrl(value);
 
-        if (!valid) {
-            const demo = !!this.getDemoSiteData(value);
+            if (!valid) {
+                const demo = !!this.getDemoSiteData(value);
 
-            if (demo) {
-                valid = true;
+                if (demo) {
+                    valid = true;
+                }
             }
-        }
 
-        return valid ? null : {siteUrl: {value: control.value}};
-      };
+            return valid ? null : {siteUrl: {value: control.value}};
+        };
+    }
+
+    /**
+     * Show instructions and scan QR code.
+     *
+     * @todo Use it in 3.9 release instead of scanQR.
+     */
+    showInstructionsAndScanQR(): void {
+        // Show some instructions first.
+        this.domUtils.showAlertWithButtons(
+            this.translate.instant('core.login.faqwhereisqrcode'),
+            this.translate.instant('core.login.faqwhereisqrcodeanswer', {$image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML}),
+            [
+                {
+                    text: this.translate.instant('core.cancel'),
+                    role: 'cancel'
+                },
+                {
+                    text: this.translate.instant('core.next'),
+                    handler: (): void => {
+                        this.scanQR();
+                    }
+                },
+            ]
+        );
     }
 
     /**
      * Scan a QR code and put its text in the URL input.
+     *
+     * @return Promise resolved when done.
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
