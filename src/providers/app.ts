@@ -51,6 +51,51 @@ export interface CoreRedirectData {
 }
 
 /**
+ * Store config data.
+ */
+export interface CoreStoreConfig {
+    /**
+     * ID of the Apple store where the desktop Mac app is uploaded.
+     */
+    mac?: string;
+
+    /**
+     * ID of the Windows store where the desktop Windows app is uploaded.
+     */
+    windows?: string;
+
+    /**
+     * Url with the desktop linux download link.
+     */
+    linux?: string;
+
+    /**
+     * Fallback URL when the desktop options is not set.
+     */
+    desktop?: string;
+
+    /**
+     * ID of the Apple store where the mobile iOS app is uploaded.
+     */
+    ios?: string;
+
+    /**
+     * ID of the Google play store where the android app is uploaded.
+     */
+    android?: string;
+
+    /**
+     * Fallback URL when the mobile options is not set.
+     */
+    mobile?: string;
+
+    /**
+     * Fallback URL when the other fallbacks options are not set.
+     */
+    default?: string;
+}
+
+/**
  * App DB schema and migration function.
  */
 export interface CoreAppSchema {
@@ -253,6 +298,44 @@ export class CoreAppProvider {
     getRootNavController(): NavController {
         // Function getRootNav is deprecated. Get the first root nav, there should always be one.
         return this.appCtrl.getRootNavs()[0];
+    }
+
+    /**
+     * Get app store URL.
+     *
+     * @param  storesConfig Config params to send the user to the right place.
+     * @return Store URL.
+     */
+     getAppStoreUrl(storesConfig: CoreStoreConfig): string {
+        if (this.isMac() && storesConfig.mac) {
+            return 'itms-apps://itunes.apple.com/app/' + storesConfig.mac;
+        }
+
+        if (this.isWindows() && storesConfig.windows) {
+            return 'https://www.microsoft.com/p/' + storesConfig.windows;
+        }
+
+        if (this.isLinux() && storesConfig.linux) {
+            return storesConfig.linux;
+        }
+
+        if (this.isDesktop() && storesConfig.desktop) {
+            return storesConfig.desktop;
+        }
+
+        if (this.isIOS() && storesConfig.ios) {
+            return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
+        }
+
+        if (this.isAndroid() && storesConfig.android) {
+            return 'market://details?id=' + storesConfig.android;
+        }
+
+        if (this.isMobile() && storesConfig.mobile) {
+            return storesConfig.mobile;
+        }
+
+        return storesConfig.default || null;
     }
 
     /**

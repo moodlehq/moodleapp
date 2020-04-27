@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { Platform, AlertController, NavController, NavOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '@providers/app';
+import { CoreAppProvider, CoreStoreConfig } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
@@ -1180,13 +1180,7 @@ export class CoreLoginHelperProvider {
      * @param message The warning message.
      */
     protected showWorkplaceNoticeModal(message: string): void {
-        let link;
-
-        if (this.platform.is('android')) {
-            link = 'market://details?id=com.moodle.workplace';
-        } else if (this.platform.is('ios')) {
-            link = 'itms-apps://itunes.apple.com/app/id1470929705';
-        }
+        const link = this.appProvider.getAppStoreUrl({android: 'com.moodle.workplace', ios: 'id1470929705' });
 
         this.showDownloadAppNoticeModal(message, link);
     }
@@ -1197,20 +1191,12 @@ export class CoreLoginHelperProvider {
      * @param message The warning message.
      */
     protected showMoodleAppNoticeModal(message: string): void {
-        let link;
+        const storesConfig: CoreStoreConfig = CoreConfigConstants.appstores;
+        storesConfig.desktop = 'https://download.moodle.org/desktop/';
+        storesConfig.mobile = 'https://download.moodle.org/mobile/';
+        storesConfig.default = 'https://download.moodle.org/mobile/';
 
-        if (this.appProvider.isWindows()) {
-            link = 'https://download.moodle.org/desktop/download.php?platform=windows';
-        } else if (this.appProvider.isLinux()) {
-            link = 'https://download.moodle.org/desktop/download.php?platform=linux&arch=' +
-                    (this.appProvider.is64Bits() ? '64' : '32');
-        } else if (this.appProvider.isMac()) {
-            link = 'itms-apps://itunes.apple.com/app/id1255924440';
-        } else if (this.platform.is('android')) {
-            link = 'market://details?id=com.moodle.moodlemobile';
-        } else if (this.platform.is('ios')) {
-            link = 'itms-apps://itunes.apple.com/app/id633359593';
-        }
+        const link = this.appProvider.getAppStoreUrl(storesConfig);
 
         this.showDownloadAppNoticeModal(message, link);
     }
