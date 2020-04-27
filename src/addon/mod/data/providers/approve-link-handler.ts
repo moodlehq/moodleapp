@@ -27,6 +27,7 @@ export class AddonModDataApproveLinkHandler extends CoreContentLinksHandlerBase 
     name = 'AddonModDataApproveLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModData';
     pattern = /\/mod\/data\/view\.php.*([\?\&](d|approve|disapprove)=\d+)/;
+    priority = 50; // Higher priority than the default link handler for view.php.
 
     constructor(private dataProvider: AddonModDataProvider, private dataHelper: AddonModDataHelperProvider) {
         super();
