@@ -4,4 +4,7 @@
     <core-input-errors *ngIf="error && mode == 'edit'" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
 </span>
 
-<a *ngIf="isShowOrListMode() && value && value.content" [href]="value.content" core-link capture="true">{{value.content}}</a>
+<ng-container *ngIf="isShowOrListMode() && value && value.content">
+    <a *ngIf="autoLink" [href]="value.content" core-link capture="true">{{ displayValue }}</a>
+    <span *ngIf="!autoLink">{{ displayValue }}</span>
+</ng-container>
