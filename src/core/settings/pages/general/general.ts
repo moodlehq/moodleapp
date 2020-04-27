@@ -14,7 +14,6 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Segment } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreFileProvider } from '@providers/file';
@@ -49,10 +48,14 @@ export class CoreSettingsGeneralPage {
     selectedScheme: string;
     colorSchemeDisabled: boolean;
 
-    constructor(private appProvider: CoreAppProvider, private configProvider: CoreConfigProvider, fileProvider: CoreFileProvider,
-            private eventsProvider: CoreEventsProvider, private langProvider: CoreLangProvider,
-            private domUtils: CoreDomUtilsProvider, private pushNotificationsProvider: CorePushNotificationsProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider, private settingsHelper: CoreSettingsHelper) {
+    constructor(protected configProvider: CoreConfigProvider,
+            fileProvider: CoreFileProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected langProvider: CoreLangProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected pushNotificationsProvider: CorePushNotificationsProvider,
+            localNotificationsProvider: CoreLocalNotificationsProvider,
+            protected settingsHelper: CoreSettingsHelper) {
 
         // Get the supported languages.
         const languages = CoreConfigConstants.languages;
@@ -72,9 +75,8 @@ export class CoreSettingsGeneralPage {
             } else {
                 let defaultColorScheme = 'light';
 
-                // Auto is not working on iOS right now until we update Webkit.
-                if (!this.appProvider.isIOS() && (window.matchMedia('(prefers-color-scheme: dark)').matches ||
-                                    window.matchMedia('(prefers-color-scheme: light)').matches)) {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                                    window.matchMedia('(prefers-color-scheme: light)').matches) {
                     this.colorSchemes.push('auto');
                     defaultColorScheme = 'auto';
                 }
