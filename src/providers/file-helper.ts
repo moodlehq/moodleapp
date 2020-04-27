@@ -21,6 +21,7 @@ import { CoreSitesProvider } from './sites';
 import { CoreWSProvider } from './ws';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -333,5 +334,6 @@ export class CoreFileHelperProvider {
 
         throw new Error('Couldn\'t determine file size: ' + file.fileurl);
     }
-
 }
+
+export class CoreFileHelper extends makeSingleton(CoreFileHelperProvider) {}

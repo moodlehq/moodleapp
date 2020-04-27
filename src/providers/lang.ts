@@ -20,6 +20,7 @@ import { Platform, Config } from 'ionic-angular';
 import { CoreAppProvider } from '@providers/app';
 import { CoreConfigProvider } from './config';
 import { CoreConfigConstants } from '../configconstants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -453,3 +454,5 @@ export class CoreLangProvider {
         }
     }
 }
+
+export class CoreLang extends makeSingleton(CoreLangProvider) {}

@@ -17,6 +17,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ModalController, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Different type of errors the app can treat.
@@ -1106,3 +1107,5 @@ export class CoreTextUtilsProvider {
         return _unserialize((data + ''), 0)[2];
     }
 }
+
+export class CoreTextUtils extends makeSingleton(CoreTextUtilsProvider) {}

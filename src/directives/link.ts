@@ -92,7 +92,7 @@ export class CoreLinkDirective implements OnInit {
     protected navigate(href: string): void {
         const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';
 
-        if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0 || href.indexOf('filesystem:') === 0) {
+        if (this.urlUtils.isLocalFileUrl(href)) {
             // We have a local file.
             this.utils.openFile(href).catch((error) => {
                 this.domUtils.showErrorModal(error);

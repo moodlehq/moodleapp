@@ -93,5 +93,6 @@
     "statusbarbgremotetheme": "#000000",
     "statusbarlighttextremotetheme": true,
     "enableanalytics": false,
-    "forceColorScheme": ""
+    "forceColorScheme": "",
+    "webviewscheme": "moodleappfs"
 }

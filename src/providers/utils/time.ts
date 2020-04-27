@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { CoreConstants } from '@core/constants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * "Utils" service with helper functions for date and time.
@@ -353,3 +354,5 @@ export class CoreTimeUtilsProvider {
         }
     }
 }
+
+export class CoreTimeUtils extends makeSingleton(CoreTimeUtilsProvider) {}

@@ -8,6 +8,7 @@
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="mailto:*" />
     <access launch-external="yes" origin="geo:*" />
+    <allow-navigation href="moodleappfs:*" />
     <allow-navigation href="cdvfile:*" />
     <allow-navigation href="content:*" />
     <allow-navigation href="data:*" />
@@ -38,6 +39,8 @@
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="LoadUrlTimeoutValue" value="60000" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
+    <preference name="Scheme" value="moodleappfs" />
+    <preference name="iosScheme" value="moodleappfs" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
@@ -171,6 +174,7 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.3" />
     <plugin name="cordova-plugin-statusbar" spec="2.4.3" />
     <plugin name="cordova-plugin-whitelist" spec="1.3.4" />
+    <plugin name="cordova-plugin-wkwebview-cookies" spec="https://github.com/moodlemobile/cordova-plugin-wkwebview-cookies.git" />
     <plugin name="cordova-plugin-zip" spec="3.1.0" />
     <plugin name="cordova-sqlite-storage" spec="3.4.0" />
     <plugin name="nl.kingsquare.cordova.background-audio" spec="1.0.1" />
@@ -178,6 +182,8 @@
         <variable name="ANDROID_SUPPORT_V13_VERSION" value="27.+" />
         <variable name="FCM_VERSION" value="17.5.+" />
     </plugin>
+    <plugin name="cordova-plugin-ionic-webview" spec="4.1.3" />
+    <plugin name="cordova-plugin-advanced-http" spec="2.4.1" />
     <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity[@android:name='MainActivity']">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" android:debuggable="true" />
     </edit-config>

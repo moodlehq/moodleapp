@@ -19,6 +19,7 @@ import { CoreSitesProvider } from './sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { FileEntry } from '@ionic-native/file';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Interface that all plugin file handlers must implement.
@@ -371,3 +372,5 @@ export class CorePluginFileDelegate extends CoreDelegate {
         return Promise.resolve();
     }
 }
+
+export class CorePluginFile extends makeSingleton(CorePluginFileDelegate) {}

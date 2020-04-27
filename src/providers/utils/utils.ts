@@ -27,6 +27,8 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
+import { CoreFile } from '../file';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -862,8 +864,11 @@ export class CoreUtilsProvider {
      * @return Promise resolved when done.
      */
     openFile(path: string): Promise<any> {
-        const extension = this.mimetypeUtils.getFileExtension(path),
-            mimetype = this.mimetypeUtils.getMimeType(extension);
+        // Convert the path to a native path if needed.
+        path = CoreFile.instance.unconvertFileSrc(path);
+
+        const extension = this.mimetypeUtils.getFileExtension(path);
+        const mimetype = this.mimetypeUtils.getMimeType(extension);
 
         // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
         try {
@@ -1416,3 +1421,5 @@ export class CoreUtilsProvider {
         return debounced;
     }
 }
+
+export class CoreUtils extends makeSingleton(CoreUtilsProvider) {}

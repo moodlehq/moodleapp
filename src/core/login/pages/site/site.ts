@@ -22,7 +22,7 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CoreUrl } from '@classes/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { TranslateService } from '@ngx-translate/core';
 
 /**

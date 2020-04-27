@@ -56,7 +56,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreUrl } from '@classes/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';

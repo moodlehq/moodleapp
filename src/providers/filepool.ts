@@ -31,6 +31,7 @@ import { CoreUtilsProvider } from './utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Entry from filepool.
@@ -471,11 +472,21 @@ export class CoreFilepoolProvider {
     protected packagesPromises = {};
     protected filePromises: { [s: string]: { [s: string]: Promise<any> } } = {};
 
-    constructor(logger: CoreLoggerProvider, private appProvider: CoreAppProvider, private fileProvider: CoreFileProvider,
-            private sitesProvider: CoreSitesProvider, private wsProvider: CoreWSProvider, private textUtils: CoreTextUtilsProvider,
-            private utils: CoreUtilsProvider, private mimeUtils: CoreMimetypeUtilsProvider, private urlUtils: CoreUrlUtilsProvider,
-            private timeUtils: CoreTimeUtilsProvider, private eventsProvider: CoreEventsProvider, initDelegate: CoreInitDelegate,
-            network: Network, private pluginFileDelegate: CorePluginFileDelegate, private domUtils: CoreDomUtilsProvider,
+    constructor(logger: CoreLoggerProvider,
+            protected appProvider: CoreAppProvider,
+            protected fileProvider: CoreFileProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected wsProvider: CoreWSProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected utils: CoreUtilsProvider,
+            protected mimeUtils: CoreMimetypeUtilsProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            initDelegate: CoreInitDelegate,
+            network: Network,
+            protected pluginFileDelegate: CorePluginFileDelegate,
+            protected domUtils: CoreDomUtilsProvider,
             zone: NgZone) {
         this.logger = logger.getInstance('CoreFilepoolProvider');
 
@@ -1901,8 +1912,7 @@ export class CoreFilepoolProvider {
         if (this.fileProvider.isAvailable()) {
             return Promise.resolve(this.getFilePath(siteId, fileId)).then((path) => {
                 return this.fileProvider.getFile(path).then((fileEntry) => {
-                    // We use toInternalURL so images are loaded in iOS8 using img HTML tags.
-                    return this.fileProvider.getInternalURL(fileEntry);
+                    return this.fileProvider.convertFileSrc(fileEntry.toURL());
                 });
             });
         }
@@ -3250,3 +3260,5 @@ export class CoreFilepoolProvider {
         });
     }
 }
+
+export class CoreFilepool extends makeSingleton(CoreFilepoolProvider) {}

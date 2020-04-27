@@ -74,26 +74,27 @@ export class CoreFormatTextDirective implements OnChanges {
     protected loadingChangedListener;
 
     constructor(element: ElementRef,
-            private sitesProvider: CoreSitesProvider,
-            private domUtils: CoreDomUtilsProvider,
-            private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService,
-            private platform: Platform,
-            private utils: CoreUtilsProvider,
-            private urlUtils: CoreUrlUtilsProvider,
-            private loggerProvider: CoreLoggerProvider,
-            private filepoolProvider: CoreFilepoolProvider,
-            private appProvider: CoreAppProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider,
-            @Optional() private navCtrl: NavController,
-            @Optional() private content: Content, @Optional()
-            private svComponent: CoreSplitViewComponent,
-            private iframeUtils: CoreIframeUtilsProvider,
-            private eventsProvider: CoreEventsProvider,
-            private filterProvider: CoreFilterProvider,
-            private filterHelper: CoreFilterHelperProvider,
-            private filterDelegate: CoreFilterDelegate,
-            private viewContainerRef: ViewContainerRef) {
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService,
+            protected platform: Platform,
+            protected utils: CoreUtilsProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected loggerProvider: CoreLoggerProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected appProvider: CoreAppProvider,
+            protected contentLinksHelper: CoreContentLinksHelperProvider,
+            @Optional() protected navCtrl: NavController,
+            @Optional() protected content: Content, @Optional()
+            protected svComponent: CoreSplitViewComponent,
+            protected iframeUtils: CoreIframeUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected filterProvider: CoreFilterProvider,
+            protected filterHelper: CoreFilterHelperProvider,
+            protected filterDelegate: CoreFilterDelegate,
+            protected viewContainerRef: ViewContainerRef,
+            ) {
 
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
