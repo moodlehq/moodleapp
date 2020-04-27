@@ -18,7 +18,6 @@ import { IonicPage, NavParams, Content, PopoverController, ModalController, Moda
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
-import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -80,7 +79,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
     protected loadingMenu: boolean; // Whether the lesson menu is being loaded.
     protected lessonPages: any[]; // Lesson pages (for the lesson menu).
 
-    constructor(protected navParams: NavParams, logger: CoreLoggerProvider, protected translate: TranslateService,
+    constructor(protected navParams: NavParams, protected translate: TranslateService,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider,
             protected syncProvider: CoreSyncProvider, protected domUtils: CoreDomUtilsProvider, popoverCtrl: PopoverController,
             protected timeUtils: CoreTimeUtilsProvider, protected lessonProvider: AddonModLessonProvider,
@@ -368,6 +367,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
             this.eolData = data.data;
             this.messages = this.messages.concat(data.messages);
             this.processData = undefined;
+
+            this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'lesson' });
 
             // Format activity link if present.
             if (this.eolData && this.eolData.activitylink) {

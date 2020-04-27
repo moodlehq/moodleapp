@@ -117,6 +117,7 @@ export class AddonModChatChatPage {
      * Runs when the page is about to leave and no longer be the active page.
      */
     ionViewWillLeave(): void {
+        this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'chat' });
         this.stopPolling();
     }
 

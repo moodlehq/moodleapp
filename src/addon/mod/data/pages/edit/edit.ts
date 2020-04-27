@@ -217,6 +217,10 @@ export class AddonModDataEditPage {
 
                     this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.siteId);
 
+                    if (result.sent) {
+                        this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'data' });
+                    }
+
                     const promises = [];
 
                     this.entryId = this.entryId || result.newentryid;

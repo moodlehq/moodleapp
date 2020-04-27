@@ -473,6 +473,8 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             if (discussionIds) {
                 // Data sent to server, delete stored files (if any).
                 this.forumHelper.deleteNewDiscussionStoredFiles(this.forumId, discTimecreated);
+
+                this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'forum' });
             }
 
             if (discussionIds && discussionIds.length < groupIds.length) {

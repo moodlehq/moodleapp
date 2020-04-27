@@ -388,6 +388,8 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
                 data['submissionId'] = newSubmissionId;
             }
 
+            this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'workshop' });
+
             const promise = newSubmissionId ? this.workshopProvider.invalidateSubmissionData(this.workshopId, newSubmissionId) :
                 Promise.resolve();
 
