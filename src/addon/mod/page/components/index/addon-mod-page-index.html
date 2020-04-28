@@ -15,6 +15,10 @@
 
     <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
+    <ion-card class="core-warning-card" icon-start *ngIf="warning">
+        <ion-icon name="warning"></ion-icon> <span [innerHTML]="warning"></span>
+    </ion-card>
+
     <div padding>
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         <p padding-bottom class="addon-mod_page-timemodified" *ngIf="displayTimemodified && page && page.timemodified">

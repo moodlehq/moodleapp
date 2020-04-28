@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { Component, Injector } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
-import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { AddonModUrlProvider } from '../../providers/url';
 import { AddonModUrlHelperProvider } from '../../providers/helper';
@@ -43,9 +41,10 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     mimetype: string;
     displayDescription = true;
 
-    constructor(injector: Injector, private urlProvider: AddonModUrlProvider, private courseProvider: CoreCourseProvider,
-            private urlHelper: AddonModUrlHelperProvider, private mimeUtils: CoreMimetypeUtilsProvider,
-            private sitesProvider: CoreSitesProvider) {
+    constructor(injector: Injector,
+            protected urlProvider: AddonModUrlProvider,
+            protected urlHelper: AddonModUrlHelperProvider,
+            protected mimeUtils: CoreMimetypeUtilsProvider) {
         super(injector);
     }
 
