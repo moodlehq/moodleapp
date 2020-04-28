@@ -165,7 +165,14 @@ export class CoreLoginSitePage {
                     // Attempt guessing the domain if the initial check failed
                     const domain = CoreUrl.guessMoodleDomain(url);
 
-                    return domain ? this.sitesProvider.checkSite(domain) : Promise.reject(error);
+                    if (domain && domain != url) {
+                        return this.sitesProvider.checkSite(domain).catch((secondError) => {
+                            // Try to use the first error.
+                            return Promise.reject(error || secondError);
+                        });
+                    }
+
+                    return Promise.reject(error);
                 })
                 .then((result) => this.login(result))
                 .catch((error) => this.showLoginIssue(url, error))
