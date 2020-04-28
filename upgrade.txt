@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.8.3 ===
+
+- CoreFileProvider.writeFileDataInFile has been deprecated. Please use CoreFileHelperProvider.writeFileDataInFile instead.
+
 === 3.8.0 ===
 
 - CoreDomUtilsProvider.extractDownloadableFilesFromHtml and CoreDomUtilsProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects have been deprecated. Please use CoreFilepoolProvider.extractDownloadableFilesFromHtml and CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects. We had to move them to prevent a circular dependency.

@@ -78,7 +78,7 @@ export class CoreLocalFileComponent implements OnInit {
                 this.size = this.textUtils.bytesToSize(metadata.size, 2);
             }
 
-            this.timemodified = this.timeUtils.userDate(metadata.modificationTime, 'core.strftimedatetimeshort');
+            this.timemodified = this.timeUtils.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
         });
     }
 

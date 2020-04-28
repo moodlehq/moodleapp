@@ -1373,6 +1373,7 @@
   "core.confirmgotabrootdefault": "local_moodlemobileapp",
   "core.confirmloss": "local_moodlemobileapp",
   "core.confirmopeninbrowser": "local_moodlemobileapp",
+  "core.confirmreadfiletoobig": "local_moodlemobileapp",
   "core.considereddigitalminor": "moodle",
   "core.content": "moodle",
   "core.contenteditingsynced": "local_moodlemobileapp",
