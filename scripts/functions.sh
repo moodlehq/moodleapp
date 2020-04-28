@@ -1,6 +1,16 @@
 #!/bin/bash
 
 LANGPACKSFOLDER='../../moodle-langpacks'
+stepnumber=$1
+
+function check_success_exit {
+    if [ $? -ne 0 ]; then
+        print_error "$1"
+        exit 1
+    elif [ "$#" -gt 1 ]; then
+        print_ok "$2"
+    fi
+}
 
 function check_success {
     if [ $? -ne 0 ]; then
