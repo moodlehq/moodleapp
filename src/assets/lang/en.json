@@ -1855,6 +1855,7 @@
     "core.online": "Online",
     "core.openfullimage": "Click here to display the full size image",
     "core.openinbrowser": "Open in browser",
+    "core.openmodinbrowser": "Open {{$a}} in browser",
     "core.othergroups": "Other groups",
     "core.pagea": "Page {{$a}}",
     "core.parentlanguage": "",

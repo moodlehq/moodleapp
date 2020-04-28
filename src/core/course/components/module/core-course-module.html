@@ -1,8 +1,8 @@
 <ion-item *ngIf="module && module.visibleoncoursepage !== 0 && !module.handlerData.loading" text-wrap id="core-course-module-{{module.id}}" class="core-course-module-handler {{module.handlerData.class}}" (click)="moduleClicked($event)" [ngClass]="{'item-media': module.handlerData.icon, 'core-not-clickable': !module.handlerData.action || module.uservisible === false, 'item-dimmed': module.visible === 0 || module.uservisible === false}" [title]="module.handlerData.a11yTitle" detail-none>
 
-    <img item-start *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="module.modnametranslated" class="core-module-icon">
+    <img item-start *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="module.modnametranslated" [attr.aria-hidden]="true" class="core-module-icon">
     <div class="core-module-title">
-        <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
+        <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + module.modnametranslated"></core-format-text>
 
         <!-- Buttons. -->
         <div item-end *ngIf="module.uservisible !== false" class="buttons core-module-buttons" [ngClass]="{'core-button-completion': module.completiondata}">
@@ -13,7 +13,7 @@
                 <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled" [loading]="spinner || module.handlerData.spinner" [canTrustDownload]="canCheckUpdates" (action)="download($event)"></core-download-refresh>
 
                 <!-- Buttons defined by the module handler. -->
-                <button ion-button icon-only clear *ngFor="let button of module.handlerData.buttons" [hidden]="button.hidden || spinner || module.handlerData.spinner" (click)="buttonClicked($event, button)" color="dark" class="core-animate-show-hide" [attr.aria-label]="button.label | translate">
+                <button ion-button icon-only clear *ngFor="let button of module.handlerData.buttons" [hidden]="button.hidden || spinner || module.handlerData.spinner" (click)="buttonClicked($event, button)" color="dark" class="core-animate-show-hide" [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
                     <core-icon [name]="button.icon" [ios]="button.iosIcon || ''" [md]="button.mdIcon || ''"></core-icon>
                 </button>
             </div>
