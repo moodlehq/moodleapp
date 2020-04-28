@@ -15,7 +15,7 @@
 import { Injectable, SimpleChange, ElementRef } from '@angular/core';
 import {
     LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
-    ModalController,
+    ModalController, AlertButton
 } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
@@ -1138,65 +1138,76 @@ export class CoreDomUtilsProvider {
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
      * @return Promise resolved with the alert modal.
      */
-    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<CoreAlert> {
+    async showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<CoreAlert> {
+        const buttons = [buttonText || this.translate.instant('core.ok')];
+
+        return this.showAlertWithButtons(title, message, buttons, autocloseTime);
+    }
+
+    /**
+     * Show an alert modal with some buttons.
+     *
+     * @param title Title to show.
+     * @param message Message to show.
+     * @param buttons Buttons objects or texts.
+     * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
+     * @return Promise resolved with the alert modal.
+     */
+    async showAlertWithButtons(title: string, message: string, buttons: (string | AlertButton)[], autocloseTime?: number):
+            Promise<CoreAlert> {
         const hasHTMLTags = this.textUtils.hasHTMLTags(message);
-        let promise;
 
         if (hasHTMLTags) {
             // Format the text.
-            promise = this.textUtils.formatText(message);
-        } else {
-            promise = Promise.resolve(message);
+            message = await this.textUtils.formatText(message);
         }
 
-        return promise.then((message) => {
-            const alertId = <string> Md5.hashAsciiStr((title || '') + '#' + (message || ''));
+        const alertId = <string> Md5.hashAsciiStr((title || '') + '#' + (message || ''));
 
-            if (this.displayedAlerts[alertId]) {
-                // There's already an alert with the same message and title. Return it.
-                return this.displayedAlerts[alertId];
-            }
+        if (this.displayedAlerts[alertId]) {
+            // There's already an alert with the same message and title. Return it.
+            return this.displayedAlerts[alertId];
+        }
 
-            const alert: CoreAlert = <any> this.alertCtrl.create({
-                title: title,
-                message: message,
-                buttons: [buttonText || this.translate.instant('core.ok')]
-            });
-
-            alert.present().then(() => {
-                if (hasHTMLTags) {
-                    // Treat all anchors so they don't override the app.
-                    const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
-                    this.treatAnchors(alertMessageEl);
-                }
-            });
-
-            // Store the alert and remove it when dismissed.
-            this.displayedAlerts[alertId] = alert;
-
-            // Define the observables to extend the Alert class. This will allow several callbacks instead of just one.
-            alert.didDismiss = new Subject();
-            alert.willDismiss = new Subject();
-
-            // Set the callbacks to trigger an observable event.
-            alert.onDidDismiss((data: any, role: string) => {
-                delete this.displayedAlerts[alertId];
-
-                alert.didDismiss.next({data: data, role: role});
-            });
-
-            alert.onWillDismiss((data: any, role: string) => {
-                alert.willDismiss.next({data: data, role: role});
-            });
-
-            if (autocloseTime > 0) {
-                setTimeout(() => {
-                    alert.dismiss();
-                }, autocloseTime);
-            }
-
-            return alert;
+        const alert: CoreAlert = <any> this.alertCtrl.create({
+            title: title,
+            message: message,
+            buttons: buttons,
         });
+
+        alert.present().then(() => {
+            if (hasHTMLTags) {
+                // Treat all anchors so they don't override the app.
+                const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                this.treatAnchors(alertMessageEl);
+            }
+        });
+
+        // Store the alert and remove it when dismissed.
+        this.displayedAlerts[alertId] = alert;
+
+        // Define the observables to extend the Alert class. This will allow several callbacks instead of just one.
+        alert.didDismiss = new Subject();
+        alert.willDismiss = new Subject();
+
+        // Set the callbacks to trigger an observable event.
+        alert.onDidDismiss((data: any, role: string) => {
+            delete this.displayedAlerts[alertId];
+
+            alert.didDismiss.next({data: data, role: role});
+        });
+
+        alert.onWillDismiss((data: any, role: string) => {
+            alert.willDismiss.next({data: data, role: role});
+        });
+
+        if (autocloseTime > 0) {
+            setTimeout(() => {
+                alert.dismiss();
+            }, autocloseTime);
+        }
+
+        return alert;
     }
 
     /**

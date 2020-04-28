@@ -73,8 +73,6 @@
     "policyagreement": "Site policy agreement",
     "policyagreementclick": "Link to site policy agreement",
     "potentialidps": "Log in using your account on:",
-    "problemconnectingerror": "We're having trouble connecting to",
-    "problemconnectingerrorcontinue": "Double check you've entered the address correctly and try again.",
     "profileinvaliddata": "Invalid value",
     "recaptchachallengeimage": "reCAPTCHA challenge image",
     "recaptchaexpired": "Verification expired. Answer the security question again.",
@@ -88,7 +86,7 @@
     "selectacountry": "Select a country",
     "selectsite": "Please select your site:",
     "signupplugindisabled": "{{$a}} is not enabled.",
-    "siteaddress": "Your site address",
+    "siteaddress": "Your site",
     "sitehasredirect": "Your site contains at least one HTTP redirect. The app cannot follow redirects, this could be the issue that's preventing the app from connecting to your site.",
     "siteinmaintenance": "Your site is in maintenance mode",
     "sitepolicynotagreederror": "Site policy not agreed.",
@@ -102,5 +100,6 @@
     "usernamerequired": "Username required",
     "usernotaddederror": "User not added - error",
     "visitchangepassword": "Do you want to visit the site to change the password?",
-    "webservicesnotenabled": "Web services are not enabled in your site. Please contact your site administrator if you think they should be enabled."
+    "yourenteredsite": "Connect to your site",
+    "webservicesnotenabled": "Your host site may not have enabled Web services. Please contact your administrator for help."
 }
