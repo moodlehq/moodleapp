@@ -1376,6 +1376,11 @@ export class CoreSite {
             return { code: 0 };
         }
 
+        if (data === null) {
+            // This probably means that the server was configured to return null for non-existing URLs. Not installed.
+            return { code: 0 };
+        }
+
         if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
             if (!retrying) {
                 this.siteUrl = this.urlUtils.addOrRemoveWWW(this.siteUrl);

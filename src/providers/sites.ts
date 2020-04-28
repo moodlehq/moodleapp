@@ -572,6 +572,11 @@ export class CoreSitesProvider {
             return Promise.reject({error: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION})});
         }).then((data: any) => {
 
+            if (data === null) {
+                // Cannot connect.
+                return Promise.reject({error: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION})});
+            }
+
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
                 return Promise.reject({ errorcode: data.errorcode, error: data.error });
             } else if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
