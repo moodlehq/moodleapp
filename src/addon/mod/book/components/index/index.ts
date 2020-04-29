@@ -14,15 +14,12 @@
 
 import { Component, Optional, Injector, Input } from '@angular/core';
 import { Content, ModalController } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
-import { CoreCourseProvider } from '@core/course/providers/course';
 import {
     CoreCourseModuleMainResourceComponent, CoreCourseResourceDownloadResult
 } from '@core/course/classes/main-resource-component';
 import {
     AddonModBookProvider, AddonModBookContentsMap, AddonModBookTocChapter, AddonModBookBook, AddonModBookNavStyle
 } from '../../providers/book';
-import { AddonModBookPrefetchHandler } from '../../providers/prefetch-handler';
 import { CoreTagProvider } from '@core/tag/providers/tag';
 
 /**
