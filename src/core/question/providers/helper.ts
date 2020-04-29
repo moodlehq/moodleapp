@@ -709,8 +709,14 @@ export class CoreQuestionHelperProvider {
             if (span) {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
-                    this.textUtils.expandText(title, span.innerHTML, component, componentId, [], true, contextLevel,
-                            contextInstanceId, courseId);
+                    this.textUtils.viewText(title, span.innerHTML, {
+                        component: component,
+                        componentId: componentId,
+                        filter: true,
+                        contextLevel: contextLevel,
+                        instanceId: contextInstanceId,
+                        courseId: courseId,
+                    });
                 });
             }
         });

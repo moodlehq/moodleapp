@@ -678,8 +678,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     showAdvancedGrade(): void {
         if (this.feedback && this.feedback.advancedgrade) {
-            this.textUtils.expandText(this.translate.instant('core.grades.grade'), this.feedback.gradefordisplay,
-                    AddonModAssignProvider.COMPONENT, this.moduleId);
+            this.textUtils.viewText(this.translate.instant('core.grades.grade'), this.feedback.gradefordisplay, {
+                component: AddonModAssignProvider.COMPONENT,
+                componentId: this.moduleId,
+            });
         }
     }
 

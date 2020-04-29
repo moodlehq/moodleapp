@@ -47,7 +47,13 @@ export class CoreNavigationBarComponent {
     }
 
     showInfo(): void {
-        this.textUtils.expandText(this.title, this.info, this.component, this.componentId, [], true, this.contextLevel,
-                this.contextInstanceId, this.courseId);
+        this.textUtils.viewText(this.title, this.info, {
+            component: this.component,
+            componentId: this.componentId,
+            filter: true,
+            contextLevel: this.contextLevel,
+            instanceId: this.contextInstanceId,
+            courseId: this.courseId,
+        });
     }
 }

@@ -1387,6 +1387,7 @@
     "core.contentlinks.errorredirectothersite": "The redirect URL cannot point to a different site.",
     "core.continue": "Continue",
     "core.copiedtoclipboard": "Text copied to clipboard",
+    "core.copytoclipboard": "Copy to clipboard",
     "core.course": "Course",
     "core.course.activitydisabled": "Your organisation has disabled this activity in the mobile app.",
     "core.course.activitynotyetviewableremoteaddon": "Your organisation installed a plugin that is not yet supported.",

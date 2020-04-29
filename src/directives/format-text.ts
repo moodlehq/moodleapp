@@ -307,8 +307,14 @@ export class CoreFormatTextDirective implements OnChanges {
             // Open a new state with the contents.
             const filter = typeof this.filter != 'undefined' ? this.utils.isTrueOrOne(this.filter) : undefined;
 
-            this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId, this.courseId);
+            this.textUtils.viewText(this.fullTitle || this.translate.instant('core.description'), this.text, {
+                component: this.component,
+                componentId: this.componentId,
+                filter: filter,
+                contextLevel: this.contextLevel,
+                instanceId: this.contextInstanceId,
+                courseId: this.courseId,
+            });
         }
     }
 

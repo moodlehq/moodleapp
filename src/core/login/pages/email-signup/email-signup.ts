@@ -317,7 +317,7 @@ export class CoreLoginEmailSignupPage {
      * Show authentication instructions.
      */
     protected showAuthInstructions(): void {
-        this.textUtils.expandText(this.translate.instant('core.login.instructions'), this.authInstructions);
+        this.textUtils.viewText(this.translate.instant('core.login.instructions'), this.authInstructions);
     }
 
     /**
