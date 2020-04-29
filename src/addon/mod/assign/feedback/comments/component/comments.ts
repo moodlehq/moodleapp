@@ -65,8 +65,14 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
                     if (this.text) {
                         // Open a new state with the text.
-                        this.textUtils.expandText(this.plugin.name, this.text, this.component, this.assign.cmid, undefined, true,
-                                'module', this.assign.cmid, this.assign.course);
+                        this.textUtils.viewText(this.plugin.name, this.text, {
+                            component: this.component,
+                            componentId: this.assign.cmid,
+                            filter: true,
+                            contextLevel: 'module',
+                            instanceId: this.assign.cmid,
+                            courseId: this.assign.course,
+                        });
                     }
                 });
             } else if (this.edit) {

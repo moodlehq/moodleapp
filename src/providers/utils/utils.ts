@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, ModalController } from 'ionic-angular';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { FileOpener } from '@ionic-native/file-opener';
 import { WebIntent } from '@ionic-native/web-intent';
+import { QRScanner } from '@ionic-native/qr-scanner';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
 import { CoreMimetypeUtilsProvider } from './mimetype';
@@ -28,6 +29,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
 import { CoreFile } from '../file';
+import { Subscription } from 'rxjs';
 import { makeSingleton } from '@singletons/core.singletons';
 
 /**
@@ -63,12 +65,25 @@ export class CoreUtilsProvider {
     protected logger;
     protected iabInstance: InAppBrowserObject;
     protected uniqueIds: {[name: string]: number} = {};
+    protected qrScanData: {deferred: PromiseDefer, observable: Subscription};
 
-    constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
-            private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
-            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
-            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent,
-            private wsProvider: CoreWSProvider, private zone: NgZone, private textUtils: CoreTextUtilsProvider) {
+    constructor(protected iab: InAppBrowser,
+            protected appProvider: CoreAppProvider,
+            protected clipboard: Clipboard,
+            protected domUtils: CoreDomUtilsProvider,
+            logger: CoreLoggerProvider,
+            protected translate: TranslateService,
+            protected platform: Platform,
+            protected langProvider: CoreLangProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected fileOpener: FileOpener,
+            protected mimetypeUtils: CoreMimetypeUtilsProvider,
+            protected webIntent: WebIntent,
+            protected wsProvider: CoreWSProvider,
+            protected zone: NgZone,
+            protected textUtils: CoreTextUtilsProvider,
+            protected modalCtrl: ModalController,
+            protected qrScanner: QRScanner) {
         this.logger = logger.getInstance('CoreUtilsProvider');
     }
 
@@ -1419,6 +1434,117 @@ export class CoreUtilsProvider {
         };
 
         return debounced;
+    }
+
+    /**
+     * Check whether the app can scan QR codes.
+     *
+     * @return Whether the app can scan QR codes.
+     */
+    canScanQR(): boolean {
+        return this.appProvider.isMobile();
+    }
+
+    /**
+     * Open a modal to scan a QR code.
+     *
+     * @param title Title of the modal. Defaults to "QR reader".
+     * @return Promise resolved with the captured text or undefined if cancelled or error.
+     */
+    scanQR(title?: string): Promise<string> {
+        return new Promise((resolve, reject): void => {
+            const modal = this.modalCtrl.create('CoreViewerQRScannerPage', {
+                title: title
+            }, { cssClass: 'core-modal-fullscreen'});
+
+            modal.present();
+
+            modal.onDidDismiss((data) => {
+                resolve(data);
+            });
+        });
+    }
+
+    /**
+     * Start scanning for a QR code.
+     *
+     * @return Promise resolved with the QR string, rejected if error or cancelled.
+     */
+    startScanQR(): Promise<string> {
+        if (!this.appProvider.isMobile()) {
+            return Promise.reject('QRScanner isn\'t available in desktop apps.');
+        }
+
+        // Ask the user for permission to use the camera.
+        // The scan method also does this, but since it returns an Observable we wouldn't be able to detect if the user denied.
+        return this.qrScanner.prepare().then((status) => {
+
+            if (!status.authorized) {
+                // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
+                return Promise.reject('The user denied camera access.');
+            }
+
+            if (this.qrScanData && this.qrScanData.deferred) {
+                // Already scanning.
+                return this.qrScanData.deferred.promise;
+            }
+
+            // Start scanning.
+            this.qrScanData = {
+                deferred: this.promiseDefer(),
+                observable: this.qrScanner.scan().subscribe((text) => {
+
+                    // Text received, stop scanning and return the text.
+                    this.stopScanQR(text, false);
+                })
+            };
+
+            // Show the camera.
+            return this.qrScanner.show().then(() => {
+                document.body.classList.add('core-scanning-qr');
+
+                return this.qrScanData.deferred.promise;
+            }, (err) => {
+                this.stopScanQR(err, true);
+
+                return Promise.reject(err);
+            });
+
+        }).catch((err) => {
+            err.message = err.message || err._message;
+
+            return Promise.reject(err);
+        });
+    }
+
+    /**
+     * Stop scanning for QR code. If no param is provided, the app will consider the user cancelled.
+     *
+     * @param data If success, the text of the QR code. If error, the error object or message. Undefined for cancelled.
+     * @param error True if the data belongs to an error, false otherwise.
+     */
+    stopScanQR(data?: any, error?: boolean): void {
+
+        if (!this.qrScanData) {
+            // Not scanning.
+            return;
+        }
+
+        // Hide camera preview.
+        document.body.classList.remove('core-scanning-qr');
+        this.qrScanner.hide();
+
+        this.qrScanData.observable.unsubscribe(); // Stop scanning.
+
+        if (error) {
+            this.qrScanData.deferred.reject(data);
+        } else if (typeof data != 'undefined') {
+            this.qrScanData.deferred.resolve(data);
+        } else {
+            this.qrScanData.deferred.reject({coreCanceled: true});
+        }
+
+        delete this.qrScanData;
     }
 }
 

@@ -265,8 +265,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Expand the description.
      */
     expandDescription(): void {
-        this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component, this.module.id,
-                [], true, 'module', this.module.id, this.courseId);
+        this.textUtils.viewText(this.translate.instant('core.description'), this.description, {
+            component: this.component,
+            componentId: this.module.id,
+            filter: true,
+            contextLevel: 'module',
+            instanceId: this.module.id,
+            courseId: this.courseId,
+        });
     }
 
     /**
