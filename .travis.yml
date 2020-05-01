@@ -3,6 +3,7 @@ dist: bionic
 group: edge
 language: node_js
 node_js: 11
+php: 7.1
 
 android:
     components:
@@ -38,7 +39,7 @@ before_script:
 jobs:
   include:
   - stage: check
-    if: NOT branch =~ /(master$|integration$|desktop)/
+    if: NOT branch =~ /(master|integration|desktop)$/
     os: linux
     script: npm run build --bailOnLintError true --typeCheckOnLint true
   - stage: mirror
@@ -46,12 +47,12 @@ jobs:
     os: linux
     script: scripts/mirror.sh
   - stage: prepare
-    if: branch =~ /(master$|integration)/ AND env(PREPARE) IS present AND env(PREPARE) = 1
+    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1
     os: linux
     script: scripts/aot.sh
   - stage: build
     name: "Build Android"
-    if: env(DEPLOY) IS present AND (env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS present)
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
     os: linux
     dist: trusty
     group: edge
@@ -66,13 +67,13 @@ jobs:
     script: scripts/aot.sh
   - stage: build
     name: "Build iOS"
-    if: env(DEPLOY) IS present AND (env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS present)
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
     os: osx
     osx_image: xcode11.3
     script: scripts/aot.sh
   - stage: build
     name: "Build Linux"
-    if: env(DEPLOY) IS present AND (env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS present)
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
     os: linux
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
@@ -80,7 +81,7 @@ jobs:
     script: scripts/aot.sh
   - stage: build
     name: "Build MacOS"
-    if: env(DEPLOY) IS present AND (env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS present)
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
     os: osx
     osx_image: xcode11.3
     env:
@@ -89,7 +90,7 @@ jobs:
     script: scripts/aot.sh
   - stage: build
     name: "Build Windows"
-    if: env(DEPLOY) IS present AND (env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS present)
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
     os: windows
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
