@@ -28,6 +28,7 @@ import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
 
 /**
  * Service that provides some features regarding a course.
@@ -860,6 +861,9 @@ export class CoreCourseProvider {
             return site.write('core_course_view_course', params).then((response) => {
                 if (!response.status) {
                     return Promise.reject(null);
+                } else {
+                    this.eventsProvider.trigger(
+                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: courseId}, site.getId());
                 }
             });
         });
