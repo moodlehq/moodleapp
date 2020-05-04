@@ -669,7 +669,7 @@ export class CoreDomUtilsProvider {
             }
 
             // We received an object instead of a string. Search for common properties.
-            if (error.coreCanceled) {
+            if (this.isCanceledError(error)) {
                 // It's a canceled error, don't display an error.
                 return null;
             }
@@ -714,6 +714,16 @@ export class CoreDomUtilsProvider {
         const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
 
         return this.instances[id];
+    }
+
+    /**
+     * Check whether an error is an error caused because the user canceled a showConfirm.
+     *
+     * @param error Error to check.
+     * @return Whether it's a canceled error.
+     */
+    isCanceledError(error: any): boolean {
+        return error && error.coreCanceled;
     }
 
     /**
@@ -1314,7 +1324,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
-        if (error && error.coreCanceled) {
+        if (this.isCanceledError(error)) {
             // It's a canceled error, don't display an error.
             return;
         }

@@ -43,7 +43,7 @@ export class CoreViewerQRScannerPage {
 
             this.closeModal(text);
         }).catch((error) => {
-            if (!error.coreCanceled) {
+            if (!this.domUtils.isCanceledError(error)) {
                 // Show error and stop scanning.
                 this.domUtils.showErrorModalDefault(error, 'An error occurred.');
                 this.utils.stopScanQR();

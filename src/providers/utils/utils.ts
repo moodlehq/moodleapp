@@ -1543,7 +1543,7 @@ export class CoreUtilsProvider {
         } else if (typeof data != 'undefined') {
             this.qrScanData.deferred.resolve(data);
         } else {
-            this.qrScanData.deferred.reject({coreCanceled: true});
+            this.qrScanData.deferred.reject(this.domUtils.createCanceledError());
         }
 
         delete this.qrScanData;
