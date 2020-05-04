@@ -62,24 +62,6 @@ if [ "$TRAVIS_BRANCH" == 'master' ]; then
     git push origin HEAD:$TRAVIS_BRANCH
 fi
 
-VERSION=`jq -r '.versionname' src/config.json`
-if [ "$TRAVIS_BRANCH" == 'integration' ] && [ "$VERSION" != *-dev ] ; then
-    VERSION=$VERSION-dev
-
-    jq -r --indent 4 --arg version "$VERSION" -s '.[0] + {versionname: $version}' src/config.json  > src/config_new.json
-    mv src/config_new.json src/config.json
-
-    sed -ie "s/version[ ]*=[ ]*\"[0-9\.]*\">/version=\"$VERSION\">/1" config.xml
-
-    git remote set-url origin https://$GIT_TOKEN@github.com/$TRAVIS_REPO_SLUG.git
-    git fetch -q origin
-
-    git add src/config.json
-    git commit -m 'Change config version [ci skip]'
-
-    git push origin HEAD:$TRAVIS_BRANCH
-fi
-
 if [ "$TRAVIS_BRANCH" == 'integration' ] || [ "$TRAVIS_BRANCH" == 'master' ] || [ "$TRAVIS_BRANCH" == 'desktop' ] ; then
     print_title "Mirror repository"
     git remote add mirror https://$GIT_TOKEN@github.com/$GIT_ORG_PRIVATE/moodleapp.git
