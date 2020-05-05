@@ -15,6 +15,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy, Optional }
     from '@angular/core';
 import { TextInput, Content, Platform, Slides } from 'ionic-angular';
+import { CoreApp } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -652,8 +653,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
      */
     mouseDownAction(event: Event): void {
         const selection = window.getSelection().toString();
-        // When RTE is focused with a range selection the stopBubble will not fire click.
-        if (!this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
+        // When RTE is focused with a whole paragraph in desktop the stopBubble will not fire click.
+        if (CoreApp.instance.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
             this.stopBubble(event);
         }
     }
