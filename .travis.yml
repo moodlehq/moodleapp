@@ -39,7 +39,7 @@ before_script:
 jobs:
   include:
   - stage: check
-    if: NOT branch =~ /(master|integration|desktop)$/
+    if: NOT branch =~ /(master|integration|desktop)$/ AND env(DEPLOY) IS blank
     os: linux
     script: npm run build --bailOnLintError true --typeCheckOnLint true
   - stage: mirror
@@ -57,6 +57,8 @@ jobs:
     dist: trusty
     group: edge
     language: android
+    env:
+    - BUILD_PLATFORM='android'
     before_install:
     - nvm install 11
     - node --version
@@ -70,6 +72,8 @@ jobs:
     if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
     os: osx
     osx_image: xcode11.3
+    env:
+    - BUILD_PLATFORM='ios'
     script: scripts/aot.sh
   - stage: build
     name: "Build Linux"
@@ -78,6 +82,7 @@ jobs:
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - BUILD_PLATFORM='linux'
     script: scripts/aot.sh
   - stage: build
     name: "Build MacOS"
@@ -87,6 +92,7 @@ jobs:
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - BUILD_PLATFORM='osx'
     script: scripts/aot.sh
   - stage: build
     name: "Build Windows"
@@ -97,4 +103,5 @@ jobs:
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
     - ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true
     - DEBUG=electron-windows-store
+    - BUILD_PLATFORM='windows'
     script: scripts/aot.sh
