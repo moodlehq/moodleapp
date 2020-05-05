@@ -187,7 +187,7 @@
       "nl.kingsquare.cordova.background-audio": {},
       "phonegap-plugin-push": {
         "ANDROID_SUPPORT_V13_VERSION": "27.+",
-        "FCM_VERSION": "17.0.+"
+        "FCM_VERSION": "17.5.+"
       },
       "cordova-plugin-geolocation": {
         "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
