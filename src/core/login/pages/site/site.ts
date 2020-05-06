@@ -22,6 +22,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreConfig } from '@providers/config';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
@@ -93,6 +94,13 @@ export class CoreLoginSitePage {
             }
             this.filteredSites = this.fixedSites;
             url = this.fixedSites[0].url;
+        } else if (CoreConfigConstants.enableonboarding && !this.appProvider.isIOS() && !this.appProvider.isMac()) {
+            CoreConfig.instance.get(CoreLoginHelperProvider.ONBOARDING_DONE, false).then((onboardingDone) => {
+                if (!onboardingDone) {
+                    // Check onboarding.
+                    this.showOnboarding();
+                }
+            });
         }
 
         this.siteForm = fb.group({
@@ -238,6 +246,14 @@ export class CoreLoginSitePage {
      */
     showHelp(): void {
         const modal = this.modalCtrl.create('CoreLoginSiteHelpPage', {}, { cssClass: 'core-modal-fullscreen' });
+        modal.present();
+    }
+
+    /**
+     * Show an onboarding modal.
+     */
+    showOnboarding(): void {
+        const modal = this.modalCtrl.create('CoreLoginSiteOnboardingPage', {}, { cssClass: 'core-modal-fullscreen' });
         modal.present();
     }
 
