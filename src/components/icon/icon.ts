@@ -40,6 +40,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
     @Input('fixed-width') fixedWidth: string;
 
     @Input('label') ariaLabel?: string;
+    @Input() flipRtl?: boolean; // Whether to flip the icon in RTL. Defaults to false.
 
     protected element: HTMLElement;
     protected newElement: HTMLElement;
@@ -104,6 +105,10 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
 
         if (this.slash) {
             this.newElement.classList.add('icon-slash');
+        }
+
+        if (this.flipRtl) {
+            this.newElement.classList.add('core-icon-dir-flip');
         }
 
         oldElement.parentElement.replaceChild(this.newElement, oldElement);
