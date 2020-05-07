@@ -682,7 +682,7 @@ export class CoreSitePluginsHelperProvider {
             prefixedTitle = this.getPrefixedString(plugin.addon, titleString);
 
         this.blockDelegate.registerHandler(
-            new CoreSitePluginsBlockHandler(uniqueName, prefixedTitle, blockName, handlerSchema, initResult));
+            new CoreSitePluginsBlockHandler(uniqueName, prefixedTitle, blockName, handlerSchema, initResult, this.blockDelegate));
 
         return uniqueName;
     }
