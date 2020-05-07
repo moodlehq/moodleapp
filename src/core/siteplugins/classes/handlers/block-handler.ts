@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Injector } from '@angular/core';
+import { CoreLogger } from '@providers/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
-import { CoreBlockHandler, CoreBlockHandlerData } from '@core/block/providers/delegate';
+import { CoreBlockDelegate, CoreBlockHandler, CoreBlockHandlerData } from '@core/block/providers/delegate';
 import { CoreBlockPreRenderedComponent } from '@core/block/components/pre-rendered-block/pre-rendered-block';
 import { CoreSitePluginsBlockComponent } from '@core/siteplugins/components/block/block';
 import { CoreSitePluginsOnlyTitleBlockComponent } from '@core/siteplugins/components/only-title-block/only-title-block';
@@ -24,9 +25,13 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from '@core/siteplugins/compon
  */
 export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler implements CoreBlockHandler {
 
+    protected logger;
+
     constructor(name: string, public title: string, public blockName: string, protected handlerSchema: any,
-            protected initResult: any) {
+            protected initResult: any, protected blockDelegate: CoreBlockDelegate) {
         super(name);
+
+        this.logger = CoreLogger.instance.getInstance('CoreSitePluginsBlockHandler');
     }
 
     /**
@@ -39,10 +44,9 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
      * @param instanceId Instance id (not used)
      * @return Data or promise resolved with the data
      */
-    getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number):
-            CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
-        let className,
-            component;
+    async getDisplayData(injector: Injector, block: any, contextLevel: string, instanceId: number): Promise<CoreBlockHandlerData> {
+        let className;
+        let component;
 
         if (this.handlerSchema.displaydata && this.handlerSchema.displaydata.class) {
             className = this.handlerSchema.displaydata.class;
@@ -54,6 +58,22 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
             component = CoreSitePluginsOnlyTitleBlockComponent;
         } else if (this.handlerSchema.displaydata && this.handlerSchema.displaydata.type == 'prerendered') {
             component = CoreBlockPreRenderedComponent;
+        } else if (this.handlerSchema.fallback && !this.handlerSchema.method) {
+            // Try to use the fallback block.
+            const originalName = block.name;
+            block.name = this.handlerSchema.fallback;
+
+            try {
+                const displayData = await this.blockDelegate.getBlockDisplayData(injector, block, contextLevel, instanceId);
+
+                this.logger.debug(`Using fallback "${this.handlerSchema.fallback}" for block "${originalName}"`);
+                component = displayData.component;
+            } catch (error) {
+                this.logger.error(`Error using fallback "${this.handlerSchema.fallback}" for block "${originalName}", ` +
+                        'maybe it doesn\'t exist or isn\'t enabled.', error);
+
+                throw error;
+            }
         } else {
             component = CoreSitePluginsBlockComponent;
         }
