@@ -128,7 +128,26 @@
         <config-file target="*-Info.plist" parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED">
             <string>YES</string>
         </config-file>
-        <config-file target="*-Info.plist" parent="CFBundleDocumentTypes">
+        <config-file parent="UISupportedInterfaceOrientations" target="*-Info.plist">
+            <array>
+                <string>UIInterfaceOrientationPortrait</string>
+                <string>UIInterfaceOrientationPortraitUpsideDown</string>
+                <string>UIInterfaceOrientationLandscapeLeft</string>
+                <string>UIInterfaceOrientationLandscapeRight</string>
+            </array>
+        </config-file>
+        <config-file parent="UISupportedInterfaceOrientations~ipad" target="*-Info.plist">
+            <array>
+                <string>UIInterfaceOrientationPortrait</string>
+                <string>UIInterfaceOrientationPortraitUpsideDown</string>
+                <string>UIInterfaceOrientationLandscapeLeft</string>
+                <string>UIInterfaceOrientationLandscapeRight</string>
+            </array>
+        </config-file>
+        <config-file parent="UIRequiresFullScreen" target="*-Info.plist">
+            <false />
+        </config-file>
+        <config-file parent="CFBundleDocumentTypes" target="*-Info.plist">
             <array>
                 <dict>
                     <key>CFBundleTypeName</key>
