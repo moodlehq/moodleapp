@@ -280,6 +280,8 @@ export class AddonModFeedbackFormPage implements OnDestroy {
                     promises.push(this.feedbackProvider.invalidateFeedbackAccessInformationData(this.feedback.id));
                     promises.push(this.feedbackProvider.invalidateResumePageData(this.feedback.id));
 
+                    this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'feedback' });
+
                     return Promise.all(promises).then(() => {
                         return this.fetchAccessData();
                     });

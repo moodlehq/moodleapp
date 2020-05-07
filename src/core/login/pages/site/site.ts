@@ -277,7 +277,11 @@ export class CoreLoginSitePage {
             }
         ];
 
-        this.domUtils.showAlertWithButtons(this.translate.instant('core.cannotconnect'), message, buttons);
+        this.domUtils.showAlertWithOptions({
+            title: this.translate.instant('core.cannotconnect'),
+            message,
+            buttons,
+        });
     }
 
     /**
@@ -369,10 +373,11 @@ export class CoreLoginSitePage {
      */
     showInstructionsAndScanQR(): void {
         // Show some instructions first.
-        this.domUtils.showAlertWithButtons(
-            this.translate.instant('core.login.faqwhereisqrcode'),
-            this.translate.instant('core.login.faqwhereisqrcodeanswer', {$image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML}),
-            [
+        this.domUtils.showAlertWithOptions({
+            title: this.translate.instant('core.login.faqwhereisqrcode'),
+            message: this.translate.instant('core.login.faqwhereisqrcodeanswer',
+                {$image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML}),
+            buttons: [
                 {
                     text: this.translate.instant('core.cancel'),
                     role: 'cancel'
@@ -383,8 +388,8 @@ export class CoreLoginSitePage {
                         this.scanQR();
                     }
                 },
-            ]
-        );
+            ],
+        });
     }
 
     /**

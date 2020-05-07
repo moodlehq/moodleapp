@@ -67,6 +67,7 @@ export class CoreEventsProvider {
     static WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
     static SITE_STORAGE_DELETED = 'site_storage_deleted';
     static FORM_ACTION = 'form_action';
+    static ACTIVITY_DATA_SENT = 'activity_data_sent';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};

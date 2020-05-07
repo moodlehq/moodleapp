@@ -15,7 +15,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider, CoreAppSchema } from './app';
+import { CoreAppProvider, CoreAppSchema, CoreStoreConfig } from './app';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
@@ -1001,19 +1001,15 @@ export class CoreSitesProvider {
                 appVersion = this.convertVersionName(CoreConfigConstants.versionname);
 
             if (requiredVersion > appVersion) {
-                let downloadUrl = '';
+                const storesConfig: CoreStoreConfig = {
+                    android: config.tool_mobile_androidappid || false,
+                    ios: config.tool_mobile_iosappid || false,
+                    desktop: config.tool_mobile_setuplink || 'https://download.moodle.org/desktop/',
+                    mobile: config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/',
+                    default: config.tool_mobile_setuplink,
+                };
 
-                if (this.appProvider.isAndroid() && config.tool_mobile_androidappid) {
-                    downloadUrl = 'market://details?id=' + config.tool_mobile_androidappid;
-                } else if (this.appProvider.isIOS() && config.tool_mobile_iosappid) {
-                    downloadUrl = 'itms-apps://itunes.apple.com/app/id' + config.tool_mobile_iosappid;
-                } else if (config.tool_mobile_setuplink) {
-                    downloadUrl = config.tool_mobile_setuplink;
-                } else if (this.appProvider.isMobile()) {
-                    downloadUrl = 'https://download.moodle.org/mobile/';
-                } else {
-                    downloadUrl = 'https://download.moodle.org/desktop/';
-                }
+                const downloadUrl = this.appProvider.getAppStoreUrl(storesConfig);
 
                 siteId = siteId || this.getCurrentSiteId();
 

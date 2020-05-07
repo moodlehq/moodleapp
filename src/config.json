@@ -94,5 +94,12 @@
     "statusbarlighttextremotetheme": true,
     "enableanalytics": false,
     "forceColorScheme": "",
-    "webviewscheme": "moodleappfs"
+    "webviewscheme": "moodleappfs",
+    "appstores": {
+        "android": "com.moodle.moodlemobile",
+        "ios": "id633359593",
+        "windows": "moodle-desktop/9p9bwvhdc8c8",
+        "mac": "id1255924440",
+        "linux": "https://download.moodle.org/desktop/download.php?platform=linux&arch=64"
+    }
 }
