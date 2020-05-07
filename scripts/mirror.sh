@@ -60,12 +60,18 @@ if [ "$TRAVIS_BRANCH" == 'master' ]; then
     git commit -m 'Update licenses [ci skip]'
 
     git push origin HEAD:$TRAVIS_BRANCH
+    check_success_exit "Unsuccessful push, stopping..."
 fi
 
 if [ "$TRAVIS_BRANCH" == 'integration' ] || [ "$TRAVIS_BRANCH" == 'master' ] || [ "$TRAVIS_BRANCH" == 'desktop' ] ; then
     print_title "Mirror repository"
     git remote add mirror https://$GIT_TOKEN@github.com/$GIT_ORG_PRIVATE/moodleapp.git
     git fetch -q --unshallow mirror
+    check_success_exit "Unsuccessful fetch, stopping..."
+    git fetch -q --unshallow origin
+    check_success_exit "Unsuccessful fetch, stopping..."
     git push -f mirror HEAD:$TRAVIS_BRANCH
+    check_success_exit "Unsuccessful mirror, stopping..."
     git push -f mirror --tags
+    check_success_exit "Unsuccessful mirror tags, stopping..."
 fi
