@@ -1,0 +1,49 @@
+page-core-login-site-onboarding {
+    .content {
+        background-color: $white;
+    }
+
+    .core-login-site-logo {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        img {
+            width: 90%;
+            max-width: 300px;
+        }
+    }
+
+    h3 {
+        font-size: 1.3em;
+    }
+
+
+
+    .core-login-onboarding-step {
+        padding: 10px 20px;
+        text-align: center;
+        @include media-breakpoint-up(md) {
+            max-width: 80%;
+        }
+        margin: 0 auto;
+
+        p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            list-style-type: none;
+            @include text-align('start');
+            @include padding-horizontal(10px, null);
+            li {
+                margin-bottom: 10px;
+            }
+        }
+
+        .button-block {
+            margin-top: 20px;
+        }
+    }
+}
