@@ -67,9 +67,9 @@ if [ "$TRAVIS_BRANCH" == 'integration' ] || [ "$TRAVIS_BRANCH" == 'master' ] || 
     print_title "Mirror repository"
     git remote add mirror https://$GIT_TOKEN@github.com/$GIT_ORG_PRIVATE/moodleapp.git
     git fetch -q --unshallow mirror
-    check_success_exit "Unsuccessful fetch, stopping..."
-    git fetch -q --unshallow origin
-    check_success_exit "Unsuccessful fetch, stopping..."
+    check_success_exit "Unsuccessful fetch of mirror, stopping..."
+    git fetch -q origin --depth=100
+    check_success_exit "Unsuccessful fetch of origin, stopping..."
     git push -f mirror HEAD:$TRAVIS_BRANCH
     check_success_exit "Unsuccessful mirror, stopping..."
     git push -f mirror --tags
