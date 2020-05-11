@@ -921,6 +921,7 @@ export class CoreUtilsProvider {
         }
 
         options = options || {};
+        options.usewkwebview = 'yes'; // Force WKWebView in iOS.
 
         if (!options.enableViewPortScale) {
             options.enableViewPortScale = 'yes'; // Enable zoom on iOS.

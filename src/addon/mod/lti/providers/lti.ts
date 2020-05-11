@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
@@ -41,7 +41,8 @@ export class AddonModLtiProvider {
             private utils: CoreUtilsProvider,
             private translate: TranslateService,
             private appProvider: CoreAppProvider,
-            private logHelper: CoreCourseLogHelperProvider) {}
+            private logHelper: CoreCourseLogHelperProvider,
+            protected zone: NgZone) {}
 
     /**
      * Delete launcher.
@@ -59,38 +60,61 @@ export class AddonModLtiProvider {
      * @param params Launch params.
      * @return Promise resolved with the file URL.
      */
-    generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
+    async generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
         if (!this.fileProvider.isAvailable()) {
-            return Promise.resolve(url);
+            return url;
         }
 
-        // Generate a form with the params.
-        let text = '<form action="' + url + '" name="ltiLaunchForm" ' +
-                    'method="post" encType="application/x-www-form-urlencoded">\n';
-        params.forEach((p) => {
-            if (p.name == 'ext_submit') {
-                text += '    <input type="submit"';
-            } else {
-                text += '    <input type="hidden" name="' + this.textUtils.escapeHTML(p.name) + '"';
-            }
-            text += ' value="' + this.textUtils.escapeHTML(p.value) + '"/>\n';
-        });
-        text += '</form>\n';
-
-        // Add an in-line script to automatically submit the form.
-        text += '<script type="text/javascript"> \n' +
+        // Generate an empty page with the JS code.
+        const text = '<script type="text/javascript"> \n' +
             '    window.onload = function() { \n' +
-            '        document.ltiLaunchForm.submit(); \n' +
+            this.getLaunchJSCode(url, params) +
             '    }; \n' +
             '</script> \n';
 
-        return this.fileProvider.writeFile(this.LAUNCHER_FILE_NAME, text).then((entry) => {
-            if (this.appProvider.isDesktop()) {
-                return entry.toInternalURL();
+        const entry = await this.fileProvider.writeFile(this.LAUNCHER_FILE_NAME, text);
+
+        if (this.appProvider.isDesktop()) {
+            return entry.toInternalURL();
+        } else {
+            return entry.toURL();
+        }
+    }
+
+    /**
+     * Get the Javascript code to launch the LTI tool.
+     *
+     * @param url Launch URL.
+     * @param params Launch params.
+     * @return Javascript code.
+     */
+    getLaunchJSCode(url: string, params: AddonModLtiParam[]): string {
+        // Create the form.
+        let jsCode = 'var form = document.createElement("form");\n' +
+                'form.method = "post";\n' +
+                'form.setAttribute("encType", "application/x-www-form-urlencoded");\n' +
+                `form.setAttribute("action", "${url}");\n`;
+
+        // Create the inputs based on the params.
+        params.forEach((p) => {
+            jsCode += 'var input = document.createElement("input");\n';
+
+            if (p.name == 'ext_submit') {
+                jsCode += 'input.type = "submit";\n';
             } else {
-                return entry.toURL();
+                jsCode += 'input.type = "hidden";\n' +
+                        'input.name = "' + this.textUtils.escapeHTML(p.name) + '";\n';
             }
+
+            jsCode += 'input.value = "' + this.textUtils.escapeHTML(p.value) + '";\n' +
+                    'form.appendChild(input);\n';
         });
+
+        // Add the form to the document and submit it.
+        jsCode += 'document.body.appendChild(form);\n' +
+            'form.submit();\n';
+
+        return jsCode;
     }
 
     /**
@@ -200,20 +224,47 @@ export class AddonModLtiProvider {
      * @param params Launch params.
      * @return Promise resolved when the WS call is successful.
      */
-    launch(url: string, params: AddonModLtiParam[]): Promise<any> {
+    async launch(url: string, params: AddonModLtiParam[]): Promise<void> {
         if (!this.urlUtils.isHttpURL(url)) {
-            return Promise.reject(this.translate.instant('addon.mod_lti.errorinvalidlaunchurl'));
+            throw this.translate.instant('addon.mod_lti.errorinvalidlaunchurl');
         }
 
-        // Generate launcher and open it.
-        return this.generateLauncher(url, params).then((url) => {
-            if (this.appProvider.isMobile()) {
-                this.utils.openInApp(url);
-            } else {
-                // In desktop open in browser, we found some cases where inapp caused JS issues.
-                this.utils.openInBrowser(url);
-            }
-        });
+        if (this.appProvider.isMobile()) {
+            // Open it in InAppBrowser. Use JS code because IAB has a bug in iOS when opening local files.
+            const jsCode = this.getLaunchJSCode(url, params);
+
+            const iabInstance = this.utils.openInApp('about:blank');
+
+            // Execute the JS code when the page is loaded.
+            let codeExecuted = false;
+            const executeCode = (): void => {
+                if (codeExecuted) {
+                    return;
+                }
+
+                codeExecuted = true;
+                loadStopSubscription && loadStopSubscription.unsubscribe();
+
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                this.zone.run(() => {
+                    iabInstance.executeScript({code: jsCode});
+                });
+            };
+
+            const loadStopSubscription = iabInstance.on('loadstop').subscribe((event) => {
+                executeCode();
+            });
+
+            // If loadstop hasn't triggered after 1 second, execute the code anyway.
+            setTimeout(() => {
+                executeCode();
+            }, 1000);
+        } else {
+            // Generate launched and open it in system browser, we found some cases where inapp caused JS issues.
+            const launcherUrl = await this.generateLauncher(url, params);
+
+            this.utils.openInBrowser(launcherUrl);
+        }
     }
 
     /**
