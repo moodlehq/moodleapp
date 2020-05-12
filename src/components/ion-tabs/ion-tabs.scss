@@ -44,7 +44,7 @@ ion-app.app-root core-ion-tabs {
             }
         }
 
-        .tabbar[hidden] + .tabcontent {
+        .tabbar[hidden] + .tabcontent, &.tabbar-hidden .tabcontent {
             width: 100%;
             core-ion-tab {
                 @include position(0, 0, 0, 0);
