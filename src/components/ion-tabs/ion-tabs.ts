@@ -388,4 +388,11 @@ export class CoreIonTabsComponent extends Tabs implements OnDestroy {
             }
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    setTabbarHidden(tabbarHidden: boolean): void {
+        // Don't hide the tab bar, we'll do it via CSS if needed.
+    }
 }

@@ -143,6 +143,8 @@ export class CoreAppProvider {
     protected logger;
     protected ssoAuthenticationPromise: Promise<any>;
     protected isKeyboardShown = false;
+    protected _isKeyboardOpening = false;
+    protected _isKeyboardClosing = false;
     protected backActions = [];
     protected mainMenuId = 0;
     protected mainMenuOpen: number;
@@ -179,7 +181,7 @@ export class CoreAppProvider {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 document.body.classList.add('keyboard-is-open');
-                this.isKeyboardShown = true;
+                this.setKeyboardShown(true);
                 // Error on iOS calculating size.
                 // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, data.keyboardHeight);
@@ -189,8 +191,22 @@ export class CoreAppProvider {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 document.body.classList.remove('keyboard-is-open');
-                this.isKeyboardShown = false;
+                this.setKeyboardShown(false);
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, 0);
+            });
+        });
+        this.keyboard.onKeyboardWillShow().subscribe((data) => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this._isKeyboardOpening = true;
+                this._isKeyboardClosing = false;
+            });
+        });
+        this.keyboard.onKeyboardWillHide().subscribe((data) => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this._isKeyboardOpening = false;
+                this._isKeyboardClosing = true;
             });
         });
 
@@ -388,6 +404,24 @@ export class CoreAppProvider {
     }
 
     /**
+     * Check if the keyboard is closing.
+     *
+     * @return Whether keyboard is closing (animating).
+     */
+    isKeyboardClosing(): boolean {
+        return this._isKeyboardClosing;
+    }
+
+    /**
+     * Check if the keyboard is being opened.
+     *
+     * @return Whether keyboard is opening (animating).
+     */
+    isKeyboardOpening(): boolean {
+        return this._isKeyboardOpening;
+    }
+
+    /**
      * Check if the keyboard is visible.
      *
      * @return Whether keyboard is visible.
@@ -527,6 +561,17 @@ export class CoreAppProvider {
         if (this.isMobile() && !this.platform.is('ios')) {
             this.keyboard.show();
         }
+    }
+
+    /**
+     * Set keyboard shown or hidden.
+     *
+     * @param Whether the keyboard is shown or hidden.
+     */
+    protected setKeyboardShown(shown: boolean): void {
+        this.isKeyboardShown = shown;
+        this._isKeyboardOpening = false;
+        this._isKeyboardClosing = false;
     }
 
     /**
