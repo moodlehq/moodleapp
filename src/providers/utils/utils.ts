@@ -1534,6 +1534,7 @@ export class CoreUtilsProvider {
         // Hide camera preview.
         document.body.classList.remove('core-scanning-qr');
         this.qrScanner.hide();
+        this.qrScanner.destroy();
 
         this.qrScanData.observable.unsubscribe(); // Stop scanning.
 

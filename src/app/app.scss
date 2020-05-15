@@ -1287,5 +1287,9 @@ ion-app.app-root {
     ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), core-ion-tabs {
       display: none;
     }
+
+    &.ios .ion-page.show-page~.nav-decor {
+      display: none;
+    }
   }
 }
