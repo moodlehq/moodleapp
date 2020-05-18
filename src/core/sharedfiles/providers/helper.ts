@@ -109,7 +109,7 @@ export class CoreSharedFilesHelperProvider {
             modal.onDidDismiss((file: any) => {
                 if (!file) {
                     // User cancelled.
-                    reject();
+                    reject(this.domUtils.createCanceledError());
 
                     return;
                 }
