@@ -14,6 +14,7 @@
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, ModalController, AlertController, NavParams } from 'ionic-angular';
+import { CoreSite } from '@classes/site';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider, CoreSiteCheckResponse, CoreLoginSiteInfo } from '@providers/sites';
@@ -293,8 +294,9 @@ export class CoreLoginSitePage {
             }
         ];
 
+        // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.8.3.
         this.domUtils.showAlertWithOptions({
-            title: this.translate.instant('core.cannotconnect'),
+            title: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}),
             message,
             buttons,
         });
