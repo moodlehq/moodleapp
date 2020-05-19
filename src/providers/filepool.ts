@@ -3179,7 +3179,7 @@ export class CoreFilepoolProvider {
 
         urls.forEach((url) => {
             // Download the file only if it's an online URL.
-            if (url.indexOf('http') == 0) {
+            if (!this.urlUtils.isLocalFileUrl(url)) {
                 promises.push(this.downloadUrl(siteId, url, false, component, componentId, 0, undefined, undefined, undefined,
                         revision).then((fileUrl) => {
 

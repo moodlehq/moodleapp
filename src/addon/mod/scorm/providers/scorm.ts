@@ -22,6 +22,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormOfflineProvider } from './scorm-offline';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
@@ -1403,7 +1404,7 @@ export class AddonModScormProvider {
     protected isExternalLink(link: string): boolean {
         link = link.toLowerCase();
 
-        if (link.match(/https?:\/\//)) {
+        if (link.match(/^https?:\/\//i) && !CoreUrlUtils.instance.isLocalFileUrl(link)) {
             return true;
         } else if (link.substr(0, 4) == 'www.') {
             return true;

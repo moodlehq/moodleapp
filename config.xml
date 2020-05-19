@@ -43,7 +43,6 @@
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
-    <preference name="Scheme" value="moodleappfs" />
     <preference name="iosScheme" value="moodleappfs" />
     <preference name="WKWebViewOnly" value="true" />
     <feature name="StatusBar">

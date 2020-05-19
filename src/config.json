@@ -95,7 +95,7 @@
     "enableanalytics": false,
     "enableonboarding": true,
     "forceColorScheme": "",
-    "webviewscheme": "moodleappfs",
+    "ioswebviewscheme": "moodleappfs",
     "appstores": {
         "android": "com.moodle.moodlemobile",
         "ios": "id633359593",
