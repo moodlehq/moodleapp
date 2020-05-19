@@ -17,6 +17,7 @@ import { CoreLangProvider } from '../lang';
 import { CoreTextUtilsProvider } from './text';
 import { makeSingleton } from '@singletons/core.singletons';
 import { CoreConfigConstants } from '../../configconstants';
+import { CoreUrl } from '@singletons/url';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -432,17 +433,28 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL belongs to a local file.
      */
     isLocalFileUrl(url: string): boolean {
-        return this.isLocalFileUrlScheme(this.getUrlScheme(url));
+        const urlParts = CoreUrl.parse(url);
+
+        return this.isLocalFileUrlScheme(urlParts.protocol, urlParts.domain);
     }
 
     /**
      * Check whether a URL scheme belongs to a local file.
      *
      * @param scheme Scheme to check.
+     * @param domain The domain. Needed because in Android the WebView scheme is http.
      * @return Whether the scheme belongs to a local file.
      */
-    isLocalFileUrlScheme(scheme: string): boolean {
-        return scheme == 'cdvfile' || scheme == 'file' || scheme == 'filesystem' || scheme == CoreConfigConstants.webviewscheme;
+    isLocalFileUrlScheme(scheme: string, domain: string): boolean {
+        if (scheme) {
+            scheme = scheme.toLowerCase();
+        }
+
+        return scheme == 'cdvfile' ||
+                scheme == 'file' ||
+                scheme == 'filesystem' ||
+                scheme == CoreConfigConstants.ioswebviewscheme ||
+                (scheme == 'http' && domain == 'localhost');
     }
 
     /**

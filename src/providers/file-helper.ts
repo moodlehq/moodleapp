@@ -21,6 +21,7 @@ import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
 import { CoreWSProvider } from './ws';
 import { CoreDomUtilsProvider } from './utils/dom';
+import { CoreUrlUtils } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { FileEntry } from '@ionic-native/file';
@@ -74,7 +75,7 @@ export class CoreFileHelperProvider {
                 return;
             }
 
-            if (url.indexOf('http') === 0) {
+            if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
                 /* In iOS, if we use the same URL in embedded browser and background download then the download only
                    downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
                 url = url + '#moodlemobile-embedded';

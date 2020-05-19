@@ -70,7 +70,7 @@ export class CoreIframeComponent implements OnInit, OnChanges {
         this.allowFullscreen = this.utils.isTrueOrOne(this.allowFullscreen);
 
         // Show loading only with external URLs.
-        this.loading = !this.src || !!this.src.match(/^https?:\/\//i);
+        this.loading = !this.src || !this.urlUtils.isLocalFileUrl(this.src);
 
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         this.iframeUtils.treatFrame(iframe, false, navCtrl);

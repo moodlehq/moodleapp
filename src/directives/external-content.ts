@@ -214,7 +214,9 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
 
         }
 
-        if (!url || !url.match(/^https?:\/\//i) || (tagName === 'A' && !this.urlUtils.isDownloadableUrl(url))) {
+        if (!url || !url.match(/^https?:\/\//i) || this.urlUtils.isLocalFileUrl(url) ||
+                (tagName === 'A' && !this.urlUtils.isDownloadableUrl(url))) {
+
             this.logger.debug('Ignoring non-downloadable URL: ' + url);
             if (tagName === 'SOURCE') {
                 // Restoring original src.
@@ -244,7 +246,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             finalUrl = CoreFile.instance.convertFileSrc(finalUrl);
         }
 
-        if (finalUrl.match(/^https?:\/\//i)) {
+        if (!this.urlUtils.isLocalFileUrl(finalUrl)) {
             /* In iOS, if we use the same URL in embedded file and background download then the download only
                downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
             finalUrl = finalUrl + '#moodlemobile-embedded';
@@ -264,7 +266,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         }
 
         // Set events to download big files (not downloaded automatically).
-        if (finalUrl.indexOf('http') === 0 && targetAttr != 'poster' &&
+        if (!this.urlUtils.isLocalFileUrl(finalUrl) && targetAttr != 'poster' &&
             (tagName == 'VIDEO' || tagName == 'AUDIO' || tagName == 'A' || tagName == 'SOURCE')) {
             const eventName = tagName == 'A' ? 'click' : 'play';
             let clickableEl = this.element;

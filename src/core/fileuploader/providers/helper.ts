@@ -411,7 +411,7 @@ export class CoreFileUploaderHelperProvider {
 
                     return Promise.reject(message);
                 } else {
-                    this.logger.debug('Cancelled');
+                    return Promise.reject(this.domUtils.createCanceledError());
                 }
             }
         }
@@ -430,20 +430,18 @@ export class CoreFileUploaderHelperProvider {
         // Cancelled or error.
         if (error) {
             if (typeof error == 'string') {
-                if (error.toLowerCase().indexOf('error') > -1 || error.toLowerCase().indexOf('unable') > -1) {
-                    this.logger.error('Error getting image: ' + error);
-
-                    return Promise.reject(error);
-                } else {
+                if (error.toLowerCase().indexOf('no image selected') > -1) {
                     // User cancelled.
-                    this.logger.debug('Cancelled');
+                    return Promise.reject(this.domUtils.createCanceledError());
                 }
             } else {
                 return Promise.reject(this.translate.instant(defaultMessage));
             }
         }
 
-        return Promise.reject(null);
+        this.logger.error('Error getting image: ', error);
+
+        return Promise.reject(error);
     }
 
     /**

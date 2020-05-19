@@ -26,6 +26,7 @@ import { CoreUrlUtilsProvider } from './url';
 import { CoreUtilsProvider } from './utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { makeSingleton } from '@singletons/core.singletons';
+import { CoreUrl } from '@singletons/url';
 
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
@@ -54,7 +55,7 @@ export class CoreIframeUtilsProvider {
     checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
         const src = element.src || element.data;
 
-        if (src && src.match(/^https?:\/\//i) && !this.appProvider.isOnline()) {
+        if (src && !this.urlUtils.isLocalFileUrl(src) && !this.appProvider.isOnline()) {
             if (element.classList.contains('core-iframe-offline-disabled')) {
                 // Iframe already hidden, stop.
                 return true;
@@ -347,13 +348,13 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
-        const scheme = this.urlUtils.getUrlScheme(link.href);
-        if (!link.href || (scheme && scheme == 'javascript')) {
+        const urlParts = CoreUrl.parse(link.href);
+        if (!link.href || (urlParts.protocol && urlParts.protocol == 'javascript')) {
             // Links with no URL and Javascript links are ignored.
             return;
         }
 
-        if (!this.urlUtils.isLocalFileUrlScheme(scheme)) {
+        if (!this.urlUtils.isLocalFileUrlScheme(urlParts.protocol, urlParts.domain)) {
             // Scheme suggests it's an external resource.
             event.preventDefault();
 

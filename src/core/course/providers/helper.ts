@@ -24,6 +24,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay,
     CoreCourseOptionsMenuHandlerToDisplay } from './options-delegate';
@@ -615,7 +616,8 @@ export class CoreCourseHelperProvider {
             // File shouldn't be opened in browser. Download the module if it needs to be downloaded.
             return this.downloadModuleWithMainFileIfNeeded(module, courseId, component, componentId, files, siteId)
                     .then((result) => {
-                if (result.path.indexOf('http') === 0) {
+
+                if (!CoreUrlUtils.instance.isLocalFileUrl(result.path)) {
                     /* In iOS, if we use the same URL in embedded browser and background download then the download only
                        downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
                     result.path = result.path + '#moodlemobile-embedded';
