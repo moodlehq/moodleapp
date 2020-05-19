@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { CoreApp } from '@providers/app';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -54,8 +55,10 @@ export class CoreMainMenuProvider {
     static ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
     protected tablet = false;
 
-    constructor(private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
-            protected menuDelegate: CoreMainMenuDelegate, protected utils: CoreUtilsProvider) {
+    constructor(protected langProvider: CoreLangProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected menuDelegate: CoreMainMenuDelegate,
+            protected utils: CoreUtilsProvider) {
         this.tablet = window && window.innerWidth && window.innerWidth >= 576 && window.innerHeight >= 576;
     }
 
@@ -219,7 +222,8 @@ export class CoreMainMenuProvider {
      * @return Tabs placement including side value.
      */
     getTabPlacement(navCtrl: NavController): string {
-        const tablet = window && window.innerWidth && window.innerWidth >= 576 && window.innerHeight >= 576;
+        const tablet = window && window.innerWidth && window.innerWidth >= 576 && (window.innerHeight >= 576 ||
+                ((CoreApp.instance.isKeyboardVisible() || CoreApp.instance.isKeyboardOpening()) && window.innerHeight >= 200));
 
         if (tablet != this.tablet) {
             this.tablet = tablet;
