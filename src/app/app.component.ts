@@ -191,6 +191,11 @@ export class MoodleMobileApp implements OnInit {
                     return;
                 }
 
+                if (!this.urlSchemesProvider.isCustomURL(url)) {
+                    // Not a custom URL, ignore.
+                    return;
+                }
+
                 this.logger.debug('App launched by URL ', url);
 
                 this.lastUrls[url] = Date.now();
