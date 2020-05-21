@@ -143,7 +143,10 @@ export class CoreUserParticipantsComponent implements OnInit {
     toggleSearch(): void {
         this.showSearchBox = !this.showSearchBox;
 
-        if (!this.showSearchBox && this.displaySearchResults) {
+        if (this.showSearchBox) {
+            // Make search bar visible.
+            this.domUtils.scrollToTop(this.content);
+        } else if (!this.showSearchBox && this.displaySearchResults) {
             this.clearSearch();
         }
     }
