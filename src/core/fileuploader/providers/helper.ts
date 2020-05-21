@@ -19,7 +19,6 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider, CoreFileProgressEvent } from '@providers/file';
-import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -48,8 +47,7 @@ export class CoreFileUploaderHelperProvider {
             protected actionSheetCtrl: ActionSheetController,
             protected uploaderDelegate: CoreFileUploaderDelegate,
             protected camera: Camera,
-            protected platform: Platform,
-            protected fileHelper: CoreFileHelperProvider) {
+            protected platform: Platform) {
         this.logger = logger.getInstance('CoreFileUploaderProvider');
     }
 
@@ -108,7 +106,7 @@ export class CoreFileUploaderHelperProvider {
             const filePath = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
-            return this.fileHelper.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
+            return this.fileProvider.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
                 this.showProgressModal(modal, 'core.fileuploader.readingfileperc', progress);
             });
         }).catch((error) => {
@@ -193,9 +191,7 @@ export class CoreFileUploaderHelperProvider {
             }
         });
 
-        this.domUtils.showErrorModal(errorMessage);
-
-        return Promise.reject(null);
+        return Promise.reject(errorMessage);
     }
 
     /**
@@ -649,7 +645,7 @@ export class CoreFileUploaderHelperProvider {
                         this.fileProvider.removeExternalFile(path);
                     }
 
-                    return Promise.reject(null);
+                    return Promise.reject(this.domUtils.createCanceledError());
                 });
             };
 
