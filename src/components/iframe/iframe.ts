@@ -99,7 +99,7 @@ export class CoreIframeComponent implements OnInit, OnChanges {
         if (changes.src) {
             const url = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
 
-            if (this.platform.is('ios')) {
+            if (this.platform.is('ios') && !this.urlUtils.isLocalFileUrl(url)) {
                 // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
                 try {
                     const win = <WKWebViewCookiesWindow> window;
