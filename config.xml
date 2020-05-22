@@ -64,7 +64,7 @@
             <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" android:debuggable="true" />
         </edit-config>
         <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
-            <application android:usesCleartextTraffic="true" />
+            <application android:largeHeap="true" android:usesCleartextTraffic="true" />
         </edit-config>
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />

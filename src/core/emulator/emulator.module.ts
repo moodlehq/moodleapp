@@ -18,6 +18,7 @@ import { Platform } from 'ionic-angular';
 // Ionic Native services.
 import { Badge } from '@ionic-native/badge';
 import { Camera } from '@ionic-native/camera';
+import { Chooser } from '@ionic-native/chooser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { Device } from '@ionic-native/device';
 import { File } from '@ionic-native/file';
@@ -114,6 +115,7 @@ export const IONIC_NATIVE_PROVIDERS = [
                 return appProvider.isMobile() ? new Badge() : new BadgeMock(appProvider);
             }
         },
+        Chooser,
         CoreEmulatorHelperProvider,
         CoreEmulatorCaptureHelperProvider,
         {

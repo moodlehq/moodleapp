@@ -939,7 +939,7 @@ export class CoreFileProvider {
      * path/            -> directory: 'path', name: ''
      * path             -> directory: '', name: 'path'
      */
-    getFileAndDirectoryFromPath(path: string): any {
+    getFileAndDirectoryFromPath(path: string): {directory: string, name: string} {
         const file = {
             directory: '',
             name: ''
