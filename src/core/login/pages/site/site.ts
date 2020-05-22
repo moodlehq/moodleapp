@@ -34,7 +34,6 @@ import { TranslateService } from '@ngx-translate/core';
  * Extended data for UI implementation.
  */
 type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
-    fromWS?: boolean; // If the site came from the WS call.
     noProtocolUrl?: string; // Url wihtout protocol.
     country?: string; // Based on countrycode.
 };
@@ -60,9 +59,9 @@ export class CoreLoginSitePage {
     sites: CoreLoginSiteInfoExtended[] = [];
     hasSites = false;
     loadingSites = false;
-    onlyWrittenSite = false;
     searchFnc: Function;
     showScanQR: boolean;
+    enteredSiteUrl: CoreLoginSiteInfoExtended;
 
     constructor(navParams: NavParams,
             protected navCtrl: NavController,
@@ -108,32 +107,18 @@ export class CoreLoginSitePage {
             siteUrl: [url, this.moodleUrlValidator()]
         });
 
-        this.searchFnc = this.utils.debounce(async (search: string, isValid: boolean = false) => {
+        this.searchFnc = this.utils.debounce(async (search: string) => {
             search = search.trim();
 
             if (search.length >= 3) {
-                this.onlyWrittenSite = false;
-
                 // Update the sites list.
                 this.sites = await this.sitesProvider.findSites(search);
 
                 // UI tweaks.
                 this.sites.forEach((site) => {
                     site.noProtocolUrl = CoreUrl.removeProtocol(site.url);
-                    site.fromWS = true;
                     site.country = this.utils.getCountryName(site.countrycode);
                 });
-
-                // If it's a valid URL, add it.
-                if (isValid) {
-                    this.onlyWrittenSite = !!this.sites.length;
-                    this.sites.unshift({
-                        url: search,
-                        fromWS: false,
-                        name: this.translate.instant('core.login.yourenteredsite'),
-                        noProtocolUrl: CoreUrl.removeProtocol(search),
-                    });
-                }
 
                 this.hasSites = !!this.sites.length;
             } else {
@@ -268,7 +253,7 @@ export class CoreLoginSitePage {
         error = this.domUtils.getErrorMessage(error);
 
         if (error == this.translate.instant('core.cannotconnecttrouble')) {
-            const found = this.sites.find((site) => site.fromWS && site.url == url);
+            const found = this.sites.find((site) => site.url == url);
 
             if (!found) {
                 error += ' ' + this.translate.instant('core.cannotconnectverify');
@@ -311,7 +296,19 @@ export class CoreLoginSitePage {
     searchSite(e: Event, search: string): void {
         this.loadingSites = true;
 
-        this.searchFnc(search.trim(), this.siteForm.valid);
+        search = search.trim();
+
+        if (this.siteForm.valid && search.length >= 3) {
+            this.enteredSiteUrl = {
+                url: search,
+                name: this.translate.instant('core.login.yourenteredsite'),
+                noProtocolUrl: CoreUrl.removeProtocol(search),
+            };
+        } else {
+            this.enteredSiteUrl = null;
+        }
+
+        this.searchFnc(search.trim());
     }
 
     /**

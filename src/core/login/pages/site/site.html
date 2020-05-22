@@ -11,7 +11,7 @@
 </ion-header>
 <ion-content padding>
     <div>
-        <div text-center padding margin-bottom [class.hidden]="hasSites" class="core-login-site-logo">
+        <div text-center padding margin-bottom [class.hidden]="hasSites || enteredSiteUrl" class="core-login-site-logo">
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
         </div>
         <form ion-list [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites || fixedDisplay == 'select'" #siteFormEl>
@@ -23,19 +23,28 @@
                 </ion-item>
             </ng-container>
 
-            <ion-list *ngIf="!fixedSites" [class.hidden]="!hasSites" class="core-login-site-list" [class.dimmed]="loadingSites">
-                <div *ngIf="loadingSites" class="core-login-site-list-loading"><ion-spinner></ion-spinner></div>
-                <ion-item no-lines class="core-login-site-list-title" *ngIf="onlyWrittenSite"><h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2></ion-item>
-                <ion-item *ngFor="let site of sites" (click)="connect($event, site.url, site)" [title]="site.name" detail-push [class.core-login-entered-site]="!site.fromWS">
+            <ion-list *ngIf="!fixedSites" [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">
+                <ion-item no-lines class="core-login-site-list-title"><h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2></ion-item>
+                <ion-item *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [title]="enteredSiteUrl.name" detail-push class="core-login-entered-site">
                     <ion-thumbnail item-start>
-                        <core-icon name="fa-pencil" *ngIf="!site.imageurl && !site.fromWS"></core-icon>
-                        <img [src]="site.imageurl" *ngIf="site.imageurl">
-                        <img src="assets/icon/icon.png" *ngIf="!site.imageurl && site.fromWS" class="core-login-default-icon">
+                        <core-icon name="fa-pencil"></core-icon>
                     </ion-thumbnail>
-                    <h2 text-wrap>{{site.name}}<ng-container *ngIf="site.alias"> ({{site.alias}})</ng-container></h2>
-                    <p>{{site.noProtocolUrl}}</p>
-                    <p *ngIf="site.country || site.city" text-wrap><ng-container *ngIf="site.city">{{site.city}} - </ng-container>{{site.country}}</p>
+                    <h2 text-wrap>{{enteredSiteUrl.name}}</h2>
+                    <p>{{enteredSiteUrl.noProtocolUrl}}</p>
                 </ion-item>
+
+                <div class="core-login-site-list-found" [class.hidden]="!hasSites" [class.dimmed]="loadingSites">
+                    <div *ngIf="loadingSites" class="core-login-site-list-loading"><ion-spinner></ion-spinner></div>
+                    <ion-item *ngFor="let site of sites" (click)="connect($event, site.url, site)" [title]="site.name" detail-push>
+                        <ion-thumbnail item-start>
+                            <img [src]="site.imageurl" *ngIf="site.imageurl">
+                            <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
+                        </ion-thumbnail>
+                        <h2 text-wrap>{{site.name}}<ng-container *ngIf="site.alias"> ({{site.alias}})</ng-container></h2>
+                        <p>{{site.noProtocolUrl}}</p>
+                        <p *ngIf="site.country || site.city" text-wrap><ng-container *ngIf="site.city">{{site.city}} - </ng-container>{{site.country}}</p>
+                    </ion-item>
+                </div>
             </ion-list>
 
             <div *ngIf="!fixedSites && !hasSites && loadingSites" class="core-login-site-nolist-loading"><ion-spinner></ion-spinner></div>
@@ -48,7 +57,7 @@
                 </ion-select>
             </ion-item>
 
-            <ng-container *ngIf="!fixedSites && showScanQR && !hasSites">
+            <ng-container *ngIf="!fixedSites && showScanQR && !hasSites && !enteredSiteUrl">
                 <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
                 <ion-item>
                     <a ion-button block color="light" margin-top icon-start (click)="scanQR()">

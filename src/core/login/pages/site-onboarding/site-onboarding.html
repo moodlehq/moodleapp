@@ -6,7 +6,7 @@
             </button>
         </ion-buttons>
         <ion-buttons end>
-            <button ion-button (click)="skip($event)">
+            <button ion-button (click)="skip($event)" [attr.aria-label]="'core.skip' | translate">
                 {{'core.skip' | translate}}
             </button>
         </ion-buttons>
