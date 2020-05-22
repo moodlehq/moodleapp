@@ -33,6 +33,21 @@ interface UrlParts {
     port?: string;
 
     /**
+     * Url credentials: username and password (if any).
+     */
+    credentials?: string;
+
+    /**
+     * Url's username.
+     */
+    username?: string;
+
+    /**
+     * Url's password.
+     */
+    password?: string;
+
+    /**
      * Url path.
      */
     path?: string;
@@ -71,15 +86,21 @@ export class CoreUrl {
             return null;
         }
 
-        // Split host into domain and port.
         const host = match[4] || '';
-        const [domain, port]: string[] = host.indexOf(':') === -1 ? [host] : host.split(':');
+
+        // Get the credentials and the port from the host.
+        const [domainAndPort, credentials]: string[] = host.split('@').reverse();
+        const [domain, port]: string[] = domainAndPort.split(':');
+        const [username, password]: string[] = credentials ? credentials.split(':') : [];
 
         // Prepare parts replacing empty strings with undefined.
         return {
             protocol: match[2] || undefined,
             domain: domain || undefined,
             port: port || undefined,
+            credentials: credentials || undefined,
+            username: username || undefined,
+            password: password || undefined,
             path: match[5] || undefined,
             query: match[7] || undefined,
             fragment: match[9] || undefined,
