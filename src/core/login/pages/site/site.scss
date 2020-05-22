@@ -43,7 +43,8 @@ ion-app.app-root page-core-login-site {
     }
 
     .core-login-site-logo,
-    .core-login-site-list {
+    .core-login-site-list,
+    .core-login-site-list-found {
         transition-delay: 0s;
         visibility: visible;
         opacity: 1;
@@ -59,7 +60,7 @@ ion-app.app-root page-core-login-site {
         }
     }
 
-    .core-login-site-list.dimmed {
+    .core-login-site-list-found.dimmed {
         pointer-events: none;
         position: relative;
     }
