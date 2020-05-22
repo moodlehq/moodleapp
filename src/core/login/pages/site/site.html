@@ -25,17 +25,17 @@
 
             <ion-list *ngIf="!fixedSites" [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">
                 <ion-item no-lines class="core-login-site-list-title"><h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2></ion-item>
-                <ion-item *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [title]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
+                <button ion-item *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [attr.aria-label]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
                     <ion-thumbnail item-start>
                         <core-icon name="fa-pencil"></core-icon>
                     </ion-thumbnail>
                     <h2 text-wrap>{{ 'core.login.yourenteredsite' | translate }}</h2>
                     <p>{{enteredSiteUrl.noProtocolUrl}}</p>
-                </ion-item>
+                </button>
 
                 <div class="core-login-site-list-found" [class.hidden]="!hasSites" [class.dimmed]="loadingSites">
                     <div *ngIf="loadingSites" class="core-login-site-list-loading"><ion-spinner></ion-spinner></div>
-                    <ion-item *ngFor="let site of sites" (click)="connect($event, site.url, site)" [title]="site.name" detail-push>
+                    <button ion-item *ngFor="let site of sites" (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail-push>
                         <ion-thumbnail item-start>
                             <img [src]="site.imageurl" *ngIf="site.imageurl">
                             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
@@ -43,7 +43,7 @@
                         <h2 text-wrap>{{site.name}}<ng-container *ngIf="site.alias"> ({{site.alias}})</ng-container></h2>
                         <p>{{site.noProtocolUrl}}</p>
                         <p *ngIf="site.country || site.city" text-wrap><ng-container *ngIf="site.city">{{site.city}} - </ng-container>{{site.country}}</p>
-                    </ion-item>
+                    </button>
                 </div>
             </ion-list>
 
