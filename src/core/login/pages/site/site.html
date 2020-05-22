@@ -25,11 +25,11 @@
 
             <ion-list *ngIf="!fixedSites" [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">
                 <ion-item no-lines class="core-login-site-list-title"><h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2></ion-item>
-                <ion-item *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [title]="enteredSiteUrl.name" detail-push class="core-login-entered-site">
+                <ion-item *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [title]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
                     <ion-thumbnail item-start>
                         <core-icon name="fa-pencil"></core-icon>
                     </ion-thumbnail>
-                    <h2 text-wrap>{{enteredSiteUrl.name}}</h2>
+                    <h2 text-wrap>{{ 'core.login.yourenteredsite' | translate }}</h2>
                     <p>{{enteredSiteUrl.noProtocolUrl}}</p>
                 </ion-item>
 
