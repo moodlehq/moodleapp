@@ -301,7 +301,7 @@ export class CoreLoginSitePage {
         if (this.siteForm.valid && search.length >= 3) {
             this.enteredSiteUrl = {
                 url: search,
-                name: this.translate.instant('core.login.yourenteredsite'),
+                name: 'connect',
                 noProtocolUrl: CoreUrl.removeProtocol(search),
             };
         } else {
