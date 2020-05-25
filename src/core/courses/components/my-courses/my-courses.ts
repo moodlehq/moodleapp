@@ -17,7 +17,7 @@ import { Searchbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData } from '../../providers/courses';
 import { CoreCoursesHelperProvider } from '../../providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -63,8 +63,13 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
             this.coursesLoaded = true;
         });
 
-        this.myCoursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
-            this.fetchCourses();
+        // Update list if user enrols in a course.
+        this.myCoursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+                (data: CoreCoursesMyCoursesUpdatedEventData) => {
+
+            if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+                this.fetchCourses();
+            }
         }, this.sitesProvider.getCurrentSiteId());
 
         // Refresh the enabled flags if site is updated.

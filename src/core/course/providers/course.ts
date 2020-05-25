@@ -862,8 +862,10 @@ export class CoreCourseProvider {
                 if (!response.status) {
                     return Promise.reject(null);
                 } else {
-                    this.eventsProvider.trigger(
-                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: courseId}, site.getId());
+                    this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                        courseId: courseId,
+                        action: CoreCoursesProvider.ACTION_VIEW,
+                    }, site.getId());
                 }
             });
         });

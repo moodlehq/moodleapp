@@ -17,7 +17,7 @@ import { Searchbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -112,8 +112,12 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         }, this.sitesProvider.getCurrentSiteId());
 
-        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
-            this.refreshContent();
+        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+                (data: CoreCoursesMyCoursesUpdatedEventData) => {
+
+            if (data.action == CoreCoursesProvider.ACTION_ENROL || data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+                this.refreshCourseList();
+            }
         }, this.sitesProvider.getCurrentSiteId());
 
         this.currentSite = this.sitesProvider.getCurrentSite();
@@ -151,12 +155,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         promises.push(this.coursesProvider.invalidateUserCourses().finally(() => {
             // Invalidate course completion data.
-            promises.push(this.coursesProvider.invalidateUserCourses().finally(() => {
-                // Invalidate course completion data.
-                return this.utils.allPromises(this.courseIds.map((courseId) => {
-                    return this.courseCompletionProvider.invalidateCourseCompletion(courseId);
-                 }));
-            }));
+            return this.utils.allPromises(this.courseIds.map((courseId) => {
+                return this.courseCompletionProvider.invalidateCourseCompletion(courseId);
+             }));
         }));
 
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
@@ -316,6 +317,23 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 this.prefetchCoursesData[selected].icon = initialIcon;
             }
         });
+    }
+
+    /**
+     * Refresh the list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async refreshCourseList(): Promise<void> {
+        this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
+
+        try {
+            await this.coursesProvider.invalidateUserCourses();
+        } catch (error) {
+            // Ignore errors.
+        }
+
+        await this.loadContent(true);
     }
 
     /**

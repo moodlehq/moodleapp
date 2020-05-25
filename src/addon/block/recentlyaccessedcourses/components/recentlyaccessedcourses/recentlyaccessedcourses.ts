@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, Injector, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -72,8 +72,12 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         }, this.sitesProvider.getCurrentSiteId());
 
-        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
-            this.refreshContent();
+        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+                (data: CoreCoursesMyCoursesUpdatedEventData) => {
+
+            if (this.shouldRefreshOnUpdatedEvent(data)) {
+                this.refreshCourseList();
+            }
         }, this.sitesProvider.getCurrentSiteId());
 
         super.ngOnInit();
@@ -131,6 +135,23 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
+     * Refresh the list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async refreshCourseList(): Promise<void> {
+        this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
+
+        try {
+            await this.coursesProvider.invalidateUserCourses();
+        } catch (error) {
+            // Ignore errors.
+        }
+
+        await this.loadContent(true);
+    }
+
+    /**
      * Initialize the prefetch icon for selected courses.
      */
     protected initPrefetchCoursesIcons(): void {
@@ -143,6 +164,49 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         this.courseHelper.initPrefetchCoursesIcons(this.courses, this.prefetchCoursesData).then((prefetch) => {
             this.prefetchCoursesData = prefetch;
+        });
+    }
+
+    /**
+     * Whether list should be refreshed based on a EVENT_MY_COURSES_UPDATED event.
+     *
+     * @param data Event data.
+     * @return Whether to refresh.
+     */
+    protected shouldRefreshOnUpdatedEvent(data: CoreCoursesMyCoursesUpdatedEventData): boolean {
+        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+            // Always update if user enrolled in a course.
+            return true;
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != this.sitesProvider.getCurrentSiteHomeId() &&
+                this.courses[0] && data.courseId != this.courses[0].id) {
+            // Update list if user viewed a course that isn't the most recent one and isn't site home.
+            return true;
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE &&
+                this.hasCourse(data.courseId)) {
+            // Update list if a visible course is now favourite or unfavourite.
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a certain course is in the list of courses.
+     *
+     * @param courseId Course ID to search.
+     * @return Whether it's in the list.
+     */
+    protected hasCourse(courseId: number): boolean {
+        if (!this.courses) {
+            return false;
+        }
+
+        return !!this.courses.find((course) => {
+            return course.id == courseId;
         });
     }
 
