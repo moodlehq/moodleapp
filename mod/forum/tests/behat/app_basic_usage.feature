@@ -28,7 +28,6 @@ Feature: Test basic usage in app
     And I set the field "Message" to "An awesome message" in the app
     And I press "Post to forum" in the app
     Then I should see "My happy subject"
-    And I should see "An awesome message"
 
   @app_upto3.6.1
   Scenario: Student posts a reply
