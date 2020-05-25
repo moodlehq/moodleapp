@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, Injector, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -72,7 +72,12 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
         }, this.sitesProvider.getCurrentSiteId());
 
-        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
+        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+                (data: CoreCoursesMyCoursesUpdatedEventData) => {
+
+            if (this.shouldRefreshOnUpdatedEvent(data)) {
+                this.refreshCourseList();
+            }
             this.refreshContent();
         }, this.sitesProvider.getCurrentSiteId());
 
@@ -128,6 +133,44 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
             this.initPrefetchCoursesIcons();
         });
+    }
+
+    /**
+     * Refresh the list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async refreshCourseList(): Promise<void> {
+        this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
+
+        try {
+            await this.coursesProvider.invalidateUserCourses();
+        } catch (error) {
+            // Ignore errors.
+        }
+
+        await this.loadContent(true);
+    }
+
+    /**
+     * Whether list should be refreshed based on a EVENT_MY_COURSES_UPDATED event.
+     *
+     * @param data Event data.
+     * @return Whether to refresh.
+     */
+    protected shouldRefreshOnUpdatedEvent(data: CoreCoursesMyCoursesUpdatedEventData): boolean {
+        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+            // Always update if user enrolled in a course.
+            // New courses shouldn't be favourite by default, but just in case.
+            return true;
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE) {
+            // Update list when making a course favourite or not.
+            return true;
+        }
+
+        return false;
     }
 
     /**

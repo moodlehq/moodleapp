@@ -19,6 +19,17 @@ import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 
 /**
+ * Data sent to the EVENT_MY_COURSES_UPDATED.
+ */
+export type CoreCoursesMyCoursesUpdatedEventData = {
+    action: string; // Action performed.
+    courseId?: number; // Course ID affected (if any).
+    course?: any; // Course affected (if any).
+    state?: string; // Only for ACTION_STATE_CHANGED. The state that changed (hidden, favourite).
+    value?: boolean; // The new value for the state changed.
+};
+
+/**
  * Service that provides some features regarding lists of courses and categories.
  */
 @Injectable()
@@ -29,6 +40,15 @@ export class CoreCoursesProvider {
     static EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated'; // A course was hidden/favourite, or user enroled in a course.
     static EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
     static EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED = 'dashboard_download_enabled_changed';
+
+    // Actions for event EVENT_MY_COURSES_UPDATED.
+    static ACTION_ENROL = 'enrol'; // User enrolled in a course.
+    static ACTION_STATE_CHANGED = 'state_changed'; // Course state changed (hidden, favourite).
+    static ACTION_VIEW = 'view'; // Course viewed.
+
+    // Possible states changed.
+    static STATE_HIDDEN = 'hidden';
+    static STATE_FAVOURITE = 'favourite';
 
     protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
