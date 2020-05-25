@@ -58,6 +58,6 @@ Feature: Test basic usage in app
     And I should see "Option 3: 1"
     And I press "Remove my choice" in the app
     And I should see "Are you sure"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should not see "Remove my choice"
     And I should see "The results are not currently viewable"
