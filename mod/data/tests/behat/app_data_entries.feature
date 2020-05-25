@@ -118,7 +118,7 @@ Feature: Users can manage entries in database activities
     And I should see "Moodle Cloud"
     And I press "Delete" in the app
     And I should see "Are you sure you want to delete this entry?"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should not see "Moodle Cloud"
     And I press "Add entries" in the app
     And I set the field "URL" to "https://moodle.org/" in the app
@@ -139,7 +139,7 @@ Feature: Users can manage entries in database activities
     And I should see "Moodle Cloud"
     And I press "Delete" in the app
     And I should see "Are you sure you want to delete this entry?"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should not see "Moodle Cloud"
     And I should see "No entries in database"
 
@@ -176,7 +176,7 @@ Feature: Users can manage entries in database activities
     And I should see "Moodle Cloud"
     And I press "Delete" near "Moodle Cloud" in the app
     And I should see "Are you sure you want to delete this entry?"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should not see "Moodle Cloud"
     And I press "More" in the app
     And I should see "https://telegram.org/"
@@ -195,5 +195,5 @@ Feature: Users can manage entries in database activities
     And I should see "Moodle Cloud"
     And I press "Delete" in the app
     And I should see "Are you sure you want to delete this entry?"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should not see "Moodle Cloud"
