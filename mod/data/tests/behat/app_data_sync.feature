@@ -66,7 +66,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Save" near "Web links" in the app
     And I should see "https://moodle.org/"
     And I should see "Moodle community site"
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Download" in the app
     And I wait until the page is ready
     And I switch offline mode to "true"
@@ -87,13 +87,13 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should see "https://moodlecloud.com/"
     And I should see "Moodle Cloud"
     And I should not see "This Database has offline data to be synchronised"
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Refresh" in the app
     And I wait until the page is ready
     And I switch offline mode to "true"
     And I press "Delete" in the app
     And I should see "Are you sure you want to delete this entry?"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should see "https://moodlecloud.com/"
     And I should see "Moodle Cloud"
     And I should see "This Database has offline data to be synchronised"
@@ -117,13 +117,13 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Save" near "Web links" in the app
     And I should see "https://moodle.org/"
     And I should see "Moodle community site"
-    And I press "Information" in the app
+    And I press "Display options" in the app
     And I press "Download" in the app
     And I wait until the page is ready
     When I switch offline mode to "true"
     And I press "Delete" in the app
     And I should see "Are you sure you want to delete this entry?"
-    And I press "OK" in the app
+    And I press "Delete" in the app
     And I should see "https://moodle.org/"
     And I should see "Moodle community site"
     And I should see "This Database has offline data to be synchronised"
