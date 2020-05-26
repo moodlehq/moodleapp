@@ -1,4 +1,7 @@
 {
     "errorgetactivity": "Error getting H5P activity data.",
-    "modulenameplural": "H5P"
+    "filestatenotdownloaded": "The H5P package is not downloaded. You need to download it to be able to use it.",
+    "filestateoutdated": "The H5P package has been modified since the last download. You need to download it again to be able to use it.",
+    "modulenameplural": "H5P",
+    "storingfiles": "Storing files"
 }

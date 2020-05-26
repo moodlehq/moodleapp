@@ -18,6 +18,7 @@ import { CoreMimetypeUtils } from '@providers/utils/mimetype';
 import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreUtils } from '@providers/utils/utils';
 import { CoreH5P } from './h5p';
+import { CoreSites } from '@providers/sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { FileEntry } from '@ionic-native/file';
 import { Translate } from '@singletons/core.singletons';
@@ -50,7 +51,14 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+    async getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+        const site = await CoreSites.instance.getSite(siteId);
+
+        if (site.containsUrl(file.fileurl) && file.fileurl.match(/pluginfile\.php\/[^\/]+\/core_h5p\/export\//i)) {
+            // It's already a deployed file, use it.
+            return file;
+        }
+
         return CoreH5P.instance.getTrustedH5PFile(file.fileurl, {}, false, siteId);
     }
 
@@ -85,7 +93,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      */
     async getFileSize(file: CoreWSExternalFile, siteId?: string): Promise<number> {
         try {
-            const trustedFile = await CoreH5P.instance.getTrustedH5PFile(file.fileurl, {}, false, siteId);
+            const trustedFile = await this.getDownloadableFile(file, siteId);
 
             return trustedFile.filesize;
         } catch (error) {
@@ -145,9 +153,10 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string): Promise<void> {
-        return CoreH5PHelper.saveH5P(fileUrl, file, siteId);
+    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<void> {
+        return CoreH5PHelper.saveH5P(fileUrl, file, siteId, onProgress);
     }
 }

@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@providers/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreCourseLogHelper } from '@core/course/providers/log-helper';
 
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 
@@ -28,6 +29,39 @@ export class AddonModH5PActivityProvider {
     static COMPONENT = 'mmaModH5PActivity';
 
     protected ROOT_CACHE_KEY = 'mmaModH5PActivity:';
+
+    /**
+     * Get cache key for access information WS calls.
+     *
+     * @param id H5P activity ID.
+     * @return Cache key.
+     */
+    protected getAccessInformationCacheKey(id: number): string {
+        return this.ROOT_CACHE_KEY + 'accessInfo:' + id;
+    }
+
+    /**
+     * Get access information for a given H5P activity.
+     *
+     * @param id H5P activity ID.
+     * @param forceCache True to always get the value from cache. false otherwise.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the data.
+     */
+    async getAccessInformation(id: number, forceCache?: boolean, siteId?: string): Promise<AddonModH5PActivityAccessInfo> {
+
+        const site = await CoreSites.instance.getSite(siteId);
+
+        const params = {
+            h5pactivityid: id,
+        };
+        const preSets = {
+            cacheKey: this.getAccessInformationCacheKey(id),
+            omitExpires: forceCache,
+        };
+
+        return site.read('mod_h5pactivity_get_h5pactivity_access_information', params, preSets);
+    }
 
     /**
      * Get cache key for H5P activity data WS calls.
@@ -54,6 +88,7 @@ export class AddonModH5PActivityProvider {
             : Promise<AddonModH5PActivityData> {
 
         const site = await CoreSites.instance.getSite(siteId);
+
         const params = {
             courseids: [courseId],
         };
@@ -66,7 +101,7 @@ export class AddonModH5PActivityProvider {
             preSets.omitExpires = true;
         }
 
-        const response: AddonModH5PActivityGetByCoursesRresult =
+        const response: AddonModH5PActivityGetByCoursesResult =
                 await site.read('mod_h5pactivity_get_h5pactivities_by_courses', params, preSets);
 
         if (response && response.h5pactivities) {
@@ -109,16 +144,30 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
+     * Invalidates access information.
+     *
+     * @param id H5P activity ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the data is invalidated.
+     */
+    async invalidateAccessInformation(id: number, siteId?: string): Promise<void> {
+
+        const site = await CoreSites.instance.getSite(siteId);
+
+        await site.invalidateWsCacheForKey(this.getAccessInformationCacheKey(id));
+    }
+
+    /**
      * Invalidates H5P activity data.
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the data is invalidated.
      */
-    async invalidateActivityData(courseId: number, siteId?: string): Promise<any> {
+    async invalidateActivityData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getH5PActivityDataCacheKey(courseId));
+        await site.invalidateWsCacheForKey(this.getH5PActivityDataCacheKey(courseId));
     }
 
     /**
@@ -130,6 +179,35 @@ export class AddonModH5PActivityProvider {
         const site = await CoreSites.instance.getSite(siteId);
 
         return site.wsAvailable('mod_h5pactivity_get_h5pactivities_by_courses');
+    }
+
+    /**
+     * Report an H5P activity as being viewed.
+     *
+     * @param id H5P activity ID.
+     * @param name Name of the activity.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the WS call is successful.
+     */
+    async logView(id: number, name?: string, siteId?: string): Promise<void> {
+        const params = {
+            h5pactivityid: id,
+        };
+
+        const result: AddonModH5PActivityViewResult = await CoreCourseLogHelper.instance.logSingle(
+            'mod_h5pactivity_view_h5pactivity',
+            params,
+            AddonModH5PActivityProvider.COMPONENT,
+            id,
+            name,
+            'h5pactivity',
+            {},
+            siteId
+        );
+
+        if (!result.status) {
+            throw result.warnings[0] || 'Error marking H5P activity as viewed.';
+        }
     }
 }
 
@@ -167,7 +245,26 @@ export type AddonModH5PActivityData = {
 /**
  * Result of WS mod_h5pactivity_get_h5pactivities_by_courses.
  */
-export type AddonModH5PActivityGetByCoursesRresult = {
+export type AddonModH5PActivityGetByCoursesResult = {
     h5pactivities: AddonModH5PActivityData[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS mod_h5pactivity_get_h5pactivity_access_information.
+ */
+export type AddonModH5PActivityAccessInfo = {
+    warnings?: CoreWSExternalWarning[];
+    canview?: boolean; // Whether the user has the capability mod/h5pactivity:view allowed.
+    canaddinstance?: boolean; // Whether the user has the capability mod/h5pactivity:addinstance allowed.
+    cansubmit?: boolean; // Whether the user has the capability mod/h5pactivity:submit allowed.
+    canreviewattempts?: boolean; // Whether the user has the capability mod/h5pactivity:reviewattempts allowed.
+};
+
+/**
+ * Result of WS mod_h5pactivity_view_h5pactivity.
+ */
+export type AddonModH5PActivityViewResult = {
+    status: boolean; // Status: true if success.
     warnings?: CoreWSExternalWarning[];
 };

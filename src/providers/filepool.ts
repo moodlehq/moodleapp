@@ -1058,7 +1058,7 @@ export class CoreFilepoolProvider {
                 return this.wsProvider.downloadFile(fileUrl, filePath, addExtension, onProgress).then((entry) => {
                     fileEntry = entry;
 
-                    return this.pluginFileDelegate.treatDownloadedFile(fileUrl, fileEntry, siteId);
+                    return this.pluginFileDelegate.treatDownloadedFile(fileUrl, fileEntry, siteId, onProgress);
                 }).then(() => {
                     const data: CoreFilepoolFileEntry = poolFileObject || {};
 

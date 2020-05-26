@@ -14,8 +14,20 @@
 
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
+
+import { CoreApp } from '@providers/app';
+import { CoreFilepool } from '@providers/filepool';
+import { CoreWSExternalFile } from '@providers/ws';
+import { CoreDomUtils } from '@providers/utils/dom';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
-import { AddonModH5PActivity, AddonModH5PActivityProvider, AddonModH5PActivityData } from '../../providers/h5pactivity';
+import { CoreH5P } from '@core/h5p/providers/h5p';
+import { CoreH5PDisplayOptions } from '@core/h5p/classes/core';
+import { CoreH5PHelper } from '@core/h5p/classes/helper';
+import { CoreConstants } from '@core/constants';
+
+import {
+    AddonModH5PActivity, AddonModH5PActivityProvider, AddonModH5PActivityData, AddonModH5PActivityAccessInfo
+} from '../../providers/h5pactivity';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -29,8 +41,18 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     moduleName = 'h5pactivity';
 
     h5pActivity: AddonModH5PActivityData; // The H5P activity object.
+    accessInfo: AddonModH5PActivityAccessInfo; // Info about the user capabilities.
+    deployedFile: CoreWSExternalFile; // The H5P deployed file.
+
+    stateMessage: string; // Message about the file state.
+    downloading: boolean; // Whether the H5P file is being downloaded.
+    needsDownload: boolean; // Whether the file needs to be downloaded.
+    percentage: string; // Download/unzip percentage.
+    progressMessage: string; // Message about download/unzip.
+    playing: boolean; // Whether the package is being played.
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
+    protected displayOptions: CoreH5PDisplayOptions;
 
     constructor(injector: Injector,
             @Optional() protected content: Content) {
@@ -66,10 +88,59 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(this.courseId, this.module.id);
 
             this.description = this.h5pActivity.intro;
+            this.displayOptions = CoreH5PHelper.decodeDisplayOptions(this.h5pActivity.displayoptions);
             this.dataRetrieved.emit(this.h5pActivity);
+
+            await Promise.all([
+                this.fetchAccessInfo(),
+                this.fetchDeployedFileData(),
+            ]);
         } finally {
             this.fillContextMenu(refresh);
         }
+    }
+
+    /**
+     * Fetch the access info and store it in the right variables.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async fetchAccessInfo(): Promise<void> {
+        this.accessInfo = await AddonModH5PActivity.instance.getAccessInformation(this.h5pActivity.id);
+    }
+
+    /**
+     * Fetch the deployed file data if needed and store it in the right variables.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async fetchDeployedFileData(): Promise<void> {
+        if (this.h5pActivity.deployedfile) {
+            // File already deployed and still valid, use this one.
+            this.deployedFile = this.h5pActivity.deployedfile;
+        } else {
+            if (!this.h5pActivity.package || !this.h5pActivity.package[0]) {
+                // Shouldn't happen.
+                throw 'No H5P package found.';
+            }
+
+            // Deploy the file in the server.
+            this.deployedFile = await CoreH5P.instance.getTrustedH5PFile(this.h5pActivity.package[0].fileurl, this.displayOptions);
+        }
+
+        await this.calculateFileStatus();
+    }
+
+    /**
+     * Calculate the status of the deployed file.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async calculateFileStatus(): Promise<void> {
+        const state = await CoreFilepool.instance.getFileStateByUrl(this.siteId, this.deployedFile.fileurl,
+                this.deployedFile.timemodified);
+
+        this.showFileState(state);
     }
 
     /**
@@ -79,5 +150,121 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     protected invalidateContent(): Promise<any> {
        return AddonModH5PActivity.instance.invalidateActivityData(this.courseId);
+    }
+
+    /**
+     * Displays some data based on the state of the main file.
+     *
+     * @param state The state of the file.
+     */
+    protected showFileState(state: string): void {
+
+        if (state == CoreConstants.OUTDATED) {
+            this.stateMessage = 'addon.mod_h5pactivity.filestateoutdated';
+            this.needsDownload = true;
+        } else if (state == CoreConstants.NOT_DOWNLOADED) {
+            this.stateMessage = 'addon.mod_h5pactivity.filestatenotdownloaded';
+            this.needsDownload = true;
+        } else if (state == CoreConstants.DOWNLOADING) {
+            this.stateMessage = '';
+
+            if (!this.downloading) {
+                // It's being downloaded right now but the view isn't tracking it. "Restore" the download.
+                this.downloadDeployedFile().then(() => {
+                    this.play();
+                });
+            }
+        } else {
+            this.stateMessage = '';
+            this.needsDownload = false;
+        }
+    }
+
+    /**
+     * Download the file and play it.
+     *
+     * @param e Click event.
+     * @return Promise resolved when done.
+     */
+    async downloadAndPlay(e: MouseEvent): Promise<void> {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+
+        if (!CoreApp.instance.isOnline()) {
+            CoreDomUtils.instance.showErrorModal('core.networkerrormsg', true);
+
+            return;
+        }
+
+        try {
+            // Confirm the download if needed.
+            await CoreDomUtils.instance.confirmDownloadSize({ size: this.deployedFile.filesize, total: true });
+
+            await this.downloadDeployedFile();
+
+            if (!this.isDestroyed) {
+                this.play();
+            }
+
+        } catch (error) {
+            if (CoreDomUtils.instance.isCanceledError(error) || this.isDestroyed) {
+                // User cancelled or view destroyed, stop.
+                return;
+            }
+
+            CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+        }
+    }
+
+    /**
+     * Download athe H5P deployed file or restores an ongoing download.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async downloadDeployedFile(): Promise<void> {
+        this.downloading = true;
+        this.progressMessage = 'core.downloading';
+
+        try {
+            await CoreFilepool.instance.downloadUrl(this.siteId, this.deployedFile.fileurl, false, this.component, this.componentId,
+                    this.deployedFile.timemodified, (data) => {
+
+                if (!data) {
+                    return;
+                }
+
+                if (data.message) {
+                    // Show a message.
+                    this.progressMessage = data.message;
+                    this.percentage = undefined;
+                } else if (typeof data.loaded != 'undefined') {
+                    if (this.progressMessage == 'core.downloading') {
+                        // Downloading package.
+                        this.percentage = (Number(data.loaded / this.deployedFile.filesize) * 100).toFixed(1);
+                    } else if (typeof data.total != 'undefined') {
+                        // Unzipping package.
+                        this.percentage = (Number(data.loaded / data.total) * 100).toFixed(1);
+                    } else {
+                        this.percentage = undefined;
+                    }
+                } else {
+                    this.percentage = undefined;
+                }
+            });
+
+        } finally {
+            this.progressMessage = undefined;
+            this.percentage = undefined;
+            this.downloading = false;
+        }
+    }
+
+    /**
+     * Play the package.
+     */
+    play(): void {
+        this.playing = true;
+
+        // @TODO
     }
 }

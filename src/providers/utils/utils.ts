@@ -873,6 +873,16 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Check if a value isn't null or undefined.
+     *
+     * @param value Value to check.
+     * @return True if not null and not undefined.
+     */
+    notNullOrUndefined(value: any): boolean {
+        return typeof value != 'undefined' && value !== null;
+    }
+
+    /**
      * Open a file using platform specific method.
      *
      * @param path The local path of the file to be open.

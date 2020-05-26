@@ -1257,7 +1257,7 @@ export class AddonModScormProvider {
     /**
      * Invalidates access information.
      *
-     * @param forumId SCORM ID.
+     * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the data is invalidated.
      */
@@ -1544,7 +1544,7 @@ export class AddonModScormProvider {
 
         return this.logHelper.logSingle('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, name, 'scorm', {},
                 siteId);
-}
+    }
 
     /**
      * Saves a SCORM tracking record.

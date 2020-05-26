@@ -219,11 +219,11 @@ export class CoreH5PPlayer {
      * Get the content index file.
      *
      * @param fileUrl URL of the H5P package.
-     * @param urlParams URL params.
+     * @param displayOptions Display options.
      * @param siteId The site ID. If not defined, current site.
      * @return Promise resolved with the file URL if exists, rejected otherwise.
      */
-    async getContentIndexFileUrl(fileUrl: string, urlParams?: {[name: string]: string}, siteId?: string): Promise<string> {
+    async getContentIndexFileUrl(fileUrl: string, displayOptions?: CoreH5PDisplayOptions, siteId?: string): Promise<string> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         const path = await this.h5pCore.h5pFS.getContentIndexFileUrl(fileUrl, siteId);
@@ -231,9 +231,9 @@ export class CoreH5PPlayer {
         // Add display options to the URL.
         const data = await this.h5pCore.h5pFramework.getContentDataByUrl(fileUrl, siteId);
 
-        const options = this.h5pCore.fixDisplayOptions(this.getDisplayOptionsFromUrlParams(urlParams), data.id);
+        displayOptions = this.h5pCore.fixDisplayOptions(displayOptions, data.id);
 
-        return CoreUrlUtils.instance.addParamsToUrl(path, options, undefined, true);
+        return CoreUrlUtils.instance.addParamsToUrl(path, displayOptions, undefined, true);
     }
 
     /**

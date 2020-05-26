@@ -13,5 +13,21 @@
 
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
-    <!-- TODO -->
+    <ion-list *ngIf="deployedFile && !playing">
+        <ion-item text-wrap *ngIf="stateMessage">
+            <p >{{ stateMessage | translate }}</p>
+        </ion-item>
+
+        <!-- Button to download the package. -->
+        <ion-item *ngIf="!downloading && needsDownload" text-wrap>
+            <a ion-button block (click)="downloadAndPlay($event)">{{ 'core.download' | translate }}</a>
+        </ion-item>
+
+        <!-- Download progress. -->
+        <ion-item text-center *ngIf="downloading">
+            <ion-spinner></ion-spinner>
+            <p *ngIf="progressMessage">{{ progressMessage | translate }}</p>
+            <p *ngIf="percentage <= 100">{{ 'core.percentagenumber' | translate:{$a: percentage} }}</p>
+        </ion-item>
+    </ion-list>
 </core-loading>
