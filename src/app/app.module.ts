@@ -155,6 +155,7 @@ import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
 import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
 import { AddonFilterModule } from '@addon/filter/filter.module';
+import { AddonModH5PActivityModule } from '@addon/mod/h5pactivity/h5pactivity.module';
 
 import { setSingletonsInjector } from '@singletons/core.singletons';
 
@@ -303,7 +304,8 @@ export const WP_PROVIDER: any = null;
         AddonQbehaviourModule,
         AddonQtypeModule,
         AddonStorageManagerModule,
-        AddonFilterModule
+        AddonFilterModule,
+        AddonModH5PActivityModule,
     ],
     bootstrap: [IonicApp],
     entryComponents: [
