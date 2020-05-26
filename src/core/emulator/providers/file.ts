@@ -98,13 +98,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves to the new Entry object or rejects with an error.
      */
     copyDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<Entry> {
-        return this.resolveDirectoryUrl(path).then((fse) => {
-            return this.getDirectory(fse, dirName, { create: false });
-        }).then((srcde) => {
-            return this.resolveDirectoryUrl(newPath).then((deste) => {
-                return this.copyMock(srcde, deste, newDirName);
-            });
-        });
+        return this.copyFileOrDir(path, dirName, newPath, newDirName);
     }
 
     /**
@@ -117,15 +111,26 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves to an Entry or rejects with an error.
      */
     copyFile(path: string, fileName: string, newPath: string, newFileName: string): Promise<Entry> {
-        newFileName = newFileName || fileName;
+        return this.copyFileOrDir(path, fileName, newPath, newFileName || fileName);
+    }
 
-        return this.resolveDirectoryUrl(path).then((fse) => {
-            return this.getFile(fse, fileName, { create: false });
-        }).then((srcfe) => {
-            return this.resolveDirectoryUrl(newPath).then((deste) => {
-                return this.copyMock(srcfe, deste, newFileName);
-            });
-        });
+    /**
+     * Copy a file or dir to a given path.
+     *
+     * @param sourcePath Path of the file/dir to copy.
+     * @param sourceName Name of file/dir to copy
+     * @param destPath Path where to copy.
+     * @param destName New name of file/dir.
+     * @return Returns a Promise that resolves to the new Entry or rejects with an error.
+     */
+    async copyFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
+        const destFixed = this.fixPathAndName(destPath, destName);
+
+        const source = await this.resolveLocalFilesystemUrl(this.textUtils.concatenatePaths(sourcePath, sourceName));
+
+        const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
+
+        return this.copyMock(source, destParentDir, destFixed.name);
     }
 
     /**
@@ -431,13 +436,7 @@ export class FileMock extends File {
      *         an error.
      */
     moveDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<DirectoryEntry | Entry> {
-        return this.resolveDirectoryUrl(path).then((fse) => {
-            return this.getDirectory(fse, dirName, { create: false });
-        }).then((srcde) => {
-            return this.resolveDirectoryUrl(newPath).then((deste) => {
-                return this.moveMock(srcde, deste, newDirName);
-            });
-        });
+        return this.moveFileOrDir(path, dirName, newPath, newDirName);
     }
 
     /**
@@ -450,15 +449,43 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves to the new Entry or rejects with an error.
      */
     moveFile(path: string, fileName: string, newPath: string, newFileName: string): Promise<Entry> {
-        newFileName = newFileName || fileName;
+        return this.moveFileOrDir(path, fileName, newPath, newFileName || fileName);
+    }
 
-        return this.resolveDirectoryUrl(path).then((fse) => {
-            return this.getFile(fse, fileName, { create: false });
-        }).then((srcfe) => {
-            return this.resolveDirectoryUrl(newPath).then((deste) => {
-                return this.moveMock(srcfe, deste, newFileName);
-            });
-        });
+    /**
+     * Move a file or dir to a given path.
+     *
+     * @param sourcePath Path of the file/dir to copy.
+     * @param sourceName Name of file/dir to copy
+     * @param destPath Path where to copy.
+     * @param destName New name of file/dir.
+     * @return Returns a Promise that resolves to the new Entry or rejects with an error.
+     */
+    async moveFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
+        const destFixed = this.fixPathAndName(destPath, destName);
+
+        const source = await this.resolveLocalFilesystemUrl(this.textUtils.concatenatePaths(sourcePath, sourceName));
+
+        const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
+
+        return this.moveMock(source, destParentDir, destFixed.name);
+    }
+
+    /**
+     * Fix a path and name, making sure the name doesn't contain any folder. If it does, the folder will be moved to the path.
+     *
+     * @param path Path to fix.
+     * @param name Name to fix.
+     * @return Fixed values.
+     */
+    protected fixPathAndName(path: string, name: string): {path: string, name: string} {
+
+        const fullPath = this.textUtils.concatenatePaths(path, name);
+
+        return {
+            path: fullPath.substring(0, fullPath.lastIndexOf('/')),
+            name: fullPath.substr(fullPath.lastIndexOf('/') + 1),
+        };
     }
 
     /**
