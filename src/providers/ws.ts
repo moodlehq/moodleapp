@@ -901,7 +901,7 @@ export class CoreWSProvider {
 
         return transfer.upload(filePath, uploadUrl, options, true).then((success) => {
             const data = this.textUtils.parseJSON(success.response, null,
-                    this.logger.error.bind(this.logger, 'Error parsing response from upload'));
+                    this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response));
             if (data === null) {
                 return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
             }

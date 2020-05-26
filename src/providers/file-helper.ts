@@ -15,16 +15,13 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
-import { CoreConfigProvider } from './config';
-import { CoreFileProvider, CoreFileProgressFunction } from './file';
+import { CoreFileProvider } from './file';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
 import { CoreWSProvider } from './ws';
-import { CoreDomUtilsProvider } from './utils/dom';
 import { CoreUrlUtils } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
-import { FileEntry } from '@ionic-native/file';
 import { makeSingleton } from '@singletons/core.singletons';
 
 /**
@@ -33,23 +30,13 @@ import { makeSingleton } from '@singletons/core.singletons';
 @Injectable()
 export class CoreFileHelperProvider {
 
-    // Variables for reading files in chunks.
-    protected MAX_CHUNK_SIZE_NAME = 'file_max_chunk_size';
-    protected READ_CHUNK_ATTEMPT_NAME = 'file_read_chunk_attempt';
-    protected maxChunkSize = -1;
-
     constructor(protected fileProvider: CoreFileProvider,
             protected filepoolProvider: CoreFilepoolProvider,
             protected sitesProvider: CoreSitesProvider,
             protected appProvider: CoreAppProvider,
             protected translate: TranslateService,
             protected utils: CoreUtilsProvider,
-            protected wsProvider: CoreWSProvider,
-            protected configProvider: CoreConfigProvider,
-            protected domUtils: CoreDomUtilsProvider) {
-
-        this.initMaxChunkSize();
-    }
+            protected wsProvider: CoreWSProvider) { }
 
     /**
      * Convenience function to open a file, downloading it if needed.
@@ -259,34 +246,6 @@ export class CoreFileHelperProvider {
     }
 
     /**
-     * Initialize the max chunk size.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async initMaxChunkSize(): Promise<void> {
-        const sizes = await Promise.all([
-            await this.configProvider.get(this.READ_CHUNK_ATTEMPT_NAME, -1), // Check if there is any attempt pending.
-            await this.configProvider.get(this.MAX_CHUNK_SIZE_NAME, -1), // Retrieve current max chunk size from DB.
-        ]);
-
-        const attemptSize = sizes[0];
-        const maxChunkSize = sizes[1];
-
-        if (attemptSize != -1 && (maxChunkSize == -1 || attemptSize < maxChunkSize)) {
-            // Store the attempt's size as the max size.
-            this.storeMaxChunkSize(attemptSize);
-        } else {
-            // No attempt or the max size is already lower. Keep current max size.
-            this.maxChunkSize = maxChunkSize;
-        }
-
-        if (attemptSize != -1) {
-            // Clean pending attempt.
-            await this.configProvider.delete(this.READ_CHUNK_ATTEMPT_NAME);
-        }
-    }
-
-    /**
      * Check if a state is downloaded or outdated.
      *
      * @param state The state to check.
@@ -379,99 +338,6 @@ export class CoreFileHelperProvider {
         }
 
         throw new Error('Couldn\'t determine file size: ' + file.fileurl);
-    }
-
-    /**
-     * Save max chunk size.
-     *
-     * @param size Size to store.
-     * @return Promise resolved when done.
-     */
-    protected async storeMaxChunkSize(size: number): Promise<void> {
-        this.maxChunkSize = size;
-
-        await this.configProvider.set(this.MAX_CHUNK_SIZE_NAME, size);
-    }
-
-    /**
-     * Write some file data into a filesystem file.
-     * It's done in chunks to prevent crashing the app for big files.
-     *
-     * @param file The data to write.
-     * @param path Path where to store the data.
-     * @param onProgress Function to call on progress.
-     * @param offset Offset where to start reading from.
-     * @param append Whether to append the data to the end of the file.
-     * @return Promise resolved when done.
-     */
-    async writeFileDataInFile(file: Blob, path: string, onProgress?: CoreFileProgressFunction, offset: number = 0,
-            append?: boolean): Promise<FileEntry> {
-
-        offset = offset || 0;
-
-        // Get the chunk to read and write.
-        const readWholeFile = offset === 0 && CoreFileProvider.CHUNK_SIZE >= file.size;
-        const chunk = readWholeFile ? file : file.slice(offset, Math.min(offset + CoreFileProvider.CHUNK_SIZE, file.size));
-
-        try {
-            const fileEntry = await this.fileProvider.writeFileDataInFileChunk(chunk, path, append);
-
-            offset += CoreFileProvider.CHUNK_SIZE;
-
-            onProgress && onProgress({
-                lengthComputable: true,
-                loaded: offset,
-                total: file.size
-            });
-
-            if (offset >= file.size) {
-                // Done, stop.
-                return fileEntry;
-            }
-
-            // Read the next chunk.
-            return this.writeFileDataInFile(file, path, onProgress, offset, true);
-        } catch (error) {
-            if (readWholeFile || !error || error.name != 'NotReadableError') {
-                return Promise.reject(error);
-            }
-
-            // Permission error when reading file in chunks. This usually happens with Google Drive files.
-            // Try to read the whole file at once.
-            return this.writeBigFileDataInFile(file, path, onProgress);
-        }
-    }
-
-    /**
-     * Writes a big file data into a filesystem file without using chunks.
-     * The app can crash when doing this with big files, so this function will try to control the max size that works
-     * and warn the user if he's trying to upload a file that is too big.
-     *
-     * @param file The data to write.
-     * @param path Path where to store the data.
-     * @param onProgress Function to call on progress.
-     * @return Promise resolved with the file.
-     */
-    protected async writeBigFileDataInFile(file: Blob, path: string, onProgress?: CoreFileProgressFunction): Promise<FileEntry> {
-        if (this.maxChunkSize != -1 && file.size >= this.maxChunkSize) {
-            // The file size is bigger than the max allowed size. Ask the user to confirm.
-            await this.domUtils.showConfirm(this.translate.instant('core.confirmreadfiletoobig'));
-        }
-
-        // Store the "attempt".
-        await this.configProvider.set(this.READ_CHUNK_ATTEMPT_NAME, file.size);
-
-        // Write the whole file.
-        const fileEntry = await this.fileProvider.writeFileDataInFileChunk(file, path, false);
-
-        // Success, remove the attempt and increase the max chunk size if needed.
-        await this.configProvider.delete(this.READ_CHUNK_ATTEMPT_NAME);
-
-        if (file.size > this.maxChunkSize) {
-            await this.storeMaxChunkSize(file.size + 1);
-        }
-
-        return fileEntry;
     }
 }
 

@@ -16,12 +16,13 @@ import { Injectable } from '@angular/core';
 import { ActionSheetController, ActionSheet, Platform, Loading } from 'ionic-angular';
 import { MediaFile } from '@ionic-native/media-capture';
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { Chooser, ChooserResult } from '@ionic-native/chooser';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider, CoreFileProgressEvent } from '@providers/file';
-import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreMimetypeUtils } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreFileUploaderProvider, CoreFileUploaderOptions } from './fileuploader';
@@ -49,8 +50,35 @@ export class CoreFileUploaderHelperProvider {
             protected uploaderDelegate: CoreFileUploaderDelegate,
             protected camera: Camera,
             protected platform: Platform,
-            protected fileHelper: CoreFileHelperProvider) {
+            protected fileChooser: Chooser) {
         this.logger = logger.getInstance('CoreFileUploaderProvider');
+    }
+
+    /**
+     * Choose any type of file and upload it.
+     *
+     * @param maxSize Max size of the upload. -1 for no max size.
+     * @param upload True if the file should be uploaded, false to return the picked file.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
+     * @return Promise resolved when done.
+     */
+    async chooseAndUploadFile(maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
+
+        const result = await this.fileChooser.getFile(mimetypes ? mimetypes.join(',') : undefined);
+
+        if (!result) {
+            // User canceled.
+            throw this.domUtils.createCanceledError();
+        }
+
+        if (result.name == 'File') {
+            // In some Android 4.4 devices the file name cannot be retrieved. Try to use the one from the URI.
+            result.name = this.getChosenFileNameFromPath(result) || result.name;
+        }
+
+        const options = this.fileUploaderProvider.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
+
+        return this.uploadFile(result.uri, maxSize, true, options);
     }
 
     /**
@@ -108,7 +136,7 @@ export class CoreFileUploaderHelperProvider {
             const filePath = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
-            return this.fileHelper.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
+            return this.fileProvider.writeFileDataInFile(file, filePath, (progress: CoreFileProgressEvent) => {
                 this.showProgressModal(modal, 'core.fileuploader.readingfileperc', progress);
             });
         }).catch((error) => {
@@ -193,9 +221,7 @@ export class CoreFileUploaderHelperProvider {
             }
         });
 
-        this.domUtils.showErrorModal(errorMessage);
-
-        return Promise.reject(null);
+        return Promise.reject(errorMessage);
     }
 
     /**
@@ -222,6 +248,33 @@ export class CoreFileUploaderHelperProvider {
         if (this.actionSheet) {
             this.actionSheet.dismiss();
         }
+    }
+
+    /**
+     * Given the result of choosing a file, try to get its file name from the path.
+     *
+     * @param result Chosen file data.
+     * @return File name, undefined if cannot get it.
+     */
+    protected getChosenFileNameFromPath(result: ChooserResult): string {
+        const nameAndDir = this.fileProvider.getFileAndDirectoryFromPath(result.uri);
+
+        if (!nameAndDir.name) {
+            return;
+        }
+
+        let extension = CoreMimetypeUtils.instance.getFileExtension(nameAndDir.name);
+
+        if (!extension) {
+            // The URI doesn't have an extension, add it now.
+            extension = CoreMimetypeUtils.instance.getExtension(result.mediaType);
+
+            if (extension) {
+                nameAndDir.name += '.' + extension;
+            }
+        }
+
+        return decodeURIComponent(nameAndDir.name);
     }
 
     /**
@@ -632,7 +685,7 @@ export class CoreFileUploaderHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if the file is uploaded, rejected otherwise.
      */
-    protected uploadFile(path: string, maxSize: number, checkSize: boolean, options: CoreFileUploaderOptions, siteId?: string)
+    uploadFile(path: string, maxSize: number, checkSize: boolean, options: CoreFileUploaderOptions, siteId?: string)
             : Promise<any> {
 
         const errorStr = this.translate.instant('core.error'),
@@ -649,7 +702,7 @@ export class CoreFileUploaderHelperProvider {
                         this.fileProvider.removeExternalFile(path);
                     }
 
-                    return Promise.reject(null);
+                    return Promise.reject(this.domUtils.createCanceledError());
                 });
             };
 

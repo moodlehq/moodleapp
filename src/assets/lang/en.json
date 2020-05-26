@@ -1375,7 +1375,6 @@
     "core.confirmgotabrootdefault": "Are you sure you want to go to the initial page of the current tab?",
     "core.confirmloss": "Are you sure? All changes will be lost.",
     "core.confirmopeninbrowser": "Do you want to open it in a web browser?",
-    "core.confirmreadfiletoobig": "It seems the app previously crashed when trying to read a file as big as this one. Are you sure you want to continue?<br><br>If this file is stored in a repository like Google Drive, please try to download the file to your device first and use the downloaded file.",
     "core.considereddigitalminor": "You are too young to create an account on this site.",
     "core.content": "Content",
     "core.contenteditingsynced": "The content you are editing has been synced.",

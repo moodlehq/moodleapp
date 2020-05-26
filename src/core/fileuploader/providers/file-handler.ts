@@ -21,6 +21,7 @@ import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from './delegate
 import { CoreFileUploaderHelperProvider } from './helper';
 import { CoreFileUploaderProvider } from './fileuploader';
 import { TranslateService } from '@ngx-translate/core';
+
 /**
  * Handler to upload any type of file.
  */
@@ -65,11 +66,24 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
     getData(): CoreFileUploaderHandlerData {
         const isIOS = this.platform.is('ios');
 
-        return {
+        const handler: CoreFileUploaderHandlerData = {
             title: isIOS ? 'core.fileuploader.more' : 'core.fileuploader.file',
             class: 'core-fileuploader-file-handler',
             icon: isIOS ? 'more' : 'folder',
-            afterRender: (maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]): void => {
+        };
+
+        if (this.appProvider.isMobile()) {
+            handler.action = (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
+                return this.uploaderHelper.chooseAndUploadFile(maxSize, upload, mimetypes).then((result) => {
+                    return {
+                        treated: true,
+                        result: result
+                    };
+                });
+            };
+
+        } else {
+            handler.afterRender = (maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]): void => {
                 // Add an invisible file input in the file handler.
                 // It needs to be done like this because the action sheet items don't accept inputs.
                 const element = document.querySelector('.core-fileuploader-file-handler');
@@ -134,7 +148,9 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         element.appendChild(input);
                     }
                 }
-            }
-        };
+            };
+        }
+
+        return handler;
     }
 }

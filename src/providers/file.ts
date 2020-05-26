@@ -65,7 +65,7 @@ export class CoreFileProvider {
     static SITESFOLDER = 'sites';
     static TMPFOLDER = 'tmp';
 
-    static CHUNK_SIZE = 10485760; // 10 MB.
+    static CHUNK_SIZE = 1048576; // 1 MB. Same chunk size as Ionic Native.
 
     protected logger;
     protected initialized = false;
@@ -639,6 +639,7 @@ export class CoreFileProvider {
     /**
      * Write some file data into a filesystem file.
      * It's done in chunks to prevent crashing the app for big files.
+     * Please notice Ionic Native writeFile function already splits by chunks, but it doesn't have an onProgress function.
      *
      * @param file The data to write.
      * @param path Path where to store the data.
@@ -646,19 +647,17 @@ export class CoreFileProvider {
      * @param offset Offset where to start reading from.
      * @param append Whether to append the data to the end of the file.
      * @return Promise resolved when done.
-     * @deprecated since 3.8.3. Please use CoreFileHelperProvider.writeFileDataInFile instead.
      */
     async writeFileDataInFile(file: Blob, path: string, onProgress?: CoreFileProgressFunction, offset: number = 0,
             append?: boolean): Promise<FileEntry> {
 
         offset = offset || 0;
 
-        // Get the chunk to read and write.
-        const readWholeFile = offset === 0 && CoreFileProvider.CHUNK_SIZE >= file.size;
-        const chunk = readWholeFile ? file : file.slice(offset, Math.min(offset + CoreFileProvider.CHUNK_SIZE, file.size));
-
         try {
-            const fileEntry = await this.writeFileDataInFileChunk(chunk, path, append);
+            // Get the chunk to write.
+            const chunk = file.slice(offset, Math.min(offset + CoreFileProvider.CHUNK_SIZE, file.size));
+
+            const fileEntry = await this.writeFile(path, chunk, append);
 
             offset += CoreFileProvider.CHUNK_SIZE;
 
@@ -676,30 +675,13 @@ export class CoreFileProvider {
             // Read the next chunk.
             return this.writeFileDataInFile(file, path, onProgress, offset, true);
         } catch (error) {
-            if (readWholeFile || !error || error.name != 'NotReadableError') {
-                return Promise.reject(error);
+            if (error && error.target && error.target.error) {
+                // Error returned by the writer, get the "real" error.
+                error = error.target.error;
             }
 
-            // Permission error when reading file in chunks. This usually happens with Google Drive files.
-            // Try to read the whole file at once.
-            return this.writeFileDataInFileChunk(file, path, false);
+            throw error;
         }
-    }
-
-    /**
-     * Write a chunk of data into a file.
-     *
-     * @param chunkData The chunk of data.
-     * @param path Path where to store the data.
-     * @param append Whether to append the data to the end of the file.
-     * @return Promise resolved when done.
-     */
-    writeFileDataInFileChunk(chunkData: Blob, path: string, append?: boolean): Promise<FileEntry> {
-        // Read the chunk data.
-        return this.readFileData(chunkData, CoreFileProvider.FORMATARRAYBUFFER).then((fileData) => {
-            // Write the data in the file.
-            return this.writeFile(path, fileData, append);
-        });
     }
 
     /**
@@ -957,7 +939,7 @@ export class CoreFileProvider {
      * path/            -> directory: 'path', name: ''
      * path             -> directory: '', name: 'path'
      */
-    getFileAndDirectoryFromPath(path: string): any {
+    getFileAndDirectoryFromPath(path: string): {directory: string, name: string} {
         const file = {
             directory: '',
             name: ''
