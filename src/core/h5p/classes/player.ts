@@ -40,8 +40,10 @@ export class CoreH5PPlayer {
      * @return URL.
      */
     calculateOnlinePlayerUrl(siteUrl: string, fileUrl: string, displayOptions?: CoreH5PDisplayOptions, component?: string): string {
+        fileUrl = CoreH5P.instance.treatH5PUrl(fileUrl, siteUrl);
+
         const params = this.getUrlParamsFromDisplayOptions(displayOptions);
-        params.url = fileUrl;
+        params.url = encodeURIComponent(fileUrl);
         if (component) {
             params.component = component;
         }

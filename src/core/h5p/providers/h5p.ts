@@ -428,7 +428,7 @@ export class CoreH5PProvider {
      * @param siteUrl Site URL.
      * @return Treated url.
      */
-    protected treatH5PUrl(url: string, siteUrl: string): string {
+    treatH5PUrl(url: string, siteUrl: string): string {
         if (url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }

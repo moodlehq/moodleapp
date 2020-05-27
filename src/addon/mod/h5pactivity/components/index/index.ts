@@ -116,6 +116,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             if (!this.siteCanDownload || this.state == CoreConstants.DOWNLOADED) {
                 // Cannot download the file or already downloaded, play the package directly.
                 this.play();
+
+            } else if ((this.state == CoreConstants.NOT_DOWNLOADED || this.state == CoreConstants.OUTDATED) &&
+                    CoreFilepool.instance.shouldDownload(this.deployedFile.filesize) && CoreApp.instance.isOnline()) {
+                // Package is small, download it automatically. Don't block this function for this.
+                this.downloadAutomatically();
             }
         } finally {
             this.fillContextMenu(refresh);
@@ -240,6 +245,23 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 return;
             }
 
+            CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+        }
+    }
+
+    /**
+     * Download the file automatically.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async downloadAutomatically(): Promise<void> {
+        try {
+            await this.downloadDeployedFile();
+
+            if (!this.isDestroyed) {
+                this.play();
+            }
+        } catch (error) {
             CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
         }
     }

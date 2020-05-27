@@ -144,7 +144,7 @@ export class CoreH5PHelper {
 
         try {
             // Notify that the unzip is starting.
-            onProgress && onProgress({message: 'addon.mod_h5pactivity.storingfiles'});
+            onProgress && onProgress({message: 'core.storingfiles'});
 
             // Read the contents of the unzipped dir, process them and store them.
             const contents = await CoreFile.instance.getDirectoryContents(destFolder);
