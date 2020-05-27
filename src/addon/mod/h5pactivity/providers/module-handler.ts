@@ -65,6 +65,7 @@ export class AddonModH5PActivityModuleHandler implements CoreCourseModuleHandler
             icon: CoreCourse.instance.getModuleIconSrc(this.modName, module.modicon),
             title: module.name,
             class: 'addon-mod_h5pactivity-handler',
+            showDownloadButton: true,
             action(event: Event, navCtrl: NavController, module: any, courseId: number, options: NavOptions, params?: any): void {
                 const pageParams = {module: module, courseId: courseId};
                 if (params) {

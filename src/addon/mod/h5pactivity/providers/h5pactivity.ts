@@ -18,6 +18,8 @@ import { CoreSites } from '@providers/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseLogHelper } from '@core/course/providers/log-helper';
+import { CoreH5P } from '@core/h5p/providers/h5p';
+import { CoreH5PDisplayOptions } from '@core/h5p/classes/core';
 
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 
@@ -61,6 +63,33 @@ export class AddonModH5PActivityProvider {
         };
 
         return site.read('mod_h5pactivity_get_h5pactivity_access_information', params, preSets);
+    }
+
+    /**
+     * Get deployed file from an H5P activity instance.
+     *
+     * @param h5pActivity Activity instance.
+     * @param options Options
+     * @return Promise resolved with the file.
+     */
+    async getDeployedFile(h5pActivity: AddonModH5PActivityData, options?: AddonModH5PActivityGetDeployedFileOptions)
+            : Promise<CoreWSExternalFile> {
+
+        if (h5pActivity.deployedfile) {
+            // File already deployed and still valid, use this one.
+            return h5pActivity.deployedfile;
+        } else {
+            if (!h5pActivity.package || !h5pActivity.package[0]) {
+                // Shouldn't happen.
+                throw 'No H5P package found.';
+            }
+
+            options = options || {};
+
+            // Deploy the file in the server.
+            return CoreH5P.instance.getTrustedH5PFile(h5pActivity.package[0].fileurl, options.displayOptions,
+                    options.ignoreCache, options.siteId);
+        }
     }
 
     /**
@@ -189,12 +218,12 @@ export class AddonModH5PActivityProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the WS call is successful.
      */
-    async logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params = {
             h5pactivityid: id,
         };
 
-        const result: AddonModH5PActivityViewResult = await CoreCourseLogHelper.instance.logSingle(
+        return CoreCourseLogHelper.instance.logSingle(
             'mod_h5pactivity_view_h5pactivity',
             params,
             AddonModH5PActivityProvider.COMPONENT,
@@ -204,10 +233,6 @@ export class AddonModH5PActivityProvider {
             {},
             siteId
         );
-
-        if (!result.status) {
-            throw result.warnings[0] || 'Error marking H5P activity as viewed.';
-        }
     }
 }
 
@@ -262,9 +287,10 @@ export type AddonModH5PActivityAccessInfo = {
 };
 
 /**
- * Result of WS mod_h5pactivity_view_h5pactivity.
+ * Options to pass to getDeployedFile function.
  */
-export type AddonModH5PActivityViewResult = {
-    status: boolean; // Status: true if success.
-    warnings?: CoreWSExternalWarning[];
+export type AddonModH5PActivityGetDeployedFileOptions = {
+    displayOptions?: CoreH5PDisplayOptions; // Display options
+    ignoreCache?: boolean; // Whether to ignore cache. Will fail if offline or server down.
+    siteId?: string; // Site ID. If not defined, current site.
 };

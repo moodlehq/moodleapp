@@ -142,18 +142,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        if (this.h5pActivity.deployedfile) {
-            // File already deployed and still valid, use this one.
-            this.deployedFile = this.h5pActivity.deployedfile;
-        } else {
-            if (!this.h5pActivity.package || !this.h5pActivity.package[0]) {
-                // Shouldn't happen.
-                throw 'No H5P package found.';
-            }
-
-            // Deploy the file in the server.
-            this.deployedFile = await CoreH5P.instance.getTrustedH5PFile(this.h5pActivity.package[0].fileurl, this.displayOptions);
-        }
+        this.deployedFile = await AddonModH5PActivity.instance.getDeployedFile(this.h5pActivity, {
+            displayOptions: this.displayOptions,
+            siteId: this.siteId,
+        });
 
         this.fileUrl = this.deployedFile.fileurl;
 
@@ -300,6 +292,9 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     play(): void {
         this.playing = true;
+
+        // Mark the activity as viewed.
+        AddonModH5PActivity.instance.logView(this.h5pActivity.id, this.h5pActivity.name, this.siteId);
     }
 
     /**
