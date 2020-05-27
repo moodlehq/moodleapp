@@ -220,6 +220,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
     /**
      * Function that converts a regular ProgressEvent into a AddonModScormProgressEvent.
      *
+     * @param downloading True when downloading, false when unzipping.
      * @param onProgress Function to call on progress.
      * @param progress Event returned by the download function.
      */
