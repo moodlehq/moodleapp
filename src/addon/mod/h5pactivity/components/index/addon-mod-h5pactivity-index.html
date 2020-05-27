@@ -13,6 +13,11 @@
 
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
+    <!-- Offline disabled. -->
+    <ion-card class="core-warning-card" icon-start *ngIf="!siteCanDownload && playing">
+        <ion-icon name="warning"></ion-icon> {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
+    </ion-card>
+
     <ion-list *ngIf="deployedFile && !playing">
         <ion-item text-wrap *ngIf="stateMessage">
             <p >{{ stateMessage | translate }}</p>
@@ -30,4 +35,6 @@
             <p *ngIf="percentage <= 100">{{ 'core.percentagenumber' | translate:{$a: percentage} }}</p>
         </ion-item>
     </ion-list>
+
+    <core-h5p-iframe *ngIf="playing" [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"></core-h5p-iframe>
 </core-loading>

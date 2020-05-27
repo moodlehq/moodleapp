@@ -36,11 +36,11 @@ export class CoreH5PHelper {
         const config: any = {};
         const displayOptionsObject = CoreH5P.instance.h5pCore.getDisplayOptionsAsObject(displayOptions);
 
-        config.export = 0; // Don't allow downloading in the app.
+        config.export = false; // Don't allow downloading in the app.
         config.embed = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED] : 0;
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED] : false;
         config.copyright = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : 0;
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false;
 
         return config;
     }

@@ -663,6 +663,7 @@
     "addon.mod_h5pactivity.filestatenotdownloaded": "The H5P package is not downloaded. You need to download it to be able to use it.",
     "addon.mod_h5pactivity.filestateoutdated": "The H5P package has been modified since the last download. You need to download it again to be able to use it.",
     "addon.mod_h5pactivity.modulenameplural": "H5P",
+    "addon.mod_h5pactivity.offlinedisabledwarning": "You will need to be online to view the H5P package.",
     "addon.mod_h5pactivity.storingfiles": "Storing files",
     "addon.mod_imscp.deploymenterror": "Content package error!",
     "addon.mod_imscp.modulenameplural": "IMS content packages",

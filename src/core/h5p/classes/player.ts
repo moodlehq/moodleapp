@@ -31,6 +31,25 @@ export class CoreH5PPlayer {
             protected h5pStorage: CoreH5PStorage) { }
 
     /**
+     * Calculate the URL to the site H5P player.
+     *
+     * @param siteUrl Site URL.
+     * @param fileUrl File URL.
+     * @param displayOptions Display options.
+     * @param component Component to send xAPI events to.
+     * @return URL.
+     */
+    calculateOnlinePlayerUrl(siteUrl: string, fileUrl: string, displayOptions?: CoreH5PDisplayOptions, component?: string): string {
+        const params = this.getUrlParamsFromDisplayOptions(displayOptions);
+        params.url = fileUrl;
+        if (component) {
+            params.component = component;
+        }
+
+        return CoreUrlUtils.instance.addParamsToUrl(CoreTextUtils.instance.concatenatePaths(siteUrl, '/h5p/embed.php'), params);
+    }
+
+    /**
      * Create the index.html to render an H5P package.
      * Part of the code of this function is equivalent to Moodle's add_assets_to_page function.
      *
@@ -322,5 +341,26 @@ export class CoreH5PPlayer {
      */
     getResizerScriptUrl(): string {
         return CoreTextUtils.instance.concatenatePaths(this.h5pCore.h5pFS.getCoreH5PPath(), 'js/h5p-resizer.js');
+    }
+
+    /**
+     * Get online player URL params from display options.
+     *
+     * @param options Display options.
+     * @return Object with URL params.
+     */
+    getUrlParamsFromDisplayOptions(options: CoreH5PDisplayOptions): {[name: string]: string} {
+        const params: {[name: string]: string} = {};
+
+        if (!options) {
+            return params;
+        }
+
+        params[CoreH5PCore.DISPLAY_OPTION_FRAME] = options[CoreH5PCore.DISPLAY_OPTION_FRAME] ? '1' : '0';
+        params[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] = options[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] ? '1' : '0';
+        params[CoreH5PCore.DISPLAY_OPTION_EMBED] = options[CoreH5PCore.DISPLAY_OPTION_EMBED] ? '1' : '0';
+        params[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] = options[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] ? '1' : '0';
+
+        return params;
     }
 }

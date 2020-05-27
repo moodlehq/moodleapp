@@ -16,6 +16,7 @@ import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 
 import { CoreApp } from '@providers/app';
+import { CoreEvents } from '@providers/events';
 import { CoreFilepool } from '@providers/filepool';
 import { CoreWSExternalFile } from '@providers/ws';
 import { CoreDomUtils } from '@providers/utils/dom';
@@ -24,6 +25,7 @@ import { CoreH5P } from '@core/h5p/providers/h5p';
 import { CoreH5PDisplayOptions } from '@core/h5p/classes/core';
 import { CoreH5PHelper } from '@core/h5p/classes/helper';
 import { CoreConstants } from '@core/constants';
+import { CoreSite } from '@classes/site';
 
 import {
     AddonModH5PActivity, AddonModH5PActivityProvider, AddonModH5PActivityData, AddonModH5PActivityAccessInfo
@@ -50,13 +52,22 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     percentage: string; // Download/unzip percentage.
     progressMessage: string; // Message about download/unzip.
     playing: boolean; // Whether the package is being played.
+    displayOptions: CoreH5PDisplayOptions; // Display options for the package.
+    onlinePlayerUrl: string; // URL to play the package in online.
+    fileUrl: string; // The fileUrl to use to play the package.
+    state: string; // State of the file.
+    siteCanDownload: boolean;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
-    protected displayOptions: CoreH5PDisplayOptions;
+    protected site: CoreSite;
+    protected observer;
 
     constructor(injector: Injector,
             @Optional() protected content: Content) {
         super(injector, content);
+
+        this.site = this.sitesProvider.getCurrentSite();
+        this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.instance.isOfflineDisabledInSite();
     }
 
     /**
@@ -87,14 +98,25 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         try {
             this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(this.courseId, this.module.id);
 
+            this.dataRetrieved.emit(this.h5pActivity);
             this.description = this.h5pActivity.intro;
             this.displayOptions = CoreH5PHelper.decodeDisplayOptions(this.h5pActivity.displayoptions);
-            this.dataRetrieved.emit(this.h5pActivity);
+
+            if (this.h5pActivity.package && this.h5pActivity.package[0]) {
+                // The online player should use the original file, not the trusted one.
+                this.onlinePlayerUrl = CoreH5P.instance.h5pPlayer.calculateOnlinePlayerUrl(
+                            this.site.getURL(), this.h5pActivity.package[0].fileurl, this.displayOptions);
+            }
 
             await Promise.all([
                 this.fetchAccessInfo(),
                 this.fetchDeployedFileData(),
             ]);
+
+            if (!this.siteCanDownload || this.state == CoreConstants.DOWNLOADED) {
+                // Cannot download the file or already downloaded, play the package directly.
+                this.play();
+            }
         } finally {
             this.fillContextMenu(refresh);
         }
@@ -115,6 +137,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * @return Promise resolved when done.
      */
     protected async fetchDeployedFileData(): Promise<void> {
+        if (!this.siteCanDownload) {
+            // Cannot download the file, no need to fetch the file data.
+            return;
+        }
+
         if (this.h5pActivity.deployedfile) {
             // File already deployed and still valid, use this one.
             this.deployedFile = this.h5pActivity.deployedfile;
@@ -128,19 +155,30 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             this.deployedFile = await CoreH5P.instance.getTrustedH5PFile(this.h5pActivity.package[0].fileurl, this.displayOptions);
         }
 
-        await this.calculateFileStatus();
+        this.fileUrl = this.deployedFile.fileurl;
+
+        // Listen for changes in the state.
+        const eventName = await CoreFilepool.instance.getFileEventNameByUrl(this.siteId, this.deployedFile.fileurl);
+
+        if (!this.observer) {
+            this.observer = CoreEvents.instance.on(eventName, () => {
+                this.calculateFileState();
+            });
+        }
+
+        await this.calculateFileState();
     }
 
     /**
-     * Calculate the status of the deployed file.
+     * Calculate the state of the deployed file.
      *
      * @return Promise resolved when done.
      */
-    protected async calculateFileStatus(): Promise<void> {
-        const state = await CoreFilepool.instance.getFileStateByUrl(this.siteId, this.deployedFile.fileurl,
+    protected async calculateFileState(): Promise<void> {
+        this.state = await CoreFilepool.instance.getFileStateByUrl(this.siteId, this.deployedFile.fileurl,
                 this.deployedFile.timemodified);
 
-        this.showFileState(state);
+        this.showFileState();
     }
 
     /**
@@ -154,18 +192,16 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
     /**
      * Displays some data based on the state of the main file.
-     *
-     * @param state The state of the file.
      */
-    protected showFileState(state: string): void {
+    protected showFileState(): void {
 
-        if (state == CoreConstants.OUTDATED) {
+        if (this.state == CoreConstants.OUTDATED) {
             this.stateMessage = 'addon.mod_h5pactivity.filestateoutdated';
             this.needsDownload = true;
-        } else if (state == CoreConstants.NOT_DOWNLOADED) {
+        } else if (this.state == CoreConstants.NOT_DOWNLOADED) {
             this.stateMessage = 'addon.mod_h5pactivity.filestatenotdownloaded';
             this.needsDownload = true;
-        } else if (state == CoreConstants.DOWNLOADING) {
+        } else if (this.state == CoreConstants.DOWNLOADING) {
             this.stateMessage = '';
 
             if (!this.downloading) {
@@ -264,7 +300,12 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     play(): void {
         this.playing = true;
+    }
 
-        // @TODO
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.observer && this.observer.off();
     }
 }

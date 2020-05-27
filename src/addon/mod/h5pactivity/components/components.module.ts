@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreCourseComponentsModule } from '@core/course/components/components.module';
+import { CoreH5PComponentsModule } from '@core/h5p/components/components.module';
 import { AddonModH5PActivityIndexComponent } from './index/index';
 
 @NgModule({
@@ -31,7 +32,8 @@ import { AddonModH5PActivityIndexComponent } from './index/index';
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CoreCourseComponentsModule
+        CoreCourseComponentsModule,
+        CoreH5PComponentsModule,
     ],
     providers: [
     ],

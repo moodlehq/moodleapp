@@ -62,7 +62,9 @@ export class CoreH5PStorage {
                 // Library already installed.
                 libraryData.libraryId = dbData.id;
 
-                if (!this.h5pFramework.isPatchedLibrary(libraryData, dbData)) {
+                const isNewPatch = await this.h5pFramework.isPatchedLibrary(libraryData, dbData);
+
+                if (!isNewPatch) {
                     // Same or older version, no need to save.
                     libraryData.saveDependencies = false;
 
