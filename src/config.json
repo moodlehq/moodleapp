@@ -1,7 +1,7 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "desktopappname": "Moodle Desktop",
+    "app_id": "com.resulam.mobile",
+    "appname": "Resulam Mobile",
+    "desktopappname": "Resulam Desktop",
     "versioncode": 3820,
     "versionname": "3.8.2",
     "cache_update_frequency_usually": 420000,
@@ -60,16 +60,7 @@
     "wsservice": "moodle_mobile_app",
     "wsextservice": "local_mobile",
     "demo_sites": {
-        "student": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "student",
-            "password": "moodle"
-        },
-        "teacher": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle"
-        }
+        
     },
     "font_sizes": [
         62.5,
@@ -77,7 +68,7 @@
         93.75
     ],
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
+    "siteurl": "http://13.93.29.207",
     "sitename": "",
     "multisitesdisplay": "",
     "skipssoconfirmation": false,

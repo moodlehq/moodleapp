@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.moodle.moodlemobile" version="3.8.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
+<widget id="com.resulam.mobile" version="3.8.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Resulam</name>
+    <description>Resulam official app</description>
     <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
     <content src="index.html" />
     <access origin="*" />
@@ -73,12 +73,12 @@
         <resource-file src="resources/android/splash/drawable-port-xxhdpi-screen.png" target="app/src/main/res/drawable-port-xxhdpi/screen.png" />
         <resource-file src="resources/android/splash/drawable-port-xxxhdpi-screen.png" target="app/src/main/res/drawable-port-xxxhdpi/screen.png" />
         <resource-file src="resources/values/colors.xml" target="/app/src/main/res/values/colors.xml" />
-        <icon background="@color/background" density="ldpi" foreground="resources/android/icon/ldpi-foreground.png" src="resources/android/icon/drawable-ldpi-icon.png" />
-        <icon background="@color/background" density="mdpi" foreground="resources/android/icon/mdpi-foreground.png" src="resources/android/icon/drawable-mdpi-icon.png" />
-        <icon background="@color/background" density="hdpi" foreground="resources/android/icon/hdpi-foreground.png" src="resources/android/icon/drawable-hdpi-icon.png" />
-        <icon background="@color/background" density="xhdpi" foreground="resources/android/icon/xhdpi-foreground.png" src="resources/android/icon/drawable-xhdpi-icon.png" />
-        <icon background="@color/background" density="xxhdpi" foreground="resources/android/icon/xxhdpi-foreground.png" src="resources/android/icon/drawable-xxhdpi-icon.png" />
-        <icon background="@color/background" density="xxxhdpi" foreground="resources/android/icon/xxxhdpi-foreground.png" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
+        <icon background="resources/android/icon/ldpi-background.png" density="ldpi" foreground="resources/android/icon/ldpi-foreground.png" src="resources/android/icon/drawable-ldpi-icon.png" />
+        <icon background="resources/android/icon/mdpi-background.png" density="mdpi" foreground="resources/android/icon/mdpi-foreground.png" src="resources/android/icon/drawable-mdpi-icon.png" />
+        <icon background="resources/android/icon/hdpi-background.png" density="hdpi" foreground="resources/android/icon/hdpi-foreground.png" src="resources/android/icon/drawable-hdpi-icon.png" />
+        <icon background="resources/android/icon/xhdpi-background.png" density="xhdpi" foreground="resources/android/icon/xhdpi-foreground.png" src="resources/android/icon/drawable-xhdpi-icon.png" />
+        <icon background="resources/android/icon/xxhdpi-background.png" density="xxhdpi" foreground="resources/android/icon/xxhdpi-foreground.png" src="resources/android/icon/drawable-xxhdpi-icon.png" />
+        <icon background="resources/android/icon/xxxhdpi-background.png" density="xxxhdpi" foreground="resources/android/icon/xxxhdpi-foreground.png" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <provider android:authorities="${applicationId}.opener.provider" android:exported="false" android:grantUriPermissions="true" android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
                 <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
