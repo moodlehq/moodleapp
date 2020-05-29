@@ -202,11 +202,15 @@ export class AddonQtypeDdImageOrTextQuestion {
         let dragItemsArea = <HTMLElement> topNode.querySelector('div.draghomes');
 
         if (dragItemsArea) {
+            // On 3.9+ dragitems were removed.
+            const dragItems = topNode.querySelector('div.dragitems');
+
+            if (dragItems) {
+                // Remove empty div.dragitems.
+                dragItems.remove();
+            }
+
             // 3.6+ site, transform HTML so it has the same structure as in Moodle 3.5.
-
-            // Remove empty div.dragitems.
-            topNode.querySelector('div.dragitems').remove();
-
             const ddArea = topNode.querySelector('div.ddarea');
 
             // Move div.dropzones to div.ddarea.
