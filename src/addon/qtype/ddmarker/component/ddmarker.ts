@@ -89,14 +89,20 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
             }
         } else if (this.question.amdArgs) {
             // Moodle version >= 3.6.
-            if (typeof this.question.amdArgs[1] != 'undefined') {
-                this.imgSrc = this.question.amdArgs[1];
+            let nextIndex = 1;
+            // Moodle version >= 3.9, imgSrc is not specified, do not advance index.
+            if (typeof this.question.amdArgs[nextIndex] != 'undefined' && typeof this.question.amdArgs[nextIndex] != 'boolean') {
+                this.imgSrc = this.question.amdArgs[nextIndex];
+                nextIndex++;
             }
-            if (typeof this.question.amdArgs[2] != 'undefined') {
-                this.question.readOnly = this.question.amdArgs[2];
+
+            if (typeof this.question.amdArgs[nextIndex] != 'undefined') {
+                this.question.readOnly = this.question.amdArgs[nextIndex];
             }
-            if (typeof this.question.amdArgs[3] != 'undefined') {
-                this.dropZones = this.question.amdArgs[3];
+            nextIndex++;
+
+            if (typeof this.question.amdArgs[nextIndex] != 'undefined') {
+                this.dropZones = this.question.amdArgs[nextIndex];
             }
         }
 
