@@ -33,7 +33,6 @@ addon-qtype-ddwtos {
     }
     .draghome, .drag.unplaced{
         border: 1px solid $gray-darker;
-        border-radius: 5px;
     }
     .draghome {
         visibility: hidden;
@@ -87,6 +86,28 @@ addon-qtype-ddwtos {
             background: nth($core-dd-question-colors, $i + 1);
             color: $text-color;
         }
+    }
+
+    .group2 {
+        border-radius: 10px 0 0 0;
+    }
+    .group3 {
+        border-radius: 0 10px 0 0;
+    }
+    .group4 {
+        border-radius: 0 0 10px 0;
+    }
+    .group5 {
+        border-radius: 0 0 0 10px;
+    }
+    .group6 {
+        border-radius: 0 10px 10px 0;
+    }
+    .group7 {
+        border-radius: 10px 0 0 10px;
+    }
+    .group8 {
+        border-radius: 10px 10px 10px 10px;
     }
 
     sub, sup {
