@@ -110,7 +110,11 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchUserProfile(): Promise<void> {
-        this.user = await CoreUser.instance.getProfile(this.userId, this.courseId, true);
+        try {
+            this.user = await CoreUser.instance.getProfile(this.userId, this.courseId, true);
+        } catch (error) {
+            // Ignore errors.
+        }
     }
 
     /**

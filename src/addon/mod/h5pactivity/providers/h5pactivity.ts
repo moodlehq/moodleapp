@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@providers/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 import { CoreTimeUtils } from '@providers/utils/time';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseLogHelper } from '@core/course/providers/log-helper';
 import { CoreH5P } from '@core/h5p/providers/h5p';
@@ -64,9 +65,9 @@ export class AddonModH5PActivityProvider {
     protected formatAttemptResults(attempt: AddonModH5PActivityWSAttemptResults): AddonModH5PActivityAttemptResults {
         const formattedAttempt: AddonModH5PActivityAttemptResults = this.formatAttempt(attempt);
 
-        for (const i in formattedAttempt.results) {
-            formattedAttempt.results[i] = this.formatResult(formattedAttempt.results[i]);
-        }
+        formattedAttempt.results = formattedAttempt.results.map((result) => {
+            return this.formatResult(result);
+        });
 
         return formattedAttempt;
     }
@@ -80,14 +81,15 @@ export class AddonModH5PActivityProvider {
     protected formatUserAttempts(data: AddonModH5PActivityWSUserAttempts): AddonModH5PActivityUserAttempts {
         const formatted: AddonModH5PActivityUserAttempts = data;
 
-        for (const i in formatted.attempts) {
-            formatted.attempts[i] = this.formatAttempt(formatted.attempts[i]);
-        }
+        formatted.attempts = formatted.attempts.map((attempt) => {
+            return this.formatAttempt(attempt);
+        });
 
         if (formatted.scored) {
-            for (const i in formatted.scored.attempts) {
-                formatted.scored.attempts[i] = this.formatAttempt(formatted.scored.attempts[i]);
-            }
+
+            formatted.scored.attempts = formatted.scored.attempts.map((attempt) => {
+                return this.formatAttempt(attempt);
+            });
         }
 
         return formatted;
@@ -135,6 +137,153 @@ export class AddonModH5PActivityProvider {
         };
 
         return site.read('mod_h5pactivity_get_h5pactivity_access_information', params, preSets);
+    }
+
+    /**
+     * Get attempt results for all user attempts.
+     *
+     * @param id Activity ID.
+     * @param options Other options.
+     * @return Promise resolved with the results of the attempt.
+     */
+    async getAllAttemptsResults(id: number, options?: AddonModH5PActivityGetAttemptResultsOptions)
+            : Promise<AddonModH5PActivityAttemptsResults> {
+
+        const userAttempts = await AddonModH5PActivity.instance.getUserAttempts(id, options);
+
+        const attemptIds = userAttempts.attempts.map((attempt) => {
+            return attempt.id;
+        });
+
+        if (attemptIds.length) {
+            // Get all the attempts with a single call.
+            return AddonModH5PActivity.instance.getAttemptsResults(id, attemptIds, options);
+        } else {
+            // No attempts.
+            return {
+                activityid: id,
+                attempts: [],
+                warnings: [],
+            };
+        }
+    }
+
+    /**
+     * Get cache key for results WS calls.
+     *
+     * @param id Instance ID.
+     * @param attemptsIds Attempts IDs.
+     * @return Cache key.
+     */
+    protected getAttemptResultsCacheKey(id: number, attemptsIds: number[]): string {
+        return this.getAttemptResultsCommonCacheKey(id) + ':' + JSON.stringify(attemptsIds);
+    }
+
+    /**
+     * Get common cache key for results WS calls.
+     *
+     * @param id Instance ID.
+     * @return Cache key.
+     */
+    protected getAttemptResultsCommonCacheKey(id: number): string {
+        return this.ROOT_CACHE_KEY + 'results:' + id;
+    }
+
+    /**
+     * Get attempt results.
+     *
+     * @param id Activity ID.
+     * @param attemptId Attempt ID.
+     * @param options Other options.
+     * @return Promise resolved with the results of the attempt.
+     */
+    async getAttemptResults(id: number, attemptId: number, options?: AddonModH5PActivityGetAttemptResultsOptions)
+            : Promise<AddonModH5PActivityAttemptResults> {
+
+        options = options || {};
+
+        const site = await CoreSites.instance.getSite(options.siteId);
+
+        const params = {
+            h5pactivityid: id,
+            attemptids: [attemptId],
+        };
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
+            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+        };
+
+        if (options.forceCache) {
+            preSets.omitExpires = true;
+        } else if (options.ignoreCache) {
+            preSets.getFromCache = false;
+            preSets.emergencyCache = false;
+        }
+
+        try {
+            const response: AddonModH5PActivityGetResultsResult = await site.read('mod_h5pactivity_get_results', params, preSets);
+
+            return this.formatAttemptResults(response.attempts[0]);
+        } catch (error) {
+            if (CoreUtils.instance.isWebServiceError(error)) {
+                throw error;
+            }
+
+            // Check if the full list of results is cached. If so, get the results from there.
+            options.forceCache = true;
+
+            const attemptsResults = await AddonModH5PActivity.instance.getAllAttemptsResults(id, options);
+
+            const attempt = attemptsResults.attempts.find((attempt) => {
+                return attempt.id == attemptId;
+            });
+
+            if (!attempt) {
+                throw error;
+            }
+
+            return attempt;
+        }
+    }
+
+    /**
+     * Get attempts results.
+     *
+     * @param id Activity ID.
+     * @param attemptsIds Attempts IDs.
+     * @param options Other options.
+     * @return Promise resolved with all the attempts.
+     */
+    async getAttemptsResults(id: number, attemptsIds: number[], options?: AddonModH5PActivityGetAttemptResultsOptions)
+            : Promise<AddonModH5PActivityAttemptsResults> {
+
+        options = options || {};
+
+        const site = await CoreSites.instance.getSite(options.siteId);
+
+        const params = {
+            h5pactivityid: id,
+            attemptids: attemptsIds,
+        };
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getAttemptResultsCommonCacheKey(id),
+            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+        };
+
+        if (options.forceCache) {
+            preSets.omitExpires = true;
+        } else if (options.ignoreCache) {
+            preSets.getFromCache = false;
+            preSets.emergencyCache = false;
+        }
+
+        const response: AddonModH5PActivityGetResultsResult = await site.read('mod_h5pactivity_get_results', params, preSets);
+
+        response.attempts = response.attempts.map((attempt) => {
+            return this.formatAttemptResults(attempt);
+        });
+
+        return response;
     }
 
     /**
@@ -245,61 +394,6 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
-     * Get cache key for results WS calls.
-     *
-     * @param id Instance ID.
-     * @param attemptsIds Attempts IDs.
-     * @return Cache key.
-     */
-    protected getResultsCacheKey(id: number, attemptsIds: number[]): string {
-        return this.getResultsCommonCacheKey(id) + ':' + JSON.stringify(attemptsIds);
-    }
-
-    /**
-     * Get common cache key for results WS calls.
-     *
-     * @param id Instance ID.
-     * @return Cache key.
-     */
-    protected getResultsCommonCacheKey(id: number): string {
-        return this.ROOT_CACHE_KEY + 'results:' + id;
-    }
-
-    /**
-     * Get attempt results.
-     *
-     * @param id Activity ID.
-     * @param attemptId Attempt ID.
-     * @param options Other options.
-     * @return Promise resolved with the attempts of the user.
-     */
-    async getResults(id: number, attemptId: number, options?: AddonModH5PActivityGetResultsOptions)
-            : Promise<AddonModH5PActivityAttemptResults> {
-
-        options = options || {};
-
-        const site = await CoreSites.instance.getSite(options.siteId);
-
-        const params = {
-            h5pactivityid: id,
-            attemptids: [attemptId],
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getResultsCacheKey(id, params.attemptids),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-        };
-
-        if (options.ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
-
-        const response: AddonModH5PActivityGetResultsResult = await site.read('mod_h5pactivity_get_results', params, preSets);
-
-        return this.formatAttemptResults(response.attempts[0]);
-    }
-
-    /**
      * Get cache key for attemps WS calls.
      *
      * @param id Instance ID.
@@ -342,7 +436,9 @@ export class AddonModH5PActivityProvider {
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
         };
 
-        if (options.ignoreCache) {
+        if (options.forceCache) {
+            preSets.omitExpires = true;
+        } else if (options.ignoreCache) {
             preSets.getFromCache = false;
             preSets.emergencyCache = false;
         }
@@ -389,7 +485,7 @@ export class AddonModH5PActivityProvider {
     async invalidateAllResults(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getResultsCommonCacheKey(id));
+        await site.invalidateWsCacheForKey(this.getAttemptResultsCommonCacheKey(id));
     }
 
     /**
@@ -403,7 +499,7 @@ export class AddonModH5PActivityProvider {
     async invalidateAttemptResults(id: number, attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getResultsCacheKey(id, [attemptId]));
+        await site.invalidateWsCacheForKey(this.getAttemptResultsCacheKey(id, [attemptId]));
     }
 
     /**
@@ -634,6 +730,15 @@ export type AddonModH5PActivityUserAttempts = {
 };
 
 /**
+ * Attempts results with some calculated data.
+ */
+export type AddonModH5PActivityAttemptsResults = {
+    activityid: number; // Activity course module ID.
+    attempts: AddonModH5PActivityAttemptResults[]; // The complete attempts list.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
  * Attempt with some calculated data.
  */
 export type AddonModH5PActivityAttempt = AddonModH5PActivityWSAttempt & {
@@ -658,18 +763,16 @@ export type AddonModH5PActivityGetDeployedFileOptions = {
 };
 
 /**
- * Options to pass to getResults function.
+ * Options to pass to getAttemptResults function.
  */
-export type AddonModH5PActivityGetResultsOptions = {
+export type AddonModH5PActivityGetAttemptResultsOptions = {
+    forceCache?: boolean; // Whether to force cache. If not cached, it will call the WS.
     ignoreCache?: boolean; // Whether to ignore cache. Will fail if offline or server down.
     siteId?: string; // Site ID. If not defined, current site.
+    userId?: number; // User ID. If not defined, user of the site.
 };
 
 /**
  * Options to pass to getAttempts function.
  */
-export type AddonModH5PActivityGetAttemptsOptions = {
-    ignoreCache?: boolean; // Whether to ignore cache. Will fail if offline or server down.
-    siteId?: string; // Site ID. If not defined, current site.
-    userId?: number; // User ID. If not defined, user of the site.
-};
+export type AddonModH5PActivityGetAttemptsOptions = AddonModH5PActivityGetAttemptResultsOptions;

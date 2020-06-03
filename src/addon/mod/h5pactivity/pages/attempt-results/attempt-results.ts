@@ -100,7 +100,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchAttempt(): Promise<void> {
-        this.attempt = await AddonModH5PActivity.instance.getResults(this.h5pActivityId, this.attemptId);
+        this.attempt = await AddonModH5PActivity.instance.getAttemptResults(this.h5pActivityId, this.attemptId);
     }
 
     /**
@@ -109,7 +109,11 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchUserProfile(): Promise<void> {
-        this.user = await CoreUser.instance.getProfile(this.attempt.userid, this.courseId, true);
+        try {
+            this.user = await CoreUser.instance.getProfile(this.attempt.userid, this.courseId, true);
+        } catch (error) {
+            // Ignore errors.
+        }
     }
 
     /**
