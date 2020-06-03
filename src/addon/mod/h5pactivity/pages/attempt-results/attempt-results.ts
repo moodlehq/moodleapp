@@ -14,37 +14,35 @@
 
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { CoreSites } from '@providers/sites';
 import { CoreDomUtils } from '@providers/utils/dom';
 import { CoreUser } from '@core/user/providers/user';
 import {
-    AddonModH5PActivity, AddonModH5PActivityData, AddonModH5PActivityUserAttempts
+    AddonModH5PActivity, AddonModH5PActivityProvider, AddonModH5PActivityData, AddonModH5PActivityAttemptResults
 } from '../../providers/h5pactivity';
 
 /**
- * Page that displays user attempts of a certain user.
+ * Page that displays results of an attempt.
  */
-@IonicPage({ segment: 'addon-mod-h5pactivity-user-attempts' })
+@IonicPage({ segment: 'addon-mod-h5pactivity-attempt-results' })
 @Component({
-    selector: 'page-addon-mod-h5pactivity-user-attempts',
-    templateUrl: 'user-attempts.html',
+    selector: 'page-addon-mod-h5pactivity-attempt-results',
+    templateUrl: 'attempt-results.html',
 })
-export class AddonModH5PActivityUserAttemptsPage implements OnInit {
+export class AddonModH5PActivityAttemptResultsPage implements OnInit {
     loaded: boolean;
-    courseId: number;
-    h5pActivityId: number;
     h5pActivity: AddonModH5PActivityData;
-    attemptsData: AddonModH5PActivityUserAttempts;
+    attempt: AddonModH5PActivityAttemptResults;
     user: any;
-    isCurrentUser: boolean;
+    component = AddonModH5PActivityProvider.COMPONENT;
 
-    protected userId: number;
+    protected courseId: number;
+    protected h5pActivityId: number;
+    protected attemptId: number;
 
     constructor(navParams: NavParams) {
         this.courseId = navParams.get('courseId');
         this.h5pActivityId = navParams.get('h5pActivityId');
-        this.userId = navParams.get('userId') || CoreSites.instance.getCurrentSiteUserId();
-        this.isCurrentUser = this.userId == CoreSites.instance.getCurrentSiteUserId();
+        this.attemptId = navParams.get('attemptId');
     }
 
     /**
@@ -56,7 +54,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
         try {
             await this.fetchData();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading attempts.');
+            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading attempt.');
         } finally {
             this.loaded = true;
         }
@@ -81,9 +79,10 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
     protected async fetchData(): Promise<void> {
         await Promise.all([
             this.fetchActivity(),
-            this.fetchAttempts(),
-            this.fetchUserProfile(),
+            this.fetchAttempt(),
         ]);
+
+        await this.fetchUserProfile();
     }
 
     /**
@@ -100,8 +99,8 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      *
      * @return Promise resolved when done.
      */
-    protected async fetchAttempts(): Promise<void> {
-        this.attemptsData = await AddonModH5PActivity.instance.getUserAttempts(this.h5pActivityId, { userId: this.userId });
+    protected async fetchAttempt(): Promise<void> {
+        this.attempt = await AddonModH5PActivity.instance.getResults(this.h5pActivityId, this.attemptId);
     }
 
     /**
@@ -110,7 +109,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchUserProfile(): Promise<void> {
-        this.user = await CoreUser.instance.getProfile(this.userId, this.courseId, true);
+        this.user = await CoreUser.instance.getProfile(this.attempt.userid, this.courseId, true);
     }
 
     /**
@@ -123,7 +122,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
         try {
             await Promise.all([
                 AddonModH5PActivity.instance.invalidateActivityData(this.courseId),
-                AddonModH5PActivity.instance.invalidateUserAttempts(this.h5pActivityId, this.userId),
+                AddonModH5PActivity.instance.invalidateAttemptResults(this.h5pActivityId, this.attemptId),
             ]);
         } catch (error) {
             // Ignore errors.

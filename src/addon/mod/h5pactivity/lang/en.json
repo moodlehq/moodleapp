@@ -1,5 +1,11 @@
 {
     "all_attempts": "All user attempts",
+    "answer_checked": "Answer checked",
+    "answer_correct": "Your answer is correct",
+    "answer_fail": "Incorrect answer",
+    "answer_incorrect": "Your answer is incorrect",
+    "answer_pass": "Correct answer",
+    "attempt": "Attempt",
     "attempt_completion_no": "This attempt is not marked as completed",
     "attempt_completion_yes": "This attempt is completed",
     "attempts_none": "This user has no attempts to display.",
@@ -15,8 +21,15 @@
     "maxscore": "Max score",
     "modulenameplural": "H5P",
     "myattempts": "My attempts",
+    "no_compatible_track": "This interaction ({{$a}}) does not provide tracking information or the tracking provided is not compatible with the current activity version.",
     "offlinedisabledwarning": "You will need to be online to view the H5P package.",
+    "outcome": "Outcome",
+    "result_fill-in": "Fill-in text",
+    "result_other": "Unkown interaction type",
     "review_my_attempts": "View my attempts",
     "score": "Score",
+    "score_out_of": "{{$a.rawscore}} out of {{$a.maxscore}}",
+    "startdate": "Start date",
+    "totalscore": "Total score",
     "viewattempt": "View attempt {{$a}}"
 }
