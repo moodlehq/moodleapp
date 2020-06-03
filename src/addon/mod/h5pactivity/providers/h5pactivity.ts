@@ -223,6 +223,10 @@ export class AddonModH5PActivityProvider {
         try {
             const response: AddonModH5PActivityGetResultsResult = await site.read('mod_h5pactivity_get_results', params, preSets);
 
+            if (response.warnings[0]) {
+                throw response.warnings[0]; // Cannot view attempt.
+            }
+
             return this.formatAttemptResults(response.attempts[0]);
         } catch (error) {
             if (CoreUtils.instance.isWebServiceError(error)) {
@@ -444,6 +448,10 @@ export class AddonModH5PActivityProvider {
         }
 
         const response: AddonModH5PActivityGetAttemptsResult = await site.read('mod_h5pactivity_get_attempts', params, preSets);
+
+        if (response.warnings[0]) {
+            throw response.warnings[0]; // Cannot view user attempts.
+        }
 
         return this.formatUserAttempts(response.usersattempts[0]);
     }
