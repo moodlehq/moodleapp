@@ -28,6 +28,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreFileHelperProvider } from '@providers/file-helper';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Progress of downloading a list of modules.
@@ -1467,3 +1468,5 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         }
     }
 }
+
+export class CoreCourseModulePrefetch extends makeSingleton(CoreCourseModulePrefetchDelegate) {}

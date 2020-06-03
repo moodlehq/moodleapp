@@ -98,7 +98,17 @@ export class AddonStorageManagerCourseStoragePage {
      *
      * (This works by deleting data for each module on the course that has data.)
      */
-    deleteForCourse(): void {
+    async deleteForCourse(): Promise<void> {
+        try {
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+        } catch (error) {
+            if (!error.coreCanceled) {
+                throw error;
+            }
+
+            return;
+        }
+
         const modules = [];
         this.sections.forEach((section) => {
             section.modules.forEach((module) => {
@@ -118,7 +128,17 @@ export class AddonStorageManagerCourseStoragePage {
      *
      * @param section Section object with information about section and modules
      */
-    deleteForSection(section: any): void {
+    async deleteForSection(section: any): Promise<void> {
+        try {
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+        } catch (error) {
+            if (!error.coreCanceled) {
+                throw error;
+            }
+
+            return;
+        }
+
         const modules = [];
         section.modules.forEach((module) => {
             if (module.totalSize > 0) {
@@ -134,10 +154,22 @@ export class AddonStorageManagerCourseStoragePage {
      *
      * @param module Module details
      */
-    deleteForModule(module: any): void {
-        if (module.totalSize > 0) {
-            this.deleteModules([module]);
+    async deleteForModule(module: any): Promise<void> {
+        if (module.totalSize === 0) {
+            return;
         }
+
+        try {
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+        } catch (error) {
+            if (!error.coreCanceled) {
+                throw error;
+            }
+
+            return;
+        }
+
+        this.deleteModules([module]);
     }
 
     /**

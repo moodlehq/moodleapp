@@ -17,6 +17,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Data sent to the EVENT_MY_COURSES_UPDATED.
@@ -1152,3 +1153,5 @@ export class CoreCoursesProvider {
         });
     }
 }
+
+export class CoreCourses extends makeSingleton(CoreCoursesProvider) {}

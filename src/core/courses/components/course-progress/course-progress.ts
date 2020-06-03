@@ -162,6 +162,16 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Delete the course.
      */
     async deleteCourse(): Promise<void> {
+        try {
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+        } catch (error) {
+            if (!error.coreCanceled) {
+                throw error;
+            }
+
+            return;
+        }
+
         const modal = this.domUtils.showModalLoading();
 
         try {

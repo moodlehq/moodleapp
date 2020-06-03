@@ -1014,6 +1014,7 @@
     "addon.notifications.playsound": "Play sound",
     "addon.notifications.therearentnotificationsyet": "There are no notifications.",
     "addon.storagemanager.deletecourse": "Offload all course data",
+    "addon.storagemanager.deletecourses": "Offload all courses data",
     "addon.storagemanager.deletedatafrom": "Offload data from {{name}}",
     "addon.storagemanager.info": "Files stored on your device make the app work faster and enable the app to be used offline. You can safely offload files if you need to free up storage space.",
     "addon.storagemanager.managestorage": "Manage storage",

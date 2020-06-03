@@ -29,6 +29,7 @@ import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Service that provides some features regarding a course.
@@ -332,6 +333,23 @@ export class CoreCourseProvider {
         }).catch(() => {
             return CoreConstants.NOT_DOWNLOADED;
         });
+    }
+
+    /**
+     * Obtain ids of downloaded courses.
+     *
+     * @param siteId Site id.
+     * @return Resolves with an array containing downloaded course ids.
+     */
+    async getDownloadedCourseIds(siteId?: string): Promise<number[]> {
+        const site = await this.sitesProvider.getSite(siteId);
+        const entries = await site.getDb().getRecordsList(this.COURSE_STATUS_TABLE, 'status', [
+            CoreConstants.DOWNLOADED,
+            CoreConstants.DOWNLOADING,
+            CoreConstants.OUTDATED,
+        ]);
+
+        return entries.map((entry) => entry.id);
     }
 
     /**
@@ -1178,3 +1196,5 @@ export type CoreCourseModuleSummary = {
     url?: string; // Url.
     iconurl: string; // Iconurl.
 };
+
+export class CoreCourse extends makeSingleton(CoreCourseProvider) {}

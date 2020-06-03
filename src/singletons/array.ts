@@ -18,6 +18,17 @@
 export class CoreArray {
 
     /**
+     * Check whether an array contains an item.
+     *
+     * @param arr  Array.
+     * @param item Item.
+     * @return Whether item is within the array.
+     */
+    static contains<T>(arr: T[], item: T): boolean {
+        return arr.indexOf(item) !== -1;
+    }
+
+    /**
      * Flatten the first dimension of a multi-dimensional array.
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat#reduce_and_concat
@@ -31,6 +42,24 @@ export class CoreArray {
         }
 
         return [].concat(...arr);
+    }
+
+    /**
+     * Obtain a new array without the specified item.
+     *
+     * @param arr Array.
+     * @param item Item to remove.
+     * @return Array without the specified item.
+     */
+    static withoutItem<T>(arr: T[], item: T): T[] {
+        const newArray = [...arr];
+        const index = arr.indexOf(item);
+
+        if (index !== -1) {
+            newArray.splice(index, 1);
+        }
+
+        return newArray;
     }
 
 }

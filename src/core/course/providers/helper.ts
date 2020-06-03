@@ -41,6 +41,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import * as moment from 'moment';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CoreArray } from '@singletons/array';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Prefetch info of a module.
@@ -1627,3 +1628,5 @@ export class CoreCourseHelperProvider {
     }
 
 }
+
+export class CoreCourseHelper extends makeSingleton(CoreCourseHelperProvider) {}
