@@ -97,7 +97,7 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             siteId = this.sitesProvider.getCurrentSiteId();
 
         promises.push(this.getFiles(module, courseId, single, siteId).then((files) => {
-            return this.pluginFileDelegate.getFilesSize(files);
+            return this.pluginFileDelegate.getFilesDownloadSize(files);
         }));
 
         promises.push(this.getAllPages(module, courseId, false, true, siteId).then((pages) => {

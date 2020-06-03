@@ -111,7 +111,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             let files = lesson.mediafiles || [];
             files = files.concat(this.getIntroFilesFromInstance(module, lesson));
 
-            return this.pluginFileDelegate.getFilesSize(files);
+            return this.pluginFileDelegate.getFilesDownloadSize(files);
         }).then((res) => {
             result = res;
 

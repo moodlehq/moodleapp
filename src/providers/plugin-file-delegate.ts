@@ -18,6 +18,8 @@ import { CoreLoggerProvider } from './logger';
 import { CoreSitesProvider } from './sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { FileEntry } from '@ionic-native/file';
+import { CoreFilepool } from './filepool';
+import { CoreConstants } from '@core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons/core.singletons';
 
@@ -235,33 +237,51 @@ export class CorePluginFileDelegate extends CoreDelegate {
     }
 
     /**
+     * Sum the filesizes from a list if they are not downloaded.
+     *
+     * @param files List of files to sum its filesize.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
+     */
+    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number, total: boolean }> {
+        const filteredFiles = [];
+
+        await Promise.all(files.map(async (file) => {
+            const state = await CoreFilepool.instance.getFileStateByUrl(siteId, file.fileurl, file.timemodified);
+
+            if (state != CoreConstants.DOWNLOADED && state != CoreConstants.NOT_DOWNLOADABLE) {
+                filteredFiles.push(file);
+            }
+        }));
+
+        return this.getFilesSize(filteredFiles, siteId);
+    }
+
+    /**
      * Sum the filesizes from a list of files checking if the size will be partial or totally calculated.
      *
      * @param files List of files to sum its filesize.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number, total: boolean }> {
-        const promises = [],
-            result = {
-                size: 0,
-                total: true
-            };
+    async getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number, total: boolean }> {
+        const result = {
+            size: 0,
+            total: true
+        };
 
-        files.forEach((file) => {
-            promises.push(this.getFileSize(file, siteId).then((size) => {
-                if (typeof size == 'undefined') {
-                    // We don't have the file size, cannot calculate its total size.
-                    result.total = false;
-                } else {
-                    result.size += size;
-                }
-            }));
-        });
+        await Promise.all(files.map(async (file) => {
+            const size = await this.getFileSize(file, siteId);
 
-        return Promise.all(promises).then(() => {
-            return result;
-        });
+            if (typeof size == 'undefined') {
+                // We don't have the file size, cannot calculate its total size.
+                result.total = false;
+            } else {
+                result.size += size;
+            }
+        }));
+
+        return result;
     }
 
     /**

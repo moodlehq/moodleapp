@@ -19,6 +19,7 @@ import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '../providers/course';
+import { CoreWSExternalFile } from '@providers/ws';
 import { CoreCourseModulePrefetchHandler } from '../providers/module-prefetch-delegate';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
@@ -114,7 +115,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module The module object returned by WS.
      * @return List of files.
      */
-    getContentDownloadableFiles(module: any): any[] {
+    getContentDownloadableFiles(module: any): CoreWSExternalFile[] {
         const files = [];
 
         if (module.contents && module.contents.length) {
@@ -139,7 +140,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     getDownloadSize(module: any, courseId: number, single?: boolean): Promise<{ size: number, total: boolean }> {
         return this.getFiles(module, courseId).then((files) => {
-            return this.pluginFileDelegate.getFilesSize(files);
+            return this.pluginFileDelegate.getFilesDownloadSize(files);
         }).catch(() => {
             return { size: -1, total: false };
         });
@@ -166,7 +167,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @return Promise resolved with the list of files.
      */
-    getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
+    getFiles(module: any, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
         // To be overridden.
         return Promise.resolve([]);
     }
@@ -179,7 +180,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise resolved with list of intro files.
      */
-    getIntroFiles(module: any, courseId: number, ignoreCache?: boolean): Promise<any[]> {
+    getIntroFiles(module: any, courseId: number, ignoreCache?: boolean): Promise<CoreWSExternalFile[]> {
         return Promise.resolve(this.getIntroFilesFromInstance(module));
     }
 
@@ -190,7 +191,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param instance The instance to get the intro files (book, assign, ...). If not defined, module will be used.
      * @return List of intro files.
      */
-    getIntroFilesFromInstance(module: any, instance?: any): any[] {
+    getIntroFilesFromInstance(module: any, instance?: any): CoreWSExternalFile[] {
         if (instance) {
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
