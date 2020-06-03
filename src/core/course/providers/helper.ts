@@ -40,6 +40,7 @@ import { CoreSite } from '@classes/site';
 import { CoreLoggerProvider } from '@providers/logger';
 import * as moment from 'moment';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Prefetch info of a module.
@@ -1607,4 +1608,22 @@ export class CoreCourseHelperProvider {
             return this.loginHelper.redirect(CoreLoginHelperProvider.OPEN_COURSE, params, siteId);
         }
     }
+
+    /**
+     * Delete course files.
+     *
+     * @param courseId Course id.
+     * @return Promise to be resolved once the course files are deleted.
+     */
+    async deleteCourseFiles(courseId: number): Promise<void> {
+        const sections = await this.courseProvider.getSections(courseId);
+        const modules = CoreArray.flatten(sections.map((section) => section.modules));
+
+        await Promise.all(
+            modules.map((module) => this.prefetchDelegate.removeModuleFiles(module, courseId)),
+        );
+
+        await this.courseProvider.setCourseStatus(courseId, CoreConstants.NOT_DOWNLOADED);
+    }
+
 }
