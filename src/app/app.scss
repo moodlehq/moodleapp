@@ -687,6 +687,16 @@ ion-app.app-root {
     border: 0;
   }
 
+  ion-alert .alert-message + div:not(.alert-button-group) {
+    overflow: auto;
+    alert-checkbox-group,
+    alert-radio-group,
+    alert-input-group {
+      overflow: visible;
+      max-height: none;
+    }
+  }
+
   ion-toast.core-toast-success .toast-wrapper{
       background: $green-dark;
   }
