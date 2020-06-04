@@ -16,182 +16,159 @@ Feature: Test basic usage of assignment activity in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And the following "activities" exist:
-      | activity | course | idnumber | name                | intro                        | assignsubmission_onlinetext_enabled | duedate | attemptreopenmethod |
-      | assign   | C1     | assign1  | assignment1         | Test assignment description1 | 1                                   | 1       | manual              |
+      | activity | course | idnumber | name                | intro                        | assignsubmission_onlinetext_enabled | duedate    | attemptreopenmethod |
+      | assign   | C1     | assign1  | assignment1         | Test assignment description1 | 1                                   | 1029844800 | manual              |
 
+  @app @3.8.0
+  Scenario: Create, edit and submit an assignment as a student, view it as a teacher
+    # Create, edit and submit as a student
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    Then the header should be "assignment1" in the app
+    And I should see "Test assignment description1"
+    And I should see "Due date"
+    And I should see "Tuesday, 20 August 2002, 12:00 PM"
 
-  @app @3.8.0 @OK
-  Scenario: View assign and add a submission (online text), submit for grading, view own submission or student submission and view list of student submissions (as teacher)
-  When I enter the app
-  And I log in as "student1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I should see "Test assignment description1"
-  And I should see "Due date"
-  And I should see "Thursday, 1 January 1970, 1:00 AM"
-  And I press "Add submission" in the app
-  And I set the field "Online text submissions" to "Submission test" in the app
-  And I press "Save" in the app
-  Then I should see "Draft (not submitted)"
-  And I should see "Not graded"
-  And I press "Edit submission" in the app
-  And I set the field "Online text submissions" to "Submission test edited" in the app
-  And I press "Save" in the app
-  And I press "OK" in the app
-  And I press "Submit assignment" in the app
-  And I press "OK" in the app
-  Then I should see "Submitted for grading"
-  And I should see "Not graded"
-  And I should see "Submission test edited"
-  When I enter the app
-  And I log in as "teacher1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I press "Submitted" in the app
-  Then I should see "Student student"
-  And I should see "Not graded"
-  And I press "Student student" near "assignment1" in the app
-  Then I should see "Online text submission"
-  And I should see "Submission test edited"
+    When I press "Add submission" in the app
+    And I set the field "Online text submissions" to "Submission test" in the app
+    And I press "Save" in the app
+    Then I should see "Draft (not submitted)"
+    And I should see "Not graded"
 
-  @app @3.8.0 @OK
+    When I press "Edit submission" in the app
+    And I set the field "Online text submissions" to "Submission test edited" in the app
+    And I press "Save" in the app
+    And I press "OK" in the app
+    Then I should see "Submission test edited"
+
+    When I press "Submit assignment" in the app
+    And I press "OK" in the app
+    Then I should see "Submitted for grading"
+    And I should see "Not graded"
+    And I should see "Submission test edited"
+
+    # View as a teacher
+    When I enter the app
+    And I log in as "teacher1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    Then the header should be "assignment1" in the app
+
+    When I press "Submitted" in the app
+    Then I should see "Student student"
+    And I should see "Not graded"
+
+    When I press "Student student" near "assignment1" in the app
+    Then I should see "Online text submissions"
+    And I should see "Submission test edited"
+
+  @app @3.8.0
   Scenario: Add new attempt from previous submission
-  When I enter the app
-  And I log in as "student1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I should see "Test assignment description1"
-  And I should see "Due date"
-  And I should see "Thursday, 1 January 1970, 1:00 AM"
-  And I press "Add submission" in the app
-  And I set the field "Online text submissions" to "Submission test" in the app
-  And I press "Save" in the app
-  And I press "Submit assignment" in the app
-  And I press "OK" in the app
-  When I enter the app
-  And I log in as "teacher1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I press "Participants" in the app
-  Then I should see "Student student"
-  And I should see "Not graded"
-  And I press "Student student" near "assignment1" in the app
-  Then I should see "Online text submission"
-  And I should see "Submission test"
-  And I press "Grade" in the app
-  And I press "Allow another attempt" in the app
-  And I press "Done"
-  Then I should see "Reopened"
-  And I should see "Not graded"
-  When I enter the app
-  And I log in as "student1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  And I should see "Reopened"
-  And I should see "2 out of Unlimited"
-  And I should see "Add a new attempt based on previous submission"
-  And I should see "Add a new attempt"
-  And I press "Add a new attempt based on previous submission" in the app
-  And I press "OK" in the app
-  Then I should see "Submission test"
-  And I set the field "Online text submissions" to "Submission test 2 attempt" in the app
-  And I press "Save" in the app
-  And I press "OK" in the app
-  And I press "Submit assignment" in the app
-  And I press "OK" in the app
-  When I enter the app
-  And I log in as "teacher1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I press "Participants" in the app
-  Then I should see "Student student"
-  And I should see "Not graded"
-  And I press "Student student" near "assignment1" in the app
-  Then I should see "Online text submission"
-  And I should see "Submission test 2 attempt"
+    # Submit first attempt as a student
+    Given I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    And I press "Add submission" in the app
+    And I set the field "Online text submissions" to "Submission test 1st attempt" in the app
+    And I press "Save" in the app
+    And I press "Submit assignment" in the app
+    And I press "OK" in the app
 
-  @app @3.8.0 @OK
-  Scenario: Add submission offline (online text), submit for grading offline and sync submissions
-  When I enter the app
-  And I log in as "student1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I should see "Test assignment description1"
-  And I should see "Due date"
-  And I should see "Thursday, 1 January 1970, 1:00 AM"
-  And I press "Add submission" in the app
-  And I switch offline mode to "true"
-  And I set the field "Online text submissions" to "Submission test" in the app
-  And I press "Save" in the app
-  And I press "Submit assignment" in the app
-  And I press "OK" in the app
-  Then I should see "This Assignment has offline data to be synchronised."
-  And I switch offline mode to "false"
-  And I press the back button in the app
-  And I press "assignment1" in the app
-  And I press "Display options" in the app
-  And I press "Refresh" in the app
-  Then I should not see "This Assignment has offline data to be synchronised."
-  And I should see "Submitted for grading"
+    # Allow more attempts as a teacher
+    When I enter the app
+    And I log in as "teacher1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    And I press "Participants" in the app
+    And I press "Student student" near "assignment1" in the app
+    And I press "Grade" in the app
+    And I press "Allow another attempt" in the app
+    And I press "Done"
+    Then I should see "Reopened"
+    And I should see "Not graded"
 
-  @app @3.8.0 @OK
-  Scenario: Edit an offline submission before synchronizing it
-  When I enter the app
-  And I log in as "student1"
-  Then the header should be "Acceptance test site" in the app 
-  And I should see "Course 1"
-  And I press "Course 1" near "Recently accessed courses" in the app
-  Then the header should be "Course 1" in the app
-  And I press "assignment1" in the app
-  Then the header should be "assignment1" in the app
-  And I should see "Test assignment description1"
-  And I should see "Due date"
-  And I should see "Thursday, 1 January 1970, 1:00 AM"
-  And I press "Add submission" in the app
-  And I switch offline mode to "true"
-  And I set the field "Online text submissions" to "Submission test1" in the app
-  And I press "Save" in the app
-  Then I should see "This Assignment has offline data to be synchronised."
-  And I should see "Submission test1"
-  And I press "Edit submission" in the app
-  And I set the field "Online text submissions" to "Submission test edited offline" in the app
-  And I press "Save" in the app
-  Then I should see "This Assignment has offline data to be synchronised."
-  And I should not see "Submission test1"
-  And I should see "Submission test edited offline"
-  And I press "Submit assignment" in the app
-  And I press "OK" in the app
-  Then I should see "This Assignment has offline data to be synchronised."
-  And I switch offline mode to "false"
-  And I press the back button in the app
-  And I press "assignment1" in the app
-  Then I should not see "This Assignment has offline data to be synchronised."
-  And I should see "Submitted for grading"
-  And I should see "Submission test edited offline"
+    # Submit second attempt as a student
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    Then I should see "Reopened"
+    And I should see "2 out of Unlimited"
+    And I should see "Add a new attempt based on previous submission"
+    And I should see "Add a new attempt"
+
+    When I press "Add a new attempt based on previous submission" in the app
+    And I press "OK" in the app
+    Then I should see "Submission test 1st attempt"
+
+    When I set the field "Online text submissions" to "Submission test 2nd attempt" in the app
+    And I press "Save" in the app
+    And I press "OK" in the app
+    And I press "Submit assignment" in the app
+    And I press "OK" in the app
+
+    # View second attempt as a teacher
+    When I enter the app
+    And I log in as "teacher1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    And I press "Participants" in the app
+    And I press "Student student" near "assignment1" in the app
+    Then I should see "Online text submissions"
+    And I should see "Submission test 2nd attempt"
+
+  @app @3.8.0
+  Scenario: Add offline submission and synchronise it
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    And I press "Add submission" in the app
+    And I switch offline mode to "true"
+    And I set the field "Online text submissions" to "Submission test" in the app
+    And I press "Save" in the app
+    And I press "Submit assignment" in the app
+    And I press "OK" in the app
+    Then I should see "This Assignment has offline data to be synchronised."
+
+    When I switch offline mode to "false"
+    And I press the back button in the app
+    And I press "assignment1" in the app
+    And I press "Display options" in the app
+    And I press "Refresh" in the app
+    Then I should see "Submitted for grading"
+    But I should not see "This Assignment has offline data to be synchronised."
+
+  @app @3.8.0
+  Scenario: Edit an offline submission before synchronising it
+    When I enter the app
+    And I log in as "student1"
+    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "assignment1" in the app
+    And I press "Add submission" in the app
+    And I switch offline mode to "true"
+    And I set the field "Online text submissions" to "Submission test original offline" in the app
+    And I press "Save" in the app
+    Then I should see "This Assignment has offline data to be synchronised."
+    And I should see "Submission test original offline"
+
+    When I press "Edit submission" in the app
+    And I set the field "Online text submissions" to "Submission test edited offline" in the app
+    And I press "Save" in the app
+    Then I should see "This Assignment has offline data to be synchronised."
+    And I should see "Submission test edited offline"
+    But I should not see "Submission test original offline"
+
+    When I press "Submit assignment" in the app
+    And I press "OK" in the app
+    Then I should see "This Assignment has offline data to be synchronised."
+
+    When I switch offline mode to "false"
+    And I press the back button in the app
+    And I press "assignment1" in the app
+    Then I should see "Submitted for grading"
+    And I should see "Submission test edited offline"
+    But I should not see "This Assignment has offline data to be synchronised."

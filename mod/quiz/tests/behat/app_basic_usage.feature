@@ -30,7 +30,6 @@ Feature: Attempt a quiz in app
       | question | page |
       | TF1      | 1    |
       | TF2      | 2    |
-
     And the following "activities" exist:
       | activity   | name   | intro              | course | idnumber |
       | quiz       | Quiz 2 | Quiz 2 description | C1     | quiz2    |
@@ -48,7 +47,7 @@ Feature: Attempt a quiz in app
       | Test questions   | match            | TF9   | Text of the seventh question  |
     And quiz "Quiz 2" contains the following questions:
       | question | page |
-      | TF3      | 1    | 
+      | TF3      | 1    |
       | TF4      | 2    |
       | TF5      | 3    |
       | TF6      | 4    |
@@ -56,40 +55,48 @@ Feature: Attempt a quiz in app
       | TF8      | 6    |
       | TF9      | 7    |
 
-
-    @app @3.8.0 @OK
-    Scenario: View a quiz entry page (attempts, status, etc.)
+  @app @3.8.0
+  Scenario: View a quiz entry page (attempts, status, etc.)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should see "Text of the first question"
-    And I should not see "Text of the second question"
-    And I press "Next" near "Question 1" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
-    And I press "Previous" near "Question 2" in the app
-    And I should not see "Text of the second question"
-    And I should see "Text of the first question"
+    But I should not see "Text of the second question"
+
+    When I press "Next" near "Question 1" in the app
+    Then I should see "Text of the second question"
+    But I should not see "Text of the first question"
+
+    When I press "Previous" near "Question 2" in the app
+    Then I should see "Text of the first question"
+    But I should not see "Text of the second question"
+
+    When I press "Next" near "Quiz 1" in the app
+    Then I should see "Text of the second question"
+    But I should not see "Text of the first question"
+
+    When I press "Previous" near "Quiz 1" in the app
+    Then I should see "Text of the first question"
+    But I should not see "Text of the second question"
+
+    When I press "Next" near "Question 1" in the app
     And I press "Next" near "Quiz 1" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
-    And I press "Previous" near "Quiz 1" in the app
-    And I should not see "Text of the second question"
-    And I should see "Text of the first question"
-    And I press "Next" near "Question 1" in the app
-    And I press "Next" near "Quiz 1" in the app
-    And I should see "Summary of attempt"
-    And I press "Return to attempt" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
-    And I press "Next" in the app
+    Then I should see "Summary of attempt"
+
+    When I press "Return to attempt" in the app
+    Then I should see "Text of the second question"
+    But I should not see "Text of the first question"
+
+    When I press "Next" in the app
     And I press "Submit all and finish" in the app
     Then I should see "Once you submit"
-    And I press "Cancel" near "Once you submit" in the app
-    And I should see "Summary of attempt"
-    And I press "Submit all and finish" in the app
+
+    When I press "Cancel" near "Once you submit" in the app
+    Then I should see "Summary of attempt"
+
+    When I press "Submit all and finish" in the app
     And I press "OK" near "Once you submit" in the app
     Then I should see "Review of attempt 1"
     And I should see "Started on"
@@ -101,8 +108,8 @@ Feature: Attempt a quiz in app
     And I should see "Question 1"
     And I should see "Question 2"
 
-    @app @3.8.0 @OK
-    Scenario: Attempt a quiz (all question types)
+  @app @3.8.0
+  Scenario: Attempt a quiz (all question types)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -134,8 +141,8 @@ Feature: Attempt a quiz in app
     And I should see "Finished"
     And I should see "Not yet graded"
 
-    @app @3.8.0 @OK
-    Scenario: Submit a quiz and review a quiz attempt
+  @app @3.8.0
+  Scenario: Submit a quiz and review a quiz attempt
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -148,6 +155,7 @@ Feature: Attempt a quiz in app
     And I press "Submit all and finish" in the app
     And I press "OK" in the app
     Then I should see "Review of attempt 1"
+
     When I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
@@ -160,4 +168,3 @@ Feature: Attempt a quiz in app
     And I follow "Review attempt"
     Then I should see "Finished"
     And I should see "1.00/2.00"
-    And I close the browser tab opened by the app
