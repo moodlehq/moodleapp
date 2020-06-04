@@ -75,17 +75,17 @@ export class CoreIframeComponent implements OnInit, OnChanges {
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         this.iframeUtils.treatFrame(iframe, false, navCtrl);
 
+        iframe.addEventListener('load', () => {
+            this.loading = false;
+            this.loaded.emit(iframe); // Notify iframe was loaded.
+        });
+
+        iframe.addEventListener('error', () => {
+            this.loading = false;
+            this.domUtils.showErrorModal('core.errorloadingcontent', true);
+        });
+
         if (this.loading) {
-            iframe.addEventListener('load', () => {
-                this.loading = false;
-                this.loaded.emit(iframe); // Notify iframe was loaded.
-            });
-
-            iframe.addEventListener('error', () => {
-                this.loading = false;
-                this.domUtils.showErrorModal('core.errorloadingcontent', true);
-            });
-
             setTimeout(() => {
                 this.loading = false;
             }, this.IFRAME_TIMEOUT);

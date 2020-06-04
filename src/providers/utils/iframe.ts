@@ -55,7 +55,7 @@ export class CoreIframeUtilsProvider {
     checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
         const src = element.src || element.data;
 
-        if (src && !this.urlUtils.isLocalFileUrl(src) && !this.appProvider.isOnline()) {
+        if (src && src != 'about:blank' && !this.urlUtils.isLocalFileUrl(src) && !this.appProvider.isOnline()) {
             if (element.classList.contains('core-iframe-offline-disabled')) {
                 // Iframe already hidden, stop.
                 return true;
