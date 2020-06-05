@@ -24,6 +24,7 @@ import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main
 import { CoreH5P } from '@core/h5p/providers/h5p';
 import { CoreH5PDisplayOptions } from '@core/h5p/classes/core';
 import { CoreH5PHelper } from '@core/h5p/classes/helper';
+import { CoreXAPI } from '@core/xapi/providers/xapi';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 
@@ -57,10 +58,12 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     fileUrl: string; // The fileUrl to use to play the package.
     state: string; // State of the file.
     siteCanDownload: boolean;
+    trackComponent: string; // Component for tracking.
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
     protected site: CoreSite;
     protected observer;
+    protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
 
     constructor(injector: Injector,
             @Optional() protected content: Content) {
@@ -68,6 +71,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         this.site = this.sitesProvider.getCurrentSite();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.instance.isOfflineDisabledInSite();
+
+        // Listen for messages from the iframe.
+        this.messageListenerFunction = this.onIframeMessage.bind(this);
+        window.addEventListener('message', this.messageListenerFunction);
     }
 
     /**
@@ -102,16 +109,18 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             this.description = this.h5pActivity.intro;
             this.displayOptions = CoreH5PHelper.decodeDisplayOptions(this.h5pActivity.displayoptions);
 
-            if (this.h5pActivity.package && this.h5pActivity.package[0]) {
-                // The online player should use the original file, not the trusted one.
-                this.onlinePlayerUrl = CoreH5P.instance.h5pPlayer.calculateOnlinePlayerUrl(
-                            this.site.getURL(), this.h5pActivity.package[0].fileurl, this.displayOptions);
-            }
-
             await Promise.all([
                 this.fetchAccessInfo(),
                 this.fetchDeployedFileData(),
             ]);
+
+            this.trackComponent = this.accessInfo.cansubmit ? AddonModH5PActivityProvider.TRACK_COMPONENT : '';
+
+            if (this.h5pActivity.package && this.h5pActivity.package[0]) {
+                // The online player should use the original file, not the trusted one.
+                this.onlinePlayerUrl = CoreH5P.instance.h5pPlayer.calculateOnlinePlayerUrl(
+                            this.site.getURL(), this.h5pActivity.package[0].fileurl, this.displayOptions, this.trackComponent);
+            }
 
             if (!this.siteCanDownload || this.state == CoreConstants.DOWNLOADED) {
                 // Cannot download the file or already downloaded, play the package directly.
@@ -327,9 +336,55 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     }
 
     /**
+     * Treat an iframe message event.
+     *
+     * @param event Event.
+     * @return Promise resolved when done.
+     */
+    protected async onIframeMessage(event: MessageEvent): Promise<void> {
+        if (!event.data || !CoreXAPI.instance.canPostStatementInSite(this.site) || !this.isCurrentXAPIPost(event.data)) {
+            return;
+        }
+
+        try {
+            await CoreXAPI.instance.postStatement(event.data.component, JSON.stringify(event.data.statements));
+        } catch (error) {
+            CoreDomUtils.instance.showErrorModalDefault(error, 'Error sending tracking data.');
+        }
+    }
+
+    /**
+     * Check if an event is an XAPI post statement of the current activity.
+     *
+     * @param data Event data.
+     * @return Whether it's an XAPI post statement of the current activity.
+     */
+    protected isCurrentXAPIPost(data: any): boolean {
+        if (data.context != 'moodleapp' || data.action != 'xapi_post_statement' || !data.statements) {
+            return false;
+        }
+
+        // Check the event belongs to this activity.
+        const trackingUrl = data.statements[0] && data.statements[0].object && data.statements[0].object.id;
+        if (!trackingUrl) {
+            return false;
+        }
+
+        if (!this.site.containsUrl(trackingUrl)) {
+            // The event belongs to another site, weird scenario. Maybe some JS running in background.
+            return false;
+        }
+
+        const match = trackingUrl.match(/xapi\/activity\/(\d+)/);
+
+        return match && match[1] == this.h5pActivity.context;
+    }
+
+    /**
      * Component destroyed.
      */
     ngOnDestroy(): void {
         this.observer && this.observer.off();
+        window.removeEventListener('message', this.messageListenerFunction);
     }
 }

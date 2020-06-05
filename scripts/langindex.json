@@ -684,6 +684,7 @@
   "addon.mod_h5pactivity.no_compatible_track": "h5pactivity",
   "addon.mod_h5pactivity.offlinedisabledwarning": "local_moodlemobileapp",
   "addon.mod_h5pactivity.outcome": "h5pactivity",
+  "addon.mod_h5pactivity.previewmode": "h5pactivity",
   "addon.mod_h5pactivity.result_fill-in": "h5pactivity",
   "addon.mod_h5pactivity.result_other": "h5pactivity",
   "addon.mod_h5pactivity.review_my_attempts": "h5pactivity",

@@ -38,6 +38,8 @@ export class CoreH5PIframeComponent implements OnChanges {
     @Input() fileUrl?: string; // The URL of the H5P file. If not supplied, onlinePlayerUrl is required.
     @Input() displayOptions?: CoreH5PDisplayOptions; // Display options.
     @Input() onlinePlayerUrl?: string; // The URL of the online player to display the H5P package.
+    @Input() trackComponent?: string; // Component to send xAPI events to.
+    @Input() contextId?: number; // Context ID. Required for tracking.
     @Output() onIframeUrlSet = new EventEmitter<{src: string, online: boolean}>();
     @Output() onIframeLoaded = new EventEmitter<void>();
 
@@ -93,7 +95,7 @@ export class CoreH5PIframeComponent implements OnChanges {
                 this.iframeSrc = localUrl;
             } else {
                 this.onlinePlayerUrl = this.onlinePlayerUrl || CoreH5P.instance.h5pPlayer.calculateOnlinePlayerUrl(
-                        this.site.getURL(), this.fileUrl, this.displayOptions);
+                        this.site.getURL(), this.fileUrl, this.displayOptions, this.trackComponent);
 
                 // Never allow downloading in the app. This will only work if the user is allowed to change the params.
                 const src = this.onlinePlayerUrl.replace(CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=1',
@@ -121,7 +123,8 @@ export class CoreH5PIframeComponent implements OnChanges {
      */
     protected async getLocalUrl(): Promise<string> {
         try {
-            const url = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(this.fileUrl, this.displayOptions, this.siteId);
+            const url = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(this.fileUrl, this.displayOptions,
+                    this.trackComponent, this.contextId, this.siteId);
 
             return url;
         } catch (error) {
@@ -135,7 +138,7 @@ export class CoreH5PIframeComponent implements OnChanges {
 
                 // File treated. Try to get the index file URL again.
                 const url = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(this.fileUrl, this.displayOptions,
-                        this.siteId);
+                        this.trackComponent, this.contextId, this.siteId);
 
                 return url;
             } catch (error) {

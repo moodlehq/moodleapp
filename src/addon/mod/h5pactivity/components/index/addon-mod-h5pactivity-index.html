@@ -21,6 +21,11 @@
         <ion-icon name="warning"></ion-icon> {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
     </ion-card>
 
+    <!-- Preview mode. -->
+    <ion-card class="core-warning-card" icon-start *ngIf="accessInfo && !trackComponent">
+        <ion-icon name="warning"></ion-icon> {{ 'addon.mod_h5pactivity.previewmode' | translate }}
+    </ion-card>
+
     <ion-list *ngIf="deployedFile && !playing">
         <ion-item text-wrap *ngIf="stateMessage">
             <p >{{ stateMessage | translate }}</p>
@@ -39,5 +44,5 @@
         </ion-item>
     </ion-list>
 
-    <core-h5p-iframe *ngIf="playing" [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"></core-h5p-iframe>
+    <core-h5p-iframe *ngIf="playing" [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl" [trackComponent]="trackComponent" [contextId]="h5pActivity.context"></core-h5p-iframe>
 </core-loading>

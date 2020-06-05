@@ -615,6 +615,8 @@ export class CoreH5PCore {
             urls.push(libUrl + script);
         });
 
+        urls.push(CoreTextUtils.instance.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
+
         return urls;
     }
 

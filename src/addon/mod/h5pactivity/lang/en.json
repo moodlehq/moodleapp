@@ -24,6 +24,7 @@
     "no_compatible_track": "This interaction ({{$a}}) does not provide tracking information or the tracking provided is not compatible with the current activity version.",
     "offlinedisabledwarning": "You will need to be online to view the H5P package.",
     "outcome": "Outcome",
+    "previewmode": "This content is displayed in preview mode. No attempt tracking will be stored.",
     "result_fill-in": "Fill-in text",
     "result_other": "Unkown interaction type",
     "review_my_attempts": "View my attempts",

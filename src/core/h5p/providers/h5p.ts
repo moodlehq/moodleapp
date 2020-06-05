@@ -391,7 +391,7 @@ export class CoreH5PProvider {
      * @param siteId Site ID (empty for current site).
      * @return Promise resolved when the data is invalidated.
      */
-    async invalidateAvailableInContexts(url: string, siteId?: string): Promise<void> {
+    async invalidateGetTrustedH5PFile(url: string, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getTrustedH5PFileCacheKey(url));

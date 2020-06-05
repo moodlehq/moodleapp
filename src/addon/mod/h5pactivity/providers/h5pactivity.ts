@@ -31,6 +31,7 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 @Injectable()
 export class AddonModH5PActivityProvider {
     static COMPONENT = 'mmaModH5PActivity';
+    static TRACK_COMPONENT = 'mod_h5pactivity'; // Component for tracking.
 
     protected ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 
@@ -595,6 +596,7 @@ export type AddonModH5PActivityData = {
     grademethod: number; // Which H5P attempt is used for grading.
     contenthash?: string; // Sha1 hash of file content.
     coursemodule: number; // Coursemodule.
+    context: number; // Context ID.
     introfiles: CoreWSExternalFile[];
     package: CoreWSExternalFile[];
     deployedfile?: {
