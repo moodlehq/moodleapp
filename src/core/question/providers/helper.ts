@@ -277,7 +277,7 @@ export class CoreQuestionHelperProvider {
 
                 const amdRegExp = new RegExp('require\\(\\[["\']qtype_' + question.type + '/question["\']\\],[^f]*' +
                     'function\\(amd\\)[^\\{]*\\{[^a]*amd\\.init\\((["\'](q|question-' + usageId + '-)' + question.slot +
-                    '["\'].*)\\);', 'm');
+                    '["\'].*?)\\);', 'm');
                 const amdMatch = match.match(amdRegExp);
 
                 if (amdMatch) {

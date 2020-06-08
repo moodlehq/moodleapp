@@ -27,6 +27,7 @@ export interface AddonQtypeDdMarkerQuestionDocStructure {
     dragItems?: () => HTMLElement[];
     dragItemsForChoice?: (choiceNo: number) => HTMLElement[];
     dragItemForChoice?: (choiceNo: number, itemNo: number) => HTMLElement;
+    dragItemPlaceholder?: (choiceNo: number) => HTMLElement;
     dragItemBeingDragged?: (choiceNo: number) => HTMLElement;
     dragItemHome?: (choiceNo: number) => HTMLElement;
     dragItemHomes?: () => HTMLElement[];
@@ -35,6 +36,14 @@ export interface AddonQtypeDdMarkerQuestionDocStructure {
     inputForChoice?: (choiceNo: number) => HTMLElement;
     markerTexts?: () => HTMLElement;
 }
+
+/**
+ * Point type.
+ */
+export type AddonQtypeDdMarkerQuestionPoint = {
+    x: number; // X axis coordinates.
+    y: number; // Y axis coordinates.
+};
 
 /**
  * Class to make a question of ddmarker type work.
@@ -98,14 +107,13 @@ export class AddonQtypeDdMarkerQuestion {
      * @return The new element.
      */
     cloneNewDragItem(dragHome: HTMLElement, itemNo: number): HTMLElement {
-        const marker = <HTMLElement> dragHome.querySelector('span.markertext');
-        marker.style.opacity = '0.6';
-
         // Clone the element and add the right classes.
         const drag = <HTMLElement> dragHome.cloneNode(true);
         drag.classList.remove('draghome');
         drag.classList.add('dragitem');
         drag.classList.add('item' + itemNo);
+        drag.classList.remove('dragplaceholder'); // In case it has it.
+        dragHome.classList.add('dragplaceholder');
 
         // Insert the new drag after the dragHome.
         dragHome.parentElement.insertBefore(drag, dragHome.nextSibling);
@@ -122,15 +130,14 @@ export class AddonQtypeDdMarkerQuestion {
      * @param bgImgXY X and Y of the BG IMG relative position.
      * @return Position relative to the window.
      */
-    convertToWindowXY(bgImgXY: number[]): number[] {
-        const bgImg = this.doc.bgImg(),
-            position = this.domUtils.getElementXY(bgImg, null, 'ddarea');
+    convertToWindowXY(bgImgXY: string): number[] {
+        const bgImg = this.doc.bgImg();
+        const position = this.domUtils.getElementXY(bgImg, null, 'ddarea');
+        let coordsNumbers = this.parsePoint(bgImgXY);
 
-        // Render the position related to the current image dimensions.
-        bgImgXY[0] *= this.proportion;
-        bgImgXY[1] *= this.proportion;
+        coordsNumbers = this.makePointProportional(coordsNumbers);
 
-        return [Number(bgImgXY[0]) + position[0], Number(bgImgXY[1]) + position[1]];
+        return [coordsNumbers.x + position[0], coordsNumbers.y + position[1]];
     }
 
     /**
@@ -139,10 +146,10 @@ export class AddonQtypeDdMarkerQuestion {
      * @param coords Coordinates to check.
      * @return Whether they're inside the background image.
      */
-    coordsInImg(coords: number[]): boolean {
+    coordsInImg(coords: AddonQtypeDdMarkerQuestionPoint): boolean {
         const bgImg = this.doc.bgImg();
 
-        return (coords[0] * this.proportion <= bgImg.width && coords[1] * this.proportion <= bgImg.height);
+        return (coords.x * this.proportion <= bgImg.width + 1) && (coords.y * this.proportion <= bgImg.height + 1);
     }
 
     /**
@@ -173,7 +180,7 @@ export class AddonQtypeDdMarkerQuestion {
      */
     docStructure(slot: number): AddonQtypeDdMarkerQuestionDocStructure {
         const topNode = <HTMLElement> this.container.querySelector('.addon-qtype-ddmarker-container'),
-            dragItemsArea = <HTMLElement> topNode.querySelector('div.dragitems');
+            dragItemsArea = <HTMLElement> topNode.querySelector('div.dragitems, div.draghomes');
 
         return {
             topNode: (): HTMLElement => {
@@ -194,14 +201,18 @@ export class AddonQtypeDdMarkerQuestion {
             dragItemForChoice: (choiceNo: number, itemNo: number): HTMLElement => {
                 return <HTMLElement> dragItemsArea.querySelector('span.dragitem.choice' + choiceNo + '.item' + itemNo);
             },
+            dragItemPlaceholder: (choiceNo: number): HTMLElement => {
+                return <HTMLElement> dragItemsArea.querySelector('span.dragplaceholder.choice' + choiceNo);
+            },
             dragItemBeingDragged: (choiceNo: number): HTMLElement => {
                 return <HTMLElement> dragItemsArea.querySelector('span.dragitem.beingdragged.choice' + choiceNo);
             },
             dragItemHome: (choiceNo: number): HTMLElement => {
-                return <HTMLElement> dragItemsArea.querySelector('span.draghome.choice' + choiceNo);
+                return <HTMLElement> dragItemsArea.querySelector('span.draghome.choice' + choiceNo +
+                    ', span.marker.choice' + choiceNo);
             },
             dragItemHomes: (): HTMLElement[] => {
-                return <HTMLElement[]> Array.from(dragItemsArea.querySelectorAll('span.draghome'));
+                return <HTMLElement[]> Array.from(dragItemsArea.querySelectorAll('span.draghome, span.marker'));
             },
             getClassnameNumericSuffix: (node: HTMLElement, prefix: string): number => {
 
@@ -328,13 +339,11 @@ export class AddonQtypeDdMarkerQuestion {
                 const markerSpan = <HTMLElement> this.doc.topNode().querySelector(
                         'div.ddarea div.markertexts span.markertext' + dropZoneNo);
                 if (markerSpan !== null) {
-
-                    xyForText[0] = (xyForText[0] - markerSpan.offsetWidth / 2) * this.proportion;
-                    xyForText[1] = (xyForText[1] - markerSpan.offsetHeight / 2) * this.proportion;
-
+                    const width = this.domUtils.getElementMeasure(markerSpan, true, true, false, true);
+                    const height = this.domUtils.getElementMeasure(markerSpan, false, true, false, true);
                     markerSpan.style.opacity = '0.6';
-                    markerSpan.style.left = xyForText[0] + 'px';
-                    markerSpan.style.top = xyForText[1] + 'px';
+                    markerSpan.style.left = (xyForText.x - (width / 2)) + 'px';
+                    markerSpan.style.top = (xyForText.y - (height / 2)) + 'px';
 
                     const markerSpanAnchor = markerSpan.querySelector('a');
                     if (markerSpanAnchor !== null) {
@@ -364,38 +373,36 @@ export class AddonQtypeDdMarkerQuestion {
      * Draw a circle in a drop zone.
      *
      * @param dropZoneNo Number of the drop zone.
-     * @param coords Coordinates of the circle.
+     * @param coordinates Coordinates of the circle.
      * @param colour Colour of the circle.
      * @return X and Y position of the center of the circle.
      */
-    drawShapeCircle(dropZoneNo: number, coords: string, colour: string): number[] {
-        // Extract the numbers in the coordinates.
-        const coordsParts = coords.match(/(\d+),(\d+);(\d+)/);
+    drawShapeCircle(dropZoneNo: number, coordinates: string, colour: string): AddonQtypeDdMarkerQuestionPoint {
+        if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?;\d+(\.\d+)?$/)) {
+            return null;
+        }
 
-        if (coordsParts && coordsParts.length === 4) {
-            // Remove first element and convert them to number.
-            coordsParts.shift();
+        const bits = coordinates.split(';');
+        let centre = this.parsePoint(bits[0]);
+        const radius = Number(bits[1]);
 
-            const coordsPartsNum = coordsParts.map((i) => {
-               return Number(i);
+        // Calculate circle limits and check it's inside the background image.
+        const circleLimit = {x: centre.x - radius, y: centre.y - radius};
+        if (this.coordsInImg(circleLimit)) {
+            centre = this.makePointProportional(centre);
+
+            // All good, create the shape.
+            this.shapes[dropZoneNo] = this.graphics.addShape({
+                type: 'circle',
+                color: colour
+            }, {
+                cx: centre.x,
+                cy: centre.y,
+                r: Math.round(radius * this.proportion)
             });
 
-            // Calculate circle limits and check it's inside the background image.
-            const circleLimit = [coordsPartsNum[0] - coordsPartsNum[2], coordsPartsNum[1] - coordsPartsNum[2]];
-            if (this.coordsInImg(circleLimit)) {
-                // All good, create the shape.
-                this.shapes[dropZoneNo] = this.graphics.addShape({
-                    type: 'circle',
-                    color: colour
-                }, {
-                    cx: coordsPartsNum[0] * this.proportion,
-                    cy: coordsPartsNum[1] * this.proportion,
-                    r: coordsPartsNum[2] * this.proportion
-                });
-
-                // Return the center.
-                return [coordsPartsNum[0], coordsPartsNum[1]];
-            }
+            // Return the centre.
+            return centre;
         }
 
         return null;
@@ -405,39 +412,40 @@ export class AddonQtypeDdMarkerQuestion {
      * Draw a rectangle in a drop zone.
      *
      * @param dropZoneNo Number of the drop zone.
-     * @param coords Coordinates of the rectangle.
+     * @param coordinates Coordinates of the rectangle.
      * @param colour Colour of the rectangle.
      * @return X and Y position of the center of the rectangle.
      */
-    drawShapeRectangle(dropZoneNo: number, coords: string, colour: string): number[] {
-        // Extract the numbers in the coordinates.
-        const coordsParts = coords.match(/(\d+),(\d+);(\d+),(\d+)/);
+    drawShapeRectangle(dropZoneNo: number, coordinates: string, colour: string): AddonQtypeDdMarkerQuestionPoint {
+        if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?;\d+(\.\d+)?,\d+(\.\d+)?$/)) {
+            return null;
+        }
 
-        if (coordsParts && coordsParts.length === 5) {
-            // Remove first element and convert them to number.
-            coordsParts.shift();
+        const bits = coordinates.split(';');
+        const startPoint = this.parsePoint(bits[0]);
+        const size = this.parsePoint(bits[1]);
 
-            const coordsPartsNum = coordsParts.map((i) => {
-               return Number(i);
+        // Calculate rectangle limits and check it's inside the background image.
+        const rectLimits = {x: startPoint.x + size.x, y: startPoint.y + size.y};
+        if (this.coordsInImg(rectLimits)) {
+            const startPointProp = this.makePointProportional(startPoint);
+            const sizeProp = this.makePointProportional(size);
+
+            // All good, create the shape.
+            this.shapes[dropZoneNo] = this.graphics.addShape({
+                type: 'rect',
+                color: colour
+            }, {
+                x: startPointProp.x,
+                y: startPointProp.y,
+                width: sizeProp.x,
+                height: sizeProp.y
             });
 
-            // Calculate rectangle limits and check it's inside the background image.
-            const rectLimits = [coordsPartsNum[0] + coordsPartsNum[2], coordsPartsNum[1] + coordsPartsNum[3]];
-            if (this.coordsInImg(rectLimits)) {
-                // All good, create the shape.
-                this.shapes[dropZoneNo] = this.graphics.addShape({
-                    type: 'rect',
-                    color: colour
-                }, {
-                    x: coordsPartsNum[0] * this.proportion,
-                    y: coordsPartsNum[1] * this.proportion,
-                    width: coordsPartsNum[2] * this.proportion,
-                    height: coordsPartsNum[3] * this.proportion
-                });
+            const centre = { x: startPoint.x + (size.x / 2) , y: startPoint.y + (size.y / 2)};
 
-                // Return the center.
-                return [coordsPartsNum[0] + coordsPartsNum[2] / 2, coordsPartsNum[1] + coordsPartsNum[3] / 2];
-            }
+            // Return the centre.
+            return this.makePointProportional(centre);
         }
 
         return null;
@@ -447,51 +455,81 @@ export class AddonQtypeDdMarkerQuestion {
      * Draw a polygon in a drop zone.
      *
      * @param dropZoneNo Number of the drop zone.
-     * @param coords Coordinates of the polygon.
+     * @param coordinates Coordinates of the polygon.
      * @param colour Colour of the polygon.
      * @return X and Y position of the center of the polygon.
      */
-    drawShapePolygon(dropZoneNo: number, coords: string, colour: string): number[] {
-        const coordsParts = coords.split(';'),
-            points = [],
-            bgImg = this.doc.bgImg(),
-            maxXY = [0, 0],
-            minXY = [bgImg.width, bgImg.height];
-
-        for (const i in coordsParts) {
-            // Extract the X and Y of this point.
-            const partsString = coordsParts[i].match(/^(\d+),(\d+)$/),
-                parts = partsString && partsString.map((part) => {
-                    return Number(part);
-                });
-
-            if (parts !== null && this.coordsInImg([parts[1], parts[2]])) {
-                parts[1] *= this.proportion;
-                parts[2] *= this.proportion;
-
-                // Calculate min and max points to find center to show marker on.
-                minXY[0] = Math.min(parts[1], minXY[0]);
-                minXY[1] = Math.min(parts[2], minXY[1]);
-                maxXY[0] = Math.max(parts[1], maxXY[0]);
-                maxXY[1] = Math.max(parts[2], maxXY[1]);
-
-                points.push(parts[1] + ',' + parts[2]);
-            }
+    drawShapePolygon(dropZoneNo: number, coordinates: string, colour: string): AddonQtypeDdMarkerQuestionPoint {
+        if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?(?:;\d+(\.\d+)?,\d+(\.\d+)?)*$/)) {
+            return null;
         }
 
-        if (points.length > 2) {
+        const bits = coordinates.split(';');
+        const centre = {x: 0, y: 0};
+        const points = bits.map((bit) => {
+            const point = this.parsePoint(bit);
+            centre.x += point.x;
+            centre.y += point.y;
+
+            return point;
+        });
+
+        if (points.length > 0) {
+            centre.x = Math.round(centre.x / points.length);
+            centre.y = Math.round(centre.y / points.length);
+        }
+
+        const pointsOnImg = [];
+        points.forEach((point) => {
+            if (this.coordsInImg(point)) {
+                point = this.makePointProportional(point);
+
+                pointsOnImg.push(point.x + ',' + point.y);
+            }
+        });
+
+        if (pointsOnImg.length > 2) {
             this.shapes[dropZoneNo] = this.graphics.addShape({
                 type: 'polygon',
                 color: colour
             }, {
-                points: points.join(' ')
+                points: pointsOnImg.join(' ')
             });
 
-            // Return the center.
-            return [(minXY[0] + maxXY[0]) / 2, (minXY[1] + maxXY[1]) / 2];
+            // Return the centre.
+            return this.makePointProportional(centre);
         }
 
         return null;
+    }
+
+    /**
+     * Make a point from the string representation.
+     *
+     * @param coordinates "x,y".
+     * @return Coordinates to the point.
+     */
+    parsePoint(coordinates: string): AddonQtypeDdMarkerQuestionPoint {
+        const bits = coordinates.split(',');
+        if (bits.length !== 2) {
+            throw coordinates + ' is not a valid point';
+        }
+
+        return {x: Number(bits[0]), y: Number(bits[1])};
+    }
+
+    /**
+     * Make proportional position of the point.
+     *
+     * @param  point Point coordinates.
+     * @return Converted point.
+     */
+    makePointProportional(point: AddonQtypeDdMarkerQuestionPoint): AddonQtypeDdMarkerQuestionPoint {
+        return {
+            x: Math.round(point.x * this.proportion),
+            y: Math.round(point.y * this.proportion)
+
+        };
     }
 
     /**
@@ -507,9 +545,6 @@ export class AddonQtypeDdMarkerQuestion {
             // Set the position related to the natural image dimensions.
             if (this.proportion < 1) {
                 position[0] = Math.round(position[0] / this.proportion);
-            }
-
-            if (this.proportion < 1) {
                 position[1] = Math.round(position[1] / this.proportion);
             }
         }
@@ -538,11 +573,7 @@ export class AddonQtypeDdMarkerQuestion {
             const coordsStrings = fv.split(';');
 
             for (let i = 0; i < coordsStrings.length; i++) {
-                const coordsNumbers = coordsStrings[i].split(',').map((i) => {
-                    return Number(i);
-                });
-
-                coords[coords.length] = this.convertToWindowXY(coordsNumbers);
+                coords[coords.length] = this.convertToWindowXY(coordsStrings[i]);
             }
         }
 
@@ -581,9 +612,6 @@ export class AddonQtypeDdMarkerQuestion {
         // Set the position related to the natural image dimensions.
         if (this.proportion < 1) {
             position[0] = Math.round(position[0] / this.proportion);
-        }
-
-        if (this.proportion < 1) {
             position[1] = Math.round(position[1] / this.proportion);
         }
 
@@ -723,6 +751,12 @@ export class AddonQtypeDdMarkerQuestion {
             this.question.loaded = true;
         };
 
+        if (bgImg.complete && bgImg.naturalWidth) {
+            imgLoaded();
+
+            return;
+        }
+
         bgImg.addEventListener('load', imgLoaded);
 
         // Try again after a while.
@@ -764,13 +798,25 @@ export class AddonQtypeDdMarkerQuestion {
                     dragItem.classList.remove('unneeded');
                 }
 
+                const placeholder = this.doc.dragItemPlaceholder(choiceNo);
+
                 // Remove the class only if is placed on the image.
                 if (homePosition[0] != coords[i][0] || homePosition[1] != coords[i][1]) {
                     dragItem.classList.remove('unplaced');
-                }
+                    dragItem.classList.add('placed');
 
-                dragItem.style.left = coords[i][0] + 'px';
-                dragItem.style.top = coords[i][1] + 'px';
+                    const computedStyle = getComputedStyle(dragItem);
+                    const left = coords[i][0] - this.domUtils.getComputedStyleMeasure(computedStyle, 'marginLeft');
+                    const top = coords[i][1] - this.domUtils.getComputedStyleMeasure(computedStyle, 'marginTop');
+
+                    dragItem.style.left = left + 'px';
+                    dragItem.style.top = top + 'px';
+                    placeholder.classList.add('active');
+                } else {
+                    dragItem.classList.remove('placed');
+                    dragItem.classList.add('unplaced');
+                    placeholder.classList.remove('active');
+                }
             }
         }
 
