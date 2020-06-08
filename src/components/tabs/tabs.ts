@@ -477,6 +477,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      * @param scrollElement Scroll element to check scroll position.
      */
     showHideTabs(scrollElement: any): void {
+        if (!this.tabBarHeight && this.topTabsElement.offsetHeight != this.tabBarHeight) {
+            // Wrong tab height, recalculate it.
+            this.calculateTabBarHeight();
+        }
+
         if (!this.tabBarHeight) {
             // We don't have the tab bar height, this means the tab bar isn't shown.
             return;
