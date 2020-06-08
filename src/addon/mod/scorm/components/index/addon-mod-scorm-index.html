@@ -98,7 +98,7 @@
                     <div *ngFor="let sco of toc" class="core-padding-{{sco.level}} addon-mod_scorm-type-{{sco.scormtype}}">
                         <p *ngIf="sco.isvisible">
                             <core-icon [name]="sco.image.icon" [label]="sco.image.description" item-start></core-icon>
-                            <a *ngIf="sco.prereq && sco.launch" (click)="open($event, sco.id)" class="core-clickable"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></a>
+                            <a *ngIf="sco.prereq && sco.launch" (click)="open($event, false, sco.id)" class="core-clickable"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></a>
                             <span *ngIf="!sco.prereq || !sco.launch"><core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></span>
                             <span *ngIf="accessInfo && accessInfo.canviewscores && sco.score_raw">({{ 'addon.mod_scorm.score' | translate }}: {{sco.score_raw}})</span>
                         </p>
@@ -130,43 +130,42 @@
         <!-- Open SCORM in app form -->
         <ion-card *ngIf="!errorMessage && scorm && (!scorm.lastattemptlock || scorm.attemptsLeft > 0)">
             <ion-list>
-                <!-- Open mode (Preview or Normal) -->
-                <div *ngIf="!scorm.hidebrowse && !skip" radio-group [(ngModel)]="scormOptions.mode" name="mode">
-                    <ion-item>
-                        <h2>{{ 'addon.mod_scorm.mode' | translate }}</h2>
-                    </ion-item>
-                    <ion-item>
-                        <ion-label>{{ 'addon.mod_scorm.browse' | translate }}</ion-label>
-                        <ion-radio [value]="modeBrowser"></ion-radio>
-                    </ion-item>
-                    <ion-item>
-                        <ion-label>{{ 'addon.mod_scorm.normal' | translate }}</ion-label>
-                        <ion-radio [value]="modeNormal"></ion-radio>
-                    </ion-item>
-                </div>
-
-                <!-- Create new attempt -->
-                <ion-item text-wrap *ngIf="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0 && !skip">
-                    <ion-label>{{ 'addon.mod_scorm.newattempt' | translate }}</ion-label>
-                    <ion-checkbox item-end name="newAttempt" [(ngModel)]="scormOptions.newAttempt">
-                    </ion-checkbox>
-                </ion-item>
-
-                <!-- Button to open the SCORM. -->
                 <ng-container *ngIf="!downloading && !skip">
+                    <!-- Create new attempt -->
+                    <ion-item text-wrap *ngIf="!scorm.forcenewattempt && scorm.numAttempts > 0 && !scorm.incomplete && scorm.attemptsLeft > 0">
+                        <ion-label>{{ 'addon.mod_scorm.newattempt' | translate }}</ion-label>
+                        <ion-checkbox item-end name="newAttempt" [(ngModel)]="startNewAttempt">
+                        </ion-checkbox>
+                    </ion-item>
+
                     <ion-item text-wrap *ngIf="statusMessage">
-                        <p >{{ statusMessage | translate }}</p>
+                        <p>{{ statusMessage | translate }}</p>
                     </ion-item>
-                    <ion-item text-wrap>
-                        <a ion-button block (click)="open($event)">{{ 'addon.mod_scorm.enter' | translate }}</a>
-                    </ion-item>
+
+                    <!-- Open mode (Preview or Normal) -->
+                    <ion-grid>
+                        <ion-row align-items-center>
+                            <ion-col col-12 col-sm-6 *ngIf="!scorm.hidebrowse">
+                                <button ion-button block outline icon-end (click)="open($event, true)" text-wrap>
+                                    {{ 'addon.mod_scorm.browse' | translate }}
+                                    <ion-icon name="search"></ion-icon>
+                                </button>
+                            </ion-col>
+                            <ion-col col-12 [attr.col-sm-6]="!scorm.hidebrowse || null">
+                                <button ion-button block icon-end (click)="open($event)" text-wrap>
+                                    {{ 'addon.mod_scorm.enter' | translate }}
+                                    <ion-icon name="arrow-forward"></ion-icon>
+                                </button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
                 </ng-container>
 
                 <!-- Download progress. -->
                 <ion-item text-center *ngIf="downloading">
                     <ion-spinner></ion-spinner>
-                    <p *ngIf="progressMessage">{{ progressMessage | translate }}</p>
-                    <p *ngIf="percentage <= 100">{{ 'core.percentagenumber' | translate:{$a: percentage} }}</p>
+                    <h2 *ngIf="progressMessage">{{ progressMessage | translate }}</h2>
+                    <core-progress-bar *ngIf="percentage <= 100" [progress]="percentage"></core-progress-bar>
                 </ion-item>
             </ion-list>
         </ion-card>
