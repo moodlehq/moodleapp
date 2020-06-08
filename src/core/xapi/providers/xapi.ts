@@ -13,9 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreApp } from '@providers/app';
 import { CoreSites } from '@providers/sites';
 import { CoreTextUtils } from '@providers/utils/text';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreSite } from '@classes/site';
+import { CoreXAPIOffline, CoreXAPIOfflineSaveStatementsOptions } from './offline';
 
 import { makeSingleton } from '@singletons/core.singletons';
 
@@ -34,10 +37,10 @@ export class CoreXAPIProvider {
      * @return Promise resolved with true if ws is available, false otherwise.
      * @since 3.9
      */
-    async canPostStatement(siteId?: string): Promise<boolean> {
+    async canPostStatements(siteId?: string): Promise<boolean> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        return this.canPostStatementInSite(site);
+        return this.canPostStatementsInSite(site);
     }
 
     /**
@@ -47,7 +50,7 @@ export class CoreXAPIProvider {
      * @return Promise resolved with true if ws is available, false otherwise.
      * @since 3.9
      */
-    canPostStatementInSite(site?: CoreSite): boolean {
+    canPostStatementsInSite(site?: CoreSite): boolean {
         site = site || CoreSites.instance.getCurrentSite();
 
         return site.wsAvailable('core_xapi_statement_post');
@@ -68,14 +71,56 @@ export class CoreXAPIProvider {
     }
 
     /**
-     * Post an statement.
+     * Post statements.
+     *
+     * @param contextId Context ID.
+     * @param component Component.
+     * @param json JSON string to send.
+     * @param options Options.
+     * @return Promise resolved with boolean: true if response was sent to server, false if stored in device.
+     */
+    async postStatements(contextId: number, component: string, json: string, options?: CoreXAPIPostStatementsOptions)
+            : Promise<boolean> {
+
+        options = options || {};
+        options.siteId = options.siteId || CoreSites.instance.getCurrentSiteId();
+
+        // Convenience function to store a message to be synchronized later.
+        const storeOffline = async (): Promise<boolean> => {
+            await CoreXAPIOffline.instance.saveStatements(contextId, component, json, options);
+
+            return false;
+        };
+
+        if (!CoreApp.instance.isOnline() || options.offline) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        try {
+            await this.postStatementsOnline(component, json, options.siteId);
+
+            return true;
+        } catch (error) {
+            if (CoreUtils.instance.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                throw error;
+            } else {
+                // Couldn't connect to server, store it offline.
+                return storeOffline();
+            }
+        }
+    }
+
+    /**
+     * Post statements. It will fail if offline or cannot connect.
      *
      * @param component Component.
      * @param json JSON string to send.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async postStatement(component: string, json: string, siteId?: string): Promise<number[]> {
+    async postStatementsOnline(component: string, json: string, siteId?: string): Promise<number[]> {
 
         const site = await CoreSites.instance.getSite(siteId);
 
@@ -89,3 +134,10 @@ export class CoreXAPIProvider {
 }
 
 export class CoreXAPI extends makeSingleton(CoreXAPIProvider) {}
+
+/**
+ * Options to pass to postStatements function.
+ */
+export type CoreXAPIPostStatementsOptions = CoreXAPIOfflineSaveStatementsOptions & {
+    offline?: boolean; // Whether to force storing it in offline.
+};

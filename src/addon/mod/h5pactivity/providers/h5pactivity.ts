@@ -386,6 +386,20 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
+     * Get an H5P activity by context ID.
+     *
+     * @param courseId Course ID.
+     * @param contextId Context ID.
+     * @param forceCache Whether it should always return cached data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the activity data.
+     */
+    getH5PActivityByContextId(courseId: number, contextId: number, forceCache?: boolean, siteId?: string)
+            : Promise<AddonModH5PActivityData> {
+        return this.getH5PActivityByField(courseId, 'context', contextId, forceCache, siteId);
+    }
+
+    /**
      * Get an H5P activity by instance ID.
      *
      * @param courseId Course ID.

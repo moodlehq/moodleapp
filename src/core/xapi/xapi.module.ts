@@ -14,10 +14,12 @@
 
 import { NgModule } from '@angular/core';
 import { CoreXAPIProvider } from './providers/xapi';
+import { CoreXAPIOfflineProvider } from './providers/offline';
 
 // List of providers (without handlers).
 export const CORE_XAPI_PROVIDERS: any[] = [
     CoreXAPIProvider,
+    CoreXAPIOfflineProvider,
 ];
 
 @NgModule({
@@ -25,6 +27,7 @@ export const CORE_XAPI_PROVIDERS: any[] = [
     imports: [],
     providers: [
         CoreXAPIProvider,
+        CoreXAPIOfflineProvider,
     ],
     exports: []
 })

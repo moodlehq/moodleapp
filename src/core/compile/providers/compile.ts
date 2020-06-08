@@ -41,6 +41,7 @@ import { CORE_PUSHNOTIFICATIONS_PROVIDERS } from '@core/pushnotifications/pushno
 import { IONIC_NATIVE_PROVIDERS } from '@core/emulator/emulator.module';
 import { CORE_EDITOR_PROVIDERS } from '@core/editor/editor.module';
 import { CORE_SEARCH_PROVIDERS } from '@core/search/search.module';
+import { CORE_XAPI_PROVIDERS } from '@core/xapi/xapi.module';
 
 // Import only this provider to prevent circular dependencies.
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
@@ -243,7 +244,7 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
                 .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS)
                 .concat(CORE_FILTER_PROVIDERS).concat(CORE_H5P_PROVIDERS).concat(CORE_EDITOR_PROVIDERS)
-                .concat(CORE_SEARCH_PROVIDERS).concat(ADDON_MOD_H5P_ACTIVITY_PROVIDERS);
+                .concat(CORE_SEARCH_PROVIDERS).concat(ADDON_MOD_H5P_ACTIVITY_PROVIDERS).concat(CORE_XAPI_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

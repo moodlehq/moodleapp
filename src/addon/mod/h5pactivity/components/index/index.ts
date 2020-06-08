@@ -25,12 +25,14 @@ import { CoreH5P } from '@core/h5p/providers/h5p';
 import { CoreH5PDisplayOptions } from '@core/h5p/classes/core';
 import { CoreH5PHelper } from '@core/h5p/classes/helper';
 import { CoreXAPI } from '@core/xapi/providers/xapi';
+import { CoreXAPIOffline } from '@core/xapi/providers/offline';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 
 import {
     AddonModH5PActivity, AddonModH5PActivityProvider, AddonModH5PActivityData, AddonModH5PActivityAccessInfo
 } from '../../providers/h5pactivity';
+import { AddonModH5PActivitySyncProvider, AddonModH5PActivitySync } from '../../providers/sync';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -59,8 +61,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     state: string; // State of the file.
     siteCanDownload: boolean;
     trackComponent: string; // Component for tracking.
+    hasOffline: boolean;
+    isOpeningPage: boolean;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
+    protected syncEventName = AddonModH5PActivitySyncProvider.AUTO_SYNCED;
     protected site: CoreSite;
     protected observer;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
@@ -103,13 +108,18 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
         try {
-            this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(this.courseId, this.module.id);
+            this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(this.courseId, this.module.id, false, this.siteId);
 
             this.dataRetrieved.emit(this.h5pActivity);
             this.description = this.h5pActivity.intro;
             this.displayOptions = CoreH5PHelper.decodeDisplayOptions(this.h5pActivity.displayoptions);
 
+            if (sync) {
+                await this.syncActivity(showErrors);
+            }
+
             await Promise.all([
+                this.checkHasOffline(),
                 this.fetchAccessInfo(),
                 this.fetchDeployedFileData(),
             ]);
@@ -141,8 +151,17 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      *
      * @return Promise resolved when done.
      */
+    protected async checkHasOffline(): Promise<void> {
+        this.hasOffline = await CoreXAPIOffline.instance.contextHasStatements(this.h5pActivity.context, this.siteId);
+    }
+
+    /**
+     * Fetch the access info and store it in the right variables.
+     *
+     * @return Promise resolved when done.
+     */
     protected async fetchAccessInfo(): Promise<void> {
-        this.accessInfo = await AddonModH5PActivity.instance.getAccessInformation(this.h5pActivity.id);
+        this.accessInfo = await AddonModH5PActivity.instance.getAccessInformation(this.h5pActivity.id, false, this.siteId);
     }
 
     /**
@@ -331,8 +350,17 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Go to view user events.
      */
-    viewMyAttempts(): void {
-        this.navCtrl.push('AddonModH5PActivityUserAttemptsPage', {courseId: this.courseId, h5pActivityId: this.h5pActivity.id});
+    async viewMyAttempts(): Promise<void> {
+        this.isOpeningPage = true;
+
+        try {
+            await this.navCtrl.push('AddonModH5PActivityUserAttemptsPage', {
+                courseId: this.courseId,
+                h5pActivityId: this.h5pActivity.id,
+            });
+        } finally {
+            this.isOpeningPage = false;
+        }
     }
 
     /**
@@ -342,12 +370,31 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * @return Promise resolved when done.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
-        if (!event.data || !CoreXAPI.instance.canPostStatementInSite(this.site) || !this.isCurrentXAPIPost(event.data)) {
+        if (!event.data || !CoreXAPI.instance.canPostStatementsInSite(this.site) || !this.isCurrentXAPIPost(event.data)) {
             return;
         }
 
         try {
-            await CoreXAPI.instance.postStatement(event.data.component, JSON.stringify(event.data.statements));
+            const options = {
+                offline: this.hasOffline,
+                courseId: this.courseId,
+                extra: this.h5pActivity.name,
+                siteId: this.site.getId(),
+            };
+
+            const sent = await CoreXAPI.instance.postStatements(this.h5pActivity.context, event.data.component,
+                    JSON.stringify(event.data.statements), options);
+
+            this.hasOffline = !sent;
+
+            if (sent) {
+                try {
+                    // Invalidate attempts.
+                    await AddonModH5PActivity.instance.invalidateUserAttempts(this.h5pActivity.id, undefined, this.siteId);
+                } catch (error) {
+                    // Ignore errors.
+                }
+            }
         } catch (error) {
             CoreDomUtils.instance.showErrorModalDefault(error, 'Error sending tracking data.');
         }
@@ -378,6 +425,39 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         const match = trackingUrl.match(/xapi\/activity\/(\d+)/);
 
         return match && match[1] == this.h5pActivity.context;
+    }
+
+    /**
+     * Performs the sync of the activity.
+     *
+     * @return Promise resolved when done.
+     */
+    protected sync(): Promise<any> {
+        return AddonModH5PActivitySync.instance.syncActivity(this.h5pActivity.context, this.site.getId());
+    }
+
+    /**
+     * An autosync event has been received.
+     *
+     * @param syncEventData Data receiven on sync observer.
+     */
+    protected autoSyncEventReceived(syncEventData: any): void {
+        this.checkHasOffline();
+    }
+
+    /**
+     * Go to blog posts.
+     *
+     * @param event Event.
+     */
+    async gotoBlog(event: any): Promise<void> {
+        this.isOpeningPage = true;
+
+        try {
+            await super.gotoBlog(event);
+        } finally {
+            this.isOpeningPage = false;
+        }
     }
 
     /**

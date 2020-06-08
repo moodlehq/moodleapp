@@ -56,7 +56,7 @@ export class AddonModH5PActivityIndexPage {
      * @return Resolved if we can leave it, rejected if not.
      */
     ionViewCanLeave(): Promise<void> {
-        if (!this.h5pComponent.playing) {
+        if (!this.h5pComponent.playing || this.h5pComponent.isOpeningPage) {
             return;
         }
 

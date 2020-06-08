@@ -1862,6 +1862,7 @@
     "core.mod_folder": "Folder",
     "core.mod_forum": "Forum",
     "core.mod_glossary": "Glossary",
+    "core.mod_h5pactivity": "H5P",
     "core.mod_ims": "IMS content package",
     "core.mod_imscp": "IMS content package",
     "core.mod_label": "Label",

@@ -280,8 +280,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      *
      * @param event Event.
      */
-    gotoBlog(event: any): void {
-        this.linkHelper.goInSite(this.navCtrl, 'AddonBlogEntriesPage', { cmId: this.module.id });
+    gotoBlog(event: any): Promise<any> {
+        return this.linkHelper.goInSite(this.navCtrl, 'AddonBlogEntriesPage', { cmId: this.module.id });
     }
 
     /**
