@@ -17,12 +17,12 @@
     <ion-slides [slidesPerView]="numToolbarButtons" (ionSlideDidChange)="updateToolbarArrows()">
         <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.b" (click)="buttonAction($event, 'bold', 'b')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.bold' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strong" (click)="buttonAction($event, 'bold', 'strong')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.bold' | translate">
                 <core-icon name="fa-bold"></core-icon>
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.i" (click)="buttonAction($event, 'italic', 'i')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.italic' | translate">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.em" (click)="buttonAction($event, 'italic', 'em')" (mousedown)="mouseDownAction($event)" [title]=" 'core.editor.italic' | translate">
                 <core-icon name="fa-italic"></core-icon>
             </button>
         </ion-slide>
