@@ -1397,7 +1397,7 @@ export class CoreFilepoolProvider {
      * @param html HTML code.
      * @return List of fake file objects with file URLs.
      */
-    extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): any[] {
+    extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): CoreWSExternalFile[] {
         const urls = this.extractDownloadableFilesFromHtml(html);
 
         // Convert them to fake file objects.
@@ -1768,46 +1768,50 @@ export class CoreFilepoolProvider {
      * @param revision File revision. If not defined, it will be calculated using the URL.
      * @return Promise resolved with the file state.
      */
-    getFileStateByUrl(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string, revision?: number)
+    async getFileStateByUrl(siteId: string, fileUrl: string, timemodified: number = 0, filePath?: string, revision?: number)
             : Promise<string> {
-        let fileId;
+        let file;
 
-        return this.fixPluginfileURL(siteId, fileUrl, timemodified).then((file) => {
-
-            fileUrl = file.fileurl;
-            timemodified = file.timemodified || timemodified;
-            revision = revision || this.getRevisionFromUrl(fileUrl);
-            fileId = this.getFileIdByUrl(fileUrl);
-
-            // Check if the file is in queue (waiting to be downloaded).
-            return this.hasFileInQueue(siteId, fileId).then(() => {
-                return CoreConstants.DOWNLOADING;
-            }).catch(() => {
-                // Check if the file is being downloaded right now.
-                const extension = this.mimeUtils.guessExtensionFromUrl(fileUrl),
-                    path = filePath ? filePath : this.getFilePath(siteId, fileId, extension);
-
-                return Promise.resolve(path).then((filePath) => {
-                    const downloadId = this.getFileDownloadId(fileUrl, filePath);
-                    if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
-                        return CoreConstants.DOWNLOADING;
-                    }
-
-                    // File is not being downloaded. Check if it's downloaded and if it's outdated.
-                    return this.hasFileInPool(siteId, fileId).then((entry) => {
-                        if (this.isFileOutdated(entry, revision, timemodified)) {
-                            return CoreConstants.OUTDATED;
-                        } else {
-                            return CoreConstants.DOWNLOADED;
-                        }
-                    }).catch(() => {
-                        return CoreConstants.NOT_DOWNLOADED;
-                    });
-                });
-            });
-        }, () => {
+        try {
+            file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
+        } catch (e) {
             return CoreConstants.NOT_DOWNLOADABLE;
-        });
+        }
+
+        fileUrl = file.fileurl;
+        timemodified = file.timemodified || timemodified;
+        revision = revision || this.getRevisionFromUrl(fileUrl);
+        const fileId = this.getFileIdByUrl(fileUrl);
+
+        try {
+            // Check if the file is in queue (waiting to be downloaded).
+            await this.hasFileInQueue(siteId, fileId);
+
+            return CoreConstants.DOWNLOADING;
+        } catch (e) {
+            // Check if the file is being downloaded right now.
+            const extension = this.mimeUtils.guessExtensionFromUrl(fileUrl);
+            filePath = filePath || (await this.getFilePath(siteId, fileId, extension));
+
+            const downloadId = this.getFileDownloadId(fileUrl, filePath);
+
+            if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
+                return CoreConstants.DOWNLOADING;
+            }
+
+            try {
+                // File is not being downloaded. Check if it's downloaded and if it's outdated.
+                const entry = await this.hasFileInPool(siteId, fileId);
+
+                if (this.isFileOutdated(entry, revision, timemodified)) {
+                    return CoreConstants.OUTDATED;
+                }
+
+                return CoreConstants.DOWNLOADED;
+            } catch (e) {
+                return CoreConstants.NOT_DOWNLOADED;
+            }
+        }
     }
 
     /**
