@@ -15,6 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { CoreCoursesProvider } from '../../providers/courses';
+import { CoreConstants } from '@core/constants';
 
 /**
  * This component is meant to display a popover with the course options.
@@ -25,12 +26,14 @@ import { CoreCoursesProvider } from '../../providers/courses';
 })
 export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
     course: any; // The course.
+    courseStatus: string; // The course status.
     prefetch: any; // The prefecth info.
 
     downloadCourseEnabled: boolean;
 
     constructor(navParams: NavParams, private viewCtrl: ViewController, private coursesProvider: CoreCoursesProvider) {
         this.course = navParams.get('course') || {};
+        this.courseStatus = navParams.get('courseStatus') || CoreConstants.NOT_DOWNLOADED;
         this.prefetch = navParams.get('prefetch') || {};
     }
 

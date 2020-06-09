@@ -123,6 +123,13 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     }
 
     /**
+     * Open page to manage courses storage.
+     */
+    manageCoursesStorage(): void {
+        this.navCtrl.push('AddonStorageManagerCoursesStoragePage');
+    }
+
+    /**
      * Go to search courses.
      */
     openSearch(): void {
