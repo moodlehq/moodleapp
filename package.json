@@ -24,6 +24,12 @@
     }
   ],
   "scripts": {
+    "start": "npm run dev",
+    "dev": "ionic serve",
+    "dev:android": "ionic cordova run android --livereload",
+    "dev:ios": "ionic cordova run ios --livereload",
+    "prod:android": "ionic cordova run android --aot",
+    "prod:ios": "ionic cordova run ios --aot",
     "setup": "npm install && npx cordova prepare && npx gulp",
     "clean": "npx ionic-app-scripts clean",
     "build": "npx ionic-app-scripts build",
@@ -129,6 +135,7 @@
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.2.3",
+    "@ionic/cli": "^6.9.3",
     "@types/cordova": "0.0.34",
     "@types/cordova-plugin-file-transfer": "0.0.3",
     "@types/cordova-plugin-globalization": "0.0.3",
@@ -147,6 +154,7 @@
     "gulp-slash": "1.1.3",
     "lodash.template": "4.5.0",
     "minimist": "^1.2.5",
+    "native-run": "^1.0.0",
     "node-loader": "0.6.0",
     "through": "2.3.8",
     "typescript": "2.6.2",
