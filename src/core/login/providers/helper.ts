@@ -83,6 +83,7 @@ export class CoreLoginHelperProvider {
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
     protected pageToLoad: {page: string, params: any, time: number}; // Page to load once main menu is opened.
+    protected isOpeningReconnect = false;
     waitingForBrowser = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -1135,7 +1136,7 @@ export class CoreLoginHelperProvider {
                 }
 
                 const info = currentSite.getInfo();
-                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
+                if (typeof info != 'undefined' && typeof info.username != 'undefined' && !this.isOpeningReconnect) {
                     const rootNavCtrl = this.appProvider.getRootNavController(),
                         activePage = rootNavCtrl.getActive();
 
@@ -1144,6 +1145,8 @@ export class CoreLoginHelperProvider {
                         return;
                     }
 
+                    this.isOpeningReconnect = true;
+
                     rootNavCtrl.setRoot('CoreLoginReconnectPage', {
                         infoSiteUrl: info.siteurl,
                         siteUrl: result.siteUrl,
@@ -1151,6 +1154,8 @@ export class CoreLoginHelperProvider {
                         pageName: data.pageName,
                         pageParams: data.params,
                         siteConfig: result.config
+                    }).finally(() => {
+                        this.isOpeningReconnect = false;
                     });
                 }
             }
