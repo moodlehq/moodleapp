@@ -136,6 +136,11 @@ export class CoreCronDelegate {
                 this.startNetworkHandlers();
             });
         });
+
+        // Export the sync provider so Behat tests can trigger cron tasks without waiting.
+        if (CoreAppProvider.isAutomated()) {
+            (<any> window).cronProvider = this;
+        }
     }
 
     /**
