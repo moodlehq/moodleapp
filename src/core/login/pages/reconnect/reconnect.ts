@@ -105,8 +105,8 @@ export class CoreLoginReconnectPage {
                     // Check logoURL if user avatar is not set.
                     if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
                         this.showSiteAvatar = false;
-                        this.logoUrl = this.loginHelper.getLogoUrl(config);
                     }
+                    this.logoUrl = this.loginHelper.getLogoUrl(config);
 
                     this.getDataFromConfig(this.siteConfig);
                 }).catch(() => {

@@ -93,11 +93,8 @@ ion-app.app-root page-core-login-site {
     }
 
     .core-login-site-logo {
-        margin-top: 5px;
-        margin-bottom: 5px;
-        img {
-            width: 90%;
-            max-width: 300px;
-        }
+        width: 90%;
+        max-width: 300px;
+        margin: 5px auto;
     }
 }
