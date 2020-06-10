@@ -53,7 +53,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         const versionApplied: number = await this.configProvider.get(this.VERSION_APPLIED, 0);
 
         if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
-            promises.push(CoreH5P.instance.deleteAllContentIndexes());
+            promises.push(CoreH5P.instance.h5pPlayer.deleteAllContentIndexes());
         }
 
         try {

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreH5PProvider, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from '../providers/h5p';
-import { CoreH5PUtilsProvider } from '../providers/utils';
-import { TranslateService } from '@ngx-translate/core';
+import { CoreTextUtils } from '@providers/utils/text';
+import { CoreUtils } from '@providers/utils/utils';
+import { CoreH5P } from '../providers/h5p';
+import { Translate } from '@singletons/core.singletons';
+import { CoreH5PCore, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from './core';
 
 /**
- * Equivalent to Moodle's H5PContentValidator, but without some of the validations.
+ * Equivalent to H5P's H5PContentValidator, but without some of the validations.
  * It's also used to build the dependency list.
  */
 export class CoreH5PContentValidator {
@@ -43,17 +43,12 @@ export class CoreH5PContentValidator {
     protected libraries: {[libString: string]: CoreH5PLibraryData} = {};
     protected dependencies: {[key: string]: CoreH5PContentDepsTreeDependency} = {};
     protected relativePathRegExp = /^((\.\.\/){1,2})(.*content\/)?(\d+|editor)\/(.+)$/;
-    protected allowedHtml: {[tag: string]: any} = {};
+    protected allowedHtml: {[tag: string]: string} = {};
     protected allowedStyles: RegExp[];
     protected metadataSemantics: any[];
     protected copyrightSemantics: any;
 
-    constructor(protected h5pProvider: CoreH5PProvider,
-            protected h5pUtils: CoreH5PUtilsProvider,
-            protected textUtils: CoreTextUtilsProvider,
-            protected utils: CoreUtilsProvider,
-            protected translate: TranslateService,
-            protected siteId: string) { }
+    constructor(protected siteId: string) { }
 
     /**
      * Add Addon library.
@@ -61,24 +56,23 @@ export class CoreH5PContentValidator {
      * @param library The addon library to add.
      * @return Promise resolved when done.
      */
-    addon(library: CoreH5PLibraryAddonData): Promise<void> {
+    async addon(library: CoreH5PLibraryAddonData): Promise<void> {
         const depKey = 'preloaded-' + library.machineName;
 
         this.dependencies[depKey] = {
             library: library,
-            type: 'preloaded'
+            type: 'preloaded',
         };
 
-        return this.h5pProvider.findLibraryDependencies(this.dependencies, library, this.nextWeight).then((weight) => {
-            this.nextWeight = weight;
-            this.dependencies[depKey].weight = this.nextWeight++;
-        });
+        this.nextWeight = await CoreH5P.instance.h5pCore.findLibraryDependencies(this.dependencies, library, this.nextWeight);
+
+        this.dependencies[depKey].weight = this.nextWeight++;
     }
 
     /**
      * Get the flat dependency tree.
      *
-     * @return array
+     * @return Dependencies.
      */
     getDependencies(): {[key: string]: CoreH5PContentDepsTreeDependency} {
         return this.dependencies;
@@ -92,7 +86,7 @@ export class CoreH5PContentValidator {
      */
     validateMetadata(metadata: any): Promise<any> {
         const semantics = this.getMetadataSemantics();
-        const group = this.utils.clone(metadata || {});
+        const group = CoreUtils.instance.clone(metadata || {});
 
         // Stop complaining about "invalid selected option in select" for old content without license chosen.
         if (typeof group.license == 'undefined') {
@@ -135,7 +129,7 @@ export class CoreH5PContentValidator {
                 tags.push('s');
             }
 
-            tags = this.utils.uniqueArray(tags);
+            tags = CoreUtils.instance.uniqueArray(tags);
 
             // Determine allowed style tags
             const stylePatterns: RegExp[] = [];
@@ -168,7 +162,7 @@ export class CoreH5PContentValidator {
             text = this.filterXss(text, tags, stylePatterns);
         } else {
             // Filter text to plain text.
-            text = this.textUtils.escapeHTML(text);
+            text = CoreTextUtils.instance.escapeHTML(text);
         }
 
         // Check if string is within allowed length.
@@ -213,8 +207,8 @@ export class CoreH5PContentValidator {
         }
         // Check if number is within allowed bounds even if step value is set.
         if (typeof semantics.step != 'undefined') {
-            const testNumber = num - (typeof semantics.min != 'undefined' ? semantics.min : 0),
-                rest = testNumber % semantics.step;
+            const testNumber = num - (typeof semantics.min != 'undefined' ? semantics.min : 0);
+            const rest = testNumber % semantics.step;
             if (rest !== 0) {
                 num -= rest;
             }
@@ -245,8 +239,8 @@ export class CoreH5PContentValidator {
      * @return Validated select.
      */
     validateSelect(select: any, semantics: any): any {
-        const optional = semantics.optional,
-            options = {};
+        const optional = semantics.optional;
+        const options = {};
         let strict = false;
 
         if (semantics.options && semantics.options.length) {
@@ -273,7 +267,7 @@ export class CoreH5PContentValidator {
                 if (strict && !optional && !options[value]) {
                     delete select[key];
                 } else {
-                    select[key] = this.textUtils.escapeHTML(value);
+                    select[key] = CoreTextUtils.instance.escapeHTML(value);
                 }
             }
         } else {
@@ -285,7 +279,7 @@ export class CoreH5PContentValidator {
             if (strict && !optional && !options[select]) {
                 select = semantics.options[0].value;
             }
-            select = this.textUtils.escapeHTML(select);
+            select = CoreTextUtils.instance.escapeHTML(select);
         }
 
         return select;
@@ -299,11 +293,10 @@ export class CoreH5PContentValidator {
      * @param semantics Semantics.
      * @return Validated list.
      */
-    validateList(list: any, semantics: any): Promise<any[]> {
-        const field = semantics.field,
-            fn = this[this.typeMap[field.type]].bind(this);
-        let promise = Promise.resolve(), // Use a chain of promises so the order is kept.
-            keys = Object.keys(list);
+    async validateList(list: any, semantics: any): Promise<any[]> {
+        const field = semantics.field;
+        const fn = this[this.typeMap[field.type]].bind(this);
+        let keys = Object.keys(list);
 
         // Check that list is not longer than allowed length.
         if (typeof semantics.max != 'undefined') {
@@ -311,35 +304,32 @@ export class CoreH5PContentValidator {
         }
 
         // Validate each element in list.
-        keys.forEach((key) => {
+        for (const i in keys) {
+            const key = keys[i];
+
             if (isNaN(parseInt(key, 10))) {
                 // It's an object and the key isn't an integer. Delete it.
                 delete list[key];
             } else {
-                promise = promise.then(() => {
-                    return Promise.resolve(fn(list[key], field)).then((val) => {
-                        if (val === null) {
-                            list.splice(key, 1);
-                        } else {
-                            list[key] = val;
-                        }
-                    });
-                });
+                const val = await fn(list[key], field);
+
+                if (val === null) {
+                    list.splice(key, 1);
+                } else {
+                    list[key] = val;
+                }
             }
-        });
+        }
 
-        return promise.then(() => {
+        if (!Array.isArray(list)) {
+            list = CoreUtils.instance.objectToArray(list);
+        }
 
-            if (!Array.isArray(list)) {
-                list = this.utils.objectToArray(list);
-            }
+        if (!list.length) {
+            return null;
+        }
 
-            if (!list.length) {
-                return null;
-            }
-
-            return list;
-        });
+        return list;
     }
 
     /**
@@ -350,7 +340,7 @@ export class CoreH5PContentValidator {
      * @param typeValidKeys List of valid keys.
      * @return Promise resolved with the validated file.
      */
-    protected validateFilelike(file: any, semantics: any, typeValidKeys: string[] = []): Promise<any> {
+    protected async validateFilelike(file: any, semantics: any, typeValidKeys: string[] = []): Promise<any> {
         // Do not allow to use files from other content folders.
         const matches = file.path.match(this.relativePathRegExp);
         if (matches && matches.length) {
@@ -363,9 +353,9 @@ export class CoreH5PContentValidator {
         }
 
         // Make sure path and mime does not have any special chars
-        file.path = this.textUtils.escapeHTML(file.path);
+        file.path = CoreTextUtils.instance.escapeHTML(file.path);
         if (file.mime) {
-            file.mime = this.textUtils.escapeHTML(file.mime);
+            file.mime = CoreTextUtils.instance.escapeHTML(file.mime);
         }
 
         // Remove attributes that should not exist, they may contain JSON escape code.
@@ -373,7 +363,7 @@ export class CoreH5PContentValidator {
         if (semantics.extraAttributes) {
             validKeys = validKeys.concat(semantics.extraAttributes);
         }
-        validKeys = this.utils.uniqueArray(validKeys);
+        validKeys = CoreUtils.instance.uniqueArray(validKeys);
 
         this.filterParams(file, validKeys);
 
@@ -386,7 +376,7 @@ export class CoreH5PContentValidator {
         }
 
         if (file.codecs) {
-            file.codecs = this.textUtils.escapeHTML(file.codecs);
+            file.codecs = CoreTextUtils.instance.escapeHTML(file.codecs);
         }
 
         if (typeof file.bitrate != 'undefined') {
@@ -399,17 +389,15 @@ export class CoreH5PContentValidator {
             } else {
                 this.filterParams(file.quality, ['level', 'label']);
                 file.quality.level = parseInt(file.quality.level);
-                file.quality.label = this.textUtils.escapeHTML(file.quality.label);
+                file.quality.label = CoreTextUtils.instance.escapeHTML(file.quality.label);
             }
         }
 
         if (typeof file.copyright != 'undefined') {
-            return this.validateGroup(file.copyright, this.getCopyrightSemantics()).then(() => {
-                return file;
-            });
+            await this.validateGroup(file.copyright, this.getCopyrightSemantics());
         }
 
-        return Promise.resolve(file);
+        return file;
     }
 
     /**
@@ -441,18 +429,13 @@ export class CoreH5PContentValidator {
      * @param semantics Semantics.
      * @return Promise resolved with the validated file.
      */
-    validateVideo(video: any, semantics: any): Promise<any> {
-        let promise = Promise.resolve(); // Use a chain of promises so the order is kept.
+    async validateVideo(video: any, semantics: any): Promise<any> {
 
         for (const key in video) {
-            promise = promise.then(() => {
-                return this.validateFilelike(video[key], semantics, ['width', 'height', 'codecs', 'quality', 'bitrate']);
-            });
+            await this.validateFilelike(video[key], semantics, ['width', 'height', 'codecs', 'quality', 'bitrate']);
         }
 
-        return promise.then(() => {
-            return video;
-        });
+        return video;
     }
 
     /**
@@ -462,18 +445,13 @@ export class CoreH5PContentValidator {
      * @param semantics Semantics.
      * @return Promise resolved with the validated file.
      */
-    validateAudio(audio: any, semantics: any): Promise<any> {
-        let promise = Promise.resolve(); // Use a chain of promises so the order is kept.
+    async validateAudio(audio: any, semantics: any): Promise<any> {
 
         for (const key in audio) {
-            promise = promise.then(() => {
-                return this.validateFilelike(audio[key], semantics);
-            });
+            await this.validateFilelike(audio[key], semantics);
         }
 
-        return promise.then(() => {
-            return audio;
-        });
+        return audio;
     }
 
     /**
@@ -483,19 +461,19 @@ export class CoreH5PContentValidator {
      * @param group Group.
      * @param semantics Semantics.
      * @param flatten Whether to flatten.
+     * @return Promise resolved when done.
      */
-    validateGroup(group: any, semantics: any, flatten: boolean = true): Promise<any> {
-        // Groups with just one field are compressed in the editor to only output he child content.
+    async validateGroup(group: any, semantics: any, flatten: boolean = true): Promise<any> {
+        // Groups with just one field are compressed in the editor to only output the child content.
 
         const isSubContent = semantics.isSubContent === true;
 
         if (semantics.fields.length == 1 && flatten && !isSubContent) {
-            const field = semantics.fields[0],
-                fn = this[this.typeMap[field.type]].bind(this);
+            const field = semantics.fields[0];
+            const fn = this[this.typeMap[field.type]].bind(this);
 
-            return Promise.resolve(fn(group, field));
+            return fn(group, field);
         } else {
-            let promise = Promise.resolve(); // Use a chain of promises so the order is kept.
 
             for (const key in group) {
                 // If subContentId is set, keep value
@@ -504,9 +482,9 @@ export class CoreH5PContentValidator {
                 }
 
                 // Find semantics for name=key.
-                let found = false,
-                    fn = null,
-                    field = null;
+                let found = false;
+                let fn = null;
+                let field = null;
 
                 for (let i = 0; i < semantics.fields.length; i++) {
                     field = semantics.fields[i];
@@ -522,23 +500,19 @@ export class CoreH5PContentValidator {
                 }
 
                 if (found && fn) {
-                    promise = promise.then(() => {
-                        return Promise.resolve(fn(group[key], field)).then((val) => {
-                            group[key] = val;
-                            if (val === null) {
-                                delete group[key];
-                            }
-                        });
-                    });
+                    const val = await fn(group[key], field);
+
+                    group[key] = val;
+                    if (val === null) {
+                        delete group[key];
+                    }
                 } else {
                     // Something exists in content that does not have a corresponding semantics field. Remove it.
                     delete group.key;
                 }
             }
 
-            return promise.then(() => {
-                return group;
-            });
+            return group;
         }
     }
 
@@ -551,71 +525,57 @@ export class CoreH5PContentValidator {
      * @param semantics Semantics.
      * @return Promise resolved when done.
      */
-    validateLibrary(value: any, semantics: any): Promise<any> {
+    async validateLibrary(value: any, semantics: any): Promise<any> {
         if (!value.library) {
-            return Promise.resolve();
+            return;
         }
-
-        let promise;
 
         if (!this.libraries[value.library]) {
-            const libSpec = this.h5pUtils.libraryFromString(value.library);
+            // Load the library and store it in the index of libraries.
+            const libSpec = CoreH5PCore.libraryFromString(value.library);
 
-            promise = this.h5pProvider.loadLibrary(libSpec.machineName, libSpec.majorVersion, libSpec.minorVersion, this.siteId)
-                    .then((library) => {
-                this.libraries[value.library] = library;
-
-                return library;
-            });
-        } else {
-            promise = Promise.resolve(this.libraries[value.library]);
+            this.libraries[value.library] = await CoreH5P.instance.h5pCore.loadLibrary(libSpec.machineName, libSpec.majorVersion,
+                    libSpec.minorVersion, this.siteId);
         }
 
-        return promise.then((library) => {
-            // Validate parameters.
-            return this.validateGroup(value.params, {type: 'group', fields: library.semantics}, false).then((validated) => {
+        const library = this.libraries[value.library];
 
-                value.params = validated;
+        // Validate parameters.
+        value.params = await this.validateGroup(value.params, {type: 'group', fields: library.semantics}, false);
 
-                // Validate subcontent's metadata
-                if (value.metadata) {
-                    return this.validateMetadata(value.metadata).then((res) => {
-                        value.metadata = res;
-                    });
-                }
-            }).then(() => {
+        // Validate subcontent's metadata
+        if (value.metadata) {
+            value.metadata = await this.validateMetadata(value.metadata);
+        }
 
-                let validKeys = ['library', 'params', 'subContentId', 'metadata'];
-                if (semantics.extraAttributes) {
-                    validKeys = this.utils.uniqueArray(validKeys.concat(semantics.extraAttributes));
-                }
+        let validKeys = ['library', 'params', 'subContentId', 'metadata'];
+        if (semantics.extraAttributes) {
+            validKeys = CoreUtils.instance.uniqueArray(validKeys.concat(semantics.extraAttributes));
+        }
 
-                this.filterParams(value, validKeys);
+        this.filterParams(value, validKeys);
 
-                if (value.subContentId &&
-                        !value.subContentId.match(/^\{?[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\}?$/)) {
-                    delete value.subContentId;
-                }
+        if (value.subContentId &&
+                !value.subContentId.match(/^\{?[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\}?$/)) {
+            delete value.subContentId;
+        }
 
-                // Find all dependencies for this library.
-                const depKey = 'preloaded-' + library.machineName;
-                if (!this.dependencies[depKey]) {
-                    this.dependencies[depKey] = {
-                        library: library,
-                        type: 'preloaded'
-                    };
+        // Find all dependencies for this library.
+        const depKey = 'preloaded-' + library.machineName;
+        if (!this.dependencies[depKey]) {
+            this.dependencies[depKey] = {
+                library: library,
+                type: 'preloaded'
+            };
 
-                    return this.h5pProvider.findLibraryDependencies(this.dependencies, library, this.nextWeight).then((weight) => {
-                        this.nextWeight = weight;
-                        this.dependencies[depKey].weight = this.nextWeight++;
+            this.nextWeight = await CoreH5P.instance.h5pCore.findLibraryDependencies(this.dependencies, library, this.nextWeight);
 
-                        return value;
-                    });
-                } else {
-                    return value;
-                }
-            });
-        });
+            this.dependencies[depKey].weight = this.nextWeight++;
+
+            return value;
+        } else {
+            return value;
+        }
     }
 
     /**
@@ -689,7 +649,7 @@ export class CoreH5PContentValidator {
     protected filterXssSplit(m: string[], store: boolean = false): string {
 
         if (store) {
-            this.allowedHtml = this.utils.arrayToObject(m);
+            this.allowedHtml = CoreUtils.instance.arrayToObject(m);
 
             return '';
         }
@@ -710,9 +670,9 @@ export class CoreH5PContentValidator {
             return '';
         }
 
-        const slash = matches[1] ? matches[1].trim() : '',
-            attrList = matches[3] || '',
-            comment = matches[4] || '';
+        const slash = matches[1] ? matches[1].trim() : '';
+        const attrList = matches[3] || '';
+        const comment = matches[4] || '';
         let elem = matches[2] || '';
 
         if (comment) {
@@ -733,8 +693,8 @@ export class CoreH5PContentValidator {
         }
 
         // Is there a closing XHTML slash at the end of the attributes?
-        const newAttrList = attrList.replace(/(\s?)\/\s*$/g, '$1'),
-           xhtmlSlash = attrList != newAttrList ? ' /' : '';
+        const newAttrList = attrList.replace(/(\s?)\/\s*$/g, '$1');
+        const xhtmlSlash = attrList != newAttrList ? ' /' : '';
 
         // Clean up attributes.
         let attr2 = this.filterXssAttributes(newAttrList,
@@ -760,9 +720,9 @@ export class CoreH5PContentValidator {
 
         while (attr.length != 0) {
             // Was the last operation successful?
-            let working = 0,
-                matches,
-                thisVal;
+            let working = 0;
+            let matches;
+            let thisVal;
 
             switch (mode) {
                 case 0:
@@ -877,10 +837,10 @@ export class CoreH5PContentValidator {
     filterXssBadProtocol(str: string, decode: boolean = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).
         if (decode) {
-            str = this.textUtils.decodeHTMLEntities(str);
+            str = CoreTextUtils.instance.decodeHTMLEntities(str);
         }
 
-        return this.textUtils.escapeHTML(this.stripDangerousProtocols(str));
+        return CoreTextUtils.instance.escapeHTML(this.stripDangerousProtocols(str));
     }
 
     /**
@@ -892,11 +852,11 @@ export class CoreH5PContentValidator {
     protected stripDangerousProtocols(uri: string): string {
 
         const allowedProtocols = {
-                ftp: true,
-                http: true,
-                https: true,
-                mailto: true
-            };
+            ftp: true,
+            http: true,
+            https: true,
+            mailto: true
+        };
         let before;
 
         // Iteratively remove any invalid protocol found.
@@ -939,92 +899,92 @@ export class CoreH5PContentValidator {
             {
                 name: 'title',
                 type: 'text',
-                label: this.translate.instant('core.h5p.title'),
+                label: Translate.instance.instant('core.h5p.title'),
                 placeholder: 'La Gioconda'
             },
             {
                 name: 'license',
                 type: 'select',
-                label: this.translate.instant('core.h5p.license'),
+                label: Translate.instance.instant('core.h5p.license'),
                 default: 'U',
                 options: [
                     {
                         value: 'U',
-                        label: this.translate.instant('core.h5p.undisclosed')
+                        label: Translate.instance.instant('core.h5p.undisclosed')
                     },
                     {
                         type: 'optgroup',
-                        label: this.translate.instant('core.h5p.creativecommons'),
+                        label: Translate.instance.instant('core.h5p.creativecommons'),
                         options: [
                             {
                                 value: 'CC BY',
-                                label: this.translate.instant('core.h5p.ccattribution'),
+                                label: Translate.instance.instant('core.h5p.ccattribution'),
                                 versions: ccVersions
                             },
                             {
                                 value: 'CC BY-SA',
-                                label: this.translate.instant('core.h5p.ccattributionsa'),
+                                label: Translate.instance.instant('core.h5p.ccattributionsa'),
                                 versions: ccVersions
                             },
                             {
                                 value: 'CC BY-ND',
-                                label: this.translate.instant('core.h5p.ccattributionnd'),
+                                label: Translate.instance.instant('core.h5p.ccattributionnd'),
                                 versions: ccVersions
                             },
                             {
                                 value: 'CC BY-NC',
-                                label: this.translate.instant('core.h5p.ccattributionnc'),
+                                label: Translate.instance.instant('core.h5p.ccattributionnc'),
                                 versions: ccVersions
                             },
                             {
                                 value: 'CC BY-NC-SA',
-                                label: this.translate.instant('core.h5p.ccattributionncsa'),
+                                label: Translate.instance.instant('core.h5p.ccattributionncsa'),
                                 versions: ccVersions
                             },
                             {
                                 value: 'CC BY-NC-ND',
-                                label: this.translate.instant('core.h5p.ccattributionncnd'),
+                                label: Translate.instance.instant('core.h5p.ccattributionncnd'),
                                 versions: ccVersions
                             },
                             {
                                 value: 'CC0 1.0',
-                                label: this.translate.instant('core.h5p.ccpdd')
+                                label: Translate.instance.instant('core.h5p.ccpdd')
                             },
                             {
                                 value: 'CC PDM',
-                                label: this.translate.instant('core.h5p.pdm')
+                                label: Translate.instance.instant('core.h5p.pdm')
                             },
                         ]
                     },
                     {
                         value: 'GNU GPL',
-                        label: this.translate.instant('core.h5p.gpl')
+                        label: Translate.instance.instant('core.h5p.gpl')
                     },
                     {
                         value: 'PD',
-                        label: this.translate.instant('core.h5p.pd')
+                        label: Translate.instance.instant('core.h5p.pd')
                     },
                     {
                         value: 'ODC PDDL',
-                        label: this.translate.instant('core.h5p.pddl')
+                        label: Translate.instance.instant('core.h5p.pddl')
                     },
                     {
                         value: 'C',
-                        label: this.translate.instant('core.h5p.copyrightstring')
+                        label: Translate.instance.instant('core.h5p.copyrightstring')
                     }
                 ]
             },
             {
                 name: 'licenseVersion',
                 type: 'select',
-                label: this.translate.instant('core.h5p.licenseversion'),
+                label: Translate.instance.instant('core.h5p.licenseversion'),
                 options: ccVersions,
                 optional: true
             },
             {
                 name: 'yearFrom',
                 type: 'number',
-                label: this.translate.instant('core.h5p.yearsfrom'),
+                label: Translate.instance.instant('core.h5p.yearsfrom'),
                 placeholder: '1991',
                 min: '-9999',
                 max: '9999',
@@ -1033,7 +993,7 @@ export class CoreH5PContentValidator {
             {
                 name: 'yearTo',
                 type: 'number',
-                label: this.translate.instant('core.h5p.yearsto'),
+                label: Translate.instance.instant('core.h5p.yearsto'),
                 placeholder: '1992',
                 min: '-9999',
                 max: '9999',
@@ -1042,7 +1002,7 @@ export class CoreH5PContentValidator {
             {
                 name: 'source',
                 type: 'text',
-                label: this.translate.instant('core.h5p.source'),
+                label: Translate.instance.instant('core.h5p.source'),
                 placeholder: 'https://',
                 optional: true
             },
@@ -1054,7 +1014,7 @@ export class CoreH5PContentValidator {
                     type: 'group',
                     fields: [
                         {
-                            label: this.translate.instant('core.h5p.authorname'),
+                            label: Translate.instance.instant('core.h5p.authorname'),
                             name: 'name',
                             optional: true,
                             type: 'text'
@@ -1062,24 +1022,24 @@ export class CoreH5PContentValidator {
                         {
                             name: 'role',
                             type: 'select',
-                            label: this.translate.instant('core.h5p.authorrole'),
+                            label: Translate.instance.instant('core.h5p.authorrole'),
                             default: 'Author',
                             options: [
                                 {
                                     value: 'Author',
-                                    label: this.translate.instant('core.h5p.author')
+                                    label: Translate.instance.instant('core.h5p.author')
                                 },
                                 {
                                     value: 'Editor',
-                                    label: this.translate.instant('core.h5p.editor')
+                                    label: Translate.instance.instant('core.h5p.editor')
                                 },
                                 {
                                     value: 'Licensee',
-                                    label: this.translate.instant('core.h5p.licensee')
+                                    label: Translate.instance.instant('core.h5p.licensee')
                                 },
                                 {
                                     value: 'Originator',
-                                    label: this.translate.instant('core.h5p.originator')
+                                    label: Translate.instance.instant('core.h5p.originator')
                                 }
                             ]
                         }
@@ -1090,9 +1050,9 @@ export class CoreH5PContentValidator {
                 name: 'licenseExtras',
                 type: 'text',
                 widget: 'textarea',
-                label: this.translate.instant('core.h5p.licenseextras'),
+                label: Translate.instance.instant('core.h5p.licenseextras'),
                 optional: true,
-                description: this.translate.instant('core.h5p.additionallicenseinfo')
+                description: Translate.instance.instant('core.h5p.additionallicenseinfo')
             },
             {
                 name: 'changes',
@@ -1100,26 +1060,26 @@ export class CoreH5PContentValidator {
                 field: {
                     name: 'change',
                     type: 'group',
-                    label: this.translate.instant('core.h5p.changelog'),
+                    label: Translate.instance.instant('core.h5p.changelog'),
                     fields: [
                         {
                             name: 'date',
                             type: 'text',
-                            label: this.translate.instant('core.h5p.date'),
+                            label: Translate.instance.instant('core.h5p.date'),
                             optional: true
                         },
                         {
                             name: 'author',
                             type: 'text',
-                            label: this.translate.instant('core.h5p.changedby'),
+                            label: Translate.instance.instant('core.h5p.changedby'),
                             optional: true
                         },
                         {
                             name: 'log',
                             type: 'text',
                             widget: 'textarea',
-                            label: this.translate.instant('core.h5p.changedescription'),
-                            placeholder: this.translate.instant('core.h5p.changeplaceholder'),
+                            label: Translate.instance.instant('core.h5p.changedescription'),
+                            placeholder: Translate.instance.instant('core.h5p.changeplaceholder'),
                             optional: true
                         }
                     ]
@@ -1129,8 +1089,8 @@ export class CoreH5PContentValidator {
                 name: 'authorComments',
                 type: 'text',
                 widget: 'textarea',
-                label: this.translate.instant('core.h5p.authorcomments'),
-                description: this.translate.instant('core.h5p.authorcommentsdescription'),
+                label: Translate.instance.instant('core.h5p.authorcomments'),
+                description: Translate.instance.instant('core.h5p.authorcommentsdescription'),
                 optional: true
             },
             {
@@ -1164,33 +1124,33 @@ export class CoreH5PContentValidator {
         this.copyrightSemantics = {
             name: 'copyright',
             type: 'group',
-            label: this.translate.instant('core.h5p.copyrightinfo'),
+            label: Translate.instance.instant('core.h5p.copyrightinfo'),
             fields: [
                 {
                     name: 'title',
                     type: 'text',
-                    label: this.translate.instant('core.h5p.title'),
+                    label: Translate.instance.instant('core.h5p.title'),
                     placeholder: 'La Gioconda',
                     optional: true
                 },
                 {
                     name: 'author',
                     type: 'text',
-                    label: this.translate.instant('core.h5p.author'),
+                    label: Translate.instance.instant('core.h5p.author'),
                     placeholder: 'Leonardo da Vinci',
                     optional: true
                 },
                 {
                     name: 'year',
                     type: 'text',
-                    label: this.translate.instant('core.h5p.years'),
+                    label: Translate.instance.instant('core.h5p.years'),
                     placeholder: '1503 - 1517',
                     optional: true
                 },
                 {
                     name: 'source',
                     type: 'text',
-                    label: this.translate.instant('core.h5p.source'),
+                    label: Translate.instance.instant('core.h5p.source'),
                     placeholder: 'http://en.wikipedia.org/wiki/Mona_Lisa',
                     optional: true,
                     regexp: {
@@ -1201,64 +1161,64 @@ export class CoreH5PContentValidator {
                 {
                     name: 'license',
                     type: 'select',
-                    label: this.translate.instant('core.h5p.license'),
+                    label: Translate.instance.instant('core.h5p.license'),
                     default: 'U',
                     options: [
                         {
                             value: 'U',
-                            label: this.translate.instant('core.h5p.undisclosed')
+                            label: Translate.instance.instant('core.h5p.undisclosed')
                         },
                         {
                             value: 'CC BY',
-                            label: this.translate.instant('core.h5p.ccattribution'),
+                            label: Translate.instance.instant('core.h5p.ccattribution'),
                             versions: ccVersions
                         },
                         {
                             value: 'CC BY-SA',
-                            label: this.translate.instant('core.h5p.ccattributionsa'),
+                            label: Translate.instance.instant('core.h5p.ccattributionsa'),
                             versions: ccVersions
                         },
                         {
                             value: 'CC BY-ND',
-                            label: this.translate.instant('core.h5p.ccattributionnd'),
+                            label: Translate.instance.instant('core.h5p.ccattributionnd'),
                             versions: ccVersions
                         },
                         {
                             value: 'CC BY-NC',
-                            label: this.translate.instant('core.h5p.ccattributionnc'),
+                            label: Translate.instance.instant('core.h5p.ccattributionnc'),
                             versions: ccVersions
                         },
                         {
                             value: 'CC BY-NC-SA',
-                            label: this.translate.instant('core.h5p.ccattributionncsa'),
+                            label: Translate.instance.instant('core.h5p.ccattributionncsa'),
                             versions: ccVersions
                         },
                         {
                             value: 'CC BY-NC-ND',
-                            label: this.translate.instant('core.h5p.ccattributionncnd'),
+                            label: Translate.instance.instant('core.h5p.ccattributionncnd'),
                             versions: ccVersions
                         },
                         {
                             value: 'GNU GPL',
-                            label: this.translate.instant('core.h5p.licenseGPL'),
+                            label: Translate.instance.instant('core.h5p.licenseGPL'),
                             versions: [
                                 {
                                     value: 'v3',
-                                    label: this.translate.instant('core.h5p.licenseV3')
+                                    label: Translate.instance.instant('core.h5p.licenseV3')
                                 },
                                 {
                                     value: 'v2',
-                                    label: this.translate.instant('core.h5p.licenseV2')
+                                    label: Translate.instance.instant('core.h5p.licenseV2')
                                 },
                                 {
                                     value: 'v1',
-                                    label: this.translate.instant('core.h5p.licenseV1')
+                                    label: Translate.instance.instant('core.h5p.licenseV1')
                                 }
                             ]
                         },
                         {
                             value: 'PD',
-                            label: this.translate.instant('core.h5p.pd'),
+                            label: Translate.instance.instant('core.h5p.pd'),
                             versions: [
                                 {
                                     value: '-',
@@ -1266,24 +1226,24 @@ export class CoreH5PContentValidator {
                                 },
                                 {
                                     value: 'CC0 1.0',
-                                    label: this.translate.instant('core.h5p.licenseCC010U')
+                                    label: Translate.instance.instant('core.h5p.licenseCC010U')
                                 },
                                 {
                                     value: 'CC PDM',
-                                    label: this.translate.instant('core.h5p.pdm')
+                                    label: Translate.instance.instant('core.h5p.pdm')
                                 }
                             ]
                         },
                         {
                             value: 'C',
-                            label: this.translate.instant('core.h5p.copyrightstring')
+                            label: Translate.instance.instant('core.h5p.copyrightstring')
                         }
                     ]
                 },
                 {
                     name: 'version',
                     type: 'select',
-                    label: this.translate.instant('core.h5p.licenseversion'),
+                    label: Translate.instance.instant('core.h5p.licenseversion'),
                     options: []
                 }
             ]
@@ -1301,23 +1261,23 @@ export class CoreH5PContentValidator {
         return [
             {
                 value: '4.0',
-                label: this.translate.instant('core.h5p.licenseCC40')
+                label: Translate.instance.instant('core.h5p.licenseCC40')
             },
             {
                 value: '3.0',
-                label: this.translate.instant('core.h5p.licenseCC30')
+                label: Translate.instance.instant('core.h5p.licenseCC30')
             },
             {
                 value: '2.5',
-                label: this.translate.instant('core.h5p.licenseCC25')
+                label: Translate.instance.instant('core.h5p.licenseCC25')
             },
             {
                 value: '2.0',
-                label: this.translate.instant('core.h5p.licenseCC20')
+                label: Translate.instance.instant('core.h5p.licenseCC20')
             },
             {
                 value: '1.0',
-                label: this.translate.instant('core.h5p.licenseCC10')
+                label: Translate.instance.instant('core.h5p.licenseCC10')
             }
         ];
     }
