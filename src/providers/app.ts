@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, ApplicationRef } from '@angular/core';
 import { Platform, App, NavController, MenuController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
@@ -168,9 +168,18 @@ export class CoreAppProvider {
         ],
     };
 
-    constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
-            private network: Network, logger: CoreLoggerProvider, private events: CoreEventsProvider, zone: NgZone,
-            private menuCtrl: MenuController, private statusBar: StatusBar) {
+    constructor(dbProvider: CoreDbProvider,
+            private platform: Platform,
+            private keyboard: Keyboard,
+            private appCtrl: App,
+            private network: Network,
+            logger: CoreLoggerProvider,
+            private events: CoreEventsProvider,
+            zone: NgZone,
+            private menuCtrl: MenuController,
+            private statusBar: StatusBar,
+            appRef: ApplicationRef) {
+
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
 
@@ -214,9 +223,10 @@ export class CoreAppProvider {
             this.backButtonAction();
         }, 100);
 
-        // Export the app provider so Behat tests can change the forceOffline flag.
+        // Export the app provider and appRef to control the application in Behat tests.
         if (CoreAppProvider.isAutomated()) {
             (<any> window).appProvider = this;
+            (<any> window).appRef = appRef;
         }
     }
 
