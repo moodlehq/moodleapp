@@ -31,8 +31,6 @@ import { CorePushNotificationsProvider } from '@core/pushnotifications/providers
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { makeSingleton } from '@singletons/core.singletons';
 
-import { makeSingleton } from '@singletons/core.singletons';
-
 /**
  * Service that provides some features regarding a course.
  */
@@ -1163,8 +1161,6 @@ export class CoreCourseProvider {
         }, siteId);
     }
 }
-
-export class CoreCourse extends makeSingleton(CoreCourseProvider) {}
 
 /**
  * Data returned by course_summary_exporter.

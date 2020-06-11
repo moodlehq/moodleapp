@@ -158,6 +158,10 @@ export class CoreWSProvider {
             protected mimeUtils: CoreMimetypeUtilsProvider,
             logger: CoreLoggerProvider) {
         this.logger = logger.getInstance('CoreWSProvider');
+
+        if (this.appProvider.isMobile()) {
+            (<any> cordova).plugin.http.setHeader('User-Agent', navigator.userAgent);
+        }
     }
 
     /**
