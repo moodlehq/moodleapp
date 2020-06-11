@@ -54,7 +54,8 @@ ion-app.app-root page-core-login-site {
         &.hidden {
             opacity: 0;
             visibility: hidden;
-            margin: 0;
+            margin-top: 0;
+            margin-bottom: 0;
             padding: 0;
             max-height: 0;
         }

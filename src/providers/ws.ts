@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { FileTransfer, FileUploadOptions } from '@ionic-native/file-transfer';
@@ -156,12 +157,15 @@ export class CoreWSProvider {
             protected fileProvider: CoreFileProvider,
             protected fileTransfer: FileTransfer,
             protected mimeUtils: CoreMimetypeUtilsProvider,
-            logger: CoreLoggerProvider) {
+            logger: CoreLoggerProvider,
+            platform: Platform) {
         this.logger = logger.getInstance('CoreWSProvider');
 
-        if (this.appProvider.isMobile()) {
-            (<any> cordova).plugin.http.setHeader('User-Agent', navigator.userAgent);
-        }
+        platform.ready().then(() => {
+            if (this.appProvider.isMobile()) {
+                (<any> cordova).plugin.http.setHeader('User-Agent', navigator.userAgent);
+            }
+        });
     }
 
     /**
