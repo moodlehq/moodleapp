@@ -13,35 +13,21 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from 'ionic-angular';
+import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreH5PPlayerComponent } from './h5p-player/h5p-player';
-import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
+import { AddonModH5PActivityComponentsModule } from '../../components/components.module';
+import { AddonModH5PActivityIndexPage } from './index';
 
 @NgModule({
     declarations: [
-        CoreH5PPlayerComponent,
-        CoreH5PIframeComponent,
+        AddonModH5PActivityIndexPage,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
         CoreDirectivesModule,
-        TranslateModule.forChild(),
-        CoreComponentsModule
+        AddonModH5PActivityComponentsModule,
+        IonicPageModule.forChild(AddonModH5PActivityIndexPage),
+        TranslateModule.forChild()
     ],
-    providers: [
-    ],
-    exports: [
-        CoreH5PPlayerComponent,
-        CoreH5PIframeComponent,
-    ],
-    entryComponents: [
-        CoreH5PPlayerComponent,
-        CoreH5PIframeComponent,
-    ]
 })
-export class CoreH5PComponentsModule {}
+export class AddonModH5PActivityIndexPageModule {}

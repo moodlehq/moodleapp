@@ -110,9 +110,10 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile?(fileUrl: string, file: FileEntry, siteId?: string): Promise<any>;
+    treatDownloadedFile?(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<any>;
 }
 
 /**
@@ -380,13 +381,14 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string): Promise<any> {
+    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<any> {
         const handler = this.getHandlerForFile({fileurl: fileUrl});
 
         if (handler && handler.treatDownloadedFile) {
-            return handler.treatDownloadedFile(fileUrl, file, siteId);
+            return handler.treatDownloadedFile(fileUrl, file, siteId, onProgress);
         }
 
         return Promise.resolve();

@@ -1,0 +1,4 @@
+<core-loading [hideUntil]="iframeSrc" class="core-loading-center safe-area-page">
+    <core-iframe *ngIf="iframeSrc" [src]="iframeSrc" iframeHeight="auto" [allowFullscreen]="true" (loaded)="iframeLoaded()"></core-iframe>
+    <script *ngIf="resizeScript && iframeSrc" type="text/javascript" [src]="resizeScript"></script>
+</core-loading>

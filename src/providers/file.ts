@@ -812,42 +812,17 @@ export class CoreFileProvider {
             }
         }).then(() => {
 
-            if (this.isHTMLAPI) {
-                // In Cordova API we need to calculate the longest matching path to make it work.
-                // The function this.file.moveFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
-                // The function this.file.moveFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
-                const dirsA = originalPath.split('/'),
-                    dirsB = newPath.split('/');
-                let commonPath = this.basePath;
+            return moveFn(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
+                // The move can fail if the path has encoded characters. Try again if that's the case.
+                const decodedOriginal = decodeURI(originalPath),
+                    decodedNew = decodeURI(newPath);
 
-                for (let i = 0; i < dirsA.length; i++) {
-                    let dir = dirsA[i];
-                    if (dirsB[i] === dir) {
-                        // Found a common folder, add it to common path and remove it from each specific path.
-                        dir = dir + '/';
-                        commonPath = this.textUtils.concatenatePaths(commonPath, dir);
-                        originalPath = originalPath.replace(dir, '');
-                        newPath = newPath.replace(dir, '');
-                    } else {
-                        // Folder doesn't match, stop searching.
-                        break;
-                    }
+                if (decodedOriginal != originalPath || decodedNew != newPath) {
+                    return moveFn(this.basePath, decodedOriginal, this.basePath, decodedNew);
+                } else {
+                    return Promise.reject(error);
                 }
-
-                return moveFn(commonPath, originalPath, commonPath, newPath);
-            } else {
-                return moveFn(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
-                    // The move can fail if the path has encoded characters. Try again if that's the case.
-                    const decodedOriginal = decodeURI(originalPath),
-                        decodedNew = decodeURI(newPath);
-
-                    if (decodedOriginal != originalPath || decodedNew != newPath) {
-                        return moveFn(this.basePath, decodedOriginal, this.basePath, decodedNew);
-                    } else {
-                        return Promise.reject(error);
-                    }
-                });
-            }
+            });
         });
     }
 
@@ -888,8 +863,6 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is copied.
      */
     protected copyFileOrDir(from: string, to: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
-        let fromFileAndDir,
-            toFileAndDir;
         const copyFn = isDir ? this.file.copyDir.bind(this.file) : this.file.copyFile.bind(this.file);
 
         return this.init().then(() => {
@@ -897,33 +870,24 @@ export class CoreFileProvider {
             from = this.removeStartingSlash(from.replace(this.basePath, ''));
             to = this.removeStartingSlash(to.replace(this.basePath, ''));
 
-            fromFileAndDir = this.getFileAndDirectoryFromPath(from);
-            toFileAndDir = this.getFileAndDirectoryFromPath(to);
+            const toFileAndDir = this.getFileAndDirectoryFromPath(to);
 
             if (toFileAndDir.directory && !destDirExists) {
                 // Create the target directory if it doesn't exist.
                 return this.createDir(toFileAndDir.directory);
             }
         }).then(() => {
-            if (this.isHTMLAPI) {
-                // In HTML API, the file name cannot include a directory, otherwise it fails.
-                const fromDir = this.textUtils.concatenatePaths(this.basePath, fromFileAndDir.directory),
-                    toDir = this.textUtils.concatenatePaths(this.basePath, toFileAndDir.directory);
+            return copyFn(this.basePath, from, this.basePath, to).catch((error) => {
+                // The copy can fail if the path has encoded characters. Try again if that's the case.
+                const decodedFrom = decodeURI(from),
+                    decodedTo = decodeURI(to);
 
-                return copyFn(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
-            } else {
-                return copyFn(this.basePath, from, this.basePath, to).catch((error) => {
-                    // The copy can fail if the path has encoded characters. Try again if that's the case.
-                    const decodedFrom = decodeURI(from),
-                        decodedTo = decodeURI(to);
-
-                    if (from != decodedFrom || to != decodedTo) {
-                        return copyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
-                    } else {
-                        return Promise.reject(error);
-                    }
-                });
-            }
+                if (from != decodedFrom || to != decodedTo) {
+                    return copyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
+                } else {
+                    return Promise.reject(error);
+                }
+            });
         });
     }
 

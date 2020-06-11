@@ -15,7 +15,6 @@
 import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
 import { CoreApp } from '@providers/app';
 import { CoreEvents } from '@providers/events';
-import { CoreFile } from '@providers/file';
 import { CoreFilepool } from '@providers/filepool';
 import { CoreLogger } from '@providers/logger';
 import { CoreSites } from '@providers/sites';
@@ -23,11 +22,9 @@ import { CoreDomUtils } from '@providers/utils/dom';
 import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreH5P } from '@core/h5p/providers/h5p';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
-import { CoreFileHelper } from '@providers/file-helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
-import { CoreH5PCore } from '../../classes/core';
-import { CoreH5PHelper } from '../../classes/helper';
+import { CoreH5PDisplayOptions } from '../../classes/core';
 
 /**
  * Component to render an H5P package.
@@ -41,18 +38,17 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     @Input() component?: string; // Component.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
 
-    playerSrc: string;
     showPackage = false;
-    loading = false;
     state: string;
     canDownload: boolean;
     calculating = true;
+    displayOptions: CoreH5PDisplayOptions;
+    urlParams: {[name: string]: string};
 
     protected site: CoreSite;
     protected siteId: string;
     protected siteCanDownload: boolean;
     protected observer;
-    protected urlParams;
     protected logger;
 
     constructor(public elementRef: ElementRef,
@@ -90,61 +86,15 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        this.loading = true;
+        this.displayOptions = CoreH5P.instance.h5pPlayer.getDisplayOptionsFromUrlParams(this.urlParams);
+        this.showPackage = true;
 
-        let localUrl: string;
-
-        if (this.canDownload && CoreFileHelper.instance.isStateDownloaded(this.state)) {
-            // Package is downloaded, use the local URL.
+        if (this.canDownload && (this.state == CoreConstants.OUTDATED || this.state == CoreConstants.NOT_DOWNLOADED)) {
+            // Download the package in background if the size is low.
             try {
-                localUrl = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(this.urlParams.url, this.urlParams, this.siteId);
+                this.attemptDownloadInBg();
             } catch (error) {
-                // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
-                try {
-                    const path = await CoreFilepool.instance.getInternalUrlByUrl(this.siteId, this.urlParams.url);
-
-                    const file = await CoreFile.instance.getFile(path);
-
-                    await CoreH5PHelper.saveH5P(this.urlParams.url, file, this.siteId);
-
-                    // File treated. Try to get the index file URL again.
-                    localUrl = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(this.urlParams.url, this.urlParams,
-                            this.siteId);
-                } catch (error) {
-                    // Still failing. Delete the H5P package?
-                    this.logger.error('Error loading downloaded index:', error, this.src);
-                }
-            }
-        }
-
-        try {
-            if (localUrl) {
-                // Local package.
-                this.playerSrc = localUrl;
-            } else {
-                // Never allow downloading in the app. This will only work if the user is allowed to change the params.
-                const src = this.src && this.src.replace(CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=1',
-                        CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=0');
-
-                // Get auto-login URL so the user is automatically authenticated.
-                const url = await CoreSites.instance.getCurrentSite().getAutoLoginUrl(src, false);
-
-                // Add the preventredirect param so the user can authenticate.
-                this.playerSrc = CoreUrlUtils.instance.addParamsToUrl(url, {preventredirect: false});
-            }
-        } finally {
-
-            this.addResizerScript();
-            this.loading = false;
-            this.showPackage = true;
-
-            if (this.canDownload && (this.state == CoreConstants.OUTDATED || this.state == CoreConstants.NOT_DOWNLOADED)) {
-                // Download the package in background if the size is low.
-                try {
-                    this.attemptDownloadInBg();
-                } catch (error) {
-                    this.logger.error('Error downloading H5P in background', error);
-                }
+                this.logger.error('Error downloading H5P in background', error);
             }
         }
     }
@@ -204,22 +154,6 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Add the resizer script if it hasn't been added already.
-     */
-    protected addResizerScript(): void {
-        if (document.head.querySelector('#core-h5p-resizer-script') != null) {
-            // Script already added, don't add it again.
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.id = 'core-h5p-resizer-script';
-        script.type = 'text/javascript';
-        script.src = CoreH5P.instance.h5pPlayer.getResizerScriptUrl();
-        document.head.appendChild(script);
-    }
-
-    /**
      * Check if the package can be downloaded.
      *
      * @return Promise resolved when done.
@@ -270,14 +204,6 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         } finally {
             this.calculating = false;
         }
-    }
-
-    /**
-     * H5P iframe has been loaded.
-     */
-    iframeLoaded(): void {
-        // Send a resize event to the window so H5P package recalculates the size.
-        window.dispatchEvent(new Event('resize'));
     }
 
     /**

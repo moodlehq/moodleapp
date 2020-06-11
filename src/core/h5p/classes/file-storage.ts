@@ -222,7 +222,7 @@ export class CoreH5PFileStorage {
         await Array.from(result.rows).map(async (entry: {foldername: string}) => {
             try {
                 // Delete the index.html.
-                await CoreFile.instance.removeFile(this.getContentIndexPath(entry.foldername, site.getId()));
+                await this.deleteContentIndex(entry.foldername, site.getId());
             } catch (error) {
                 // Ignore errors.
             }

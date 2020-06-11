@@ -31,6 +31,8 @@ import { CorePushNotificationsProvider } from '@core/pushnotifications/providers
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { makeSingleton } from '@singletons/core.singletons';
 
+import { makeSingleton } from '@singletons/core.singletons';
+
 /**
  * Service that provides some features regarding a course.
  */
@@ -99,7 +101,7 @@ export class CoreCourseProvider {
     protected CORE_MODULES = [
         'assign', 'assignment', 'book', 'chat', 'choice', 'data', 'database', 'date', 'external-tool',
         'feedback', 'file', 'folder', 'forum', 'glossary', 'ims', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz',
-        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'
+        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', 'h5pactivity'
     ];
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
@@ -1161,6 +1163,8 @@ export class CoreCourseProvider {
         }, siteId);
     }
 }
+
+export class CoreCourse extends makeSingleton(CoreCourseProvider) {}
 
 /**
  * Data returned by course_summary_exporter.

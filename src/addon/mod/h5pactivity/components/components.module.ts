@@ -16,32 +16,32 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreH5PPlayerComponent } from './h5p-player/h5p-player';
-import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreCourseComponentsModule } from '@core/course/components/components.module';
+import { CoreH5PComponentsModule } from '@core/h5p/components/components.module';
+import { AddonModH5PActivityIndexComponent } from './index/index';
 
 @NgModule({
     declarations: [
-        CoreH5PPlayerComponent,
-        CoreH5PIframeComponent,
+        AddonModH5PActivityIndexComponent,
     ],
     imports: [
         CommonModule,
         IonicModule,
-        CoreDirectivesModule,
         TranslateModule.forChild(),
-        CoreComponentsModule
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        CoreCourseComponentsModule,
+        CoreH5PComponentsModule,
     ],
     providers: [
     ],
     exports: [
-        CoreH5PPlayerComponent,
-        CoreH5PIframeComponent,
+        AddonModH5PActivityIndexComponent,
     ],
     entryComponents: [
-        CoreH5PPlayerComponent,
-        CoreH5PIframeComponent,
+        AddonModH5PActivityIndexComponent,
     ]
 })
-export class CoreH5PComponentsModule {}
+export class AddonModH5PActivityComponentsModule {}

@@ -16,14 +16,34 @@ import { CoreFile, CoreFileProvider } from '@providers/file';
 import { CoreSites } from '@providers/sites';
 import { CoreMimetypeUtils } from '@providers/utils/mimetype';
 import { CoreTextUtils } from '@providers/utils/text';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreH5P } from '../providers/h5p';
-import { CoreH5PCore } from './core';
+import { CoreH5PCore, CoreH5PDisplayOptions } from './core';
 import { FileEntry } from '@ionic-native/file';
 
 /**
  * Equivalent to Moodle's H5P helper class.
  */
 export class CoreH5PHelper {
+
+    /**
+     * Convert the number representation of display options into an object.
+     *
+     * @param displayOptions Number representing display options.
+     * @return Object with display options.
+     */
+    static decodeDisplayOptions(displayOptions: number): CoreH5PDisplayOptions {
+        const config: any = {};
+        const displayOptionsObject = CoreH5P.instance.h5pCore.getDisplayOptionsAsObject(displayOptions);
+
+        config.export = false; // Don't allow downloading in the app.
+        config.embed = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED]) ?
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED] : false;
+        config.copyright = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false;
+
+        return config;
+    }
 
     /**
      * Get the core H5P assets, including all core H5P JavaScript and CSS.
@@ -107,19 +127,25 @@ export class CoreH5PHelper {
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    static async saveH5P(fileUrl: string, file: FileEntry, siteId?: string): Promise<void> {
+    static async saveH5P(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<void> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
-        // Unzip the file.
         const folderName = CoreMimetypeUtils.instance.removeExtension(file.name);
         const destFolder = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
 
+        // Notify that the unzip is starting.
+        onProgress && onProgress({message: 'core.unzipping'});
+
         // Unzip the file.
-        await CoreFile.instance.unzipFile(file.toURL(), destFolder);
+        await CoreFile.instance.unzipFile(file.toURL(), destFolder, onProgress);
 
         try {
+            // Notify that the unzip is starting.
+            onProgress && onProgress({message: 'core.storingfiles'});
+
             // Read the contents of the unzipped dir, process them and store them.
             const contents = await CoreFile.instance.getDirectoryContents(destFolder);
 
