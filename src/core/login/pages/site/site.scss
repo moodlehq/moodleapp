@@ -27,13 +27,23 @@ ion-app.app-root page-core-login-site {
     .item ion-thumbnail {
         min-width: 50px;
         min-height: 50px;
+        width: 50px;
+        height: 50px;
         border-radius: 20%;
         box-shadow: 0 0 4px #eee;
         text-align: center;
+        overflow: hidden;
 
         img {
-            width: 50px;
-            height: 50px;
+            max-height: 50px;
+            max-width: fit-content;
+            width: auto;
+            height: auto;
+            margin: 0 auto;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            object-fit: cover;
+            object-position: 50% 50%;
         }
         ion-icon {
             margin: 0 auto;
