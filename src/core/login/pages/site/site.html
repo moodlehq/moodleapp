@@ -37,7 +37,7 @@
                     <div *ngIf="loadingSites" class="core-login-site-list-loading"><ion-spinner></ion-spinner></div>
                     <button ion-item *ngFor="let site of sites" (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail-push>
                         <ion-thumbnail item-start>
-                            <img [src]="site.imageurl" *ngIf="site.imageurl">
+                            <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'">
                             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
                         </ion-thumbnail>
                         <h2 text-wrap>{{site.name}}<ng-container *ngIf="site.alias"> ({{site.alias}})</ng-container></h2>
