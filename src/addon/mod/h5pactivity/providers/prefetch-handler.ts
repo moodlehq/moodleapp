@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -26,7 +26,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/acti
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CoreH5PHelper } from '@core/h5p/classes/helper';
 import { CoreH5P } from '@core/h5p/providers/h5p';
-import { CoreUserProvider } from '@core/user/providers/user';
+import { CoreUser } from '@core/user/providers/user';
 import { AddonModH5PActivity, AddonModH5PActivityProvider, AddonModH5PActivityData } from './h5pactivity';
 
 /**
@@ -47,9 +47,7 @@ export class AddonModH5PActivityPrefetchHandler extends CoreCourseActivityPrefet
             sitesProvider: CoreSitesProvider,
             domUtils: CoreDomUtilsProvider,
             filterHelper: CoreFilterHelperProvider,
-            pluginFileDelegate: CorePluginFileDelegate,
-            protected userProvider: CoreUserProvider,
-            protected injector: Injector) {
+            pluginFileDelegate: CorePluginFileDelegate) {
 
         super(translate, appProvider, utils, courseProvider, filepoolProvider, sitesProvider, domUtils, filterHelper,
                 pluginFileDelegate);
@@ -137,7 +135,7 @@ export class AddonModH5PActivityPrefetchHandler extends CoreCourseActivityPrefet
         const introFiles = this.getIntroFilesFromInstance(module, h5pActivity);
 
         await Promise.all([
-            AddonModH5PActivity.instance.getAccessInformation(h5pActivity.id, true, siteId),
+            this.prefetchWSData(h5pActivity, siteId),
             this.filepoolProvider.addFilesToQueue(siteId, introFiles, AddonModH5PActivityProvider.COMPONENT, module.id),
             this.prefetchMainFile(module, h5pActivity, siteId),
         ]);
@@ -162,5 +160,32 @@ export class AddonModH5PActivityPrefetchHandler extends CoreCourseActivityPrefet
         });
 
         await this.filepoolProvider.addFilesToQueue(siteId, [deployedFile], AddonModH5PActivityProvider.COMPONENT, module.id);
+    }
+
+    /**
+     * Prefetch all the WebService data.
+     *
+     * @param h5pActivity Activity instance.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
+     */
+    protected async prefetchWSData(h5pActivity: AddonModH5PActivityData, siteId: string): Promise<void> {
+
+        const accessInfo = await AddonModH5PActivity.instance.getAccessInformation(h5pActivity.id, true, siteId);
+
+        if (!accessInfo.canreviewattempts) {
+            // Not a teacher, prefetch user attempts and the current user profile.
+            const site = await this.sitesProvider.getSite(siteId);
+
+            const options = {
+                ignoreCache: true,
+                siteId: siteId,
+            };
+
+            await Promise.all([
+                AddonModH5PActivity.instance.getAllAttemptsResults(h5pActivity.id, options),
+                CoreUser.instance.prefetchProfiles([site.getUserId()], h5pActivity.course, siteId),
+            ]);
+        }
     }
 }

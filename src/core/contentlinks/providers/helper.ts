@@ -32,6 +32,8 @@ import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins
 import { CoreSite } from '@classes/site';
 import { CoreMainMenuProvider } from '@core/mainmenu/providers/mainmenu';
 
+import { makeSingleton } from '@singletons/core.singletons';
+
 /**
  * Service that provides some features regarding content links.
  */
@@ -358,3 +360,5 @@ export class CoreContentLinksHelperProvider {
         }
     }
 }
+
+export class CoreContentLinksHelper extends makeSingleton(CoreContentLinksHelperProvider) {}

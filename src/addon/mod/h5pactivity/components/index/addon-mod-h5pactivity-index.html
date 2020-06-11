@@ -1,6 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons end>
     <core-context-menu>
+        <core-context-menu-item *ngIf="h5pActivity && h5pActivity.enabletracking && accessInfo && !accessInfo.canreviewattempts" [priority]="1000" [content]="'addon.mod_h5pactivity.review_my_attempts' | translate" (action)="viewMyAttempts()" [iconAction]="'stats'"></core-context-menu-item>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
         <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" [iconAction]="'fa-newspaper-o'" (action)="gotoBlog($event)"></core-context-menu-item>

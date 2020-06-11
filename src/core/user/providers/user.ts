@@ -22,6 +22,8 @@ import { CoreAppProvider } from '@providers/app';
 import { CoreUserOfflineProvider } from './offline';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
+import { makeSingleton } from '@singletons/core.singletons';
+
 /**
  * Service to provide user functionalities.
  */
@@ -732,6 +734,8 @@ export class CoreUserProvider {
         });
     }
 }
+
+export class CoreUser extends makeSingleton(CoreUserProvider) {}
 
 /**
  * Data returned by user_summary_exporter.

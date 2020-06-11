@@ -23,6 +23,7 @@ import { AddonModH5PActivityModuleHandler } from './providers/module-handler';
 import { AddonModH5PActivityProvider } from './providers/h5pactivity';
 import { AddonModH5PActivityPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModH5PActivityIndexLinkHandler } from './providers/index-link-handler';
+import { AddonModH5PActivityReportLinkHandler } from './providers/report-link-handler';
 
 // List of providers (without handlers).
 export const ADDON_MOD_H5P_ACTIVITY_PROVIDERS: any[] = [
@@ -40,6 +41,7 @@ export const ADDON_MOD_H5P_ACTIVITY_PROVIDERS: any[] = [
         AddonModH5PActivityModuleHandler,
         AddonModH5PActivityPrefetchHandler,
         AddonModH5PActivityIndexLinkHandler,
+        AddonModH5PActivityReportLinkHandler,
     ]
 })
 export class AddonModH5PActivityModule {
@@ -48,10 +50,12 @@ export class AddonModH5PActivityModule {
             prefetchDelegate: CoreCourseModulePrefetchDelegate,
             prefetchHandler: AddonModH5PActivityPrefetchHandler,
             linksDelegate: CoreContentLinksDelegate,
-            indexHandler: AddonModH5PActivityIndexLinkHandler) {
+            indexHandler: AddonModH5PActivityIndexLinkHandler,
+            reportLinkHandler: AddonModH5PActivityReportLinkHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         linksDelegate.registerHandler(indexHandler);
+        linksDelegate.registerHandler(reportLinkHandler);
     }
 }

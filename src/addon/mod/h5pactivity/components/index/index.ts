@@ -320,6 +320,13 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     }
 
     /**
+     * Go to view user events.
+     */
+    viewMyAttempts(): void {
+        this.navCtrl.push('AddonModH5PActivityUserAttemptsPage', {courseId: this.courseId, h5pActivityId: this.h5pActivity.id});
+    }
+
+    /**
      * Component destroyed.
      */
     ngOnDestroy(): void {
