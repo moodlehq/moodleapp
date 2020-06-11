@@ -2,6 +2,9 @@
 source "scripts/functions.sh"
 
 npm run build --bailOnLintError true --typeCheckOnLint true
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 if [ -z $GIT_ORG_PRIVATE ] || [ -z $GIT_TOKEN ]; then
     print_error "Env vars not correctly defined"
