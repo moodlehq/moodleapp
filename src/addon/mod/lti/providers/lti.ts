@@ -24,6 +24,8 @@ import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
+import { makeSingleton } from '@singletons/core.singletons';
+
 /**
  * Service that provides some features for LTI.
  */
@@ -194,6 +196,30 @@ export class AddonModLtiProvider {
     }
 
     /**
+     * Check if open in InAppBrowser is disabled.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's disabled.
+     */
+    async isOpenInAppBrowserDisabled(siteId?: string): Promise<boolean> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        return this.isOpenInAppBrowserDisabledInSite(site);
+    }
+
+    /**
+     * Check if open in InAppBrowser is disabled.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Whether it's disabled.
+     */
+    isOpenInAppBrowserDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:openInAppBrowser');
+    }
+
+    /**
      * Launch LTI.
      *
      * @param url Launch URL.
@@ -232,6 +258,8 @@ export class AddonModLtiProvider {
         return this.logHelper.logSingle('mod_lti_view_lti', params, AddonModLtiProvider.COMPONENT, id, name, 'lti', {}, siteId);
     }
 }
+
+export class AddonModLti extends makeSingleton(AddonModLtiProvider) {}
 
 /**
  * LTI returned by mod_lti_get_ltis_by_courses.
