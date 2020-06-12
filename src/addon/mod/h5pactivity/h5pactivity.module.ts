@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 
+import { CoreCronDelegate } from '@providers/cron';
 import { CoreContentLinksDelegate } from '@core/contentlinks/providers/delegate';
 import { CoreCourseModuleDelegate } from '@core/course/providers/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -21,13 +22,16 @@ import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-
 import { AddonModH5PActivityComponentsModule } from './components/components.module';
 import { AddonModH5PActivityModuleHandler } from './providers/module-handler';
 import { AddonModH5PActivityProvider } from './providers/h5pactivity';
+import { AddonModH5PActivitySyncProvider } from './providers/sync';
 import { AddonModH5PActivityPrefetchHandler } from './providers/prefetch-handler';
 import { AddonModH5PActivityIndexLinkHandler } from './providers/index-link-handler';
 import { AddonModH5PActivityReportLinkHandler } from './providers/report-link-handler';
+import { AddonModH5PActivitySyncCronHandler } from './providers/sync-cron-handler';
 
 // List of providers (without handlers).
 export const ADDON_MOD_H5P_ACTIVITY_PROVIDERS: any[] = [
     AddonModH5PActivityProvider,
+    AddonModH5PActivitySyncProvider,
 ];
 
 @NgModule({
@@ -38,10 +42,12 @@ export const ADDON_MOD_H5P_ACTIVITY_PROVIDERS: any[] = [
     ],
     providers: [
         AddonModH5PActivityProvider,
+        AddonModH5PActivitySyncProvider,
         AddonModH5PActivityModuleHandler,
         AddonModH5PActivityPrefetchHandler,
         AddonModH5PActivityIndexLinkHandler,
         AddonModH5PActivityReportLinkHandler,
+        AddonModH5PActivitySyncCronHandler,
     ]
 })
 export class AddonModH5PActivityModule {
@@ -51,11 +57,14 @@ export class AddonModH5PActivityModule {
             prefetchHandler: AddonModH5PActivityPrefetchHandler,
             linksDelegate: CoreContentLinksDelegate,
             indexHandler: AddonModH5PActivityIndexLinkHandler,
-            reportLinkHandler: AddonModH5PActivityReportLinkHandler) {
+            reportLinkHandler: AddonModH5PActivityReportLinkHandler,
+            cronDelegate: CoreCronDelegate,
+            syncHandler: AddonModH5PActivitySyncCronHandler) {
 
         moduleDelegate.registerHandler(moduleHandler);
         prefetchDelegate.registerHandler(prefetchHandler);
         linksDelegate.registerHandler(indexHandler);
         linksDelegate.registerHandler(reportLinkHandler);
+        cronDelegate.register(syncHandler);
     }
 }

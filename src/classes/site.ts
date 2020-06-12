@@ -1820,7 +1820,7 @@ export class CoreSite {
 
             this.lastAutoLogin = this.timeUtils.timestamp();
 
-            return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + url;
+            return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + encodeURIComponent(url);
         }).catch(() => {
 
             // Couldn't get autologin key, return the same URL.

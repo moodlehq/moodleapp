@@ -244,6 +244,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
 
     protected ROOT_CACHE_KEY = 'mmCourse:';
     protected statusCache = new CoreCache();
+    protected featurePrefix = 'CoreCourseModuleDelegate_';
     protected handlerNameProperty = 'modName';
 
     // Promises for check updates, to prevent performing the same request twice at the same time.

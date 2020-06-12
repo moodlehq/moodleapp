@@ -14,8 +14,11 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
+import { CoreDomUtils } from '@providers/utils/dom';
 import { AddonModH5PActivityIndexComponent } from '../../components/index/index';
 import { AddonModH5PActivityData } from '../../providers/h5pactivity';
+
+import { Translate } from '@singletons/core.singletons';
 
 /**
  * Page that displays an H5P activity.
@@ -45,5 +48,18 @@ export class AddonModH5PActivityIndexPage {
      */
     updateData(h5p: AddonModH5PActivityData): void {
         this.title = h5p.name || this.title;
+    }
+
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @return Resolved if we can leave it, rejected if not.
+     */
+    ionViewCanLeave(): Promise<void> {
+        if (!this.h5pComponent.playing || this.h5pComponent.isOpeningPage) {
+            return;
+        }
+
+        return CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmleaveunknownchanges'));
     }
 }

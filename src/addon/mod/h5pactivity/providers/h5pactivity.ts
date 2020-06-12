@@ -31,6 +31,7 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 @Injectable()
 export class AddonModH5PActivityProvider {
     static COMPONENT = 'mmaModH5PActivity';
+    static TRACK_COMPONENT = 'mod_h5pactivity'; // Component for tracking.
 
     protected ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 
@@ -385,6 +386,20 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
+     * Get an H5P activity by context ID.
+     *
+     * @param courseId Course ID.
+     * @param contextId Context ID.
+     * @param forceCache Whether it should always return cached data.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the activity data.
+     */
+    getH5PActivityByContextId(courseId: number, contextId: number, forceCache?: boolean, siteId?: string)
+            : Promise<AddonModH5PActivityData> {
+        return this.getH5PActivityByField(courseId, 'context', contextId, forceCache, siteId);
+    }
+
+    /**
      * Get an H5P activity by instance ID.
      *
      * @param courseId Course ID.
@@ -595,6 +610,7 @@ export type AddonModH5PActivityData = {
     grademethod: number; // Which H5P attempt is used for grading.
     contenthash?: string; // Sha1 hash of file content.
     coursemodule: number; // Coursemodule.
+    context: number; // Context ID.
     introfiles: CoreWSExternalFile[];
     package: CoreWSExternalFile[];
     deployedfile?: {

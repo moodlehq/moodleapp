@@ -66,6 +66,7 @@ export class CoreTextUtilsProvider {
         {old: /_mmaModFolder/g, new: '_AddonModFolder'},
         {old: /_mmaModForum/g, new: '_AddonModForum'},
         {old: /_mmaModGlossary/g, new: '_AddonModGlossary'},
+        {old: /_mmaModH5pactivity/g, new: '_AddonModH5PActivity'},
         {old: /_mmaModImscp/g, new: '_AddonModImscp'},
         {old: /_mmaModLabel/g, new: '_AddonModLabel'},
         {old: /_mmaModLesson/g, new: '_AddonModLesson'},

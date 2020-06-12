@@ -17,6 +17,7 @@ import { CoreSites } from '@providers/sites';
 import { CoreTextUtils } from '@providers/utils/text';
 import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreUtils } from '@providers/utils/utils';
+import { CoreXAPI } from '@core/xapi/providers/xapi';
 import { CoreH5P } from '../providers/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PContentData, CoreH5PDependenciesFiles } from './core';
 import { CoreH5PHelper } from './helper';
@@ -81,7 +82,7 @@ export class CoreH5PPlayer {
             resizeCode: this.getResizeCode(),
             title: content.slug,
             displayOptions: {},
-            url: this.getEmbedUrl(site.getURL(), h5pUrl),
+            url: '', // It will be filled using dynamic params if needed.
             contentUrl: contentUrl,
             metadata: content.metadata,
             contentUserData: [
@@ -109,9 +110,9 @@ export class CoreH5PPlayer {
         html += '<script type="text/javascript">var H5PIntegration = ' +
                 JSON.stringify(result.settings).replace(/\//g, '\\/') + '</script>';
 
-        // Add our own script to handle the display options.
+        // Add our own script to handle the params.
         html += '<script type="text/javascript" src="' + CoreTextUtils.instance.concatenatePaths(
-                this.h5pCore.h5pFS.getCoreH5PPath(), 'moodle/js/displayoptions.js') + '"></script>';
+                this.h5pCore.h5pFS.getCoreH5PPath(), 'moodle/js/params.js') + '"></script>';
 
         html += '</head><body>';
 
@@ -241,20 +242,34 @@ export class CoreH5PPlayer {
      *
      * @param fileUrl URL of the H5P package.
      * @param displayOptions Display options.
+     * @param component Component to send xAPI events to.
+     * @param contextId Context ID where the H5P is. Required for tracking.
      * @param siteId The site ID. If not defined, current site.
      * @return Promise resolved with the file URL if exists, rejected otherwise.
      */
-    async getContentIndexFileUrl(fileUrl: string, displayOptions?: CoreH5PDisplayOptions, siteId?: string): Promise<string> {
+    async getContentIndexFileUrl(fileUrl: string, displayOptions?: CoreH5PDisplayOptions, component?: string, contextId?: number,
+            siteId?: string): Promise<string> {
+
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         const path = await this.h5pCore.h5pFS.getContentIndexFileUrl(fileUrl, siteId);
 
-        // Add display options to the URL.
+        // Add display options and component to the URL.
         const data = await this.h5pCore.h5pFramework.getContentDataByUrl(fileUrl, siteId);
 
         displayOptions = this.h5pCore.fixDisplayOptions(displayOptions, data.id);
 
-        return CoreUrlUtils.instance.addParamsToUrl(path, displayOptions, undefined, true);
+        const params = {
+            displayOptions: JSON.stringify(displayOptions),
+            component: component || '',
+            trackingUrl: undefined,
+        };
+
+        if (contextId) {
+            params.trackingUrl = await CoreXAPI.instance.getUrl(contextId, 'activity', siteId);
+        }
+
+        return CoreUrlUtils.instance.addParamsToUrl(path, params);
     }
 
     /**

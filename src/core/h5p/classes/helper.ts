@@ -17,6 +17,7 @@ import { CoreSites } from '@providers/sites';
 import { CoreMimetypeUtils } from '@providers/utils/mimetype';
 import { CoreTextUtils } from '@providers/utils/text';
 import { CoreUtils } from '@providers/utils/utils';
+import { CoreUser } from '@core/user/providers/user';
 import { CoreH5P } from '../providers/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions } from './core';
 import { FileEntry } from '@ionic-native/file';
@@ -90,6 +91,13 @@ export class CoreH5PHelper {
     static async getCoreSettings(siteId?: string): Promise<any> {
 
         const site = await CoreSites.instance.getSite(siteId);
+        let user;
+
+        try {
+            user = await CoreUser.instance.getProfile(site.getUserId(), undefined, true);
+        } catch (error) {
+            // Ignore errors.
+        }
 
         const basePath = CoreFile.instance.getBasePathInstant();
         const ajaxPaths = {
@@ -110,7 +118,7 @@ export class CoreH5PHelper {
             l10n: {
                 H5P: CoreH5P.instance.h5pCore.getLocalization(),
             },
-            user: [],
+            user: {name: site.getInfo().fullname, mail: user && user.email},
             hubIsEnabled: false,
             reportingIsEnabled: false,
             crossorigin: null,
