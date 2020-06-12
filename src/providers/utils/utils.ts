@@ -85,6 +85,13 @@ export class CoreUtilsProvider {
             protected modalCtrl: ModalController,
             protected qrScanner: QRScanner) {
         this.logger = logger.getInstance('CoreUtilsProvider');
+
+        const win = <any> window;
+
+        if (win.cordova && win.cordova.InAppBrowser) {
+            // Override the default window.open with the InAppBrowser one.
+            win.open = win.cordova.InAppBrowser.open;
+        }
     }
 
     /**
