@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.inspire.inspireLMS" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>InspireLMS</name>
+    <name>Inspire Academy</name>
     <description>Inspire Online Academy</description>
     <author email="it-support@inspire.qa" href="https://inspire.qa">Inspire IT Team</author>
     <content src="index.html" />
