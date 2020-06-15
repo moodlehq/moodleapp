@@ -86,12 +86,14 @@ export class CoreUtilsProvider {
             protected qrScanner: QRScanner) {
         this.logger = logger.getInstance('CoreUtilsProvider');
 
-        const win = <any> window;
+        this.platform.ready().then(() => {
+            const win = <any> window;
 
-        if (win.cordova && win.cordova.InAppBrowser) {
-            // Override the default window.open with the InAppBrowser one.
-            win.open = win.cordova.InAppBrowser.open;
-        }
+            if (win.cordova && win.cordova.InAppBrowser) {
+                // Override the default window.open with the InAppBrowser one.
+                win.open = win.cordova.InAppBrowser.open;
+            }
+        });
     }
 
     /**
