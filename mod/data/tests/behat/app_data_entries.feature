@@ -31,7 +31,7 @@ Feature: Users can manage entries in database activities
       | Field description | Link description |
     And I log out
 
-  Scenario: Students can add entries to a database in the app
+  Scenario: Create entry
     Given I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -44,7 +44,7 @@ Feature: Users can manage entries in database activities
     Then I should see "https://moodle.org/"
     And I should see "Moodle community site"
 
-  Scenario: Students can navigate along single entries in the app
+  Scenario: Browse entry
     Given I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -95,7 +95,7 @@ Feature: Users can manage entries in database activities
     And "Edit" "link" should not exist
     And "Delete" "link" should not exist
 
-  Scenario: Students can edit and delete their own entries from list and single view in the app
+  Scenario: Delete entry (student) & Update entry (student)
     Given I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -143,7 +143,7 @@ Feature: Users can manage entries in database activities
     And I should not see "Moodle Cloud"
     And I should see "No entries in database"
 
-  Scenario: Teachers can edit and delete students' entries from list view in the app
+  Scenario: Delete entry (teacher) & Update entry (teacher)
     Given I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app

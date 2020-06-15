@@ -18,6 +18,20 @@ Feature: Test basic usage of login in app
       | teacher1 | C1     | editingteacher |
 
   @app @3.8.0
+  Scenario: Add a new site in the app & Site name in displayed when adding a new site
+    When I enter the app
+    And I press the back button in the app
+    And I set the field "https://campus.example.edu" to "webserver" in the app
+    And I press "Connect to your site" in the app
+    Then I should see "Acceptance test site"
+
+    When I set the field "Username" to "student1" in the app
+    And I set the field "Password" to "student1" in the app
+    And I press "Log in" near "Forgotten your username or password?" in the app
+    Then I should see "Acceptance test site"
+    But I should not see "Log in"
+
+  @app @3.8.0
   Scenario: Add a non existing site
     When I enter the app
     And I log in as "student1"
@@ -43,7 +57,7 @@ Feature: Test basic usage of login in app
     But I should not see "Acceptance test site"
 
   @app @3.8.0
-  Scenario: Require minium version of the app for a site and site name in displayed when adding a new site
+  Scenario: Require minium version of the app for a site
     When I enter the app
     And I log in as "teacher1"
     And I press "menu" in the app

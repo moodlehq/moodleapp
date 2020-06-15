@@ -25,7 +25,7 @@ Feature: Test basic usage of forum activity in app
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 1        | 1     |
 
   @app @3.8.0
-  Scenario: Student starts a discussion
+  Scenario: Create new discussion
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -40,7 +40,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "An awesome message"
 
   @app_from3.7
-  Scenario: Student posts a reply
+  Scenario: Reply a post
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -57,7 +57,7 @@ Feature: Test basic usage of forum activity in app
     And I should see "ReplyMessage"
 
   @app @3.8.0
-  Scenario: Student stars a discussion
+  Scenario: Star and pin discussions (student)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -94,7 +94,7 @@ Feature: Test basic usage of forum activity in app
     Then I should see "normal message"
 
   @app @3.8.0
-  Scenario: Teacher star and pin a discussion
+  Scenario: Star and pin discussions (teacher)
     When I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
@@ -127,7 +127,7 @@ Feature: Test basic usage of forum activity in app
     And I should see "Auto-test pin"
 
   @app_upto3.6.0
-  Scenario: Teacher checks pin and star in 3.6
+  Scenario: Star and pin discussions (teacher in 3.6)
     When I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
@@ -313,7 +313,7 @@ Feature: Test basic usage of forum activity in app
     But I should not see "Average of ratings: -"
 
   @app @3.8.0
-  Scenario: Student replies a post offline
+  Scenario: Reply a post offline
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -344,7 +344,7 @@ Feature: Test basic usage of forum activity in app
     But I should not see "Not sent"
 
   @app @3.8.0
-  Scenario: Student creates a new discussion offline and sync forum
+  Scenario: New discussion offline & Sync Forum
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -370,7 +370,7 @@ Feature: Test basic usage of forum activity in app
     And I should not see "This Forum has offline data to be synchronised."
 
   @app @3.8.0
-  Scenario: Student creates a new discussion offline and auto-sync forum
+  Scenario: New discussion offline & Auto-sync forum
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app

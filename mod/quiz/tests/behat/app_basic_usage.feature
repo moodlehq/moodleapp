@@ -142,7 +142,7 @@ Feature: Attempt a quiz in app
     And I should see "Not yet graded"
 
   @app @3.8.0
-  Scenario: Submit a quiz and review a quiz attempt
+  Scenario: Submit a quiz & Review a quiz attempt
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
