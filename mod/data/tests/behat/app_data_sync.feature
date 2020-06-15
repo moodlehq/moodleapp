@@ -32,7 +32,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I log out
 
   @app_from3.7
-  Scenario: Students can add entries to a database in the app while offline
+  Scenario: Create entry (offline)
     Given I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -54,7 +54,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should not see "This Database has offline data to be synchronised"
 
   @app_from3.7
-  Scenario: Students can edit and delete entries to a database in the app while offline
+  Scenario: Update entry (offline) & Delete entry (offline)
     Given I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app

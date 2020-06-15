@@ -20,7 +20,7 @@ Feature: Test basic usage of assignment activity in app
       | assign   | C1     | assign1  | assignment1         | Test assignment description1 | 1                                   | 1029844800 | manual              |
 
   @app @3.8.0
-  Scenario: Create, edit and submit an assignment as a student, view it as a teacher
+  Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission
     # Create, edit and submit as a student
     When I enter the app
     And I log in as "student1"
@@ -65,7 +65,7 @@ Feature: Test basic usage of assignment activity in app
     And I should see "Submission test edited"
 
   @app @3.8.0
-  Scenario: Add new attempt from previous submission
+  Scenario: Edit/Add submission (online text) & Add new attempt from previous submission & Submit for grading
     # Submit first attempt as a student
     Given I enter the app
     And I log in as "student1"
@@ -121,7 +121,7 @@ Feature: Test basic usage of assignment activity in app
     And I should see "Submission test 2nd attempt"
 
   @app @3.8.0
-  Scenario: Add offline submission and synchronise it
+  Scenario: Add submission offline (online text) & Submit for grading offline & Sync submissions
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app

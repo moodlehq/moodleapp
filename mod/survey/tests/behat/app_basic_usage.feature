@@ -21,7 +21,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey name | Test survey | C1     | survey   | 0         |
 
   @app @3.8.0
-  Scenario: Student answers a survey ATTLS and see results
+  Scenario: Answer a survey & View results (ATTLS)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
@@ -75,7 +75,7 @@ Feature: Test basic usage of survey activity in app
     And I should see "1 people have completed this survey so far"
 
   @app @3.8.0
-  Scenario: Student answers a survey of critical incidents and see results
+  Scenario: Answer a survey & View results (Critical incidents)
     Given the following "activities" exist:
       | activity | name                           | intro        | template |course | idnumber | groupmode |
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1    | survey1  | 0         |
@@ -83,6 +83,11 @@ Feature: Test basic usage of survey activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test survey critical incidents" in the app
+    And I set the field with xpath "//textarea[@aria-label='At what moment in class were you most engaged as a learner?']" to "1st answer"
+    And I set the field with xpath "//textarea[@aria-label='At what moment in class were you most distanced as a learner?']" to "2nd answer"
+    And I set the field with xpath "//textarea[@aria-label='What action from anyone in the forums did you find most affirming or helpful?']" to "3rd answer"
+    And I set the field with xpath "//textarea[@aria-label='What action from anyone in the forums did you find most puzzling or confusing?']" to "4th answer"
+    And I set the field with xpath "//textarea[@aria-label='What event surprised you most?']" to "5th answer"
     And I press "Submit" in the app
     And I press "OK" in the app
     Then I should see "Results"
@@ -91,9 +96,14 @@ Feature: Test basic usage of survey activity in app
     And I switch to the browser tab opened by the app
     And I log in as "student1"
     Then I should see "Test survey critical incidents"
+    And I should see "1st answer"
+    And I should see "2nd answer"
+    And I should see "3rd answer"
+    And I should see "4th answer"
+    And I should see "5th answer"
 
   @app @3.8.0
-  Scenario: Student answers a survey of Colles (actual) and see results
+  Scenario: Answer a survey & View results (Colles actual)
     Given the following "activities" exist:
       | activity | name                        | intro        | template |course | idnumber | groupmode |
       | survey   | Test survey Colles (actual) | Test survey1 | 1        | C1    | survey1  | 0         |
@@ -162,7 +172,7 @@ Feature: Test basic usage of survey activity in app
     And I should see "1 people have completed this survey so far"
 
   @app @3.8.0
-  Scenario: Student answers a survey of Colles (preferred) and see results
+  Scenario: Answer a survey & View results (Colles preferred)
     Given the following "activities" exist:
       | activity | name                           | intro        | template | course | idnumber | groupmode |
       | survey   | Test survey Colles (preferred) | Test survey1 | 2        | C1     | survey1  | 0         |
@@ -231,7 +241,7 @@ Feature: Test basic usage of survey activity in app
     And I should see "1 people have completed this survey so far"
 
   @app @3.8.0
-  Scenario: Student answers a survey of Colles (preferred and actual) and see results
+  Scenario: Answer a survey & View results (Colles preferred amd actual)
     Given the following "activities" exist:
       | activity | name                                      | intro        | template | course | idnumber | groupmode |
       | survey   | Test survey Colles (preferred and actual) | Test survey1 | 3        | C1     | survey1  | 0         |
@@ -348,7 +358,7 @@ Feature: Test basic usage of survey activity in app
     And I should see "1 people have completed this survey so far"
 
   @app @3.8.0
-  Scenario: Student answers a survey offline and sync survey
+  Scenario: Answer survey offline & Sync survey
     Given the following "activities" exist:
       | activity | name                           | intro        | template | course | idnumber | groupmode |
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
@@ -371,7 +381,7 @@ Feature: Test basic usage of survey activity in app
     But I should not see "This Survey has offline data to be synchronised."
 
   @app @3.8.0
-  Scenario: Prefetch and auto-sync
+  Scenario: Prefetch & Auto-sync survey
     Given the following "activities" exist:
       | activity | name                           | intro        | template | course | idnumber | groupmode |
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |

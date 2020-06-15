@@ -24,7 +24,7 @@ Feature: Test basic usage of comments in app
       | data     | Data      | Data info    | C1     | data1    | 1        |
 
   @app @3.8.0
-  Scenario: Create and delete comments (database)
+  Scenario: Add comments & Delete comments (database)
     # Create database entry and comment as a teacher
     Given I enter the app
     And I log in as "teacher1"
@@ -84,7 +84,7 @@ Feature: Test basic usage of comments in app
     Then I should see "Comments (1)"
 
   @app @3.8.0
-  Scenario: Create and delete offline comments and synchronise (database)
+  Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Recently accessed courses" in the app
@@ -146,7 +146,7 @@ Feature: Test basic usage of comments in app
     And I should see "Comments (0)"
 
   @app @3.8.0
-  Scenario: Create and delete comments (glossary)
+  Scenario: Add comments & delete comments (glossary)
     # Create glossary entry and comment as a teacher
     When I enter the app
     And I log in as "teacher1"
@@ -193,7 +193,7 @@ Feature: Test basic usage of comments in app
     And I should see "Comments (1)"
 
   @app @3.8.0
-  Scenario: Create and delete offline comments and synchronise (glossary)
+  Scenario: Add comments offline & Delete comments offline & Sync comments (glossary)
     When I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Recently accessed courses" in the app
@@ -243,7 +243,7 @@ Feature: Test basic usage of comments in app
     And I should see "Comments (0)"
 
   @app @3.8.0
-  Scenario: Create and delete comments (blogs)
+  Scenario: Add comments & Delete comments (blogs)
     # Create blog as a teacher
     Given I enter the app
     And I log in as "teacher1"
@@ -293,7 +293,7 @@ Feature: Test basic usage of comments in app
     Then I should see "Comments (0)"
 
   @app @3.8.0
-  Scenario: Create and delete offline comments and synchronise (blogs)
+  Scenario: Add comments offline & Delete comments offline & Sync comments (blogs)
     # Create blog as a teacher
     Given I enter the app
     And I log in as "teacher1"

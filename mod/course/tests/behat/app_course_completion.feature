@@ -15,7 +15,7 @@ Feature: Check course completion feature.
       | user     | course | role    |
       | student1 | C1     | student |
 
-  Scenario: Complete the activity manually by clicking at the completion checkbox.
+  Scenario: Activity completion, marking the checkbox manually
     Given the following "activities" exist:
       | activity | name         | course | idnumber | completion | completionview |
       | forum    | First forum  | C1     | forum1   | 1          | 0              |

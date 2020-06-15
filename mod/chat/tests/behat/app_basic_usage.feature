@@ -20,7 +20,7 @@ Feature: Test basic usage of chat in app
       | chat       | Test chat name  | Test chat   | C1     | chat     | 0         |
 
   @app @3.8.0
-  Scenario: Send and read messages, send beeps and view connected users
+  Scenario: Receive and send messages & See connected users, beep and talk to
     # Send messages as student1
     When I enter the app
     And I log in as "student1"
@@ -57,7 +57,7 @@ Feature: Test basic usage of chat in app
     Then I should see "Hi David, I am Pau."
 
   @app @3.8.0
-  Scenario: View past sessions shown for >=3.5
+  Scenario: Past sessions shown for >=3.5
     # Send messages as student1
     Given I enter the app
     And I log in as "student1"

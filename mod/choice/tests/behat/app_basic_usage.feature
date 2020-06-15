@@ -18,7 +18,7 @@ Feature: Test basic usage of choice activity in app
       | student1 | C1 | student |
 
   @app @3.8.0
-  Scenario: Student sends a single choice answer and views the results
+  Scenario: Answer a choice (multi or single, update answer) & View results
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
@@ -44,7 +44,7 @@ Feature: Test basic usage of choice activity in app
     And I should see "Option 3: 0"
 
   @app @3.8.0
-  Scenario: Student sends, changes and removes a multi choice answer
+  Scenario: Answer a choice (multi or single, update answer) & View results & Delete choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test multi choice name  | Test multi choice description  | C1     | choice2  | Option 1, Option 2, Option 3 | 1             | 1           | 1           |
@@ -75,7 +75,7 @@ Feature: Test basic usage of choice activity in app
     But I should not see "Remove my choice"
 
   @app @3.8.0
-  Scenario: Student edits answer offline and synchronises
+  Scenario: Answer and change answer offline & Sync choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
@@ -108,7 +108,7 @@ Feature: Test basic usage of choice activity in app
     But I should not see "This Choice has offline data to be synchronised."
 
   @app @3.8.0
-  Scenario: Student edits answer offline and the app synchronises automatically
+  Scenario: Answer and change answer offline & Auto-sync choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
@@ -136,7 +136,7 @@ Feature: Test basic usage of choice activity in app
     But I should not see "This Choice has offline data to be synchronised."
 
   @app @3.8.0
-  Scenario: Prefetch activity
+  Scenario: Prefetch
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test multi choice name  | Test multi choice description  | C1     | choice2  | Option 1, Option 2, Option 3 | 1             | 1           | 1           |

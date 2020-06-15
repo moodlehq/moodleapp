@@ -109,7 +109,7 @@ Feature: Test basic usage of messages in app
     And I should see "byee"
 
   @app @3.8.0
-  Scenario: User profile, send message, add/remove contact
+  Scenario: User profile: send message, add/remove contact
     When I enter the app
     And I log in as "teacher1"
     And I press "Messages" in the app

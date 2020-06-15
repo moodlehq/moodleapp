@@ -19,39 +19,22 @@ Feature: Test course list shown on app start tab
       | student2 | C1     | student |
       | student2 | C2     | student |
 
-  Scenario: Student is registered on one course
+  Scenario: View courses (shortnames not displayed)
     When I enter the app
     And I log in as "student1"
     Then I should see "Course 1"
-    And I should not see "Course 2"
+    But I should not see "Course 2"
+    But I should not see "C1"
+    But I should not see "C2"
 
-  Scenario: Student is registered on two courses (shortnames not displayed)
     When I enter the app
     And I log in as "student2"
     Then I should see "Course 1"
     And I should see "Course 2"
-    And I should not see "C1"
-    And I should not see "C2"
+    But I should not see "C1"
+    But I should not see "C2"
 
-  Scenario: Student is registered on two courses (shortnames displayed)
-    Given the following config values are set as admin:
-      | courselistshortnames | 1 |
-    When I enter the app
-    And I log in as "student2"
-    Then I should see "Course 1"
-    And I should see "Course 2"
-    And I should see "C1"
-    And I should see "C2"
-
-  Scenario: Student uses course list to enter course, then leaves it again
-    When I enter the app
-    And I log in as "student2"
-    And I press "Course 2" near "Course overview" in the app
-    Then the header should be "Course 2" in the app
-    And I press the back button in the app
-    Then the header should be "Acceptance test site" in the app
-
-  Scenario: Student uses filter feature to reduce course list
+  Scenario: Filter courses
     Given the following config values are set as admin:
       | courselistshortnames | 1 |
     And the following "courses" exist:

@@ -72,7 +72,7 @@ Feature: Test basic usage of one course in app
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
   @app @3.8.0
-  Scenario: Student views course contents
+  Scenario: View course contents
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
@@ -150,7 +150,7 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test workshop name" in the app
 
   @app @3.8.0
-  Scenario: Student views section contents
+  Scenario: View section contents
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
