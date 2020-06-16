@@ -43,11 +43,11 @@ jobs:
     os: linux
     script: npm run build --bailOnLintError true --typeCheckOnLint true
   - stage: mirror
-    if: branch IN (master, integration, desktop) AND repo = moodlehq/moodleapp
+    if: branch IN (master, integration, desktop) AND repo = moodlehq/moodleapp AND type != cron
     os: linux
     script: scripts/mirror.sh
   - stage: prepare
-    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1
+    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1 AND type != cron
     os: linux
     script: scripts/aot.sh
   - stage: build
