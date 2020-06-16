@@ -453,8 +453,7 @@ export class CoreUrlUtilsProvider {
         return scheme == 'cdvfile' ||
                 scheme == 'file' ||
                 scheme == 'filesystem' ||
-                scheme == CoreConfigConstants.ioswebviewscheme ||
-                (scheme == 'http' && domain == 'localhost');
+                scheme == CoreConfigConstants.ioswebviewscheme;
     }
 
     /**

@@ -978,7 +978,7 @@ export class CoreWSProvider {
         options.responseType = options.responseType || 'json';
         options.timeout = typeof options.timeout == 'undefined' ? this.getRequestTimeout() : options.timeout;
 
-        if (this.appProvider.isMobile()) {
+        if (this.appProvider.isIOS()) {
             // Use the cordova plugin.
             if (url.indexOf('file://') === 0) {
                 // We cannot load local files using the http native plugin. Use file provider instead.

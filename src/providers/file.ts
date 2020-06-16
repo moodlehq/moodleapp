@@ -1251,7 +1251,7 @@ export class CoreFileProvider {
      * @return Converted src.
      */
     convertFileSrc(src: string): string {
-        return this.appProvider.isMobile() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
+        return this.appProvider.isIOS() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
     }
 
     /**
@@ -1261,13 +1261,11 @@ export class CoreFileProvider {
      * @return Unconverted src.
      */
     unconvertFileSrc(src: string): string {
-        if (!this.appProvider.isMobile()) {
+        if (!this.appProvider.isIOS()) {
             return src;
         }
 
-        const scheme = this.platform.is('ios') ? CoreConfigConstants.ioswebviewscheme : 'http';
-
-        return src.replace(scheme + '://localhost/_app_file_', 'file://');
+        return src.replace(CoreConfigConstants.ioswebviewscheme + '://localhost/_app_file_', 'file://');
     }
 }
 
