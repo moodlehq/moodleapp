@@ -109,17 +109,17 @@ jobs:
     name: "End to end tests (mod_forum, mod_messages and mod_comments)"
     services:
     - docker
-    if: env(TRAVIS_EVENT_TYPE) = cron
+    if: type = cron
     script: scripts/test_e2e.sh "@app&&@mod_forum" "@app&&@mod_messages" "@app&&@mod_comments"
   - stage: test
     name: "End to end tests (mod_data, mod_survey, mod_course, core_course and mod_courses)"
     services:
     - docker
-    if: env(TRAVIS_EVENT_TYPE) = cron
+    if: type = cron
     script: scripts/test_e2e.sh "@app&&@mod_data" "@app&&@mod_survey" "@app&&@mod_course" "@app&&@core_course" "@app&&@mod_courses"
   - stage: test
     name: "End to end tests (others)"
     services:
     - docker
-    if: env(TRAVIS_EVENT_TYPE) = cron
+    if: type = cron
     script: scripts/test_e2e.sh "@app&&~@mod_forum&&~@mod_messages&&~@mod_comments&&~@mod_data&&~@mod_survey&&~@mod_course&&~@core_course&&~@mod_courses"
