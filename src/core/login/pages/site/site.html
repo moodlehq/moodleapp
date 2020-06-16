@@ -60,7 +60,7 @@
             <ng-container *ngIf="!fixedSites && showScanQR && !hasSites && !enteredSiteUrl">
                 <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
                 <ion-item>
-                    <a ion-button block color="light" margin-top icon-start (click)="scanQR()">
+                    <a ion-button block color="light" margin-top icon-start (click)="showInstructionsAndScanQR()">
                         <core-icon name="fa-qrcode" aria-hidden="true"></core-icon>
                         {{ 'core.scanqr' | translate }}
                     </a>
