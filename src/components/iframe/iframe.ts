@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {
-    Component, Input, Output, OnInit, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, Optional
+    Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, Optional
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NavController, Platform } from 'ionic-angular';
@@ -30,7 +30,7 @@ import { CoreUrl } from '@singletons/url';
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html'
 })
-export class CoreIframeComponent implements OnInit, OnChanges {
+export class CoreIframeComponent implements OnChanges {
 
     @ViewChild('iframe') iframe: ElementRef;
     @Input() src: string;
@@ -43,6 +43,7 @@ export class CoreIframeComponent implements OnInit, OnChanges {
 
     protected logger;
     protected IFRAME_TIMEOUT = 15000;
+    protected initialized = false;
 
     constructor(logger: CoreLoggerProvider,
             protected iframeUtils: CoreIframeUtilsProvider,
@@ -59,9 +60,15 @@ export class CoreIframeComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Component being initialized.
+     * Init the data.
      */
-    ngOnInit(): void {
+    protected init(): void {
+        if (this.initialized) {
+            return;
+        }
+
+        this.initialized = true;
+
         const iframe: HTMLIFrameElement = this.iframe && this.iframe.nativeElement;
 
         this.iframeWidth = this.domUtils.formatPixelsSize(this.iframeWidth) || '100%';
@@ -116,6 +123,11 @@ export class CoreIframeComponent implements OnInit, OnChanges {
             }
 
             this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.instance.convertFileSrc(url));
+
+            // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
+            setTimeout(() => {
+                this.init();
+            });
         }
     }
 }
