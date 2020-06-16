@@ -279,7 +279,7 @@ export class CoreLoginSitePage {
             }
         ];
 
-        // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.8.3.
+        // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
         this.domUtils.showAlertWithOptions({
             title: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}),
             message,
@@ -383,8 +383,6 @@ export class CoreLoginSitePage {
 
     /**
      * Show instructions and scan QR code.
-     *
-     * @todo Use it in 3.9 release instead of scanQR.
      */
     showInstructionsAndScanQR(): void {
         // Show some instructions first.

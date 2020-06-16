@@ -37,7 +37,7 @@ export class CoreLoginSiteHelpPage {
             protected translate: TranslateService,
             protected utils: CoreUtilsProvider) {
 
-        this.canScanQR = this.utils.canScanQR() && false; // @todo: Enable it for 3.9 release.
+        this.canScanQR = this.utils.canScanQR();
         this.urlImageHtml = CoreLoginHelperProvider.FAQ_URL_IMAGE_HTML;
         this.qrCodeImageHtml = CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML;
         this.setupLinkHtml = '<a href="https://moodle.com/getstarted/" title="' +
