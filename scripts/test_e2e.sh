@@ -41,14 +41,16 @@ $dockercompose pull
 $dockercompose up -d
 $dockerscripts/moodle-docker-wait-for-db
 $dockerscripts/moodle-docker-wait-for-app
-$dockercompose exec -T webserver php admin/tool/behat/cli/init.php
+
+$dockercompose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
+notify_on_error_exit "e2e failed initializing behat"
 
 # Run tests
 for tags in "$@"
 do
     print_title "Running e2e tests ($tags)"
 
-    $dockercompose exec -T webserver php admin/tool/behat/cli/run.php --tags="$tags"
+    $dockercompose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags=\"$tags\""
     notify_on_error_exit "e2e failed on $tags"
 done
 

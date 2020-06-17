@@ -43,11 +43,11 @@ jobs:
     os: linux
     script: npm run build --bailOnLintError true --typeCheckOnLint true
   - stage: mirror
-    if: branch IN (master, integration, desktop) AND repo = moodlehq/moodleapp
+    if: branch IN (master, integration, desktop) AND repo = moodlehq/moodleapp AND type != cron
     os: linux
     script: scripts/mirror.sh
   - stage: prepare
-    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1
+    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1 AND type != cron
     os: linux
     script: scripts/aot.sh
   - stage: build
@@ -109,17 +109,17 @@ jobs:
     name: "End to end tests (mod_forum, mod_messages and mod_comments)"
     services:
     - docker
-    if: env(TRAVIS_EVENT_TYPE) = cron
+    if: type = cron
     script: scripts/test_e2e.sh "@app&&@mod_forum" "@app&&@mod_messages" "@app&&@mod_comments"
   - stage: test
     name: "End to end tests (mod_data, mod_survey, mod_course, core_course and mod_courses)"
     services:
     - docker
-    if: env(TRAVIS_EVENT_TYPE) = cron
+    if: type = cron
     script: scripts/test_e2e.sh "@app&&@mod_data" "@app&&@mod_survey" "@app&&@mod_course" "@app&&@core_course" "@app&&@mod_courses"
   - stage: test
     name: "End to end tests (others)"
     services:
     - docker
-    if: env(TRAVIS_EVENT_TYPE) = cron
+    if: type = cron
     script: scripts/test_e2e.sh "@app&&~@mod_forum&&~@mod_messages&&~@mod_comments&&~@mod_data&&~@mod_survey&&~@mod_course&&~@core_course&&~@mod_courses"
