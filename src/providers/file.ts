@@ -1158,7 +1158,7 @@ export class CoreFileProvider {
                 do {
                     newName = fileNameWithoutExtension + '(' + num + ')' + extension;
                     num++;
-                } while (typeof files[newName] != 'undefined');
+                } while (typeof files[newName.toLowerCase()] != 'undefined');
 
                 // Ask the user what he wants to do.
                 return newName;
