@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "scripts/functions.sh"
+
 # Prepare variables
 basedir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 dockerscripts="$HOME/moodle-docker/bin/"
@@ -12,7 +14,7 @@ export MOODLE_DOCKER_PHP_VERSION=7.3
 export MOODLE_DOCKER_APP_PATH=$basedir
 
 # Prepare dependencies
-echo "Preparing dependencies"
+print_title "Preparing dependencies"
 git clone --branch master --depth 1 git://github.com/moodle/moodle $HOME/moodle
 git clone --branch master --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $HOME/moodle/local/moodlemobileapp
 # git clone --branch master --depth 1 git://github.com/moodlehq/moodle-docker $HOME/moodle-docker
@@ -29,12 +31,12 @@ cd -
 cp $HOME/moodle-docker/config.docker-template.php $HOME/moodle/config.php
 
 # Build app
-echo "Building app"
+print_title "Building app"
 npm install
 npm run setup
 
 # Start containers
-echo "Starting containers"
+print_title "Starting containers"
 $dockercompose pull
 $dockercompose up -d
 $dockerscripts/moodle-docker-wait-for-db
@@ -44,9 +46,10 @@ $dockercompose exec -T webserver php admin/tool/behat/cli/init.php
 # Run tests
 for tags in "$@"
 do
-    echo "Running e2e tests ($tags)"
+    print_title "Running e2e tests ($tags)"
 
     $dockercompose exec -T webserver php admin/tool/behat/cli/run.php --tags="$tags"
+    notify_on_error_exit "e2e failed on $tags"
 done
 
 # Clean up
