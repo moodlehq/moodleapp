@@ -27,7 +27,7 @@ import { CoreUtilsProvider } from './utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { makeSingleton } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
-import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
+import { WKUserScriptWindow, WKUserScriptInjectionTime } from 'cordova-plugin-wkuserscript';
 
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
@@ -50,8 +50,16 @@ export class CoreIframeUtilsProvider {
         if (platform.is('ios') && win.WKUserScript) {
             platform.ready().then(() => {
                 // Inject code to the iframes because we cannot access the online ones.
-                const path = textUtils.concatenatePaths(fileProvider.getWWWAbsolutePath(), 'assets/js/iframe-treat-links.js');
-                win.WKUserScript.addScript({id: 'CoreIframeUtilsScript', file: path});
+                const wwwPath = fileProvider.getWWWAbsolutePath();
+                const linksPath = textUtils.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
+                const recaptchaPath = textUtils.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
+
+                win.WKUserScript.addScript({id: 'CoreIframeUtilsLinksScript', file: linksPath});
+                win.WKUserScript.addScript({
+                    id: 'CoreIframeUtilsRecaptchaScript',
+                    file: recaptchaPath,
+                    injectionTime: WKUserScriptInjectionTime.END,
+                });
 
                 // Handle post messages received by iframes.
                 window.addEventListener('message', this.handleIframeMessage.bind(this));
