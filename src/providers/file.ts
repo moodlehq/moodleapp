@@ -1229,7 +1229,7 @@ export class CoreFileProvider {
     }
 
     /**
-     * Get the full path to the www folder at runtime.
+     * Get the path to the www folder at runtime based on the WebView URL.
      *
      * @return Path.
      */
@@ -1241,6 +1241,20 @@ export class CoreFileProvider {
         }
 
         return window.location.href;
+    }
+
+    /**
+     * Get the full path to the www folder.
+     *
+     * @return Path.
+     */
+    getWWWAbsolutePath(): string {
+        if (cordova && cordova.file && cordova.file.applicationDirectory) {
+            return this.textUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
+        }
+
+        // Cannot use Cordova to get it, use the WebView URL.
+        return this.getWWWPath();
     }
 
     /**

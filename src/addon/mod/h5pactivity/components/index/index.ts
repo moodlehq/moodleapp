@@ -407,7 +407,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * @return Whether it's an XAPI post statement of the current activity.
      */
     protected isCurrentXAPIPost(data: any): boolean {
-        if (data.context != 'moodleapp' || data.action != 'xapi_post_statement' || !data.statements) {
+        if (data.environment != 'moodleapp' || data.context != 'h5p' || data.action != 'xapi_post_statement' || !data.statements) {
             return false;
         }
 

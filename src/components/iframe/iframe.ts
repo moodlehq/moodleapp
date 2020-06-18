@@ -25,6 +25,7 @@ import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUrl } from '@singletons/url';
+import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 @Component({
     selector: 'core-iframe',
@@ -108,7 +109,7 @@ export class CoreIframeComponent implements OnChanges {
             if (this.platform.is('ios') && !this.urlUtils.isLocalFileUrl(url)) {
                 // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
                 try {
-                    const win = <any> window;
+                    const win = <WKWebViewCookiesWindow> window;
                     const urlParts = CoreUrl.parse(url);
 
                     await win.WKWebViewCookies.setCookie({
