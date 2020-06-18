@@ -1,5 +1,7 @@
-<div [class.core-loading-container]="loading" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}">
-    <iframe #iframe [hidden]="loading" class="core-iframe" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl" [attr.allowfullscreen]="allowFullscreen ? 'allowfullscreen' : null"></iframe>
+<div [class.core-loading-container]="loading || !safeUrl" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}">
+    <!-- Don't add the iframe until the safeUrl is set, adding an iframe with null as src causes the iframe to load the whole app. -->
+    <iframe #iframe *ngIf="safeUrl" [hidden]="loading" class="core-iframe" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl" [attr.allowfullscreen]="allowFullscreen ? 'allowfullscreen' : null"></iframe>
+
     <span class="core-loading-spinner">
         <ion-spinner *ngIf="loading"></ion-spinner>
     </span>

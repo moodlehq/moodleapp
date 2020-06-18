@@ -80,7 +80,8 @@ H5PEmbedCommunicator = (function() {
          */
         self.post = function(component, statements) {
             window.parent.postMessage({
-                context: 'moodleapp',
+                environment: 'moodleapp',
+                context: 'h5p',
                 action: 'xapi_post_statement',
                 component: component,
                 statements: statements,
