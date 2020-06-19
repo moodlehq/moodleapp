@@ -93,16 +93,9 @@ export class CoreLoginCredentialsPage {
     }
 
     /**
-     * View enter.
+     * View destroyed.
      */
-    ionViewDidEnter(): void {
-        this.viewLeft = false;
-    }
-
-    /**
-     * View left.
-     */
-    ionViewDidLeave(): void {
+    ionViewWillUnload(): void {
         this.viewLeft = true;
         this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
     }
