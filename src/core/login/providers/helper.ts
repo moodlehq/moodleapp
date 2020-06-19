@@ -531,9 +531,16 @@ export class CoreLoginHelperProvider {
     goToNoSitePage(navCtrl: NavController, page: string, params?: any): Promise<any> {
         navCtrl = navCtrl || this.appProvider.getRootNavController();
 
-        if (page == 'CoreLoginSitesPage') {
+        const currentPage = navCtrl && navCtrl.getActive().component.name;
+
+        if (page == currentPage) {
+            // Already at page, nothing to do.
+        } else if (page == 'CoreLoginSitesPage') {
             // Just open the page as root.
             return navCtrl.setRoot(page, params);
+        } else if (page == 'CoreLoginCredentialsPage' && currentPage == 'CoreLoginSitePage') {
+            // Just open the new page to keep the navigation history.
+            return navCtrl.push(page, params);
         } else {
             // Check if there is any site stored.
             return this.sitesProvider.hasSites().then((hasSites) => {

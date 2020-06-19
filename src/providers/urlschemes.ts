@@ -105,7 +105,7 @@ export class CoreCustomURLSchemesProvider {
                 await this.sitesProvider.checkRequiredMinimumVersion(result.config);
             }
 
-            return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, data.isSSOToken,
+            return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, !!data.isSSOToken,
                         this.loginHelper.getOAuthIdFromParams(data.ssoUrlParams));
         } else {
             // Token belongs to current site, no need to create it.
