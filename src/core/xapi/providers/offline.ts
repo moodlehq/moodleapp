@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSiteSchema } from '@providers/sites';
-
+import { SQLiteDB } from '@classes/sqlitedb';
 import { makeSingleton } from '@singletons/core.singletons';
 
 /**
@@ -68,8 +68,10 @@ export class CoreXAPIOfflineProvider {
         ]
     };
 
+    protected dbReady: Promise<any>; // Promise resolved when the DB schema is ready.
+
     constructor() {
-        CoreSites.instance.registerSiteSchema(this.siteSchema);
+        this.dbReady = CoreSites.instance.registerSiteSchema(this.siteSchema);
     }
 
     /**
@@ -93,9 +95,9 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteStatements(id: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const db = await this.getSiteDB(siteId);
 
-        await site.getDb().deleteRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {id});
+        await db.deleteRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {id});
     }
 
     /**
@@ -106,9 +108,9 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteStatementsForContext(contextId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const db = await this.getSiteDB(siteId);
 
-        await site.getDb().deleteRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {contextid: contextId});
+        await db.deleteRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {contextid: contextId});
     }
 
     /**
@@ -118,9 +120,9 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved with all the data.
      */
     async getAllStatements(siteId?: string): Promise<CoreXAPIOfflineStatementsDBData[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const db = await this.getSiteDB(siteId);
 
-        return site.getDb().getRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, undefined, 'timecreated ASC');
+        return db.getRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, undefined, 'timecreated ASC');
     }
 
     /**
@@ -131,9 +133,9 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved with the data.
      */
     async getContextStatements(contextId: number, siteId?: string): Promise<CoreXAPIOfflineStatementsDBData[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const db = await this.getSiteDB(siteId);
 
-        return site.getDb().getRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {contextid: contextId}, 'timecreated ASC');
+        return db.getRecords(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {contextid: contextId}, 'timecreated ASC');
     }
 
     /**
@@ -144,9 +146,9 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved with the data.
      */
     async getStatements(id: number, siteId?: string): Promise<CoreXAPIOfflineStatementsDBData> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const db = await this.getSiteDB(siteId);
 
-        return site.getDb().getRecord(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {id});
+        return db.getRecord(CoreXAPIOfflineProvider.STATEMENTS_TABLE, {id});
     }
 
     /**
@@ -161,7 +163,7 @@ export class CoreXAPIOfflineProvider {
     async saveStatements(contextId: number, component: string, statements: string, options?: CoreXAPIOfflineSaveStatementsOptions)
             : Promise<void> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const db = await this.getSiteDB(options.siteId);
 
         const entry = {
             contextid: contextId,
@@ -172,7 +174,19 @@ export class CoreXAPIOfflineProvider {
             extra: options.extra,
         };
 
-        await site.getDb().insertRecord(CoreXAPIOfflineProvider.STATEMENTS_TABLE, entry);
+        await db.insertRecord(CoreXAPIOfflineProvider.STATEMENTS_TABLE, entry);
+    }
+
+    /**
+     * Get Site database when ready.
+     *
+     * @param siteId Site id.
+     * @return SQLiteDB Site database.
+     */
+    protected async getSiteDB(siteId: string): Promise<SQLiteDB> {
+        await this.dbReady;
+
+        return CoreSites.instance.getSiteDb(siteId);
     }
 }
 
