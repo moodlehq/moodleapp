@@ -74,7 +74,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
 
         if (this.appProvider.isMobile()) {
             handler.action = (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
-                return this.uploaderHelper.chooseAndUploadFile(maxSize, upload, mimetypes).then((result) => {
+                return this.uploaderHelper.chooseAndUploadFile(maxSize, upload, allowOffline, mimetypes).then((result) => {
                     return {
                         treated: true,
                         result: result

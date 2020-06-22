@@ -60,9 +60,10 @@ export class CoreFileUploaderHelperProvider {
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
+     * @param allowOffline True to allow uploading in offline.
      * @return Promise resolved when done.
      */
-    async chooseAndUploadFile(maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
+    async chooseAndUploadFile(maxSize: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> {
 
         const result = await this.fileChooser.getFile(mimetypes ? mimetypes.join(',') : undefined);
 
@@ -76,9 +77,28 @@ export class CoreFileUploaderHelperProvider {
             result.name = this.getChosenFileNameFromPath(result) || result.name;
         }
 
-        const options = this.fileUploaderProvider.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
+        // Verify that the mimetype is supported.
+        const error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, result.name, result.mediaType);
 
-        return this.uploadFile(result.uri, maxSize, true, options);
+        if (error) {
+            return Promise.reject(error);
+        }
+
+        if (upload) {
+            const size = await this.fileProvider.getExternalFileSize(result.uri);
+
+            await this.confirmUploadFile(size, false, allowOffline);
+
+            const options = this.fileUploaderProvider.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
+
+            return this.uploadFile(result.uri, maxSize, true, options);
+        } else {
+            const entry = await this.fileProvider.getExternalFile(result.uri);
+
+            entry.name = result.name; // In Android sometimes the file is exported with a different name, use the original one.
+
+            return entry;
+        }
     }
 
     /**
@@ -664,15 +684,17 @@ export class CoreFileUploaderHelperProvider {
      * @param name Name to use when uploading the file. If not defined, use the file's name.
      * @return Promise resolved when done.
      */
-    uploadFileObject(file: any, maxSize?: number, upload?: boolean, allowOffline?: boolean, name?: string): Promise<any> {
+    async uploadFileObject(file: any, maxSize?: number, upload?: boolean, allowOffline?: boolean, name?: string): Promise<any> {
         if (maxSize != -1 && file.size > maxSize) {
             return this.errorMaxBytes(maxSize, file.name);
         }
 
-        return this.confirmUploadFile(file.size, false, allowOffline).then(() => {
-            // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-            return this.copyAndUploadFile(file, upload, name);
-        });
+        if (upload) {
+            await this.confirmUploadFile(file.size, false, allowOffline);
+        }
+
+        // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
+        return this.copyAndUploadFile(file, upload, name);
     }
 
     /**
