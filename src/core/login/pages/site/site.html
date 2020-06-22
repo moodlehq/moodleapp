@@ -19,7 +19,7 @@
             <ng-container *ngIf="!fixedSites">
                 <ion-item>
                     <ion-label stacked><h2>{{ 'core.login.siteaddress' | translate }}</h2></ion-label>
-                    <ion-input type="url" name="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard" (ionChange)="searchSite($event, siteForm.value.siteUrl)"></ion-input>
+                    <ion-input name="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard" (ionChange)="searchSite($event, siteForm.value.siteUrl)"></ion-input>
                 </ion-item>
             </ng-container>
 
@@ -59,7 +59,7 @@
 
             <ng-container *ngIf="!fixedSites && showScanQR && !hasSites && !enteredSiteUrl">
                 <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
-                <ion-item>
+                <ion-item class="core-login-site-qrcode">
                     <a ion-button block color="light" margin-top icon-start (click)="showInstructionsAndScanQR()">
                         <core-icon name="fa-qrcode" aria-hidden="true"></core-icon>
                         {{ 'core.scanqr' | translate }}
