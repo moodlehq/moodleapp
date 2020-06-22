@@ -48,7 +48,7 @@ class behat_local_moodlemobileapp extends behat_base {
         // Force cron tasks execution and wait until they are completed.
         $operationid = random_string();
 
-        $session->evaluateScript(
+        $session->executeScript(
             "cronProvider.forceSyncExecution().then(() => { window['behat_{$operationid}_completed'] = true; });"
         );
         $this->spin(
@@ -63,7 +63,7 @@ class behat_local_moodlemobileapp extends behat_base {
         // Trigger Angular digest cycle multiple times in case some changes have
         // side-effects that result in further pending operations.
         for ($ticks = 5; $ticks > 0; $ticks--) {
-            $session->evaluateScript('appRef.tick();');
+            $session->executeScript('appRef.tick();');
         }
     }
 
@@ -77,7 +77,7 @@ class behat_local_moodlemobileapp extends behat_base {
 
         $this->spin(
             function() use ($session) {
-                $session->evaluateScript('appRef.tick();');
+                $session->executeScript('appRef.tick();');
 
                 $nodes = $this->find_all('css', 'core-loading ion-spinner');
 
