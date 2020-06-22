@@ -697,6 +697,18 @@ export class CoreFileProvider {
     }
 
     /**
+     * Calculate the size of a file.
+     *
+     * @param path Absolute path to the file.
+     * @return Promise to be resolved when the size is calculated.
+     */
+    async getExternalFileSize(path: string): Promise<number> {
+        const fileEntry = await this.getExternalFile(path);
+
+        return this.getSize(fileEntry);
+    }
+
+    /**
      * Removes a file that might be outside the app's folder.
      *
      * @param fullPath Absolute path to the file.
@@ -770,7 +782,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is moved.
      */
     moveDir(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
-        return this.moveFileOrDir(originalPath, newPath, true, destDirExists);
+        return this.copyOrMoveFileOrDir(originalPath, newPath, true, false, destDirExists);
     }
 
     /**
@@ -783,47 +795,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is moved.
      */
     moveFile(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
-        return this.moveFileOrDir(originalPath, newPath, false, destDirExists);
-    }
-
-    /**
-     * Move a file/dir.
-     *
-     * @param originalPath Path to the file/dir to move.
-     * @param newPath New path of the file/dir.
-     * @param isDir Whether it's a dir or a file.
-     * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
-     *                      try to create it (slower).
-     * @return Promise resolved when the entry is moved.
-     */
-    protected moveFileOrDir(originalPath: string, newPath: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
-        const moveFn = isDir ? this.file.moveDir.bind(this.file) : this.file.moveFile.bind(this.file);
-
-        return this.init().then(() => {
-            // Remove basePath if it's in the paths.
-            originalPath = this.removeStartingSlash(originalPath.replace(this.basePath, ''));
-            newPath = this.removeStartingSlash(newPath.replace(this.basePath, ''));
-
-            const newPathFileAndDir = this.getFileAndDirectoryFromPath(newPath);
-
-            if (newPathFileAndDir.directory && !destDirExists) {
-                // Create the target directory if it doesn't exist.
-                return this.createDir(newPathFileAndDir.directory);
-            }
-        }).then(() => {
-
-            return moveFn(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
-                // The move can fail if the path has encoded characters. Try again if that's the case.
-                const decodedOriginal = decodeURI(originalPath),
-                    decodedNew = decodeURI(newPath);
-
-                if (decodedOriginal != originalPath || decodedNew != newPath) {
-                    return moveFn(this.basePath, decodedOriginal, this.basePath, decodedNew);
-                } else {
-                    return Promise.reject(error);
-                }
-            });
-        });
+        return this.copyOrMoveFileOrDir(originalPath, newPath, false, false, destDirExists);
     }
 
     /**
@@ -836,7 +808,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is copied.
      */
     copyDir(from: string, to: string, destDirExists?: boolean): Promise<any> {
-        return this.copyFileOrDir(from, to, true, destDirExists);
+        return this.copyOrMoveFileOrDir(from, to, true, true, destDirExists);
     }
 
     /**
@@ -849,46 +821,61 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is copied.
      */
     copyFile(from: string, to: string, destDirExists?: boolean): Promise<any> {
-        return this.copyFileOrDir(from, to, false, destDirExists);
+        return this.copyOrMoveFileOrDir(from, to, false, true, destDirExists);
     }
 
     /**
-     * Copy a file or a directory.
+     * Copy or move a file or a directory.
      *
      * @param from Path to the file/dir to move.
      * @param to New path of the file/dir.
      * @param isDir Whether it's a dir or a file.
+     * @param copy Whether to copy. If false, it will move the file.
      * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
      *                      try to create it (slower).
      * @return Promise resolved when the entry is copied.
      */
-    protected copyFileOrDir(from: string, to: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
-        const copyFn = isDir ? this.file.copyDir.bind(this.file) : this.file.copyFile.bind(this.file);
+    protected async copyOrMoveFileOrDir(from: string, to: string, isDir?: boolean, copy?: boolean, destDirExists?: boolean)
+            : Promise<Entry> {
 
-        return this.init().then(() => {
-            // Paths cannot start with "/". Remove basePath if present.
-            from = this.removeStartingSlash(from.replace(this.basePath, ''));
-            to = this.removeStartingSlash(to.replace(this.basePath, ''));
+        const fileIsInAppFolder = this.isPathInAppFolder(from);
 
-            const toFileAndDir = this.getFileAndDirectoryFromPath(to);
+        if (!fileIsInAppFolder) {
+            return this.copyOrMoveExternalFile(from, to, copy);
+        }
 
-            if (toFileAndDir.directory && !destDirExists) {
-                // Create the target directory if it doesn't exist.
-                return this.createDir(toFileAndDir.directory);
+        const moveCopyFn = copy ?
+                (isDir ? this.file.copyDir.bind(this.file) : this.file.copyFile.bind(this.file)) :
+                (isDir ? this.file.moveDir.bind(this.file) : this.file.moveFile.bind(this.file));
+
+        await this.init();
+
+        // Paths cannot start with "/". Remove basePath if present.
+        from = this.removeStartingSlash(from.replace(this.basePath, ''));
+        to = this.removeStartingSlash(to.replace(this.basePath, ''));
+
+        const toFileAndDir = this.getFileAndDirectoryFromPath(to);
+
+        if (toFileAndDir.directory && !destDirExists) {
+            // Create the target directory if it doesn't exist.
+            await this.createDir(toFileAndDir.directory);
+        }
+
+        try {
+            const entry = await moveCopyFn(this.basePath, from, this.basePath, to);
+
+            return entry;
+        } catch (error) {
+            // The copy can fail if the path has encoded characters. Try again if that's the case.
+            const decodedFrom = decodeURI(from);
+            const decodedTo = decodeURI(to);
+
+            if (from != decodedFrom || to != decodedTo) {
+                return moveCopyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
+            } else {
+                return Promise.reject(error);
             }
-        }).then(() => {
-            return copyFn(this.basePath, from, this.basePath, to).catch((error) => {
-                // The copy can fail if the path has encoded characters. Try again if that's the case.
-                const decodedFrom = decodeURI(from),
-                    decodedTo = decodeURI(to);
-
-                if (from != decodedFrom || to != decodedTo) {
-                    return copyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
-                } else {
-                    return Promise.reject(error);
-                }
-            });
-        });
+        }
     }
 
     /**
@@ -1280,6 +1267,16 @@ export class CoreFileProvider {
         }
 
         return src.replace(CoreConfigConstants.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+    }
+
+    /**
+     * Check if a certain path is in the app's folder (basePath).
+     *
+     * @param path Path to check.
+     * @return Whether it's in the app folder.
+     */
+    protected isPathInAppFolder(path: string): boolean {
+        return !path || !path.match(/^[a-z0-9]+:\/\//i) || path.indexOf(this.basePath) != -1;
     }
 }
 
