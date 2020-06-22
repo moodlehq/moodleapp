@@ -98,6 +98,10 @@ ion-app.app-root {
     }
   }
 
+  .item[detail-push] {
+    cursor: pointer;
+  }
+
   .core-nav-item-selected, .item.core-nav-item-selected {
     @include core-selected-item($core-splitview-selected);
   }

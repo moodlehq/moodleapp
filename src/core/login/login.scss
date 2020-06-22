@@ -97,4 +97,12 @@ ion-app.app-root page-core-login-site {
         max-width: 300px;
         margin: 5px auto;
     }
+
+    .item.item-block {
+        background: transparent;
+
+        @include darkmode() {
+            background: transparent;
+        }
+    }
 }

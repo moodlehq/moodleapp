@@ -11,12 +11,14 @@ ion-app.app-root page-core-login-site {
         }
     }
 
-    .core-login-need-help.item {
-        background: transparent;
-        text-decoration: underline;
-
-        @include darkmode() {
-            background: transparent;
+    .item.item-block {
+        &.core-login-need-help.item {
+            text-decoration: underline;
+        }
+        &.core-login-site-qrcode {
+            .item-inner {
+                border-bottom: 0;
+            }
         }
     }
 

@@ -458,7 +458,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             eventtype: formData.eventtype,
             timestart: timeStartDate,
             description: {
-                text: formData.description,
+                text: formData.description || '',
                 format: 1
             },
             location: formData.location,
