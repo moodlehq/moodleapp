@@ -21,6 +21,7 @@ import { CoreUser } from '@core/user/providers/user';
 import { CoreH5P } from '../providers/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions } from './core';
 import { FileEntry } from '@ionic-native/file';
+import { Translate } from '@singletons/core.singletons';
 
 /**
  * Equivalent to Moodle's H5P helper class.
@@ -94,9 +95,13 @@ export class CoreH5PHelper {
         let user;
 
         try {
-            user = await CoreUser.instance.getProfile(site.getUserId(), undefined, true);
+            user = await CoreUser.instance.getProfile(site.getUserId(), undefined, false, siteId);
         } catch (error) {
             // Ignore errors.
+        }
+
+        if (!user || !user.email) {
+            throw Translate.instance.instant('core.h5p.errorgetemail');
         }
 
         const basePath = CoreFile.instance.getBasePathInstant();
@@ -118,7 +123,7 @@ export class CoreH5PHelper {
             l10n: {
                 H5P: CoreH5P.instance.h5pCore.getLocalization(),
             },
-            user: {name: site.getInfo().fullname, mail: user && user.email},
+            user: {name: site.getInfo().fullname, mail: user.email},
             hubIsEnabled: false,
             reportingIsEnabled: false,
             crossorigin: null,

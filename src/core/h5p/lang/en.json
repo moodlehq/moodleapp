@@ -39,6 +39,7 @@
     "editor": "Editor",
     "embed": "Embed",
     "embedtitle": "View the embed code for this content.",
+    "errorgetemail": "Error obtaining the user email. Please check your connection and try again.",
     "fullscreen": "Fullscreen",
     "gpl": "General Public License v3",
     "h5ptitle": "Visit h5p.org to check out more content.",

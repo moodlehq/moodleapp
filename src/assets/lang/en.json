@@ -1651,6 +1651,7 @@
     "core.h5p.editor": "Editor",
     "core.h5p.embed": "Embed",
     "core.h5p.embedtitle": "View the embed code for this content.",
+    "core.h5p.errorgetemail": "Error obtaining the user email. Please check your connection and try again.",
     "core.h5p.fullscreen": "Fullscreen",
     "core.h5p.gpl": "General Public License v3",
     "core.h5p.h5ptitle": "Visit h5p.org to check out more content.",
