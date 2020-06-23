@@ -84,20 +84,16 @@ export class CoreFileUploaderHelperProvider {
             return Promise.reject(error);
         }
 
+        const options = this.fileUploaderProvider.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
+
         if (upload) {
             const size = await this.fileProvider.getExternalFileSize(result.uri);
 
             await this.confirmUploadFile(size, false, allowOffline);
 
-            const options = this.fileUploaderProvider.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
-
             return this.uploadFile(result.uri, maxSize, true, options);
         } else {
-            const entry = await this.fileProvider.getExternalFile(result.uri);
-
-            entry.name = result.name; // In Android sometimes the file is exported with a different name, use the original one.
-
-            return entry;
+            return this.copyToTmpFolder(result.uri, false, maxSize, undefined, options);
         }
     }
 

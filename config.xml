@@ -64,56 +64,50 @@
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="IntentShim" >
-                <param name="android-package" value="com.darryncampbell.cordova.plugin.intent.IntentShim"/>
-                <param name="onload" value="true"/>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="IntentShim">
+                <param name="android-package" value="com.darryncampbell.cordova.plugin.intent.IntentShim" />
+                <param name="onload" value="true" />
             </feature>
         </config-file>
-        <config-file target="AndroidManifest.xml" platform="android" parent="/manifest/application" mode="merge">
-            <provider
-                android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider"
-                android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider"
-                android:exported="false"
-                android:grantUriPermissions="true">
-                <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/provider_paths"/>
+        <config-file mode="merge" parent="/manifest/application" platform="android" target="AndroidManifest.xml">
+            <provider android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider">
+                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
             </provider>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Clipboard">
                 <param name="android-package" value="com.verso.cordova.clipboard.Clipboard" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="CordovaHttpPlugin">
-                <param name="android-package" value="com.silkimen.cordovahttp.CordovaHttpPlugin"/>
+                <param name="android-package" value="com.silkimen.cordovahttp.CordovaHttpPlugin" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Camera">
-                <param name="android-package" value="org.apache.cordova.camera.CameraLauncher"/>
+                <param name="android-package" value="org.apache.cordova.camera.CameraLauncher" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="LaunchMyApp">
-                <param name="android-package" value="nl.xservices.plugins.LaunchMyApp"/>
+                <param name="android-package" value="nl.xservices.plugins.LaunchMyApp" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Device" >
-                <param name="android-package" value="org.apache.cordova.device.Device"/>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="Device">
+                <param name="android-package" value="org.apache.cordova.device.Device" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="File" >
-                <param name="android-package" value="org.apache.cordova.file.FileUtils"/>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="File">
+                <param name="android-package" value="org.apache.cordova.file.FileUtils" />
                 <param name="onload" value="true" />
             </feature>
             <allow-navigation href="cdvfile:*" />
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="FileOpener2">
                 <param name="android-package" value="io.github.pwlin.cordova.plugins.fileopener2.FileOpener2" />
             </feature>
@@ -123,124 +117,105 @@
                 <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
             </provider>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="FileTransfer" >
-                <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer"/>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="FileTransfer">
+                <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Geolocation">
                 <param name="android-package" value="org.apache.cordova.geolocation.Geolocation" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Globalization">
                 <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="InAppBrowser">
-                <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser"/>
+                <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="LocalNotification">
-                <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
+                <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
             </feature>
         </config-file>
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <provider
-                android:name="de.appplant.cordova.plugin.notification.util.AssetProvider"
-                android:authorities="${applicationId}.localnotifications.provider"
-                android:exported="false"
-                android:grantUriPermissions="true" >
-                <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/localnotification_provider_paths"/>
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <provider android:authorities="${applicationId}.localnotifications.provider" android:exported="false" android:grantUriPermissions="true" android:name="de.appplant.cordova.plugin.notification.util.AssetProvider">
+                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/localnotification_provider_paths" />
             </provider>
-
-            <receiver
-                android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver"
-                android:exported="false" />
-
-            <receiver
-                android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
-                android:exported="false" />
-
-            <service
-                android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
-                android:exported="false" />
-
-            <receiver
-                android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
-                android:directBootAware="true"
-                android:exported="false" >
+            <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver" />
+            <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver" />
+            <service android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver" />
+            <receiver android:directBootAware="true" android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver">
                 <intent-filter>
                     <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
             </receiver>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Capture" >
-                <param name="android-package" value="org.apache.cordova.mediacapture.Capture"/>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="Capture">
+                <param name="android-package" value="org.apache.cordova.mediacapture.Capture" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="NetworkStatus">
-                <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager"/>
+                <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="QRScanner">
-                <param name="android-package" value="com.bitpay.cordova.qrscanner.QRScanner"/>
+                <param name="android-package" value="com.bitpay.cordova.qrscanner.QRScanner" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="CDVOrientation">
                 <param name="android-package" value="cordova.plugins.screenorientation.CDVOrientation" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="SplashScreen">
-                <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen"/>
-                <param name="onload" value="true"/>
+                <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen" />
+                <param name="onload" value="true" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="StatusBar">
                 <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Whitelist" >
-                <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin"/>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="Whitelist">
+                <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="SQLitePlugin">
-                <param name="android-package" value="io.sqlc.SQLitePlugin"/>
+                <param name="android-package" value="io.sqlc.SQLitePlugin" />
             </feature>
         </config-file>
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="PushNotification">
-                <param name="android-package" value="com.adobe.phonegap.push.PushPlugin"/>
+                <param name="android-package" value="com.adobe.phonegap.push.PushPlugin" />
             </feature>
         </config-file>
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <activity android:name="com.adobe.phonegap.push.PushHandlerActivity" android:exported="true" android:permission="${applicationId}.permission.PushHandlerActivity"/>
-            <receiver android:name="com.adobe.phonegap.push.BackgroundActionButtonHandler"/>
-            <receiver android:name="com.adobe.phonegap.push.PushDismissedHandler"/>
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <activity android:exported="true" android:name="com.adobe.phonegap.push.PushHandlerActivity" android:permission="${applicationId}.permission.PushHandlerActivity" />
+            <receiver android:name="com.adobe.phonegap.push.BackgroundActionButtonHandler" />
+            <receiver android:name="com.adobe.phonegap.push.PushDismissedHandler" />
             <service android:name="com.adobe.phonegap.push.FCMService">
                 <intent-filter>
-                    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 </intent-filter>
             </service>
             <service android:name="com.adobe.phonegap.push.PushInstanceIDListenerService">
                 <intent-filter>
-                    <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                    <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
                 </intent-filter>
             </service>
         </config-file>
