@@ -441,6 +441,18 @@ ion-app.app-root {
         }
       }
     }
+    @include darkmode() {
+      @each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
+        &.select-md-#{$color-name},
+        &.select-ios-#{$color-name} {
+           color: $color-base;
+
+          .select-icon .select-icon-inner {
+            color: $color-base;
+          }
+        }
+      }
+    }
   }
 
   .item-label-stacked ion-select[multiple="true"] {
@@ -1293,17 +1305,17 @@ ion-app.app-root {
 // QR scan. The scanner is at the background of the app, we need to hide the elements that overlay it.
 .core-scanning-qr {
   ion-app.app-root {
-    background-color: transparent;
+    background-color: transparent !important;
 
     .ion-page {
-      background-color: transparent;
+      background-color: transparent !important;
     }
     ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), core-ion-tabs {
-      display: none;
+      display: none !important;
     }
 
     &.ios .ion-page.show-page~.nav-decor {
-      display: none;
+      display: none !important;
     }
   }
 }

@@ -9,7 +9,7 @@
                 <ion-icon name="close"></ion-icon>
             </button>
         </ion-item>
-        <ion-list class="core-search-history with-borders">
+        <ion-list class="core-search-history with-borders" [hidden]="!historyShown">
             <a ion-item text-wrap *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)" class="core-clickable" tabindex="1">
                 <core-icon name="fa-history" item-start></core-icon>
                 {{item.searchedtext}}
