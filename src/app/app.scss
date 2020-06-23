@@ -441,6 +441,18 @@ ion-app.app-root {
         }
       }
     }
+    @include darkmode() {
+      @each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
+        &.select-md-#{$color-name},
+        &.select-ios-#{$color-name} {
+           color: $color-base;
+
+          .select-icon .select-icon-inner {
+            color: $color-base;
+          }
+        }
+      }
+    }
   }
 
   .item-label-stacked ion-select[multiple="true"] {

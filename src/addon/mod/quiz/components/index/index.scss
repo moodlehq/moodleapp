@@ -46,6 +46,12 @@ ion-app.app-root addon-mod-quiz-index {
                 background-color: $blue-dark;
                 color: $blue-light;
             }
+
+            .item.addon-mod_quiz-highlighted.activated,
+            .item.addon-mod_quiz-highlighted.activated p {
+                background-color: $blue;
+                color: $blue-light;
+            }
         }
     }
 }
