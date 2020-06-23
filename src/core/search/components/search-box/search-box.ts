@@ -78,6 +78,19 @@ export class CoreSearchBoxComponent implements OnInit {
         if (this.searchArea) {
             this.loadHistory();
         }
+
+        this.formElement.nativeElement.addEventListener('focus', () => {
+            this.historyShown = true;
+        }, true);
+
+        this.formElement.nativeElement.addEventListener('blur', () => {
+            // Wait the new element to be focused.
+            setTimeout(() => {
+                if (document.activeElement.closest('form') != this.formElement.nativeElement) {
+                    this.historyShown = false;
+                }
+            });
+        }, true);
     }
 
     /**
@@ -100,6 +113,7 @@ export class CoreSearchBoxComponent implements OnInit {
 
         this.domUtils.triggerFormSubmittedEvent(this.formElement, false, this.sitesProvider.getCurrentSiteId());
 
+        this.historyShown = false;
         this.searched = this.searchText;
         this.onSubmit.emit(this.searchText);
     }
