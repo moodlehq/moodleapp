@@ -9,11 +9,14 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <!-- User viewed. -->
-        <a ion-item text-wrap *ngIf="user" core-user-link [userId]="user.id" [courseId]="courseId" [title]="user.fullname">
+        <a ion-item text-wrap *ngIf="user && !isCurrentUser" core-user-link [userId]="user.id" [courseId]="courseId" [title]="user.fullname">
             <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
-            <h2 *ngIf="!isCurrentUser">{{ user.fullname }}</h2>
-            <h2 *ngIf="isCurrentUser">{{ 'addon.mod_h5pactivity.myattempts' | translate }}</h2>
+            <h2>{{ user.fullname }}</h2>
         </a>
+        <ion-item text-wrap *ngIf="user && isCurrentUser">
+            <ion-avatar core-user-avatar [user]="user" item-start></ion-avatar>
+            <h2>{{ 'addon.mod_h5pactivity.myattempts' | translate }}</h2>
+        </ion-item>
 
         <ion-list *ngIf="attemptsData">
             <!-- Attempts used to calculate the score. -->
