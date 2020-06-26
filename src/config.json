@@ -38,6 +38,7 @@
         "ko": "한국어",
         "lt": "Lietuvių",
         "lv": "Latviešu",
+        "mn": "Монгол",
         "mr": "मराठी",
         "nl": "Nederlands",
         "no": "Norsk - bokmål",
@@ -61,12 +62,12 @@
     "wsextservice": "local_mobile",
     "demo_sites": {
         "student": {
-            "url": "https://school.moodledemo.net",
+            "url": "https:\/\/school.moodledemo.net",
             "username": "student",
             "password": "moodle"
         },
         "teacher": {
-            "url": "https://school.moodledemo.net",
+            "url": "https:\/\/school.moodledemo.net",
             "username": "teacher",
             "password": "moodle"
         }
@@ -82,7 +83,7 @@
     "multisitesdisplay": "",
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https://moodle.net/moodle-app-privacy/",
+    "privacypolicy": "https:\/\/moodle.net\/moodle-app-privacy\/",
     "notificoncolor": "#f98012",
     "statusbarbg": false,
     "statusbarlighttext": false,
@@ -99,8 +100,8 @@
     "appstores": {
         "android": "com.moodle.moodlemobile",
         "ios": "id633359593",
-        "windows": "moodle-desktop/9p9bwvhdc8c8",
+        "windows": "moodle-desktop\/9p9bwvhdc8c8",
         "mac": "id1255924440",
-        "linux": "https://download.moodle.org/desktop/download.php?platform=linux&arch=64"
+        "linux": "https:\/\/download.moodle.org\/desktop\/download.php?platform=linux&arch=64"
     }
 }
