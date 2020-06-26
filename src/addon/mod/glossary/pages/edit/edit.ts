@@ -246,6 +246,7 @@ export class AddonModGlossaryEditPage implements OnInit {
             if (entryId) {
                 // Data sent to server, delete stored files (if any).
                 this.glossaryHelper.deleteStoredFiles(this.glossary.id, this.entry.concept, timecreated);
+                this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'glossary' });
             }
 
             const data = {

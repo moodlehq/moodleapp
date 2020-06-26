@@ -16,6 +16,7 @@ import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModLtiProvider, AddonModLtiLti } from '../../providers/lti';
+import { AddonModLtiHelper } from '../../providers/helper';
 
 /**
  * Component that displays an LTI entry page.
@@ -92,18 +93,6 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
      * Launch the LTI.
      */
     launch(): void {
-        this.ltiProvider.getLtiLaunchData(this.lti.id).then((launchData) => {
-            // "View" LTI.
-            this.ltiProvider.logView(this.lti.id, this.lti.name).then(() => {
-                this.checkCompletion();
-            }).catch((error) => {
-                // Ignore errors.
-            });
-
-            // Launch LTI.
-            return this.ltiProvider.launch(launchData.endpoint, launchData.parameters);
-        }).catch((message) => {
-            this.domUtils.showErrorModalDefault(message, 'core.error', true);
-        });
+        AddonModLtiHelper.instance.getDataAndLaunch(this.courseId, this.module, this.lti);
     }
 }

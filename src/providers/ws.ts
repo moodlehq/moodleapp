@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { FileTransfer, FileUploadOptions } from '@ionic-native/file-transfer';
@@ -24,6 +25,9 @@ import { CoreTextUtilsProvider } from './utils/text';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { CoreInterceptor } from '@classes/interceptor';
+import { makeSingleton } from '@singletons/core.singletons';
+import { Observable } from 'rxjs/Observable';
+import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
 
 /**
  * PreSets accepted by the WS call.
@@ -81,6 +85,61 @@ export interface CoreWSAjaxPreSets {
 }
 
 /**
+ * Options for HTTP requests.
+ */
+export type HttpRequestOptions = {
+    /**
+     * The HTTP method.
+     */
+    method: string;
+
+    /**
+     * Payload to send to the server. Only applicable on post, put or patch methods.
+     */
+    data?: any;
+
+    /**
+     * Query params to be appended to the URL (only applicable on get, head, delete, upload or download methods).
+     */
+    params?: any;
+
+    /**
+     * Response type. Defaults to json.
+     */
+    responseType?: 'json' | 'text' | 'arraybuffer' | 'blob';
+
+    /**
+     * Timeout for the request in seconds. If undefined, the default value will be used. If null, no timeout.
+     */
+    timeout?: number | null;
+
+    /**
+     * Serializer to use. Defaults to 'urlencoded'. Only for mobile environments.
+     */
+    serializer?: string;
+
+    /**
+     * Whether to follow redirects. Defaults to true. Only for mobile environments.
+     */
+    followRedirect?: boolean;
+
+    /**
+     * Headers. Only for mobile environments.
+     */
+    headers?: {[name: string]: string};
+
+    /**
+     * File paths to use for upload or download. Only for mobile environments.
+     */
+    filePath?: string;
+
+    /**
+     * Name to use during upload. Only for mobile environments.
+     */
+    name?: string;
+};
+
+/**
  * This service allows performing WS calls and download/upload files.
  */
 @Injectable()
@@ -98,8 +157,15 @@ export class CoreWSProvider {
             protected fileProvider: CoreFileProvider,
             protected fileTransfer: FileTransfer,
             protected mimeUtils: CoreMimetypeUtilsProvider,
-            logger: CoreLoggerProvider) {
+            logger: CoreLoggerProvider,
+            platform: Platform) {
         this.logger = logger.getInstance('CoreWSProvider');
+
+        platform.ready().then(() => {
+            if (this.appProvider.isMobile()) {
+                (<any> cordova).plugin.http.setHeader('User-Agent', navigator.userAgent);
+            }
+        });
     }
 
     /**
@@ -376,8 +442,8 @@ export class CoreWSProvider {
             return Promise.resolve(this.mimeTypeCache[url]);
         }
 
-        return this.performHead(url).then((data) => {
-            let mimeType = data.headers.get('Content-Type');
+        return this.performHead(url).then((response) => {
+            let mimeType = response.headers.get('Content-Type');
             if (mimeType) {
                 // Remove "parameters" like charset.
                 mimeType = mimeType.split(';')[0];
@@ -398,8 +464,8 @@ export class CoreWSProvider {
      * @return Promise resolved with the size or -1 if failure.
      */
     getRemoteFileSize(url: string): Promise<number> {
-        return this.performHead(url).then((data) => {
-            const size = parseInt(data.headers.get('Content-Length'), 10);
+        return this.performHead(url).then((response) => {
+            const size = parseInt(response.headers.get('Content-Length'), 10);
 
             if (size) {
                 return size;
@@ -462,12 +528,12 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
-        const script = preSets.noLogin ? 'service-nologin.php' : 'service.php',
-            ajaxData = JSON.stringify([{
-                index: 0,
-                methodname: method,
-                args: this.convertValuesToString(data)
-            }]);
+        const script = preSets.noLogin ? 'service-nologin.php' : 'service.php';
+        const ajaxData = [{
+            index: 0,
+            methodname: method,
+            args: this.convertValuesToString(data)
+        }];
 
         // The info= parameter has no function. It is just to help with debugging.
         // We call it info to match the parameter name use by Moodle's AMD ajax module.
@@ -475,13 +541,22 @@ export class CoreWSProvider {
 
         if (preSets.noLogin && preSets.useGet) {
             // Send params using GET.
-            siteUrl += '&args=' + encodeURIComponent(ajaxData);
-            promise = this.http.get(siteUrl).timeout(this.getRequestTimeout()).toPromise();
+            siteUrl += '&args=' + encodeURIComponent(JSON.stringify(ajaxData));
+
+            promise = this.sendHTTPRequest(siteUrl, {
+                method: 'get',
+            });
         } else {
-            promise = this.http.post(siteUrl, ajaxData).timeout(this.getRequestTimeout()).toPromise();
+            promise = this.sendHTTPRequest(siteUrl, {
+                method: 'post',
+                data: ajaxData,
+                serializer: 'json',
+            });
         }
 
-        return promise.then((data: any) => {
+        return promise.then((response: HttpResponse<any>) => {
+            let data = response.body;
+
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data is returned, we create a blank object.
             if (!data && !preSets.responseExpected) {
@@ -535,8 +610,11 @@ export class CoreWSProvider {
         let promise = this.getPromiseHttp('head', url);
 
         if (!promise) {
-            promise = this.http.head(url, {observe: 'response', responseType: 'blob'}).timeout(this.getRequestTimeout())
-                    .toPromise();
+            promise = this.sendHTTPRequest(url, {
+                method: 'head',
+                responseType: 'text',
+            });
+
             promise = this.setPromiseHttp(promise, 'head', url);
         }
 
@@ -570,6 +648,7 @@ export class CoreWSProvider {
         const promise = this.http.post(requestUrl, ajaxData, options).timeout(this.getRequestTimeout()).toPromise();
 
         return promise.then((data: any) => {
+
             // Some moodle web services return null.
             // If the responseExpected value is set to false, we create a blank object if the response is null.
             if (!data && !preSets.responseExpected) {
@@ -830,7 +909,7 @@ export class CoreWSProvider {
 
         return transfer.upload(filePath, uploadUrl, options, true).then((success) => {
             const data = this.textUtils.parseJSON(success.response, null,
-                    this.logger.error.bind(this.logger, 'Error parsing response from upload'));
+                    this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response));
             if (data === null) {
                 return Promise.reject(this.translate.instant('core.errorinvalidresponse'));
             }
@@ -870,14 +949,106 @@ export class CoreWSProvider {
      */
     async getText(url: string): Promise<string> {
         // Fetch the URL content.
-        const content = await this.http.get(url, { responseType: 'text' }).toPromise();
+        const options: HttpRequestOptions = {
+            method: 'get',
+            responseType: 'text',
+        };
+
+        const response = await this.sendHTTPRequest(url, options);
+
+        const content = response.body;
+
         if (typeof content !== 'string') {
-            return Promise.reject(null);
+            throw 'Error reading content';
         }
 
         return content;
     }
+
+    /**
+     * Send an HTTP request. In mobile devices it will use the cordova plugin.
+     *
+     * @param url URL of the request.
+     * @param options Options for the request.
+     * @return Promise resolved with the response.
+     */
+    async sendHTTPRequest(url: string, options: HttpRequestOptions): Promise<HttpResponse<any>> {
+
+        // Set default values.
+        options.responseType = options.responseType || 'json';
+        options.timeout = typeof options.timeout == 'undefined' ? this.getRequestTimeout() : options.timeout;
+
+        if (this.appProvider.isIOS()) {
+            // Use the cordova plugin.
+            if (url.indexOf('file://') === 0) {
+                // We cannot load local files using the http native plugin. Use file provider instead.
+                const format = options.responseType == 'json' ? CoreFileProvider.FORMATJSON : CoreFileProvider.FORMATTEXT;
+
+                const content = await this.fileProvider.readFile(url, format);
+
+                return new HttpResponse({
+                    body: content,
+                    headers: null,
+                    status: 200,
+                    statusText: 'OK',
+                    url: url
+                });
+            }
+
+            return new Promise<HttpResponse<any>>((resolve, reject): void => {
+                // We cannot use Ionic Native plugin because it doesn't have the sendRequest method.
+                (<any> cordova).plugin.http.sendRequest(url, options, (response) => {
+                    resolve(new CoreNativeToAngularHttpResponse(response));
+                }, reject);
+            });
+        } else {
+            let observable: Observable<any>;
+
+            // Use Angular's library.
+            switch (options.method) {
+                case 'get':
+                    observable = this.http.get(url, {
+                        headers: options.headers,
+                        params: options.params,
+                        observe: 'response',
+                        responseType: <any> options.responseType,
+                    });
+                    break;
+
+                case 'post':
+                    if (options.serializer == 'json') {
+                        options.data = JSON.stringify(options.data);
+                    }
+
+                    observable = this.http.post(url, options.data, {
+                        headers: options.headers,
+                        observe: 'response',
+                        responseType: <any> options.responseType,
+                    });
+                    break;
+
+                case 'head':
+                    observable = this.http.head(url, {
+                        headers: options.headers,
+                        observe: 'response',
+                        responseType: <any> options.responseType
+                    });
+                    break;
+
+                default:
+                    return Promise.reject('Method not implemented yet.');
+            }
+
+            if (options.timeout) {
+                observable = observable.timeout(options.timeout);
+            }
+
+            return observable.toPromise();
+        }
+    }
 }
+
+export class CoreWS extends makeSingleton(CoreWSProvider) {}
 
 /**
  * Error returned by a WS call.

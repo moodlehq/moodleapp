@@ -17,12 +17,14 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreH5PPlayerComponent } from './h5p-player/h5p-player';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreH5PPlayerComponent } from './h5p-player/h5p-player';
+import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
 
 @NgModule({
     declarations: [
-        CoreH5PPlayerComponent
+        CoreH5PPlayerComponent,
+        CoreH5PIframeComponent,
     ],
     imports: [
         CommonModule,
@@ -34,10 +36,12 @@ import { CoreComponentsModule } from '@components/components.module';
     providers: [
     ],
     exports: [
-        CoreH5PPlayerComponent
+        CoreH5PPlayerComponent,
+        CoreH5PIframeComponent,
     ],
     entryComponents: [
-        CoreH5PPlayerComponent
+        CoreH5PPlayerComponent,
+        CoreH5PIframeComponent,
     ]
 })
 export class CoreH5PComponentsModule {}

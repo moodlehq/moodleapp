@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, ApplicationRef } from '@angular/core';
 import { Platform, App, NavController, MenuController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
@@ -23,6 +23,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreEventsProvider } from './events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConfigConstants } from '../configconstants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Data stored for a redirect to another page/site.
@@ -47,6 +48,51 @@ export interface CoreRedirectData {
      * Timestamp when this redirect was last modified.
      */
     timemodified?: number;
+}
+
+/**
+ * Store config data.
+ */
+export interface CoreStoreConfig {
+    /**
+     * ID of the Apple store where the desktop Mac app is uploaded.
+     */
+    mac?: string;
+
+    /**
+     * ID of the Windows store where the desktop Windows app is uploaded.
+     */
+    windows?: string;
+
+    /**
+     * Url with the desktop linux download link.
+     */
+    linux?: string;
+
+    /**
+     * Fallback URL when the desktop options is not set.
+     */
+    desktop?: string;
+
+    /**
+     * ID of the Apple store where the mobile iOS app is uploaded.
+     */
+    ios?: string;
+
+    /**
+     * ID of the Google play store where the android app is uploaded.
+     */
+    android?: string;
+
+    /**
+     * Fallback URL when the mobile options is not set.
+     */
+    mobile?: string;
+
+    /**
+     * Fallback URL when the other fallbacks options are not set.
+     */
+    default?: string;
 }
 
 /**
@@ -97,6 +143,8 @@ export class CoreAppProvider {
     protected logger;
     protected ssoAuthenticationPromise: Promise<any>;
     protected isKeyboardShown = false;
+    protected _isKeyboardOpening = false;
+    protected _isKeyboardClosing = false;
     protected backActions = [];
     protected mainMenuId = 0;
     protected mainMenuOpen: number;
@@ -120,9 +168,18 @@ export class CoreAppProvider {
         ],
     };
 
-    constructor(dbProvider: CoreDbProvider, private platform: Platform, private keyboard: Keyboard, private appCtrl: App,
-            private network: Network, logger: CoreLoggerProvider, private events: CoreEventsProvider, zone: NgZone,
-            private menuCtrl: MenuController, private statusBar: StatusBar) {
+    constructor(dbProvider: CoreDbProvider,
+            private platform: Platform,
+            private keyboard: Keyboard,
+            private appCtrl: App,
+            private network: Network,
+            logger: CoreLoggerProvider,
+            private events: CoreEventsProvider,
+            zone: NgZone,
+            private menuCtrl: MenuController,
+            private statusBar: StatusBar,
+            appRef: ApplicationRef) {
+
         this.logger = logger.getInstance('CoreAppProvider');
         this.db = dbProvider.getDB(this.DBNAME);
 
@@ -133,7 +190,7 @@ export class CoreAppProvider {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 document.body.classList.add('keyboard-is-open');
-                this.isKeyboardShown = true;
+                this.setKeyboardShown(true);
                 // Error on iOS calculating size.
                 // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, data.keyboardHeight);
@@ -143,8 +200,22 @@ export class CoreAppProvider {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 document.body.classList.remove('keyboard-is-open');
-                this.isKeyboardShown = false;
+                this.setKeyboardShown(false);
                 events.trigger(CoreEventsProvider.KEYBOARD_CHANGE, 0);
+            });
+        });
+        this.keyboard.onKeyboardWillShow().subscribe((data) => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this._isKeyboardOpening = true;
+                this._isKeyboardClosing = false;
+            });
+        });
+        this.keyboard.onKeyboardWillHide().subscribe((data) => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            zone.run(() => {
+                this._isKeyboardOpening = false;
+                this._isKeyboardClosing = true;
             });
         });
 
@@ -152,9 +223,10 @@ export class CoreAppProvider {
             this.backButtonAction();
         }, 100);
 
-        // Export the app provider so Behat tests can change the forceOffline flag.
+        // Export the app provider and appRef to control the application in Behat tests.
         if (CoreAppProvider.isAutomated()) {
             (<any> window).appProvider = this;
+            (<any> window).appRef = appRef;
         }
     }
 
@@ -255,6 +327,44 @@ export class CoreAppProvider {
     }
 
     /**
+     * Get app store URL.
+     *
+     * @param  storesConfig Config params to send the user to the right place.
+     * @return Store URL.
+     */
+     getAppStoreUrl(storesConfig: CoreStoreConfig): string {
+        if (this.isMac() && storesConfig.mac) {
+            return 'itms-apps://itunes.apple.com/app/' + storesConfig.mac;
+        }
+
+        if (this.isWindows() && storesConfig.windows) {
+            return 'https://www.microsoft.com/p/' + storesConfig.windows;
+        }
+
+        if (this.isLinux() && storesConfig.linux) {
+            return storesConfig.linux;
+        }
+
+        if (this.isDesktop() && storesConfig.desktop) {
+            return storesConfig.desktop;
+        }
+
+        if (this.isIOS() && storesConfig.ios) {
+            return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
+        }
+
+        if (this.isAndroid() && storesConfig.android) {
+            return 'market://details?id=' + storesConfig.android;
+        }
+
+        if (this.isMobile() && storesConfig.mobile) {
+            return storesConfig.mobile;
+        }
+
+        return storesConfig.default || null;
+    }
+
+    /**
      * Returns whether the user agent is controlled by automation. I.e. Behat testing.
      *
      * @return True if the user agent is controlled by automation, false otherwise.
@@ -301,6 +411,24 @@ export class CoreAppProvider {
      */
     isIOS(): boolean {
         return this.platform.is('ios');
+    }
+
+    /**
+     * Check if the keyboard is closing.
+     *
+     * @return Whether keyboard is closing (animating).
+     */
+    isKeyboardClosing(): boolean {
+        return this._isKeyboardClosing;
+    }
+
+    /**
+     * Check if the keyboard is being opened.
+     *
+     * @return Whether keyboard is opening (animating).
+     */
+    isKeyboardOpening(): boolean {
+        return this._isKeyboardOpening;
     }
 
     /**
@@ -443,6 +571,17 @@ export class CoreAppProvider {
         if (this.isMobile() && !this.platform.is('ios')) {
             this.keyboard.show();
         }
+    }
+
+    /**
+     * Set keyboard shown or hidden.
+     *
+     * @param Whether the keyboard is shown or hidden.
+     */
+    protected setKeyboardShown(shown: boolean): void {
+        this.isKeyboardShown = shown;
+        this._isKeyboardOpening = false;
+        this._isKeyboardClosing = false;
     }
 
     /**
@@ -703,3 +842,5 @@ export class CoreAppProvider {
         this.forceOffline = !!value;
     }
 }
+
+export class CoreApp extends makeSingleton(CoreAppProvider) {}

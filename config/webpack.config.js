@@ -12,7 +12,8 @@ const customConfig = {
       '@providers': resolve('./src/providers'),
       '@components': resolve('./src/components'),
       '@directives': resolve('./src/directives'),
-      '@pipes': resolve('./src/pipes')
+      '@pipes': resolve('./src/pipes'),
+      '@singletons': resolve('./src/singletons'),
     }
   },
   externals: [

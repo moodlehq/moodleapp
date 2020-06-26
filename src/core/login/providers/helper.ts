@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { Platform, AlertController, NavController, NavOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '@providers/app';
+import { CoreAppProvider, CoreStoreConfig } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
@@ -75,11 +75,15 @@ export interface CoreLoginSSOData {
 @Injectable()
 export class CoreLoginHelperProvider {
     static OPEN_COURSE = 'open_course';
+    static ONBOARDING_DONE = 'onboarding_done';
+    static FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation">';
+    static FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation">';
 
     protected logger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
     protected pageToLoad: {page: string, params: any, time: number}; // Page to load once main menu is opened.
+    protected isOpeningReconnect = false;
     waitingForBrowser = false;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private domUtils: CoreDomUtilsProvider,
@@ -527,9 +531,16 @@ export class CoreLoginHelperProvider {
     goToNoSitePage(navCtrl: NavController, page: string, params?: any): Promise<any> {
         navCtrl = navCtrl || this.appProvider.getRootNavController();
 
-        if (page == 'CoreLoginSitesPage') {
+        const currentPage = navCtrl && navCtrl.getActive().component.name;
+
+        if (page == currentPage) {
+            // Already at page, nothing to do.
+        } else if (page == 'CoreLoginSitesPage') {
             // Just open the page as root.
             return navCtrl.setRoot(page, params);
+        } else if (page == 'CoreLoginCredentialsPage' && currentPage == 'CoreLoginSitePage') {
+            // Just open the new page to keep the navigation history.
+            return navCtrl.push(page, params);
         } else {
             // Check if there is any site stored.
             return this.sitesProvider.hasSites().then((hasSites) => {
@@ -1132,7 +1143,7 @@ export class CoreLoginHelperProvider {
                 }
 
                 const info = currentSite.getInfo();
-                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
+                if (typeof info != 'undefined' && typeof info.username != 'undefined' && !this.isOpeningReconnect) {
                     const rootNavCtrl = this.appProvider.getRootNavController(),
                         activePage = rootNavCtrl.getActive();
 
@@ -1141,6 +1152,8 @@ export class CoreLoginHelperProvider {
                         return;
                     }
 
+                    this.isOpeningReconnect = true;
+
                     rootNavCtrl.setRoot('CoreLoginReconnectPage', {
                         infoSiteUrl: info.siteurl,
                         siteUrl: result.siteUrl,
@@ -1148,6 +1161,8 @@ export class CoreLoginHelperProvider {
                         pageName: data.pageName,
                         pageParams: data.params,
                         siteConfig: result.config
+                    }).finally(() => {
+                        this.isOpeningReconnect = false;
                     });
                 }
             }
@@ -1178,13 +1193,7 @@ export class CoreLoginHelperProvider {
      * @param message The warning message.
      */
     protected showWorkplaceNoticeModal(message: string): void {
-        let link;
-
-        if (this.platform.is('android')) {
-            link = 'market://details?id=com.moodle.workplace';
-        } else if (this.platform.is('ios')) {
-            link = 'itms-apps://itunes.apple.com/app/id1470929705';
-        }
+        const link = this.appProvider.getAppStoreUrl({android: 'com.moodle.workplace', ios: 'id1470929705' });
 
         this.showDownloadAppNoticeModal(message, link);
     }
@@ -1195,20 +1204,12 @@ export class CoreLoginHelperProvider {
      * @param message The warning message.
      */
     protected showMoodleAppNoticeModal(message: string): void {
-        let link;
+        const storesConfig: CoreStoreConfig = CoreConfigConstants.appstores;
+        storesConfig.desktop = 'https://download.moodle.org/desktop/';
+        storesConfig.mobile = 'https://download.moodle.org/mobile/';
+        storesConfig.default = 'https://download.moodle.org/mobile/';
 
-        if (this.appProvider.isWindows()) {
-            link = 'https://download.moodle.org/desktop/download.php?platform=windows';
-        } else if (this.appProvider.isLinux()) {
-            link = 'https://download.moodle.org/desktop/download.php?platform=linux&arch=' +
-                    (this.appProvider.is64Bits() ? '64' : '32');
-        } else if (this.appProvider.isMac()) {
-            link = 'itms-apps://itunes.apple.com/app/id1255924440';
-        } else if (this.platform.is('android')) {
-            link = 'market://details?id=com.moodle.moodlemobile';
-        } else if (this.platform.is('ios')) {
-            link = 'itms-apps://itunes.apple.com/app/id633359593';
-        }
+        const link = this.appProvider.getAppStoreUrl(storesConfig);
 
         this.showDownloadAppNoticeModal(message, link);
     }

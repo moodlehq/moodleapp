@@ -133,8 +133,15 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         ev && ev.stopPropagation();
 
         if (this.assign && (this.description || this.assign.introattachments)) {
-            this.textUtils.expandText(this.translate.instant('core.description'), this.description, this.component,
-                    this.module.id, this.assign.introattachments, true, 'module', this.module.id, this.courseId);
+            this.textUtils.viewText(this.translate.instant('core.description'), this.description, {
+                component: this.component,
+                componentId: this.module.id,
+                files: this.assign.introattachments,
+                filter: true,
+                contextLevel: 'module',
+                instanceId: this.module.id,
+                courseId: this.courseId,
+            });
         }
     }
 

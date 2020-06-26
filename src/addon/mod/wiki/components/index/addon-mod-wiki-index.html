@@ -19,7 +19,7 @@
         <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate" iconAction="create" (action)="goToEditPage()"></core-context-menu-item>
         <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="add" (action)="goToNewPage()"></core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.removefiles' | translate:{$a: size}" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.removefiles' | translate:{$a: size}" [iconDescription]="'cube'" (action)="removeFiles($event)" [iconAction]="'trash'" [closeOnClick]="false"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 

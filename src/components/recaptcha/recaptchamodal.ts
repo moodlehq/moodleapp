@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ViewController, NavParams } from 'ionic-angular';
 
 /**
@@ -22,13 +22,19 @@ import { ViewController, NavParams } from 'ionic-angular';
     selector: 'core-recaptcha-modal',
     templateUrl: 'core-recaptchamodal.html'
 })
-export class CoreRecaptchaModalComponent {
+export class CoreRecaptchaModalComponent implements OnDestroy {
     expired = false;
     value = '';
     src: string;
 
+    protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
+
     constructor(protected viewCtrl: ViewController, params: NavParams) {
         this.src = params.get('src');
+
+        // Listen for messages from the iframe.
+        this.messageListenerFunction = this.onIframeMessage.bind(this);
+        window.addEventListener('message', this.messageListenerFunction);
     }
 
     /**
@@ -51,18 +57,63 @@ export class CoreRecaptchaModalComponent {
         const contentWindow = iframe && iframe.contentWindow;
 
         if (contentWindow) {
-            // Set the callbacks we're interested in.
-            contentWindow['recaptchacallback'] = (value): void => {
-                this.expired = false;
-                this.value = value;
-                this.closeModal();
-            };
-
-            contentWindow['recaptchaexpiredcallback'] = (): void => {
-                // Verification expired. Check the checkbox again.
-                this.expired = true;
-                this.value = '';
-            };
+            try {
+                // Set the callbacks we're interested in.
+                contentWindow['recaptchacallback'] = this.onRecaptchaCallback.bind(this);
+                contentWindow['recaptchaexpiredcallback'] = this.onRecaptchaExpiredCallback.bind(this);
+            } catch (error) {
+                // Cannot access the window.
+            }
         }
+    }
+
+    /**
+     * Treat an iframe message event.
+     *
+     * @param event Event.
+     * @return Promise resolved when done.
+     */
+    protected async onIframeMessage(event: MessageEvent): Promise<void> {
+        if (!event.data || event.data.environment != 'moodleapp' || event.data.context != 'recaptcha') {
+            return;
+        }
+
+        switch (event.data.action) {
+            case 'callback':
+                this.onRecaptchaCallback(event.data.value);
+                break;
+            case 'expired':
+                this.onRecaptchaExpiredCallback();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Recapcha callback called.
+     *
+     * @param value Value received.
+     */
+    protected onRecaptchaCallback(value: any): void {
+        this.expired = false;
+        this.value = value;
+        this.closeModal();
+    }
+
+    /**
+     * Recapcha expired callback called.
+     */
+    protected onRecaptchaExpiredCallback(): void {
+        this.expired = true;
+        this.value = '';
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        window.removeEventListener('message', this.messageListenerFunction);
     }
 }

@@ -13,22 +13,25 @@
 // limitations under the License.
 
 import {
-    Component, Input, Output, OnInit, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, Optional
+    Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, Optional
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+import { CoreFile } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreUrl } from '@singletons/url';
+import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html'
 })
-export class CoreIframeComponent implements OnInit, OnChanges {
+export class CoreIframeComponent implements OnChanges {
 
     @ViewChild('iframe') iframe: ElementRef;
     @Input() src: string;
@@ -41,6 +44,7 @@ export class CoreIframeComponent implements OnInit, OnChanges {
 
     protected logger;
     protected IFRAME_TIMEOUT = 15000;
+    protected initialized = false;
 
     constructor(logger: CoreLoggerProvider,
             protected iframeUtils: CoreIframeUtilsProvider,
@@ -49,16 +53,23 @@ export class CoreIframeComponent implements OnInit, OnChanges {
             protected navCtrl: NavController,
             protected urlUtils: CoreUrlUtilsProvider,
             protected utils: CoreUtilsProvider,
-            @Optional() protected svComponent: CoreSplitViewComponent) {
+            @Optional() protected svComponent: CoreSplitViewComponent,
+            protected platform: Platform) {
 
         this.logger = logger.getInstance('CoreIframe');
         this.loaded = new EventEmitter<HTMLIFrameElement>();
     }
 
     /**
-     * Component being initialized.
+     * Init the data.
      */
-    ngOnInit(): void {
+    protected init(): void {
+        if (this.initialized) {
+            return;
+        }
+
+        this.initialized = true;
+
         const iframe: HTMLIFrameElement = this.iframe && this.iframe.nativeElement;
 
         this.iframeWidth = this.domUtils.formatPixelsSize(this.iframeWidth) || '100%';
@@ -66,22 +77,22 @@ export class CoreIframeComponent implements OnInit, OnChanges {
         this.allowFullscreen = this.utils.isTrueOrOne(this.allowFullscreen);
 
         // Show loading only with external URLs.
-        this.loading = !this.src || !!this.src.match(/^https?:\/\//i);
+        this.loading = !this.src || !this.urlUtils.isLocalFileUrl(this.src);
 
         const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         this.iframeUtils.treatFrame(iframe, false, navCtrl);
 
+        iframe.addEventListener('load', () => {
+            this.loading = false;
+            this.loaded.emit(iframe); // Notify iframe was loaded.
+        });
+
+        iframe.addEventListener('error', () => {
+            this.loading = false;
+            this.domUtils.showErrorModal('core.errorloadingcontent', true);
+        });
+
         if (this.loading) {
-            iframe.addEventListener('load', () => {
-                this.loading = false;
-                this.loaded.emit(iframe); // Notify iframe was loaded.
-            });
-
-            iframe.addEventListener('error', () => {
-                this.loading = false;
-                this.domUtils.showErrorModal('core.errorloadingcontent', true);
-            });
-
             setTimeout(() => {
                 this.loading = false;
             }, this.IFRAME_TIMEOUT);
@@ -91,10 +102,35 @@ export class CoreIframeComponent implements OnInit, OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange }): void {
+    async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
         if (changes.src) {
-            const youtubeUrl = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue);
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(youtubeUrl || changes.src.currentValue);
+            const url = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
+
+            if (this.platform.is('ios') && url && !this.urlUtils.isLocalFileUrl(url)) {
+                // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
+                try {
+                    const win = <WKWebViewCookiesWindow> window;
+                    const urlParts = CoreUrl.parse(url);
+
+                    if (urlParts.domain) {
+                        await win.WKWebViewCookies.setCookie({
+                            name: 'MoodleAppCookieForWKWebView',
+                            value: '1',
+                            domain: urlParts.domain,
+                        });
+                    }
+                } catch (err) {
+                    // Ignore errors.
+                    this.logger.error('Error setting cookie', err);
+                }
+            }
+
+            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.instance.convertFileSrc(url));
+
+            // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
+            setTimeout(() => {
+                this.init();
+            });
         }
     }
 }

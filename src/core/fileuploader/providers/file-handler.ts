@@ -20,6 +20,8 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from './delegate';
 import { CoreFileUploaderHelperProvider } from './helper';
 import { CoreFileUploaderProvider } from './fileuploader';
+import { TranslateService } from '@ngx-translate/core';
+
 /**
  * Handler to upload any type of file.
  */
@@ -28,9 +30,13 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
     name = 'CoreFileUploaderFile';
     priority = 1200;
 
-    constructor(private appProvider: CoreAppProvider, private platform: Platform, private timeUtils: CoreTimeUtilsProvider,
-            private uploaderHelper: CoreFileUploaderHelperProvider, private uploaderProvider: CoreFileUploaderProvider,
-            private domUtils: CoreDomUtilsProvider) { }
+    constructor(protected appProvider: CoreAppProvider,
+            protected platform: Platform,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected uploaderHelper: CoreFileUploaderHelperProvider,
+            protected uploaderProvider: CoreFileUploaderProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected translate: TranslateService) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
@@ -60,11 +66,24 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
     getData(): CoreFileUploaderHandlerData {
         const isIOS = this.platform.is('ios');
 
-        return {
+        const handler: CoreFileUploaderHandlerData = {
             title: isIOS ? 'core.fileuploader.more' : 'core.fileuploader.file',
             class: 'core-fileuploader-file-handler',
             icon: isIOS ? 'more' : 'folder',
-            afterRender: (maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]): void => {
+        };
+
+        if (this.appProvider.isMobile()) {
+            handler.action = (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
+                return this.uploaderHelper.chooseAndUploadFile(maxSize, upload, allowOffline, mimetypes).then((result) => {
+                    return {
+                        treated: true,
+                        result: result
+                    };
+                });
+            };
+
+        } else {
+            handler.afterRender = (maxSize: number, upload: boolean, allowOffline: boolean, mimetypes: string[]): void => {
                 // Add an invisible file input in the file handler.
                 // It needs to be done like this because the action sheet items don't accept inputs.
                 const element = document.querySelector('.core-fileuploader-file-handler');
@@ -107,9 +126,8 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         this.uploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline, fileName).then((result) => {
                             this.uploaderHelper.fileUploaded(result);
                         }).catch((error) => {
-                            if (error) {
-                                this.domUtils.showErrorModal(error);
-                            }
+                            this.domUtils.showErrorModalDefault(error,
+                                    this.translate.instant('core.fileuploader.errorreadingfile'));
                         });
                     });
 
@@ -130,7 +148,9 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         element.appendChild(input);
                     }
                 }
-            }
-        };
+            };
+        }
+
+        return handler;
     }
 }

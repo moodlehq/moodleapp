@@ -62,6 +62,10 @@ ion-app.app-root core-courses-course-progress {
 
                 &.core-course-with-buttons {
                     max-width: calc(100% - 50px);
+
+                    &.core-course-with-spinner {
+                        max-width: calc(100% - 100px);
+                    }
                 }
             }
 

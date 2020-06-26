@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import * as moment from 'moment';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Helper service to display messages in the console.
@@ -72,3 +73,5 @@ export class CoreLoggerProvider {
         };
     }
 }
+
+export class CoreLogger extends makeSingleton(CoreLoggerProvider) {}

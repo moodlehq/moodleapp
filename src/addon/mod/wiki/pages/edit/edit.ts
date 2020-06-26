@@ -465,6 +465,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                     this.domUtils.triggerFormSubmittedEvent(this.formElement, id > 0, this.sitesProvider.getCurrentSiteId());
 
                     if (id > 0) {
+                        this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'wiki' });
+
                         // Page was created, get its data and go to the page.
                         this.pageId = id;
 

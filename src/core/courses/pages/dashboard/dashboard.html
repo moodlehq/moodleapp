@@ -10,6 +10,8 @@
                 <ion-icon name="search"></ion-icon>
             </button>
             <core-context-menu>
+                <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="500" [content]="'addon.storagemanager.managestorage' | translate" (action)="manageCoursesStorage()" iconAction="cube"></core-context-menu-item>
+
                 <!-- Action for dashboard and site home. -->
                 <core-context-menu-item *ngIf="(siteHomeEnabled || dashboardEnabled) && (downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000" [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" [iconAction]="downloadEnabledIcon"></core-context-menu-item>
 

@@ -90,7 +90,7 @@ $inverted-contrast: $primary !default;
 
 $primary-dark: lighten($primary, 10%) !default;
 $secondary-dark: mix($secondary, white, 20%) !default;
-$danger-dark: mix($danger, white, 20%) !default;
+$danger-dark: mix($danger, white, 80%) !default;
 $warning-dark: mix($warning, white, 20%) !default;
 $success-dark: mix($success, white, 20%) !default;
 $info-dark: mix($info, white, 20%) !default;
@@ -183,16 +183,6 @@ $core-spinner-color: $core-color !default;
 $core-button-outline-background-color: $white !default;
 
 $core-network-message-height: 16px !default;
-
-// Login.
-$core-login-page-background-color: radial-gradient(white, $gray-light) !default;
-$core-login-box-background-color: $white !default;
-$core-login-box-background-border: $gray !default;
-$core-login-box-text-color: $text-color !default;
-$core-login-button-outline: false !default;
-$core-login-loading-color: false !default;
-$core-login-item-inner-background-color: $white !default;
-$core-login-item-background-color: $white !default;
 
 $core-action-sheet-color: $core-color !default;
 $core-action-sheet-cancel-color: $danger !default;

@@ -18,11 +18,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@core/course/providers/module-delegate';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseProvider } from '@core/course/providers/course';
-import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { AddonModLtiIndexComponent } from '../components/index/index';
 import { AddonModLtiProvider } from './lti';
+import { AddonModLtiHelper } from './helper';
 import { CoreConstants } from '@core/constants';
 
 /**
@@ -46,7 +46,6 @@ export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
 
     constructor(private appProvider: CoreAppProvider,
             private courseProvider: CoreCourseProvider,
-            private domUtils: CoreDomUtilsProvider,
             private filepoolProvider: CoreFilepoolProvider,
             private sitesProvider: CoreSitesProvider,
             private ltiProvider: AddonModLtiProvider,
@@ -85,26 +84,8 @@ export class AddonModLtiModuleHandler implements CoreCourseModuleHandler {
                 icon: 'link',
                 label: 'addon.mod_lti.launchactivity',
                 action: (event: Event, navCtrl: NavController, module: any, courseId: number): void => {
-                    const modal = this.domUtils.showModalLoading();
-
-                    // Get LTI and launch data.
-                    this.ltiProvider.getLti(courseId, module.id).then((ltiData) => {
-                        return this.ltiProvider.getLtiLaunchData(ltiData.id).then((launchData) => {
-                            // "View" LTI.
-                            this.ltiProvider.logView(ltiData.id, ltiData.name).then(() => {
-                                this.courseProvider.checkModuleCompletion(courseId, module.completiondata);
-                            }).catch(() => {
-                                // Ignore errors.
-                            });
-
-                            // Launch LTI.
-                            return this.ltiProvider.launch(launchData.endpoint, launchData.parameters);
-                        });
-                    }).catch((message) => {
-                        this.domUtils.showErrorModalDefault(message, 'addon.mod_lti.errorgetlti', true);
-                    }).finally(() => {
-                        modal.dismiss();
-                    });
+                    // Launch the LTI.
+                    AddonModLtiHelper.instance.getDataAndLaunch(courseId, module);
                 }
             }]
         };

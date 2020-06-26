@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { CoreConstants } from '@core/constants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * "Utils" service with helper functions for date and time.
@@ -219,7 +220,7 @@ export class CoreTimeUtilsProvider {
      * Returns hours, minutes and seconds in a human readable format.
      *
      * @param duration Duration in seconds
-     * @param precision Number of elements to have in precission. 0 or undefined to full precission.
+     * @param precision Number of elements to have in precision. 0 or undefined to full precission.
      * @return Duration in a human readable format.
      */
     formatDuration(duration: number, precision?: number): string {
@@ -250,6 +251,29 @@ export class CoreTimeUtilsProvider {
         }
 
         return durationString.trim();
+    }
+
+    /**
+     * Returns duration in a short human readable format: minutes and seconds, in fromat: 3' 27''.
+     *
+     * @param duration Duration in seconds
+     * @return Duration in a short human readable format.
+     */
+    formatDurationShort(duration: number): string {
+
+        const minutes = Math.floor(duration / 60);
+        const seconds = duration - minutes * 60;
+        const durations = [];
+
+        if (minutes > 0) {
+            durations.push(minutes + '\'');
+        }
+
+        if (seconds > 0 || minutes === 0) {
+            durations.push(seconds + '\'\'');
+        }
+
+        return durations.join(' ');
     }
 
     /**
@@ -353,3 +377,5 @@ export class CoreTimeUtilsProvider {
         }
     }
 }
+
+export class CoreTimeUtils extends makeSingleton(CoreTimeUtilsProvider) {}

@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from './events';
 import { CoreSitesProvider, CoreSiteSchema } from './sites';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * Service that provides some features regarding synchronization.
@@ -206,3 +207,5 @@ export class CoreSyncProvider {
         }
     }
 }
+
+export class CoreSync extends makeSingleton(CoreSyncProvider) {}

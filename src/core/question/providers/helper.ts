@@ -275,10 +275,11 @@ export class CoreQuestionHelperProvider {
                     question.initObjects = this.textUtils.parseJSON(initMatch, null);
                 }
 
-                const amdRegExp = new RegExp('require\\(\\[["\']qtype_' + question.type + '/question["\']\\], ?' +
-                    'function\\(amd\\) ?\\{ ?amd\\.init\\((["\'](q|question-' + usageId + '-)' + question.slot +
+                const amdRegExp = new RegExp('require\\(\\[["\']qtype_' + question.type + '/question["\']\\],[^f]*' +
+                    'function\\(amd\\)[^\\{]*\\{[^a]*amd\\.init\\((["\'](q|question-' + usageId + '-)' + question.slot +
                     '["\'].*?)\\);', 'm');
                 const amdMatch = match.match(amdRegExp);
+
                 if (amdMatch) {
                     // Try to convert the arguments to an array and add them to the question.
                     question.amdArgs = this.textUtils.parseJSON('[' + amdMatch[1] + ']', null);
@@ -708,8 +709,14 @@ export class CoreQuestionHelperProvider {
             if (span) {
                 // There's a hidden feedback, show it when the icon is clicked.
                 icon.addEventListener('click', (event) => {
-                    this.textUtils.expandText(title, span.innerHTML, component, componentId, [], true, contextLevel,
-                            contextInstanceId, courseId);
+                    this.textUtils.viewText(title, span.innerHTML, {
+                        component: component,
+                        componentId: componentId,
+                        filter: true,
+                        contextLevel: contextLevel,
+                        instanceId: contextInstanceId,
+                        courseId: courseId,
+                    });
                 });
             }
         });

@@ -234,16 +234,16 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
                         this.canDelete = !assessment;
                     }
 
-                    assessment.userid = assessment.reviewerid;
-                    assessment = this.workshopHelper.realGradeValue(this.workshop, assessment);
-
-                    if (this.currentUserId == assessment.userid) {
-                        this.ownAssessment = assessment;
-                        assessment.ownAssessment = true;
-                    }
+                    assessment = this.parseAssessment(assessment);
 
                     this.submissionInfo.reviewedby = [assessment];
                 }));
+            } else if (this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED && this.userId == this.currentUserId) {
+                this.workshopProvider.getSubmissionAssessments(this.workshopId, this.submissionId).then((assessments) => {
+                    this.submissionInfo.reviewedby = assessments.map((assessment) => {
+                        return this.parseAssessment(assessment);
+                    });
+                });
             }
 
             if (this.canAddFeedback || this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED) {
@@ -322,6 +322,24 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy {
         }).finally(() => {
             this.loaded = true;
         });
+    }
+
+    /**
+     * Parse assessment to be shown.
+     *
+     * @param  assessment Original assessment.
+     * @return Parsed assessment.
+     */
+    protected parseAssessment(assessment: any): any {
+        assessment.userid = assessment.reviewerid;
+        assessment = this.workshopHelper.realGradeValue(this.workshop, assessment);
+
+        if (this.currentUserId == assessment.userid) {
+            this.ownAssessment = assessment;
+            assessment.ownAssessment = true;
+        }
+
+        return assessment;
     }
 
     /**

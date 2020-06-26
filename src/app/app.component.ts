@@ -22,7 +22,7 @@ import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
+import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
@@ -140,7 +140,9 @@ export class MoodleMobileApp implements OnInit {
 
             if (this.urlSchemesProvider.isCustomURL(url)) {
                 // Close the browser if it's a valid SSO URL.
-                this.urlSchemesProvider.handleCustomURL(url);
+                this.urlSchemesProvider.handleCustomURL(url).catch((error: CoreCustomURLSchemesHandleError) => {
+                    this.urlSchemesProvider.treatHandleCustomURLError(error);
+                });
                 this.utils.closeInAppBrowser(false);
 
             } else if (this.platform.is('android')) {
@@ -189,12 +191,19 @@ export class MoodleMobileApp implements OnInit {
                     return;
                 }
 
+                if (!this.urlSchemesProvider.isCustomURL(url)) {
+                    // Not a custom URL, ignore.
+                    return;
+                }
+
                 this.logger.debug('App launched by URL ', url);
 
                 this.lastUrls[url] = Date.now();
 
                 this.eventsProvider.trigger(CoreEventsProvider.APP_LAUNCHED_URL, url);
-                this.urlSchemesProvider.handleCustomURL(url);
+                this.urlSchemesProvider.handleCustomURL(url).catch((error: CoreCustomURLSchemesHandleError) => {
+                    this.urlSchemesProvider.treatHandleCustomURLError(error);
+                });
             });
         };
 

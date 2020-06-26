@@ -6,16 +6,6 @@ $core-dark-item-bg-color: $gray-darker !default;
 $core-dark-item-divider-bg-color: $gray-dark !default;
 $core-dark-background-color: $black !default;
 
-// Login.
-$core-dark-login-page-background-color: radial-gradient(white, $gray-dark) !default;
-$core-dark-login-box-background-color: $black !default;
-$core-dark-login-box-background-border: $core-login-box-background-border !default;
-$core-dark-login-box-text-color: $core-dark-text-color !default;
-$core-dark-login-item-inner-background-color: $core-dark-login-box-background-color !default;
-$core-dark-login-item-background-color: $core-dark-login-box-background-color !default;
-$core-dark-login-button-outline: $core-login-button-outline !default;
-$core-dark-login-loading-color: $core-dark-text-color !default;
-
 ion-app.app-root {
   @include darkmode() {
     ion-action-sheet .action-sheet-container .action-sheet-group .action-sheet-button {
@@ -23,6 +13,7 @@ ion-app.app-root {
 
       &.action-sheet-selected {
         color: $core-color;
+        background-color: $black;
       }
       &.activated {
         background-color: $black;

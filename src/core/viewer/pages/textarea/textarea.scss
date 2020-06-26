@@ -1,0 +1,187 @@
+$core-modal-promt-min-width: 320px;
+
+ion-app.app-root ion-modal.core-modal-prompt {
+    /* Some styles have been copied from ionic alert component. */
+    @include position(0, 0, 0, 0);
+    position: absolute;
+    z-index: $z-index-overlay;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    contain: strict;
+
+    ion-backdrop {
+        visibility: visible;
+    }
+
+    .header {
+        &::after {
+            background: none;
+        }
+        .toolbar-background {
+            display: none;
+        }
+    }
+
+    .prompt-button-group {
+        display: flex;
+        flex-direction: row;
+
+        .prompt-button {
+            @include margin(0);
+
+            z-index: 0;
+            display: block;
+
+            font-size: $alert-button-font-size;
+            line-height: $alert-button-line-height;
+        }
+    }
+
+    ion-textarea {
+        @include placeholder($alert-input-placeholder-color);
+        @include padding($alert-md-message-padding-top, $alert-md-message-padding-end, $alert-md-message-padding-bottom, $alert-md-message-padding-start);
+        border: 0;
+        background: inherit;
+
+        textarea {
+            margin: 0;
+        }
+    }
+
+    .prompt-message {
+        @include deprecated-variable(padding, $alert-md-message-padding) {
+            @include padding($alert-md-message-padding-top, $alert-md-message-padding-end, $alert-md-message-padding-bottom, $alert-md-message-padding-start);
+        }
+    }
+
+    .modal-wrapper {
+        z-index: $z-index-overlay-wrapper;
+        display: flex;
+        flex-direction: column;
+        min-width: $core-modal-promt-min-width;
+        max-height: $alert-max-height;
+        opacity: 0;
+        contain: content;
+        height: auto;
+
+        page-core-viewer-textarea,
+        ion-content,
+        .fixed-content,
+        .scroll-content {
+            position: relative;
+            background: $white;
+            overflow: hidden;
+        }
+        .fixed-content {
+            display: none;
+        }
+        .scroll-content {
+            padding: 0 !important;
+        }
+    }
+
+    .content-md .prompt-button-group {
+        flex-wrap: $alert-md-button-group-flex-wrap;
+        justify-content: $alert-md-button-group-justify-content;
+
+        @include deprecated-variable(padding, $alert-md-button-group-padding) {
+            @include padding($alert-md-button-group-padding-top, $alert-md-button-group-padding-end, $alert-md-button-group-padding-bottom, $alert-md-button-group-padding-start);
+        }
+
+        .prompt-button {
+            @include text-align($alert-md-button-text-align);
+            @include border-radius($alert-md-button-border-radius);
+
+            // necessary for ripple to work properly
+            position: relative;
+            overflow: hidden;
+
+            font-weight: $alert-md-button-font-weight;
+            text-transform: $alert-md-button-text-transform;
+            color: $alert-md-button-text-color;
+            background-color: $alert-md-button-background-color;
+
+            @include deprecated-variable(margin, $alert-md-button-margin) {
+                @include margin($alert-md-button-margin-top, $alert-md-button-margin-end, $alert-md-button-margin-bottom, $alert-md-button-margin-start);
+            }
+
+            @include deprecated-variable(padding, $alert-md-button-padding) {
+                @include padding($alert-md-button-padding-top, $alert-md-button-padding-end, $alert-md-button-padding-bottom, $alert-md-button-padding-start);
+            }
+        }
+
+        .prompt-button.activated {
+            background-color: $alert-md-button-background-color-activated;
+        }
+
+        .prompt-button .button-inner {
+            justify-content: $alert-md-button-group-justify-content;
+        }
+    }
+
+    .content-ios .prompt-button-group {
+        @include margin-horizontal(null, -$alert-ios-button-border-width);
+
+        flex-wrap: $alert-ios-button-group-flex-wrap;
+        .prompt-button {
+            @include margin($alert-ios-button-margin);
+            @include border-radius($alert-ios-button-border-radius);
+
+            overflow: hidden;
+
+            flex: $alert-ios-button-flex;
+
+            min-width: $alert-ios-button-min-width;
+            height: $alert-ios-button-min-height;
+
+            border-top: $alert-ios-button-border-width $alert-ios-button-border-style $alert-ios-button-border-color;
+            border-right: $alert-ios-button-border-width $alert-ios-button-border-style $alert-ios-button-border-color;
+            font-size: $alert-ios-button-font-size;
+            color: $alert-ios-button-text-color;
+            background-color: $alert-ios-button-background-color;
+        }
+
+        .prompt-button:last-child {
+            border-right: 0;
+            font-weight: $alert-ios-button-main-font-weight;
+        }
+
+        .prompt-button.activated {
+            background-color: $alert-ios-button-background-color-activated;
+        }
+    }
+}
+
+ion-app.app-root-md ion-modal.core-modal-prompt {
+    .modal-wrapper {
+        @include border-radius($alert-md-border-radius);
+        max-width: $alert-md-max-width;
+        background-color: $alert-md-background-color;
+        box-shadow: $alert-md-box-shadow;
+    }
+
+    .toolbar-content .toolbar-title {
+        color: $alert-md-message-text-color;
+        white-space: normal;
+    }
+}
+
+ion-app.app-root-ios ion-modal.core-modal-prompt {
+    .modal-wrapper {
+        @include border-radius($alert-ios-border-radius);
+        overflow: hidden;
+        max-width: $alert-ios-max-width;
+        background-color: $alert-ios-background;
+        box-shadow: $alert-ios-box-shadow;
+    }
+
+    .toolbar-content .toolbar-title {
+        color: $alert-ios-message-text-color;
+        white-space: normal;
+    }
+
+    ion-title {
+        padding: 0;
+    }
+}

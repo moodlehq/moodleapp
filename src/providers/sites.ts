@@ -15,7 +15,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider, CoreAppSchema } from './app';
+import { CoreAppProvider, CoreAppSchema, CoreStoreConfig } from './app';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
 import { CoreSitesFactoryProvider } from './sites-factory';
@@ -30,6 +30,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { Md5 } from 'ts-md5/dist/md5';
 import { WP_PROVIDER } from '@app/app.module';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Response of checking if a site exists and its configuration.
@@ -162,6 +163,41 @@ export interface CoreSiteSchema {
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> | void;
+}
+
+/**
+ * Data about sites to be listed.
+ */
+export interface  CoreLoginSiteInfo {
+    /**
+     * Site name.
+     */
+    name: string;
+
+    /**
+     * Site alias.
+     */
+    alias?: string;
+
+    /**
+     * URL of the site.
+     */
+    url: string;
+
+    /**
+     * Image URL of the site.
+     */
+    imageurl?: string;
+
+    /**
+     * City of the site.
+     */
+    city?: string;
+
+    /**
+     * Countrycode of the site.
+     */
+    countrycode?: string;
 }
 
 /**
@@ -366,10 +402,17 @@ export class CoreSitesProvider {
         ]
     };
 
-    constructor(logger: CoreLoggerProvider, private http: HttpClient, private sitesFactory: CoreSitesFactoryProvider,
-            private appProvider: CoreAppProvider, private translate: TranslateService, private urlUtils: CoreUrlUtilsProvider,
-            private eventsProvider: CoreEventsProvider,  private textUtils: CoreTextUtilsProvider,
-            private utils: CoreUtilsProvider, private injector: Injector, private wsProvider: CoreWSProvider,
+    constructor(logger: CoreLoggerProvider,
+            protected http: HttpClient,
+            protected sitesFactory: CoreSitesFactoryProvider,
+            protected appProvider: CoreAppProvider,
+            protected translate: TranslateService,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected utils: CoreUtilsProvider,
+            protected injector: Injector,
+            protected wsProvider: CoreWSProvider,
             protected domUtils: CoreDomUtilsProvider) {
         this.logger = logger.getInstance('CoreSitesProvider');
 
@@ -430,7 +473,7 @@ export class CoreSitesProvider {
                     } else if (this.textUtils.getErrorMessageFromError(secondError)) {
                         return Promise.reject(secondError);
                     } else {
-                        return this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION});
+                        return this.translate.instant('core.cannotconnecttrouble');
                     }
                 });
             });
@@ -522,8 +565,7 @@ export class CoreSitesProvider {
                                         error.error = this.translate.instant('core.login.sitehasredirect');
                                     } else {
                                         // We can't be sure if there is a redirect or not. Display cannot connect error.
-                                        error.error = this.translate.instant('core.cannotconnect',
-                                            {$a: CoreSite.MINIMUM_MOODLE_VERSION});
+                                        error.error = this.translate.instant('core.cannotconnecttrouble');
                                     }
 
                                     return Promise.reject(error);
@@ -568,8 +610,13 @@ export class CoreSitesProvider {
         return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
                 .catch(() => {
             // Default error messages are kinda bad, return our own message.
-            return Promise.reject({error: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION})});
+            return Promise.reject({error: this.translate.instant('core.cannotconnecttrouble')});
         }).then((data: any) => {
+
+            if (data === null) {
+                // Cannot connect.
+                return Promise.reject({error: this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION})});
+            }
 
             if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
                 return Promise.reject({ errorcode: data.errorcode, error: data.error });
@@ -610,7 +657,7 @@ export class CoreSitesProvider {
 
         return promise.then((data: any): any => {
             if (typeof data == 'undefined') {
-                return Promise.reject(this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
+                return Promise.reject(this.translate.instant('core.cannotconnecttrouble'));
             } else {
                 if (typeof data.token != 'undefined') {
                     return { token: data.token, siteUrl: siteUrl, privateToken: data.privatetoken };
@@ -642,7 +689,7 @@ export class CoreSitesProvider {
                 }
             }
         }, () => {
-            return Promise.reject(this.translate.instant('core.cannotconnect', {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
+            return Promise.reject(this.translate.instant('core.cannotconnecttrouble'));
         });
     }
 
@@ -954,19 +1001,15 @@ export class CoreSitesProvider {
                 appVersion = this.convertVersionName(CoreConfigConstants.versionname);
 
             if (requiredVersion > appVersion) {
-                let downloadUrl = '';
+                const storesConfig: CoreStoreConfig = {
+                    android: config.tool_mobile_androidappid || false,
+                    ios: config.tool_mobile_iosappid || false,
+                    desktop: config.tool_mobile_setuplink || 'https://download.moodle.org/desktop/',
+                    mobile: config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/',
+                    default: config.tool_mobile_setuplink,
+                };
 
-                if (this.appProvider.isAndroid() && config.tool_mobile_androidappid) {
-                    downloadUrl = 'market://details?id=' + config.tool_mobile_androidappid;
-                } else if (this.appProvider.isIOS() && config.tool_mobile_iosappid) {
-                    downloadUrl = 'itms-apps://itunes.apple.com/app/id' + config.tool_mobile_iosappid;
-                } else if (config.tool_mobile_setuplink) {
-                    downloadUrl = config.tool_mobile_setuplink;
-                } else if (this.appProvider.isMobile()) {
-                    downloadUrl = 'https://download.moodle.org/mobile/';
-                } else {
-                    downloadUrl = 'https://download.moodle.org/desktop/';
-                }
+                const downloadUrl = this.appProvider.getAppStoreUrl(storesConfig);
 
                 siteId = siteId || this.getCurrentSiteId();
 
@@ -1926,4 +1969,15 @@ export class CoreSitesProvider {
         }
     }
 
+    /**
+     * Returns site info found on the backend.
+     *
+     * @param search Searched text.
+     * @return Site info list.
+     */
+    async findSites(search: string): Promise<CoreLoginSiteInfo[]> {
+        return [];
+    }
 }
+
+export class CoreSites extends makeSingleton(CoreSitesProvider) {}

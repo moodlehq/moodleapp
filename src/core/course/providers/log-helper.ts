@@ -20,6 +20,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 
+import { makeSingleton } from '@singletons/core.singletons';
+
 /**
  * Helper to manage logging to Moodle.
  */
@@ -355,3 +357,5 @@ export class CoreCourseLogHelperProvider {
         }));
     }
 }
+
+export class CoreCourseLogHelper extends makeSingleton(CoreCourseLogHelperProvider) {}

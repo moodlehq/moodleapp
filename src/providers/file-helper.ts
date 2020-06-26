@@ -19,8 +19,10 @@ import { CoreFileProvider } from './file';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
 import { CoreWSProvider } from './ws';
+import { CoreUrlUtils } from './utils/url';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -28,9 +30,13 @@ import { CoreConstants } from '@core/constants';
 @Injectable()
 export class CoreFileHelperProvider {
 
-    constructor(private fileProvider: CoreFileProvider, private filepoolProvider: CoreFilepoolProvider,
-            private sitesProvider: CoreSitesProvider, private appProvider: CoreAppProvider, private translate: TranslateService,
-            private utils: CoreUtilsProvider, private wsProvider: CoreWSProvider) { }
+    constructor(protected fileProvider: CoreFileProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected appProvider: CoreAppProvider,
+            protected translate: TranslateService,
+            protected utils: CoreUtilsProvider,
+            protected wsProvider: CoreWSProvider) { }
 
     /**
      * Convenience function to open a file, downloading it if needed.
@@ -56,7 +62,7 @@ export class CoreFileHelperProvider {
                 return;
             }
 
-            if (url.indexOf('http') === 0) {
+            if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
                 /* In iOS, if we use the same URL in embedded browser and background download then the download only
                    downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
                 url = url + '#moodlemobile-embedded';
@@ -333,5 +339,6 @@ export class CoreFileHelperProvider {
 
         throw new Error('Couldn\'t determine file size: ' + file.fileurl);
     }
-
 }
+
+export class CoreFileHelper extends makeSingleton(CoreFileHelperProvider) {}

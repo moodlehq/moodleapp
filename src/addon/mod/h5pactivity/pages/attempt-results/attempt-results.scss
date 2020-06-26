@@ -1,0 +1,55 @@
+ion-app.app-root page-addon-mod-h5pactivity-attempt-results {
+
+    .addon-mod_h5pactivity-attempt-result-summary {
+        img {
+            width: 16px;
+            height: 16px;
+            display: inline;
+            @include margin-horizontal(0, 4px);
+        }
+
+        .icon {
+            font-size: 1.4em;
+        }
+    }
+
+    .addon-mod_h5pactivity-result-table-header .item-inner {
+        font-size: 0.9em;
+        font-weight: bold;
+
+        .col[text-center] {
+            @include padding-horizontal(0);
+        }
+    }
+
+    .addon-mod_h5pactivity-result-table-header, .addon-mod_h5pactivity-result-table-row {
+
+        .item-inner ion-label {
+            @include margin(null, 0, null, null);
+        }
+
+        .item {
+            @include padding(null, null, null, 0);
+        }
+
+        .label {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+    }
+
+    .addon-mod_h5pactivity-result-table-row.item:nth-child(even) {
+        background-color: $gray-lighter;
+        @include darkmode() {
+            background-color: $core-dark-item-divider-bg-color;
+        }
+    }
+
+    .addon-mod_h5pactivity-result-score {
+        border-top: 1px solid black;
+    }
+}

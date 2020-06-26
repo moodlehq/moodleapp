@@ -162,10 +162,10 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                 // Local file.
                 this.utils.openFile(this.file.toURL());
             } else if (this.fileUrl) {
-                if (this.fileUrl.indexOf('http') === 0) {
-                    this.utils.openOnlineFile(this.urlUtils.unfixPluginfileURL(this.fileUrl));
-                } else {
+                if (this.urlUtils.isLocalFileUrl(this.fileUrl)) {
                     this.utils.openFile(this.fileUrl);
+                } else {
+                    this.utils.openOnlineFile(this.urlUtils.unfixPluginfileURL(this.fileUrl));
                 }
             }
 

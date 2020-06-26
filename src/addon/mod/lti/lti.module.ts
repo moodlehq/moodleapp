@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { AddonModLtiComponentsModule } from './components/components.module';
 import { AddonModLtiModuleHandler } from './providers/module-handler';
 import { AddonModLtiProvider } from './providers/lti';
+import { AddonModLtiHelperProvider } from './providers/helper';
 import { AddonModLtiLinkHandler } from './providers/link-handler';
 import { AddonModLtiListLinkHandler } from './providers/list-link-handler';
 import { AddonModLtiPrefetchHandler } from './providers/prefetch-handler';
@@ -25,7 +26,8 @@ import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-
 
 // List of providers (without handlers).
 export const ADDON_MOD_LTI_PROVIDERS: any[] = [
-    AddonModLtiProvider
+    AddonModLtiProvider,
+    AddonModLtiHelperProvider,
 ];
 
 @NgModule({
@@ -36,10 +38,11 @@ export const ADDON_MOD_LTI_PROVIDERS: any[] = [
     ],
     providers: [
         AddonModLtiProvider,
+        AddonModLtiHelperProvider,
         AddonModLtiModuleHandler,
         AddonModLtiLinkHandler,
         AddonModLtiListLinkHandler,
-        AddonModLtiPrefetchHandler
+        AddonModLtiPrefetchHandler,
     ]
 })
 export class AddonModLtiModule {

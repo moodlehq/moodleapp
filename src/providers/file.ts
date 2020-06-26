@@ -14,13 +14,15 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { File, FileEntry, DirectoryEntry } from '@ionic-native/file';
+import { File, FileEntry, DirectoryEntry, Entry, Metadata } from '@ionic-native/file';
 
 import { CoreAppProvider } from './app';
 import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
+import { CoreConfigConstants } from '../configconstants';
 import { Zip } from '@ionic-native/zip';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -43,6 +45,11 @@ export interface CoreFileProgressEvent {
 }
 
 /**
+ * Progress function.
+ */
+export type CoreFileProgressFunction = (event: CoreFileProgressEvent) => void;
+
+/**
  * Factory to interact with the file system.
  */
 @Injectable()
@@ -58,14 +65,21 @@ export class CoreFileProvider {
     static SITESFOLDER = 'sites';
     static TMPFOLDER = 'tmp';
 
+    static CHUNK_SIZE = 1048576; // 1 MB. Same chunk size as Ionic Native.
+
     protected logger;
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
-    protected CHUNK_SIZE = 10485760; // 10 MB.
 
-    constructor(logger: CoreLoggerProvider, private platform: Platform, private file: File, private appProvider: CoreAppProvider,
-            private textUtils: CoreTextUtilsProvider, private zip: Zip, private mimeUtils: CoreMimetypeUtilsProvider) {
+    constructor(logger: CoreLoggerProvider,
+            protected platform: Platform,
+            protected file: File,
+            protected appProvider: CoreAppProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected zip: Zip,
+            protected mimeUtils: CoreMimetypeUtilsProvider) {
+
         this.logger = logger.getInstance('CoreFileProvider');
 
         if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
@@ -543,7 +557,7 @@ export class CoreFileProvider {
 
             reader.onloadend = (evt): void => {
                 const target = <any> evt.target; // Convert to <any> to be able to use non-standard properties.
-                if (target.result !== undefined || target.result !== null) {
+                if (target.result !== undefined && target.result !== null) {
                     if (format == CoreFileProvider.FORMATJSON) {
                         // Convert to object.
                         const parsed = this.textUtils.parseJSON(target.result, null);
@@ -556,7 +570,7 @@ export class CoreFileProvider {
                     } else {
                         resolve(target.result);
                     }
-                } else if (target.error !== undefined || target.error !== null) {
+                } else if (target.error !== undefined && target.error !== null) {
                     reject(target.error);
                 } else {
                     reject({ code: null, message: 'READER_ONLOADEND_ERR' });
@@ -600,7 +614,7 @@ export class CoreFileProvider {
      * @param append Whether to append the data to the end of the file.
      * @return Promise to be resolved when the file is written.
      */
-    writeFile(path: string, data: any, append?: boolean): Promise<any> {
+    writeFile(path: string, data: any, append?: boolean): Promise<FileEntry> {
         return this.init().then(() => {
             // Remove basePath if it's in the path.
             path = this.removeStartingSlash(path.replace(this.basePath, ''));
@@ -625,6 +639,7 @@ export class CoreFileProvider {
     /**
      * Write some file data into a filesystem file.
      * It's done in chunks to prevent crashing the app for big files.
+     * Please notice Ionic Native writeFile function already splits by chunks, but it doesn't have an onProgress function.
      *
      * @param file The data to write.
      * @param path Path where to store the data.
@@ -633,16 +648,18 @@ export class CoreFileProvider {
      * @param append Whether to append the data to the end of the file.
      * @return Promise resolved when done.
      */
-    writeFileDataInFile(file: any, path: string, onProgress?: (event: CoreFileProgressEvent) => any, offset: number = 0,
-            append?: boolean): Promise<any> {
+    async writeFileDataInFile(file: Blob, path: string, onProgress?: CoreFileProgressFunction, offset: number = 0,
+            append?: boolean): Promise<FileEntry> {
 
         offset = offset || 0;
 
-        // Get the chunk to read.
-        const blob = file.slice(offset, Math.min(offset + this.CHUNK_SIZE, file.size));
+        try {
+            // Get the chunk to write.
+            const chunk = file.slice(offset, Math.min(offset + CoreFileProvider.CHUNK_SIZE, file.size));
 
-        return this.writeFileDataInFileChunk(blob, path, append).then((fileEntry) => {
-            offset += this.CHUNK_SIZE;
+            const fileEntry = await this.writeFile(path, chunk, append);
+
+            offset += CoreFileProvider.CHUNK_SIZE;
 
             onProgress && onProgress({
                 lengthComputable: true,
@@ -657,23 +674,14 @@ export class CoreFileProvider {
 
             // Read the next chunk.
             return this.writeFileDataInFile(file, path, onProgress, offset, true);
-        });
-    }
+        } catch (error) {
+            if (error && error.target && error.target.error) {
+                // Error returned by the writer, get the "real" error.
+                error = error.target.error;
+            }
 
-    /**
-     * Write a chunk of data into a file.
-     *
-     * @param chunkData The chunk of data.
-     * @param path Path where to store the data.
-     * @param append Whether to append the data to the end of the file.
-     * @return Promise resolved when done.
-     */
-    protected writeFileDataInFileChunk(chunkData: any, path: string, append?: boolean): Promise<any> {
-        // Read the chunk data.
-        return this.readFileData(chunkData, CoreFileProvider.FORMATARRAYBUFFER).then((fileData) => {
-            // Write the data in the file.
-            return this.writeFile(path, fileData, append);
-        });
+            throw error;
+        }
     }
 
     /**
@@ -686,6 +694,18 @@ export class CoreFileProvider {
         return this.file.resolveLocalFilesystemUrl(fullPath).then((entry) => {
             return <FileEntry> entry;
         });
+    }
+
+    /**
+     * Calculate the size of a file.
+     *
+     * @param path Absolute path to the file.
+     * @return Promise to be resolved when the size is calculated.
+     */
+    async getExternalFileSize(path: string): Promise<number> {
+        const fileEntry = await this.getExternalFile(path);
+
+        return this.getSize(fileEntry);
     }
 
     /**
@@ -762,7 +782,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is moved.
      */
     moveDir(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
-        return this.moveFileOrDir(originalPath, newPath, true, destDirExists);
+        return this.copyOrMoveFileOrDir(originalPath, newPath, true, false, destDirExists);
     }
 
     /**
@@ -775,72 +795,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is moved.
      */
     moveFile(originalPath: string, newPath: string, destDirExists?: boolean): Promise<any> {
-        return this.moveFileOrDir(originalPath, newPath, false, destDirExists);
-    }
-
-    /**
-     * Move a file/dir.
-     *
-     * @param originalPath Path to the file/dir to move.
-     * @param newPath New path of the file/dir.
-     * @param isDir Whether it's a dir or a file.
-     * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
-     *                      try to create it (slower).
-     * @return Promise resolved when the entry is moved.
-     */
-    protected moveFileOrDir(originalPath: string, newPath: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
-        const moveFn = isDir ? this.file.moveDir.bind(this.file) : this.file.moveFile.bind(this.file);
-
-        return this.init().then(() => {
-            // Remove basePath if it's in the paths.
-            originalPath = this.removeStartingSlash(originalPath.replace(this.basePath, ''));
-            newPath = this.removeStartingSlash(newPath.replace(this.basePath, ''));
-
-            const newPathFileAndDir = this.getFileAndDirectoryFromPath(newPath);
-
-            if (newPathFileAndDir.directory && !destDirExists) {
-                // Create the target directory if it doesn't exist.
-                return this.createDir(newPathFileAndDir.directory);
-            }
-        }).then(() => {
-
-            if (this.isHTMLAPI) {
-                // In Cordova API we need to calculate the longest matching path to make it work.
-                // The function this.file.moveFile('a/', 'b/c.ext', 'a/', 'b/d.ext') doesn't work.
-                // The function this.file.moveFile('a/b/', 'c.ext', 'a/b/', 'd.ext') works.
-                const dirsA = originalPath.split('/'),
-                    dirsB = newPath.split('/');
-                let commonPath = this.basePath;
-
-                for (let i = 0; i < dirsA.length; i++) {
-                    let dir = dirsA[i];
-                    if (dirsB[i] === dir) {
-                        // Found a common folder, add it to common path and remove it from each specific path.
-                        dir = dir + '/';
-                        commonPath = this.textUtils.concatenatePaths(commonPath, dir);
-                        originalPath = originalPath.replace(dir, '');
-                        newPath = newPath.replace(dir, '');
-                    } else {
-                        // Folder doesn't match, stop searching.
-                        break;
-                    }
-                }
-
-                return moveFn(commonPath, originalPath, commonPath, newPath);
-            } else {
-                return moveFn(this.basePath, originalPath, this.basePath, newPath).catch((error) => {
-                    // The move can fail if the path has encoded characters. Try again if that's the case.
-                    const decodedOriginal = decodeURI(originalPath),
-                        decodedNew = decodeURI(newPath);
-
-                    if (decodedOriginal != originalPath || decodedNew != newPath) {
-                        return moveFn(this.basePath, decodedOriginal, this.basePath, decodedNew);
-                    } else {
-                        return Promise.reject(error);
-                    }
-                });
-            }
-        });
+        return this.copyOrMoveFileOrDir(originalPath, newPath, false, false, destDirExists);
     }
 
     /**
@@ -853,7 +808,7 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is copied.
      */
     copyDir(from: string, to: string, destDirExists?: boolean): Promise<any> {
-        return this.copyFileOrDir(from, to, true, destDirExists);
+        return this.copyOrMoveFileOrDir(from, to, true, true, destDirExists);
     }
 
     /**
@@ -866,57 +821,61 @@ export class CoreFileProvider {
      * @return Promise resolved when the entry is copied.
      */
     copyFile(from: string, to: string, destDirExists?: boolean): Promise<any> {
-        return this.copyFileOrDir(from, to, false, destDirExists);
+        return this.copyOrMoveFileOrDir(from, to, false, true, destDirExists);
     }
 
     /**
-     * Copy a file or a directory.
+     * Copy or move a file or a directory.
      *
      * @param from Path to the file/dir to move.
      * @param to New path of the file/dir.
      * @param isDir Whether it's a dir or a file.
+     * @param copy Whether to copy. If false, it will move the file.
      * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
      *                      try to create it (slower).
      * @return Promise resolved when the entry is copied.
      */
-    protected copyFileOrDir(from: string, to: string, isDir?: boolean, destDirExists?: boolean): Promise<any> {
-        let fromFileAndDir,
-            toFileAndDir;
-        const copyFn = isDir ? this.file.copyDir.bind(this.file) : this.file.copyFile.bind(this.file);
+    protected async copyOrMoveFileOrDir(from: string, to: string, isDir?: boolean, copy?: boolean, destDirExists?: boolean)
+            : Promise<Entry> {
 
-        return this.init().then(() => {
-            // Paths cannot start with "/". Remove basePath if present.
-            from = this.removeStartingSlash(from.replace(this.basePath, ''));
-            to = this.removeStartingSlash(to.replace(this.basePath, ''));
+        const fileIsInAppFolder = this.isPathInAppFolder(from);
 
-            fromFileAndDir = this.getFileAndDirectoryFromPath(from);
-            toFileAndDir = this.getFileAndDirectoryFromPath(to);
+        if (!fileIsInAppFolder) {
+            return this.copyOrMoveExternalFile(from, to, copy);
+        }
 
-            if (toFileAndDir.directory && !destDirExists) {
-                // Create the target directory if it doesn't exist.
-                return this.createDir(toFileAndDir.directory);
-            }
-        }).then(() => {
-            if (this.isHTMLAPI) {
-                // In HTML API, the file name cannot include a directory, otherwise it fails.
-                const fromDir = this.textUtils.concatenatePaths(this.basePath, fromFileAndDir.directory),
-                    toDir = this.textUtils.concatenatePaths(this.basePath, toFileAndDir.directory);
+        const moveCopyFn = copy ?
+                (isDir ? this.file.copyDir.bind(this.file) : this.file.copyFile.bind(this.file)) :
+                (isDir ? this.file.moveDir.bind(this.file) : this.file.moveFile.bind(this.file));
 
-                return copyFn(fromDir, fromFileAndDir.name, toDir, toFileAndDir.name);
+        await this.init();
+
+        // Paths cannot start with "/". Remove basePath if present.
+        from = this.removeStartingSlash(from.replace(this.basePath, ''));
+        to = this.removeStartingSlash(to.replace(this.basePath, ''));
+
+        const toFileAndDir = this.getFileAndDirectoryFromPath(to);
+
+        if (toFileAndDir.directory && !destDirExists) {
+            // Create the target directory if it doesn't exist.
+            await this.createDir(toFileAndDir.directory);
+        }
+
+        try {
+            const entry = await moveCopyFn(this.basePath, from, this.basePath, to);
+
+            return entry;
+        } catch (error) {
+            // The copy can fail if the path has encoded characters. Try again if that's the case.
+            const decodedFrom = decodeURI(from);
+            const decodedTo = decodeURI(to);
+
+            if (from != decodedFrom || to != decodedTo) {
+                return moveCopyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
             } else {
-                return copyFn(this.basePath, from, this.basePath, to).catch((error) => {
-                    // The copy can fail if the path has encoded characters. Try again if that's the case.
-                    const decodedFrom = decodeURI(from),
-                        decodedTo = decodeURI(to);
-
-                    if (from != decodedFrom || to != decodedTo) {
-                        return copyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
-                    } else {
-                        return Promise.reject(error);
-                    }
-                });
+                return Promise.reject(error);
             }
-        });
+        }
     }
 
     /**
@@ -931,7 +890,7 @@ export class CoreFileProvider {
      * path/            -> directory: 'path', name: ''
      * path             -> directory: '', name: 'path'
      */
-    getFileAndDirectoryFromPath(path: string): any {
+    getFileAndDirectoryFromPath(path: string): {directory: string, name: string} {
         const file = {
             directory: '',
             name: ''
@@ -945,6 +904,7 @@ export class CoreFileProvider {
 
     /**
      * Get the internal URL of a file.
+     * Please notice that with WKWebView these URLs no longer work in mobile. Use fileEntry.toURL() along with convertFileSrc.
      *
      * @param fileEntry File Entry.
      * @return Internal URL.
@@ -1050,7 +1010,7 @@ export class CoreFileProvider {
      * @param fileEntry FileEntry retrieved from getFile or similar.
      * @return Promise resolved with metadata.
      */
-    getMetadata(fileEntry: Entry): Promise<any> {
+    getMetadata(fileEntry: Entry): Promise<Metadata> {
         if (!fileEntry || !fileEntry.getMetadata) {
             return Promise.reject(null);
         }
@@ -1185,7 +1145,7 @@ export class CoreFileProvider {
                 do {
                     newName = fileNameWithoutExtension + '(' + num + ')' + extension;
                     num++;
-                } while (typeof files[newName] != 'undefined');
+                } while (typeof files[newName.toLowerCase()] != 'undefined');
 
                 // Ask the user what he wants to do.
                 return newName;
@@ -1256,7 +1216,7 @@ export class CoreFileProvider {
     }
 
     /**
-     * Get the full path to the www folder at runtime.
+     * Get the path to the www folder at runtime based on the WebView URL.
      *
      * @return Path.
      */
@@ -1269,4 +1229,55 @@ export class CoreFileProvider {
 
         return window.location.href;
     }
+
+    /**
+     * Get the full path to the www folder.
+     *
+     * @return Path.
+     */
+    getWWWAbsolutePath(): string {
+        if (cordova && cordova.file && cordova.file.applicationDirectory) {
+            return this.textUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
+        }
+
+        // Cannot use Cordova to get it, use the WebView URL.
+        return this.getWWWPath();
+    }
+
+    /**
+     * Helper function to call Ionic WebView convertFileSrc only in the needed platforms.
+     * This is needed to make files work with the Ionic WebView plugin.
+     *
+     * @param src Source to convert.
+     * @return Converted src.
+     */
+    convertFileSrc(src: string): string {
+        return this.appProvider.isIOS() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
+    }
+
+    /**
+     * Undo the conversion of convertFileSrc.
+     *
+     * @param src Source to unconvert.
+     * @return Unconverted src.
+     */
+    unconvertFileSrc(src: string): string {
+        if (!this.appProvider.isIOS()) {
+            return src;
+        }
+
+        return src.replace(CoreConfigConstants.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+    }
+
+    /**
+     * Check if a certain path is in the app's folder (basePath).
+     *
+     * @param path Path to check.
+     * @return Whether it's in the app folder.
+     */
+    protected isPathInAppFolder(path: string): boolean {
+        return !path || !path.match(/^[a-z0-9]+:\/\//i) || path.indexOf(this.basePath) != -1;
+    }
 }
+
+export class CoreFile extends makeSingleton(CoreFileProvider) {}

@@ -22,6 +22,7 @@ import { CoreSyncProvider } from '@providers/sync';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormOfflineProvider } from './scorm-offline';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
@@ -1256,7 +1257,7 @@ export class AddonModScormProvider {
     /**
      * Invalidates access information.
      *
-     * @param forumId SCORM ID.
+     * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the data is invalidated.
      */
@@ -1403,7 +1404,7 @@ export class AddonModScormProvider {
     protected isExternalLink(link: string): boolean {
         link = link.toLowerCase();
 
-        if (link.match(/https?:\/\//)) {
+        if (link.match(/^https?:\/\//i) && !CoreUrlUtils.instance.isLocalFileUrl(link)) {
             return true;
         } else if (link.substr(0, 4) == 'www.') {
             return true;
@@ -1543,7 +1544,7 @@ export class AddonModScormProvider {
 
         return this.logHelper.logSingle('mod_scorm_view_scorm', params, AddonModScormProvider.COMPONENT, id, name, 'scorm', {},
                 siteId);
-}
+    }
 
     /**
      * Saves a SCORM tracking record.

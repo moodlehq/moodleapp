@@ -15,6 +15,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy, Optional }
     from '@angular/core';
 import { TextInput, Content, Platform, Slides } from 'ionic-angular';
+import { CoreApp } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -83,8 +84,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
     toolbarPrevHidden = true;
     toolbarNextHidden = false;
     toolbarStyles = {
-        b: 'false',
-        i: 'false',
+        strong: 'false',
+        em: 'false',
         u: 'false',
         strike: 'false',
         p: 'false',
@@ -95,6 +96,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
         ol: 'false',
     };
     infoMessage: string;
+    canScanQR: boolean;
+
     protected isCurrentView = true;
     protected toolbarButtonWidth = 40;
     protected toolbarArrowWidth = 28;
@@ -119,6 +122,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
         this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
+        this.canScanQR = this.utils.canScanQR();
     }
 
     /**
@@ -188,6 +192,10 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
             this.elementId = 'id_' + this.elementId;
             this.element.setAttribute('id', this.elementId);
         }
+
+        // Update tags for a11y.
+        this.replaceTags('b', 'strong');
+        this.replaceTags('i', 'em');
 
         if (this.shouldAutoSaveDrafts()) {
             this.restoreDraft();
@@ -297,7 +305,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
      *
      * @param $event The event.
      */
-    onChange($event: Event): void {
+    onChange($event?: Event): void {
         if (this.rteEnabled) {
             if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
                 this.clearText();
@@ -464,6 +472,9 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
         // Set focus and cursor at the end.
         // Modify the DOM directly so the keyboard stays open.
         if (this.rteEnabled) {
+            // Update tags for a11y.
+            this.replaceTags('b', 'strong');
+            this.replaceTags('i', 'em');
             this.editorElement.removeAttribute('hidden');
             this.textarea.getNativeElement().setAttribute('hidden', '');
             this.editorElement.focus();
@@ -594,8 +605,41 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
                 }
 
                 document.execCommand(command, false);
+
+                // Modern browsers are using non a11y tags, so replace them.
+                if (command == 'bold') {
+                    this.replaceTags('b', 'strong');
+                } else if (command == 'italic') {
+                    this.replaceTags('i', 'em');
+                }
             }
         }
+    }
+
+    /**
+     * Replace tags for a11y.
+     *
+     * @param originTag      Origin tag to be replaced.
+     * @param destinationTag Destination tag to replace.
+     */
+    protected replaceTags(originTag: string, destinationTag: string): void {
+        const elems = Array.from(this.editorElement.getElementsByTagName(originTag));
+
+        elems.forEach((elem) => {
+            const newElem = document.createElement(destinationTag);
+            newElem.innerHTML = elem.innerHTML;
+
+            if (elem.hasAttributes()) {
+                const attrs = Array.from(elem.attributes);
+                attrs.forEach((attr) => {
+                    newElem.setAttribute(attr.name, attr.value);
+                });
+            }
+
+            elem.parentNode.replaceChild(newElem, elem);
+        });
+
+        this.onChange();
     }
 
     /**
@@ -649,8 +693,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
      */
     mouseDownAction(event: Event): void {
         const selection = window.getSelection().toString();
-        // When RTE is focused with a range selection the stopBubble will not fire click.
-        if (!this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
+        // When RTE is focused with a whole paragraph in desktop the stopBubble will not fire click.
+        if (CoreApp.instance.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
             this.stopBubble(event);
         }
     }
@@ -863,6 +907,24 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
             this.hideMessageTimeout = null;
             this.infoMessage = null;
         }, timeout);
+    }
+
+    /**
+     * Scan a QR code and put its text in the editor.
+     *
+     * @param $event Event data
+     */
+    scanQR($event: any): void {
+        this.stopBubble($event);
+
+        // Scan for a QR code.
+        this.utils.scanQR().then((text) => {
+            if (text) {
+                document.execCommand('insertText', false, text);
+            }
+
+            this.content.resize(); // Resize content, otherwise the content height becomes 1 for some reason.
+        });
     }
 
     /**

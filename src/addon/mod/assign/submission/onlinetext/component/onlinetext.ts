@@ -83,8 +83,14 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
                     if (text) {
                         // Open a new state with the interpolated contents.
-                        this.textUtils.expandText(this.plugin.name, text, this.component, this.assign.cmid, undefined, true,
-                                'module', this.assign.cmid, this.assign.course);
+                        this.textUtils.viewText(this.plugin.name, text, {
+                            component: this.component,
+                            componentId: this.assign.cmid,
+                            filter: true,
+                            contextLevel: 'module',
+                            instanceId: this.assign.cmid,
+                            courseId: this.assign.course,
+                        });
                     }
                 });
             } else {

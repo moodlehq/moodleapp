@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ title }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <div class="prompt-message"><core-format-text [text]="message"></core-format-text></div>
+    <ion-textarea rows="1" core-auto-rows name="feedback" [attr.aria-multiline]="true" [(ngModel)]="text" [placeholder]="placeholder"></ion-textarea>
+    <div class="prompt-button-group">
+        <button *ngFor="let button of buttons" ion-button="prompt-button" (click)="buttonClicked(button)" [ngClass]="button.cssClass">
+            {{ button.text }}
+        </button>
+    </div>
+</ion-content>

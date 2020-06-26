@@ -103,8 +103,7 @@ export class CoreLoginSitesPage {
                     });
                 }).catch((error) => {
                     this.logger.error('Error deleting site ' + site.id, error);
-                    this.domUtils.showErrorModalDefault(error, 'Delete site failed.');
-                    this.domUtils.showErrorModal('core.login.errordeletesite', true);
+                    this.domUtils.showErrorModalDefault(error, 'core.login.errordeletesite', true);
                 });
             }).catch(() => {
                 // User cancelled, nothing to do.

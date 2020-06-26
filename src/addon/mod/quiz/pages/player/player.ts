@@ -376,6 +376,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                     synced: !this.offline
                 }, this.sitesProvider.getCurrentSiteId());
 
+                this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'quiz' });
+
                 // Leave the player.
                 this.forceLeave = true;
                 this.navCtrl.pop();

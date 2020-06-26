@@ -9,24 +9,15 @@ addon-qtype-ddmarker {
         display: block;
     }
 
+    .droparea {
+        display: inline-block;
+    }
+
     div.droparea img {
         border: 1px solid $gray-darker;
         max-width: 100%;
     }
 
-    .draghome img, .draghome span {
-        visibility: hidden;
-    }
-
-    .dragitems .dragitem {
-        cursor: pointer;
-        position: absolute;
-        z-index: 2;
-    }
-
-    .dropzones {
-        position: absolute;
-    }
     .dropzones svg {
         z-index: 3;
     }
@@ -35,31 +26,81 @@ addon-qtype-ddmarker {
         z-index: 5;
         box-shadow: $core-dd-question-selected-shadow;
     }
-    .dragitems .draghome {
-        margin: 10px;
-        display: inline-block;
+
+    .dragitems, // Previous to 3.9.
+    .draghomes {
+        &.readonly {
+            .dragitem,
+            .marker {
+                cursor: auto;
+            }
+        }
+
+        .dragitem, // Previous to 3.9.
+        .draghome,
+        .marker {
+            vertical-align: top;
+            cursor: pointer;
+            position: relative;
+            margin: 10px;
+            display: inline-block;
+            &.dragplaceholder {
+                display: none;
+                visibility: hidden;
+
+                &.active {
+                    display: inline-block;
+                }
+            }
+
+            &.unplaced {
+                position: relative;
+            }
+            &.placed {
+                position: absolute;
+                opacity: 0.6;
+            }
+        }
     }
 
-    .dragitems.readonly .dragitem {
-        cursor: auto;
+    .droparea {
+        .dragitem,
+        .marker {
+            cursor: pointer;
+            position: absolute;
+            vertical-align: top;
+            z-index: 2;
+        }
     }
+
     div.ddarea {
         text-align: center;
+        position: relative;
     }
+    div.ddarea .dropzones,
     div.ddarea .markertexts {
+        top: 0;
+        left: 0;
         min-height: 80px;
         position: absolute;
         @include text-align('start');
     }
+
     .dropbackground {
         margin: 0 auto;
     }
 
-    div.dragitems div.draghome, div.dragitems div.dragitem,
-    div.draghome, div.drag {
+    div.dragitems div.draghome,
+    div.dragitems div.dragitem,
+    div.draghome,
+    div.drag,
+    div.draghomes div.marker,
+    div.marker,
+    div.drag {
         font: 13px/1.231 arial,helvetica,clean,sans-serif;
     }
     div.dragitems span.markertext,
+    div.draghomes span.markertext,
     div.markertexts span.markertext {
         margin: 0 5px;
         z-index: 2;
@@ -86,17 +127,18 @@ addon-qtype-ddmarker {
         border-color: $yellow;
         padding: 5px;
         border-radius: 10px;
-        filter: alpha(opacity=60);
         opacity: 0.6;
         margin: 5px;
         display: inline-block;
     }
-    div.dragitems img.target {
+    div.dragitems img.target,
+    div.draghomes img.target {
         position: absolute;
         left: -7px; /* This must be half the size of the target image, minus 0.5. */
         top: -7px;  /* In other words, this works for a 15x15 cross-hair. */
     }
-    div.dragitems div.draghome img.target {
+    div.dragitems div.draghome img.target,
+    div.draghomes div.marker img.target {
         display: none;
     }
 }

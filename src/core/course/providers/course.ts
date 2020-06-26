@@ -28,6 +28,8 @@ import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Service that provides some features regarding a course.
@@ -97,7 +99,7 @@ export class CoreCourseProvider {
     protected CORE_MODULES = [
         'assign', 'assignment', 'book', 'chat', 'choice', 'data', 'database', 'date', 'external-tool',
         'feedback', 'file', 'folder', 'forum', 'glossary', 'ims', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz',
-        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'
+        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', 'h5pactivity'
     ];
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider,
@@ -331,6 +333,23 @@ export class CoreCourseProvider {
         }).catch(() => {
             return CoreConstants.NOT_DOWNLOADED;
         });
+    }
+
+    /**
+     * Obtain ids of downloaded courses.
+     *
+     * @param siteId Site id.
+     * @return Resolves with an array containing downloaded course ids.
+     */
+    async getDownloadedCourseIds(siteId?: string): Promise<number[]> {
+        const site = await this.sitesProvider.getSite(siteId);
+        const entries = await site.getDb().getRecordsList(this.COURSE_STATUS_TABLE, 'status', [
+            CoreConstants.DOWNLOADED,
+            CoreConstants.DOWNLOADING,
+            CoreConstants.OUTDATED,
+        ]);
+
+        return entries.map((entry) => entry.id);
     }
 
     /**
@@ -860,6 +879,11 @@ export class CoreCourseProvider {
             return site.write('core_course_view_course', params).then((response) => {
                 if (!response.status) {
                     return Promise.reject(null);
+                } else {
+                    this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                        courseId: courseId,
+                        action: CoreCoursesProvider.ACTION_VIEW,
+                    }, site.getId());
                 }
             });
         });
@@ -1172,3 +1196,5 @@ export type CoreCourseModuleSummary = {
     url?: string; // Url.
     iconurl: string; // Iconurl.
 };
+
+export class CoreCourse extends makeSingleton(CoreCourseProvider) {}

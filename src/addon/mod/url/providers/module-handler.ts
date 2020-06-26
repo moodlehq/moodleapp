@@ -118,7 +118,7 @@ export class AddonModUrlModuleHandler implements CoreCourseModuleHandler {
             buttons: [ {
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'link',
-                label: 'core.openinbrowser',
+                label: 'core.openmodinbrowser',
                 action: (event: Event, navCtrl: NavController, module: any, courseId: number): void => {
                     handler.openUrl(module, courseId);
                 }

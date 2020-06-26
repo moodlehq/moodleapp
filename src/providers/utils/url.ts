@@ -15,6 +15,9 @@
 import { Injectable } from '@angular/core';
 import { CoreLangProvider } from '../lang';
 import { CoreTextUtilsProvider } from './text';
+import { makeSingleton } from '@singletons/core.singletons';
+import { CoreConfigConstants } from '../../configconstants';
+import { CoreUrl } from '@singletons/url';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -223,7 +226,7 @@ export class CoreUrlUtilsProvider {
             url = 'https://' + url;
         }
 
-        // http allways in lowercase.
+        // http always in lowercase.
         url = url.replace(/^http/i, 'http');
         url = url.replace(/^https/i, 'https');
 
@@ -424,6 +427,36 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
+     * Check whether an URL belongs to a local file.
+     *
+     * @param url URL to check.
+     * @return Whether the URL belongs to a local file.
+     */
+    isLocalFileUrl(url: string): boolean {
+        const urlParts = CoreUrl.parse(url);
+
+        return this.isLocalFileUrlScheme(urlParts.protocol, urlParts.domain);
+    }
+
+    /**
+     * Check whether a URL scheme belongs to a local file.
+     *
+     * @param scheme Scheme to check.
+     * @param domain The domain. Needed because in Android the WebView scheme is http.
+     * @return Whether the scheme belongs to a local file.
+     */
+    isLocalFileUrlScheme(scheme: string, domain: string): boolean {
+        if (scheme) {
+            scheme = scheme.toLowerCase();
+        }
+
+        return scheme == 'cdvfile' ||
+                scheme == 'file' ||
+                scheme == 'filesystem' ||
+                scheme == CoreConfigConstants.ioswebviewscheme;
+    }
+
+    /**
      * Returns if a URL is a pluginfile URL.
      *
      * @param url The URL to test.
@@ -498,3 +531,5 @@ export class CoreUrlUtilsProvider {
         return url;
     }
 }
+
+export class CoreUrlUtils extends makeSingleton(CoreUrlUtilsProvider) {}

@@ -4,6 +4,9 @@ $item-message-note-text: $gray-dark !default;
 $item-message-note-font-size: 75% !default;
 $item-message-mine-bg: $gray-light !default;
 
+$core-discussion-messages-badge: $core-color !default;
+$core-discussion-messages-badge-text: $white !default;
+
 @mixin message-page {
     ion-content {
         background-color: $gray-lighter !important;
@@ -194,6 +197,30 @@ $item-message-mine-bg: $gray-light !default;
         border-top-right-radius: 0;
         border-top-left-radius: 0;
     }
+
+    .has-fab .scroll-content {
+        padding-bottom: 0;
+    }
+    ion-fab button {
+        overflow: visible;
+        position: relative;
+        box-shadow: $fab-md-box-shadow;
+
+        .core-discussion-messages-badge {
+            position: absolute;
+            border-radius: 50%;
+            color: $core-discussion-messages-badge-text;
+            background-color: $core-discussion-messages-badge;
+            display: block;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            right: -6px;
+            top: -6px;
+
+        }
+    }
+
 }
 
 

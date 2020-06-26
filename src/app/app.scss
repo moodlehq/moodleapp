@@ -46,19 +46,6 @@ ion-app.app-root {
     text-transform: none;
   }
 
-  @include media-breakpoint-up(sm) {
-    .core-center-view .scroll-content {
-      display: flex!important;
-      align-content: center !important;
-      align-items: center !important;
-      > * {
-        margin: 0 auto;
-        width: 100%;
-        max-width: 600px;
-      }
-    }
-  }
-
   @include media-breakpoint-down(sm) {
     .hidden-phone {
       display: none !important;
@@ -109,6 +96,10 @@ ion-app.app-root {
     ion-icon, core-icon {
       vertical-align: bottom;
     }
+  }
+
+  .item[detail-push] {
+    cursor: pointer;
   }
 
   .core-nav-item-selected, .item.core-nav-item-selected {
@@ -450,6 +441,18 @@ ion-app.app-root {
         }
       }
     }
+    @include darkmode() {
+      @each $color-name, $color-base, $color-contrast in get-colors($colors-dark) {
+        &.select-md-#{$color-name},
+        &.select-ios-#{$color-name} {
+           color: $color-base;
+
+          .select-icon .select-icon-inner {
+            color: $color-base;
+          }
+        }
+      }
+    }
   }
 
   .item-label-stacked ion-select[multiple="true"] {
@@ -666,11 +669,12 @@ ion-app.app-root {
       overflow: auto;
   }
 
-  .action-sheet-wrapper {
+  ion-action-sheet .action-sheet-wrapper .action-sheet-container {
     .action-sheet-button.action-sheet-cancel {
       color: $core-action-sheet-cancel-color;
       @include darkmode() {
         color: $core-dark-action-sheet-cancel-color;
+        background-color: $black;
       }
     }
     .action-sheet-selected {
@@ -697,6 +701,16 @@ ion-app.app-root {
 
   ion-alert .alert-checkbox-group {
     border: 0;
+  }
+
+  ion-alert .alert-message + div:not(.alert-button-group) {
+    overflow: auto;
+    alert-checkbox-group,
+    alert-radio-group,
+    alert-input-group {
+      overflow: visible;
+      max-height: none;
+    }
   }
 
   ion-toast.core-toast-success .toast-wrapper{
@@ -1284,6 +1298,24 @@ ion-app.app-root {
   a.item-ios:not([detail-none]) .item-inner {
     [item-end] {
       @include safe-area-margin-horizontal(($item-ios-padding-start / 2), ($item-ios-padding-end / 2));
+    }
+  }
+}
+
+// QR scan. The scanner is at the background of the app, we need to hide the elements that overlay it.
+.core-scanning-qr {
+  ion-app.app-root {
+    background-color: transparent !important;
+
+    .ion-page {
+      background-color: transparent !important;
+    }
+    ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), core-ion-tabs {
+      display: none !important;
+    }
+
+    &.ios .ion-page.show-page~.nav-decor {
+      display: none !important;
     }
   }
 }

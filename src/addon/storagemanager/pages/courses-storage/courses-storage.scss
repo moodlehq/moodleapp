@@ -1,0 +1,28 @@
+ion-app.app-root page-addon-storagemanager-courses-storage {
+
+    .item-md.item-block .item-inner {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    ion-item.course {
+        border-bottom: 1px solid $list-border-color;
+        padding-right: 16px;
+        padding-left: 16px;
+
+        h2 {
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        h3 {
+            color: $subdued-text-color;
+        }
+
+        &:last-child {
+            border-bottom: 0;
+        }
+
+    }
+
+}

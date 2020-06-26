@@ -1,0 +1,31 @@
+.addon-block-activity-results core-block-pre-rendered {
+    ion-item.core-block-content {
+        table.grades {
+            @include text-align('start');
+            width: 100%;
+
+            .number {
+                @include text-align('start');
+                width: 10%;
+            }
+
+            .name {
+                @include text-align('start');
+                width: 77%;
+            }
+
+            .grade {
+                @include text-align('end');
+            }
+
+            caption {
+                @include text-align('start');
+                padding-top: .75rem;
+                padding-bottom: .75rem;
+                color: $gray-darker;
+                font-weight: bold;
+                font-size: 18px;
+            }
+        }
+    }
+}

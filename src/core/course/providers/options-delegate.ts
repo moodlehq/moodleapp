@@ -243,11 +243,17 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
      */
     protected clearCoursesHandlers(courseId?: number): void {
         if (courseId) {
+            if (!this.loaded[courseId]) {
+                // Don't clear if not loaded, it's probably an ongoing load and it could cause JS errors.
+                return;
+            }
+
             this.loaded[courseId] = false;
             delete this.coursesHandlers[courseId];
         } else {
-            this.loaded = {};
-            this.coursesHandlers = {};
+            for (const courseId in this.coursesHandlers) {
+                this.clearCoursesHandlers(Number(courseId));
+            }
         }
     }
 
@@ -484,7 +490,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
         const promises = [],
             courseData = this.coursesHandlers[courseId];
 
-        if (!courseData) {
+        if (!courseData || !courseData.enabledHandlers) {
             return Promise.resolve();
         }
 

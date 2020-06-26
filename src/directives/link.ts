@@ -19,9 +19,9 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { CoreConfigConstants } from '../configconstants';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
 
 /**
  * Directive to open a link in external browser.
@@ -39,11 +39,17 @@ export class CoreLinkDirective implements OnInit {
 
     protected element: HTMLElement;
 
-    constructor(element: ElementRef, private domUtils: CoreDomUtilsProvider, private utils: CoreUtilsProvider,
-            private sitesProvider: CoreSitesProvider, private urlUtils: CoreUrlUtilsProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider, @Optional() private navCtrl: NavController,
-            @Optional() private content: Content, @Optional() private svComponent: CoreSplitViewComponent,
-            private textUtils: CoreTextUtilsProvider) {
+    constructor(element: ElementRef,
+            protected domUtils: CoreDomUtilsProvider,
+            protected utils: CoreUtilsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected contentLinksHelper: CoreContentLinksHelperProvider,
+            @Optional() protected navCtrl: NavController,
+            @Optional() protected content: Content,
+            @Optional() protected svComponent: CoreSplitViewComponent,
+            protected textUtils: CoreTextUtilsProvider,
+            protected urlSchemesProvider: CoreCustomURLSchemesProvider) {
         // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
         this.element = element.nativeElement || element;
     }
@@ -90,9 +96,8 @@ export class CoreLinkDirective implements OnInit {
      * @param href HREF to be opened.
      */
     protected navigate(href: string): void {
-        const contentLinksScheme = CoreConfigConstants.customurlscheme + '://link=';
 
-        if (href.indexOf('cdvfile://') === 0 || href.indexOf('file://') === 0 || href.indexOf('filesystem:') === 0) {
+        if (this.urlUtils.isLocalFileUrl(href)) {
             // We have a local file.
             this.utils.openFile(href).catch((error) => {
                 this.domUtils.showErrorModal(error);
@@ -107,10 +112,10 @@ export class CoreLinkDirective implements OnInit {
                 // Look for id or name.
                 this.domUtils.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');
             }
-        } else if (href.indexOf(contentLinksScheme) === 0) {
-            // Link should be treated by Custom URL Scheme. Encode the right part, otherwise ':' is removed in iOS.
-            href = contentLinksScheme + encodeURIComponent(href.replace(contentLinksScheme, ''));
-            this.utils.openInBrowser(href);
+        } else if (this.urlSchemesProvider.isCustomURL(href)) {
+            this.urlSchemesProvider.handleCustomURL(href).catch((error: CoreCustomURLSchemesHandleError) => {
+                this.urlSchemesProvider.treatHandleCustomURLError(error);
+            });
         } else {
 
             // It's an external link, we will open with browser. Check if we need to auto-login.

@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Injectable, NgZone } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, ModalController } from 'ionic-angular';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { FileOpener } from '@ionic-native/file-opener';
 import { WebIntent } from '@ionic-native/web-intent';
+import { QRScanner } from '@ionic-native/qr-scanner';
 import { CoreAppProvider } from '../app';
 import { CoreDomUtilsProvider } from './dom';
 import { CoreMimetypeUtilsProvider } from './mimetype';
@@ -27,6 +28,9 @@ import { CoreLoggerProvider } from '../logger';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { CoreWSProvider, CoreWSError } from '../ws';
+import { CoreFile } from '../file';
+import { Subscription } from 'rxjs';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.
@@ -61,13 +65,35 @@ export class CoreUtilsProvider {
     protected logger;
     protected iabInstance: InAppBrowserObject;
     protected uniqueIds: {[name: string]: number} = {};
+    protected qrScanData: {deferred: PromiseDefer, observable: Subscription};
 
-    constructor(private iab: InAppBrowser, private appProvider: CoreAppProvider, private clipboard: Clipboard,
-            private domUtils: CoreDomUtilsProvider, logger: CoreLoggerProvider, private translate: TranslateService,
-            private platform: Platform, private langProvider: CoreLangProvider, private eventsProvider: CoreEventsProvider,
-            private fileOpener: FileOpener, private mimetypeUtils: CoreMimetypeUtilsProvider, private webIntent: WebIntent,
-            private wsProvider: CoreWSProvider, private zone: NgZone, private textUtils: CoreTextUtilsProvider) {
+    constructor(protected iab: InAppBrowser,
+            protected appProvider: CoreAppProvider,
+            protected clipboard: Clipboard,
+            protected domUtils: CoreDomUtilsProvider,
+            logger: CoreLoggerProvider,
+            protected translate: TranslateService,
+            protected platform: Platform,
+            protected langProvider: CoreLangProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected fileOpener: FileOpener,
+            protected mimetypeUtils: CoreMimetypeUtilsProvider,
+            protected webIntent: WebIntent,
+            protected wsProvider: CoreWSProvider,
+            protected zone: NgZone,
+            protected textUtils: CoreTextUtilsProvider,
+            protected modalCtrl: ModalController,
+            protected qrScanner: QRScanner) {
         this.logger = logger.getInstance('CoreUtilsProvider');
+
+        this.platform.ready().then(() => {
+            const win = <any> window;
+
+            if (win.cordova && win.cordova.InAppBrowser) {
+                // Override the default window.open with the InAppBrowser one.
+                win.open = win.cordova.InAppBrowser.open;
+            }
+        });
     }
 
     /**
@@ -856,14 +882,27 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Check if a value isn't null or undefined.
+     *
+     * @param value Value to check.
+     * @return True if not null and not undefined.
+     */
+    notNullOrUndefined(value: any): boolean {
+        return typeof value != 'undefined' && value !== null;
+    }
+
+    /**
      * Open a file using platform specific method.
      *
      * @param path The local path of the file to be open.
      * @return Promise resolved when done.
      */
     openFile(path: string): Promise<any> {
-        const extension = this.mimetypeUtils.getFileExtension(path),
-            mimetype = this.mimetypeUtils.getMimeType(extension);
+        // Convert the path to a native path if needed.
+        path = CoreFile.instance.unconvertFileSrc(path);
+
+        const extension = this.mimetypeUtils.getFileExtension(path);
+        const mimetype = this.mimetypeUtils.getMimeType(extension);
 
         // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
         try {
@@ -901,6 +940,7 @@ export class CoreUtilsProvider {
         }
 
         options = options || {};
+        options.usewkwebview = 'yes'; // Force WKWebView in iOS.
 
         if (!options.enableViewPortScale) {
             options.enableViewPortScale = 'yes'; // Enable zoom on iOS.
@@ -1392,4 +1432,141 @@ export class CoreUtilsProvider {
 
         return filtered;
     }
+
+    /**
+     * Debounce a function so consecutive calls are ignored until a certain time has passed since the last call.
+     *
+     * @param context The context to apply to the function.
+     * @param fn Function to debounce.
+     * @param delay Time that must pass until the function is called.
+     * @return Debounced function.
+     */
+    debounce(fn: (...args: any[]) => any, delay: number): (...args: any[]) => void {
+
+        let timeoutID: number;
+
+        const debounced = (...args: any[]): void => {
+            clearTimeout(timeoutID);
+
+            timeoutID = window.setTimeout(() => {
+                fn.apply(null, args);
+            }, delay);
+        };
+
+        return debounced;
+    }
+
+    /**
+     * Check whether the app can scan QR codes.
+     *
+     * @return Whether the app can scan QR codes.
+     */
+    canScanQR(): boolean {
+        return this.appProvider.isMobile();
+    }
+
+    /**
+     * Open a modal to scan a QR code.
+     *
+     * @param title Title of the modal. Defaults to "QR reader".
+     * @return Promise resolved with the captured text or undefined if cancelled or error.
+     */
+    scanQR(title?: string): Promise<string> {
+        return new Promise((resolve, reject): void => {
+            const modal = this.modalCtrl.create('CoreViewerQRScannerPage', {
+                title: title
+            }, { cssClass: 'core-modal-fullscreen'});
+
+            modal.present();
+
+            modal.onDidDismiss((data) => {
+                resolve(data);
+            });
+        });
+    }
+
+    /**
+     * Start scanning for a QR code.
+     *
+     * @return Promise resolved with the QR string, rejected if error or cancelled.
+     */
+    startScanQR(): Promise<string> {
+        if (!this.appProvider.isMobile()) {
+            return Promise.reject('QRScanner isn\'t available in desktop apps.');
+        }
+
+        // Ask the user for permission to use the camera.
+        // The scan method also does this, but since it returns an Observable we wouldn't be able to detect if the user denied.
+        return this.qrScanner.prepare().then((status) => {
+
+            if (!status.authorized) {
+                // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
+                return Promise.reject('The user denied camera access.');
+            }
+
+            if (this.qrScanData && this.qrScanData.deferred) {
+                // Already scanning.
+                return this.qrScanData.deferred.promise;
+            }
+
+            // Start scanning.
+            this.qrScanData = {
+                deferred: this.promiseDefer(),
+                observable: this.qrScanner.scan().subscribe((text) => {
+
+                    // Text received, stop scanning and return the text.
+                    this.stopScanQR(text, false);
+                })
+            };
+
+            // Show the camera.
+            return this.qrScanner.show().then(() => {
+                document.body.classList.add('core-scanning-qr');
+
+                return this.qrScanData.deferred.promise;
+            }, (err) => {
+                this.stopScanQR(err, true);
+
+                return Promise.reject(err);
+            });
+
+        }).catch((err) => {
+            err.message = err.message || err._message;
+
+            return Promise.reject(err);
+        });
+    }
+
+    /**
+     * Stop scanning for QR code. If no param is provided, the app will consider the user cancelled.
+     *
+     * @param data If success, the text of the QR code. If error, the error object or message. Undefined for cancelled.
+     * @param error True if the data belongs to an error, false otherwise.
+     */
+    stopScanQR(data?: any, error?: boolean): void {
+
+        if (!this.qrScanData) {
+            // Not scanning.
+            return;
+        }
+
+        // Hide camera preview.
+        document.body.classList.remove('core-scanning-qr');
+        this.qrScanner.hide();
+        this.qrScanner.destroy();
+
+        this.qrScanData.observable.unsubscribe(); // Stop scanning.
+
+        if (error) {
+            this.qrScanData.deferred.reject(data);
+        } else if (typeof data != 'undefined') {
+            this.qrScanData.deferred.resolve(data);
+        } else {
+            this.qrScanData.deferred.reject(this.domUtils.createCanceledError());
+        }
+
+        delete this.qrScanData;
+    }
 }
+
+export class CoreUtils extends makeSingleton(CoreUtilsProvider) {}

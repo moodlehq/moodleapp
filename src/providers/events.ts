@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { CoreLoggerProvider } from '@providers/logger';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Observer instance to stop listening to an event.
@@ -47,6 +48,7 @@ export class CoreEventsProvider {
     static PACKAGE_STATUS_CHANGED = 'package_status_changed';
     static COURSE_STATUS_CHANGED = 'course_status_changed';
     static SECTION_STATUS_CHANGED = 'section_status_changed';
+    static COMPONENT_FILE_ACTION = 'component_file_action';
     static SITE_PLUGINS_LOADED = 'site_plugins_loaded';
     static SITE_PLUGINS_COURSE_RESTRICT_UPDATED = 'site_plugins_course_restrict_updated';
     static LOGIN_SITE_CHECKED = 'login_site_checked';
@@ -65,6 +67,7 @@ export class CoreEventsProvider {
     static WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
     static SITE_STORAGE_DELETED = 'site_storage_deleted';
     static FORM_ACTION = 'form_action';
+    static ACTIVITY_DATA_SENT = 'activity_data_sent';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
@@ -173,3 +176,5 @@ export class CoreEventsProvider {
         }
     }
 }
+
+export class CoreEvents extends makeSingleton(CoreEventsProvider) {}

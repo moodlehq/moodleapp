@@ -17,6 +17,8 @@ import { CoreConfigProvider } from './config';
 import { CoreInitHandler, CoreInitDelegate } from './init';
 import { CoreLoggerProvider } from './logger';
 import { CoreConfigConstants } from '../configconstants';
+import { CoreH5P } from '@core/h5p/providers/h5p';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Factory to handle app updates. This factory shouldn't be used outside of core.
@@ -33,7 +35,8 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
     protected VERSION_APPLIED = 'version_applied';
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private configProvider: CoreConfigProvider) {
+    constructor(logger: CoreLoggerProvider,
+            protected configProvider: CoreConfigProvider) {
         this.logger = logger.getInstance('CoreUpdateManagerProvider');
     }
 
@@ -43,19 +46,24 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return Promise resolved when the update process finishes.
      */
-    load(): Promise<any> {
-        const promises = [],
-            versionCode = CoreConfigConstants.versioncode;
+    async load(): Promise<any> {
+        const promises = [];
+        const versionCode = CoreConfigConstants.versioncode;
 
-        return this.configProvider.get(this.VERSION_APPLIED, 0).then((versionApplied: number) => {
+        const versionApplied: number = await this.configProvider.get(this.VERSION_APPLIED, 0);
 
-            // Put here the code to treat app updates.
+        if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
+            promises.push(CoreH5P.instance.h5pPlayer.deleteAllContentIndexes());
+        }
 
-            return Promise.all(promises).then(() => {
-                return this.configProvider.set(this.VERSION_APPLIED, versionCode);
-            }).catch((error) => {
-                this.logger.error(`Error applying update from ${versionApplied} to ${versionCode}`, error);
-            });
-        });
+        try {
+            await Promise.all(promises);
+
+            await this.configProvider.set(this.VERSION_APPLIED, versionCode);
+        } catch (error) {
+            this.logger.error(`Error applying update from ${versionApplied} to ${versionCode}`, error);
+        }
     }
 }
+
+export class CoreUpdateManager extends makeSingleton(CoreUpdateManagerProvider) {}

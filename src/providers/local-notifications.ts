@@ -27,6 +27,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { Subject, Subscription } from 'rxjs';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /*
  * Generated class for the LocalNotificationsProvider provider.
@@ -754,3 +755,5 @@ export class CoreLocalNotificationsProvider {
         return this.appDB.updateRecords(this.COMPONENTS_TABLE, {id: newId}, {id: oldId});
     }
 }
+
+export class CoreLocalNotifications extends makeSingleton(CoreLocalNotificationsProvider) {}

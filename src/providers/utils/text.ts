@@ -17,6 +17,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ModalController, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Different type of errors the app can treat.
@@ -65,6 +66,7 @@ export class CoreTextUtilsProvider {
         {old: /_mmaModFolder/g, new: '_AddonModFolder'},
         {old: /_mmaModForum/g, new: '_AddonModForum'},
         {old: /_mmaModGlossary/g, new: '_AddonModGlossary'},
+        {old: /_mmaModH5pactivity/g, new: '_AddonModH5PActivity'},
         {old: /_mmaModImscp/g, new: '_AddonModImscp'},
         {old: /_mmaModLabel/g, new: '_AddonModLabel'},
         {old: /_mmaModLesson/g, new: '_AddonModLesson'},
@@ -101,6 +103,33 @@ export class CoreTextUtilsProvider {
         }
 
         return text;
+    }
+
+    /**
+     * Add some text to an error message.
+     *
+     * @param error Error message or object.
+     * @param text Text to add.
+     * @return Modified error.
+     */
+    addTextToError(error: string | CoreTextErrorObject, text: string): string | CoreTextErrorObject {
+        if (typeof error == 'string') {
+            return error + text;
+        }
+
+        if (error) {
+            if (typeof error.message == 'string') {
+                error.message += text;
+            } else if (typeof error.error == 'string') {
+                error.error += text;
+            } else if (typeof error.content == 'string') {
+                error.content += text;
+            } else if (typeof error.body == 'string') {
+                error.body += text;
+            }
+        }
+
+        return error;
     }
 
     /**
@@ -413,28 +442,20 @@ export class CoreTextUtilsProvider {
      * @param contextLevel The context level.
      * @param instanceId The instance ID related to the context.
      * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
+     * @deprecated since 3.8.3. Please use viewText instead.
      */
     expandText(title: string, text: string, component?: string, componentId?: string | number, files?: any[],
             filter?: boolean, contextLevel?: string, instanceId?: number, courseId?: number): void {
-        if (text.length > 0) {
-            const params: any = {
-                title: title,
-                content: text,
-                component: component,
-                componentId: componentId,
-                files: files,
-                filter: filter,
-                contextLevel: contextLevel,
-                instanceId: instanceId,
-                courseId: courseId
-            };
 
-            // Open a modal with the contents.
-            params.isModal = true;
-
-            const modal = this.modalCtrl.create('CoreViewerTextPage', params);
-            modal.present();
-        }
+        return this.viewText(title, text, {
+            component,
+            componentId,
+            files,
+            filter,
+            contextLevel,
+            instanceId,
+            courseId,
+        });
     }
 
     /**
@@ -1105,4 +1126,50 @@ export class CoreTextUtilsProvider {
 
         return _unserialize((data + ''), 0)[2];
     }
+
+    /**
+     * Shows a text on a new page.
+     *
+     * @param title Title of the new state.
+     * @param text Content of the text to be expanded.
+     * @param component Component to link the embedded files to.
+     * @param componentId An ID to use in conjunction with the component.
+     * @param files List of files to display along with the text.
+     * @param filter Whether the text should be filtered.
+     * @param contextLevel The context level.
+     * @param instanceId The instance ID related to the context.
+     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
+     */
+    viewText(title: string, text: string, options?: CoreTextUtilsViewTextOptions): void {
+        if (text.length > 0) {
+            options = options || {};
+
+            const params: any = {
+                title: title,
+                content: text,
+                isModal: true,
+            };
+
+            Object.assign(params, options);
+
+            const modal = this.modalCtrl.create('CoreViewerTextPage', params);
+            modal.present();
+        }
+    }
 }
+
+/**
+ * Options for viewText.
+ */
+export type CoreTextUtilsViewTextOptions = {
+    component?: string; // Component to link the embedded files to.
+    componentId?: string | number; // An ID to use in conjunction with the component.
+    files?: any[]; // List of files to display along with the text.
+    filter?: boolean; // Whether the text should be filtered.
+    contextLevel?: string; // The context level.
+    instanceId?: number; // The instance ID related to the context.
+    courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+    displayCopyButton?: boolean; // Whether to display a button to copy the text.
+};
+
+export class CoreTextUtils extends makeSingleton(CoreTextUtilsProvider) {}

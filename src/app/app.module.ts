@@ -14,7 +14,7 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, COMPILER_OPTIONS } from '@angular/core';
+import { NgModule, COMPILER_OPTIONS, Injector } from '@angular/core';
 import { IonicApp, IonicModule, Platform, Content, ScrollEvent, Config, Refresher } from 'ionic-angular';
 import { assert } from 'ionic-angular/util/util';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -88,6 +88,7 @@ import { CoreFilterModule } from '@core/filter/filter.module';
 import { CoreH5PModule } from '@core/h5p/h5p.module';
 import { CoreSearchModule } from '@core/search/search.module';
 import { CoreEditorModule } from '@core/editor/editor.module';
+import { CoreXAPIModule } from '@core/xapi/xapi.module';
 
 // Addon modules.
 import { AddonBadgesModule } from '@addon/badges/badges.module';
@@ -98,6 +99,7 @@ import { AddonCourseCompletionModule } from '@addon/coursecompletion/coursecompl
 import { AddonUserProfileFieldModule } from '@addon/userprofilefield/userprofilefield.module';
 import { AddonFilesModule } from '@addon/files/files.module';
 import { AddonBlockActivityModulesModule } from '@addon/block/activitymodules/activitymodules.module';
+import { AddonBlockActivityResultsModule } from '@addon/block/activityresults/activityresults.module';
 import { AddonBlockBadgesModule } from '@addon/block/badges/badges.module';
 import { AddonBlockBlogMenuModule } from '@addon/block/blogmenu/blogmenu.module';
 import { AddonBlockBlogTagsModule } from '@addon/block/blogtags/blogtags.module';
@@ -154,6 +156,9 @@ import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
 import { AddonStorageManagerModule } from '@addon/storagemanager/storagemanager.module';
 import { AddonFilterModule } from '@addon/filter/filter.module';
+import { AddonModH5PActivityModule } from '@addon/mod/h5pactivity/h5pactivity.module';
+
+import { setSingletonsInjector } from '@singletons/core.singletons';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -237,6 +242,7 @@ export const WP_PROVIDER: any = null;
         CoreH5PModule,
         CoreSearchModule,
         CoreEditorModule,
+        CoreXAPIModule,
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
@@ -245,6 +251,7 @@ export const WP_PROVIDER: any = null;
         AddonUserProfileFieldModule,
         AddonFilesModule,
         AddonBlockActivityModulesModule,
+        AddonBlockActivityResultsModule,
         AddonBlockBadgesModule,
         AddonBlockBlogMenuModule,
         AddonBlockBlogRecentModule,
@@ -299,7 +306,8 @@ export const WP_PROVIDER: any = null;
         AddonQbehaviourModule,
         AddonQtypeModule,
         AddonStorageManagerModule,
-        AddonFilterModule
+        AddonFilterModule,
+        AddonModH5PActivityModule,
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -357,6 +365,7 @@ export class AppModule {
             private eventsProvider: CoreEventsProvider,
             cronDelegate: CoreCronDelegate,
             siteInfoCronHandler: CoreSiteInfoCronHandler,
+            injector: Injector,
             ) {
         // Register a handler for platform ready.
         initDelegate.registerProcess({
@@ -390,6 +399,9 @@ export class AppModule {
 
         // Register handlers.
         cronDelegate.register(siteInfoCronHandler);
+
+        // Set the injector.
+        setSingletonsInjector(injector);
 
         // Set transition animation.
         config.setTransition('core-page-transition', CorePageTransition);

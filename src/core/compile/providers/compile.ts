@@ -41,6 +41,7 @@ import { CORE_PUSHNOTIFICATIONS_PROVIDERS } from '@core/pushnotifications/pushno
 import { IONIC_NATIVE_PROVIDERS } from '@core/emulator/emulator.module';
 import { CORE_EDITOR_PROVIDERS } from '@core/editor/editor.module';
 import { CORE_SEARCH_PROVIDERS } from '@core/search/search.module';
+import { CORE_XAPI_PROVIDERS } from '@core/xapi/xapi.module';
 
 // Import only this provider to prevent circular dependencies.
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
@@ -56,7 +57,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreUrl } from '@classes/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
@@ -109,6 +110,7 @@ import { ADDON_MOD_FEEDBACK_PROVIDERS } from '@addon/mod/feedback/feedback.modul
 import { ADDON_MOD_FOLDER_PROVIDERS } from '@addon/mod/folder/folder.module';
 import { ADDON_MOD_FORUM_PROVIDERS } from '@addon/mod/forum/forum.module';
 import { ADDON_MOD_GLOSSARY_PROVIDERS } from '@addon/mod/glossary/glossary.module';
+import { ADDON_MOD_H5P_ACTIVITY_PROVIDERS } from '@addon/mod/h5pactivity/h5pactivity.module';
 import { ADDON_MOD_IMSCP_PROVIDERS } from '@addon/mod/imscp/imscp.module';
 import { ADDON_MOD_LESSON_PROVIDERS } from '@addon/mod/lesson/lesson.module';
 import { ADDON_MOD_LTI_PROVIDERS } from '@addon/mod/lti/lti.module';
@@ -242,7 +244,7 @@ export class CoreCompileProvider {
                 .concat(ADDON_MOD_WORKSHOP_PROVIDERS).concat(ADDON_NOTES_PROVIDERS).concat(ADDON_NOTIFICATIONS_PROVIDERS)
                 .concat(CORE_PUSHNOTIFICATIONS_PROVIDERS).concat(ADDON_REMOTETHEMES_PROVIDERS).concat(CORE_BLOCK_PROVIDERS)
                 .concat(CORE_FILTER_PROVIDERS).concat(CORE_H5P_PROVIDERS).concat(CORE_EDITOR_PROVIDERS)
-                .concat(CORE_SEARCH_PROVIDERS);
+                .concat(CORE_SEARCH_PROVIDERS).concat(ADDON_MOD_H5P_ACTIVITY_PROVIDERS).concat(CORE_XAPI_PROVIDERS);
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {

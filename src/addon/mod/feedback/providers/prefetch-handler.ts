@@ -28,6 +28,7 @@ import { CoreGroupsProvider } from '@providers/groups';
 import { AddonModFeedbackSyncProvider } from './sync';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Handler to prefetch feedbacks.
@@ -68,26 +69,31 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @return Promise resolved with the list of files.
      */
-    getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
+    async getFiles(module: any, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
         let files = [];
 
-        return this.feedbackProvider.getFeedback(courseId, module.id).then((feedback) => {
+        const feedback = await this.feedbackProvider.getFeedback(courseId, module.id);
 
-            // Get intro files and page after submit files.
-            files = feedback.pageaftersubmitfiles || [];
-            files = files.concat(this.getIntroFilesFromInstance(module, feedback));
+        // Get intro files and page after submit files.
+        files = feedback.pageaftersubmitfiles || [];
+        files = files.concat(this.getIntroFilesFromInstance(module, feedback));
 
-            return this.feedbackProvider.getItems(feedback.id);
-        }).then((response) => {
+        try {
+            const response = await this.feedbackProvider.getItems(feedback.id);
+
             response.items.forEach((item) => {
-                files = files.concat(item.itemfiles);
+                files = files.concat(item.itemfiles.map((file) => {
+                    file.fileurl = file.fileurl || file.url;
+
+                    return file;
+                }));
             });
 
-            return files;
-        }).catch(() => {
-            // Any error, return the list we have.
-            return files;
-        });
+        } catch (e) {
+            // Ignore errors.
+        }
+
+        return files;
     }
 
     /**
@@ -97,7 +103,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
      * @param courseId Course ID.
      * @return Promise resolved with list of intro files.
      */
-    getIntroFiles(module: any, courseId: number): Promise<any[]> {
+    getIntroFiles(module: any, courseId: number): Promise<CoreWSExternalFile[]> {
         return this.feedbackProvider.getFeedback(courseId, module.id).catch(() => {
             // Not found, return undefined so module description is used.
         }).then((feedback) => {

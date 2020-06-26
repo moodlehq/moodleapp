@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title>{{ 'addon.storagemanager.managestorage' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-card>
+            <ion-card-header>
+                <h1 text-wrap>{{ 'core.courses.courses' | translate }}</h1>
+                <p text-wrap>{{ 'addon.storagemanager.info' | translate }}</p>
+                <ion-item no-padding padding-top class="size" text-wrap>
+                    <ion-icon name="cube" item-start></ion-icon>
+                    <h2 text-wrap>{{ 'addon.storagemanager.storageused' | translate }}</h2>
+                    <div item-end>
+                        <p text-end>{{ totalSize | coreBytesToSize }}</p>
+                    </div>
+                    <button ion-button icon-only item-end no-padding (click)="deleteCompletelyDownloadedCourses()" [disabled]="completelyDownloadedCourses.length === 0">
+                        <core-icon name="trash" label="{{ 'addon.storagemanager.deletecourses' | translate }}"></core-icon>
+                    </button>
+                </ion-item>
+            </ion-card-header>
+        </ion-card>
+        <ion-card>
+            <ion-list>
+                <ion-item *ngFor="let course of downloadedCourses" class="course">
+                    <h2 text-wrap>{{ course.displayname }}</h2>
+                    <h3 *ngIf="course.isDownloading">{{ 'core.downloading' | translate }}</h3>
+                    <p>
+                        <ion-icon name="cube" item-start></ion-icon>
+                        {{ course.totalSize | coreBytesToSize }}
+                    </p>
+                    <button ion-button icon-only item-end (click)="deleteCourse(course)" [disabled]="course.isDownloading">
+                        <core-icon name="trash" label="{{ 'addon.storagemanager.deletedatafrom' | translate: { name: course.name } }}"></core-icon>
+                    </button>
+                </ion-item>
+            </ion-list>
+        </ion-card>
+    </core-loading>
+</ion-content>

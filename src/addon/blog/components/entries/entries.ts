@@ -16,6 +16,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreTextUtils } from '@providers/utils/text';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { AddonBlogProvider, AddonBlogPost } from '../../providers/blog';
@@ -161,6 +162,8 @@ export class AddonBlogEntriesComponent implements OnInit {
                     entry.contextLevel = 'user';
                     entry.contextInstanceId = entry.userid;
                 }
+
+                entry.summary = CoreTextUtils.instance.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
 
                 return this.userProvider.getProfile(entry.userid, entry.courseid, true).then((user) => {
                     entry.user = user;

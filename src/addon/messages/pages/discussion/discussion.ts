@@ -65,6 +65,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     protected viewDestroyed = false;
     protected memberInfoObserver: any;
     protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
+    protected scrollListener;
 
     conversationId: number; // Conversation ID. Undefined if it's a new individual conversation.
     conversation: AddonMessagesConversationFormatted; // The conversation object (if it exists).
@@ -95,6 +96,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     isSelf = false;
     muteEnabled = false;
     muteIcon = 'volume-off';
+    newMessages = 0;
 
     constructor(private eventsProvider: CoreEventsProvider, sitesProvider: CoreSitesProvider, navParams: NavParams,
             private userProvider: CoreUserProvider, private navCtrl: NavController, private messagesSync: AddonMessagesSyncProvider,
@@ -134,6 +136,8 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 this.fetchData();
             }
         }, this.siteId);
+
+        this.scrollListener = this.scrollListenerFunction.bind(this);
     }
 
     /**
@@ -141,21 +145,26 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      *
      * @param message Message to be added.
      * @param keep If set the keep flag or not.
+     * @return If message is not mine and was recently added.
      */
     protected addMessage(message: AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted,
-            keep: boolean = true): void {
+            keep: boolean = true): boolean {
 
         /* Create a hash to identify the message. The text of online messages isn't reliable because it can have random data
            like VideoJS ID. Try to use id and fallback to text for offline messages. */
         message.hash = Md5.hashAsciiStr(String(message.id || message.text || '')) + '#' + message.timecreated + '#' +
                 message.useridfrom;
 
+        let added = false;
         if (typeof this.keepMessageMap[message.hash] === 'undefined') {
             // Message not added to the list. Add it now.
             this.messages.push(message);
+            added = message.useridfrom != this.currentUserId;
         }
         // Message needs to be kept in the list.
         this.keepMessageMap[message.hash] = keep;
+
+        return added;
     }
 
     /**
@@ -306,9 +315,10 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Convenience function to fetch messages.
      *
+     * @param messagesAreNew If messages loaded are new messages.
      * @return Resolved when done.
      */
-    protected fetchMessages(): Promise<void> {
+    protected fetchMessages(messagesAreNew: boolean = true): Promise<void> {
         this.loadMoreError = false;
 
         if (this.messagesBeingSent > 0) {
@@ -348,7 +358,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 });
             }
         }).then((messages: (AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted)[]) => {
-            this.loadMessages(messages);
+            this.loadMessages(messages, messagesAreNew);
         }).finally(() => {
             this.fetching = false;
         });
@@ -357,10 +367,11 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
     /**
      * Format and load a list of messages into the view.
      *
+     * @param messagesAreNew If messages loaded are new messages.
      * @param messages Messages to load.
      */
-    protected loadMessages(messages: (AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted)[])
-            : void {
+    protected loadMessages(messages: (AddonMessagesConversationMessageFormatted | AddonMessagesGetMessagesMessageFormatted)[],
+            messagesAreNew: boolean = true): void {
 
         if (this.viewDestroyed) {
             return;
@@ -380,9 +391,14 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         }
 
         // Add new messages to the list and mark the messages that should still be displayed.
-        messages.forEach((message) => {
-            this.addMessage(message);
-        });
+        const newMessages = messages.reduce((val, message) => {
+            return val + (this.addMessage(message) ? 1 : 0);
+        }, 0);
+
+        // Set the new badges message if we're loading new messages.
+        if (messagesAreNew) {
+            this.setNewMessagesBadge(this.newMessages + newMessages);
+        }
 
         // Remove messages that shouldn't be in the list anymore.
         for (const hash in this.keepMessageMap) {
@@ -412,6 +428,63 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
         // Mark retrieved messages as read if they are not.
         this.markMessagesAsRead(forceMark);
+    }
+
+    /**
+     * Set the new message badge number and set scroll listener if needed.
+     *
+     * @param addMessages NUmber of messages still to be read.
+     */
+    protected setNewMessagesBadge(addMessages: number): void {
+        if (this.newMessages == 0 && addMessages > 0) {
+            // Setup scrolling.
+            this.content.getScrollElement().addEventListener('scroll', this.scrollListener);
+
+            this.scrollListenerFunction();
+        } else if (this.newMessages > 0 && addMessages == 0) {
+            // Remove scrolling.
+            this.content.getScrollElement().removeEventListener('scroll', this.scrollListener);
+        }
+
+        this.newMessages = addMessages;
+    }
+
+    /**
+     * The scroll was moved. Update new messages count.
+     */
+    protected scrollListenerFunction(): void {
+        if (this.newMessages > 0) {
+            const scrollBottom = this.domUtils.getScrollTop(this.content) + this.domUtils.getContentHeight(this.content);
+            const scrollHeight = this.domUtils.getScrollHeight(this.content);
+            if (scrollBottom > scrollHeight - 40) {
+                // At the bottom, reset.
+                this.setNewMessagesBadge(0);
+
+                return;
+            }
+
+            const scrollElRect = this.content.getScrollElement().getBoundingClientRect();
+            const scrollBottomPos = (scrollElRect && scrollElRect.bottom) || 0;
+
+            if (scrollBottomPos == 0) {
+                return;
+            }
+
+            const messages = Array.from(document.querySelectorAll('.addon-message-not-mine')).slice(-this.newMessages).reverse();
+
+            const newMessagesUnread = messages.findIndex((message, index) => {
+                const elementRect = message.getBoundingClientRect();
+                if (!elementRect) {
+                    return false;
+                }
+
+                return elementRect.bottom <= scrollBottomPos;
+            });
+
+            if (newMessagesUnread > 0 && newMessagesUnread < this.newMessages) {
+                this.setNewMessagesBadge(newMessagesUnread);
+            }
+        }
     }
 
     /**
@@ -887,7 +960,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
         return this.waitForFetch().finally(() => {
             this.pagesLoaded++;
 
-            this.fetchMessages().then(() => {
+            this.fetchMessages(false).then(() => {
 
                 // Try to keep the scroll position.
                 const scrollBottom = scrollHeight - this.domUtils.getScrollTop(this.content);
@@ -972,6 +1045,20 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
                 }
             });
             this.scrollBottom = false;
+
+            // Reset the badge.
+            this.setNewMessagesBadge(0);
+        }
+    }
+
+    /**
+     * Scroll to the first new unread message.
+     */
+    scrollToFirstUnreadMessage(): void {
+        if (this.newMessages > 0) {
+            const messages = Array.from(document.querySelectorAll('.addon-message-not-mine'));
+
+            this.domUtils.scrollToElement(this.content, <HTMLElement> messages[messages.length - this.newMessages]);
         }
     }
 
@@ -987,6 +1074,7 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
 
         this.showDelete = false;
         this.scrollBottom = true;
+        this.setNewMessagesBadge(0);
 
         message = {
             id: null,

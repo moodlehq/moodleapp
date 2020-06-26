@@ -41,7 +41,7 @@
                 </h6>
 
                 <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom && message.id == unreadMessageFrom" color="light">
-                    <ion-label>{{ 'addon.messages.newmessages' | translate:{$a: title} }}</ion-label>
+                    <ion-label>{{ 'addon.messages.newmessages' | translate }}</ion-label>
                     <ion-icon name="arrow-round-down"></ion-icon>
                 </ion-chip>
 
@@ -68,6 +68,13 @@
                 </ion-item>
             </ng-container>
         </ion-list>
+        <!-- Scroll bottom. -->
+        <ion-fab core-fab bottom end *ngIf="newMessages > 0">
+            <button ion-fab mini (click)="scrollToFirstUnreadMessage(true)" color="light" [attr.aria-label]="'addon.messages.newmessages' | translate">
+                <ion-icon name="arrow-round-down"></ion-icon>
+                <span class="core-discussion-messages-badge">{{ newMessages }}</span>
+            </button>
+        </ion-fab>
         <core-empty-box *ngIf="!messages || messages.length <= 0" icon="chatbubbles" [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
     </core-loading>
 </ion-content>

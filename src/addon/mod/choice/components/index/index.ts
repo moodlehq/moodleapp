@@ -14,6 +14,7 @@
 
 import { Component, Optional, Injector } from '@angular/core';
 import { Content } from 'ionic-angular';
+import { CoreEvents, CoreEventsProvider } from '@providers/events';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCourseModuleMainActivityComponent } from '@core/course/classes/main-activity-component';
 import { AddonModChoiceProvider, AddonModChoiceChoice, AddonModChoiceOption, AddonModChoiceResult } from '../../providers/choice';
@@ -51,9 +52,14 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasAnsweredOnline = false;
     protected now: number;
 
-    constructor(injector: Injector, private choiceProvider: AddonModChoiceProvider, @Optional() content: Content,
-            private choiceOffline: AddonModChoiceOfflineProvider, private choiceSync: AddonModChoiceSyncProvider,
-            private timeUtils: CoreTimeUtilsProvider) {
+    constructor(
+            injector: Injector,
+            protected choiceProvider: AddonModChoiceProvider,
+            @Optional() content: Content,
+            protected choiceOffline: AddonModChoiceOfflineProvider,
+            protected choiceSync: AddonModChoiceSyncProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            ) {
         super(injector, content);
     }
 
@@ -358,6 +364,10 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 // Check completion since it could be configured to complete once the user answers the choice.
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completiondata);
                 this.domUtils.scrollToTop(this.content);
+
+                if (online) {
+                    CoreEvents.instance.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: this.moduleName });
+                }
 
                 return this.dataUpdated(online);
             }).catch((message) => {

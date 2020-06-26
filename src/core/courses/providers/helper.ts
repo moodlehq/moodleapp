@@ -212,6 +212,14 @@ export class CoreCoursesHelperProvider {
                             return b.timemodified - a.timemodified;
                         });
                         break;
+                    case 'shortname':
+                        courses.sort((a, b) => {
+                            const compareA = a.shortname.toLowerCase(),
+                                compareB = b.shortname.toLowerCase();
+
+                            return compareA.localeCompare(compareB);
+                        });
+                        break;
                     default:
                         // Sort not implemented. Do not sort.
                 }

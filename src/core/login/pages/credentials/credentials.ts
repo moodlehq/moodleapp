@@ -65,6 +65,8 @@ export class CoreLoginCredentialsPage {
             private eventsProvider: CoreEventsProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
+        this.siteName = navParams.get('siteName') || null;
+        this.logoUrl = navParams.get('logoUrl') || null;
         this.siteConfig = navParams.get('siteConfig');
         this.urlToOpen = navParams.get('urlToOpen');
 
@@ -91,16 +93,9 @@ export class CoreLoginCredentialsPage {
     }
 
     /**
-     * View enter.
+     * View destroyed.
      */
-    ionViewDidEnter(): void {
-        this.viewLeft = false;
-    }
-
-    /**
-     * View left.
-     */
-    ionViewDidLeave(): void {
+    ionViewWillUnload(): void {
         this.viewLeft = true;
         this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
     }
@@ -170,8 +165,6 @@ export class CoreLoginCredentialsPage {
                 this.eventsProvider.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, { config: this.siteConfig });
             }
         } else {
-            this.siteName = null;
-            this.logoUrl = null;
             this.authInstructions = null;
             this.canSignup = false;
             this.identityProviders = [];

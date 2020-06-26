@@ -67,20 +67,20 @@
                 </ng-container>
                 <ion-grid *ngIf="!preview">
                     <ion-row align-items-center>
-                        <ion-col *ngIf="hasPrevPage">
-                            <button ion-button block outline icon-start (click)="gotoPage(true)">
+                        <ion-col *ngIf="hasPrevPage" col-12 col-sm-6>
+                            <button ion-button block outline icon-start (click)="gotoPage(true)" text-wrap>
                                 <ion-icon name="arrow-back"></ion-icon>
                                 {{ 'addon.mod_feedback.previous_page' | translate }}
                             </button>
                         </ion-col>
-                        <ion-col *ngIf="hasNextPage">
-                            <button ion-button block icon-end (click)="gotoPage(false)">
+                        <ion-col *ngIf="hasNextPage" col-12 [attr.col-sm-6]="(hasPrevPage) || null">
+                            <button ion-button block icon-end (click)="gotoPage(false)" text-wrap>
                                 {{ 'addon.mod_feedback.next_page' | translate }}
                                 <ion-icon name="arrow-forward"></ion-icon>
                             </button>
                         </ion-col>
-                        <ion-col *ngIf="!hasNextPage">
-                            <button ion-button block (click)="gotoPage(false)">
+                        <ion-col *ngIf="!hasNextPage" col-12 [attr.col-sm-6]="(hasPrevPage) || null">
+                            <button ion-button block (click)="gotoPage(false)" text-wrap>
                                 {{ 'addon.mod_feedback.save_entries' | translate }}
                             </button>
                         </ion-col>
@@ -98,14 +98,14 @@
 
         <ion-grid *ngIf="completed">
             <ion-row align-items-center>
-                <ion-col *ngIf="access.canviewanalysis">
-                    <button ion-button block outline icon-start (click)="showAnalysis()">
+                <ion-col *ngIf="access.canviewanalysis" col-12 [attr.col-sm-6]="(hasNextPage) || null">
+                    <button ion-button block outline icon-start (click)="showAnalysis()" text-wrap>
                         <ion-icon name="stats"></ion-icon>
                         {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
                     </button>
                 </ion-col>
-                <ion-col *ngIf="hasNextPage">
-                    <button ion-button block icon-end (click)="continue()">
+                <ion-col *ngIf="hasNextPage" col-12 [attr.col-sm-6]="(access.canviewanalysis) || null">
+                    <button ion-button block icon-end (click)="continue()" text-wrap>
                         {{ 'core.continue' | translate }}
                         <ion-icon name="arrow-forward"></ion-icon>
                     </button>

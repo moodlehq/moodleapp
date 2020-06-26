@@ -17,7 +17,7 @@ import { Searchbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData } from '@core/courses/providers/courses';
 import { CoreCoursesHelperProvider } from '@core/courses/providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
@@ -83,6 +83,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected updateSiteObserver;
     protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting my overview data.';
+    protected showSortByShortName = false;
 
     constructor(injector: Injector,
             protected coursesProvider: CoreCoursesProvider,
@@ -112,8 +113,12 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         }, this.sitesProvider.getCurrentSiteId());
 
-        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, () => {
-            this.refreshContent();
+        this.coursesObserver = this.eventsProvider.on(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+                (data: CoreCoursesMyCoursesUpdatedEventData) => {
+
+            if (data.action == CoreCoursesProvider.ACTION_ENROL || data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+                this.refreshCourseList();
+            }
         }, this.sitesProvider.getCurrentSiteId());
 
         this.currentSite = this.sitesProvider.getCurrentSite();
@@ -151,12 +156,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         promises.push(this.coursesProvider.invalidateUserCourses().finally(() => {
             // Invalidate course completion data.
-            promises.push(this.coursesProvider.invalidateUserCourses().finally(() => {
-                // Invalidate course completion data.
-                return this.utils.allPromises(this.courseIds.map((courseId) => {
-                    return this.courseCompletionProvider.invalidateCourseCompletion(courseId);
-                 }));
-            }));
+            return this.utils.allPromises(this.courseIds.map((courseId) => {
+                return this.courseCompletionProvider.invalidateCourseCompletion(courseId);
+             }));
         }));
 
         promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
@@ -180,6 +182,18 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const showCategories = config && config.displaycategories && config.displaycategories.value == '1';
 
         return this.coursesHelper.getUserCoursesWithOptions(this.sort, null, null, showCategories).then((courses) => {
+            // Check to show sort by short name only if the text is visible.
+            if (courses.length > 0) {
+                const sampleCourse = courses[0];
+                this.showSortByShortName = sampleCourse.displayname && sampleCourse.shortname &&
+                    sampleCourse.fullname != sampleCourse.displayname;
+            }
+
+            // Rollback to sort by full name if user is sorting by short name then Moodle web change the config.
+            if (!this.showSortByShortName && this.sort === 'shortname') {
+                this.switchSort('fullname');
+            }
+
             this.courseIds = courses.map((course) => {
                     return course.id;
                 });
@@ -319,6 +333,23 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
+     * Refresh the list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async refreshCourseList(): Promise<void> {
+        this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
+
+        try {
+            await this.coursesProvider.invalidateUserCourses();
+        } catch (error) {
+            // Ignore errors.
+        }
+
+        await this.loadContent(true);
+    }
+
+    /**
      * The selected courses filter have changed.
      */
     selectedChanged(): void {
@@ -377,7 +408,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.courses.allincludinghidden = courses;
 
         if (this.showSortFilter) {
-                if (this.sort == 'lastaccess') {
+            if (this.sort == 'lastaccess') {
                 courses.sort((a, b) => {
                     return b.lastaccess - a.lastaccess;
                 });
@@ -385,6 +416,14 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 courses.sort((a, b) => {
                     const compareA = a.fullname.toLowerCase(),
                         compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+            } else if (this.sort == 'shortname') {
+                courses.sort((a, b) => {
+                    const compareA = a.shortname.toLowerCase(),
+                        compareB = b.shortname.toLowerCase();
+                    compareA.localeCompare();
 
                     return compareA.localeCompare(compareB);
                 });

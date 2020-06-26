@@ -35,6 +35,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFilterProvider, CoreFilterFilter, CoreFilterFormatTextOptions } from '@core/filter/providers/filter';
 import { CoreFilterHelperProvider } from '@core/filter/providers/helper';
 import { CoreFilterDelegate } from '@core/filter/providers/delegate';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -74,26 +75,28 @@ export class CoreFormatTextDirective implements OnChanges {
     protected loadingChangedListener;
 
     constructor(element: ElementRef,
-            private sitesProvider: CoreSitesProvider,
-            private domUtils: CoreDomUtilsProvider,
-            private textUtils: CoreTextUtilsProvider,
-            private translate: TranslateService,
-            private platform: Platform,
-            private utils: CoreUtilsProvider,
-            private urlUtils: CoreUrlUtilsProvider,
-            private loggerProvider: CoreLoggerProvider,
-            private filepoolProvider: CoreFilepoolProvider,
-            private appProvider: CoreAppProvider,
-            private contentLinksHelper: CoreContentLinksHelperProvider,
-            @Optional() private navCtrl: NavController,
-            @Optional() private content: Content, @Optional()
-            private svComponent: CoreSplitViewComponent,
-            private iframeUtils: CoreIframeUtilsProvider,
-            private eventsProvider: CoreEventsProvider,
-            private filterProvider: CoreFilterProvider,
-            private filterHelper: CoreFilterHelperProvider,
-            private filterDelegate: CoreFilterDelegate,
-            private viewContainerRef: ViewContainerRef) {
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService,
+            protected platform: Platform,
+            protected utils: CoreUtilsProvider,
+            protected urlUtils: CoreUrlUtilsProvider,
+            protected loggerProvider: CoreLoggerProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected appProvider: CoreAppProvider,
+            protected contentLinksHelper: CoreContentLinksHelperProvider,
+            @Optional() protected navCtrl: NavController,
+            @Optional() protected content: Content, @Optional()
+            @Optional() protected svComponent: CoreSplitViewComponent,
+            protected iframeUtils: CoreIframeUtilsProvider,
+            protected eventsProvider: CoreEventsProvider,
+            protected filterProvider: CoreFilterProvider,
+            protected filterHelper: CoreFilterHelperProvider,
+            protected filterDelegate: CoreFilterDelegate,
+            protected viewContainerRef: ViewContainerRef,
+            protected urlSchemesProvider: CoreCustomURLSchemesProvider
+            ) {
 
         this.element = element.nativeElement;
         this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
@@ -304,8 +307,14 @@ export class CoreFormatTextDirective implements OnChanges {
             // Open a new state with the contents.
             const filter = typeof this.filter != 'undefined' ? this.utils.isTrueOrOne(this.filter) : undefined;
 
-            this.textUtils.expandText(this.fullTitle || this.translate.instant('core.description'), this.text,
-                this.component, this.componentId, undefined, filter, this.contextLevel, this.contextInstanceId, this.courseId);
+            this.textUtils.viewText(this.fullTitle || this.translate.instant('core.description'), this.text, {
+                component: this.component,
+                componentId: this.componentId,
+                filter: filter,
+                contextLevel: this.contextLevel,
+                instanceId: this.contextInstanceId,
+                courseId: this.courseId,
+            });
         }
     }
 
@@ -466,7 +475,7 @@ export class CoreFormatTextDirective implements OnChanges {
             anchors.forEach((anchor) => {
                 // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
                 const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
-                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent, this.textUtils);
+                    this.contentLinksHelper, this.navCtrl, this.content, this.svComponent, this.textUtils, this.urlSchemesProvider);
                 linkDir.capture = true;
                 linkDir.ngOnInit();
 

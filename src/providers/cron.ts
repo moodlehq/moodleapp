@@ -20,6 +20,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreUtilsProvider } from './utils/utils';
 import { CoreConstants } from '@core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Interface that all cron handlers must implement.
@@ -135,6 +136,11 @@ export class CoreCronDelegate {
                 this.startNetworkHandlers();
             });
         });
+
+        // Export the sync provider so Behat tests can trigger cron tasks without waiting.
+        if (CoreAppProvider.isAutomated()) {
+            (<any> window).cronProvider = this;
+        }
     }
 
     /**
@@ -554,3 +560,5 @@ export class CoreCronDelegate {
         delete this.handlers[name].timeout;
     }
 }
+
+export class CoreCron extends makeSingleton(CoreCronDelegate) {}

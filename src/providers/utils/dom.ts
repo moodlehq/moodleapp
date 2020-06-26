@@ -15,7 +15,7 @@
 import { Injectable, SimpleChange, ElementRef } from '@angular/core';
 import {
     LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
-    ModalController,
+    ModalController, AlertButton, AlertOptions
 } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
@@ -30,6 +30,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Subject } from 'rxjs';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Interface that defines an extension of the Ionic Alert class, to support multiple listeners.
@@ -668,7 +669,7 @@ export class CoreDomUtilsProvider {
             }
 
             // We received an object instead of a string. Search for common properties.
-            if (error.coreCanceled) {
+            if (this.isCanceledError(error)) {
                 // It's a canceled error, don't display an error.
                 return null;
             }
@@ -713,6 +714,16 @@ export class CoreDomUtilsProvider {
         const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
 
         return this.instances[id];
+    }
+
+    /**
+     * Check whether an error is an error caused because the user canceled a showConfirm.
+     *
+     * @param error Error to check.
+     * @return Whether it's a canceled error.
+     */
+    isCanceledError(error: any): boolean {
+        return error && error.coreCanceled;
     }
 
     /**
@@ -1137,65 +1148,81 @@ export class CoreDomUtilsProvider {
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
      * @return Promise resolved with the alert modal.
      */
-    showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<CoreAlert> {
-        const hasHTMLTags = this.textUtils.hasHTMLTags(message);
-        let promise;
+    async showAlert(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<CoreAlert> {
+        return this.showAlertWithOptions({
+            title: title,
+            message,
+            buttons: [buttonText || this.translate.instant('core.ok')]
+        }, autocloseTime);
+    }
+
+    /**
+     * General show an alert modal.
+     *
+     * @param options Alert options to pass to the alert.
+     * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
+     * @return Promise resolved with the alert modal.
+     */
+    async showAlertWithOptions(options: AlertOptions = {}, autocloseTime?: number): Promise<CoreAlert> {
+        const hasHTMLTags = this.textUtils.hasHTMLTags(options.message || '');
 
         if (hasHTMLTags) {
             // Format the text.
-            promise = this.textUtils.formatText(message);
-        } else {
-            promise = Promise.resolve(message);
+            options.message = await this.textUtils.formatText(options.message);
         }
 
-        return promise.then((message) => {
-            const alertId = <string> Md5.hashAsciiStr((title || '') + '#' + (message || ''));
+        const alertId = <string> Md5.hashAsciiStr((options.title || '') + '#' + (options.message || ''));
 
-            if (this.displayedAlerts[alertId]) {
-                // There's already an alert with the same message and title. Return it.
-                return this.displayedAlerts[alertId];
+        if (this.displayedAlerts[alertId]) {
+            // There's already an alert with the same message and title. Return it.
+            return this.displayedAlerts[alertId];
+        }
+
+        const alert: CoreAlert = <any> this.alertCtrl.create(options);
+
+        alert.present().then(() => {
+            if (hasHTMLTags) {
+                // Treat all anchors so they don't override the app.
+                const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                this.treatAnchors(alertMessageEl);
             }
-
-            const alert: CoreAlert = <any> this.alertCtrl.create({
-                title: title,
-                message: message,
-                buttons: [buttonText || this.translate.instant('core.ok')]
-            });
-
-            alert.present().then(() => {
-                if (hasHTMLTags) {
-                    // Treat all anchors so they don't override the app.
-                    const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
-                    this.treatAnchors(alertMessageEl);
-                }
-            });
-
-            // Store the alert and remove it when dismissed.
-            this.displayedAlerts[alertId] = alert;
-
-            // Define the observables to extend the Alert class. This will allow several callbacks instead of just one.
-            alert.didDismiss = new Subject();
-            alert.willDismiss = new Subject();
-
-            // Set the callbacks to trigger an observable event.
-            alert.onDidDismiss((data: any, role: string) => {
-                delete this.displayedAlerts[alertId];
-
-                alert.didDismiss.next({data: data, role: role});
-            });
-
-            alert.onWillDismiss((data: any, role: string) => {
-                alert.willDismiss.next({data: data, role: role});
-            });
-
-            if (autocloseTime > 0) {
-                setTimeout(() => {
-                    alert.dismiss();
-                }, autocloseTime);
-            }
-
-            return alert;
         });
+
+        // Store the alert and remove it when dismissed.
+        this.displayedAlerts[alertId] = alert;
+
+        // Define the observables to extend the Alert class. This will allow several callbacks instead of just one.
+        alert.didDismiss = new Subject();
+        alert.willDismiss = new Subject();
+
+        // Set the callbacks to trigger an observable event.
+        alert.onDidDismiss((data: any, role: string) => {
+            delete this.displayedAlerts[alertId];
+
+            alert.didDismiss.next({data: data, role: role});
+        });
+
+        alert.onWillDismiss((data: any, role: string) => {
+            alert.willDismiss.next({data: data, role: role});
+        });
+
+        if (autocloseTime > 0) {
+            setTimeout(async () => {
+                await alert.dismiss();
+
+                if (options.buttons) {
+                    // Execute dismiss function if any.
+                    const cancelButton = <AlertButton> options.buttons.find((button) => {
+                        return typeof button != 'string' && typeof button.role != 'undefined' &&
+                            typeof button.handler != 'undefined' && button.role == 'cancel';
+                    });
+                    cancelButton && cancelButton.handler(null);
+                }
+
+            }, autocloseTime);
+        }
+
+        return alert;
     }
 
     /**
@@ -1238,52 +1265,33 @@ export class CoreDomUtilsProvider {
      * @param options More options. See https://ionicframework.com/docs/v3/api/components/alert/AlertController/
      * @return Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
-    showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options?: any): Promise<any> {
+    showConfirm(message: string, title?: string, okText?: string, cancelText?: string, options: AlertOptions = {}): Promise<any> {
         return new Promise<void>((resolve, reject): void => {
-            const hasHTMLTags = this.textUtils.hasHTMLTags(message);
-            let promise;
 
-            if (hasHTMLTags) {
-                // Format the text.
-                promise = this.textUtils.formatText(message);
-            } else {
-                promise = Promise.resolve(message);
+            options.title = title;
+            options.message = message;
+
+            options.buttons = [
+                {
+                    text: cancelText || this.translate.instant('core.cancel'),
+                    role: 'cancel',
+                    handler: (): void => {
+                        reject(this.createCanceledError());
+                    }
+                },
+                {
+                    text: okText || this.translate.instant('core.ok'),
+                    handler: (data: any): void => {
+                        resolve(data);
+                    }
+                }
+            ];
+
+            if (!title) {
+                options.cssClass = 'core-nohead';
             }
 
-            promise.then((message) => {
-                options = options || {};
-
-                options.message = message;
-                options.title = title;
-                if (!title) {
-                    options.cssClass = 'core-nohead';
-                }
-                options.buttons = [
-                    {
-                        text: cancelText || this.translate.instant('core.cancel'),
-                        role: 'cancel',
-                        handler: (): void => {
-                            reject(this.createCanceledError());
-                        }
-                    },
-                    {
-                        text: okText || this.translate.instant('core.ok'),
-                        handler: (data: any): void => {
-                            resolve(data);
-                        }
-                    }
-                ];
-
-                const alert = this.alertCtrl.create(options);
-
-                alert.present().then(() => {
-                    if (hasHTMLTags) {
-                        // Treat all anchors so they don't override the app.
-                        const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
-                        this.treatAnchors(alertMessageEl);
-                    }
-                });
-            });
+            this.showAlertWithOptions(options, 0);
         });
     }
 
@@ -1316,7 +1324,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     showErrorModalDefault(error: any, defaultError: any, needsTranslate?: boolean, autocloseTime?: number): Promise<Alert> {
-        if (error && error.coreCanceled) {
+        if (this.isCanceledError(error)) {
             // It's a canceled error, don't display an error.
             return;
         }
@@ -1402,57 +1410,65 @@ export class CoreDomUtilsProvider {
      * @param title Modal title.
      * @param placeholder Placeholder of the input element. By default, "Password".
      * @param type Type of the input element. By default, password.
+     * @param options More options to pass to the alert.
      * @return Promise resolved with the input data if the user clicks OK, rejected if cancels.
      */
     showPrompt(message: string, title?: string, placeholder?: string, type: string = 'password'): Promise<any> {
-        return new Promise((resolve, reject): void => {
-            const hasHTMLTags = this.textUtils.hasHTMLTags(message);
-            let promise;
+        return new Promise((resolve, reject): any => {
+            placeholder = typeof placeholder == 'undefined' || placeholder == null ?
+                this.translate.instant('core.login.password') : placeholder;
 
-            if (hasHTMLTags) {
-                // Format the text.
-                promise = this.textUtils.formatText(message);
-            } else {
-                promise = Promise.resolve(message);
-            }
-
-            promise.then((message) => {
-                const alert = this.alertCtrl.create({
-                    message: message,
-                    title: title,
-                    inputs: [
-                        {
-                            name: 'promptinput',
-                            placeholder: placeholder || this.translate.instant('core.login.password'),
-                            type: type
-                        }
-                    ],
-                    buttons: [
-                        {
-                            text: this.translate.instant('core.cancel'),
-                            role: 'cancel',
-                            handler: (): void => {
-                                reject();
-                            }
-                        },
-                        {
-                            text: this.translate.instant('core.ok'),
-                            handler: (data): void => {
-                                resolve(data.promptinput);
-                            }
-                        }
-                    ]
-                });
-
-                alert.present().then(() => {
-                    if (hasHTMLTags) {
-                        // Treat all anchors so they don't override the app.
-                        const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
-                        this.treatAnchors(alertMessageEl);
+            const options: AlertOptions = {
+                title,
+                message,
+                inputs: [
+                    {
+                        name: 'promptinput',
+                        placeholder: placeholder,
+                        type: type
                     }
-                });
-            });
+                ],
+                buttons: [
+                    {
+                        text: this.translate.instant('core.cancel'),
+                        role: 'cancel',
+                        handler: (): void => {
+                            reject();
+                        }
+                    },
+                    {
+                        text: this.translate.instant('core.ok'),
+                        handler: (data): void => {
+                            resolve(data.promptinput);
+                        }
+                    }
+                ],
+            };
+
+            this.showAlertWithOptions(options);
         });
+    }
+
+    /**
+     * Show a prompt modal to input a textarea.
+     *
+     * @param title Modal title.
+     * @param message Modal message.
+     * @param buttons Buttons to pass to the modal.
+     * @param placeholder Placeholder of the input element if any.
+     * @return Promise resolved when modal presented.
+     */
+    showTextareaPrompt(title: string, message: string, buttons: (string | AlertButton)[], placeholder?: string): Promise<any> {
+        const params = {
+            title: title,
+            message: message,
+            placeholder: placeholder,
+            buttons: buttons,
+        };
+
+        const modal = this.modalCtrl.create('CoreViewerTextAreaPage', params, { cssClass: 'core-modal-prompt' });
+
+        return modal.present();
     }
 
     /**
@@ -1666,3 +1682,5 @@ export class CoreDomUtilsProvider {
         }, siteId);
     }
 }
+
+export class CoreDomUtils extends makeSingleton(CoreDomUtilsProvider) {}

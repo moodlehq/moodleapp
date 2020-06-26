@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreFileProvider } from '@providers/file';
 import { CorePluginFileHandler } from '@providers/plugin-file-delegate';
-import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
-import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreUrlUtilsProvider } from '@providers/utils/url';
-import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreH5PProvider } from './h5p';
+import { CoreMimetypeUtils } from '@providers/utils/mimetype';
+import { CoreUrlUtils } from '@providers/utils/url';
+import { CoreUtils } from '@providers/utils/utils';
+import { CoreH5P } from './h5p';
+import { CoreSites } from '@providers/sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { FileEntry } from '@ionic-native/file';
-import { TranslateService } from '@ngx-translate/core';
+import { Translate } from '@singletons/core.singletons';
+import { CoreH5PHelper } from '../classes/helper';
 
 /**
  * Handler to treat H5P files.
@@ -30,14 +30,6 @@ import { TranslateService } from '@ngx-translate/core';
 @Injectable()
 export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
     name = 'CoreH5PPluginFileHandler';
-
-    constructor(protected urlUtils: CoreUrlUtilsProvider,
-            protected mimeUtils: CoreMimetypeUtilsProvider,
-            protected textUtils: CoreTextUtilsProvider,
-            protected utils: CoreUtilsProvider,
-            protected fileProvider: CoreFileProvider,
-            protected h5pProvider: CoreH5PProvider,
-            protected translate: TranslateService) { }
 
     /**
      * React to a file being deleted.
@@ -49,7 +41,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      */
     fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<any> {
         // If an h5p file is deleted, remove the contents folder.
-        return this.h5pProvider.deleteContentByUrl(fileUrl, siteId);
+        return CoreH5P.instance.h5pPlayer.deleteContentByUrl(fileUrl, siteId);
     }
 
     /**
@@ -59,8 +51,15 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
-        return this.h5pProvider.getTrustedH5PFile(file.fileurl, {}, false, siteId);
+    async getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+        const site = await CoreSites.instance.getSite(siteId);
+
+        if (site.containsUrl(file.fileurl) && file.fileurl.match(/pluginfile\.php\/[^\/]+\/core_h5p\/export\//i)) {
+            // It's already a deployed file, use it.
+            return file;
+        }
+
+        return CoreH5P.instance.getTrustedH5PFile(file.fileurl, {}, false, siteId);
     }
 
     /**
@@ -75,7 +74,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
         const urls = [];
 
         for (let i = 0; i < iframes.length; i++) {
-            const params = this.urlUtils.extractUrlParams(iframes[i].src);
+            const params = CoreUrlUtils.instance.extractUrlParams(iframes[i].src);
 
             if (params.url) {
                 urls.push(params.url);
@@ -92,17 +91,19 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the size.
      */
-    getFileSize(file: CoreWSExternalFile, siteId?: string): Promise<number> {
-        return this.h5pProvider.getTrustedH5PFile(file.fileurl, {}, false, siteId).then((file) => {
-            return file.filesize;
-        }).catch((error): any => {
-            if (this.utils.isWebServiceError(error)) {
+    async getFileSize(file: CoreWSExternalFile, siteId?: string): Promise<number> {
+        try {
+            const trustedFile = await this.getDownloadableFile(file, siteId);
+
+            return trustedFile.filesize;
+        } catch (error) {
+            if (CoreUtils.instance.isWebServiceError(error)) {
                 // WS returned an error, it means it cannot be downloaded.
                 return 0;
             }
 
-            return Promise.reject(error);
-        });
+            throw error;
+        }
     }
 
     /**
@@ -111,7 +112,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.h5pProvider.canGetTrustedH5PFileInSite();
+        return CoreH5P.instance.canGetTrustedH5PFileInSite();
     }
 
     /**
@@ -122,12 +123,12 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
      */
     async isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<{downloadable: boolean, reason?: string}> {
-        const offlineDisabled = await this.h5pProvider.isOfflineDisabled(siteId);
+        const offlineDisabled = await CoreH5P.instance.isOfflineDisabled(siteId);
 
         if (offlineDisabled) {
             return {
                 downloadable: false,
-                reason: this.translate.instant('core.h5p.offlinedisabled'),
+                reason: Translate.instance.instant('core.h5p.offlinedisabled'),
             };
         } else {
             return {
@@ -143,7 +144,7 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @return Whether the file should be treated by this handler.
      */
     shouldHandleFile(file: CoreWSExternalFile): boolean {
-        return this.mimeUtils.guessExtensionFromUrl(file.fileurl) == 'h5p';
+        return CoreMimetypeUtils.instance.guessExtensionFromUrl(file.fileurl) == 'h5p';
     }
 
     /**
@@ -152,9 +153,10 @@ export class CoreH5PPluginFileHandler implements CorePluginFileHandler {
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string): Promise<any> {
-        return this.h5pProvider.extractH5PFile(fileUrl, file, siteId);
+    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<void> {
+        return CoreH5PHelper.saveH5P(fileUrl, file, siteId, onProgress);
     }
 }

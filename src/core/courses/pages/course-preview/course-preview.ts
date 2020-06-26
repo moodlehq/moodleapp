@@ -365,8 +365,11 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             this.waitForEnrolled(true).then(() => {
                 this.refreshData().finally(() => {
                     // My courses have been updated, trigger event.
-                    this.eventsProvider.trigger(
-                        CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {course: this.course}, this.sitesProvider.getCurrentSiteId());
+                    this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                        courseId: this.course.id,
+                        course: this.course,
+                        action: CoreCoursesProvider.ACTION_ENROL,
+                    }, this.sitesProvider.getCurrentSiteId());
                 });
             });
         }).catch((error) => {

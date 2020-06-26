@@ -1,0 +1,48 @@
+<ion-header>
+    <ion-navbar>
+        <ion-buttons step>
+            <button ion-button icon-only (click)="previous($event)" [attr.aria-label]="'core.back' | translate">
+                <ion-icon name="arrow-back"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons end>
+            <button ion-button (click)="skip($event)" [attr.aria-label]="'core.skip' | translate">
+                {{'core.skip' | translate}}
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <div>
+        <div text-center padding class="core-login-site-logo">
+            <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
+        </div>
+
+        <h3 class="core-login-onboarding-step">
+            {{'core.login.onboardingwelcome' | translate}}
+        </h3>
+
+        <div *ngIf="step == 0" class="core-login-onboarding-step">
+            <a ion-button block (click)="skip($event)" margin-bottom color="light">{{'core.login.onboardingimalearner' | translate}}</a>
+            <a ion-button block (click)="next($event)" margin-bottom color="light">{{'core.login.onboardingimaneducator' | translate}}</a>
+        </div>
+
+        <div *ngIf="step == 1" class="core-login-onboarding-step">
+            <p class="core-login-onboarding-text">
+                {{ 'core.login.onboardingtoconnect' | translate }}
+            </p>
+            <a ion-button block (click)="skip($event)" margin-bottom color="light">{{ 'core.login.onboardingialreadyhaveasite' | translate }}</a>
+            <a ion-button block (click)="next($event)" margin-bottom>{{ 'core.login.onboardingineedasite' | translate }}</a>
+        </div>
+
+        <div *ngIf="step == 2" class="core-login-onboarding-step">
+            <ul class="core-login-onboarding-text">
+                <li><core-icon name="fa-check-circle-o"></core-icon> {{ 'core.login.onboardingcreatemanagecourses' | translate }}</li>
+                <li><core-icon name="fa-check-circle-o"></core-icon> {{ 'core.login.onboardingenrolmanagestudents' | translate }}</li>
+                <li><core-icon name="fa-check-circle-o"></core-icon> {{ 'core.login.onboardingprovidefeedback' | translate }}</li>
+            </ul>
+
+            <a ion-button block (click)="gotoWeb($event)" margin-bottom>{{ 'core.login.onboardinggetstarted' | translate }}</a>
+        </div>
+    </div>
+</ion-content>
