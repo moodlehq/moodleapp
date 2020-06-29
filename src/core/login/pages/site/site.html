@@ -56,17 +56,6 @@
                     <ion-option *ngFor="let site of fixedSites" [value]="site.url">{{site.name}}</ion-option>
                 </ion-select>
             </ion-item>
-
-            <ng-container *ngIf="!fixedSites && showScanQR && !hasSites && !enteredSiteUrl">
-                <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
-                <ion-item class="core-login-site-qrcode">
-                    <a ion-button block color="light" margin-top icon-start (click)="showInstructionsAndScanQR()">
-                        <core-icon name="fa-qrcode" aria-hidden="true"></core-icon>
-                        {{ 'core.scanqr' | translate }}
-                    </a>
-                </ion-item>
-            </ng-container>
-
         </form>
 
         <!-- Pick the site from a list of fixed sites. -->
@@ -84,6 +73,16 @@
             <p class="padding no-padding-bottom">{{ 'core.login.selectsite' | translate }}</p>
             <a *ngFor="let site of fixedSites" ion-button block (click)="connect($event, site.url)" [title]="site.name" margin-bottom>{{site.name}}</a>
         </div>
+
+        <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
+            <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
+            <ion-item class="core-login-site-qrcode">
+                <a ion-button block color="light" margin-top icon-start (click)="showInstructionsAndScanQR()">
+                    <core-icon name="fa-qrcode" aria-hidden="true"></core-icon>
+                    {{ 'core.scanqr' | translate }}
+                </a>
+            </ion-item>
+        </ng-container>
 
         <!-- Help. -->
         <ion-list no-lines margin-top>
