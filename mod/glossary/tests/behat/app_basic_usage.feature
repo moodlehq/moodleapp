@@ -123,7 +123,9 @@ Feature: Test basic usage of glossary in app
     And I set the field "Message" to "Glossary terms auto-linked: potato car mountain" in the app
     And I press "Post to forum" in the app
     And I press "Testing auto-link glossary" near "Last post a few seconds ago" in the app
-    And I press "car" in the app
+    Then I should see "car"
+
+    When I press "car" in the app
     Then the header should be "car" in the app
     And I should see "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods."
 

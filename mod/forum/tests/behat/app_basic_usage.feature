@@ -50,7 +50,9 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     And I press "DiscussionSubject" in the app
-    And I press "Reply" in the app
+    Then I should see "Reply"
+
+    When I press "Reply" in the app
     And I set the field "Write your reply" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
     Then I should see "DiscussionMessage"
@@ -62,11 +64,11 @@ Feature: Test basic usage of forum activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "starred subject" in the app
     And I set the field "Message" to "starred message" in the app
     And I press "Post to forum" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "normal subject" in the app
     And I set the field "Message" to "normal message" in the app
     And I press "Post to forum" in the app
@@ -99,17 +101,17 @@ Feature: Test basic usage of forum activity in app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test star" in the app
     And I set the field "Message" to "Auto-test star message" in the app
     And I press "Post to forum" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test pin" in the app
     And I set the field "Message" to "Auto-test pin message" in the app
     And I press "Post to forum" in the app
-    And I press "close" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I press "Add a new discussion topic" in the app
+    And I set the field "Subject" to "Auto-test plain" in the app
+    And I set the field "Message" to "Auto-test plain message" in the app
     And I press "Post to forum" in the app
     And I press "Display options" near "Auto-test star" in the app
     And I press "Star this discussion" in the app
@@ -117,7 +119,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Pin this discussion" in the app
     Then I should see "Auto-test pin"
     And I should see "Auto-test star"
-    And I should see "Auto-test"
+    And I should see "Auto-test plain"
 
     When I press "Display options" near "Auto-test pin" in the app
     And I press "Unpin this discussion" in the app
@@ -132,12 +134,14 @@ Feature: Test basic usage of forum activity in app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
-    And I press "Information" in the app
+    Then I should see "Reply"
+
+    When I press "Information" in the app
     Then I should not see "Star this discussion"
     And I should not see "Pin this discussion"
 
@@ -147,13 +151,19 @@ Feature: Test basic usage of forum activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    And I should see "Reply"
+
+    When I press the back button in the app
     And I switch offline mode to "true"
-    And I press "Reply" in the app
+    And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
+    Then I should see "Reply"
+
+    When I press "Reply" in the app
     And I set the field "Write your reply..." to "not sent reply" in the app
     And I press "Post to forum" in the app
     And I press "Display options" near "not sent reply" in the app
@@ -178,7 +188,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I switch offline mode to "true"
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -189,7 +199,9 @@ Feature: Test basic usage of forum activity in app
 
     When I switch offline mode to "false"
     And I press "Auto-test" in the app
-    And I press "Post to forum" in the app
+    Then I should see "Post to forum"
+
+    When I press "Post to forum" in the app
     Then I should not see "This Forum has offline data to be synchronised."
 
     When I press "Auto-test" near "Sort by last post creation date in descending order" in the app
@@ -201,7 +213,7 @@ Feature: Test basic usage of forum activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -213,7 +225,9 @@ Feature: Test basic usage of forum activity in app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    And I press "Display options" near "Reply" in the app
+    Then I should see "Reply"
+
+    When I press "Display options" near "Reply" in the app
     Then I should see "Edit"
 
     When I press "Edit" in the app
@@ -232,7 +246,7 @@ Feature: Test basic usage of forum activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -244,7 +258,9 @@ Feature: Test basic usage of forum activity in app
     And I press "cloud download" near "Test forum name" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    And I press "Display options" near "Reply" in the app
+    Then I should see "Reply"
+
+    When I press "Display options" near "Reply" in the app
     Then I should see "Delete"
 
     When I press "Delete" in the app
@@ -268,12 +284,14 @@ Feature: Test basic usage of forum activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
-    And I press "close" in the app
+    And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
-    And I press "Reply" in the app
+    Then I should see "Reply"
+
+    When I press "Reply" in the app
     And I set the field "Write your reply..." to "test2" in the app
     And I press "Post to forum" in the app
     When I enter the app
@@ -281,7 +299,9 @@ Feature: Test basic usage of forum activity in app
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
-    And I press "None" near "Auto-test message" in the app
+    Then I should see "Reply"
+
+    When I press "None" near "Auto-test message" in the app
     And I press "1" near "Cancel" in the app
     And I switch offline mode to "true"
     And I press "None" near "test2" in the app
@@ -329,7 +349,9 @@ Feature: Test basic usage of forum activity in app
     And I press "Test forum name" in the app
     And I press "DiscussionSubject" in the app
     And I switch offline mode to "true"
-    And I press "Reply" in the app
+    Then I should see "Reply"
+
+    When I press "Reply" in the app
     And I set the field "Write your reply" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
     Then I should see "DiscussionMessage"
@@ -402,10 +424,10 @@ Feature: Test basic usage of forum activity in app
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Add a new discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
+    And I set the field "Subject" to "DiscussionSubject 1" in the app
+    And I set the field "Message" to "DiscussionMessage 1" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject"
+    Then I should see "DiscussionSubject 1"
 
     When I press the back button in the app
     And I press "Display options" in the app
@@ -416,7 +438,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "DiscussionSubject 2" in the app
     And I set the field "Message" to "DiscussionMessage 2" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject"
+    Then I should see "DiscussionSubject 1"
     And I should see "DiscussionSubject 2"
 
     When I press the back button in the app
@@ -427,7 +449,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press "OK" in the app
     And I press the back button in the app
-    And I press "DiscussionSubject" in the app
-    Then I should see "DiscussionSubject"
-    And I should see "DiscussionMessage"
+    And I press "DiscussionSubject 1" in the app
+    Then I should see "DiscussionSubject 1"
+    And I should see "DiscussionMessage 1"
     But I should not see "There was a problem connecting to the site. Please check your connection and try again."
