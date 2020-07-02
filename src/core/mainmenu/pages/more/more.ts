@@ -67,7 +67,8 @@ export class CoreMainMenuMorePage implements OnDestroy {
         this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.loadSiteInfo.bind(this),
             sitesProvider.getCurrentSiteId());
         this.loadSiteInfo();
-        this.showScanQR = this.utils.canScanQR();
+        this.showScanQR = this.utils.canScanQR() &&
+                !this.sitesProvider.getCurrentSite().isFeatureDisabled('CoreMainMenuDelegate_QrReader');
     }
 
     /**
