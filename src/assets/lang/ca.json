@@ -1913,7 +1913,6 @@
     "core.openmodinbrowser": "Obre {{$a}} al navegador",
     "core.othergroups": "Altres grups",
     "core.pagea": "Pàgina {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Utilitzeu el botó de baix per pagar i inscriure-us.",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Telèfon",

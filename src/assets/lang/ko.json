@@ -1385,7 +1385,6 @@
     "core.openfullimage": "전체 크기 이미지를 보려면 여기를 클릭하십시오.",
     "core.openinbrowser": "브라우저에서 열기",
     "core.pagea": "페이지 {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "신속하게 등록금 지불 및 등록을 마치려면 아래의 버튼을 사용하시오!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "전화",

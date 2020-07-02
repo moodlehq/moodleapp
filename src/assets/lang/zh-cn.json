@@ -1844,7 +1844,6 @@
     "core.openinbrowser": "在浏览器中打开",
     "core.othergroups": "其他小组",
     "core.pagea": "页 {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "点击下面的按钮便可以快速付费并加入课程!",
     "core.phone": "电话",
     "core.pictureof": "{{$a}}的头像",

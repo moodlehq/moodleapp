@@ -1717,7 +1717,6 @@
     "core.openinbrowser": "ブラウザで開く",
     "core.othergroups": "他のグループ",
     "core.pagea": "ページ {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "下のボタンをお使いください。支払いおよび登録がすぐに完了します!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "電話",

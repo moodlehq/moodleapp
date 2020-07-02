@@ -1700,7 +1700,6 @@
     "core.openinbrowser": "Otvori u veb čitaču",
     "core.othergroups": "Druge grupe",
     "core.pagea": "Stranica {{$a}}",
-    "core.parentlanguage": "en",
     "core.paymentinstant": "Upotrebite dugme ispod kako biste izvršili uplatu i upisali kurs u roku od nekoliko minuta!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Telefon",
