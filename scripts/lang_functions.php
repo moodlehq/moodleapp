@@ -120,8 +120,6 @@ function add_langs_to_config($langs, $config) {
 function get_langfolder($lang) {
     $folder = LANGPACKSFOLDER.'/'.str_replace('-', '_', $lang);
     if (!is_dir($folder) || !is_file($folder.'/langconfig.php')) {
-        echo "Cannot translate $folder, folder not found";
-
         return false;
     }
 
@@ -173,6 +171,8 @@ function reset_translations_strings() {
 function build_lang($lang, $keys) {
     $langfoldername = get_langfolder($lang);
     if (!$langfoldername) {
+        echo "Cannot translate $lang, folder not found";
+
         return false;
     }
 
@@ -182,15 +182,18 @@ function build_lang($lang, $keys) {
         $override_langfolder = false;
     }
 
-    $total = count ($keys);
+    $total = count($keys);
     $local = 0;
 
-    $string = get_translation_strings($langfoldername, 'langconfig');
-    $parent = isset($string['parentlanguage']) ? $string['parentlanguage'] : "";
+    $langparts = explode('-', $lang, 2);
+    $parentname = $langparts[0] ?? "";
+    $parent = "";
 
     echo "Processing $lang";
-    if ($parent != "" && $parent != $lang) {
-        echo " ($parent)";
+    // Check parent language exists.
+    if ($parentname != $lang && get_langfolder($parentname)) {
+        echo " ($parentname)";
+        $parent = $parentname;
     }
 
     $langFile = false;
@@ -247,6 +250,12 @@ function build_lang($lang, $keys) {
         $translations[$key] = html_entity_decode($text);
     }
 
+    if (!empty($parent)) {
+        $translations['core.parentlanguage'] = $parent;
+    } else if (isset($translations['core.parentlanguage'])) {
+        unset($translations['core.parentlanguage']);
+    }
+
     // Sort and save.
     ksort($translations);
     file_put_contents(ASSETSPATH.$lang.'.json', str_replace('\/', '/', json_encode($translations, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
@@ -275,6 +284,8 @@ function progressbar($percentage) {
 function detect_lang($lang, $keys) {
     $langfoldername = get_langfolder($lang);
     if (!$langfoldername) {
+        echo "Cannot translate $lang, folder not found";
+
         return false;
     }
 

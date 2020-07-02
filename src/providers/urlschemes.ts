@@ -29,6 +29,7 @@ import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins
 import { CoreConfigConstants } from '../configconstants';
 import { CoreConstants } from '@core/constants';
 import { makeSingleton } from '@singletons/core.singletons';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * All params that can be in a custom URL scheme.
@@ -166,6 +167,12 @@ export class CoreCustomURLSchemesProvider {
         }
 
         try {
+            const isValid = await this.isInFixedSiteUrls(data.siteUrl);
+
+            if (!isValid) {
+                throw this.translate.instant('core.errorurlschemeinvalidsite');
+            }
+
             if (data.redirect && data.redirect.match(/^https?:\/\//) && data.redirect.indexOf(data.siteUrl) == -1) {
                 // Redirect URL must belong to the same site. Reject.
                 throw this.translate.instant('core.contentlinks.errorredirectothersite');
@@ -539,6 +546,38 @@ export class CoreCustomURLSchemesProvider {
         } else {
             this.domUtils.showErrorModalDefault(error.error, this.translate.instant('core.login.invalidsite'));
         }
+    }
+
+    /**
+     * Check if a site URL is one of the fixed sites for the app (in case there are fixed sites).
+     *
+     * @param siteUrl Site URL to check.
+     * @return Promise resolved with boolean: whether is one of the fixed sites.
+     */
+    protected async isInFixedSiteUrls(siteUrl: string): Promise<boolean> {
+        if (this.loginHelper.isFixedUrlSet()) {
+
+            return CoreUrl.sameDomainAndPath(siteUrl, <string> this.loginHelper.getFixedSites());
+        } else if (this.loginHelper.hasSeveralFixedSites()) {
+            const sites = <any[]> this.loginHelper.getFixedSites();
+
+            const site = sites.find((site) => {
+                return CoreUrl.sameDomainAndPath(siteUrl, site.url);
+            });
+
+            return !!site;
+        } else if (CoreConfigConstants.multisitesdisplay == 'sitefinder' && CoreConfigConstants.onlyallowlistedsites) {
+            // Call the sites finder to validate the site.
+            const result = await this.sitesProvider.findSites(siteUrl.replace(/^https?\:\/\/|\.\w{2,3}\/?$/g, ''));
+
+            const site = result && result.find((site) => {
+                return CoreUrl.sameDomainAndPath(siteUrl, site.url);
+            });
+
+            return !!site;
+        }
+
+        return true;
     }
 }
 

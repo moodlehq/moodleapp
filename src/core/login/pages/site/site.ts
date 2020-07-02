@@ -53,7 +53,7 @@ export class CoreLoginSitePage {
     siteForm: FormGroup;
     fixedSites: CoreLoginSiteInfo[];
     filteredSites: CoreLoginSiteInfo[];
-    fixedDisplay = 'buttons';
+    siteSelector = 'sitefinder';
     showKeyboard = false;
     filter = '';
     sites: CoreLoginSiteInfoExtended[] = [];
@@ -80,17 +80,16 @@ export class CoreLoginSitePage {
             protected textUtils: CoreTextUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
-        this.showScanQR = this.utils.canScanQR();
 
         let url = '';
+        this.siteSelector = CoreConfigConstants.multisitesdisplay;
 
         // Load fixed sites if they're set.
         if (this.loginHelper.hasSeveralFixedSites()) {
             this.fixedSites = <any[]> this.loginHelper.getFixedSites();
-            this.fixedDisplay = CoreConfigConstants.multisitesdisplay;
             // Autoselect if not defined.
-            if (['list', 'listnourl', 'select', 'buttons'].indexOf(this.fixedDisplay) < 0) {
-                this.fixedDisplay = this.fixedSites.length > 8 ? 'list' : (this.fixedSites.length > 3 ? 'select' : 'buttons');
+            if (['list', 'listnourl', 'select', 'buttons'].indexOf(this.siteSelector) < 0) {
+                this.siteSelector = this.fixedSites.length > 8 ? 'list' : (this.fixedSites.length > 3 ? 'select' : 'buttons');
             }
             this.filteredSites = this.fixedSites;
             url = this.fixedSites[0].url;
@@ -102,6 +101,9 @@ export class CoreLoginSitePage {
                 }
             });
         }
+
+        this.showScanQR = this.utils.canScanQR() && (typeof CoreConfigConstants['displayqronsitescreen'] == 'undefined' ||
+            !!CoreConfigConstants['displayqronsitescreen']);
 
         this.siteForm = fb.group({
             siteUrl: [url, this.moodleUrlValidator()]

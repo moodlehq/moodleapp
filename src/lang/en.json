@@ -102,6 +102,7 @@
     "errorsomedatanotdownloaded": "If you downloaded this activity, please notice that some data isn't downloaded during the download process for performance and data usage reasons.",
     "errorsync": "An error occurred while synchronising. Please try again.",
     "errorsyncblocked": "This {{$a}} cannot be synchronised right now because of an ongoing process. Please try again later. If the problem persists, try restarting the app.",
+    "errorurlschemeinvalidsite": "This site URL cannot be opened in this app.",
     "explanationdigitalminor": "This information is required to determine if your age is over the digital age of consent. This is the age when an individual can consent to terms and conditions and their data being legally stored and processed.",
     "favourites": "Starred",
     "filename": "Filename",

@@ -1809,7 +1809,7 @@
     "core.openinbrowser": "Abrir no navegador",
     "core.othergroups": "Outros grupos",
     "core.pagea": "Página {{$a}}",
-    "core.parentlanguage": "",
+    "core.parentlanguage": "pt",
     "core.paymentinstant": "Clique o botão abaixo para efetuar o pagamento e fazer a sua inscrição em poucos minutos!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Fone",

@@ -1752,7 +1752,6 @@
     "core.openinbrowser": "Åben i browser",
     "core.othergroups": "Andre grupper",
     "core.pagea": "Side {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Brug knappen forneden til at betale og blive tilmeldt umiddelbart derefter.",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Telefon",

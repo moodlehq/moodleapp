@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreTextUtils } from '@providers/utils/text';
+
 /**
  * Parts contained within a url.
  */
@@ -171,5 +173,28 @@ export class CoreUrl {
      */
     static removeProtocol(url: string): string {
         return url.replace(/^[a-zA-Z]+:\/\//i, '');
+    }
+
+    /**
+     * Check if two URLs have the same domain and path.
+     *
+     * @param urlA First URL.
+     * @param urlB Second URL.
+     * @return Whether they have same domain and path.
+     */
+    static sameDomainAndPath(urlA: string, urlB: string): boolean {
+        // Add protocol if missing, the parse function requires it.
+        if (!urlA.match(/^[^\/:\.\?]*:\/\//)) {
+            urlA = `https://${urlA}`;
+        }
+        if (!urlB.match(/^[^\/:\.\?]*:\/\//)) {
+            urlB = `https://${urlB}`;
+        }
+
+        const partsA = CoreUrl.parse(urlA);
+        const partsB = CoreUrl.parse(urlB);
+
+        return partsA.domain == partsB.domain &&
+                CoreTextUtils.instance.removeEndingSlash(partsA.path) == CoreTextUtils.instance.removeEndingSlash(partsB.path);
     }
 }

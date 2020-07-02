@@ -1841,7 +1841,6 @@
     "core.openinbrowser": "Odpri v brskalniku",
     "core.othergroups": "Ostale skupine",
     "core.pagea": "Stran {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Uporabite spodnje gumbe za plačilo in vpis v nekaj minutah!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Telefon",

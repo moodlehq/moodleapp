@@ -1909,7 +1909,6 @@
     "core.openmodinbrowser": "Otevřít {{$a}} v prohlížeči",
     "core.othergroups": "Další skupiny",
     "core.pagea": "Stránka {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Pomocí tlačítka níže můžete provést platbu a během několika minut se zapsat do kurzu!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Telefon",

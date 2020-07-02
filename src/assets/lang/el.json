@@ -1841,7 +1841,6 @@
     "core.openinbrowser": "Ανοίξτε στον περιηγητή.",
     "core.othergroups": "Άλλες ομάδες",
     "core.pagea": "Σελίδα {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Χρησιμοποιήστε το παρακάτω πλήκτρο για να πληρώσετε και να εγγραφείτε μέσα σε λίγα λεπτά!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Τηλέφωνο",

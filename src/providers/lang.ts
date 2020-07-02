@@ -55,7 +55,9 @@ export class CoreLangProvider {
 
         translate.onLangChange.subscribe((event: any) => {
             platform.setLang(event.lang, true);
-            platform.setDir(this.translate.instant('core.thisdirection'), true);
+
+            const dir = this.translate.instant('core.thisdirection');
+            platform.setDir(dir.indexOf('rtl') != -1 ? 'rtl' : 'ltr', true);
         });
     }
 

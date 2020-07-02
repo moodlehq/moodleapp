@@ -1875,7 +1875,6 @@
     "core.openinbrowser": "Ouvrir dans le navigateur",
     "core.othergroups": "Autres groupes",
     "core.pagea": "Page {{$a}}",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Le bouton ci-dessous vous permet de payer et de vous inscrire en quelques minutes !",
     "core.percentagenumber": "{{$a}} %",
     "core.phone": "Téléphone",
