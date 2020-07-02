@@ -65,7 +65,9 @@
                 </ion-select>
             </ion-item>
 
-            <button *ngIf="(fixedSites && siteSelector == 'select') || (!fixedSites && siteSelector == 'url')" ion-button block [disabled]="!siteForm.valid">{{ 'core.login.connect' | translate }}</button>
+            <ion-item *ngIf="(fixedSites && siteSelector == 'select') || (!fixedSites && siteSelector == 'url')" no-lines>
+                <button ion-button block [disabled]="!siteForm.valid" text-wrap>{{ 'core.login.connect' | translate }}</button>
+            </ion-item>
         </form>
 
         <ng-container *ngIf="fixedSites">
@@ -88,8 +90,8 @@
 
         <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
             <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
-            <ion-item class="core-login-site-qrcode">
-                <a ion-button block color="light" margin-top icon-start (click)="showInstructionsAndScanQR()">
+            <ion-item class="core-login-site-qrcode" no-lines>
+                <a ion-button block color="light" margin-top icon-start (click)="showInstructionsAndScanQR()" text-wrap>
                     <core-icon name="fa-qrcode" aria-hidden="true"></core-icon>
                     {{ 'core.scanqr' | translate }}
                 </a>
