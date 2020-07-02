@@ -21,9 +21,9 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 /**
  * Component to show a loading spinner and message while data is being loaded.
  *
- * It will show a spinner with a message and hide all the content until 'dataLoaded' variable is set to true.
- * If 'message' and 'dynMessage' attributes aren't set, default message "Loading" is shown.
- * 'message' attribute accepts hardcoded strings, variables, filters, etc. E.g. message="'core.loading' | translate".
+ * It will show a spinner with a message and hide all the content until 'hideUntil' variable is set to a truthy value (!!hideUntil).
+ * If 'message' isn't set, default message "Loading" is shown.
+ * 'message' attribute accepts hardcoded strings, variables, filters, etc. E.g. [message]="'core.loading' | translate".
  *
  * Usage:
  * <core-loading [message]="loadingMessage" [hideUntil]="dataLoaded">
@@ -44,7 +44,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
     animations: [coreShowHideAnimation]
 })
 export class CoreLoadingComponent implements OnInit, OnChanges {
-    @Input() hideUntil: boolean; // Determine when should the contents be shown.
+    @Input() hideUntil: any; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
     @ViewChild('content') content: ElementRef;
 
@@ -69,7 +69,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges {
         }
 
         // Add class if loaded on init.
-        if (this.hideUntil) {
+        if (!!this.hideUntil) {
             this.element.classList.add('core-loading-loaded');
             this.content.nativeElement.classList.add('core-loading-content');
         }
@@ -77,7 +77,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hideUntil) {
-            if (changes.hideUntil.currentValue === true) {
+            if (!!this.hideUntil) {
                 setTimeout(() => {
                     // Content is loaded so, center the spinner on the content itself.
                     this.element.classList.add('core-loading-loaded');
@@ -96,7 +96,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges {
             // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.
             setTimeout(() => {
                 this.eventsProvider.trigger(CoreEventsProvider.CORE_LOADING_CHANGED, {
-                    loaded: changes.hideUntil.currentValue,
+                    loaded: !!this.hideUntil,
                     uniqueId: this.uniqueId
                 });
             });
