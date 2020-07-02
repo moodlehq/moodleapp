@@ -162,7 +162,7 @@ export class CoreWSProvider {
         this.logger = logger.getInstance('CoreWSProvider');
 
         platform.ready().then(() => {
-            if (this.appProvider.isMobile()) {
+            if (this.appProvider.isIOS()) {
                 (<any> cordova).plugin.http.setHeader('User-Agent', navigator.userAgent);
             }
         });
