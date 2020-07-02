@@ -81,6 +81,7 @@
     "siteurl": "",
     "sitename": "",
     "multisitesdisplay": "",
+    "onlyallowlistedsites": false,
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
     "privacypolicy": "https:\/\/moodle.net\/moodle-app-privacy\/",

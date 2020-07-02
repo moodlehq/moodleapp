@@ -80,7 +80,6 @@ export class CoreLoginSitePage {
             protected textUtils: CoreTextUtilsProvider) {
 
         this.showKeyboard = !!navParams.get('showKeyboard');
-        this.showScanQR = this.utils.canScanQR();
 
         let url = '';
 
@@ -102,6 +101,9 @@ export class CoreLoginSitePage {
                 }
             });
         }
+
+        this.showScanQR = this.utils.canScanQR() && (typeof CoreConfigConstants['displayqronsitescreen'] == 'undefined' ||
+            !!CoreConfigConstants['displayqronsitescreen']);
 
         this.siteForm = fb.group({
             siteUrl: [url, this.moodleUrlValidator()]

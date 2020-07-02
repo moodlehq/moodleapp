@@ -16,12 +16,14 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreConfigConstants } from '../../../../configconstants';
+import { CoreCustomURLSchemes } from '@providers/urlschemes';
 
 /**
  * Page to enter the user credentials.
@@ -47,6 +49,7 @@ export class CoreLoginCredentialsPage {
     isBrowserSSO = false;
     isFixedUrlSet = false;
     showForgottenPassword = true;
+    showScanQR: boolean;
 
     protected siteConfig;
     protected eventThrown = false;
@@ -74,6 +77,17 @@ export class CoreLoginCredentialsPage {
             username: [navParams.get('username') || '', Validators.required],
             password: ['', Validators.required]
         });
+
+        const canScanQR = CoreUtils.instance.canScanQR();
+        if (canScanQR) {
+            if (typeof CoreConfigConstants['displayqroncredentialscreen'] == 'undefined') {
+                this.showScanQR = this.loginHelper.isFixedUrlSet();
+            } else {
+                this.showScanQR = !!CoreConfigConstants['displayqroncredentialscreen'];
+            }
+        } else {
+            this.showScanQR = false;
+        }
     }
 
     /**
@@ -266,5 +280,47 @@ export class CoreLoginCredentialsPage {
      */
     signup(): void {
         this.navCtrl.push('CoreLoginEmailSignupPage', { siteUrl: this.siteUrl });
+    }
+
+    /**
+     * Show instructions and scan QR code.
+     */
+    showInstructionsAndScanQR(): void {
+        // Show some instructions first.
+        this.domUtils.showAlertWithOptions({
+            title: this.translate.instant('core.login.faqwhereisqrcode'),
+            message: this.translate.instant('core.login.faqwhereisqrcodeanswer',
+                {$image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML}),
+            buttons: [
+                {
+                    text: this.translate.instant('core.cancel'),
+                    role: 'cancel'
+                },
+                {
+                    text: this.translate.instant('core.next'),
+                    handler: (): void => {
+                        this.scanQR();
+                    }
+                },
+            ],
+        });
+    }
+
+    /**
+     * Scan a QR code and put its text in the URL input.
+     *
+     * @return Promise resolved when done.
+     */
+    async scanQR(): Promise<void> {
+        // Scan for a QR code.
+        const text = await CoreUtils.instance.scanQR();
+
+        if (text && CoreCustomURLSchemes.instance.isCustomURL(text)) {
+            try {
+                await CoreCustomURLSchemes.instance.handleCustomURL(text);
+            } catch (error) {
+                CoreCustomURLSchemes.instance.treatHandleCustomURLError(error);
+            }
+        }
     }
 }
