@@ -389,7 +389,7 @@
     "addon.mod_assign.numberofteams": "Grupos",
     "addon.mod_assign.numwords": "{{$a}} palavras",
     "addon.mod_assign.outof": "{{$a.current}} de {{$a.total}}",
-    "addon.mod_assign.overdue": "<font color=\"red\">Trabalho entregue após data limite por {{$a}}</font>",
+    "addon.mod_assign.overdue": "<font color=\"red\">Trabalho entregue {{$a}} após a data limite</font>",
     "addon.mod_assign.submission": "Trabalho",
     "addon.mod_assign.submissioneditable": "Os alunos podem editar esta submissão",
     "addon.mod_assign.submissionnoteditable": "O aluno não pode editar esta submissão",

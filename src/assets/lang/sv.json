@@ -22,7 +22,7 @@
     "addon.block_completionstatus.pluginname": "Status för fullföljande av kurs",
     "addon.block_glossaryrandom.pluginname": "Slumpade bidrag till ordlista",
     "addon.block_learningplans.pluginname": "Studieplaner",
-    "addon.block_myoverview.all": "Alla",
+    "addon.block_myoverview.all": "Alla (förutom dolda)",
     "addon.block_myoverview.allincludinghidden": "Alla",
     "addon.block_myoverview.favourites": "Favoriter",
     "addon.block_myoverview.future": "Kommande",

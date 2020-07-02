@@ -728,7 +728,7 @@
     "addon.mod_lesson.reports": "Risultati",
     "addon.mod_lesson.response": "Replica",
     "addon.mod_lesson.retakefinishedinsync": "E' stato sincronizzato un tentativo offline. Desideri rivederlo?",
-    "addon.mod_lesson.retakelabelfull": "{retake}}: {{grade}} {{timestart}} ({{duration}})",
+    "addon.mod_lesson.retakelabelfull": "{{retake}}: {{grade}} {{timestart}} ({{duration}})",
     "addon.mod_lesson.retakelabelshort": "{{retake}}: {{grade}} {{timestart}}",
     "addon.mod_lesson.review": "Revisione",
     "addon.mod_lesson.reviewlesson": "Rivedi la lezione",

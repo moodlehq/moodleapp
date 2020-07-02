@@ -790,7 +790,7 @@
     "addon.mod_scorm.gradereported": "成績報告",
     "addon.mod_scorm.gradescoes": "學習目標",
     "addon.mod_scorm.gradesum": "加總",
-    "addon.mod_scorm.highestattempt": "最高作答次數",
+    "addon.mod_scorm.highestattempt": "以最高分採計",
     "addon.mod_scorm.incomplete": "不完整",
     "addon.mod_scorm.lastattempt": "最後完成的作答次",
     "addon.mod_scorm.modulenameplural": "SCORM課程包",
