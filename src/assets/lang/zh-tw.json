@@ -1636,7 +1636,6 @@
     "core.openinbrowser": "以瀏覽器開啟",
     "core.othergroups": "其他群組",
     "core.pagea": "第 {{$a}} 頁",
-    "core.parentlanguage": "",
     "core.paymentinstant": "使用以下按鈕立即付款及註冊。",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "電話",

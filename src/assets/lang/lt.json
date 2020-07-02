@@ -1634,7 +1634,6 @@
     "core.openinbrowser": "Atidaryti naršyklėje",
     "core.othergroups": "Kitos grupės",
     "core.pagea": "{{$a}} puslapis",
-    "core.parentlanguage": "",
     "core.paymentinstant": "Naudokite toliau pateiktą mygtuką, kad sumokėtumėte ir būtumėte įregistruoti per kelias minutes.",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Telefonas",
