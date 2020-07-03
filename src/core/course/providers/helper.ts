@@ -566,7 +566,7 @@ export class CoreCourseHelperProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         let promise;
-        if (files) {
+        if (files && files.length) {
             promise = Promise.resolve(files);
         } else {
             promise = this.courseProvider.loadModuleContents(module, courseId).then(() => {
