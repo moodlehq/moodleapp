@@ -222,7 +222,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, DoChec
                 let isPast = true;
 
                 this.weeks.forEach((week) => {
-                    week.days.some((day) => {
+                    week.days.forEach((day) => {
                         day.istoday = day.mday == currentDay;
                         day.ispast = isPast && !day.istoday;
                         isPast = day.ispast;
@@ -231,11 +231,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnChanges, DoChec
                             day.events.forEach((event) => {
                                 event.ispast = this.isEventPast(event);
                             });
-
-                            return true;
                         }
-
-                        return day.istoday;
                     });
                 });
             }
