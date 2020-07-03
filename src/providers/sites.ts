@@ -729,6 +729,7 @@ export class CoreSitesProvider {
                         candidateSite.setPrivateToken(privateToken);
                         candidateSite.setInfo(info);
                         candidateSite.setOAuthId(oauthId);
+                        candidateSite.setLoggedOut(false);
 
                     } else {
                         // New site, set site ID and info.
