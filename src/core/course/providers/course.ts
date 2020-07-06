@@ -122,7 +122,7 @@ export class CoreCourseProvider {
     canGetCourseBlocks(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isVersionGreaterEqualThan('3.7') && site.wsAvailable('core_block_get_course_blocks');
+        return site && site.isVersionGreaterEqualThan('3.7') && site.wsAvailable('core_block_get_course_blocks');
     }
 
     /**
@@ -135,7 +135,7 @@ export class CoreCourseProvider {
     canRequestStealthModules(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isVersionGreaterEqualThan(['3.4.6', '3.5.3']);
+        return site && site.isVersionGreaterEqualThan(['3.4.6', '3.5.3']);
     }
 
     /**

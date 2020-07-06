@@ -225,7 +225,7 @@ export class AddonModAssignSubmissionOnlineTextHandler implements AddonModAssign
         // Bug was fixed in 3.1.1 minor release and in 3.2.
         const currentSite = this.sitesProvider.getCurrentSite();
 
-        return currentSite.isVersionGreaterEqualThan('3.1.1') || currentSite.checkIfAppUsesLocalMobile();
+        return currentSite && (currentSite.isVersionGreaterEqualThan('3.1.1') || currentSite.checkIfAppUsesLocalMobile());
     }
 
     /**

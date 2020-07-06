@@ -291,7 +291,8 @@ export class AddonModForumProvider {
      * @return True if fixed, false otherwise.
      */
     isAllParticipantsFixed(): boolean {
-        return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
+        return this.sitesProvider.getCurrentSite() &&
+                this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
     }
 
     /**
@@ -543,7 +544,7 @@ export class AddonModForumProvider {
     isDiscussionListSortingAvailable(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
-        return site.isVersionGreaterEqualThan('3.7');
+        return site && site.isVersionGreaterEqualThan('3.7');
     }
 
     /**

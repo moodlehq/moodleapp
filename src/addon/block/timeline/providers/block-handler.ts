@@ -41,7 +41,9 @@ export class AddonBlockTimelineHandler extends CoreBlockBaseHandler {
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.timelineProvider.isAvailable().then((enabled) => {
-            return enabled && (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6') ||
+            const currentSite = this.sitesProvider.getCurrentSite();
+
+            return enabled && ((currentSite && currentSite.isVersionGreaterEqualThan('3.6')) ||
                 !this.coursesProvider.isMyCoursesDisabledInSite());
         });
     }

@@ -207,9 +207,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
                     // Check if groupmode is enabled to avoid showing wrong numbers.
                     return this.groupsProvider.getActivityGroupInfo(this.assign.cmid, false).then((groupInfo) => {
+                        const currentSite = this.sitesProvider.getCurrentSite();
                         this.groupInfo = groupInfo;
                         this.showNumbers = groupInfo.groups.length == 0 ||
-                            this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.5');
+                            (currentSite && currentSite.isVersionGreaterEqualThan('3.5'));
 
                         return this.setGroup(this.groupsProvider.validateGroupId(this.group, groupInfo));
                     });
@@ -258,8 +259,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                 }
             }
 
+            const currentSite = this.sitesProvider.getCurrentSite();
+
             this.needsGradingAvalaible = response.gradingsummary && response.gradingsummary.submissionsneedgradingcount > 0 &&
-                    this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
+                    currentSite && currentSite.isVersionGreaterEqualThan('3.2');
         });
     }
 

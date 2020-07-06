@@ -37,7 +37,7 @@ export class AddonBlockMyOverviewHandler extends CoreBlockBaseHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6') ||
+        return (this.sitesProvider.getCurrentSite() && this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6')) ||
             !this.coursesProvider.isMyCoursesDisabledInSite();
     }
 
