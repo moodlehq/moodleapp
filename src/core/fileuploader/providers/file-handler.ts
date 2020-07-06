@@ -64,12 +64,10 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
      * @return Data.
      */
     getData(): CoreFileUploaderHandlerData {
-        const isIOS = this.platform.is('ios');
-
         const handler: CoreFileUploaderHandlerData = {
-            title: isIOS ? 'core.fileuploader.more' : 'core.fileuploader.file',
+            title: 'core.fileuploader.file',
             class: 'core-fileuploader-file-handler',
-            icon: isIOS ? 'more' : 'folder',
+            icon: 'folder',
         };
 
         if (this.appProvider.isMobile()) {
@@ -98,7 +96,6 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
 
                     input.addEventListener('change', (evt: Event) => {
                         const file = input.files[0];
-                        let fileName;
 
                         input.value = ''; // Unset input.
                         if (!file) {
@@ -113,17 +110,8 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                             return;
                         }
 
-                        fileName = file.name;
-                        if (isIOS) {
-                            // Check the name of the file and add a timestamp if needed (take picture).
-                            const matches = fileName.match(/image\.(jpe?g|png)/);
-                            if (matches) {
-                                fileName = 'image_' + this.timeUtils.readableTimestamp() + '.' + matches[1];
-                            }
-                        }
-
                         // Upload the picked file.
-                        this.uploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline, fileName).then((result) => {
+                        this.uploaderHelper.uploadFileObject(file, maxSize, upload, allowOffline, file.name).then((result) => {
                             this.uploaderHelper.fileUploaded(result);
                         }).catch((error) => {
                             this.domUtils.showErrorModalDefault(error,
