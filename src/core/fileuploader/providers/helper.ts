@@ -65,7 +65,11 @@ export class CoreFileUploaderHelperProvider {
      */
     async chooseAndUploadFile(maxSize: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> {
 
+        const modal = this.domUtils.showModalLoading();
+
         const result = await this.fileChooser.getFile(mimetypes ? mimetypes.join(',') : undefined);
+
+        modal.dismiss();
 
         if (!result) {
             // User canceled.
@@ -87,10 +91,6 @@ export class CoreFileUploaderHelperProvider {
         const options = this.fileUploaderProvider.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
 
         if (upload) {
-            const size = await this.fileProvider.getExternalFileSize(result.uri);
-
-            await this.confirmUploadFile(size, false, allowOffline);
-
             return this.uploadFile(result.uri, maxSize, true, options);
         } else {
             return this.copyToTmpFolder(result.uri, false, maxSize, undefined, options);
