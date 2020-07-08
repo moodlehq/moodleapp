@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -35,10 +35,12 @@ export class CoreLoginForgottenPasswordPage {
 
     myForm: FormGroup;
     siteUrl: string;
+    autoFocus: boolean;
 
     constructor(protected navCtrl: NavController,
             navParams: NavParams,
             fb: FormBuilder,
+            platform: Platform,
             protected translate: TranslateService,
             protected loginHelper: CoreLoginHelperProvider,
             protected domUtils: CoreDomUtilsProvider,
@@ -46,6 +48,7 @@ export class CoreLoginForgottenPasswordPage {
             protected sitesProvider: CoreSitesProvider) {
 
         this.siteUrl = navParams.get('siteUrl');
+        this.autoFocus = platform.is('tablet');
         this.myForm = fb.group({
             field: ['username', Validators.required],
             value: [navParams.get('username') || '', Validators.required]
