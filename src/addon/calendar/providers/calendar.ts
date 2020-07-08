@@ -1606,61 +1606,55 @@ export class AddonCalendarProvider {
      * @param siteId Site ID the event belongs to. If not defined, use current site.
      * @return Promise resolved when the notification is scheduled.
      */
-    protected scheduleEventNotification(event: AddonCalendarAnyEvent, reminderId: number, time: number, siteId?: string)
+    protected async scheduleEventNotification(event: AddonCalendarAnyEvent, reminderId: number, time: number, siteId?: string)
             : Promise<void> {
 
-        if (this.localNotificationsProvider.isAvailable()) {
-            siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        if (!this.localNotificationsProvider.isAvailable()) {
+            return;
+        }
 
-            if (time === 0) {
-                // Cancel if it was scheduled.
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (time === 0) {
+            // Cancel if it was scheduled.
+            return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
+        }
+
+        if (time == -1) {
+            // If time is -1, get event default time to calculate the notification time.
+            time = await this.getDefaultNotificationTime(siteId);
+
+            if (time == 0) {
+                // Default notification time is disabled, do not show.
                 return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
             }
 
-            let promise;
-            if (time == -1) {
-                // If time is -1, get event default time to calculate the notification time.
-                promise = this.getDefaultNotificationTime(siteId).then((time) => {
-                    if (time == 0) {
-                        // Default notification time is disabled, do not show.
-                        return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
-                    }
-
-                    return event.timestart - (time * 60);
-                });
-            } else {
-                promise = Promise.resolve(time);
-            }
-
-            return promise.then((time) => {
-                time = time * 1000;
-
-                if (time <= new Date().getTime()) {
-                    // This reminder is over, don't schedule. Cancel if it was scheduled.
-                    return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
-                }
-
-                const notification: ILocalNotification = {
-                        id: reminderId,
-                        title: event.name,
-                        text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
-                        icon: 'file://assets/img/icons/calendar.png',
-                        trigger: {
-                            at: new Date(time)
-                        },
-                        data: {
-                            eventid: event.id,
-                            reminderid: reminderId,
-                            siteid: siteId
-                        }
-                    };
-
-                return this.localNotificationsProvider.schedule(notification, AddonCalendarProvider.COMPONENT, siteId);
-            });
-
-        } else {
-            return Promise.resolve();
+            time = event.timestart - (time * 60);
         }
+
+        time = time * 1000;
+
+        if (time <= Date.now()) {
+            // This reminder is over, don't schedule. Cancel if it was scheduled.
+            return this.localNotificationsProvider.cancel(reminderId, AddonCalendarProvider.COMPONENT, siteId);
+        }
+
+        const notification: ILocalNotification = {
+                id: reminderId,
+                title: event.name,
+                text: this.timeUtils.userDate(event.timestart * 1000, 'core.strftimedaydatetime', true),
+                icon: 'file://assets/img/icons/calendar.png',
+                trigger: {
+                    at: new Date(time)
+                },
+                data: {
+                    eventid: event.id,
+                    reminderid: reminderId,
+                    siteid: siteId
+                }
+            };
+
+        return this.localNotificationsProvider.schedule(notification, AddonCalendarProvider.COMPONENT, siteId);
     }
 
     /**

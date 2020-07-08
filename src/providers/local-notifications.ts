@@ -24,6 +24,7 @@ import { CoreLoggerProvider } from './logger';
 import { CoreTextUtilsProvider } from './utils/text';
 import { CoreUtilsProvider } from './utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreConstants } from '@core/constants';
 import { CoreConfigConstants } from '../configconstants';
 import { Subject, Subscription } from 'rxjs';
@@ -112,6 +113,7 @@ export class CoreLocalNotificationsProvider {
     protected cancelSubscription: Subscription;
     protected addSubscription: Subscription;
     protected updateSubscription: Subscription;
+    protected queueRunner: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
 
     constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
             private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
@@ -119,6 +121,7 @@ export class CoreLocalNotificationsProvider {
             eventsProvider: CoreEventsProvider, private push: Push, private zone: NgZone) {
 
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
+        this.queueRunner = new CoreQueueRunner(10);
         this.appDB = appProvider.getDB();
         this.dbReady = appProvider.createTablesFromSchema(this.tablesSchema).catch(() => {
             // Ignore errors.
@@ -176,9 +179,13 @@ export class CoreLocalNotificationsProvider {
      * @param siteId Site ID.
      * @return Promise resolved when the notification is cancelled.
      */
-    cancel(id: number, component: string, siteId: string): Promise<any> {
-        return this.getUniqueNotificationId(id, component, siteId).then((uniqueId) => {
-            return this.localNotifications.cancel(uniqueId);
+    async cancel(id: number, component: string, siteId: string): Promise<void> {
+        const uniqueId = await this.getUniqueNotificationId(id, component, siteId);
+
+        const queueId = 'cancel-' + uniqueId;
+
+        await this.queueRunner.run(queueId, () => this.localNotifications.cancel(uniqueId), {
+            allowRepeated: true,
         });
     }
 
@@ -188,28 +195,29 @@ export class CoreLocalNotificationsProvider {
      * @param siteId Site ID.
      * @return Promise resolved when the notifications are cancelled.
      */
-    cancelSiteNotifications(siteId: string): Promise<any> {
+    async cancelSiteNotifications(siteId: string): Promise<void> {
 
         if (!this.isAvailable()) {
-            return Promise.resolve();
+            return;
         } else if (!siteId) {
-            return Promise.reject(null);
+            throw new Error('No site ID supplied.');
         }
 
-        return this.localNotifications.getScheduled().then((scheduled) => {
-            const ids = [];
+        const scheduled = await this.getAllScheduled();
 
-            scheduled.forEach((notif) => {
-                if (typeof notif.data == 'string') {
-                    notif.data = this.textUtils.parseJSON(notif.data);
-                }
+        const ids = [];
+        const queueId = 'cancelSiteNotifications-' + siteId;
 
-                if (typeof notif.data == 'object' && notif.data.siteId === siteId) {
-                    ids.push(notif.id);
-                }
-            });
+        scheduled.forEach((notif) => {
+            notif.data = this.parseNotificationData(notif.data);
 
-            return this.localNotifications.cancel(ids);
+            if (typeof notif.data == 'object' && notif.data.siteId === siteId) {
+                ids.push(notif.id);
+            }
+        });
+
+        await this.queueRunner.run(queueId, () => this.localNotifications.cancel(ids), {
+            allowRepeated: true,
         });
     }
 
@@ -241,6 +249,15 @@ export class CoreLocalNotificationsProvider {
         }).catch((error) => {
             this.logger.error('Error changing channel name', error);
         });
+    }
+
+    /**
+     * Get all scheduled notifications.
+     *
+     * @return Promise resolved with the notifications.
+     */
+    protected getAllScheduled(): Promise<ILocalNotification[]> {
+        return this.queueRunner.run('allScheduled', () => this.localNotifications.getScheduled());
     }
 
     /**
@@ -359,9 +376,10 @@ export class CoreLocalNotificationsProvider {
      * Check if a notification has been triggered with the same trigger time.
      *
      * @param notification Notification to check.
+     * @param useQueue Whether to add the call to the queue.
      * @return Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
-    async isTriggered(notification: ILocalNotification): Promise<boolean> {
+    async isTriggered(notification: ILocalNotification, useQueue: boolean = true): Promise<boolean> {
         await this.dbReady;
 
         try {
@@ -374,7 +392,15 @@ export class CoreLocalNotificationsProvider {
 
             return stored.at === triggered;
         } catch (err) {
-            return this.localNotifications.isTriggered(notification.id);
+            if (useQueue) {
+                const queueId = 'isTriggered-' + notification.id;
+
+                return this.queueRunner.run(queueId, () => this.localNotifications.isTriggered(notification.id), {
+                    allowRepeated: true,
+                });
+            } else {
+                return this.localNotifications.isTriggered(notification.id);
+            }
         }
     }
 
@@ -403,6 +429,22 @@ export class CoreLocalNotificationsProvider {
                 }
             }
         });
+    }
+
+    /**
+     * Parse some notification data.
+     *
+     * @param data Notification data.
+     * @return Parsed data.
+     */
+    protected parseNotificationData(data: any): any {
+        if (!data) {
+            return {};
+        } else if (typeof data == 'string') {
+            return this.textUtils.parseJSON(data, {});
+        } else {
+            return data;
+        }
     }
 
     /**
@@ -531,20 +573,20 @@ export class CoreLocalNotificationsProvider {
      *
      * @return Promise resolved when all notifications have been rescheduled.
      */
-    rescheduleAll(): Promise<any> {
+    async rescheduleAll(): Promise<void> {
         // Get all the scheduled notifications.
-        return this.localNotifications.getScheduled().then((notifications) => {
-            const promises = [];
+        const notifications = await this.getAllScheduled();
 
-            notifications.forEach((notification) => {
-                // Convert some properties to the needed types.
-                notification.data = notification.data ? this.textUtils.parseJSON(notification.data, {}) : {};
+        await Promise.all(notifications.map(async (notification) => {
+            // Convert some properties to the needed types.
+            notification.data = this.parseNotificationData(notification.data);
 
-                promises.push(this.scheduleNotification(notification));
+            const queueId = 'schedule-' + notification.id;
+
+            await this.queueRunner.run(queueId, () => this.scheduleNotification(notification), {
+                allowRepeated: true,
             });
-
-            return Promise.all(promises);
-        });
+        }));
     }
 
     /**
@@ -557,35 +599,33 @@ export class CoreLocalNotificationsProvider {
      * @param alreadyUnique Whether the ID is already unique.
      * @return Promise resolved when the notification is scheduled.
      */
-    schedule(notification: ILocalNotification, component: string, siteId: string, alreadyUnique?: boolean): Promise<any> {
-        let promise;
+    async schedule(notification: ILocalNotification, component: string, siteId: string, alreadyUnique?: boolean): Promise<void> {
 
-        if (alreadyUnique) {
-            promise = Promise.resolve(notification.id);
-        } else {
-            promise = this.getUniqueNotificationId(notification.id, component, siteId);
+        if (!alreadyUnique) {
+            notification.id = await this.getUniqueNotificationId(notification.id, component, siteId);
         }
 
-        return promise.then((uniqueId) => {
-            notification.id = uniqueId;
-            notification.data = notification.data || {};
-            notification.data.component = component;
-            notification.data.siteId = siteId;
+        notification.data = notification.data || {};
+        notification.data.component = component;
+        notification.data.siteId = siteId;
 
-            if (this.platform.is('android')) {
-                notification.icon = notification.icon || 'res://icon';
-                notification.smallIcon = notification.smallIcon || 'res://smallicon';
-                notification.color = notification.color || CoreConfigConstants.notificoncolor;
+        if (this.platform.is('android')) {
+            notification.icon = notification.icon || 'res://icon';
+            notification.smallIcon = notification.smallIcon || 'res://smallicon';
+            notification.color = notification.color || CoreConfigConstants.notificoncolor;
 
-                const led: any = notification.led || {};
-                notification.led = {
-                    color: led.color || 'FF9900',
-                    on: led.on || 1000,
-                    off: led.off || 1000
-                };
-            }
+            const led: any = notification.led || {};
+            notification.led = {
+                color: led.color || 'FF9900',
+                on: led.on || 1000,
+                off: led.off || 1000
+            };
+        }
 
-            return this.scheduleNotification(notification);
+        const queueId = 'schedule-' + notification.id;
+
+        await this.queueRunner.run(queueId, () => this.scheduleNotification(notification), {
+            allowRepeated: true,
         });
     }
 
@@ -595,9 +635,9 @@ export class CoreLocalNotificationsProvider {
      * @param notification Notification to schedule.
      * @return Promise resolved when scheduled.
      */
-    protected scheduleNotification(notification: ILocalNotification): Promise<any> {
+    protected scheduleNotification(notification: ILocalNotification): Promise<void> {
         // Check if the notification has been triggered already.
-        return this.isTriggered(notification).then((triggered) => {
+        return this.isTriggered(notification, false).then((triggered) => {
             // Cancel the current notification in case it gets scheduled twice.
             return this.localNotifications.cancel(notification.id).finally(() => {
                 if (!triggered) {
