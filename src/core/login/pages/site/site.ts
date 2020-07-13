@@ -429,10 +429,19 @@ export class CoreLoginSitePage {
                     }
                 }
             } else {
-                // Not a custom URL scheme, put the text in the field.
-                this.siteForm.controls.siteUrl.setValue(text);
+                // Not a custom URL scheme, check if it's a URL scheme to another app.
+                const scheme = this.urlUtils.getUrlProtocol(text);
 
-                this.connect(new Event('click'), text);
+                if (scheme && scheme != 'http' && scheme != 'https') {
+                    this.domUtils.showErrorModal(this.translate.instant('core.errorurlschemeinvalidscheme', {$a: text}));
+                } else if (this.loginHelper.isSiteUrlAllowed(text)) {
+                    // Put the text in the field (if present).
+                    this.siteForm.controls.siteUrl.setValue(text);
+
+                    this.connect(new Event('click'), text);
+                } else {
+                    this.domUtils.showErrorModal('core.errorurlschemeinvalidsite', true);
+                }
             }
         }
     }

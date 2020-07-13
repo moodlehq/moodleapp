@@ -29,7 +29,6 @@ import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins
 import { CoreConfigConstants } from '../configconstants';
 import { CoreConstants } from '@core/constants';
 import { makeSingleton } from '@singletons/core.singletons';
-import { CoreUrl } from '@singletons/url';
 
 /**
  * All params that can be in a custom URL scheme.
@@ -167,7 +166,7 @@ export class CoreCustomURLSchemesProvider {
         }
 
         try {
-            const isValid = await this.isInFixedSiteUrls(data.siteUrl);
+            const isValid = await this.loginHelper.isSiteUrlAllowed(data.siteUrl);
 
             if (!isValid) {
                 throw this.translate.instant('core.errorurlschemeinvalidsite');
@@ -546,38 +545,6 @@ export class CoreCustomURLSchemesProvider {
         } else {
             this.domUtils.showErrorModalDefault(error.error, this.translate.instant('core.login.invalidsite'));
         }
-    }
-
-    /**
-     * Check if a site URL is one of the fixed sites for the app (in case there are fixed sites).
-     *
-     * @param siteUrl Site URL to check.
-     * @return Promise resolved with boolean: whether is one of the fixed sites.
-     */
-    protected async isInFixedSiteUrls(siteUrl: string): Promise<boolean> {
-        if (this.loginHelper.isFixedUrlSet()) {
-
-            return CoreUrl.sameDomainAndPath(siteUrl, <string> this.loginHelper.getFixedSites());
-        } else if (this.loginHelper.hasSeveralFixedSites()) {
-            const sites = <any[]> this.loginHelper.getFixedSites();
-
-            const site = sites.find((site) => {
-                return CoreUrl.sameDomainAndPath(siteUrl, site.url);
-            });
-
-            return !!site;
-        } else if (CoreConfigConstants.multisitesdisplay == 'sitefinder' && CoreConfigConstants.onlyallowlistedsites) {
-            // Call the sites finder to validate the site.
-            const result = await this.sitesProvider.findSites(siteUrl.replace(/^https?\:\/\/|\.\w{2,3}\/?$/g, ''));
-
-            const site = result && result.find((site) => {
-                return CoreUrl.sameDomainAndPath(siteUrl, site.url);
-            });
-
-            return !!site;
-        }
-
-        return true;
     }
 }
 
