@@ -99,7 +99,7 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      * @return Closest ancestor.
      */
-    closest(element: HTMLElement, selector: string): Element {
+    closest(element: Element, selector: string): Element {
         // Try to use closest if the browser supports it.
         if (typeof element.closest == 'function') {
             return element.closest(selector);
