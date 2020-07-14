@@ -11,7 +11,7 @@
         <ion-list>
             <ion-item text-wrap *ngFor="let device of devices">
                 <ion-label [class.core-bold]="device.current">
-                    {{ device.model }}
+                    {{ device.name }} {{ device.model }} {{ device.platform }} {{ device.version }}
                     <span *ngIf="device.current">({{ 'core.currentdevice' | translate }})</span>
                 </ion-label>
                 <ion-spinner *ngIf="device.updating" item-end></ion-spinner>
