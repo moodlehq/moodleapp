@@ -27,6 +27,9 @@ ion-app.app-root core-ion-tabs {
         .ion-page > ion-content > .scroll-content {
             margin-bottom: $navbar-md-height;
         }
+        .tabshidden .ion-page > ion-content > .scroll-content {
+            margin-bottom: 0;
+        }
     }
 
     &[tabsplacement="side"] {
