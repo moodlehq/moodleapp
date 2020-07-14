@@ -1,6 +1,6 @@
 <core-loading [hideUntil]="loaded">
     <div *ngIf="!summary">
-        <ion-list-header text-wrap>
+        <ion-item text-wrap class="addon-workshop-submission-title">
             <ion-avatar core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile && profile.id" item-start></ion-avatar>
             <h2><core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text></h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
@@ -21,7 +21,7 @@
                 <ng-container *ngIf="submission.offline"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</ng-container>
                 <ng-container *ngIf="submission.deleted"><ion-icon name="trash"></ion-icon> {{ 'core.deletedoffline' | translate }}</ng-container>
             </ion-note>
-        </ion-list-header>
+        </ion-item>
         <ion-item text-wrap *ngIf="submission.content">
             <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         </ion-item>

@@ -113,8 +113,8 @@ ion-app.app-root {
     @include core-as-items();
   }
 
-  .card.with-borders .item,
-  .list.with-borders .item {
+  .card.with-borders > .item,
+  .list.with-borders > .item {
     @include core-items();
   }
 

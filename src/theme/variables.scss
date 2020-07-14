@@ -527,7 +527,7 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
     border-bottom: $hairlines-width solid $list-ios-border-color;
   }
 
-  &:last-child > .item-inner {
+  &.item-block:last-child > .item-inner {
     border-bottom: 0;
   }
 }
