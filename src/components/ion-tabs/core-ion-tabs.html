@@ -7,7 +7,7 @@
         </span>
     </div>
 </div>
-<div #originalTabs class="tabcontent">
+<div #originalTabs class="tabcontent" [class.tabshidden]="hidden">
     <ng-content></ng-content>
 </div>
 <div #portal tab-portal></div>
