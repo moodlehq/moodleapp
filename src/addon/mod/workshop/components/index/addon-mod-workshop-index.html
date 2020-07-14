@@ -112,7 +112,7 @@
                     <h2>{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h2>
                 </ion-item-divider>
                 <ng-container *ngFor="let submission of publishedSubmissions">
-                    <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission>
+                    <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true" class="core-as-item"></addon-mod-workshop-submission>
                 </ng-container>
             </ion-card>
         </ng-container>
@@ -134,7 +134,7 @@
                     <p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p>
                 </ion-item>
                 <ng-container *ngFor="let assessment of (assessments || [])">
-                    <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission>
+                    <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true" class="core-as-item"></addon-mod-workshop-submission>
                 </ng-container>
             </ion-card >
         </ng-container>
@@ -156,7 +156,7 @@
             </ion-item>
 
             <ng-container *ngFor="let submission of grades">
-                <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"></addon-mod-workshop-submission>
+                <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true" class="core-as-item"></addon-mod-workshop-submission>
             </ng-container>
 
             <ion-grid *ngIf="page > 0 || hasNextPage">

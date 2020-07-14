@@ -1,4 +1,13 @@
-ion-app.app-root addon-mod-workshop-submission,
-ion-app.app-root .card.with-borders addon-mod-workshop-submission {
-  @include core-as-items();
+ion-app.app-root addon-mod-workshop-submission .addon-workshop-submission-title {
+
+    &.item-ios {
+        border-bottom: $list-ios-header-border-bottom;
+    }
+    &.item-md {
+        border-bottom: 1px solid $list-md-border-color;
+    }
+
+    &:last-child {
+        border: 0;
+    }
 }
