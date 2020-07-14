@@ -53,6 +53,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     displayRefresh = true;
     displayPrefetch = true;
     displaySize = true;
+    ptrEnabled = true;
 
     jsData: any; // Data to pass to the component.
 
@@ -92,6 +93,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                 this.displayRefresh = !this.utils.isFalseOrZero(handler.handlerSchema.displayrefresh);
                 this.displayPrefetch = !this.utils.isFalseOrZero(handler.handlerSchema.displayprefetch);
                 this.displaySize = !this.utils.isFalseOrZero(handler.handlerSchema.displaysize);
+                this.ptrEnabled = !this.utils.isFalseOrZero(handler.handlerSchema.ptrenabled);
             }
 
             // Get the data for the context menu.

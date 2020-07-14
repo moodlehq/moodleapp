@@ -40,7 +40,8 @@ export class CoreSitePluginsMessageOutputHandler extends CoreSitePluginsBaseHand
                 title: this.title,
                 component: this.plugin.component,
                 method: this.handlerSchema.method,
-                initResult: this.initResult
+                initResult: this.initResult,
+                ptrEnabled: this.handlerSchema.ptrenabled,
             }
         };
     }

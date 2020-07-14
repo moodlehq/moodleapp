@@ -94,7 +94,8 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                         courseid: courseId,
                         userid: user.id
                     },
-                    initResult: this.initResult
+                    initResult: this.initResult,
+                    ptrEnabled: this.handlerSchema.ptrenabled,
                 });
             }
         };
