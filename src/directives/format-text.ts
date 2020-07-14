@@ -711,7 +711,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 }
 
                 // Width and height parameters are required in 3.6 and older sites.
-                if (!site.isVersionGreaterEqualThan('3.7')) {
+                if (site && !site.isVersionGreaterEqualThan('3.7')) {
                     newUrl += '&width=' + width + '&height=' + height;
                 }
                 iframe.src = newUrl;

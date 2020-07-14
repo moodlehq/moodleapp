@@ -86,7 +86,8 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
      */
     protected getFilesFromGlossaryAndEntries(module: any, glossary: any, entries: any[]): any[] {
         let files = this.getIntroFilesFromInstance(module, glossary);
-        const getInlineFiles = this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
+        const getInlineFiles = this.sitesProvider.getCurrentSite() &&
+                this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
 
         // Get entries files.
         entries.forEach((entry) => {

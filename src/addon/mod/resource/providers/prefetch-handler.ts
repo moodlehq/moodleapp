@@ -147,7 +147,7 @@ export class AddonModResourcePrefetchHandler extends CoreCourseResourcePrefetchH
      * @return Promise resolved with true if downloadable, resolved with false otherwise.
      */
     isDownloadable(module: any, courseId: number): Promise<boolean> {
-        if (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
+        if (this.sitesProvider.getCurrentSite() && this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.7')) {
             // Nextcloud files are downloadable from 3.7 onwards.
             return Promise.resolve(true);
         }

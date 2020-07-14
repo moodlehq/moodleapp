@@ -110,8 +110,9 @@ export class AddonModQuizPrefetchHandler extends CoreCourseActivityPrefetchHandl
      */
     protected getAttemptsFeedbackFiles(quiz: any, attempts: any[]): Promise<any[]> {
         // We have quiz data, now we'll get specific data for each attempt.
-        const promises = [],
-            getInlineFiles = this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
+        const promises = [];
+        const getInlineFiles = this.sitesProvider.getCurrentSite() &&
+                this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
         let files = [];
 
         attempts.forEach((attempt) => {

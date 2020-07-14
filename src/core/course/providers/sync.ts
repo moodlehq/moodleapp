@@ -197,7 +197,9 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider {
             if (result.updated) {
                 // Update data.
                 return this.courseProvider.invalidateSections(courseId, siteId).then(() => {
-                    if (this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.6')) {
+                    const currentSite = this.sitesProvider.getCurrentSite();
+
+                    if (currentSite && currentSite.isVersionGreaterEqualThan('3.6')) {
                         return this.courseProvider.getSections(courseId, false, true, undefined, siteId);
                     } else {
                         return this.courseProvider.getActivitiesCompletionStatus(courseId, siteId);

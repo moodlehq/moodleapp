@@ -393,7 +393,7 @@ export class AddonCalendarProvider {
         site = site || this.sitesProvider.getCurrentSite();
 
         // The WS to create/edit events requires a fix that was integrated in 3.7.1.
-        return site.isVersionGreaterEqualThan('3.7.1');
+        return site && site.isVersionGreaterEqualThan('3.7.1');
     }
 
     /**

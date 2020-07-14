@@ -87,7 +87,8 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
      */
     protected getPostsFiles(posts: any[]): any[] {
         let files = [];
-        const getInlineFiles = this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
+        const getInlineFiles = this.sitesProvider.getCurrentSite() &&
+                this.sitesProvider.getCurrentSite().isVersionGreaterEqualThan('3.2');
 
         posts.forEach((post) => {
             if (post.attachments && post.attachments.length) {
