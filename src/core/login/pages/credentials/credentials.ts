@@ -249,6 +249,9 @@ export class CoreLoginCredentialsPage {
             this.loginHelper.treatUserTokenError(siteUrl, error, username, password);
             if (error.loggedout) {
                 this.navCtrl.setRoot('CoreLoginSitesPage');
+            } else if (error.errorcode == 'forcepasswordchangenotice') {
+                // Reset password field.
+                this.credForm.controls.password.reset();
             }
         }).finally(() => {
             modal.dismiss();
