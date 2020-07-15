@@ -9,7 +9,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="loaded">
-            <ion-list>
+            <ion-list *ngIf="hasUnsupportedAreas || areas">
                 <ion-item text-wrap *ngIf="hasUnsupportedAreas" class="core-warning-item">
                     <ion-icon item-start name="warning" color="warning"></ion-icon>
                     {{ 'core.tag.warningareasnotsupported' | translate }}
@@ -19,6 +19,7 @@
                     <ion-badge item-end *ngIf="area.badge">{{ area.badge }}</ion-badge>
                 </a>
             </ion-list>
+            <core-empty-box icon="fa-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)" [message]="'core.tag.noresultsfor' | translate: { $a: tagName }"></core-empty-box>
         </core-loading>
     </ion-content>
 </core-split-view>

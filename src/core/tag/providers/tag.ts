@@ -166,7 +166,7 @@ export class CoreTagProvider {
 
                 return Promise.reject(error);
             }).then((response) => {
-                if (!response || !response.length) {
+                if (!response) {
                     return Promise.reject(null);
                 }
 

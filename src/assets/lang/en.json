@@ -2097,6 +2097,7 @@
     "core.tag.errorareanotsupported": "This tag area is not supported by the app.",
     "core.tag.inalltagcoll": "Everywhere",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} tagged with \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "No results for \"{{$a}}\"",
     "core.tag.notagsfound": "No tags matching \"{{$a}}\" found",
     "core.tag.searchtags": "Search tags",
     "core.tag.showingfirsttags": "Showing {{$a}} most popular tags",
