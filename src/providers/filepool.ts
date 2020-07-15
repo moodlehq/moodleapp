@@ -279,6 +279,8 @@ export class CoreFilepoolProvider {
     protected ERR_QUEUE_IS_EMPTY = 'CoreFilepoolError:ERR_QUEUE_IS_EMPTY';
     protected ERR_FS_OR_NETWORK_UNAVAILABLE = 'CoreFilepoolError:ERR_FS_OR_NETWORK_UNAVAILABLE';
     protected ERR_QUEUE_ON_PAUSE = 'CoreFilepoolError:ERR_QUEUE_ON_PAUSE';
+    protected FILE_UPDATE_UNKNOWN_WHERE_CLAUSE =
+        'isexternalfile = 1 OR ((revision IS NULL OR revision = 0) AND (timemodified IS NULL OR timemodified = 0))';
 
     // Variables for database.
     protected QUEUE_TABLE = 'filepool_files_queue'; // Queue of files to download.
@@ -2439,17 +2441,12 @@ export class CoreFilepoolProvider {
      *                    It is advised to set it to true to reduce the performance and data usage of the app.
      * @return Resolved on success.
      */
-    invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<any> {
-        return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            let where,
-                whereParams;
-            if (onlyUnknown) {
-                where = 'isexternalfile = ? OR (revision < ? AND timemodified = ?)';
-                whereParams = [0, 1, 0];
-            }
+    async invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<void> {
+        const db = await this.sitesProvider.getSiteDb(siteId);
 
-            return db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, where, whereParams);
-        });
+        const where = onlyUnknown ? this.FILE_UPDATE_UNKNOWN_WHERE_CLAUSE : null;
+
+        await db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, where);
     }
 
     /**
@@ -2484,25 +2481,28 @@ export class CoreFilepoolProvider {
      *                    It is advised to set it to true to reduce the performance and data usage of the app.
      * @return Resolved when done.
      */
-    invalidateFilesByComponent(siteId: string, component: string, componentId?: string | number, onlyUnknown: boolean = true)
-            : Promise<any> {
-        return this.sitesProvider.getSiteDb(siteId).then((db) => {
-            return this.getComponentFiles(db, component, componentId).then((items) => {
-                const fileIds = items.map((item) => {
-                        return item.fileId;
-                    }),
-                    whereAndParams = db.getInOrEqual(fileIds);
+    async invalidateFilesByComponent(siteId: string, component: string, componentId?: string | number, onlyUnknown: boolean = true)
+            : Promise<void> {
 
-                whereAndParams[0] = 'fileId ' + whereAndParams[0];
+        const db = await this.sitesProvider.getSiteDb(siteId);
 
-                if (onlyUnknown) {
-                    whereAndParams[0] += ' AND (isexternalfile = ? OR (revision < ? AND timemodified = ?))';
-                    whereAndParams[1] = whereAndParams[1].concat([0, 1, 0]);
-                }
+        const items = await this.getComponentFiles(db, component, componentId);
 
-                return db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, whereAndParams[0], whereAndParams[1]);
-            });
-        });
+        if (!items.length) {
+            // Nothing to invalidate.
+            return;
+        }
+
+        const fileIds = items.map((item) => item.fileId);
+        const whereAndParams = db.getInOrEqual(fileIds);
+
+        whereAndParams[0] = 'fileId ' + whereAndParams[0];
+
+        if (onlyUnknown) {
+            whereAndParams[0] += ' AND (' + this.FILE_UPDATE_UNKNOWN_WHERE_CLAUSE + ')';
+        }
+
+        await db.updateRecordsWhere(this.FILES_TABLE, { stale: 1 }, whereAndParams[0], whereAndParams[1]);
     }
 
     /**
@@ -2567,7 +2567,7 @@ export class CoreFilepoolProvider {
      * @return Whether it cannot determine updates.
      */
     protected isFileUpdateUnknown(entry: CoreFilepoolFileEntry): boolean {
-        return !!entry.isexternalfile || (entry.revision < 1 && !entry.timemodified);
+        return !!entry.isexternalfile || (!entry.revision && !entry.timemodified);
     }
 
     /**
