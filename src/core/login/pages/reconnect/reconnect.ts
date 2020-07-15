@@ -221,6 +221,9 @@ export class CoreLoginReconnectPage {
 
             if (error.loggedout) {
                 this.cancel();
+            } else if (error.errorcode == 'forcepasswordchangenotice') {
+                // Reset password field.
+                this.credForm.controls.password.reset();
             }
         }).finally(() => {
             modal.dismiss();
