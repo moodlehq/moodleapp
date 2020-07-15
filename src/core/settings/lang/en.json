@@ -2,6 +2,7 @@
     "about": "About",
     "appsettings": "App settings",
     "appversion": "App version",
+    "cannotsyncloggedout": "This site cannot be synchronised because you've logged out. Please try again when you're logged in the site again.",
     "cannotsyncoffline": "Cannot synchronise offline.",
     "cannotsyncwithoutwifi": "Cannot synchronise because the current settings only allow to synchronise when connected to Wi-Fi. Please connect to a Wi-Fi network.",
     "colorscheme": "Color Scheme",
