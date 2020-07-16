@@ -1622,6 +1622,7 @@
     "core.tag.defautltagcoll": "Alapgyűjtemény",
     "core.tag.inalltagcoll": "Mindenhol",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} \"{{$a.tag}}\" címkével megjelölve",
+    "core.tag.noresultsfor": "Nincs eredmény \"{{$a}}\" esetén",
     "core.tag.notagsfound": "Nincs \"{{$a}}\" szerint megfelelő címke",
     "core.tag.searchtags": "Címkék közötti keresés",
     "core.tag.showingfirsttags": "{{$a}} legnépszerűbb címke megjelenítése",

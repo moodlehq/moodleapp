@@ -2096,6 +2096,7 @@
     "core.tag.errorareanotsupported": "Esta área de marca no está soportada por la App.",
     "core.tag.inalltagcoll": "En todas partes",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} marcadas con \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Sin resultados para \"{{$a}}\"",
     "core.tag.notagsfound": "No se encontraron marcas que coincidan con \"{{$a}}\"",
     "core.tag.searchtags": "Buscar marcas",
     "core.tag.showingfirsttags": "Mostrando las {{$a}} marcas más populares",

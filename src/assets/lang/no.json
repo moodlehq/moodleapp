@@ -1673,6 +1673,7 @@
     "core.tag.defautltagcoll": "Standardsamling",
     "core.tag.inalltagcoll": "Over alt",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} tagget med \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Ikke noe resultat for \"{{$a}}\"",
     "core.tag.notagsfound": "Fant ingen tagger som lignet på \"{{$a}}\"",
     "core.tag.searchtags": "Søk i tagger",
     "core.tag.showingfirsttags": "Viser {{$a}} mest populære tagger",

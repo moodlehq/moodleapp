@@ -1660,6 +1660,7 @@
     "core.tag.defautltagcoll": "Domyślna kolekcja",
     "core.tag.inalltagcoll": "Wszędzie",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} otagowano \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Brak wyników dla \"{{$a}}\"",
     "core.tag.notagsfound": "Nie znaleziono pasujących tagów \"{{$a}}\"",
     "core.tag.searchtags": "Szukaj tagów",
     "core.tag.showingfirsttags": "Wyświetl {{$a}} najpopularniejszych tagów",

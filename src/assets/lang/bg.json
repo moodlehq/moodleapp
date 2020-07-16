@@ -1339,6 +1339,7 @@
     "core.strftimetime": "%H:%M",
     "core.submit": "Напред",
     "core.success": "Успешно",
+    "core.tag.noresultsfor": "Няма резултати за \"{{$a}}\"",
     "core.tag.searchtags": "Търсене в етикети",
     "core.tag.tags": "Етикети",
     "core.teachers": "Преподаватели",

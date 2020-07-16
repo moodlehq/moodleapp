@@ -1969,6 +1969,7 @@
     "core.tag.defautltagcoll": "Coleção padrão",
     "core.tag.inalltagcoll": "Em toda parte",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} marcada com \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Nenhum resultado para \"{{$a}}\"",
     "core.tag.notagsfound": "Nenhuma tag correspondente a \"{{$a}}\" encontrado",
     "core.tag.searchtags": "Pesquisar tags",
     "core.tag.showingfirsttags": "Exibindo {{$a}} tags mais populares",

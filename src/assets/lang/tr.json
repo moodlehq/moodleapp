@@ -1590,6 +1590,7 @@
     "core.tag.defautltagcoll": "Varsayılan koleksiyon",
     "core.tag.inalltagcoll": "Her yer",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} etiketlenen ile birlikte \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Sonuç yok: \"{{$a}}\"",
     "core.tag.notagsfound": "\"{{$a}}\" ile eşleşen etiket bulunamadı",
     "core.tag.searchtags": "Etiketleri ara",
     "core.tag.showingfirsttags": "En popüler etiketler {{$a}} gösteriliyor",

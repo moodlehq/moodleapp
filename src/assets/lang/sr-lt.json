@@ -1857,6 +1857,7 @@
     "core.tag.defautltagcoll": "Podrazumevana kolekcija",
     "core.tag.inalltagcoll": "Svugde",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} označena sa \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Nema rezultata za \"{{$a}}\"",
     "core.tag.notagsfound": "Nisu pronađene oznake koje se poklapaju sa \"{{$a}}\"",
     "core.tag.searchtags": "Pretraži oznake",
     "core.tag.showingfirsttags": "Broj najpopularnijih oznaka koje se prikazuju: {{$a}}",

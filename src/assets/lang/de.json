@@ -2095,6 +2095,7 @@
     "core.tag.errorareanotsupported": "Dieser Tag-Bereich wird von der App nicht unterstützt.",
     "core.tag.inalltagcoll": "Überall",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} mit '{{$a.tag}}' markiert",
+    "core.tag.noresultsfor": "Kein Suchergebnis für '{{$a}}'",
     "core.tag.notagsfound": "Kein Tag passend zu '{{$a}}' gefunden",
     "core.tag.searchtags": "Tags suchen",
     "core.tag.showingfirsttags": "Beliebteste Tags anzeigen: {{$a}}",

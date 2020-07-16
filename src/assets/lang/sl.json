@@ -2020,6 +2020,7 @@
     "core.tag.errorareanotsupported": "Aplikacija te oznake ne podpira.",
     "core.tag.inalltagcoll": "Povsod",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} označeno z \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Ni rezultatov za \"{{$a}}\"",
     "core.tag.notagsfound": "Nobena oznaka se ne ujema s/z \"{{$a}}\"",
     "core.tag.searchtags": "Iskanje po oznakah",
     "core.tag.showingfirsttags": "Prikazujem {{$a}} najpopularnejše oznake",

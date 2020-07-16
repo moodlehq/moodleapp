@@ -1622,6 +1622,7 @@
     "core.tablet": "Tablet",
     "core.tag.defautltagcoll": "Zadana zbirka",
     "core.tag.inalltagcoll": "Svuda",
+    "core.tag.noresultsfor": "Nema rezultata u \"{{$a}}\"",
     "core.tag.searchtags": "Pretraži oznake",
     "core.tag.tag": "Oznaka (tag)",
     "core.tag.tagarea_course": "E-kolegiji",

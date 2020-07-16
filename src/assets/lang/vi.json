@@ -1071,6 +1071,7 @@
     "core.success": "Thành công",
     "core.tablet": "Máy tính bảng",
     "core.tag.errorareanotsupported": "Vùng thẻ này không được ứng dụng hỗ trợ.",
+    "core.tag.noresultsfor": "Không có kết quả cho \"{{$a}}\"",
     "core.tag.searchtags": "Các thẻ tìm kiếm",
     "core.tag.tag": "Thẻ từ khoá",
     "core.tag.tags": "Thẻ từ khoá",

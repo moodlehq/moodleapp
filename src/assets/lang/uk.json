@@ -1711,6 +1711,7 @@
     "core.tag.defautltagcoll": "Типова колекція",
     "core.tag.inalltagcoll": "Скрізь",
     "core.tag.itemstaggedwith": "Область {{$a.tagarea}} відмічена як \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Немає результатів для \"{{$a}}\"",
     "core.tag.notagsfound": "Для \"{{$a}}\" відповідних міток не знайдено",
     "core.tag.searchtags": "Пошук міток",
     "core.tag.showingfirsttags": "Показати {{$a}} найпопулярніших міток",

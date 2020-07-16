@@ -1688,6 +1688,7 @@
     "core.tag.defautltagcoll": "Noklusējuma kolekcija",
     "core.tag.inalltagcoll": "Visur",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} tagots ar \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "\"{{$a}}\" nav rezultātu",
     "core.tag.notagsfound": "Nav atrasti tagi, kas atbilstu \"{{$a}}\"",
     "core.tag.searchtags": "Meklēt tagus",
     "core.tag.showingfirsttags": "Rāda {{$a}} populārākos tagus",

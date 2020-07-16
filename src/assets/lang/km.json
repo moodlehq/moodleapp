@@ -1743,6 +1743,7 @@
     "core.tag.defautltagcoll": "កម្រងលំនាំដើម",
     "core.tag.inalltagcoll": "គ្រប់កន្លែង",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} ដែលបានដាក់ស្លាក \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "គ្មានលទ្ធផលសម្រាប់ \"{{$a}}\"",
     "core.tag.notagsfound": "រកមិនឃើញស្លាកដែលផ្គូផ្គងនឹង \"{{$a}}\"",
     "core.tag.searchtags": "ស្វែងរកស្លាក",
     "core.tag.showingfirsttags": "បង្ហាញស្លាក {{$a}} ដែលពេញនិយមបំផុត",

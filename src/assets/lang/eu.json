@@ -2095,6 +2095,7 @@
     "core.tag.errorareanotsupported": "Etiketa-eremu hau ez da aplikazioan onartzen.",
     "core.tag.inalltagcoll": "Edonon",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} ondokoarekin etiketatu da: \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Ez dago emaitzarik \"{{$a}}\"-(e)rako",
     "core.tag.notagsfound": "Ez da aurkitu \"{{$a}}\"-(r)ekin bat datorren etiketarik",
     "core.tag.searchtags": "Bilatu etiketak",
     "core.tag.showingfirsttags": "{{$a}} etiketa ospetsuenak erakusten",

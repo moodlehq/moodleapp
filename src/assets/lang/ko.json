@@ -1530,6 +1530,7 @@
     "core.submit": "제출",
     "core.success": "성공",
     "core.tablet": "태블릿",
+    "core.tag.noresultsfor": "\"{{$a}}\"에 대한 결과 없음",
     "core.tag.searchtags": "태그 검색",
     "core.tag.tag": "태그",
     "core.tag.tags": "태그",

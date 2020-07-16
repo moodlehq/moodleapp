@@ -2094,6 +2094,7 @@
     "core.tag.defautltagcoll": "Colección por defecto",
     "core.tag.errorareanotsupported": "Esta etiqueta de area no está permitida por esta aplicación.",
     "core.tag.inalltagcoll": "En todas partes",
+    "core.tag.noresultsfor": "No hay resultados para \"{{$a}}\"",
     "core.tag.searchtags": "Buscar marcas",
     "core.tag.showingfirsttags": "Mostrando las {{$a}} marcas más populares",
     "core.tag.tag": "Marca",

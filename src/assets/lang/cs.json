@@ -2090,6 +2090,7 @@
     "core.tag.errorareanotsupported": "Aplikace nepodporuje pole štítků.",
     "core.tag.inalltagcoll": "Všude",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} označeno štítkem \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Hledání výrazu \"{{$a}}\" nepřineslo žádné výsledky",
     "core.tag.notagsfound": "Hledání výrazu ve štítku \"{{$a}}\" nepřineslo žádné výsledky",
     "core.tag.searchtags": "Prohledat štítky",
     "core.tag.showingfirsttags": "Zobrazit {{$a}} nejpopulárnějších štítků",

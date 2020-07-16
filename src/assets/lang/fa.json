@@ -1443,6 +1443,7 @@
     "core.submit": "ارسال",
     "core.success": "موفق",
     "core.tag.defautltagcoll": "مجموعه پیش‌فرض",
+    "core.tag.noresultsfor": "نتیجه‌ای برای «{{$a}}» وجود نداشت",
     "core.tag.searchtags": "جستجوی برچسب‌ها",
     "core.tag.tag": "برچسب",
     "core.tag.tagarea_course": "درس‌ها",

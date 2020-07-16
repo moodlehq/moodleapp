@@ -1160,6 +1160,7 @@
     "core.strftimetime": "%H:%M",
     "core.submit": "Равона карда шавад",
     "core.success": "Бо муваффақият",
+    "core.tag.noresultsfor": "Ҳеҷ як теги дорои \"{{$a}}\" ёфт нашудааст",
     "core.tag.searchtags": "Ҷустуҷӯи тегҳо",
     "core.tag.tag": "Тег",
     "core.tag.tags": "Тегҳо",

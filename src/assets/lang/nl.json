@@ -2095,6 +2095,7 @@
     "core.tag.errorareanotsupported": "Dit taggebied wordt niet ondersteund door de app.",
     "core.tag.inalltagcoll": "Overal",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} getagged met \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Geen resultaten voor \"{{$a}}\"",
     "core.tag.notagsfound": "Geen tags die overeenkomen met \"{{$a}}\" gevonden",
     "core.tag.searchtags": "Zoek tags",
     "core.tag.showingfirsttags": "Toon {{$a}} populairste tags",

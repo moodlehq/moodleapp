@@ -1778,6 +1778,7 @@
     "core.submit": "Lähetä",
     "core.success": "Valmis!",
     "core.tablet": "Tabletti-tietokone",
+    "core.tag.noresultsfor": "Ei tuloksia haulla '{{$a}}'",
     "core.tag.searchtags": "Hae tunnisteita",
     "core.tag.tag": "Tunniste",
     "core.tag.tags": "Tunnisteet",

@@ -1784,6 +1784,7 @@
     "core.tag.defautltagcoll": "Numatytas rinkinys",
     "core.tag.inalltagcoll": "Visur",
     "core.tag.itemstaggedwith": "{{$a.tagarea}} pažymėta su \"{{$a.tag}}\"",
+    "core.tag.noresultsfor": "Rezultatų užklausai „{{$a}}“ nėra",
     "core.tag.notagsfound": "Nerasta jokių žymių atitiktimi \"{{$a}}\"",
     "core.tag.searchtags": "Ieškoti žymių",
     "core.tag.showingfirsttags": "Rodomos {{$a}} populiariausios žymės",
