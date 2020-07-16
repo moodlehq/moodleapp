@@ -897,12 +897,19 @@ export class CoreUtilsProvider {
      * @param path The local path of the file to be open.
      * @return Promise resolved when done.
      */
-    openFile(path: string): Promise<any> {
+    async openFile(path: string): Promise<void> {
         // Convert the path to a native path if needed.
         path = CoreFile.instance.unconvertFileSrc(path);
 
         const extension = this.mimetypeUtils.getFileExtension(path);
         const mimetype = this.mimetypeUtils.getMimeType(extension);
+
+        if (mimetype == 'text/html' && this.platform.is('android')) {
+            // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
+            this.openInApp(path);
+
+            return;
+        }
 
         // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
         try {
@@ -911,7 +918,9 @@ export class CoreUtilsProvider {
             // Error, use the original path.
         }
 
-        return this.fileOpener.open(path, mimetype).catch((error) => {
+        try {
+            await this.fileOpener.open(path, mimetype);
+        } catch (error) {
             this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
             this.logger.error('Error: ', JSON.stringify(error));
 
@@ -922,8 +931,8 @@ export class CoreUtilsProvider {
                 error = this.translate.instant('core.erroropenfilenoapp');
             }
 
-            return Promise.reject(error);
-        });
+            throw error;
+        }
     }
 
     /**
