@@ -4,6 +4,7 @@
     "inalltagcoll": "Everywhere",
     "itemstaggedwith": "{{$a.tagarea}} tagged with \"{{$a.tag}}\"",
     "notagsfound": "No tags matching \"{{$a}}\" found",
+    "noresultsfor": "No results for \"{{$a}}\"",
     "searchtags": "Search tags",
     "showingfirsttags": "Showing {{$a}} most popular tags",
     "tag": "Tag",

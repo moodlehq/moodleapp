@@ -431,6 +431,8 @@ export class CoreSitesProvider {
      */
     getDemoSiteData(name: string): any {
         const demoSites = CoreConfigConstants.demo_sites;
+        name = name.toLowerCase();
+
         if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
             return demoSites[name];
         }

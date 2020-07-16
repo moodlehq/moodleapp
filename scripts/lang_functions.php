@@ -186,7 +186,7 @@ function build_lang($lang, $keys) {
     $local = 0;
 
     $langparts = explode('-', $lang, 2);
-    $parentname = $langparts[0] ?? "";
+    $parentname = $langparts[0] ? $langparts[0] : "";
     $parent = "";
 
     echo "Processing $lang";
@@ -306,8 +306,6 @@ function detect_lang($lang, $keys) {
     }
     $langname = $string['thislanguage'];
     $title .= " ".$langname." -D";
-
-
 
     // Add the translation to the array.
     foreach ($keys as $key => $value) {

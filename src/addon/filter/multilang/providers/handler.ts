@@ -83,6 +83,6 @@ export class AddonFilterMultilangHandler extends CoreFilterDefaultHandler {
      */
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
         // The filter should be applied if site is older than 3.7 or the WS didn't filter the text.
-        return options.wsNotFiltered || !site.isVersionGreaterEqualThan('3.7');
+        return options.wsNotFiltered || (site && !site.isVersionGreaterEqualThan('3.7'));
     }
 }

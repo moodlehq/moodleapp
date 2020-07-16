@@ -13,7 +13,7 @@
 <ion-content>
     <core-loading [hideUntil]="loaded">
         <core-navigation-bar [previous]="previousSco" [next]="nextSco" (action)="loadSco($event)"></core-navigation-bar>
-        <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scorm.popup ? scorm.width : undefined" [iframeHeight]="scorm.popup ? scorm.height : undefined"></core-iframe>
+        <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"></core-iframe>
         <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
     </core-loading>
 </ion-content>

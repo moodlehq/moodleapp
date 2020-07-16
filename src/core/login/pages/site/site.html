@@ -20,13 +20,13 @@
                 <ng-container *ngIf="siteSelector == 'url'">
                     <ion-item>
                         <ion-label stacked><h2>{{ 'core.login.siteaddress' | translate }}</h2></ion-label>
-                        <ion-input name="url" type="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard"></ion-input>
+                        <ion-input name="url" type="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard && !showScanQR"></ion-input>
                     </ion-item>
                 </ng-container>
                 <ng-container *ngIf="siteSelector != 'url'">
                     <ion-item>
                         <ion-label stacked><h2>{{ 'core.login.siteaddress' | translate }}</h2></ion-label>
-                        <ion-input name="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard" (ionChange)="searchSite($event, siteForm.value.siteUrl)"></ion-input>
+                        <ion-input name="url" placeholder="https://campus.example.edu" formControlName="siteUrl" [core-auto-focus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)"></ion-input>
                     </ion-item>
 
                     <ion-list [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">

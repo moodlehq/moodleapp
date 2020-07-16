@@ -114,7 +114,7 @@ export class CoreCoursesHelperProvider {
             promises = [],
             colors = [];
 
-        if (site.isVersionGreaterEqualThan('3.8')) {
+        if (site && site.isVersionGreaterEqualThan('3.8')) {
             promises.push(site.getConfig().then((configs) => {
                 for (let x = 0; x < 10; x++) {
                     colors[x] = configs['core_admin_coursecolor' + (x + 1)] || null;
