@@ -48,6 +48,8 @@ export class CoreLoginEmailSignupPage {
     countries: any;
     categories: any[];
     settingsLoaded = false;
+    allRequiredSupported = true;
+    signupUrl: string;
     captcha = {
         recaptcharesponse: ''
     };
@@ -136,63 +138,70 @@ export class CoreLoginEmailSignupPage {
     }
 
     /**
-     * Fetch the required data from the server-
+     * Fetch the required data from the server.
+     *
+     * @return Promise resolved when done.
      */
-    protected fetchData(): Promise<any> {
-        // Get site config.
-        return this.sitesProvider.getSitePublicConfig(this.siteUrl).then((config) => {
-            this.siteConfig = config;
+    protected async fetchData(): Promise<void> {
+        try {
+            // Get site config.
+            this.siteConfig = await this.sitesProvider.getSitePublicConfig(this.siteUrl);
+            this.signupUrl = this.textUtils.concatenatePaths(this.siteConfig.httpswwwroot, 'login/signup.php');
 
-            if (this.treatSiteConfig(config)) {
+            if (this.treatSiteConfig(this.siteConfig)) {
                 // Check content verification.
                 if (typeof this.ageDigitalConsentVerification == 'undefined') {
-                    return this.wsProvider.callAjax('core_auth_is_age_digital_consent_verification_enabled', {},
-                            {siteUrl: this.siteUrl }).then((result) => {
 
-                        this.ageDigitalConsentVerification = result.status;
-                    }).catch((e) => {
-                        // Capture exceptions, fail silently.
-                    }).then(() => {
-                        return this.getSignupSettings();
-                    });
-                } else {
-                    return this.getSignupSettings();
+                    const result = await this.utils.ignoreErrors(this.wsProvider.callAjax(
+                            'core_auth_is_age_digital_consent_verification_enabled', {}, {siteUrl: this.siteUrl }));
+
+                    this.ageDigitalConsentVerification = result && result.status;
                 }
+
+                await this.getSignupSettings();
             }
-        }).then(() => {
+
             this.completeFormGroup();
-        }).catch((err) => {
-            this.domUtils.showErrorModal(err);
-        });
+        } catch (error) {
+            if (this.allRequiredSupported) {
+                this.domUtils.showErrorModal(error);
+            }
+        }
     }
 
     /**
      * Get signup settings from server.
+     *
+     * @return Promise resolved when done.
      */
-    protected getSignupSettings(): Promise<any> {
-        return this.wsProvider.callAjax('auth_email_get_signup_settings', {}, { siteUrl: this.siteUrl }).then((settings) => {
-            this.settings = settings;
-            this.categories = this.loginHelper.formatProfileFieldsForSignup(settings.profilefields);
+    protected async getSignupSettings(): Promise<void> {
+        const settings = await this.wsProvider.callAjax('auth_email_get_signup_settings', {}, { siteUrl: this.siteUrl });
 
-            if (this.settings.recaptchapublickey) {
-                this.captcha.recaptcharesponse = ''; // Reset captcha.
-            }
+        if (this.userProfileFieldDelegate.hasRequiredUnsupportedField(settings.profilefields)) {
+            this.allRequiredSupported = false;
 
-            if (!this.countryControl.value) {
-                this.countryControl.setValue(settings.country || '');
-            }
+            throw new Error(this.translate.instant('core.login.signuprequiredfieldnotsupported'));
+        }
 
-            this.namefieldsErrors = {};
-            if (settings.namefields) {
-                settings.namefields.forEach((field) => {
-                    this.namefieldsErrors[field] = this.loginHelper.getErrorMessages('core.login.missing' + field);
-                });
-            }
+        this.settings = settings;
+        this.categories = this.loginHelper.formatProfileFieldsForSignup(settings.profilefields);
 
-            return this.utils.getCountryListSorted().then((countries) => {
-                this.countries = countries;
+        if (this.settings.recaptchapublickey) {
+            this.captcha.recaptcharesponse = ''; // Reset captcha.
+        }
+
+        if (!this.countryControl.value) {
+            this.countryControl.setValue(settings.country || '');
+        }
+
+        this.namefieldsErrors = {};
+        if (settings.namefields) {
+            settings.namefields.forEach((field) => {
+                this.namefieldsErrors[field] = this.loginHelper.getErrorMessages('core.login.missing' + field);
             });
-        });
+        }
+
+        this.countries = await this.utils.getCountryListSorted();
     }
 
     /**

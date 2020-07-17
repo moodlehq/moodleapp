@@ -157,4 +157,20 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate {
             return result;
         });
     }
+
+    /**
+     * Check if any of the profile fields is not supported in the app.
+     *
+     * @param fields List of fields.
+     * @return Whether any of the profile fields is not supported in the app.
+     */
+    hasRequiredUnsupportedField(fields: any[]): boolean {
+        if (!fields || !fields.length) {
+            return false;
+        }
+
+        return fields.some((field) => {
+            return field.required && !this.hasHandler(field.type || field.datatype);
+        });
+    }
 }
