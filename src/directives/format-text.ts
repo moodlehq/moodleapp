@@ -354,7 +354,8 @@ export class CoreFormatTextDirective implements OnChanges {
             this.element.classList.add('core-disable-media-adapt');
 
             this.element.innerHTML = ''; // Remove current contents.
-            if (this.maxHeight && result.div.innerHTML != '') {
+            if (this.maxHeight && result.div.innerHTML != '' &&
+                    (this.fullOnClick || (window.innerWidth < 576 || window.innerHeight < 576))) { // Don't collapse in big screens.
 
                 // Move the children to the current element to be able to calculate the height.
                 this.domUtils.moveChildren(result.div, this.element);
