@@ -57,7 +57,9 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreArray } from '@singletons/array';
 import { CoreUrl } from '@singletons/url';
+import { CoreWindow } from '@singletons/window';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
@@ -270,7 +272,9 @@ export class CoreCompileProvider {
         instance['moment'] = moment;
         instance['Md5'] = Md5;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
+        instance['CoreArray'] = CoreArray;
         instance['CoreUrl'] = CoreUrl;
+        instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache;
         instance['CoreDelegate'] = CoreDelegate;
         instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;

@@ -27,6 +27,7 @@ import { CoreUtilsProvider } from './utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { makeSingleton } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
+import { CoreWindow } from '@singletons/window';
 import { WKUserScriptWindow, WKUserScriptInjectionTime } from 'cordova-plugin-wkuserscript';
 
 /*
@@ -387,17 +388,9 @@ export class CoreIframeUtilsProvider {
             }
         } else {
             // It's an external link, check if it can be opened in the app.
-            const treated = await this.contentLinksHelper.handleLink(url, undefined, navCtrl, true, true);
-
-            if (!treated) {
-                // Not opened in the app, open with browser. Check if we need to auto-login
-                if (!this.sitesProvider.isLoggedIn()) {
-                    // Not logged in, cannot auto-login.
-                    this.utils.openInBrowser(url);
-                } else {
-                    await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
-                }
-            }
+            await CoreWindow.open(url, name, {
+                navCtrl,
+            });
         }
     }
 
