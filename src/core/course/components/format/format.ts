@@ -76,6 +76,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     selectOptions: any = {};
     loaded: boolean;
+    hasSeveralSections: boolean;
 
     protected sectionStatusObserver;
     protected selectTabObserver;
@@ -171,9 +172,16 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (changes.sections && this.sections) {
+            const hasAllSections = this.sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
+            this.hasSeveralSections = this.sections.length > 2 || (this.sections.length == 2 && !hasAllSections);
+
             if (!this.selectedSection) {
                 // There is no selected section yet, calculate which one to load.
-                if (this.initialSectionId || this.initialSectionNumber) {
+                if (!this.hasSeveralSections) {
+                    // Always load "All sections" to display the section title. If it isn't there just load the section.
+                    this.loaded = true;
+                    this.sectionChanged(this.sections[0]);
+                } else if (this.initialSectionId || this.initialSectionNumber) {
                     // We have an input indicating the section ID to load. Search the section.
                     for (let i = 0; i < this.sections.length; i++) {
                         const section = this.sections[i];
