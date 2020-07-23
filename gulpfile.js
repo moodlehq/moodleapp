@@ -16,7 +16,8 @@ const BuildConfigTask = require('./gulp/task-build-config');
 const BuildLangTask = require('./gulp/task-build-lang');
 const CombineScssTask = require('./gulp/task-combine-scss');
 const CopyComponentTemplatesTask = require('./gulp/task-copy-component-templates');
-
+const PushTask = require('./gulp/task-push');
+const Utils = require('./gulp/utils');
 const gulp = require('gulp');
 const pathLib = require('path');
 
@@ -30,6 +31,8 @@ const paths = {
     ],
     config: './src/config.json',
 };
+
+const args = Utils.getCommandLineArguments();
 
 // Build the language files into a single file per language.
 gulp.task('lang', (done) => {
@@ -49,6 +52,10 @@ gulp.task('copy-component-templates', (done) => {
 // Combine SCSS files.
 gulp.task('combine-scss', (done) => {
     new CombineScssTask().run(done);
+});
+
+gulp.task('push', (done) => {
+    new PushTask().run(args, done);
 });
 
 gulp.task('default', gulp.parallel('lang', 'config'));
