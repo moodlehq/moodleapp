@@ -13,6 +13,7 @@
 // limitations under the License.
 
 const gulp = require('gulp');
+const inquirer = require('inquirer');
 const DevConfig = require('./dev-config');
 const Git = require('./git');
 const Jira = require('./jira');
@@ -43,6 +44,15 @@ class PushTask {
                 throw new Error('Cannot determine the current branch. Please make sure youu aren\'t in detached HEAD state');
             } else if (branch == 'HEAD') {
                 throw new Error('Cannot push HEAD branch');
+            }
+
+            const keepRunning = await this.validateLastCommitMessage(branch);
+
+            if (!keepRunning) {
+                // Last commit not valid, stop.
+                console.log('Exiting...');
+                done();
+                return;
             }
 
             // Push the branch.
@@ -119,6 +129,44 @@ class PushTask {
 
         console.log('Setting tracker fields...');
         await Jira.setCustomFields(branchData.issue, updates);
+    }
+
+    /**
+     * Validate last commit message comparing it with the branch name.
+     *
+     * @param branch Branch name.
+     * @return True if value is ok or the user wants to continue anyway, false to stop.
+     */
+    async validateLastCommitMessage(branch) {
+        const branchData = Utils.parseBranch(branch);
+
+        const messages = await Git.messages(1);
+        const message = messages[0];
+
+        const issue = Utils.getIssueFromCommitMessage(message);
+
+        if (!issue || issue != branchData.issue) {
+            if (!issue) {
+                console.log('The issue number could not be found in the commit message.');
+                console.log(`Commit: ${message}`);
+            } else if (issue != branchData.issue) {
+                console.log('The issue number in the last commit does not match the branch being pushed to.');
+                console.log(`Branch: ${branchData.issue} vs. commit: ${issue}`);
+            }
+
+            const answer = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'confirm',
+                    message: 'Are you sure you want to continue?',
+                    default: 'n',
+                },
+            ]);
+
+            return answer.confirm == 'y';
+        }
+
+        return true;
     }
 }
 

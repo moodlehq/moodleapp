@@ -157,6 +157,25 @@ class Git {
     }
 
     /**
+     * Return the latest titles of the commit messages.
+     *
+     * @param count Number of commits to display.
+     * @param range Show only commits in the specified revision range.
+     * @param path Show only commits that are enough to explain how the files that match the specified paths came to be.
+     * @return Promise resolved with the list of titles.
+     */
+    async messages(count, range, path) {
+        count = typeof count != 'undefined' ? count : 10;
+
+        const messageList = await this.log(count, range, '%s', path);
+
+        const messages = messageList.split('\n');
+        messages.pop(); // Remove last element, it's an empty string.
+
+        return messages;
+    }
+
+    /**
      * Push a branch.
      *
      * @param remote Remote to use.
