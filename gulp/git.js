@@ -13,6 +13,7 @@
 // limitations under the License.
 
 const exec = require('child_process').exec;
+const fs = require('fs');
 const DevConfig = require('./dev-config');
 const Utils = require('./utils');
 
@@ -20,6 +21,38 @@ const Utils = require('./utils');
  * Class to run git commands.
  */
 class Git {
+
+    /**
+     * Create a patch.
+     *
+     * @param range Show only commits in the specified revision range.
+     * @param saveTo Path to the file to save the patch to. If not defined, the patch contents will be returned.
+     * @return Promise resolved when done. If saveTo not provided, it will return the patch contents.
+     */
+    createPatch(range, saveTo) {
+        return new Promise((resolve, reject) => {
+            exec(`git format-patch ${range} --stdout`, (err, result) => {
+                if (err) {
+                    reject(err || 'Cannot create patch.');
+                    return;
+                }
+
+                if (!saveTo) {
+                    resolve(result);
+                    return;
+                }
+
+                // Save it to a file.
+                const directory = saveTo.substring(0, saveTo.lastIndexOf('/'));
+                if (directory && directory != '.' && directory != '..' && !fs.existsSync(directory)) {
+                    fs.mkdirSync(directory);
+                }
+                fs.writeFileSync(saveTo, result);
+
+                resolve();
+            });
+        });
+    }
 
     /**
      * Get current branch.

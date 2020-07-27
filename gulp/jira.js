@@ -16,6 +16,8 @@ const exec = require('child_process').exec;
 const https = require('https');
 const keytar = require('keytar');
 const inquirer = require('inquirer');
+const fs = require('fs');
+const request = require('request'); // This lib is deprecated, but it was the only way I found to make upload files work.
 const DevConfig = require('./dev-config');
 const Git = require('./git');
 const Url = require('./url');
@@ -71,6 +73,30 @@ class Jira {
         });
 
         return data;
+    }
+
+    /**
+     * Build URL to perform requests to Jira.
+     *
+     * @param uri URI to add the the Jira URL.
+     * @return URL.
+     */
+    buildRequestUrl(uri) {
+        return Utils.concatenatePaths([this.url, this.uri, '/rest/api/', apiVersion, uri]);
+    }
+
+    /**
+     * Delete an attachment.
+     *
+     * @param attachmentId Attachment ID.
+     * @return Promise resolved when done.
+     */
+    async deleteAttachment(attachmentId) {
+        const response = await this.request(`attachment/${attachmentId}`, 'DELETE');
+
+        if (response.status != 204) {
+            throw new Error('Could not delete the attachment');
+        }
     }
 
     /**
@@ -249,6 +275,18 @@ class Jira {
     }
 
     /**
+     * Check if a certain issue could be a security issue.
+     *
+     * @param key Key to identify the issue. E.g. MOBILE-1234.
+     * @return Promise resolved with boolean: whether it's a security issue.
+     */
+    async isSecurityIssue(key) {
+        const issue = await this.getIssue(key, 'security');
+
+        return issue.fields && !!issue.fields.security;
+    }
+
+    /**
      * Sends a request to the server and returns the data.
      *
      * @param uri URI to add the the Jira URL.
@@ -269,16 +307,23 @@ class Jira {
         return new Promise((resolve, reject) => {
 
             // Build the request URL.
-            let url = Utils.concatenatePaths([this.url, this.uri, '/rest/api/', apiVersion, uri]);
-            url = Url.addParamsToUrl(url, params);
+            const url = Url.addParamsToUrl(this.buildRequestUrl(uri), params);
 
-            // Perform the request.
+            // Initialize the request.
             const options = {
                 method: method,
                 auth: `${this.username}:${this.password}`,
                 headers: headers,
             };
-            const request = https.request(url, options, (response) => {
+            const request = https.request(url, options);
+
+            // Add data.
+            if (data) {
+                request.write(data);
+            }
+
+            // Treat response.
+            request.on('response', (response) => {
                 // Read the result.
                 let result = '';
                 response.on('data', (chunk) => {
@@ -302,11 +347,7 @@ class Jira {
                 reject(e);
             });
 
-            // Send data.
-            if (data) {
-                request.write(data);
-            }
-
+            // Send the request.
             request.end();
         });
     }
@@ -358,6 +399,75 @@ class Jira {
         }
 
         console.log('Issue updated successfully.');
+    }
+
+    /**
+     * Upload a new attachment to an issue.
+     *
+     * @param key Key to identify the issue. E.g. MOBILE-1234.
+     * @param filePath Path to the file to upload.
+     * @return Promise resolved when done.
+     */
+    async upload(key, filePath) {
+
+        const uri = `issue/${key}/attachments`;
+        const headers = {
+            'X-Atlassian-Token': 'nocheck',
+        }
+
+        const response = await this.uploadFile(uri, 'file', filePath, headers);
+
+        if (response.status != 200) {
+            throw new Error('Could not upload file to Jira issue');
+        }
+
+        console.log('File successfully uploaded.')
+    }
+
+    /**
+     * Upload a file to Jira.
+     *
+     * @param uri URI to add the the Jira URL.
+     * @param fieldName Name of the form field where to put the file.
+     * @param filePath Path to the file.
+     * @param headers Headers.
+     * @return Promise resolved with the result.
+     */
+    async uploadFile(uri, fieldName, filePath, headers) {
+        uri = uri || '';
+        headers = headers || {};
+        headers['Content-Type'] = 'multipart/form-data';
+
+        return new Promise((resolve, reject) => {
+            // Add the file to the form data.
+            const formData = {};
+            formData[fieldName] = {
+                value: fs.createReadStream(filePath),
+                options: {
+                    filename: filePath.substr(filePath.lastIndexOf('/') + 1),
+                    contentType: 'multipart/form-data',
+                },
+            };
+
+            // Perform the request.
+            const options = {
+                url: this.buildRequestUrl(uri),
+                method: 'POST',
+                headers: headers,
+                auth: {
+                    user: this.username,
+                    pass: this.password,
+                },
+                formData: formData,
+            };
+
+            request(options, (err, httpResponse, body) => {
+                resolve({
+                    status: httpResponse.statusCode,
+                    data: body,
+                });
+            });
+        });
     }
 }
 

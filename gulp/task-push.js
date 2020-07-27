@@ -25,6 +25,56 @@ const Utils = require('./utils');
 class PushTask {
 
     /**
+     * Push a patch to the tracker and remove the previous one.
+     *
+     * @param branch Branch name.
+     * @param branchData Parsed branch data.
+     * @param remote Remote used.
+     * @return Promise resolved when done.
+     */
+    async pushPatch(branch, branchData, remote) {
+        const headCommit = await Git.getHeadCommit(branch, branchData);
+
+        if (!headCommit) {
+            throw new Error('Head commit not resolved, abort pushing patch.');
+        }
+
+        // Create the patch file.
+        const fileName = branch + '.patch';
+        const tmpPatchPath = `./tmp/${fileName}`;
+
+        await Git.createPatch(`${headCommit}...${branch}`, tmpPatchPath);
+        console.log('Git patch created');
+
+        // Check if there is an attachment with same name in the issue.
+        const issue = await Jira.getIssue(branchData.issue, 'attachment');
+
+        let existingAttachmentId;
+        const attachments = (issue.fields && issue.fields.attachment) || [];
+        for (const i in attachments) {
+            if (attachments[i].filename == fileName) {
+                // Found an existing attachment with the same name, we keep track of it.
+                existingAttachmentId = attachments[i].id;
+                break
+            }
+        }
+
+        // Push the patch to the tracker.
+        console.log(`Uploading patch ${fileName} to the tracker...`);
+        await Jira.upload(branchData.issue, tmpPatchPath);
+
+        if (existingAttachmentId) {
+            // On success, deleting file that was there before.
+            try {
+                console.log('Deleting older patch...')
+                await Jira.deleteAttachment(existingAttachmentId);
+            } catch (error) {
+                console.log('Could not delete older attachment.');
+            }
+        }
+    }
+
+    /**
      * Run the task.
      *
      * @param args Command line arguments.
@@ -46,7 +96,9 @@ class PushTask {
                 throw new Error('Cannot push HEAD branch');
             }
 
-            const keepRunning = await this.validateLastCommitMessage(branch);
+            // Parse the branch to get the project and issue number.
+            const branchData = Utils.parseBranch(branch);
+            const keepRunning = await this.validateLastCommitMessage(branchData);
 
             if (!keepRunning) {
                 // Last commit not valid, stop.
@@ -55,13 +107,31 @@ class PushTask {
                 return;
             }
 
-            // Push the branch.
-            console.log(`Pushing branch ${branch} to remote ${remote}...`);
-            await Git.push(remote, branch, force);
+            if (!args.patch) {
+                // Check if it's a security issue to force patch mode.
+                try {
+                    args.patch = await Jira.isSecurityIssue(branchData.issue);
 
-            // Update tracker info.
-            console.log(`Branch pushed, update tracker info...`);
-            await this.updateTrackerGitInfo(branch, remote);
+                    if (args.patch) {
+                        console.log(`${branchData.issue} appears to be a security issue, switching to patch mode...`);
+                    }
+                } catch (error) {
+                    console.log(`Could not check if ${branchData.issue} is a security issue.`);
+                }
+            }
+
+            if (args.patch) {
+                // Create and upload a patch file.
+                await this.pushPatch(branch, branchData, remote);
+            } else {
+                // Push the branch.
+                console.log(`Pushing branch ${branch} to remote ${remote}...`);
+                await Git.push(remote, branch, force);
+
+                // Update tracker info.
+                console.log(`Branch pushed, update tracker info...`);
+                await this.updateTrackerGitInfo(branch, branchData, remote);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -73,13 +143,11 @@ class PushTask {
      * Update git info in the tracker issue.
      *
      * @param branch Branch name.
+     * @param branchData Parsed branch data.
      * @param remote Remote used.
      * @return Promise resolved when done.
      */
-    async updateTrackerGitInfo(branch, remote) {
-        // Parse the branch to get the project and issue number.
-        const branchData = Utils.parseBranch(branch);
-
+    async updateTrackerGitInfo(branch, branchData, remote) {
         // Get the repository data for the project.
         let repositoryUrl = DevConfig.get(branchData.project + '.repositoryUrl');
         let diffUrlTemplate = DevConfig.get(branchData.project + '.diffUrlTemplate', '');
@@ -134,12 +202,10 @@ class PushTask {
     /**
      * Validate last commit message comparing it with the branch name.
      *
-     * @param branch Branch name.
+     * @param branchData Parsed branch data.
      * @return True if value is ok or the user wants to continue anyway, false to stop.
      */
-    async validateLastCommitMessage(branch) {
-        const branchData = Utils.parseBranch(branch);
-
+    async validateLastCommitMessage(branchData) {
         const messages = await Git.messages(1);
         const message = messages[0];
 
