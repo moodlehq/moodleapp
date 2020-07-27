@@ -1095,7 +1095,6 @@ export class CoreLoginHelperProvider {
 
                     promise.then(() => {
                         this.waitingForBrowser = true;
-                        this.sitesProvider.unsetCurrentSite(); // We need to unset current site to make authentication work fine.
 
                         this.openBrowserForSSOLogin(result.siteUrl, result.code, result.service,
                             result.config && result.config.launchurl, data.pageName, data.params);
