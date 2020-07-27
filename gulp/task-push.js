@@ -25,6 +25,24 @@ const Utils = require('./utils');
 class PushTask {
 
     /**
+     * Ask the user whether he wants to continue.
+     *
+     * @return Promise resolved with boolean: true if he wants to continue.
+     */
+    async askConfirmContinue() {
+        const answer = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'confirm',
+                message: 'Are you sure you want to continue?',
+                default: 'n',
+            },
+        ]);
+
+        return answer.confirm == 'y';
+    }
+
+    /**
      * Push a patch to the tracker and remove the previous one.
      *
      * @param branch Branch name.
@@ -98,7 +116,7 @@ class PushTask {
 
             // Parse the branch to get the project and issue number.
             const branchData = Utils.parseBranch(branch);
-            const keepRunning = await this.validateLastCommitMessage(branchData);
+            const keepRunning = await this.validateCommitMessages(branchData);
 
             if (!keepRunning) {
                 // Last commit not valid, stop.
@@ -200,36 +218,59 @@ class PushTask {
     }
 
     /**
-     * Validate last commit message comparing it with the branch name.
+     * Validate commit messages comparing them with the branch name.
      *
      * @param branchData Parsed branch data.
      * @return True if value is ok or the user wants to continue anyway, false to stop.
      */
-    async validateLastCommitMessage(branchData) {
-        const messages = await Git.messages(1);
-        const message = messages[0];
+    async validateCommitMessages(branchData) {
+        const messages = await Git.messages(30);
 
-        const issue = Utils.getIssueFromCommitMessage(message);
+        let numConsecutive = 0;
+        let wrongCommitCandidate = null;
 
-        if (!issue || issue != branchData.issue) {
-            if (!issue) {
-                console.log('The issue number could not be found in the commit message.');
-                console.log(`Commit: ${message}`);
-            } else if (issue != branchData.issue) {
-                console.log('The issue number in the last commit does not match the branch being pushed to.');
-                console.log(`Branch: ${branchData.issue} vs. commit: ${issue}`);
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
+            const issue = Utils.getIssueFromCommitMessage(message);
+
+            if (!issue || issue != branchData.issue) {
+                if (i === 0) {
+                    // Last commit is wrong, it shouldn't happen. Ask the user if he wants to continue.
+                    if (!issue) {
+                        console.log('The issue number could not be found in the last commit message.');
+                        console.log(`Commit: ${message}`);
+                    } else if (issue != branchData.issue) {
+                        console.log('The issue number in the last commit does not match the branch being pushed to.');
+                        console.log(`Branch: ${branchData.issue} vs. commit: ${issue}`);
+                    }
+
+                    return this.askConfirmContinue();
+                }
+
+                numConsecutive++;
+                if (numConsecutive > 2) {
+                    // 3 consecutive commits with different branch, probably the branch commits are over. Everything OK.
+                    return true;
+                } else if (!wrongCommitCandidate) {
+                    wrongCommitCandidate = {
+                        message: message,
+                        issue: issue,
+                        index: i,
+                    };
+                }
+            } else if (wrongCommitCandidate) {
+                // We've found a commit with the branch name after a commit with a different branch. Probably wrong commit.
+                if (!wrongCommitCandidate.issue) {
+                    console.log('The issue number could not be found in one of the commit messages.');
+                    console.log(`Commit: ${wrongCommitCandidate.message}`);
+                } else {
+                    console.log('The issue number in a certain commit does not match the branch being pushed to.');
+                    console.log(`Branch: ${branchData.issue} vs. commit: ${wrongCommitCandidate.issue}`);
+                    console.log(`Commit message: ${wrongCommitCandidate.message}`);
+                }
+
+                return this.askConfirmContinue();
             }
-
-            const answer = await inquirer.prompt([
-                {
-                    type: 'input',
-                    name: 'confirm',
-                    message: 'Are you sure you want to continue?',
-                    default: 'n',
-                },
-            ]);
-
-            return answer.confirm == 'y';
         }
 
         return true;
