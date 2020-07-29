@@ -173,7 +173,7 @@ export class CoreFilterHelperProvider {
 
     /**
      * Get the filters in a certain context, performing some checks like the site version.
-     * It's recommended to use this function instead of canGetAvailableInContext because this function will check if
+     * It's recommended to use this function instead of canGetFilters + getEnabledFilters because this function will check if
      * it's really needed to call the WS.
      *
      * @param contextLevel The context level.
@@ -193,7 +193,7 @@ export class CoreFilterHelperProvider {
         return this.sitesProvider.getSite(siteId).then((site) => {
             siteId = site.getId();
 
-            return this.filterProvider.canGetAvailableInContext(siteId).then((canGet) => {
+            return this.filterProvider.canGetFilters(siteId).then((canGet) => {
                 if (!canGet) {
                     options.filter = true;
 
