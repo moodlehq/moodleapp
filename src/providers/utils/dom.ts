@@ -658,10 +658,11 @@ export class CoreDomUtilsProvider {
             if (this.debugDisplay) {
                 // Get the debug info. Escape the HTML so it is displayed as it is in the view.
                 if (error.debuginfo) {
-                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo);
+                    extraInfo = '<br><br>' + this.textUtils.escapeHTML(error.debuginfo, false);
                 }
                 if (error.backtrace) {
-                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(this.textUtils.escapeHTML(error.backtrace), '<br>');
+                    extraInfo += '<br><br>' + this.textUtils.replaceNewLines(
+                            this.textUtils.escapeHTML(error.backtrace, false), '<br>');
                 }
 
                 // tslint:disable-next-line

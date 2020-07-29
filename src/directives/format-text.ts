@@ -213,7 +213,7 @@ export class CoreFormatTextDirective implements OnChanges {
             }
 
             const imgSrc = this.textUtils.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src')),
-            label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage')),
+            label = this.translate.instant('core.openfullimage'),
             anchor = document.createElement('a');
 
             anchor.classList.add('core-image-viewer-icon');
