@@ -26,7 +26,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { AddonModAssignProvider, AddonModAssignAssign } from './assign';
+import { AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission } from './assign';
 import { AddonModAssignOfflineProvider } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
@@ -134,7 +134,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param force Wether to force sync not depending on last execution.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllAssignments(siteId?: string, force?: boolean): Promise<any> {
+    syncAllAssignments(siteId?: string, force?: boolean): Promise<void> {
         return this.syncOnSites('all assignments', this.syncAllAssignmentsFunc.bind(this), [force], siteId);
     }
 
@@ -145,26 +145,24 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param force Wether to force sync not depending on last execution.
      * @param Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected syncAllAssignmentsFunc(siteId?: string, force?: boolean): Promise<any> {
+    protected async syncAllAssignmentsFunc(siteId?: string, force?: boolean): Promise<void> {
         // Get all assignments that have offline data.
-        return this.assignOfflineProvider.getAllAssigns(siteId).then((assignIds) => {
-            // Sync all assignments that haven't been synced for a while.
-            const promises = assignIds.map((assignId) => {
-                const promise = force ? this.syncAssign(assignId, siteId) : this.syncAssignIfNeeded(assignId, siteId);
+        const assignIds = await this.assignOfflineProvider.getAllAssigns(siteId);
 
-                return promise.then((data) => {
-                    if (data && data.updated) {
-                        // Sync done. Send event.
-                        this.eventsProvider.trigger(AddonModAssignSyncProvider.AUTO_SYNCED, {
-                            assignId: assignId,
-                            warnings: data.warnings
-                        }, siteId);
-                    }
-                });
-            });
+        // Try to sync all assignments.
+        await Promise.all(assignIds.map(async (assignId) => {
+            const data = force ? await this.syncAssign(assignId, siteId) : await this.syncAssignIfNeeded(assignId, siteId);
 
-            return Promise.all(promises);
-        });
+            if (!data || !data.updated) {
+                // Not updated.
+                return;
+            }
+
+            this.eventsProvider.trigger(AddonModAssignSyncProvider.AUTO_SYNCED, {
+                assignId: assignId,
+                warnings: data.warnings,
+            }, siteId);
+        }));
     }
 
     /**
@@ -174,12 +172,12 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the assign is synced or it doesn't need to be synced.
      */
-    syncAssignIfNeeded(assignId: number, siteId?: string): Promise<void | AddonModAssignSyncResult> {
-        return this.isSyncNeeded(assignId, siteId).then((needed) => {
-            if (needed) {
-                return this.syncAssign(assignId, siteId);
-            }
-        });
+    async syncAssignIfNeeded(assignId: number, siteId?: string): Promise<void | AddonModAssignSyncResult> {
+        const needed = await this.isSyncNeeded(assignId, siteId);
+
+        if (needed) {
+            return this.syncAssign(assignId, siteId);
+        }
     }
 
     /**
@@ -189,17 +187,8 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved in success.
      */
-    syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
+    async syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
-
-        const promises: Promise<any>[] = [],
-            result: AddonModAssignSyncResult = {
-                warnings: [],
-                updated: false
-            };
-        let assign: AddonModAssignAssign,
-            courseId: number,
-            syncPromise: Promise<any>;
 
         if (this.isSyncing(assignId, siteId)) {
             // There's already a sync ongoing for this assign, return the promise.
@@ -208,79 +197,116 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
         // Verify that assign isn't blocked.
         if (this.syncProvider.isBlocked(AddonModAssignProvider.COMPONENT, assignId, siteId)) {
-            this.logger.debug('Cannot sync assign ' + assignId + ' because it is blocked.');
+            this.logger.error('Cannot sync assign ' + assignId + ' because it is blocked.');
 
-            return Promise.reject(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
+            throw new Error(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
         }
 
-        this.logger.debug('Try to sync assign ' + assignId + ' in site ' + siteId);
+        return this.addOngoingSync(assignId, this.performSyncAssign(assignId, siteId), siteId);
+    }
 
-        // Get offline submissions to be sent.
-        promises.push(this.assignOfflineProvider.getAssignSubmissions(assignId, siteId).catch(() => {
-            // No offline data found, return empty array.
-            return [];
-        }));
+    /**
+     * Perform the assign submission.
+     *
+     * @param assignId Assign ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success.
+     */
+    protected async performSyncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
 
-        // Get offline submission grades to be sent.
-        promises.push(this.assignOfflineProvider.getAssignSubmissionsGrade(assignId, siteId).catch(() => {
-            // No offline data found, return empty array.
-            return [];
-        }));
+        this.logger.error('Try to sync assign ' + assignId + ' in site ' + siteId);
 
-        // Sync offline logs.
-        promises.push(this.logHelper.syncIfNeeded(AddonModAssignProvider.COMPONENT, assignId, siteId));
+        const result: AddonModAssignSyncResult = {
+            warnings: [],
+            updated: false,
+        };
 
-        syncPromise = Promise.all(promises).then((results) => {
-            const submissions = results[0],
-                grades = results[1];
+        // Load offline data and sync offline logs.
+        const promisesResults = await Promise.all([
+            this.getOfflineSubmissions(assignId, siteId),
+            this.getOfflineGrades(assignId, siteId),
+            this.logHelper.syncIfNeeded(AddonModAssignProvider.COMPONENT, assignId, siteId),
+        ]);
 
-            if (!submissions.length && !grades.length) {
-                // Nothing to sync.
-                return;
-            } else if (!this.appProvider.isOnline()) {
-                // Cannot sync in offline.
-                return Promise.reject(null);
-            }
+        const submissions = promisesResults[0];
+        const grades = promisesResults[1];
 
-            courseId = submissions.length > 0 ? submissions[0].courseid : grades[0].courseid;
+        if (!submissions.length && !grades.length) {
+            // Nothing to sync.
+            await this.utils.ignoreErrors(this.setSyncTime(assignId, siteId));
 
-            return this.assignProvider.getAssignmentById(courseId, assignId, false, siteId).then((assignData) => {
-                assign = assignData;
-
-                const promises = [];
-
-                submissions.forEach((submission) => {
-                    promises.push(this.syncSubmission(assign, submission, result.warnings, siteId).then(() => {
-                        result.updated = true;
-                    }));
-                });
-
-                grades.forEach((grade) => {
-                    promises.push(this.syncSubmissionGrade(assign, grade, result.warnings, courseId, siteId).then(() => {
-                        result.updated = true;
-                    }));
-                });
-
-                return Promise.all(promises);
-            }).then(() => {
-                if (result.updated) {
-                    // Data has been sent to server. Now invalidate the WS calls.
-                    return this.assignProvider.invalidateContent(assign.cmid, courseId, siteId).catch(() => {
-                        // Ignore errors.
-                    });
-                }
-            });
-        }).then(() => {
-            // Sync finished, set sync time.
-            return this.setSyncTime(assignId, siteId).catch(() => {
-                // Ignore errors.
-            });
-        }).then(() => {
-            // All done, return the result.
             return result;
-        });
+        } else if (!this.appProvider.isOnline()) {
+            // Cannot sync in offline.
+            throw new Error(this.translate.instant('core.cannotconnect'));
+        }
 
-        return this.addOngoingSync(assignId, syncPromise, siteId);
+        const courseId = submissions.length > 0 ? submissions[0].courseid : grades[0].courseid;
+
+        const assign = await this.assignProvider.getAssignmentById(courseId, assignId, false, siteId);
+
+        let promises = [];
+
+        promises = promises.concat(submissions.map(async (submission) => {
+            await this.syncSubmission(assign, submission, result.warnings, siteId);
+
+            result.updated = true;
+        }));
+
+        promises = promises.concat(grades.map(async (grade) => {
+            await this.syncSubmissionGrade(assign, grade, result.warnings, courseId, siteId);
+
+            result.updated = true;
+        }));
+
+        await Promise.all(promises);
+
+        if (result.updated) {
+            // Data has been sent to server. Now invalidate the WS calls.
+            await this.utils.ignoreErrors(this.assignProvider.invalidateContent(assign.cmid, courseId, siteId));
+        }
+
+        // Sync finished, set sync time.
+        await this.utils.ignoreErrors(this.setSyncTime(assignId, siteId));
+
+        // All done, return the result.
+        return result;
+    }
+
+    /**
+     * Get offline grades to be sent.
+     *
+     * @param assignId Assign ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise with grades.
+     */
+    protected async getOfflineGrades(assignId: number, siteId: string): Promise<any[]> {
+        try {
+            const submissions = await this.assignOfflineProvider.getAssignSubmissionsGrade(assignId, siteId);
+
+            return submissions;
+        } catch (error) {
+            // No offline data found, return empty array.
+            return [];
+        }
+    }
+
+    /**
+     * Get offline submissions to be sent.
+     *
+     * @param assignId Assign ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise with submissions.
+     */
+    protected async getOfflineSubmissions(assignId: number, siteId: string): Promise<any[]> {
+        try {
+            const submissions = await this.assignOfflineProvider.getAssignSubmissions(assignId, siteId);
+
+            return submissions;
+        } catch (error) {
+            // No offline data found, return empty array.
+            return [];
+        }
     }
 
     /**
@@ -292,83 +318,76 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if success, rejected otherwise.
      */
-    protected syncSubmission(assign: AddonModAssignAssign, offlineData: any, warnings: string[], siteId?: string): Promise<any> {
-        const userId = offlineData.userid,
-            pluginData = {};
-        let discardError,
-            submission;
+    protected async syncSubmission(assign: AddonModAssignAssign, offlineData: any, warnings: string[], siteId?: string)
+            : Promise<void> {
 
-        return this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId).then((status) => {
-            const promises = [];
+        const userId = offlineData.userid;
+        const pluginData = {};
 
-            submission = this.assignProvider.getSubmissionObjectFromAttempt(assign, status.lastattempt);
+        const status = await this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
 
-            if (submission.timemodified != offlineData.onlinetimemodified) {
-                // The submission was modified in Moodle, discard the submission.
-                discardError = this.translate.instant('addon.mod_assign.warningsubmissionmodified');
+        const submission = this.assignProvider.getSubmissionObjectFromAttempt(assign, status.lastattempt);
 
-                return;
+        if (submission.timemodified != offlineData.onlinetimemodified) {
+            // The submission was modified in Moodle, discard the submission.
+            this.addOfflineDataDeletedWarning(warnings, this.componentTranslate, assign.name,
+                    this.translate.instant('addon.mod_assign.warningsubmissionmodified'));
+
+            return this.deleteSubmissionData(assign, submission, offlineData, siteId);
+        }
+
+        try {
+            // Prepare plugins data.
+            await Promise.all(submission.plugins.map(async (plugin) => {
+                await this.submissionDelegate.preparePluginSyncData(assign, submission, plugin, offlineData, pluginData, siteId);
+            }));
+
+            // Now save the submission.
+            if (Object.keys(pluginData).length > 0) {
+                await this.assignProvider.saveSubmissionOnline(assign.id, pluginData, siteId);
             }
 
-            submission.plugins.forEach((plugin) => {
-                promises.push(this.submissionDelegate.preparePluginSyncData(assign, submission, plugin, offlineData, pluginData,
-                        siteId));
-            });
-
-            return Promise.all(promises).then(() => {
-                // Now save the submission.
-                let promise;
-
-                if (!Object.keys(pluginData).length) {
-                    // Nothing to save.
-                    promise = Promise.resolve();
-                } else {
-                    promise = this.assignProvider.saveSubmissionOnline(assign.id, pluginData, siteId);
-                }
-
-                return promise.then(() => {
-                    if (assign.submissiondrafts && offlineData.submitted) {
-                        // The user submitted the assign manually. Submit it for grading.
-                        return this.assignProvider.submitForGradingOnline(assign.id, offlineData.submissionstatement, siteId);
-                    }
-                }).then(() => {
-                    // Submission data sent, update cached data. No need to block the user for this.
-                    this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
-                });
-            }).catch((error) => {
-                if (error && this.utils.isWebServiceError(error)) {
-                    // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
-                    discardError = this.textUtils.getErrorMessageFromError(error);
-                } else {
-                    // Couldn't connect to server, reject.
-                    return Promise.reject(error);
-                }
-            });
-        }).then(() => {
-            // Delete the offline data.
-            return this.assignOfflineProvider.deleteSubmission(assign.id, userId, siteId).then(() => {
-                const promises = [];
-
-                submission.plugins.forEach((plugin) => {
-                    promises.push(this.submissionDelegate.deletePluginOfflineData(assign, submission, plugin, offlineData, siteId));
-                });
-
-                return Promise.all(promises);
-            });
-        }).then(() => {
-            if (discardError) {
-                // Submission was discarded, add a warning.
-                const message = this.translate.instant('core.warningofflinedatadeleted', {
-                    component: this.componentTranslate,
-                    name: assign.name,
-                    error: discardError
-                });
-
-                if (warnings.indexOf(message) == -1) {
-                    warnings.push(message);
-                }
+            if (assign.submissiondrafts && offlineData.submitted) {
+                // The user submitted the assign manually. Submit it for grading.
+                await this.assignProvider.submitForGradingOnline(assign.id, offlineData.submissionstatement, siteId);
             }
-        });
+
+            // Submission data sent, update cached data. No need to block the user for this.
+            this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
+        } catch (error) {
+            if (!error || !this.utils.isWebServiceError(error)) {
+                // Local error, reject.
+                throw error;
+            }
+
+            // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
+            this.addOfflineDataDeletedWarning(warnings, this.componentTranslate, assign.name,
+                this.textUtils.getErrorMessageFromError(error));
+        }
+
+        // Delete the offline data.
+        await this.deleteSubmissionData(assign, submission, offlineData, siteId);
+    }
+
+    /**
+     * Delete the submission offline data (not grades).
+     *
+     * @param assign Assign.
+     * @param submission Submission.
+     * @param offlineData Offline data.
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
+     */
+    protected async deleteSubmissionData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission, offlineData: any,
+            siteId?: string): Promise<void> {
+
+        // Delete the offline data.
+        await this.assignOfflineProvider.deleteSubmission(assign.id, offlineData.userid, siteId);
+
+        // Delete plugins data.
+        await Promise.all(submission.plugins.map(async (plugin) => {
+            await this.submissionDelegate.deletePluginOfflineData(assign, submission, plugin, offlineData, siteId);
+        }));
     }
 
     /**
@@ -381,100 +400,88 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if success, rejected otherwise.
      */
-    protected syncSubmissionGrade(assign: AddonModAssignAssign, offlineData: any, warnings: string[], courseId: number,
+    protected async syncSubmissionGrade(assign: AddonModAssignAssign, offlineData: any, warnings: string[], courseId: number,
             siteId?: string): Promise<any> {
 
         const userId = offlineData.userid;
-        let discardError;
         const syncId = this.getGradeSyncId(assign.id, userId);
 
         // Check if this grade sync is blocked.
         if (this.syncProvider.isBlocked(AddonModAssignProvider.COMPONENT, syncId, siteId)) {
             this.logger.error(`Cannot sync grade for assign ${assign.id} and user ${userId} because it is blocked.`);
 
-            return Promise.reject(new Error(this.translate.instant('core.errorsyncblocked',
-                    {$a: this.translate.instant('addon.mod_assign.syncblockedusercomponent')})));
+            throw new Error(this.translate.instant('core.errorsyncblocked',
+                    {$a: this.translate.instant('addon.mod_assign.syncblockedusercomponent')}));
         }
 
-        return this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId).then((status) => {
-            const timemodified = status.feedback && (status.feedback.gradeddate || status.feedback.grade.timemodified);
+        const status = await this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
 
-            if (timemodified > offlineData.timemodified) {
-                // The submission grade was modified in Moodle, discard it.
-                discardError = this.translate.instant('addon.mod_assign.warningsubmissiongrademodified');
+        const timemodified = status.feedback && (status.feedback.gradeddate || status.feedback.grade.timemodified);
 
-                return;
-            }
+        if (timemodified > offlineData.timemodified) {
+            // The submission grade was modified in Moodle, discard it.
+            this.addOfflineDataDeletedWarning(warnings, this.componentTranslate, assign.name,
+                    this.translate.instant('addon.mod_assign.warningsubmissiongrademodified'));
 
-            // If grade has been modified from gradebook, do not use offline.
-            return this.gradesHelper.getGradeModuleItems(courseId, assign.cmid, userId, undefined, siteId, true).then((grades) => {
-                return this.courseProvider.getModuleBasicGradeInfo(assign.cmid, siteId).then((gradeInfo) => {
+            return this.assignOfflineProvider.deleteSubmissionGrade(assign.id, userId, siteId);
+        }
 
-                    // Override offline grade and outcomes based on the gradebook data.
-                    grades.forEach((grade) => {
-                        if (grade.gradedategraded >= offlineData.timemodified) {
-                            if (!grade.outcomeid && !grade.scaleid) {
-                                if (gradeInfo && gradeInfo.scale) {
-                                    offlineData.grade = this.getSelectedScaleId(gradeInfo.scale, grade.gradeformatted);
-                                } else {
-                                    offlineData.grade = parseFloat(grade.gradeformatted) || null;
-                                }
-                            } else if (grade.outcomeid && this.assignProvider.isOutcomesEditEnabled() && gradeInfo.outcomes) {
-                                gradeInfo.outcomes.forEach((outcome, index) => {
-                                    if (outcome.scale && grade.itemnumber == index) {
-                                        offlineData.outcomes[grade.itemnumber] = this.getSelectedScaleId(outcome.scale,
-                                                outcome.selected);
-                                    }
-                                });
-                            }
+        // If grade has been modified from gradebook, do not use offline.
+        const grades = await this.gradesHelper.getGradeModuleItems(courseId, assign.cmid, userId, undefined, siteId, true);
+
+        const gradeInfo = await this.courseProvider.getModuleBasicGradeInfo(assign.cmid, siteId);
+
+        // Override offline grade and outcomes based on the gradebook data.
+        grades.forEach((grade) => {
+            if (grade.gradedategraded >= offlineData.timemodified) {
+                if (!grade.outcomeid && !grade.scaleid) {
+                    if (gradeInfo && gradeInfo.scale) {
+                        offlineData.grade = this.getSelectedScaleId(gradeInfo.scale, grade.gradeformatted);
+                    } else {
+                        offlineData.grade = parseFloat(grade.gradeformatted) || null;
+                    }
+                } else if (grade.outcomeid && this.assignProvider.isOutcomesEditEnabled() && gradeInfo.outcomes) {
+                    gradeInfo.outcomes.forEach((outcome, index) => {
+                        if (outcome.scale && grade.itemnumber == index) {
+                            offlineData.outcomes[grade.itemnumber] = this.getSelectedScaleId(outcome.scale,
+                                    outcome.selected);
                         }
                     });
-                });
-            }).then(() => {
-                // Now submit the grade.
-                return this.assignProvider.submitGradingFormOnline(assign.id, userId, offlineData.grade, offlineData.attemptnumber,
-                        offlineData.addattempt, offlineData.workflowstate, offlineData.applytoall, offlineData.outcomes,
-                        offlineData.plugindata, siteId).then(() => {
-                    // Grades sent.
-                    // Discard grades drafts.
-                    const promises = [];
-                    if (status.feedback && status.feedback.plugins) {
-                        status.feedback.plugins.forEach((plugin) => {
-                            promises.push(this.feedbackDelegate.discardPluginFeedbackData(assign.id, userId, plugin, siteId));
-                        });
-                    }
-
-                    // Update cached data.
-                    promises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId));
-
-                    return Promise.all(promises);
-                }).catch((error) => {
-                    if (error && this.utils.isWebServiceError(error)) {
-                        // The WebService has thrown an error, this means it cannot be submitted. Discard the offline data.
-                        discardError = this.textUtils.getErrorMessageFromError(error);
-                    } else {
-                        // Couldn't connect to server, reject.
-                    return Promise.reject(error);
-                    }
-                });
-            });
-        }).then(() => {
-            // Delete the offline data.
-            return this.assignOfflineProvider.deleteSubmissionGrade(assign.id, userId, siteId);
-        }).then(() => {
-            if (discardError) {
-                // Submission grade was discarded, add a warning.
-                const message = this.translate.instant('core.warningofflinedatadeleted', {
-                    component: this.componentTranslate,
-                    name: assign.name,
-                    error: discardError
-                });
-
-                if (warnings.indexOf(message) == -1) {
-                    warnings.push(message);
                 }
             }
         });
+
+        try {
+             // Now submit the grade.
+            await this.assignProvider.submitGradingFormOnline(assign.id, userId, offlineData.grade, offlineData.attemptnumber,
+                    offlineData.addattempt, offlineData.workflowstate, offlineData.applytoall, offlineData.outcomes,
+                    offlineData.plugindata, siteId);
+
+            // Grades sent. Discard grades drafts.
+            const promises = [];
+            if (status.feedback && status.feedback.plugins) {
+                status.feedback.plugins.forEach((plugin) => {
+                    promises.push(this.feedbackDelegate.discardPluginFeedbackData(assign.id, userId, plugin, siteId));
+                });
+            }
+
+            // Update cached data.
+            promises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId));
+
+            await Promise.all(promises);
+        } catch (error) {
+            if (!error || !this.utils.isWebServiceError(error)) {
+                // Local error, reject.
+                throw error;
+            }
+
+            // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
+            this.addOfflineDataDeletedWarning(warnings, this.componentTranslate, assign.name,
+                this.textUtils.getErrorMessageFromError(error));
+        }
+
+        // Delete the offline data.
+        await this.assignOfflineProvider.deleteSubmissionGrade(assign.id, userId, siteId);
     }
 }
 

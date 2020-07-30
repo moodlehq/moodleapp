@@ -372,7 +372,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      *
      * @return Promise resolved when done.
      */
-    protected loadData(): Promise<any> {
+    protected async loadData(): Promise<any> {
         let isBlind = !!this.blindId;
 
         this.previousAttempt = undefined;
@@ -383,44 +383,34 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             isBlind = false;
         }
 
-        // Get the assignment.
-        return this.assignProvider.getAssignment(this.courseId, this.moduleId).then((assign) => {
-            const time = this.timeUtils.timestamp(),
-                promises = [];
+        try {
+            // Get the assignment.
+            this.assign = await this.assignProvider.getAssignment(this.courseId, this.moduleId);
 
-            this.assign = assign;
+            const time = this.timeUtils.timestamp();
+            let promises = [];
 
-            if (assign.allowsubmissionsfromdate && assign.allowsubmissionsfromdate >= time) {
-                this.fromDate = this.timeUtils.userDate(assign.allowsubmissionsfromdate * 1000);
+            if (this.assign.allowsubmissionsfromdate && this.assign.allowsubmissionsfromdate >= time) {
+                this.fromDate = this.timeUtils.userDate(this.assign.allowsubmissionsfromdate * 1000);
             }
 
             this.currentAttempt = 0;
             this.maxAttemptsText = this.translate.instant('addon.mod_assign.unlimitedattempts');
-            this.blindMarking = this.isSubmittedForGrading && assign.blindmarking && !assign.revealidentities;
+            this.blindMarking = this.isSubmittedForGrading && this.assign.blindmarking && !this.assign.revealidentities;
 
             if (!this.blindMarking && this.submitId != this.currentUserId) {
-                promises.push(this.userProvider.getProfile(this.submitId, this.courseId).then((profile) => {
-                    this.user = profile;
-                }));
+                promises.push(this.loadSubmissionUserProfile());
             }
 
             // Check if there's any offline data for this submission.
-            promises.push(this.assignOfflineProvider.getSubmission(assign.id, this.submitId).then((data) => {
-                this.hasOffline = data && data.plugindata && Object.keys(data.plugindata).length > 0;
-                this.submittedOffline = data && data.submitted;
-            }).catch(() => {
-                // No offline data found.
-                this.hasOffline = false;
-                this.submittedOffline = false;
-            }));
+            promises.push(this.loadSubmissionOfflineData());
 
-            return Promise.all(promises);
-        }).then(() => {
+            await Promise.all(promises);
+
             // Get submission status.
-            return this.assignProvider.getSubmissionStatusWithRetry(this.assign, this.submitId, undefined, isBlind);
-        }).then((response) => {
+            const response = await this.assignProvider.getSubmissionStatusWithRetry(this.assign, this.submitId, undefined, isBlind);
 
-            const promises = [];
+            promises = [];
 
             this.submissionStatusAvailable = true;
             this.lastAttempt = response.lastattempt;
@@ -452,16 +442,41 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             }
 
             // Get the submission plugins that don't support editing.
-            promises.push(this.assignProvider.getUnsupportedEditPlugins(this.userSubmission.plugins).then((list) => {
-                this.unsupportedEditPlugins = list;
-            }));
+            promises.push(this.loadUnsupportedPlugins());
 
-            return Promise.all(promises);
-        }).catch((error) => {
+            await Promise.all(promises);
+        } catch (error) {
             this.domUtils.showErrorModalDefault(error, 'Error getting assigment data.');
-        }).finally(() => {
+        } finally {
             this.loaded = true;
-        });
+        }
+    }
+
+    /**
+     * Load profile of submission's user.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadSubmissionUserProfile(): Promise<void> {
+        this.user = await this.userProvider.getProfile(this.submitId, this.courseId);
+    }
+
+    /**
+     * Load offline data for the submission (not the submission grade).
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadSubmissionOfflineData(): Promise<void> {
+        try {
+            const data = await this.assignOfflineProvider.getSubmission(this.assign.id, this.submitId);
+
+            this.hasOffline = data && data.plugindata && Object.keys(data.plugindata).length > 0;
+            this.submittedOffline = data && data.submitted;
+        } catch (error) {
+            // No offline data found.
+            this.hasOffline = false;
+            this.submittedOffline = false;
+        }
     }
 
     /**
@@ -622,6 +637,15 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 });
             }
         });
+    }
+
+    /**
+     * Get the submission plugins that don't support editing.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadUnsupportedPlugins(): Promise<void> {
+        this.unsupportedEditPlugins = await this.assignProvider.getUnsupportedEditPlugins(this.userSubmission.plugins);
     }
 
     /**
