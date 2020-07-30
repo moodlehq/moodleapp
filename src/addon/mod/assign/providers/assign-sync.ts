@@ -25,7 +25,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreSyncBaseProvider, CoreSyncBlockedError } from '@classes/base-sync';
 import { AddonModAssignProvider, AddonModAssignAssign, AddonModAssignSubmission } from './assign';
 import { AddonModAssignOfflineProvider } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
@@ -46,6 +46,11 @@ export interface AddonModAssignSyncResult {
      * Whether data was updated in the site.
      */
     updated: boolean;
+
+    /**
+     * Whether some grade couldn't be synced because it was blocked.
+     */
+    gradesBlocked: number[];
 }
 
 /**
@@ -55,6 +60,7 @@ export interface AddonModAssignSyncResult {
 export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
     static AUTO_SYNCED = 'addon_mod_assign_autom_synced';
+    static MANUAL_SYNCED = 'addon_mod_assign_manual_synced';
 
     protected componentTranslate: string;
 
@@ -161,6 +167,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             this.eventsProvider.trigger(AddonModAssignSyncProvider.AUTO_SYNCED, {
                 assignId: assignId,
                 warnings: data.warnings,
+                gradesBlocked: data.gradesBlocked,
             }, siteId);
         }));
     }
@@ -199,7 +206,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
         if (this.syncProvider.isBlocked(AddonModAssignProvider.COMPONENT, assignId, siteId)) {
             this.logger.error('Cannot sync assign ' + assignId + ' because it is blocked.');
 
-            throw new Error(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
+            throw new CoreSyncBlockedError(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
         }
 
         return this.addOngoingSync(assignId, this.performSyncAssign(assignId, siteId), siteId);
@@ -219,6 +226,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
         const result: AddonModAssignSyncResult = {
             warnings: [],
             updated: false,
+            gradesBlocked: [],
         };
 
         // Load offline data and sync offline logs.
@@ -254,9 +262,18 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
         }));
 
         promises = promises.concat(grades.map(async (grade) => {
-            await this.syncSubmissionGrade(assign, grade, result.warnings, courseId, siteId);
+            try {
+                await this.syncSubmissionGrade(assign, grade, result.warnings, courseId, siteId);
 
-            result.updated = true;
+                result.updated = true;
+            } catch (error) {
+                if (error instanceof CoreSyncBlockedError) {
+                    // Grade blocked, but allow finish the sync.
+                    result.gradesBlocked.push(grade.userid);
+                } else {
+                    throw error;
+                }
+            }
         }));
 
         await Promise.all(promises);
@@ -408,9 +425,9 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
         // Check if this grade sync is blocked.
         if (this.syncProvider.isBlocked(AddonModAssignProvider.COMPONENT, syncId, siteId)) {
-            this.logger.error(`Cannot sync grade for assign ${assign.id} and user ${userId} because it is blocked.`);
+            this.logger.error(`Cannot sync grade for assign ${assign.id} and user ${userId} because it is blocked.!!!!`);
 
-            throw new Error(this.translate.instant('core.errorsyncblocked',
+            throw new CoreSyncBlockedError(this.translate.instant('core.errorsyncblocked',
                     {$a: this.translate.instant('addon.mod_assign.syncblockedusercomponent')}));
         }
 

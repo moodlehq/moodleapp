@@ -21,6 +21,18 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
+ * Blocked sync error.
+ */
+export class CoreSyncBlockedError extends Error {
+    constructor(message: string) {
+        super(message);
+
+        // Set the prototype explicitly, otherwise instanceof won't work as expected.
+        Object.setPrototypeOf(this, CoreSyncBlockedError.prototype);
+    }
+}
+
+/**
  * Base class to create sync providers. It provides some common functions.
  */
 export class CoreSyncBaseProvider {

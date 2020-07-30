@@ -408,6 +408,7 @@
   "addon.mod_assign.submitassignment_help": "assign",
   "addon.mod_assign.submittedearly": "assign",
   "addon.mod_assign.submittedlate": "assign",
+  "addon.mod_assign.syncblockedusercomponent": "local_moodlemobileapp",
   "addon.mod_assign.timemodified": "assign",
   "addon.mod_assign.timeremaining": "assign",
   "addon.mod_assign.ungroupedusers": "assign",

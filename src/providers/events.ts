@@ -125,6 +125,33 @@ export class CoreEventsProvider {
     }
 
     /**
+     * Listen for several events. To stop listening to the events:
+     * let observer = eventsProvider.onMultiple(['something', 'another'], myCallBack);
+     * ...
+     * observer.off();
+     *
+     * @param eventNames Names of the events to listen to.
+     * @param callBack Function to call when any of the events is triggered.
+     * @param siteId Site where to trigger the event. Undefined won't check the site.
+     * @return Observer to stop listening.
+     */
+    onMultiple(eventNames: string[], callBack: (value: any) => void, siteId?: string): CoreEventObserver {
+
+        const observers = eventNames.map((name) => {
+            return this.on(name, callBack, siteId);
+        });
+
+        // Create and return a CoreEventObserver.
+        return {
+            off: (): void => {
+                observers.forEach((observer) => {
+                    observer.off();
+                });
+            }
+        };
+    }
+
+    /**
      * Triggers an event, notifying all the observers.
      *
      * @param event Name of the event to trigger.
