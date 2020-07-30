@@ -408,6 +408,7 @@
     "addon.mod_assign.submitassignment_help": "Once this assignment is submitted you will not be able to make any more changes.",
     "addon.mod_assign.submittedearly": "Assignment was submitted {{$a}} early",
     "addon.mod_assign.submittedlate": "Assignment was submitted {{$a}} late",
+    "addon.mod_assign.syncblockedusercomponent": "user grade",
     "addon.mod_assign.timemodified": "Last modified",
     "addon.mod_assign.timeremaining": "Time remaining",
     "addon.mod_assign.ungroupedusers": "The setting 'Require group to make submission' is enabled and some users are either not a member of any group, or are a member of more than one group, so are unable to make submissions.",

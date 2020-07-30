@@ -35,7 +35,9 @@ import {
 } from '../../providers/assign';
 import { AddonModAssignHelperProvider } from '../../providers/helper';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
+import { AddonModAssignSync } from '../../providers/assign-sync';
 import { CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreTabComponent } from '@components/tabs/tab';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
 
@@ -537,11 +539,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             // Make sure outcomes is an array.
             gradeInfo.outcomes = gradeInfo.outcomes || [];
 
-            if (!this.isDestroyed) {
-                // Block the assignment.
-                this.syncProvider.blockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
-            }
-
             // Treat the grade info.
             return this.treatGradeInfo();
         }).then(() => {
@@ -953,14 +950,40 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Block or unblock the automatic sync of the user grade.
+     *
+     * @param block Whether to block or unblock.
+     */
+    protected setGradeSyncBlocked(block?: boolean): void {
+        if (this.isDestroyed || !this.assign || !this.isGrading) {
+            return;
+        }
+
+        const syncId = AddonModAssignSync.instance.getGradeSyncId(this.assign.id, this.submitId);
+
+        if (block) {
+            this.syncProvider.blockOperation(AddonModAssignProvider.COMPONENT, syncId);
+        } else {
+            this.syncProvider.unblockOperation(AddonModAssignProvider.COMPONENT, syncId);
+        }
+    }
+
+    /**
+     * A certain tab has been selected, either manually or automatically.
+     *
+     * @param tab The tab that was selected.
+     */
+    tabSelected(tab: CoreTabComponent): void {
+        // Block sync when selecting grade tab, unblock when leaving it.
+        this.setGradeSyncBlocked(this.tabs.getIndex(tab) === 1);
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
+        this.setGradeSyncBlocked(false);
         this.isDestroyed = true;
-
-        if (this.assign && this.isGrading) {
-            this.syncProvider.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
-        }
     }
 }
 

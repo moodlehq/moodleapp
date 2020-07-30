@@ -31,6 +31,8 @@ import { AddonModAssignOfflineProvider } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 
+import { makeSingleton } from '@singletons/core.singletons';
+
 /**
  * Data returned by an assign sync.
  */
@@ -77,6 +79,17 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                 timeUtils);
 
         this.componentTranslate = courseProvider.translateModuleName('assign');
+    }
+
+    /**
+     * Get the sync ID for a certain user grade.
+     *
+     * @param assignId Assign ID.
+     * @param userId User the grade belongs to.
+     * @return Sync ID.
+     */
+    getGradeSyncId(assignId: number, userId: number): string {
+        return 'assignGrade#' + assignId + '#' + userId;
     }
 
     /**
@@ -373,6 +386,15 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
         const userId = offlineData.userid;
         let discardError;
+        const syncId = this.getGradeSyncId(assign.id, userId);
+
+        // Check if this grade sync is blocked.
+        if (this.syncProvider.isBlocked(AddonModAssignProvider.COMPONENT, syncId, siteId)) {
+            this.logger.error(`Cannot sync grade for assign ${assign.id} and user ${userId} because it is blocked.`);
+
+            return Promise.reject(new Error(this.translate.instant('core.errorsyncblocked',
+                    {$a: this.translate.instant('addon.mod_assign.syncblockedusercomponent')})));
+        }
 
         return this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId).then((status) => {
             const timemodified = status.feedback && (status.feedback.gradeddate || status.feedback.grade.timemodified);
@@ -455,3 +477,5 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
         });
     }
 }
+
+export class AddonModAssignSync extends makeSingleton(AddonModAssignSyncProvider) {}
