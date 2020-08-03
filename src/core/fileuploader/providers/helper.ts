@@ -455,37 +455,37 @@ export class CoreFileUploaderHelperProvider {
     /**
      * Treat a capture audio/video error.
      *
-     * @param error Error returned by the Cordova plugin. Can be a string or an object.
+     * @param error Error returned by the Cordova plugin.
      * @param defaultMessage Key of the default message to show.
-     * @return Rejected promise. If it doesn't have an error message it means it was cancelled.
+     * @return Rejected promise.
      */
-    protected treatCaptureError(error: any, defaultMessage: string): Promise<any> {
+    protected treatCaptureError(error: any, defaultMessage: string): void {
         // Cancelled or error. If cancelled, error is an object with code = 3.
         if (error) {
-            if (typeof error === 'string') {
-                this.logger.error('Error while recording audio/video: ' + error);
-                if (error.indexOf('No Activity found') > -1) {
-                    // User doesn't have an app to do this.
-                    return Promise.reject(this.translate.instant('core.fileuploader.errornoapp'));
-                } else {
-                    return Promise.reject(this.translate.instant(defaultMessage));
-                }
+            if (error.code != 3) {
+                // Error, not cancelled.
+                this.logger.error('Error while recording audio/video', error);
+
+                const message = this.isNoAppError(error) ? this.translate.instant('core.fileuploader.errornoapp') :
+                        (error.message || this.translate.instant(defaultMessage));
+
+                throw new Error(message);
             } else {
-                if (error.code != 3) {
-                    // Error, not cancelled.
-                    this.logger.error('Error while recording audio/video', error);
-
-                    const message = error.code == 20 ? this.translate.instant('core.fileuploader.errornoapp') :
-                            (error.message || this.translate.instant(defaultMessage));
-
-                    return Promise.reject(message);
-                } else {
-                    return Promise.reject(this.domUtils.createCanceledError());
-                }
+                throw this.domUtils.createCanceledError();
             }
         }
 
-        return Promise.reject(null);
+        throw new Error('Error capturing media');
+    }
+
+    /**
+     * Check if a capture error is because there is no app to capture.
+     *
+     * @param error Error.
+     * @return Whether it's because there is no app.
+     */
+    protected isNoAppError(error: any): boolean {
+        return error && error.code == 20;
     }
 
     /**
@@ -522,41 +522,57 @@ export class CoreFileUploaderHelperProvider {
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
      * @return Promise resolved when done.
      */
-    uploadAudioOrVideo(isAudio: boolean, maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
+    async uploadAudioOrVideo(isAudio: boolean, maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
         this.logger.debug('Trying to record a ' + (isAudio ? 'audio' : 'video') + ' file');
 
-        const options = { limit: 1, mimetypes: mimetypes },
-            promise = isAudio ? this.fileUploaderProvider.captureAudio(options) : this.fileUploaderProvider.captureVideo(options);
-
         // The mimetypes param is only for desktop apps, the Cordova plugin doesn't support it.
-        return promise.then((medias) => {
-            // We used limit 1, we only want 1 media.
-            const media: MediaFile = medias[0];
-            let path = media.fullPath;
-            const error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
+        const captureOptions = { limit: 1, mimetypes: mimetypes };
+        let media: MediaFile;
 
-            if (error) {
-                return Promise.reject(error);
-            }
+        try {
+            const medias = isAudio ? await this.fileUploaderProvider.captureAudio(captureOptions) :
+                                     await this.fileUploaderProvider.captureVideo(captureOptions);
 
-            // Make sure the path has the protocol. In iOS it doesn't.
-            if (this.appProvider.isMobile() && path.indexOf('file://') == -1) {
-                path = 'file://' + path;
-            }
+            media = medias[0]; // We used limit 1, we only want 1 media.
+        } catch (error) {
 
-            const options = this.fileUploaderProvider.getMediaUploadOptions(media);
+            if (isAudio && this.isNoAppError(error) && this.appProvider.isMobile() &&
+                    (!this.platform.is('android') || this.platform.version().major < 10)) {
+                // No app to record audio, fallback to capture it ourselves.
+                // In Android it will only be done in Android 9 or lower because there's a bug in the plugin.
+                try {
+                    media = await this.fileUploaderProvider.captureAudioInApp();
+                } catch (error) {
+                    this.treatCaptureError(error, 'core.fileuploader.errorcapturingaudio'); // Throw the right error.
+                }
 
-            if (upload) {
-                return this.uploadFile(path, maxSize, true, options);
             } else {
-                // Copy or move the file to our temporary folder.
-                return this.copyToTmpFolder(path, true, maxSize, undefined, options);
-            }
-        }, (error) => {
-            const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
+                const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
 
-            return this.treatCaptureError(error, defaultError);
-        });
+                this.treatCaptureError(error, defaultError); // Throw the right error.
+            }
+        }
+
+        let path = media.fullPath;
+        const error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
+
+        if (error) {
+            throw new Error(error);
+        }
+
+        // Make sure the path has the protocol. In iOS it doesn't.
+        if (this.appProvider.isMobile() && path.indexOf('file://') == -1) {
+            path = 'file://' + path;
+        }
+
+        const options = this.fileUploaderProvider.getMediaUploadOptions(media);
+
+        if (upload) {
+            return this.uploadFile(path, maxSize, true, options);
+        } else {
+            // Copy or move the file to our temporary folder.
+            return this.copyToTmpFolder(path, true, maxSize, undefined, options);
+        }
     }
 
     /**

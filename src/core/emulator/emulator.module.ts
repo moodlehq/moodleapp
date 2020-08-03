@@ -29,6 +29,7 @@ import { Globalization } from '@ionic-native/globalization';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Keyboard } from '@ionic-native/keyboard';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { Media } from '@ionic-native/media';
 import { MediaCapture } from '@ionic-native/media-capture';
 import { Network } from '@ionic-native/network';
 import { Push } from '@ionic-native/push';
@@ -196,6 +197,7 @@ export const IONIC_NATIVE_PROVIDERS = [
                 return appProvider.isMobile() ? new MediaCapture() : new MediaCaptureMock(captureHelper);
             }
         },
+        Media,
         {
             provide: Network,
             deps: [Platform],

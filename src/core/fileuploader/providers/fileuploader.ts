@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, ModalController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { MediaCapture, MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture';
 import { TranslateService } from '@ngx-translate/core';
@@ -53,11 +53,19 @@ export class CoreFileUploaderProvider {
     onAudioCapture: Subject<boolean> = new Subject<boolean>();
     onVideoCapture: Subject<boolean> = new Subject<boolean>();
 
-    constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, private textUtils: CoreTextUtilsProvider,
-            private utils: CoreUtilsProvider, private sitesProvider: CoreSitesProvider, private timeUtils: CoreTimeUtilsProvider,
-            private mimeUtils: CoreMimetypeUtilsProvider, private filepoolProvider: CoreFilepoolProvider,
-            private platform: Platform, private translate: TranslateService, private mediaCapture: MediaCapture,
-            private camera: Camera) {
+    constructor(logger: CoreLoggerProvider,
+            protected fileProvider: CoreFileProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected utils: CoreUtilsProvider,
+            protected sitesProvider: CoreSitesProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected mimeUtils: CoreMimetypeUtilsProvider,
+            protected filepoolProvider: CoreFilepoolProvider,
+            protected platform: Platform,
+            protected translate: TranslateService,
+            protected mediaCapture: MediaCapture,
+            protected camera: Camera,
+            protected modalCtrl: ModalController) {
         this.logger = logger.getInstance('CoreFileUploaderProvider');
     }
 
@@ -107,6 +115,29 @@ export class CoreFileUploaderProvider {
 
         return this.mediaCapture.captureAudio(options).finally(() => {
             this.onAudioCapture.next(false);
+        });
+    }
+
+    /**
+     * Record an audio file without using an external app.
+     *
+     * @return Promise resolved with the file.
+     */
+    captureAudioInApp(): Promise<MediaFile> {
+        return new Promise((resolve, reject): any => {
+            const params = {
+                type: 'audio',
+            };
+
+            const modal = this.modalCtrl.create('CoreEmulatorCaptureMediaPage', params, { enableBackdropDismiss: false });
+            modal.present();
+            modal.onDidDismiss((data: any, role: string) => {
+                if (role == 'success') {
+                    resolve(data[0]);
+                } else {
+                    reject(data);
+                }
+            });
         });
     }
 
@@ -215,13 +246,14 @@ export class CoreFileUploaderProvider {
      */
     getMediaUploadOptions(mediaFile: MediaFile): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
-        let filename = mediaFile.name,
-            split;
+        let filename = mediaFile.name;
 
-        // Add a timestamp to the filename to make it unique.
-        split = filename.split('.');
-        split[0] += '_' + this.timeUtils.readableTimestamp();
-        filename = split.join('.');
+        if (!filename.match(/_\d{14}(\..*)?$/)) {
+            // Add a timestamp to the filename to make it unique.
+            const split = filename.split('.');
+            split[0] += '_' + this.timeUtils.readableTimestamp();
+            filename = split.join('.');
+        }
 
         options.fileName = filename;
         options.deleteAfterUpload = true;
