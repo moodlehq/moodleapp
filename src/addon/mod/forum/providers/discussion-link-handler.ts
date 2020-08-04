@@ -60,6 +60,9 @@ export class AddonModForumDiscussionLinkHandler extends CoreContentLinksHandlerB
                 if (data.postid || params.urlHash) {
                     pageParams.postId = parseInt(data.postid || params.urlHash.replace('p', ''));
                 }
+                if (params.parent) {
+                    pageParams.parent = parseInt(params.parent);
+                }
 
                 this.linkHelper.goInSite(navCtrl, 'AddonModForumDiscussionPage', pageParams, siteId);
             }
