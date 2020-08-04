@@ -30,7 +30,7 @@
                 <p *ngIf="notification.userfromfullname">{{ notification.userfromfullname }}</p>
             </ion-item>
             <ion-item text-wrap>
-                <p><core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system" [contextInstanceId]="0"></core-format-text></p>
+                <p><core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system" [contextInstanceId]="0" [maxHeight]="notification.displayfullhtml ? 120 : null"></core-format-text></p>
             </ion-item>
             <addon-notifications-actions [contextUrl]="notification.contexturl" [courseId]="notification.courseid" [data]="notification.customdata"></addon-notifications-actions>
         </ion-card>

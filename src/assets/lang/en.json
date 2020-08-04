@@ -1914,6 +1914,7 @@
     "core.openmodinbrowser": "Open {{$a}} in browser",
     "core.othergroups": "Other groups",
     "core.pagea": "Page {{$a}}",
+    "core.parentlanguage": "",
     "core.paymentinstant": "Use the button below to pay and be enrolled within minutes!",
     "core.percentagenumber": "{{$a}}%",
     "core.phone": "Phone",

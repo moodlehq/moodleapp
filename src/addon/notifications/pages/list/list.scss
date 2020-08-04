@@ -1,5 +1,61 @@
-page-addon-notifications-list .core-notification-icon {
-    width: 34px;
-    height: 34px;
-    margin: 10px !important;
+page-addon-notifications-list {
+    .core-notification-icon {
+        width: 34px;
+        height: 34px;
+        margin: 10px !important;
+    }
+
+    .item core-format-text {
+        .forumpost {
+            border: 1px solid #dee2e6;
+            display: block;
+            padding: 6px;
+            margin: 0 0 1em 0;
+
+            td {
+                padding: 3px;
+            }
+
+            .header {
+                padding: 5px;
+                border-bottom: 1px solid #e3e3e3;
+                margin-bottom: 3px;
+            }
+
+            .picture {
+                width: auto;
+
+                img {
+                    margin: 3px;
+
+                    &.userpicture {
+                        margin-left: 3px;
+                        margin-right: 10px;
+                    }
+                }
+            }
+
+            .subject {
+                font-weight: 700;
+            }
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .userpicture {
+            border-radius: 50%;
+        }
+
+        .mdl-right {
+            text-align: right;
+        }
+
+        hr {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #e3e3e3;
+        }
+    }
 }
