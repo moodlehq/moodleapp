@@ -26,6 +26,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreSyncProvider } from '@providers/sync';
+import { CoreConstants } from '@core/constants';
 
 /**
  * Service to sync messages.
@@ -158,7 +159,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
      * @param siteId Site ID.
      * @return Promise resolved with the list of warnings if sync is successful, rejected otherwise.
      */
-    protected async performSyncDiscussion(conversationId: number, userId: number, siteId?: string): Promise<string[]> {
+    protected async performSyncDiscussion(conversationId: number, userId: number, siteId: string): Promise<string[]> {
         const groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
         let messages: any[];
         const errors = [];
@@ -185,12 +186,21 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
         // Order message by timecreated.
         messages = this.messagesProvider.sortMessages(messages);
 
+        // Get messages sent by the user after the first offline message was sent.
+        // We subtract some time because the message could've been saved in server before it was in the app.
+        const timeFrom = Math.floor((messages[0].timecreated - CoreConstants.WS_TIMEOUT - 1000) / 1000);
+        const onlineMessages = await this.getMessagesSentAfter(timeFrom, conversationId, userId, siteId);
+
         // Send the messages. Send them 1 by 1 to simulate web's behaviour and to make sure we know which message has failed.
         for (let i = 0; i < messages.length; i++) {
             const message = messages[i];
+            const textFieldName = conversationId ? 'text' : 'smallmessage';
+            const wrappedText = message[textFieldName][0] != '<' ? '<p>' + message[textFieldName] + '</p>' : message[textFieldName];
 
             try {
-                if (conversationId) {
+                if (onlineMessages.indexOf(wrappedText) != -1) {
+                    // Message already sent, ignore it to prevent duplicates.
+                } else if (conversationId) {
                     await this.messagesProvider.sendMessageToConversationOnline(conversationId, message.text, siteId);
                 } else {
                     await this.messagesProvider.sendMessageOnline(userId, message.smallmessage, siteId);
@@ -230,6 +240,60 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
 
         // All done, return the warnings.
         return warnings;
+    }
+
+    /**
+     * Get messages sent by current user after a certain time.
+     *
+     * @param time Time in seconds.
+     * @param conversationId Conversation ID.
+     * @param userId User ID talking to (if no conversation ID).
+     * @param siteId Site ID.
+     * @return Promise resolved with the messages texts.
+     */
+    protected async getMessagesSentAfter(time: number, conversationId: number, userId: number, siteId: string): Promise<string[]> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        const siteCurrentUserId = site.getUserId();
+
+        if (conversationId) {
+            try {
+                const result = await this.messagesProvider.getConversationMessages(conversationId, {
+                    excludePending: true,
+                    ignoreCache: true,
+                    timeFrom: time,
+                });
+
+                const sentMessages = result.messages.filter((message) => message.useridfrom == siteCurrentUserId);
+
+                return sentMessages.map((message) => message.text);
+            } catch (error) {
+                if (error && error.errorcode == 'invalidresponse') {
+                    // There's a bug in Moodle that causes this error if there are no new messages. Return empty array.
+                    return [];
+                }
+
+                throw error;
+            }
+        } else {
+
+            const params = {
+                useridto: userId,
+                useridfrom: siteCurrentUserId,
+                limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
+            };
+            const preSets = {
+                cacheKey: this.messagesProvider.getCacheKeyForDiscussion(userId),
+                ignoreCache: true,
+            };
+
+            const messages = await this.messagesProvider.getRecentMessages(params, preSets, 0, 0, false, siteId);
+
+            time = time * 1000; // Convert to milliseconds.
+            const messagesAfterTime = messages.filter((message) => message.timecreated >= time);
+
+            return messagesAfterTime.map((message) => message.text);
+        }
     }
 
     /**
