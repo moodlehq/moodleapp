@@ -581,35 +581,38 @@ export class AddonMessagesDiscussionPage implements OnDestroy {
      * @param offset Offset for message list.
      * @return Promise resolved with the list of messages.
      */
-    protected getConversationMessages(pagesToLoad: number, offset: number = 0)
+    protected async getConversationMessages(pagesToLoad: number, offset: number = 0)
             : Promise<AddonMessagesConversationMessageFormatted[]> {
 
         const excludePending = offset > 0;
 
-        return this.messagesProvider.getConversationMessages(this.conversationId, excludePending, offset).then((result) => {
-            pagesToLoad--;
-
-            // Treat members. Don't use CoreUtilsProvider.arrayToObject because we don't want to override the existing object.
-            if (result.members) {
-                result.members.forEach((member) => {
-                    this.members[member.id] = member;
-                });
-            }
-
-            if (pagesToLoad > 0 && result.canLoadMore) {
-                offset += AddonMessagesProvider.LIMIT_MESSAGES;
-
-                // Get more messages.
-                return this.getConversationMessages(pagesToLoad, offset).then((nextMessages) => {
-                    return result.messages.concat(nextMessages);
-                });
-            } else {
-                // No more messages to load, return them.
-                this.canLoadMore = result.canLoadMore;
-
-                return result.messages;
-            }
+        const result = await this.messagesProvider.getConversationMessages(this.conversationId, {
+            excludePending: excludePending,
+            limitFrom: offset,
         });
+
+        pagesToLoad--;
+
+        // Treat members. Don't use CoreUtilsProvider.arrayToObject because we don't want to override the existing object.
+        if (result.members) {
+            result.members.forEach((member) => {
+                this.members[member.id] = member;
+            });
+        }
+
+        if (pagesToLoad > 0 && result.canLoadMore) {
+            offset += AddonMessagesProvider.LIMIT_MESSAGES;
+
+            // Get more messages.
+            const nextMessages = await this.getConversationMessages(pagesToLoad, offset);
+
+            return result.messages.concat(nextMessages);
+        } else {
+            // No more messages to load, return them.
+            this.canLoadMore = result.canLoadMore;
+
+            return result.messages;
+        }
     }
 
     /**

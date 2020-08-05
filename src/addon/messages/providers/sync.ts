@@ -134,112 +134,102 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
      *
      * @param conversationId Conversation ID.
      * @param userId User ID talking to (if no conversation ID).
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @param siteId Site ID.
+     * @return Promise resolved with the list of warnings if sync is successful, rejected otherwise.
      */
-    syncDiscussion(conversationId: number, userId: number, siteId?: string): Promise<any> {
+    syncDiscussion(conversationId: number, userId: number, siteId?: string): Promise<string[]> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const syncId = this.getSyncId(conversationId, userId),
-            groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
+        const syncId = this.getSyncId(conversationId, userId);
 
         if (this.isSyncing(syncId, siteId)) {
             // There's already a sync ongoing for this conversation, return the promise.
             return this.getOngoingSync(syncId, siteId);
         }
 
-        const warnings = [];
+        return this.addOngoingSync(syncId, this.performSyncDiscussion(conversationId, userId, siteId), siteId);
+    }
+
+    /**
+     * Perform the synchronization of a discussion.
+     *
+     * @param conversationId Conversation ID.
+     * @param userId User ID talking to (if no conversation ID).
+     * @param siteId Site ID.
+     * @return Promise resolved with the list of warnings if sync is successful, rejected otherwise.
+     */
+    protected async performSyncDiscussion(conversationId: number, userId: number, siteId?: string): Promise<string[]> {
+        const groupMessagingEnabled = this.messagesProvider.isGroupMessagingEnabled();
+        let messages: any[];
+        const errors = [];
+        const warnings: string[] = [];
 
         if (conversationId) {
             this.logger.debug(`Try to sync conversation '${conversationId}'`);
+            messages = await this.messagesOffline.getConversationMessages(conversationId, siteId);
         } else {
             this.logger.debug(`Try to sync discussion with user '${userId}'`);
+            messages = await this.messagesOffline.getMessages(userId, siteId);
         }
 
-        // Get offline messages to be sent.
-        let syncPromise;
+        if (!messages.length) {
+            // Nothing to sync.
+            return [];
+        } else if (!this.appProvider.isOnline()) {
+            // Cannot sync in offline. Mark messages as device offline.
+            this.messagesOffline.setMessagesDeviceOffline(messages, true);
 
-        if (conversationId) {
-            syncPromise = this.messagesOffline.getConversationMessages(conversationId, siteId);
-        } else {
-            syncPromise = this.messagesOffline.getMessages(userId, siteId);
+            return Promise.reject(null);
         }
 
-        syncPromise = syncPromise.then((messages) => {
-            if (!messages.length) {
-                // Nothing to sync.
-                return [];
-            } else if (!this.appProvider.isOnline()) {
-                // Cannot sync in offline. Mark messages as device offline.
-                this.messagesOffline.setMessagesDeviceOffline(messages, true);
+        // Order message by timecreated.
+        messages = this.messagesProvider.sortMessages(messages);
 
-                return Promise.reject(null);
-            }
+        // Send the messages. Send them 1 by 1 to simulate web's behaviour and to make sure we know which message has failed.
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
 
-            let promise: Promise<any> = Promise.resolve();
-            const errors = [];
-
-            // Order message by timecreated.
-            messages = this.messagesProvider.sortMessages(messages);
-
-            // Send the messages.
-            // Send them 1 by 1 to simulate web's behaviour and to make sure we know which message has failed.
-            messages.forEach((message, index) => {
-                // Chain message sending. If 1 message fails to be sent we'll stop sending.
-                promise = promise.then(() => {
-                    let subPromise;
-
-                    if (conversationId) {
-                        subPromise = this.messagesProvider.sendMessageToConversationOnline(conversationId, message.text, siteId);
-                    } else {
-                        subPromise = this.messagesProvider.sendMessageOnline(userId, message.smallmessage, siteId);
+            try {
+                if (conversationId) {
+                    await this.messagesProvider.sendMessageToConversationOnline(conversationId, message.text, siteId);
+                } else {
+                    await this.messagesProvider.sendMessageOnline(userId, message.smallmessage, siteId);
+                }
+            } catch (error) {
+                if (!this.utils.isWebServiceError(error)) {
+                    // Error sending, stop execution.
+                    if (this.appProvider.isOnline()) {
+                        // App is online, unmark deviceoffline if marked.
+                        this.messagesOffline.setMessagesDeviceOffline(messages, false);
                     }
 
-                    return subPromise.catch((error) => {
-                        if (this.utils.isWebServiceError(error)) {
-                            // Error returned by WS. Store the error to show a warning but keep sending messages.
-                            if (errors.indexOf(error) == -1) {
-                                errors.push(error);
-                            }
+                    throw error;
+                }
 
-                            return;
-                        }
+                // Error returned by WS. Store the error to show a warning but keep sending messages.
+                if (errors.indexOf(error) == -1) {
+                    errors.push(error);
+                }
+            }
 
-                        // Error sending, stop execution.
-                        if (this.appProvider.isOnline()) {
-                            // App is online, unmark deviceoffline if marked.
-                            this.messagesOffline.setMessagesDeviceOffline(messages, false);
-                        }
+            // Message was sent, delete it from local DB.
+            if (conversationId) {
+                await this.messagesOffline.deleteConversationMessage(conversationId, message.text, message.timecreated, siteId);
+            } else {
+                await this.messagesOffline.deleteMessage(userId, message.smallmessage, message.timecreated, siteId);
+            }
 
-                        return Promise.reject(error);
-                    }).then(() => {
-                        // Message was sent, delete it from local DB.
-                        if (conversationId) {
-                            return this.messagesOffline.deleteConversationMessage(conversationId, message.text,
-                                    message.timecreated, siteId);
-                        } else {
-                            return this.messagesOffline.deleteMessage(userId, message.smallmessage, message.timecreated, siteId);
-                        }
-                    }).then(() => {
-                        // In some Moodle versions, wait 1 second to make sure timecreated is different.
-                        // This is because there was a bug where messages with the same timecreated had a wrong order.
-                        if (!groupMessagingEnabled && index < messages.length - 1) {
-                            return new Promise((resolve, reject): any => {
-                                setTimeout(resolve, 1000);
-                            });
-                        }
-                    });
-                });
-            });
+            // In some Moodle versions, wait 1 second to make sure timecreated is different.
+            // This is because there was a bug where messages with the same timecreated had a wrong order.
+            if (!groupMessagingEnabled && i < messages.length - 1) {
+                await this.utils.wait(1000);
+            }
+        }
 
-            return promise;
-        }).then((errors) => {
-            return this.handleSyncErrors(conversationId, userId, errors, warnings);
-        }).then(() => {
-            // All done, return the warnings.
-            return warnings;
-        });
+        await this.handleSyncErrors(conversationId, userId, errors, warnings);
 
-        return this.addOngoingSync(syncId, syncPromise, siteId);
+        // All done, return the warnings.
+        return warnings;
     }
 
     /**
@@ -251,7 +241,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider {
      * @param warnings Array where to place the warnings.
      * @return Promise resolved when done.
      */
-    protected handleSyncErrors(conversationId: number, userId: number, errors: any[], warnings: any[]): Promise<any> {
+    protected handleSyncErrors(conversationId: number, userId: number, errors: any[], warnings: string[]): Promise<any> {
         if (errors && errors.length) {
             if (conversationId) {
 
