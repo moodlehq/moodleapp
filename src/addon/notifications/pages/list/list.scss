@@ -6,37 +6,28 @@ page-addon-notifications-list {
     }
 
     .item core-format-text {
+
         .forumpost {
-            border: 1px solid #dee2e6;
-            display: block;
-            padding: 6px;
+            border: 1px solid $gray-light;
+            width: 100%;
             margin: 0 0 1em 0;
 
             td {
-                padding: 3px;
+                padding: $content-padding;
             }
 
             .header {
-                padding: 5px;
-                border-bottom: 1px solid #e3e3e3;
-                margin-bottom: 3px;
+                background-color: $gray-lighter;
             }
 
             .picture {
                 width: auto;
-
-                img {
-                    margin: 3px;
-
-                    &.userpicture {
-                        margin-left: 3px;
-                        margin-right: 10px;
-                    }
-                }
+                text-align: center;
             }
 
             .subject {
                 font-weight: 700;
+                margin-bottom: 1rem;
             }
         }
 
@@ -49,13 +40,23 @@ page-addon-notifications-list {
         }
 
         .mdl-right {
-            text-align: right;
+            @include text-align('end');
+            a {
+                display: none;
+            }
+            font {
+                font-size: 0.9em;
+            }
+        }
+
+        .commands {
+            display: none;
         }
 
         hr {
             margin-top: 1.5rem;
             margin-bottom: 1.5rem;
-            background-color: #e3e3e3;
+            background-color: $gray-light;
         }
     }
 }
