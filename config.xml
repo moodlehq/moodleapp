@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39200" id="com.moodle.moodlemobile" ios-CFBundleVersion="3.9.2.0" version="3.9.2" versionCode="39200" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+<widget android-versionCode="39200" id="com.HTU.HTUmobile" ios-CFBundleVersion="3.9.3.0" version="3.9.3" versionCode="39300" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>HTU</name>
+    <description>HTU official app</description>
+    <author email="mobile@htuelearning.org" href="http://htuelearning.org">HTU Mobile team</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="mailto:*" />
     <access launch-external="yes" origin="geo:*" />
-    <allow-navigation href="moodleappfs:*" />
+    <allow-navigation href="HTUappfs:*" />
     <allow-navigation href="cdvfile:*" />
     <allow-navigation href="content:*" />
     <allow-navigation href="data:*" />
@@ -27,7 +27,7 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="prerendered-icon" value="true" />
-    <preference name="AppendUserAgent" value="MoodleMobile" />
+    <preference name="AppendUserAgent" value="HTUMobile" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
@@ -43,13 +43,13 @@
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
-    <preference name="iosScheme" value="moodleappfs" />
+    <preference name="iosScheme" value="HTUappfs" />
     <preference name="WKWebViewOnly" value="true" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
-        <resource-file src="MainActivity.java" target="app/src/main/java/com/moodle/moodlemobile/MainActivity.java" />
+        <resource-file src="MainActivity.java" target="app/src/main/java/com/HTU/HTUmobile/MainActivity.java" />
         <resource-file src="google-services.json" target="app/google-services.json" />
         <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
