@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreFileProvider } from './file';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
@@ -30,7 +31,8 @@ import { makeSingleton } from '@singletons/core.singletons';
 @Injectable()
 export class CoreFileHelperProvider {
 
-    constructor(protected fileProvider: CoreFileProvider,
+    constructor(protected domUtils: CoreDomUtilsProvider,
+            protected fileProvider: CoreFileProvider,
             protected filepoolProvider: CoreFilepoolProvider,
             protected sitesProvider: CoreSitesProvider,
             protected appProvider: CoreAppProvider,
@@ -338,6 +340,57 @@ export class CoreFileHelperProvider {
         }
 
         throw new Error('Couldn\'t determine file size: ' + file.fileurl);
+    }
+
+    /**
+     * Is the file openable in app.
+     *
+     * @param file The file to check.
+     * @return bool.
+     */
+    isOpenableInApp(file: any): boolean {
+        const re = /(?:\.([^.]+))?$/;
+
+        const ext = re.exec(file.filename)[1];
+
+        return !this.isFileTypeExcludedInApp(ext);
+    }
+
+    /**
+     * Is the file openable in app.
+     *
+     * @param file The file to check.
+     * @return bool.
+     */
+    async showConfirmOpenUnsupportedFile(): Promise<boolean> {
+        try {
+            await this.domUtils.showConfirm(this.translate.instant('core.cannotopeninapp'), undefined,
+                this.translate.instant('core.openfile'));
+
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
+    }
+
+    /**
+     * Is the file type excluded to open in app.
+     *
+     * @param file The file to check.
+     * @return bool.
+     */
+    isFileTypeExcludedInApp(fileType: string): boolean {
+        const currentSite = this.sitesProvider.getCurrentSite();
+        const fileTypeExcludeList = currentSite && currentSite.getStoredConfig('tool_mobile_filetypeexclusionlist');
+
+        if (!fileTypeExcludeList) {
+            return false;
+        }
+
+        const regEx = new RegExp('(,|^)' + fileType + '(,|$)', 'g');
+
+        return !!fileTypeExcludeList.match(regEx);
     }
 }
 

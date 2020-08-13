@@ -148,12 +148,19 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      * @param e Click event.
      * @param openAfterDownload Whether the file should be opened after download.
      */
-    download(e?: Event, openAfterDownload: boolean = false): void {
+    async download(e?: Event, openAfterDownload: boolean = false): Promise<void> {
         e && e.preventDefault();
         e && e.stopPropagation();
 
         if (this.isDownloading && !openAfterDownload) {
             return;
+        }
+
+        if (!this.fileHelper.isOpenableInApp(this.file)) {
+            const confirmed = await this.fileHelper.showConfirmOpenUnsupportedFile();
+            if (!confirmed) {
+                return;
+            }
         }
 
         if (!this.canDownload || !this.state || this.state == CoreConstants.NOT_DOWNLOADABLE) {
