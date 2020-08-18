@@ -52,7 +52,7 @@ jobs:
     script: scripts/aot.sh
   - stage: build
     name: "Build Android"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch != desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
     os: linux
     dist: trusty
     group: edge
@@ -69,7 +69,7 @@ jobs:
     script: scripts/aot.sh
   - stage: build
     name: "Build iOS"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch != desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
     os: osx
     osx_image: xcode11.3
     env:
