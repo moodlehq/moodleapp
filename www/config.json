@@ -1,0 +1,15 @@
+{
+    "app_id" : "com.pfa.lms",
+    "appname": "PFA LMS",
+    "versioncode" : "82020",
+    "versionname" : "3.3.0",
+    "cache_expiration_time" : 300000,
+    "default_lang" : "en",
+    "wsservice" : "moodle_mobile_app",
+    "wsextservice" : "local_mobile",
+    "customurlscheme": "moodlemobile",
+    "siteurl": "http://nti.org.eg/lms/",
+    "skipssoconfirmation": "false",
+    "forcedefaultlanguage": "false",
+    "privacypolicy": "https://moodle.org/mod/page/view.php?id=8148"
+}
