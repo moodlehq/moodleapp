@@ -146,7 +146,7 @@
     "acorn": "^5.7.4",
     "electron-builder-lib": "20.23.1",
     "electron-rebuild": "1.10.0",
-    "gulp": "4.0.2",
+    "gulp": "^4.0.2",
     "gulp-clip-empty-files": "0.1.2",
     "gulp-concat": "2.6.1",
     "gulp-flatten": "0.4.0",
