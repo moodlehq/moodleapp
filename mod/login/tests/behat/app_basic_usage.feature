@@ -21,7 +21,7 @@ Feature: Test basic usage of login in app
   Scenario: Add a new site in the app & Site name in displayed when adding a new site
     When I enter the app
     And I press the back button in the app
-    And I set the field "https://campus.example.edu" to "webserver" in the app
+    And I set the field "https://campus.example.edu" to "$WEBSERVER" in the app
     And I press "Connect to your site" in the app
     Then I should see "Acceptance test site"
 

@@ -97,4 +97,21 @@ class behat_local_moodlemobileapp extends behat_base {
         );
     }
 
+    /**
+     * Replaces $WEBSERVER for webserver env variable value, defaults to "webserver" if it is not set.
+     *
+     * @Transform /^(.*\$WEBSERVER.*)$/
+     * @param string $text Text.
+     * @return string
+     */
+    public function arg_replace_webserver_env($text) {
+        $webserver = getenv('WEBSERVER');
+
+        if ($webserver === false) {
+            $webserver = 'webserver';
+        }
+
+        return str_replace('$WEBSERVER', $webserver, $text);
+    }
+
 }

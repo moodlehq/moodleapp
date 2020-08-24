@@ -130,6 +130,7 @@ Feature: Test basic usage of choice activity in app
     And I should not see "Option 3: 0"
 
     When I run cron tasks in the app
+    And I wait loading to finish in the app
     Then I should see "Option 1: 0"
     And I should see "Option 2: 1"
     And I should see "Option 3: 0"
