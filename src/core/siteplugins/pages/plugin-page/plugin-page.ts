@@ -14,6 +14,7 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreSitePluginsPluginContentComponent } from '../../components/plugin-content/plugin-content';
 
 /**
@@ -35,6 +36,7 @@ export class CoreSitePluginsPluginPage {
     initResult: any;
     jsData: any; // JS variables to pass to the plugin so they can be used in the template or JS.
     preSets: any; // The preSets for the WS call.
+    ptrEnabled: boolean;
 
     constructor(params: NavParams) {
         this.title = params.get('title');
@@ -44,6 +46,7 @@ export class CoreSitePluginsPluginPage {
         this.initResult = params.get('initResult');
         this.jsData = params.get('jsData');
         this.preSets = params.get('preSets');
+        this.ptrEnabled = !CoreUtils.instance.isFalseOrZero(params.get('ptrEnabled'));
     }
 
     /**

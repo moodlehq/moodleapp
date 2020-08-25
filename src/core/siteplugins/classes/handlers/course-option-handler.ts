@@ -98,7 +98,8 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
                 args: {
                     courseid: course.id
                 },
-                initResult: this.initResult
+                initResult: this.initResult,
+                ptrEnabled: this.handlerSchema.ptrenabled,
             }
         };
     }

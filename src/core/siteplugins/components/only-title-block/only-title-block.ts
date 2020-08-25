@@ -63,6 +63,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent  extends CoreBlockBaseCompon
                     contextlevel: this.contextLevel,
                     instanceid: this.instanceId,
                 },
+                ptrEnabled: handler.handlerSchema.ptrenabled,
             });
         }
     }

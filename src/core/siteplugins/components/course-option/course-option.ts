@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreSitePluginsProvider } from '../../providers/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 
@@ -33,6 +34,7 @@ export class CoreSitePluginsCourseOptionComponent implements OnInit {
     method: string;
     args: any;
     initResult: any;
+    ptrEnabled = true;
 
     constructor(protected sitePluginsProvider: CoreSitePluginsProvider) { }
 
@@ -49,6 +51,7 @@ export class CoreSitePluginsCourseOptionComponent implements OnInit {
                     courseid: this.courseId,
                 };
                 this.initResult = handler.initResult;
+                this.ptrEnabled = !CoreUtils.instance.isFalseOrZero(handler.handlerSchema.ptrenabled);
             }
         }
     }
