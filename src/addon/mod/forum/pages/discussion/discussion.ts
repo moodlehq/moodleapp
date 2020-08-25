@@ -85,6 +85,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
     protected forumId: number;
     protected postId: number;
+    protected parent: number;
     protected onlineObserver: any;
     protected syncObserver: any;
     protected syncManualObserver: any;
@@ -120,6 +121,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         this.discussionId = this.discussion ? this.discussion.discussion : navParams.get('discussionId');
         this.trackPosts = navParams.get('trackPosts');
         this.postId = navParams.get('postId');
+        this.parent = navParams.get('parent');
 
         this.isOnline = this.appProvider.isOnline();
         this.onlineObserver = network.onchange().subscribe(() => {
@@ -136,41 +138,56 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     /**
      * View loaded.
      */
-    ionViewDidLoad(): void {
-        this.sitesProvider.getCurrentSite().getLocalSiteConfig('AddonModForumDiscussionSort').catch(() => {
-            this.userProvider.getUserPreference('forum_displaymode').catch(() => {
-                // Ignore errors.
-            }).then((value) => {
-                const sortValue = value && parseInt(value, 10);
+    async ionViewDidLoad(): Promise<void> {
+        if (this.parent) {
+            this.sort = 'nested'; // Force nested order.
+        } else {
+            this.sort = await this.getUserSort();
+        }
 
-                switch (sortValue) {
+        await this.fetchPosts(true, false, true);
+
+        const scrollTo = this.postId || this.parent;
+        if (scrollTo) {
+            // Scroll to the post.
+            setTimeout(() => {
+                this.domUtils.scrollToElementBySelector(this.content, '#addon-mod_forum-post-' + scrollTo);
+            });
+        }
+    }
+
+    /**
+     * Get sort type configured by the current user.
+     *
+     * @return Promise resolved with the sort type.
+     */
+    protected async getUserSort(): Promise<SortType> {
+        try {
+            const value = await this.sitesProvider.getCurrentSite().getLocalSiteConfig('AddonModForumDiscussionSort');
+
+            return value;
+        } catch (error) {
+            try {
+                const value = await this.userProvider.getUserPreference('forum_displaymode');
+
+                switch (Number(value)) {
                     case 1:
-                        this.sort = 'flat-oldest';
-                        break;
+                        return 'flat-oldest';
                     case -1:
-                        this.sort = 'flat-newest';
-                        break;
+                        return 'flat-newest';
                     case 3:
-                        this.sort = 'nested';
-                        break;
+                        return 'nested';
                     case 2: // Threaded not implemented.
                     default:
                         // Not set, use default sort.
                         // @TODO add fallback to $CFG->forum_displaymode.
                 }
-            });
-        }).then((value) => {
-            this.sort = value;
-        }).finally(() => {
-            this.fetchPosts(true, false, true).then(() => {
-                if (this.postId) {
-                    // Scroll to the post.
-                    setTimeout(() => {
-                        this.domUtils.scrollToElementBySelector(this.content, '#addon-mod_forum-post-' + this.postId);
-                    });
-                }
-            });
-        });
+            } catch (error) {
+                // Ignore errors.
+            }
+        }
+
+        return 'flat-oldest';
     }
 
     /**

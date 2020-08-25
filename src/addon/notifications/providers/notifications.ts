@@ -616,4 +616,5 @@ export type AddonNotificationsNotificationCalculatedData = {
     courseid?: number; // Calculated in the app. Course the notification belongs to.
     profileimageurlfrom?: string; // Calculated in the app. Avatar of user that sent the notification.
     userfromfullname?: string; // Calculated in the app in some cases. User from full name.
+    displayfullhtml?: boolean; // Whether to display the full HTML of the notification.
 };
