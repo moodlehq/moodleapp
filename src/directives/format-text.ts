@@ -447,6 +447,8 @@ export class CoreFormatTextDirective implements OnChanges {
             }
 
         }).then((formatted) => {
+            formatted = this.treatWindowOpen(formatted);
+
             const div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
                 navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
@@ -739,5 +741,27 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         this.iframeUtils.treatFrame(iframe, false, navCtrl);
+    }
+
+    /**
+     * Convert window.open to window.openWindowSafely inside HTML tags.
+     *
+     * @param text Text to treat.
+     * @return Treated text.
+     */
+    protected treatWindowOpen(text: string): string {
+        // Get HTML tags that include window.open. Script tags aren't executed so there's no need to treat them.
+        const matches = text.match(/<[^>]+window\.open\([^\)]*\)[^>]*>/g);
+
+        if (matches) {
+            matches.forEach((match) => {
+                // Replace all the window.open inside the tag.
+                const treated = match.replace(/window\.open\(/g, 'window.openWindowSafely(');
+
+                text = text.replace(match, treated);
+            });
+        }
+
+        return text;
     }
 }

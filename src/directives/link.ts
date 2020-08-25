@@ -71,7 +71,7 @@ export class CoreLinkDirective implements OnInit {
             // If the event prevented default action, do nothing.
             if (!event.defaultPrevented) {
                 let href = this.element.getAttribute('href');
-                if (href) {
+                if (href && this.urlUtils.getUrlScheme(href) != 'javascript') {
                     event.preventDefault();
                     event.stopPropagation();
 

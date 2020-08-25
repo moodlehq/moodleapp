@@ -27,6 +27,7 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { CoreLoginSitesPage } from '@core/login/pages/sites/sites';
+import { CoreWindow } from '@singletons/window';
 
 @Component({
     templateUrl: 'app.html'
@@ -205,6 +206,11 @@ export class MoodleMobileApp implements OnInit {
                     this.urlSchemesProvider.treatHandleCustomURLError(error);
                 });
             });
+        };
+
+        // "Expose" CoreWindow.open.
+        (<any> window).openWindowSafely = (url: string, name?: string, windowFeatures?: string): void => {
+            CoreWindow.open(url, name);
         };
 
         // Load custom lang strings. This cannot be done inside the lang provider because it causes circular dependencies.
