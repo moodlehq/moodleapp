@@ -14,8 +14,9 @@
 
 import { NgModule } from '@angular/core';
 import { CoreH5PComponentsModule } from './components/components.module';
-import { CoreH5PProvider } from './providers/h5p';
+import { CoreH5P, CoreH5PProvider } from './providers/h5p';
 import { CoreH5PPluginFileHandler } from './providers/pluginfile-handler';
+import { CoreEventsProvider } from '@providers/events';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 
 // List of providers (without handlers).
@@ -36,8 +37,14 @@ export const CORE_H5P_PROVIDERS: any[] = [
 })
 export class CoreH5PModule {
     constructor(pluginfileDelegate: CorePluginFileDelegate,
-            pluginfileHandler: CoreH5PPluginFileHandler) {
+            pluginfileHandler: CoreH5PPluginFileHandler,
+            eventsProvider: CoreEventsProvider) {
 
         pluginfileDelegate.registerHandler(pluginfileHandler);
+
+        // Delete content indexes if language changes, to update the strings.
+        eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, () => {
+            CoreH5P.instance.h5pPlayer.deleteAllContentIndexes();
+        });
     }
 }
