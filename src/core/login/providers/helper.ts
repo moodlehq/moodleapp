@@ -33,6 +33,7 @@ import { CoreConfigConstants } from '../../../configconstants';
 import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { CoreSite } from '@classes/site';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Data related to a SSO authentication.
@@ -689,6 +690,35 @@ export class CoreLoginHelperProvider {
         }
 
         return false;
+    }
+
+    /**
+     * Check if a site URL is "allowed". In case the app has fixed sites, only those will be allowed to connect to.
+     *
+     * @param siteUrl Site URL to check.
+     * @return Promise resolved with boolean: whether is one of the fixed sites.
+     */
+    async isSiteUrlAllowed(siteUrl: string): Promise<boolean> {
+        if (this.isFixedUrlSet()) {
+            // Only 1 site allowed.
+            return CoreUrl.sameDomainAndPath(siteUrl, <string> this.getFixedSites());
+        } else if (this.hasSeveralFixedSites()) {
+            const sites = <any[]> this.getFixedSites();
+
+            return sites.some((site) => {
+                return CoreUrl.sameDomainAndPath(siteUrl, site.url);
+            });
+        } else if (CoreConfigConstants.multisitesdisplay == 'sitefinder' && CoreConfigConstants.onlyallowlistedsites) {
+            // Call the sites finder to validate the site.
+            const result = await this.sitesProvider.findSites(siteUrl.replace(/^https?\:\/\/|\.\w{2,3}\/?$/g, ''));
+
+            return result && result.some((site) => {
+                return CoreUrl.sameDomainAndPath(siteUrl, site.url);
+            });
+        } else {
+            // No fixed sites or it uses a non-restrictive sites finder. Allow connecting.
+            return true;
+        }
     }
 
     /**

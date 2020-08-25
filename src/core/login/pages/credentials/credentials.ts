@@ -20,6 +20,7 @@ import { CoreUtils } from '@providers/utils/utils';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreConfigConstants } from '../../../../configconstants';
@@ -323,6 +324,15 @@ export class CoreLoginCredentialsPage {
                 await CoreCustomURLSchemes.instance.handleCustomURL(text);
             } catch (error) {
                 CoreCustomURLSchemes.instance.treatHandleCustomURLError(error);
+            }
+        } else if (text) {
+            // Not a custom URL scheme, check if it's a URL scheme to another app.
+            const scheme = CoreUrlUtils.instance.getUrlProtocol(text);
+
+            if (scheme && scheme != 'http' && scheme != 'https') {
+                this.domUtils.showErrorModal(this.translate.instant('core.errorurlschemeinvalidscheme', {$a: text}));
+            } else {
+                this.domUtils.showErrorModal('core.login.errorqrnoscheme', true);
             }
         }
     }
