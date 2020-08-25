@@ -20,7 +20,6 @@ import { CoreFileProvider } from '@providers/file';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreLocalNotificationsProvider } from '@providers/local-notifications';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreSettingsHelper } from '../../providers/helper';
@@ -54,7 +53,6 @@ export class CoreSettingsGeneralPage {
             protected langProvider: CoreLangProvider,
             protected domUtils: CoreDomUtilsProvider,
             protected pushNotificationsProvider: CorePushNotificationsProvider,
-            localNotificationsProvider: CoreLocalNotificationsProvider,
             protected settingsHelper: CoreSettingsHelper) {
 
         // Get the supported languages.
