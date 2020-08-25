@@ -471,7 +471,7 @@ export class CorePushNotificationsProvider {
                         extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
                     // Get the filters to apply to text and message. Don't use FIlterHelper to prevent circular dependencies.
-                    this.filterProvider.canGetAvailableInContext(site.getId()).then((canGet) => {
+                    this.filterProvider.canGetFilters(site.getId()).then((canGet) => {
                         if (!canGet) {
                             // We cannot check which filters are available, apply them all.
                             return this.filterDelegate.getEnabledFilters(options.contextLevel, options.instanceId);
