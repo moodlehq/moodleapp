@@ -1828,6 +1828,7 @@
   "core.login.selectacountry": "moodle",
   "core.login.selectsite": "local_moodlemobileapp",
   "core.login.signupplugindisabled": "local_moodlemobileapp",
+  "core.login.signuprequiredfieldnotsupported": "local_moodlemobileapp",
   "core.login.siteaddress": "local_moodlemobileapp",
   "core.login.sitehasredirect": "local_moodlemobileapp",
   "core.login.siteinmaintenance": "local_moodlemobileapp",

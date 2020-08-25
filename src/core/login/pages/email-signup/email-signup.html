@@ -16,8 +16,20 @@
 
     <core-loading [hideUntil]="settingsLoaded" *ngIf="!isMinor">
 
+        <!-- Site has an unsupported required field. -->
+        <ion-list *ngIf="!allRequiredSupported">
+            <ion-item text-wrap>
+                {{ 'core.login.signuprequiredfieldnotsupported' | translate }}
+            </ion-item>
+            <ion-item>
+                <a ion-button block [href]="signupUrl" core-link [autoLogin]="no">
+                    {{ 'core.openinbrowser' | translate }}
+                </a>
+            </ion-item>
+        </ion-list>
+
         <!-- Age verification. -->
-        <form ion-list *ngIf="settingsLoaded && settings && ageDigitalConsentVerification" [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
+        <form ion-list *ngIf="allRequiredSupported && settingsLoaded && settings && ageDigitalConsentVerification" [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
             <ion-item-divider text-wrap>
                 <p class="item-heading">{{ 'core.agelocationverification' | translate }}</p>
             </ion-item-divider>
@@ -47,7 +59,7 @@
         </form>
 
         <!-- Signup form. -->
-        <form ion-list *ngIf="settingsLoaded && settings && !ageDigitalConsentVerification" [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
+        <form ion-list *ngIf="allRequiredSupported && settingsLoaded && settings && !ageDigitalConsentVerification" [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
             <ion-item text-wrap text-center>
                 <!-- If no sitename show big siteurl. -->
                 <p *ngIf="!siteName" padding class="item-heading">{{siteUrl}}</p>
@@ -143,7 +155,7 @@
         </form>
     </core-loading>
 
-    <ion-list *ngIf="isMinor">
+    <ion-list *ngIf="allRequiredSupported && isMinor">
         <ion-item-divider text-wrap>
             <p *ngIf="siteName" class="item-heading padding"><core-format-text [text]="siteName" [filter]="false"></core-format-text></p>
         </ion-item-divider>

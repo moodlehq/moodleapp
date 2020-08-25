@@ -102,6 +102,7 @@
     "selectacountry": "Select a country",
     "selectsite": "Please select your site:",
     "signupplugindisabled": "{{$a}} is not enabled.",
+    "signuprequiredfieldnotsupported": "The signup form contains a required custom field that isn't supported in the app. Please create your account using a web browser.",
     "siteaddress": "Your site",
     "sitehasredirect": "Your site contains at least one HTTP redirect. The app cannot follow redirects, this could be the issue that's preventing the app from connecting to your site.",
     "siteinmaintenance": "Your site is in maintenance mode",
