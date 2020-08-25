@@ -162,7 +162,7 @@ export class CoreH5PContentValidator {
             text = this.filterXss(text, tags, stylePatterns);
         } else {
             // Filter text to plain text.
-            text = CoreTextUtils.instance.escapeHTML(text);
+            text = CoreTextUtils.instance.escapeHTML(text, false);
         }
 
         // Check if string is within allowed length.
@@ -267,7 +267,7 @@ export class CoreH5PContentValidator {
                 if (strict && !optional && !options[value]) {
                     delete select[key];
                 } else {
-                    select[key] = CoreTextUtils.instance.escapeHTML(value);
+                    select[key] = CoreTextUtils.instance.escapeHTML(value, false);
                 }
             }
         } else {
@@ -279,7 +279,7 @@ export class CoreH5PContentValidator {
             if (strict && !optional && !options[select]) {
                 select = semantics.options[0].value;
             }
-            select = CoreTextUtils.instance.escapeHTML(select);
+            select = CoreTextUtils.instance.escapeHTML(select, false);
         }
 
         return select;
@@ -353,9 +353,9 @@ export class CoreH5PContentValidator {
         }
 
         // Make sure path and mime does not have any special chars
-        file.path = CoreTextUtils.instance.escapeHTML(file.path);
+        file.path = CoreTextUtils.instance.escapeHTML(file.path, false);
         if (file.mime) {
-            file.mime = CoreTextUtils.instance.escapeHTML(file.mime);
+            file.mime = CoreTextUtils.instance.escapeHTML(file.mime, false);
         }
 
         // Remove attributes that should not exist, they may contain JSON escape code.
@@ -376,7 +376,7 @@ export class CoreH5PContentValidator {
         }
 
         if (file.codecs) {
-            file.codecs = CoreTextUtils.instance.escapeHTML(file.codecs);
+            file.codecs = CoreTextUtils.instance.escapeHTML(file.codecs, false);
         }
 
         if (typeof file.bitrate != 'undefined') {
@@ -389,7 +389,7 @@ export class CoreH5PContentValidator {
             } else {
                 this.filterParams(file.quality, ['level', 'label']);
                 file.quality.level = parseInt(file.quality.level);
-                file.quality.label = CoreTextUtils.instance.escapeHTML(file.quality.label);
+                file.quality.label = CoreTextUtils.instance.escapeHTML(file.quality.label, false);
             }
         }
 
@@ -840,7 +840,7 @@ export class CoreH5PContentValidator {
             str = CoreTextUtils.instance.decodeHTMLEntities(str);
         }
 
-        return CoreTextUtils.instance.escapeHTML(this.stripDangerousProtocols(str));
+        return CoreTextUtils.instance.escapeHTML(this.stripDangerousProtocols(str), false);
     }
 
     /**

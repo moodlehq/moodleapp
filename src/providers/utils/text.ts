@@ -413,17 +413,23 @@ export class CoreTextUtilsProvider {
      * Escape an HTML text. This implementation is based on PHP's htmlspecialchars.
      *
      * @param text Text to escape.
+     * @param doubleEncode If false, it will not convert existing html entities. Defaults to true.
      * @return Escaped text.
      */
-    escapeHTML(text: string | number): string {
+    escapeHTML(text: string | number, doubleEncode: boolean = true): string {
         if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
             return '' + text;
         }
 
+        if (doubleEncode) {
+            text = text.replace(/&/g, '&amp;');
+        } else {
+            text = text.replace(/&(?!amp;)(?!lt;)(?!gt;)(?!quot;)(?!#039;)/g, '&amp;');
+        }
+
         return text
-            .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
