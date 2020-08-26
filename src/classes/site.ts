@@ -1385,6 +1385,29 @@ export class CoreSite {
     }
 
     /**
+     * Gets an approximation of the cache table usage of the site.
+     *
+     * Currently this is just the total length of the data fields in the cache table.
+     *
+     * @return Promise resolved with the total size of all data in the cache table (bytes)
+     */
+    getCacheUsage(): Promise<number> {
+        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+    }
+
+    /**
+     * Gets a total of the file and cache usage.
+     *
+     * @return Promise with the total of getSpaceUsage and getCacheUsage
+     */
+    async getTotalUsage(): Promise<number> {
+        const space = await this.getSpaceUsage();
+        const cache = await this.getCacheUsage();
+
+        return space + cache;
+    }
+
+    /**
      * Returns the URL to the documentation of the app, based on Moodle version and current language.
      *
      * @param page Docs page to go to.

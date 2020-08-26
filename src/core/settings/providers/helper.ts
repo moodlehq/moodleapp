@@ -34,7 +34,7 @@ import { TranslateService } from '@ngx-translate/core';
  */
 export interface CoreSiteSpaceUsage {
     cacheEntries?: number; // Number of cached entries that can be cleared.
-    spaceUsage?: number; // Space used in this site.
+    spaceUsage?: number; // Space used in this site (total files + estimate of cache).
 }
 
 /**
@@ -154,7 +154,7 @@ export class CoreSettingsHelper {
 
         await Promise.all([
             this.calcSiteClearRows(site).then((rows) => siteInfo.cacheEntries = rows),
-            site.getSpaceUsage().then((size) => siteInfo.spaceUsage = size),
+            site.getTotalUsage().then((size) => siteInfo.spaceUsage = size),
         ]);
 
         return siteInfo;
