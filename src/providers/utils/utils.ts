@@ -1583,7 +1583,7 @@ export class CoreUtilsProvider {
      * @param promise Promise to ignore errors.
      * @return Promise with ignored errors.
      */
-    async ignoreErrors<T>(promise: Promise<T>): Promise<T | undefined> {
+    async ignoreErrors<T>(promise: Promise<T>): Promise<T | undefined> {
         try {
             const result = await promise;
 
