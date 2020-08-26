@@ -70,13 +70,15 @@
             <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
             <ion-checkbox item-end [(ngModel)]="replyData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
-        <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
-            <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
-            <core-icon *ngIf="advanced" name="fa-caret-down" item-start></core-icon>
-            {{ 'addon.mod_forum.advanced' | translate }}
-        </ion-item-divider>
-        <ng-container *ngIf="advanced">
-            <core-attachments *ngIf="forum.id && forum.maxattachments > 0" [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
+        <ng-container *ngIf="forum.id && forum.maxattachments > 0">
+            <ion-item-divider text-wrap (click)="toggleAdvanced()" class="core-expandable">
+                <core-icon *ngIf="!advanced" name="fa-caret-right" item-start></core-icon>
+                <core-icon *ngIf="advanced" name="fa-caret-down" item-start></core-icon>
+                {{ 'addon.mod_forum.advanced' | translate }}
+            </ion-item-divider>
+            <ng-container *ngIf="advanced">
+                <core-attachments [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
+            </ng-container>
         </ng-container>
         <ion-grid>
             <ion-row>
