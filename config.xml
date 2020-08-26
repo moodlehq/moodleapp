@@ -112,11 +112,6 @@
                 <param name="android-package" value="io.github.pwlin.cordova.plugins.fileopener2.FileOpener2" />
             </feature>
         </config-file>
-        <config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <provider android:authorities="${applicationId}.opener.provider" android:exported="false" android:grantUriPermissions="true" android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
-                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
-            </provider>
-        </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="FileTransfer">
                 <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
