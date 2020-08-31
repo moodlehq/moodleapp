@@ -13,3 +13,5 @@ jszip has problems with "lie" dependency on greater versions than 3.1
 
 promise.prototype.finally has problems on greater versions than 3.1
 
+cordova-ios: should remain on 5.1 because of: https://github.com/apache/cordova-ios/pull/801
+
