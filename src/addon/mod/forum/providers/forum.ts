@@ -496,7 +496,8 @@ export class AddonModForumProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with forum posts and rating info.
      */
-    getDiscussionPosts(discussionId: number, cmId: number, siteId?: string): Promise<{posts: any[], ratinginfo?: CoreRatingInfo}> {
+    getDiscussionPosts(discussionId: number, cmId: number, siteId?: string): Promise<{posts: any[], courseid?: number,
+            forumid?: number, ratinginfo?: CoreRatingInfo}> {
         const params = {
             discussionid: discussionId
         };
