@@ -27,6 +27,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreWSFileUploadOptions } from '@providers/ws';
 import { Subject } from 'rxjs';
+import { CoreApp } from '@providers/app';
 
 /**
  * File upload options.
@@ -183,7 +184,7 @@ export class CoreFileUploaderProvider {
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
         const extension = this.mimeUtils.guessExtensionFromUrl(uri);
         const mimetype = this.mimeUtils.getMimeType(extension);
-        const isIOS = this.platform.is('ios');
+        const isIOS = CoreApp.instance.isIOS();
         const options: CoreFileUploaderOptions = {
                 deleteAfterUpload: !isFromAlbum,
                 mimeType: mimetype

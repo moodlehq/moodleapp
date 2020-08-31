@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { Platform, AlertController, NavController, NavOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider, CoreStoreConfig } from '@providers/app';
+import { CoreApp, CoreAppProvider, CoreStoreConfig } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
@@ -1272,7 +1272,7 @@ export class CoreLoginHelperProvider {
             });
 
         alert.present().then(() => {
-            const isDevice = this.platform.is('android') || this.platform.is('ios');
+            const isDevice = this.platform.is('android') || CoreApp.instance.isIOS();
             if (!isDevice) {
                 // Treat all anchors so they don't override the app.
                 const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from './delegate';
 import { CoreFileUploaderHelperProvider } from './helper';
@@ -45,7 +45,7 @@ export class CoreFileUploaderVideoHandler implements CoreFileUploaderHandler {
      * @return Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (this.platform.is('ios')) {
+        if (CoreApp.instance.isIOS()) {
             // In iOS it's recorded as MOV.
             return this.utils.filterByRegexp(mimetypes, /^video\/quicktime$/);
         } else if (this.platform.is('android')) {

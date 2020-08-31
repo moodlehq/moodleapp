@@ -236,7 +236,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
                 if (this.platform.is('android')) {
                     // In Android we ignore the keyboard height because it is not part of the web view.
                     height = this.domUtils.getContentHeight(this.content) - this.getSurroundingHeight(this.element);
-                } else if (this.platform.is('ios') && this.kbHeight > 0 && this.platform.version().major < 12) {
+                } else if (CoreApp.instance.isIOS() && this.kbHeight > 0 && this.platform.version().major < 12) {
                     // Keyboard open in iOS 11 or previous. The window height changes when the keyboard is open.
                     height = window.innerHeight - this.getSurroundingHeight(this.element);
 

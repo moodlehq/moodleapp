@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { CoreApp } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreIonTabsComponent } from '@components/ion-tabs/ion-tabs';
@@ -58,10 +58,9 @@ export class CoreMainMenuPage implements OnDestroy {
             protected mainMenuProvider: CoreMainMenuProvider,
             protected linksDelegate: CoreContentLinksDelegate,
             protected linksHelper: CoreContentLinksHelperProvider,
-            protected appProvider: CoreAppProvider,
-            protected platform: Platform) {
+            ) {
 
-        this.mainMenuId = this.appProvider.getMainMenuId();
+        this.mainMenuId = CoreApp.instance.getMainMenuId();
 
         // Check if the menu was loaded with a redirect.
         const redirectPage = navParams.get('redirectPage');
@@ -118,7 +117,7 @@ export class CoreMainMenuPage implements OnDestroy {
 
         window.addEventListener('resize', this.initHandlers.bind(this));
 
-        if (this.platform.is('ios')) {
+        if (CoreApp.instance.isIOS()) {
             // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
             // Init handlers again once keyboard is closed since the resize event doesn't have the updated height.
             this.keyboardObserver = this.eventsProvider.on(CoreEventsProvider.KEYBOARD_CHANGE, (kbHeight) => {
@@ -133,7 +132,7 @@ export class CoreMainMenuPage implements OnDestroy {
             });
         }
 
-        this.appProvider.setMainMenuOpen(this.mainMenuId, true);
+        CoreApp.instance.setMainMenuOpen(this.mainMenuId, true);
     }
 
     /**
@@ -243,7 +242,7 @@ export class CoreMainMenuPage implements OnDestroy {
         this.subscription && this.subscription.unsubscribe();
         this.redirectObs && this.redirectObs.off();
         window.removeEventListener('resize', this.initHandlers.bind(this));
-        this.appProvider.setMainMenuOpen(this.mainMenuId, false);
+        CoreApp.instance.setMainMenuOpen(this.mainMenuId, false);
         this.keyboardObserver && this.keyboardObserver.off();
     }
 }

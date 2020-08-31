@@ -14,8 +14,9 @@
 
 import { Directive, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Navbar, Platform } from 'ionic-angular';
+import { Navbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreApp } from '@providers/app';
 
 /**
  * Directive to tramslate the back button of navigation bars in iOS.
@@ -30,8 +31,10 @@ import { CoreEventsProvider } from '@providers/events';
 export class CoreBackButtonDirective implements OnInit, OnDestroy {
     protected languageObserver: any;
 
-    constructor(private host: Navbar, private platform: Platform,
-        private translate: TranslateService, private eventsProvider: CoreEventsProvider) {}
+    constructor(private host: Navbar,
+        private translate: TranslateService,
+        private eventsProvider: CoreEventsProvider
+        ) {}
 
     /**
      * Component being initialized.
@@ -56,7 +59,7 @@ export class CoreBackButtonDirective implements OnInit, OnDestroy {
      * Set the trasnlated back button text in iOS.
      */
     protected setTranslatedBackButtonText(): void {
-        if (this.host && this.platform.is('ios')) {
+        if (this.host && CoreApp.instance.isIOS()) {
             this.host.setBackButtonText(this.translate.instant('core.back'));
         }
     }

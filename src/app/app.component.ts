@@ -15,7 +15,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform, IonicApp } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -285,7 +285,7 @@ export class MoodleMobileApp implements OnInit {
         // Detect orientation changes.
         this.screenOrientation.onChange().subscribe(
             () => {
-                if (this.platform.is('ios')) {
+                if (CoreApp.instance.isIOS()) {
                     // Force ios to recalculate safe areas when rotating.
                     // This can be erased when https://issues.apache.org/jira/browse/CB-13448 issue is solved or
                     // After switching to WkWebview.

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from './delegate';
@@ -45,7 +45,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
      */
     isEnabled(): boolean | Promise<boolean> {
         return this.platform.is('android') || !this.appProvider.isMobile() ||
-            (this.platform.is('ios') && this.platform.version().major >= 9);
+            (CoreApp.instance.isIOS() && this.platform.version().major >= 9);
     }
 
     /**
@@ -119,7 +119,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         });
                     });
 
-                    if (this.platform.is('ios')) {
+                    if (CoreApp.instance.isIOS()) {
                         // In iOS, the click on the input stopped working for some reason. We need to put it 1 level higher.
                         element.parentElement.appendChild(input);
 

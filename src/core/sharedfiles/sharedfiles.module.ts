@@ -19,6 +19,7 @@ import { CoreSharedFilesHelperProvider } from './providers/helper';
 import { CoreSharedFilesUploadHandler } from './providers/upload-handler';
 import { CoreFileUploaderDelegate } from '@core/fileuploader/providers/delegate';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreAppProvider } from '@providers/app';
 
 // List of providers (without handlers).
 export const CORE_SHAREDFILES_PROVIDERS: any[] = [
@@ -38,12 +39,17 @@ export const CORE_SHAREDFILES_PROVIDERS: any[] = [
     ]
 })
 export class CoreSharedFilesModule {
-    constructor(platform: Platform, delegate: CoreFileUploaderDelegate, handler: CoreSharedFilesUploadHandler,
-            helper: CoreSharedFilesHelperProvider, eventsProvider: CoreEventsProvider) {
+    constructor(platform: Platform,
+            delegate: CoreFileUploaderDelegate,
+            handler: CoreSharedFilesUploadHandler,
+            helper: CoreSharedFilesHelperProvider,
+            appsProvider: CoreAppProvider,
+            eventsProvider: CoreEventsProvider
+            ) {
         // Register the handler.
         delegate.registerHandler(handler);
 
-        if (platform.is('ios')) {
+        if (appsProvider.isIOS()) {
             let lastCheck = 0;
 
             // Check if there are new files at app start and when the app is resumed.
