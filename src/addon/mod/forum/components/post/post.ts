@@ -43,6 +43,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input() post: any; // Post.
     @Input() courseId: number; // Post's course ID.
     @Input() discussionId: number; // Post's' discussion ID.
+    @Input() discussion?: any; // Post's' discussion, only for starting posts.
     @Input() component: string; // Component this post belong to.
     @Input() componentId: number; // Component ID.
     @Input() replyData: any; // Object with the new post data. Usually shared between posts.
@@ -92,14 +93,14 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parent;
+        this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parentid;
 
         const reTranslated = this.translate.instant('addon.mod_forum.re');
         this.displaySubject = !this.parentSubject ||
             (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
                 this.post.subject != `${reTranslated} ${this.parentSubject}`);
-        this.defaultReplySubject = (this.post.subject.startsWith('Re: ') || this.post.subject.startsWith(reTranslated))
-            ? this.post.subject : `${reTranslated} ${this.post.subject}`;
+        this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
+            this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
 
         this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
                     (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
@@ -328,7 +329,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.syncId = this.forumSync.getDiscussionSyncId(this.discussionId);
             this.syncProvider.blockOperation(AddonModForumProvider.COMPONENT, this.syncId);
 
-            this.setReplyFormData(this.post.parent, true, this.post.subject, this.post.message, this.post.attachments,
+            this.setReplyFormData(this.post.parentid, true, this.post.subject, this.post.message, this.post.attachments,
                     this.post.isprivatereply);
         }).catch(() => {
             // Cancelled.
@@ -460,9 +461,9 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         this.domUtils.showDeleteConfirm().then(() => {
             const promises = [];
 
-            promises.push(this.forumOffline.deleteReply(this.post.parent));
+            promises.push(this.forumOffline.deleteReply(this.post.parentid));
             if (this.forum.id) {
-                promises.push(this.forumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parent).catch(() => {
+                promises.push(this.forumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid).catch(() => {
                     // Ignore errors, maybe there are no files.
                 }));
             }

@@ -47,30 +47,38 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
     /**
      * Component being initialized.
      */
-    ngOnInit(): void {
-        if (this.forumId) {
-            if (this.post.id) {
-                const site: CoreSite = this.sitesProvider.getCurrentSite();
-                this.url = site.createSiteUrl('/mod/forum/discuss.php', {d: this.post.discussion}, 'p' + this.post.id);
-
-                this.forumProvider.getDiscussionPost(this.forumId, this.post.discussion, this.post.id, true).then((post) => {
-                    this.canDelete = post.capabilities.delete && this.forumProvider.isDeletePostAvailable();
-                    this.canEdit = post.capabilities.edit && this.forumProvider.isUpdatePostAvailable();
-                    this.wordCount = post.wordcount;
-                }).catch((error) => {
-                    this.domUtils.showErrorModalDefault(error, 'Error getting discussion post.');
-                }).finally(() => {
-                    this.loaded = true;
-                });
-            } else {
-                // Offline post, you can edit or discard the post.
-                this.canEdit = true;
-                this.canDelete = true;
-                this.loaded = true;
-            }
+    async ngOnInit(): Promise<void> {
+        if (this.post.id) {
+            const site: CoreSite = this.sitesProvider.getCurrentSite();
+            this.url = site.createSiteUrl('/mod/forum/discuss.php', {d: this.post.discussionid}, 'p' + this.post.id);
         } else {
+            // Offline post, you can edit or discard the post.
+            this.canEdit = true;
+            this.canDelete = true;
             this.loaded = true;
+
+            return;
         }
+
+        if (typeof this.post.capabilities.delete == 'undefined') {
+            if (this.forumId) {
+                try {
+                    this.post =
+                        await this.forumProvider.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, true);
+                } catch (error) {
+                    this.domUtils.showErrorModalDefault(error, 'Error getting discussion post.');
+                }
+            } else {
+                this.loaded = true;
+
+                return;
+            }
+        }
+
+        this.canDelete = this.post.capabilities.delete && this.forumProvider.isDeletePostAvailable();
+        this.canEdit = this.post.capabilities.edit && this.forumProvider.isUpdatePostAvailable();
+        this.wordCount = this.post.haswordcount && this.post.wordcount;
+        this.loaded = true;
     }
 
     /**

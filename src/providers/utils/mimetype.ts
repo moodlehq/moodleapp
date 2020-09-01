@@ -166,7 +166,7 @@ export class CoreMimetypeUtilsProvider {
         if (this.canBeEmbedded(ext)) {
             file.embedType = this.getExtensionType(ext);
 
-            path = CoreFile.instance.convertFileSrc(path || file.fileurl || (file.toURL && file.toURL()));
+            path = CoreFile.instance.convertFileSrc(path || file.fileurl || file.url || (file.toURL && file.toURL()));
 
             if (file.embedType == 'image') {
                 return '<img src="' + path + '">';

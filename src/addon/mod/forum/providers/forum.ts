@@ -280,7 +280,7 @@ export class AddonModForumProvider {
      * @return Starting post or undefined if not found.
      */
     extractStartingPost(posts: any[]): any {
-        const index = posts.findIndex((post) => post.parent == 0);
+        const index = posts.findIndex((post) => !post.parentid);
 
         return index >= 0 ? posts.splice(index, 1).pop() : undefined;
     }
@@ -303,6 +303,18 @@ export class AddonModForumProvider {
      */
     isGetDiscussionPostAvailable(): boolean {
         return this.sitesProvider.wsAvailableInCurrentSite('mod_forum_get_discussion_post');
+    }
+
+    /**
+     * Returns whether or not getDiscussionPost WS available or not.
+     *
+     * @param site Site. If not defined, current site.
+     * @return If WS is avalaible.
+     * @since 3.7
+     */
+    isGetDiscussionPostsAvailable(site?: CoreSite): boolean {
+        return site ? site.wsAvailable('mod_forum_get_discussion_posts') :
+            this.sitesProvider.wsAvailableInCurrentSite('mod_forum_get_discussion_posts');
     }
 
     /**
@@ -498,6 +510,41 @@ export class AddonModForumProvider {
      */
     getDiscussionPosts(discussionId: number, cmId: number, siteId?: string): Promise<{posts: any[], courseid?: number,
             forumid?: number, ratinginfo?: CoreRatingInfo}> {
+
+        // Convenience function to translate legacy data to new format.
+        const translateLegacyPostsFormat = (posts: any[]): any[] => {
+            return posts.map((post) => {
+                const newPost = {
+                    id: post.id ,
+                    discussionid: post.discussion,
+                    parentid: post.parent,
+                    hasparent: !!post.parent,
+                    author: {
+                        id: post.userid,
+                        fullname: post.userfullname,
+                        urls: { profileimage: post.userpictureurl },
+                    },
+                    timecreated: post.created,
+                    subject: post.subject,
+                    message: post.message,
+                    attachments : post.attachments,
+                    capabilities: {
+                        reply: !!post.canreply,
+                    },
+
+                    unread: !post.postread,
+                    isprivatereply: !!post.isprivatereply,
+                    tags: post.tags
+                };
+
+                if (post.groupname) {
+                    newPost.author['groups'] = [{name: post.groupname}];
+                }
+
+                return newPost;
+            });
+        };
+
         const params = {
             discussionid: discussionId
         };
@@ -508,8 +555,15 @@ export class AddonModForumProvider {
         };
 
         return this.sitesProvider.getSite(siteId).then((site) => {
-            return site.read('mod_forum_get_forum_discussion_posts', params, preSets).then((response) => {
+            const wsName = this.isGetDiscussionPostsAvailable(site) ? 'mod_forum_get_discussion_posts' :
+                'mod_forum_get_forum_discussion_posts';
+
+            return site.read(wsName, params, preSets).then((response) => {
                 if (response) {
+
+                    if (wsName == 'mod_forum_get_forum_discussion_posts') {
+                        response.posts = translateLegacyPostsFormat(response.posts);
+                    }
                     this.storeUserData(response.posts);
 
                     return response;
@@ -1054,6 +1108,16 @@ export class AddonModForumProvider {
         const users = {};
 
         list.forEach((entry) => {
+            if (entry.author) {
+                const authorId = parseInt(entry.author.id);
+                if (!isNaN(authorId) && !users[authorId]) {
+                    users[authorId] = {
+                        id: entry.author.id,
+                        fullname: entry.author.fullname,
+                        profileimageurl: entry.author.urls.profileimage
+                    };
+                }
+            }
             const userId = parseInt(entry.userid);
             if (!isNaN(userId) && !users[userId]) {
                 users[userId] = {
