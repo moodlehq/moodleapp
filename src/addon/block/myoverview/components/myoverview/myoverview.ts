@@ -77,6 +77,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     downloadCourseEnabled: boolean;
     downloadCoursesEnabled: boolean;
 
+    protected FILTER_PRIORITY = ['all', 'allincludinghidden', 'inprogress', 'future', 'past', 'favourite', 'hidden', 'custom'];
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
     protected coursesObserver;
@@ -202,9 +203,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.initCourseFilters(courses);
 
-            this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
-                   typeof courses[0].enddate != 'undefined');
-
             this.courses.filter = '';
             this.showFilter = false;
 
@@ -250,10 +248,15 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 this.showSelectorFilter = Object.keys(this.showFilters).some((key) => {
                     return this.showFilters[key] == 'show';
                 });
+
+                if (!this.showSelectorFilter) {
+                    // All filters disabled, display all the courses.
+                    this.showFilters.all = 'show';
+                }
             }
 
-            if (!this.showSelectorFilter || (this.selectedFilter === 'inprogress' && this.showFilters.inprogress == 'disabled')) {
-                // No selector, or the default option is disabled, show all.
+            if (!this.showSelectorFilter) {
+                // No selector, display all the courses.
                 this.selectedFilter = 'all';
             }
             this.setCourseFilter(this.selectedFilter);
@@ -388,7 +391,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             if (this.showFilters[filter] == 'show') {
                 this.filteredCourses = this.courses[filter];
             } else {
-                const activeFilter = Object.keys(this.showFilters).find((name) => {
+                const activeFilter = this.FILTER_PRIORITY.find((name) => {
                     return this.showFilters[name] == 'show';
                 });
 
