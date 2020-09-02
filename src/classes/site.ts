@@ -208,7 +208,7 @@ export class CoreSite {
     protected wsProvider: CoreWSProvider;
 
     // Variables for the database.
-    static WS_CACHE_TABLE = 'ws_cache';
+    static WS_CACHE_TABLE = 'wscache_2';
     static CONFIG_TABLE = 'core_site_config';
 
     // Versions of Moodle releases.

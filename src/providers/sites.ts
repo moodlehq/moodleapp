@@ -425,7 +425,11 @@ export class CoreSitesProvider {
                     'SELECT id, data, key, expirationTime, NULL as component, NULL as componentId ' +
                     'FROM ' + oldTable);
 
-                return await db.dropTable(oldTable);
+                try {
+                    await db.dropTable(oldTable);
+                } catch (error) {
+                    // Error deleting old table, ignore.
+                }
             }
         }
     };
