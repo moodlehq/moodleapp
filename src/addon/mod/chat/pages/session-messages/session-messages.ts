@@ -60,8 +60,8 @@ export class AddonModChatSessionMessagesPage {
      * @return Promise resolved when done.
      */
     protected fetchMessages(): Promise<any> {
-        return this.chatProvider.getSessionMessages(this.chatId, this.sessionStart, this.sessionEnd, this.groupId)
-                .then((messages) => {
+        return this.chatProvider.getSessionMessages(this.chatId, this.sessionStart, this.sessionEnd, this.groupId,
+                {cmId: this.cmId}).then((messages) => {
             return this.chatProvider.getMessagesUserData(messages, this.courseId).then((messages) => {
                 this.messages = <AddonModChatSessionMessageForView[]> messages;
 

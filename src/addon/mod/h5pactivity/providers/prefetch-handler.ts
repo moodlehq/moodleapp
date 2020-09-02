@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -130,7 +130,10 @@ export class AddonModH5PActivityPrefetchHandler extends CoreCourseActivityPrefet
      */
     protected async prefetchActivity(module: any, courseId: number, single: boolean, siteId: string): Promise<void> {
 
-        const h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(courseId, module.id, true, siteId);
+        const h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(courseId, module.id, {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        });
 
         const introFiles = this.getIntroFilesFromInstance(module, h5pActivity);
 
@@ -171,14 +174,19 @@ export class AddonModH5PActivityPrefetchHandler extends CoreCourseActivityPrefet
      */
     protected async prefetchWSData(h5pActivity: AddonModH5PActivityData, siteId: string): Promise<void> {
 
-        const accessInfo = await AddonModH5PActivity.instance.getAccessInformation(h5pActivity.id, true, siteId);
+        const accessInfo = await AddonModH5PActivity.instance.getAccessInformation(h5pActivity.id, {
+            cmId: h5pActivity.coursemodule,
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            siteId,
+        });
 
         if (!accessInfo.canreviewattempts) {
             // Not a teacher, prefetch user attempts and the current user profile.
             const site = await this.sitesProvider.getSite(siteId);
 
             const options = {
-                ignoreCache: true,
+                cmId: h5pActivity.coursemodule,
+                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
                 siteId: siteId,
             };
 

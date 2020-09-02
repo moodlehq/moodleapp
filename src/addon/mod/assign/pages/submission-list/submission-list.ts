@@ -153,7 +153,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
             }
 
             // Get assignment submissions.
-            this.submissionsData = await this.assignProvider.getSubmissions(this.assign.id);
+            this.submissionsData = await this.assignProvider.getSubmissions(this.assign.id, {cmId: this.assign.cmid});
 
             if (!this.submissionsData.canviewsubmissions) {
                 // User shouldn't be able to reach here.
@@ -192,7 +192,8 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
         const promises = [
             this.assignHelper.getSubmissionsUserData(this.assign, this.submissionsData.submissions, this.groupId),
             // Get assignment grades only if workflow is not enabled to check grading date.
-            !this.assign.markingworkflow ? this.assignProvider.getAssignmentGrades(this.assign.id) : Promise.resolve(null),
+            !this.assign.markingworkflow ? this.assignProvider.getAssignmentGrades(this.assign.id, {cmId: this.assign.cmid}) :
+                                           Promise.resolve(null),
         ];
 
         return Promise.all(promises).then(([submissions, grades]: [AddonModAssignSubmissionFormatted[], AddonModAssignGrade[]]) => {

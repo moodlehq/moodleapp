@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -100,29 +100,32 @@ export class AddonModLtiProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
+     * @param options Other options.
      * @return Promise resolved when the LTI is retrieved.
      */
-    getLti(courseId: number, cmId: number): Promise<AddonModLtiLti> {
+    async getLti(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLtiLti> {
         const params: any = {
             courseids: [courseId]
         };
-        const preSets: any = {
+        const preSets = {
             cacheKey: this.getLtiCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY
+            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            component: AddonModLtiProvider.COMPONENT,
+            ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        return this.sitesProvider.getCurrentSite().read('mod_lti_get_ltis_by_courses', params, preSets)
-                .then((response: AddonModLtiGetLtisByCoursesResult): any => {
+        const site = await this.sitesProvider.getSite(options.siteId);
 
-            if (response.ltis) {
-                const currentLti = response.ltis.find((lti) => lti.coursemodule == cmId);
-                if (currentLti) {
-                    return currentLti;
-                }
+        const response: AddonModLtiGetLtisByCoursesResult = await site.read('mod_lti_get_ltis_by_courses', params, preSets);
+
+        if (response.ltis) {
+            const currentLti = response.ltis.find((lti) => lti.coursemodule == cmId);
+            if (currentLti) {
+                return currentLti;
             }
+        }
 
-            return Promise.reject(null);
-        });
+        throw new Error('Activity not found.');
     }
 
     /**

@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -251,7 +251,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
         const courseId = submissions.length > 0 ? submissions[0].courseid : grades[0].courseid;
 
-        const assign = await this.assignProvider.getAssignmentById(courseId, assignId, false, siteId);
+        const assign = await this.assignProvider.getAssignmentById(courseId, assignId, {siteId});
 
         let promises = [];
 
@@ -340,8 +340,14 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
         const userId = offlineData.userid;
         const pluginData = {};
+        const options = {
+            userId,
+            cmId: assign.cmid,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
 
-        const status = await this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
+        const status = await this.assignProvider.getSubmissionStatus(assign.id, options);
 
         const submission = this.assignProvider.getSubmissionObjectFromAttempt(assign, status.lastattempt);
 
@@ -370,7 +376,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             }
 
             // Submission data sent, update cached data. No need to block the user for this.
-            this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
+            this.assignProvider.getSubmissionStatus(assign.id, options);
         } catch (error) {
             if (!error || !this.utils.isWebServiceError(error)) {
                 // Local error, reject.
@@ -422,6 +428,12 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
 
         const userId = offlineData.userid;
         const syncId = this.getGradeSyncId(assign.id, userId);
+        const options = {
+            userId,
+            cmId: assign.cmid,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
 
         // Check if this grade sync is blocked.
         if (this.syncProvider.isBlocked(AddonModAssignProvider.COMPONENT, syncId, siteId)) {
@@ -431,7 +443,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
                     {$a: this.translate.instant('addon.mod_assign.syncblockedusercomponent')}));
         }
 
-        const status = await this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId);
+        const status = await this.assignProvider.getSubmissionStatus(assign.id, options);
 
         const timemodified = status.feedback && (status.feedback.gradeddate || status.feedback.grade.timemodified);
 
@@ -483,7 +495,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
             }
 
             // Update cached data.
-            promises.push(this.assignProvider.getSubmissionStatus(assign.id, userId, undefined, false, true, true, siteId));
+            promises.push(this.assignProvider.getSubmissionStatus(assign.id, options));
 
             await Promise.all(promises);
         } catch (error) {

@@ -150,7 +150,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
         }).then((gradeInfo) => {
             this.maxGrade = gradeInfo.grade;
 
-            return this.workshopProvider.getWorkshopAccessInformation(this.workshopId);
+            return this.workshopProvider.getWorkshopAccessInformation(this.workshopId, {cmId: this.workshop.coursemodule});
         }).then((accessData) => {
             this.access = accessData;
 
@@ -168,8 +168,10 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy {
 
             if (this.evaluating || this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED) {
                 // Get all info of the assessment.
-                return this.workshopHelper.getReviewerAssessmentById(this.workshopId, this.assessmentId,
-                        this.profile && this.profile.id).then((assessment) => {
+                return this.workshopHelper.getReviewerAssessmentById(this.workshopId, this.assessmentId, {
+                    userId: this.profile && this.profile.id,
+                    cmId: this.workshop.coursemodule,
+                }).then((assessment) => {
                     let defaultGrade, promise;
 
                     this.assessment = this.workshopHelper.realGradeValue(this.workshop, assessment);

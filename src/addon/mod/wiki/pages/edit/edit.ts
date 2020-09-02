@@ -155,7 +155,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
             this.editOffline = false; // Cannot edit pages in offline.
 
             // Get page contents to obtain title and editing permission
-            promise = this.wikiProvider.getPageContents(this.pageId).then((pageContents) => {
+            promise = this.wikiProvider.getPageContents(this.pageId, {cmId: this.module.id}).then((pageContents) => {
                 this.pageForm.controls.title.setValue(pageContents.title); // Set the title in the form group.
                 this.wikiId = pageContents.wikiid;
                 this.subwikiId = pageContents.subwikiid;
@@ -168,7 +168,11 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 return this.wikiSync.waitForSync(this.blockId);
             }).then(() => {
                 // Get subwiki files, needed to replace URLs for rich text editor.
-                return this.wikiProvider.getSubwikiFiles(this.wikiId, this.groupId, this.userId);
+                return this.wikiProvider.getSubwikiFiles(this.wikiId, {
+                    groupId: this.groupId,
+                    userId: this.userId,
+                    cmId: this.module.id,
+                });
             }).then((files) => {
                 this.subwikiFiles = files;
 
@@ -460,7 +464,13 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                 // Try to send the page.
                 let wikiId = this.wikiId || (this.module && this.module.instance);
 
-                return this.wikiProvider.newPage(title, text, this.subwikiId, wikiId, this.userId, this.groupId).then((id) => {
+                return this.wikiProvider.newPage(title, text, {
+                    subwikiId: this.subwikiId,
+                    wikiId,
+                    userId: this.userId,
+                    groupId: this.groupId,
+                    cmId: this.module.id,
+                }).then((id) => {
 
                     this.domUtils.triggerFormSubmittedEvent(this.formElement, id > 0, this.sitesProvider.getCurrentSiteId());
 
@@ -470,7 +480,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy {
                         // Page was created, get its data and go to the page.
                         this.pageId = id;
 
-                        return this.wikiProvider.getPageContents(this.pageId).then((pageContents) => {
+                        return this.wikiProvider.getPageContents(this.pageId, {cmId: this.module.id}).then((pageContents) => {
                             const promises = [];
 
                             wikiId = parseInt(pageContents.wikiid, 10);

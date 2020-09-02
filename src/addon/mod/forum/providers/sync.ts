@@ -227,7 +227,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                 let groupsPromise;
                 if (data.groupid == AddonModForumProvider.ALL_GROUPS) {
                     // Fetch all group ids.
-                    groupsPromise = this.forumProvider.getForumById(data.courseid, data.forumid, siteId).then((forum) => {
+                    groupsPromise = this.forumProvider.getForumById(data.courseid, data.forumid, {siteId}).then((forum) => {
                         return this.groupsProvider.getActivityAllowedGroups(forum.cmid).then((result) => {
                             return result.groups.map((group) => group.id);
                         });
@@ -330,7 +330,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider {
                 }
                 if (result.warnings.length) {
                     // Fetch forum to construct the warning message.
-                    promises.push(this.forumProvider.getForum(result.itemSet.courseId, result.itemSet.instanceId, siteId)
+                    promises.push(this.forumProvider.getForum(result.itemSet.courseId, result.itemSet.instanceId, {siteId})
                             .then((forum) => {
                         result.warnings.forEach((warning) => {
                             warnings.push(this.translate.instant('core.warningofflinedatadeleted', {

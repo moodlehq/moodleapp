@@ -210,11 +210,23 @@ export interface CoreRegisteredSiteSchema extends CoreSiteSchema {
     siteId?: string;
 }
 
+/**
+ * Possible reading strategies (for cache).
+ */
 export const enum CoreSitesReadingStrategy {
     OnlyCache,
     PreferCache,
+    OnlyNetwork,
     PreferNetwork,
 }
+
+/**
+ * Common options used when calling a WS through CoreSite.
+ */
+export type CoreSitesCommonWSOptions = {
+    readingStrategy?: CoreSitesReadingStrategy; // Reading strategy.
+    siteId?: string; // Site ID. If not defined, current site.
+};
 
 /*
  * Service to manage and interact with sites.
@@ -2008,6 +2020,14 @@ export class CoreSitesProvider {
                     forceOffline: true,
                 };
             case CoreSitesReadingStrategy.PreferNetwork:
+                return {
+                    getFromCache: false,
+                };
+            case CoreSitesReadingStrategy.OnlyNetwork:
+                return {
+                    getFromCache: false,
+                    emergencyCache: false,
+                };
             default:
                 return {};
         }

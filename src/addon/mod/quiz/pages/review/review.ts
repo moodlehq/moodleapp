@@ -134,7 +134,7 @@ export class AddonModQuizReviewPage implements OnInit {
             this.quiz = quizData;
             this.componentId = this.quiz.coursemodule;
 
-            return this.quizProvider.getCombinedReviewOptions(this.quizId).then((result) => {
+            return this.quizProvider.getCombinedReviewOptions(this.quizId, {cmId: this.quiz.coursemodule}).then((result) => {
                 this.options = result;
 
                 // Load the navigation data.
@@ -155,7 +155,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected loadPage(page: number): Promise<void> {
-        return this.quizProvider.getAttemptReview(this.attemptId, page).then((data) => {
+        return this.quizProvider.getAttemptReview(this.attemptId, {page, cmId: this.quiz.coursemodule}).then((data) => {
             this.attempt = data.attempt;
             this.attempt.currentpage = page;
             this.currentPage = page;
@@ -187,7 +187,7 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     protected loadNavigation(): Promise<void> {
         // Get all questions in single page to retrieve all the questions.
-        return this.quizProvider.getAttemptReview(this.attemptId, -1).then((data) => {
+        return this.quizProvider.getAttemptReview(this.attemptId, {page: -1, cmId: this.quiz.coursemodule}).then((data) => {
             const lastQuestion = data.questions[data.questions.length - 1];
 
             data.questions.forEach((question) => {

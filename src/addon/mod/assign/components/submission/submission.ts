@@ -460,7 +460,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             await Promise.all(promises);
 
             // Get submission status.
-            const response = await this.assignProvider.getSubmissionStatusWithRetry(this.assign, this.submitId, undefined, isBlind);
+            const response = await this.assignProvider.getSubmissionStatusWithRetry(this.assign, {userId: this.submitId, isBlind});
 
             promises = [];
 
@@ -996,7 +996,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 response.lastattempt.submissiongroupmemberswhoneedtosubmit.forEach((member) => {
                     if (this.blindMarking) {
                         // Users not blinded! (Moodle < 3.1.1, 3.2).
-                        promises.push(this.assignProvider.getAssignmentUserMappings(this.assign.id, member).then((blindId) => {
+                        promises.push(this.assignProvider.getAssignmentUserMappings(this.assign.id, member, {
+                            cmId: this.moduleId,
+                        }).then((blindId) => {
                             this.membersToSubmit.push(blindId);
                         }));
                     } else {

@@ -175,7 +175,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.hasOffline = hasOffline;
 
             // Get assignment submissions.
-            return this.assignProvider.getSubmissions(this.assign.id).then((data) => {
+            return this.assignProvider.getSubmissions(this.assign.id, {cmId: this.module.id}).then((data) => {
                 const time = this.timeUtils.timestamp();
 
                 this.canViewAllSubmissions = data.canviewsubmissions;
@@ -217,7 +217,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                 }
 
                 // Check if the user can view their own submission.
-                return this.assignProvider.getSubmissionStatus(this.assign.id).then(() => {
+                return this.assignProvider.getSubmissionStatus(this.assign.id, {cmId: this.module.id}).then(() => {
                     this.canViewOwnSubmission = true;
                 }).catch((error) => {
                     this.canViewOwnSubmission = false;
@@ -241,7 +241,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     setGroup(groupId: number): Promise<any> {
         this.group = groupId;
 
-        return this.assignProvider.getSubmissionStatus(this.assign.id, undefined, this.group).then((response) => {
+        return this.assignProvider.getSubmissionStatus(this.assign.id, {
+            groupId: this.group,
+            cmId: this.module.id,
+        }).then((response) => {
             this.summary = response.gradingsummary;
             if (typeof this.summary.warnofungroupedusers == 'boolean' && this.summary.warnofungroupedusers) {
                 this.summary.warnofungroupedusers = 'ungroupedusers';

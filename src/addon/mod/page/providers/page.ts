@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
@@ -43,11 +43,11 @@ export class AddonModPageProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the page is retrieved.
      */
-    getPageData(courseId: number, cmId: number, siteId?: string): Promise<AddonModPagePage> {
-        return this.getPageByKey(courseId, 'coursemodule', cmId, siteId);
+    getPageData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModPagePage> {
+        return this.getPageByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -56,18 +56,21 @@ export class AddonModPageProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the page is retrieved.
      */
-    protected getPageByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModPagePage> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getPageByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModPagePage> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: this.getPageCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getPageCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModPageProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_page_get_pages_by_courses', params, preSets)
                     .then((response: AddonModPageGetPagesByCoursesResult): any => {

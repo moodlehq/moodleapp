@@ -106,7 +106,9 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.lesson = lessonData;
 
             // Get the retakes overview for all participants.
-            return this.lessonProvider.getRetakesOverview(this.lesson.id);
+            return this.lessonProvider.getRetakesOverview(this.lesson.id, {
+                cmId: this.lesson.coursemodule,
+            });
         }).then((data) => {
             // Search the student.
             let student;
@@ -193,7 +195,10 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected setRetake(retakeNumber: number): Promise<any> {
         this.selectedRetake = retakeNumber;
 
-        return this.lessonProvider.getUserRetake(this.lessonId, retakeNumber, this.userId).then((data) => {
+        return this.lessonProvider.getUserRetake(this.lessonId, retakeNumber, {
+            cmId: this.lesson.coursemodule,
+            userId: this.userId,
+        }).then((data) => {
 
             if (data && data.completed != -1) {
                 // Completed.

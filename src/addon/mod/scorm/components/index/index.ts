@@ -146,7 +146,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
 
         // Get the SCORM instance.
-        return this.scormProvider.getScorm(this.courseId, this.module.id, this.module.url).then((scormData) => {
+        return this.scormProvider.getScorm(this.courseId, this.module.id, {moduleUrl: this.module.url}).then((scormData) => {
             this.scorm = scormData;
 
             this.dataRetrieved.emit(this.scorm);
@@ -185,12 +185,12 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                 const promises = [];
 
                 // Get access information.
-                promises.push(this.scormProvider.getAccessInformation(this.scorm.id).then((accessInfo) => {
+                promises.push(this.scormProvider.getAccessInformation(this.scorm.id, {cmId: this.module.id}).then((accessInfo) => {
                     this.accessInfo = accessInfo;
                 }));
 
                 // Get the number of attempts.
-                promises.push(this.scormProvider.getAttemptCount(this.scorm.id).then((attemptsData) => {
+                promises.push(this.scormProvider.getAttemptCount(this.scorm.id, {cmId: this.module.id}).then((attemptsData) => {
                     this.attempts = attemptsData;
                     this.hasOffline = !!this.attempts.offline.length;
 
@@ -207,7 +207,10 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                     }
 
                     // Check if the last attempt is incomplete.
-                    return this.scormProvider.isAttemptIncomplete(this.scorm.id, this.lastAttempt, this.lastIsOffline);
+                    return this.scormProvider.isAttemptIncomplete(this.scorm.id, this.lastAttempt, {
+                        offline: this.lastIsOffline,
+                        cmId: this.module.id,
+                    });
                 }).then((incomplete) => {
                     const promises = [];
 
@@ -260,7 +263,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @return Promise resolved when done.
      */
     protected fetchStructure(): Promise<any> {
-        return this.scormProvider.getOrganizations(this.scorm.id).then((organizations) => {
+        return this.scormProvider.getOrganizations(this.scorm.id, {cmId: this.module.id}).then((organizations) => {
             this.organizations = organizations;
 
             if (!this.currentOrganization.identifier) {
@@ -460,8 +463,11 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         this.loadingToc = true;
 
-        return this.scormProvider.getOrganizationToc(this.scorm.id, this.lastAttempt, organizationId, this.lastIsOffline)
-                .then((toc) => {
+        return this.scormProvider.getOrganizationToc(this.scorm.id, this.lastAttempt, {
+            organization: organizationId,
+            offline: this.lastIsOffline,
+            cmId: this.module.id,
+        }).then((toc) => {
 
             this.toc = this.scormProvider.formatTocToArray(toc);
 

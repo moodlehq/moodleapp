@@ -174,7 +174,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     protected fetchOptions(hasOffline: boolean): Promise<any> {
-        return this.choiceProvider.getOptions(this.choice.id).then((options) => {
+        return this.choiceProvider.getOptions(this.choice.id, {cmId: this.module.id}).then((options) => {
             let promise;
 
             // Check if the user has answered (synced) to allow show results.
@@ -294,7 +294,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return Promise.resolve();
         }
 
-        return this.choiceProvider.getResults(this.choice.id).then((results) => {
+        return this.choiceProvider.getResults(this.choice.id, {cmId: this.module.id}).then((results) => {
             let hasVotes = false;
             this.data = [];
             this.labels = [];

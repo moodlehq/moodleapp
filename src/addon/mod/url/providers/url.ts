@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -107,18 +107,22 @@ export class AddonModUrlProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the url is retrieved.
      */
-    protected getUrlDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModUrlUrl> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getUrlDataByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModUrlUrl> {
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: this.getUrlCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getUrlCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModUrlProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_url_get_urls_by_courses', params, preSets)
                     .then((response: AddonModUrlGetUrlsByCoursesResult): any => {
@@ -142,11 +146,11 @@ export class AddonModUrlProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the url is retrieved.
      */
-    getUrl(courseId: number, cmId: number, siteId?: string): Promise<AddonModUrlUrl> {
-        return this.getUrlDataByKey(courseId, 'coursemodule', cmId, siteId);
+    getUrl(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModUrlUrl> {
+        return this.getUrlDataByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**

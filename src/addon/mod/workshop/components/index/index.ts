@@ -198,7 +198,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             }
         }).then(() => {
             // Check if there are answers stored in offline.
-            return this.workshopProvider.getWorkshopAccessInformation(this.workshop.id);
+            return this.workshopProvider.getWorkshopAccessInformation(this.workshop.id, {cmId: this.module.id});
         }).then((accessData) => {
             this.access = accessData;
 
@@ -209,7 +209,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                 });
             }
         }).then(() => {
-            return this.workshopProvider.getUserPlanPhases(this.workshop.id);
+            return this.workshopProvider.getUserPlanPhases(this.workshop.id, {cmId: this.module.id});
         }).then((phases) => {
             this.phases = phases;
 
@@ -245,7 +245,11 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * @return Resolved when done.
      */
     gotoSubmissionsPage(page: number): Promise<any> {
-        return this.workshopProvider.getGradesReport(this.workshop.id, this.group, page).then((report) => {
+        return this.workshopProvider.getGradesReport(this.workshop.id, {
+            groupId: this.group,
+            page,
+            cmId: this.module.id,
+        }).then((report) => {
             const numEntries = (report && report.grades && report.grades.length) || 0;
 
             this.page = page;
@@ -348,7 +352,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         const promises = [];
 
         if (this.canSubmit) {
-            promises.push(this.workshopHelper.getUserSubmission(this.workshop.id).then((submission) => {
+            promises.push(this.workshopHelper.getUserSubmission(this.workshop.id, {cmId: this.module.id}).then((submission) => {
                 const actions = this.workshopHelper.filterSubmissionActions(this.offlineSubmissions, submission.id || false);
 
                 return this.workshopHelper.applyOfflineData(submission, actions).then((submission) => {
@@ -366,7 +370,9 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         if (this.workshop.phase >= AddonModWorkshopProvider.PHASE_ASSESSMENT) {
             this.canAssess = this.workshopHelper.canAssess(this.workshop, this.access);
             if (this.canAssess) {
-                assessPromise = this.workshopHelper.getReviewerAssessments(this.workshop.id).then((assessments) => {
+                assessPromise = this.workshopHelper.getReviewerAssessments(this.workshop.id, {
+                    cmId: this.module.id,
+                }).then((assessments) => {
                     const p2 = [];
 
                     assessments.forEach((assessment) => {
@@ -391,13 +397,13 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         }
 
         if (this.workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED) {
-            promises.push(this.workshopProvider.getGrades(this.workshop.id).then((grades) => {
+            promises.push(this.workshopProvider.getGrades(this.workshop.id, {cmId: this.module.id}).then((grades) => {
                 this.userGrades = grades.submissionlongstrgrade || grades.assessmentlongstrgrade ? grades : false;
             }));
 
             if (this.access.canviewpublishedsubmissions) {
                 promises.push(assessPromise.then(() => {
-                    return this.workshopProvider.getSubmissions(this.workshop.id).then((submissions) => {
+                    return this.workshopProvider.getSubmissions(this.workshop.id, {cmId: this.module.id}).then((submissions) => {
                         this.publishedSubmissions = submissions.filter((submission) => {
                             if (submission.published) {
                                 this.assessments.forEach((assessment) => {

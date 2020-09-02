@@ -92,7 +92,7 @@ export class AddonModQuizAttemptPage implements OnInit {
             accessInfo;
 
         // Get all the attempts and search the one we want.
-        promises.push(this.quizProvider.getUserAttempts(this.quizId).then((attempts) => {
+        promises.push(this.quizProvider.getUserAttempts(this.quizId, {cmId: this.quiz.coursemodule}).then((attempts) => {
             for (let i = 0; i < attempts.length; i++) {
                 const attempt = attempts[i];
                 if (attempt.id == this.attemptId) {
@@ -110,12 +110,13 @@ export class AddonModQuizAttemptPage implements OnInit {
             return this.quizProvider.loadFinishedOfflineData([this.attempt]);
         }));
 
-        promises.push(this.quizProvider.getCombinedReviewOptions(this.quiz.id).then((opts) => {
+        promises.push(this.quizProvider.getCombinedReviewOptions(this.quiz.id, {cmId: this.quiz.coursemodule}).then((opts) => {
             options = opts;
         }));
 
         // Check if the user can review the attempt.
-        promises.push(this.quizProvider.getQuizAccessInformation(this.quiz.id).then((quizAccessInfo) => {
+        promises.push(this.quizProvider.getQuizAccessInformation(this.quiz.id, {cmId: this.quiz.coursemodule})
+                .then((quizAccessInfo) => {
             accessInfo = quizAccessInfo;
 
             if (accessInfo.canreviewmyattempts) {
@@ -123,7 +124,7 @@ export class AddonModQuizAttemptPage implements OnInit {
                 return this.quizProvider.invalidateAttemptReviewForPage(this.attemptId, -1).catch(() => {
                     // Ignore errors.
                 }).then(() => {
-                    return this.quizProvider.getAttemptReview(this.attemptId, -1);
+                    return this.quizProvider.getAttemptReview(this.attemptId, {page: -1, cmId: this.quiz.coursemodule});
                 }).catch(() => {
                     // Error getting the review, assume the user cannot review the attempt.
                     accessInfo.canreviewmyattempts = false;
@@ -146,7 +147,9 @@ export class AddonModQuizAttemptPage implements OnInit {
                         options.someoptions.overallfeedback && !isNaN(grade)) {
 
                 // Feedback should be displayed, get the feedback for the grade.
-                return this.quizProvider.getFeedbackForGrade(this.quiz.id, grade).then((response) => {
+                return this.quizProvider.getFeedbackForGrade(this.quiz.id, grade, {
+                    cmId: this.quiz.coursemodule,
+                }).then((response) => {
                     this.attempt.feedback = response.feedbacktext;
                 });
             } else {

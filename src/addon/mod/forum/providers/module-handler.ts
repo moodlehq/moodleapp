@@ -143,7 +143,7 @@ export class AddonModForumModuleHandler implements CoreCourseModuleHandler {
 
         this.forumProvider.invalidateForumData(courseId).finally(() => {
             // Handle unread posts.
-            this.forumProvider.getForum(courseId, moduleId, siteId).then((forumData) => {
+            this.forumProvider.getForum(courseId, moduleId, {siteId}).then((forumData) => {
                 data.extraBadgeColor = '';
                 data.extraBadge = forumData.unreadpostscount ? this.translate.instant('addon.mod_forum.unreadpostsnumber',
                     {$a : forumData.unreadpostscount }) : '';

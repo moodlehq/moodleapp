@@ -14,11 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { NavController, ViewController } from 'ionic-angular';
-import { AddonModFeedbackProvider } from './feedback';
+import { AddonModFeedbackProvider, AddonModFeedbackGroupPaginatedOptions } from './feedback';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -86,12 +86,11 @@ export class AddonModFeedbackHelperProvider {
      * Retrieves a list of students who didn't submit the feedback with extra info.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param page The page of records to return.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getNonRespondents(feedbackId: number, groupId: number, page: number): Promise<any> {
-        return this.feedbackProvider.getNonRespondents(feedbackId, groupId, page).then((responses) => {
+    getNonRespondents(feedbackId: number, options: AddonModFeedbackGroupPaginatedOptions = {}): Promise<any> {
+        return this.feedbackProvider.getNonRespondents(feedbackId, options).then((responses) => {
             return this.addImageProfileToAttempts(responses.users).then((users) => {
                 responses.users = users;
 
@@ -186,12 +185,11 @@ export class AddonModFeedbackHelperProvider {
      * Returns the feedback user responses with extra info.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param page The page of records to return.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getResponsesAnalysis(feedbackId: number, groupId: number, page: number): Promise<any> {
-        return this.feedbackProvider.getResponsesAnalysis(feedbackId, groupId, page).then((responses) => {
+    getResponsesAnalysis(feedbackId: number, options: AddonModFeedbackGroupPaginatedOptions = {}): Promise<any> {
+        return this.feedbackProvider.getResponsesAnalysis(feedbackId, options).then((responses) => {
             return this.addImageProfileToAttempts(responses.attempts).then((attempts) => {
                 responses.attempts = attempts;
 
@@ -227,7 +225,11 @@ export class AddonModFeedbackHelperProvider {
                 return this.linkHelper.goInSite(navCtrl, 'AddonModFeedbackRespondentsPage', stateParams, siteId);
             }
 
-            return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, true, siteId).then((attempt) => {
+            return this.feedbackProvider.getAttempt(module.instance, params.showcompleted, {
+                cmId: moduleId,
+                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                siteId,
+            }).then((attempt) => {
                 stateParams = {
                     moduleId: module.id,
                     attempt: attempt,

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -66,8 +66,9 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
         return this.glossaryProvider.getGlossary(courseId, module.id).then((glossary) => {
-            return this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter, [glossary.id, 'ALL'])
-                .then((entries) => {
+            return this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter, [glossary.id, 'ALL'], {
+                cmId: module.id,
+            }).then((entries) => {
                     return this.getFilesFromGlossaryAndEntries(module, glossary, entries);
                 });
         }).catch(() => {
@@ -139,8 +140,14 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
     protected prefetchGlossary(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
+        const options = {
+            cmId: module.id,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+
         // Prefetch the glossary data.
-        return this.glossaryProvider.getGlossary(courseId, module.id, siteId).then((glossary) => {
+        return this.glossaryProvider.getGlossary(courseId, module.id, {siteId}).then((glossary) => {
             const promises = [];
 
             glossary.browsemodes.forEach((mode) => {
@@ -149,25 +156,25 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
                         break;
                     case 'cat': // Not implemented.
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByCategory,
-                            [glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATEGORIES], false, false, siteId));
+                            [glossary.id, AddonModGlossaryProvider.SHOW_ALL_CATEGORIES], options));
                         break;
                     case 'date':
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByDate,
-                            [glossary.id, 'CREATION', 'DESC'], false, false, siteId));
+                            [glossary.id, 'CREATION', 'DESC'], options));
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByDate,
-                            [glossary.id, 'UPDATE', 'DESC'], false, false, siteId));
+                            [glossary.id, 'UPDATE', 'DESC'], options));
                         break;
                     case 'author':
                         promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByAuthor,
-                            [glossary.id, 'ALL', 'LASTNAME', 'ASC'], false, false, siteId));
+                            [glossary.id, 'ALL', 'LASTNAME', 'ASC'], options));
                         break;
                     default:
                 }
             });
 
             // Fetch all entries to get information from.
-            promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter,
-                    [glossary.id, 'ALL'], false, false, siteId).then((entries) => {
+            promises.push(this.glossaryProvider.fetchAllEntries(this.glossaryProvider.getEntriesByLetter, [glossary.id, 'ALL'],
+                    options).then((entries) => {
                 const promises = [];
                 const commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite();
 
@@ -190,7 +197,7 @@ export class AddonModGlossaryPrefetchHandler extends CoreCourseActivityPrefetchH
             }));
 
             // Get all categories.
-            promises.push(this.glossaryProvider.getAllCategories(glossary.id, siteId));
+            promises.push(this.glossaryProvider.getAllCategories(glossary.id, options));
 
             // Prefetch data for link handlers.
             promises.push(this.courseProvider.getModuleBasicInfo(module.id, siteId));

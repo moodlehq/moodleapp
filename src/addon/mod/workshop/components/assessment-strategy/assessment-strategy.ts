@@ -147,8 +147,10 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit {
      * @return Promised resvoled when data is loaded.
      */
     protected load(): Promise<any> {
-        return this.workshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, this.userId)
-                .then((assessmentData) => {
+        return this.workshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, {
+            userId: this.userId,
+            cmId: this.workshop.coursemodule,
+        }).then((assessmentData) => {
             this.data.assessment = assessmentData;
 
             let promise;

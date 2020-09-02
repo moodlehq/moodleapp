@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/helper';
@@ -125,11 +125,20 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         }).then(() => {
 
             // Get submission status. Ignore cache to get the latest data.
-            return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, undefined, this.isBlind, false, true)
-                    .catch((err) => {
+            const options = {
+                userId: this.userId,
+                isBlind: this.isBlind,
+                cmId: this.assign.cmid,
+                filter: false,
+                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            };
+
+            return this.assignProvider.getSubmissionStatus(this.assign.id, options).catch((err) => {
                 // Cannot connect. Get cached data.
-                return this.assignProvider.getSubmissionStatus(this.assign.id, this.userId, undefined, this.isBlind)
-                        .then((response) => {
+                options.filter = true;
+                options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
+
+                return this.assignProvider.getSubmissionStatus(this.assign.id, options).then((response) => {
                     const userSubmission = this.assignProvider.getSubmissionObjectFromAttempt(this.assign, response.lastattempt);
 
                     // Check if the user can edit it in offline.

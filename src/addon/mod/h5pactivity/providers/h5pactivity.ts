@@ -14,14 +14,15 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreSites } from '@providers/sites';
+import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 import { CoreTimeUtils } from '@providers/utils/time';
 import { CoreUtils } from '@providers/utils/utils';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { CoreCourseLogHelper } from '@core/course/providers/log-helper';
 import { CoreH5P } from '@core/h5p/providers/h5p';
 import { CoreH5PDisplayOptions } from '@core/h5p/classes/core';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 
@@ -121,20 +122,22 @@ export class AddonModH5PActivityProvider {
      * Get access information for a given H5P activity.
      *
      * @param id H5P activity ID.
-     * @param forceCache True to always get the value from cache. false otherwise.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the data.
      */
-    async getAccessInformation(id: number, forceCache?: boolean, siteId?: string): Promise<AddonModH5PActivityAccessInfo> {
+    async getAccessInformation(id: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModH5PActivityAccessInfo> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.instance.getSite(options.siteId);
 
         const params = {
             h5pactivityid: id,
         };
         const preSets = {
             cacheKey: this.getAccessInformationCacheKey(id),
-            omitExpires: forceCache,
+            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            component: AddonModH5PActivityProvider.COMPONENT,
+            componentId: options.cmId,
+            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         return site.read('mod_h5pactivity_get_h5pactivity_access_information', params, preSets);
@@ -209,17 +212,13 @@ export class AddonModH5PActivityProvider {
             h5pactivityid: id,
             attemptids: [attemptId],
         };
-        const preSets: CoreSiteWSPreSets = {
+        const preSets = {
             cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            component: AddonModH5PActivityProvider.COMPONENT,
+            componentId: options.cmId,
+            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
-
-        if (options.forceCache) {
-            preSets.omitExpires = true;
-        } else if (options.ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
 
         try {
             const response: AddonModH5PActivityGetResultsResult = await site.read('mod_h5pactivity_get_results', params, preSets);
@@ -235,9 +234,12 @@ export class AddonModH5PActivityProvider {
             }
 
             // Check if the full list of results is cached. If so, get the results from there.
-            options.forceCache = true;
+            const cacheOptions = {
+                ...options, // Include all the original options.
+                readingStrategy: CoreSitesReadingStrategy.OnlyCache,
+            };
 
-            const attemptsResults = await AddonModH5PActivity.instance.getAllAttemptsResults(id, options);
+            const attemptsResults = await AddonModH5PActivity.instance.getAllAttemptsResults(id, cacheOptions);
 
             const attempt = attemptsResults.attempts.find((attempt) => {
                 return attempt.id == attemptId;
@@ -270,17 +272,13 @@ export class AddonModH5PActivityProvider {
             h5pactivityid: id,
             attemptids: attemptsIds,
         };
-        const preSets: CoreSiteWSPreSets = {
+        const preSets = {
             cacheKey: this.getAttemptResultsCommonCacheKey(id),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            component: AddonModH5PActivityProvider.COMPONENT,
+            componentId: options.cmId,
+            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
-
-        if (options.forceCache) {
-            preSets.omitExpires = true;
-        } else if (options.ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
 
         const response: AddonModH5PActivityGetResultsResult = await site.read('mod_h5pactivity_get_results', params, preSets);
 
@@ -334,27 +332,23 @@ export class AddonModH5PActivityProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param moduleUrl Module URL.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the activity data.
      */
-    protected async getH5PActivityByField(courseId: number, key: string, value: any, forceCache?: boolean, siteId?: string)
+    protected async getH5PActivityByField(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
             : Promise<AddonModH5PActivityData> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.instance.getSite(options.siteId);
 
         const params = {
             courseids: [courseId],
         };
-        const preSets: CoreSiteWSPreSets = {
+        const preSets = {
             cacheKey: this.getH5PActivityDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
+            component: AddonModH5PActivityProvider.COMPONENT,
+            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
-
-        if (forceCache) {
-            preSets.omitExpires = true;
-        }
 
         const response: AddonModH5PActivityGetByCoursesResult =
                 await site.read('mod_h5pactivity_get_h5pactivities_by_courses', params, preSets);
@@ -377,12 +371,11 @@ export class AddonModH5PActivityProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the activity data.
      */
-    getH5PActivity(courseId: number, cmId: number, forceCache?: boolean, siteId?: string): Promise<AddonModH5PActivityData> {
-        return this.getH5PActivityByField(courseId, 'coursemodule', cmId, forceCache, siteId);
+    getH5PActivity(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModH5PActivityData> {
+        return this.getH5PActivityByField(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -390,13 +383,12 @@ export class AddonModH5PActivityProvider {
      *
      * @param courseId Course ID.
      * @param contextId Context ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the activity data.
      */
-    getH5PActivityByContextId(courseId: number, contextId: number, forceCache?: boolean, siteId?: string)
+    getH5PActivityByContextId(courseId: number, contextId: number, options: CoreSitesCommonWSOptions = {})
             : Promise<AddonModH5PActivityData> {
-        return this.getH5PActivityByField(courseId, 'context', contextId, forceCache, siteId);
+        return this.getH5PActivityByField(courseId, 'context', contextId, options);
     }
 
     /**
@@ -404,12 +396,11 @@ export class AddonModH5PActivityProvider {
      *
      * @param courseId Course ID.
      * @param id Instance ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the activity data.
      */
-    getH5PActivityById(courseId: number, id: number, forceCache?: boolean, siteId?: string): Promise<AddonModH5PActivityData> {
-        return this.getH5PActivityByField(courseId, 'id', id, forceCache, siteId);
+    getH5PActivityById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModH5PActivityData> {
+        return this.getH5PActivityByField(courseId, 'id', id, options);
     }
 
     /**
@@ -440,9 +431,8 @@ export class AddonModH5PActivityProvider {
      * @param options Other options.
      * @return Promise resolved with the attempts of the user.
      */
-    async getUserAttempts(id: number, options?: AddonModH5PActivityGetAttemptsOptions): Promise<AddonModH5PActivityUserAttempts> {
-
-        options = options || {};
+    async getUserAttempts(id: number, options: AddonModH5PActivityGetAttemptsOptions = {})
+            : Promise<AddonModH5PActivityUserAttempts> {
 
         const site = await CoreSites.instance.getSite(options.siteId);
 
@@ -450,17 +440,13 @@ export class AddonModH5PActivityProvider {
             h5pactivityid: id,
             userids: [options.userId || site.getUserId()],
         };
-        const preSets: CoreSiteWSPreSets = {
+        const preSets = {
             cacheKey: this.getUserAttemptsCacheKey(id, params.userids),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            component: AddonModH5PActivityProvider.COMPONENT,
+            componentId: options.cmId,
+            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
-
-        if (options.forceCache) {
-            preSets.omitExpires = true;
-        } else if (options.ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
 
         const response: AddonModH5PActivityGetAttemptsResult = await site.read('mod_h5pactivity_get_attempts', params, preSets);
 
@@ -789,10 +775,7 @@ export type AddonModH5PActivityGetDeployedFileOptions = {
 /**
  * Options to pass to getAttemptResults function.
  */
-export type AddonModH5PActivityGetAttemptResultsOptions = {
-    forceCache?: boolean; // Whether to force cache. If not cached, it will call the WS.
-    ignoreCache?: boolean; // Whether to ignore cache. Will fail if offline or server down.
-    siteId?: string; // Site ID. If not defined, current site.
+export type AddonModH5PActivityGetAttemptResultsOptions = CoreCourseCommonModWSOptions & {
     userId?: number; // User ID. If not defined, user of the site.
 };
 

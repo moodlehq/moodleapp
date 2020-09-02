@@ -198,7 +198,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 });
             }
         }).then(() => {
-            return this.dataProvider.getDatabaseAccessInformation(this.data.id);
+            return this.dataProvider.getDatabaseAccessInformation(this.data.id, {cmId: this.module.id});
         }).then((accessData) => {
             this.access = accessData;
 
@@ -226,7 +226,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
             });
         }).then(() => {
-            return this.dataProvider.getFields(this.data.id).then((fields) => {
+            return this.dataProvider.getFields(this.data.id, {cmId: this.module.id}).then((fields) => {
                 if (fields.length == 0) {
                     canSearch = false;
                     canAdd = false;
@@ -252,15 +252,24 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected fetchEntriesData(): Promise<any> {
 
-        return this.dataProvider.getDatabaseAccessInformation(this.data.id, this.selectedGroup).then((accessData) => {
+        return this.dataProvider.getDatabaseAccessInformation(this.data.id, {
+            groupId: this.selectedGroup,
+            cmId: this.module.id,
+        }).then((accessData) => {
             // Update values for current group.
             this.access.canaddentry = accessData.canaddentry;
 
             const search = this.search.searching && !this.search.searchingAdvanced ? this.search.text : undefined;
             const advSearch = this.search.searching && this.search.searchingAdvanced ? this.search.advanced : undefined;
 
-            return this.dataHelper.fetchEntries(this.data, this.fieldsArray, this.selectedGroup, search, advSearch,
-                    this.search.sortBy, this.search.sortDirection, this.search.page);
+            return this.dataHelper.fetchEntries(this.data, this.fieldsArray, {
+                groupId: this.selectedGroup,
+                search,
+                advSearch,
+                sort: Number(this.search.sortBy),
+                order: this.search.sortDirection,
+                page: this.search.page,
+            });
         }).then((entries) => {
             const numEntries = entries.entries.length;
             const numOfflineEntries = entries.offlineEntries.length;

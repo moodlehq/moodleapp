@@ -63,7 +63,7 @@ export class AddonModGlossaryEntryLinkHandler extends CoreContentLinksHandlerBas
                 if (courseId) {
                     promise = Promise.resolve(courseId);
                 } else {
-                    promise = this.glossaryProvider.getEntry(entryId, siteId).catch((error) => {
+                    promise = this.glossaryProvider.getEntry(entryId, {siteId}).catch((error) => {
                         this.domUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
 
                         return Promise.reject(null);

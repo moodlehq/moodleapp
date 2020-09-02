@@ -204,7 +204,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
                 return Promise.reject(null);
             }
 
-            return this.workshopProvider.getWorkshopById(courseId, workshopId, siteId).then((workshop) => {
+            return this.workshopProvider.getWorkshopById(courseId, workshopId, {siteId}).then((workshop) => {
                 const submissionsActions = syncs[0],
                     assessments = syncs[1],
                     submissionEvaluations = syncs[2],
@@ -289,7 +289,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
 
         if (submissionId > 0) {
             editing = true;
-            timePromise = this.workshopProvider.getSubmission(workshop.id, submissionId, siteId).then((submission) => {
+            timePromise = this.workshopProvider.getSubmission(workshop.id, submissionId, {
+                cmId: workshop.coursemodule,
+                siteId,
+            }).then((submission) => {
                 return submission.timemodified;
             }).catch(() => {
                 return -1;
@@ -403,7 +406,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
         let discardError;
         const assessmentId = assessmentData.assessmentid;
 
-        const timePromise = this.workshopProvider.getAssessment(workshop.id, assessmentId, siteId).then((assessment) => {
+        const timePromise = this.workshopProvider.getAssessment(workshop.id, assessmentId, {
+            cmId: workshop.coursemodule,
+            siteId,
+        }).then((assessment) => {
             return assessment.timemodified;
         }).catch(() => {
             return -1;
@@ -481,7 +487,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
         let discardError;
         const submissionId = evaluate.submissionid;
 
-        const timePromise = this.workshopProvider.getSubmission(workshop.id, submissionId, siteId).then((submission) => {
+        const timePromise = this.workshopProvider.getSubmission(workshop.id, submissionId, {
+            cmId: workshop.coursemodule,
+            siteId,
+        }).then((submission) => {
             return submission.timemodified;
         }).catch(() => {
             return -1;
@@ -540,7 +549,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider {
         let discardError;
         const assessmentId = evaluate.assessmentid;
 
-        const timePromise = this.workshopProvider.getAssessment(workshop.id, assessmentId, siteId).then((assessment) => {
+        const timePromise = this.workshopProvider.getAssessment(workshop.id, assessmentId, {
+            cmId: workshop.coursemodule,
+            siteId,
+        }).then((assessment) => {
             return assessment.timemodified;
         }).catch(() => {
             return -1;

@@ -202,7 +202,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             // Get quiz access info.
-            return this.quizProvider.getQuizAccessInformation(this.quizData.id).then((info) => {
+            return this.quizProvider.getQuizAccessInformation(this.quizData.id, {cmId: this.module.id}).then((info) => {
                 this.quizAccessInfo = info;
                 this.quizData.showReviewColumn = info.canreviewmyattempts;
                 this.accessRules = info.accessrules;
@@ -213,7 +213,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 }
 
                 // Get question types in the quiz.
-                return this.quizProvider.getQuizRequiredQtypes(this.quizData.id).then((types) => {
+                return this.quizProvider.getQuizRequiredQtypes(this.quizData.id, {cmId: this.module.id}).then((types) => {
                     this.unsupportedQuestions = this.quizProvider.getUnsupportedQuestions(types);
                     this.hasSupportedQuestions = !!types.find((type) => {
                         return type != 'random' && this.unsupportedQuestions.indexOf(type) == -1;
@@ -239,11 +239,11 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected getAttempts(): Promise<void> {
 
         // Get access information of last attempt (it also works if no attempts made).
-        return this.quizProvider.getAttemptAccessInformation(this.quizData.id, 0).then((info) => {
+        return this.quizProvider.getAttemptAccessInformation(this.quizData.id, 0, {cmId: this.module.id}).then((info) => {
             this.attemptAccessInfo = info;
 
             // Get attempts.
-            return this.quizProvider.getUserAttempts(this.quizData.id).then((atts) => {
+            return this.quizProvider.getUserAttempts(this.quizData.id, {cmId: this.module.id}).then((atts) => {
 
                 return this.treatAttempts(atts).then((atts) => {
                     this.attempts = atts;
@@ -355,7 +355,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (this.quizData.showFeedbackColumn) {
                 // Get the quiz overall feedback.
-                return this.quizProvider.getFeedbackForGrade(this.quizData.id, this.gradebookData.grade).then((response) => {
+                return this.quizProvider.getFeedbackForGrade(this.quizData.id, this.gradebookData.grade, {
+                    cmId: this.module.id,
+                }).then((response) => {
                     this.overallFeedback = response.feedbacktext;
                 });
             }
@@ -379,7 +381,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         const attemptId = this.autoReview.attemptId;
 
         if (this.quizAccessInfo.canreviewmyattempts) {
-            return this.quizProvider.getAttemptReview(attemptId, -1).then(() => {
+            return this.quizProvider.getAttemptReview(attemptId, {page: -1, cmId: this.module.id}).then(() => {
                 this.navCtrl.push('AddonModQuizReviewPage', {courseId: this.courseId, quizId: this.quizData.id, attemptId});
             }).catch(() => {
                 // Ignore errors.
@@ -559,12 +561,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         promises.push(this.quizProvider.loadFinishedOfflineData(attempts));
 
         // Get combined review options.
-        promises.push(this.quizProvider.getCombinedReviewOptions(this.quizData.id).then((result) => {
+        promises.push(this.quizProvider.getCombinedReviewOptions(this.quizData.id, {cmId: this.module.id}).then((result) => {
             this.options = result;
         }));
 
         // Get best grade.
-        promises.push(this.quizProvider.getUserBestGrade(this.quizData.id).then((best) => {
+        promises.push(this.quizProvider.getUserBestGrade(this.quizData.id, {cmId: this.module.id}).then((best) => {
             this.bestGrade = best;
 
             // Get gradebook grade.

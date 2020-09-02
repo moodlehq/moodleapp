@@ -329,7 +329,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         let ratingInfo;
 
         return syncPromise.then(() => {
-            return this.forumProvider.getDiscussionPosts(this.discussionId, this.cmId).then((response) => {
+            return this.forumProvider.getDiscussionPosts(this.discussionId, {cmId: this.cmId}).then((response) => {
                 onlinePosts = response.posts;
                 ratingInfo = response.ratinginfo;
                 this.courseId = response.courseid || this.courseId;
@@ -403,7 +403,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 const promises = [];
 
-                promises.push(this.forumProvider.getAccessInformation(this.forumId).then((accessInfo) => {
+                promises.push(this.forumProvider.getAccessInformation(this.forumId, {cmId: this.cmId}).then((accessInfo) => {
                     this.accessInfo = accessInfo;
 
                     // Disallow replying if cut-off date is reached and the user has not the capability to override it.
@@ -448,7 +448,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         }).then(() => {
             if (this.forumProvider.isSetPinStateAvailableForSite()) {
                 // Use the canAddDiscussion WS to check if the user can pin discussions.
-                return this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+                return this.forumProvider.canAddDiscussionToAll(this.forumId, {cmId: this.cmId}).then((response) => {
                     this.canPin = !!response.canpindiscussions;
                 }).catch(() => {
                     this.canPin = false;

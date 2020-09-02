@@ -49,7 +49,7 @@ export class AddonForumDiscussionOptionsMenuComponent implements OnInit {
     ngOnInit(): void {
         if (this.forumProvider.isSetPinStateAvailableForSite()) {
             // Use the canAddDiscussion WS to check if the user can pin discussions.
-            this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+            this.forumProvider.canAddDiscussionToAll(this.forumId, {cmId: this.cmId}).then((response) => {
                 this.canPin = !!response.canpindiscussions;
             }).catch(() => {
                 this.canPin = false;

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -155,17 +155,21 @@ export class AddonModImscpProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the imscp is retrieved.
      */
-    protected getImscpByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModImscpImscp> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getImscpByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModImscpImscp> {
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                courseids: [courseId]
+                courseids: [courseId],
             };
             const preSets = {
                 cacheKey: this.getImscpDataCacheKey(courseId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModImscpProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
             return site.read('mod_imscp_get_imscps_by_courses', params, preSets)
@@ -188,11 +192,11 @@ export class AddonModImscpProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the imscp is retrieved.
      */
-    getImscp(courseId: number, cmId: number, siteId?: string): Promise<AddonModImscpImscp> {
-        return this.getImscpByKey(courseId, 'coursemodule', cmId, siteId);
+    getImscp(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModImscpImscp> {
+        return this.getImscpByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**

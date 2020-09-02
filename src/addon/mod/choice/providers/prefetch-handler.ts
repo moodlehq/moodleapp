@@ -16,7 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -79,12 +79,21 @@ export class AddonModChoicePrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return Promise resolved when done.
      */
     protected prefetchChoice(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        return this.choiceProvider.getChoice(courseId, module.id, siteId, false, true).then((choice) => {
+        const commonOptions = {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+        const modOptions = {
+            cmId: module.id,
+            ...commonOptions, // Include all common options.
+        };
+
+        return this.choiceProvider.getChoice(courseId, module.id, commonOptions).then((choice) => {
             const promises = [];
 
             // Get the options and results.
-            promises.push(this.choiceProvider.getOptions(choice.id, true, siteId));
-            promises.push(this.choiceProvider.getResults(choice.id, true, siteId).then((options) => {
+            promises.push(this.choiceProvider.getOptions(choice.id, modOptions));
+            promises.push(this.choiceProvider.getResults(choice.id, modOptions).then((options) => {
                 // If we can see the users that answered, prefetch their profile and avatar.
                 const subPromises = [];
                 options.forEach((option) => {

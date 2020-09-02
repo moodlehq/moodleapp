@@ -111,7 +111,11 @@ export class AddonModFeedbackNonRespondentsPage {
             this.feedbackLoaded = false;
         }
 
-        return this.feedbackHelper.getNonRespondents(this.feedbackId, this.selectedGroup, this.page).then((response) => {
+        return this.feedbackHelper.getNonRespondents(this.feedbackId, {
+            groupId: this.selectedGroup,
+            page: this.page,
+            cmId: this.moduleId,
+        }).then((response) => {
             this.total = response.total;
 
             if (this.users.length < response.total) {

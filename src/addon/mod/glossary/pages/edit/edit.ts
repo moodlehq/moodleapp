@@ -125,7 +125,9 @@ export class AddonModGlossaryEditPage implements OnInit {
         this.definitionControl.setValue(this.entry.definition);
 
         Promise.resolve(promise).then(() => {
-            this.glossaryProvider.getAllCategories(this.glossary.id).then((categories) => {
+            this.glossaryProvider.getAllCategories(this.glossary.id, {
+                cmId: this.module.id,
+            }).then((categories) => {
                 this.categories = categories;
             }).finally(() => {
                 this.loaded = true;
@@ -215,8 +217,10 @@ export class AddonModGlossaryEditPage implements OnInit {
                 let promise;
                 if (this.entry && !this.glossary.allowduplicatedentries) {
                     // Check if the entry is duplicated in online or offline mode.
-                    promise = this.glossaryProvider.isConceptUsed(this.glossary.id, this.entry.concept, this.entry.timecreated)
-                        .then((used) => {
+                    promise = this.glossaryProvider.isConceptUsed(this.glossary.id, this.entry.concept, {
+                        timeCreated: this.entry.timecreated,
+                        cmId: this.module.id,
+                    }).then((used) => {
                             if (used) {
                                 // There's a entry with same name, reject with error message.
                                 return Promise.reject(this.translate.instant('addon.mod_glossary.errconceptalreadyexists'));
@@ -237,7 +241,12 @@ export class AddonModGlossaryEditPage implements OnInit {
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
                 return this.glossaryProvider.addEntry(this.glossary.id, this.entry.concept, definition, this.courseId, options,
-                    attach, timecreated, undefined, this.entry, !this.attachments.length, !this.glossary.allowduplicatedentries);
+                    attach, {
+                        timeCreated: timecreated,
+                        discardEntry: this.entry,
+                        allowOffline: !this.attachments.length,
+                        checkDuplicates: !this.glossary.allowduplicatedentries,
+                    });
             }
         }).then((entryId) => {
              // Delete the local files from the tmp folder.

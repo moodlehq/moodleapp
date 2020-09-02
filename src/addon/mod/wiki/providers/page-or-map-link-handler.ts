@@ -55,7 +55,7 @@ export class AddonModWikiPageOrMapLinkHandler extends CoreContentLinksHandlerBas
                     action = url.indexOf('mod/wiki/map.php') != -1 ? 'map' : 'page';
 
                 // Get the page data to obtain wikiId, subwikiId, etc.
-                this.wikiProvider.getPageContents(pageId, false, false, siteId).then((page) => {
+                this.wikiProvider.getPageContents(pageId, {siteId}).then((page) => {
                     let promise;
                     if (courseId) {
                         promise = Promise.resolve(courseId);

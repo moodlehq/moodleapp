@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -68,7 +68,7 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
      * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
-        return this.getWorkshopInfoHelper(module, courseId, true).then((info) => {
+        return this.getWorkshopInfoHelper(module, courseId, {omitFail: true}).then((info) => {
             return info.files;
         });
     }
@@ -78,31 +78,32 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
      *
      * @param module Module to get the files.
      * @param courseId Course ID the module belongs to.
-     * @param omitFail True to always return even if fails. Default false.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the info fetched.
      */
-    protected getWorkshopInfoHelper(module: any, courseId: number, omitFail: boolean = false, forceCache: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        let workshop,
-            groups = [],
-            files = [],
-            access;
+    protected getWorkshopInfoHelper(module: any, courseId: number, options: AddonModWorkshopGetInfoOptions = {}): Promise<any> {
+        let workshop;
+        let groups = [];
+        let files = [];
+        let access;
+        const modOptions = {
+            cmId: module.id,
+            ...options, // Include all options.
+        };
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const userId = site.getUserId();
 
-            return this.workshopProvider.getWorkshop(courseId, module.id, siteId, forceCache).then((data) => {
+            return this.workshopProvider.getWorkshop(courseId, module.id, options).then((data) => {
                 files = this.getIntroFilesFromInstance(module, data);
                 files = files.concat(data.instructauthorsfiles).concat(data.instructreviewersfiles);
                 workshop = data;
 
-                return this.workshopProvider.getWorkshopAccessInformation(workshop.id, false, true, siteId).then((accessData) => {
+                return this.workshopProvider.getWorkshopAccessInformation(workshop.id, modOptions).then((accessData) => {
                     access = accessData;
                     if (access.canviewallsubmissions) {
-                        return this.groupsProvider.getActivityGroupInfo(module.id, false, undefined, siteId).then((groupInfo) => {
+                        return this.groupsProvider.getActivityGroupInfo(module.id, false, undefined, options.siteId)
+                                .then((groupInfo) => {
                             if (!groupInfo.groups || groupInfo.groups.length == 0) {
                                 groupInfo.groups = [{id: 0}];
                             }
@@ -111,7 +112,7 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                     }
                 });
             }).then(() => {
-                return this.workshopProvider.getUserPlanPhases(workshop.id, false, true, siteId).then((phases) => {
+                return this.workshopProvider.getUserPlanPhases(workshop.id, modOptions).then((phases) => {
                     // Get submission phase info.
                     const submissionPhase = phases[AddonModWorkshopProvider.PHASE_SUBMISSION],
                         canSubmit = this.workshopHelper.canSubmit(workshop, access, submissionPhase.tasks),
@@ -119,7 +120,10 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                         promises = [];
 
                     if (canSubmit) {
-                        promises.push(this.workshopHelper.getUserSubmission(workshop.id, userId).then((submission) => {
+                        promises.push(this.workshopHelper.getUserSubmission(workshop.id, {
+                            userId,
+                            cmId: module.id,
+                        }).then((submission) => {
                             if (submission) {
                                 files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
                             }
@@ -127,12 +131,13 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                     }
 
                     if (access.canviewallsubmissions && workshop.phase >= AddonModWorkshopProvider.PHASE_SUBMISSION) {
-                        promises.push(this.workshopProvider.getSubmissions(workshop.id).then((submissions) => {
+                        promises.push(this.workshopProvider.getSubmissions(workshop.id, modOptions).then((submissions) => {
                             const promises2 = [];
                             submissions.forEach((submission) => {
                                 files = files.concat(submission.contentfiles).concat(submission.attachmentfiles);
-                                promises2.push(this.workshopProvider.getSubmissionAssessments(workshop.id, submission.id)
-                                        .then((assessments) => {
+                                promises2.push(this.workshopProvider.getSubmissionAssessments(workshop.id, submission.id, {
+                                    cmId: module.id,
+                                }).then((assessments) => {
                                     assessments.forEach((assessment) => {
                                         files = files.concat(assessment.feedbackattachmentfiles)
                                                 .concat(assessment.feedbackcontentfiles);
@@ -146,7 +151,7 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
 
                     // Get assessment files.
                     if (workshop.phase >= AddonModWorkshopProvider.PHASE_ASSESSMENT && canAssess) {
-                        promises.push(this.workshopHelper.getReviewerAssessments(workshop.id).then((assessments) => {
+                        promises.push(this.workshopHelper.getReviewerAssessments(workshop.id, modOptions).then((assessments) => {
                             assessments.forEach((assessment) => {
                                 files = files.concat(assessment.feedbackattachmentfiles).concat(assessment.feedbackcontentfiles);
                             });
@@ -163,7 +168,7 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                 files: files.filter((file) => typeof file !== 'undefined')
             };
         }).catch((message): any => {
-            if (omitFail) {
+            if (options.omitFail) {
                 // Any error, return the info we have.
                 return {
                     workshop: workshop,
@@ -195,8 +200,10 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
      * @return Whether the module can be downloaded. The promise should never be rejected.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
-        return this.workshopProvider.getWorkshop(courseId, module.id, undefined, true).then((workshop) => {
-            return this.workshopProvider.getWorkshopAccessInformation(workshop.id).then((accessData) => {
+        return this.workshopProvider.getWorkshop(courseId, module.id, {
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+        }).then((workshop) => {
+            return this.workshopProvider.getWorkshopAccessInformation(workshop.id, {cmId: module.id}).then((accessData) => {
                 // Check if workshop is setup by phase.
                 return accessData.canswitchphase || workshop.phase > AddonModWorkshopProvider.PHASE_SETUP;
             });
@@ -230,15 +237,15 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
      *
      * @param workshopId Workshop ID.
      * @param groups Array of groups in the activity.
+     * @param cmId Module ID.
      * @param siteId Site ID. If not defined, current site.
      * @return All unique entries.
      */
-    protected getAllGradesReport(workshopId: number, groups: any[], siteId: string): Promise<any[]> {
+    protected getAllGradesReport(workshopId: number, groups: any[], cmId: number, siteId: string): Promise<any[]> {
         const promises = [];
 
         groups.forEach((group) => {
-            promises.push(this.workshopProvider.fetchAllGradeReports(
-                    workshopId, group.id, undefined, false, false, siteId));
+            promises.push(this.workshopProvider.fetchAllGradeReports(workshopId, {groupId: group.id, cmId, siteId}));
         });
 
         return Promise.all(promises).then((grades) => {
@@ -266,23 +273,31 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
      * @return Promise resolved when done.
      */
     protected prefetchWorkshop(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        const userIds = [];
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const userIds = [];
+        const commonOptions = {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+        const modOptions = {
+            cmId: module.id,
+            ...commonOptions, // Include all common options.
+        };
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const currentUserId = site.getUserId();
 
              // Prefetch the workshop data.
-            return this.getWorkshopInfoHelper(module, courseId, false, false, true, siteId).then((info) => {
+            return this.getWorkshopInfoHelper(module, courseId, commonOptions).then((info) => {
                 const workshop = info.workshop,
                     promises = [],
                     assessments = [];
 
                 promises.push(this.filepoolProvider.addFilesToQueue(siteId, info.files, this.component, module.id));
-                promises.push(this.workshopProvider.getWorkshopAccessInformation(workshop.id, false, true, siteId)
-                        .then((access) => {
-                    return this.workshopProvider.getUserPlanPhases(workshop.id, false, true, siteId).then((phases) => {
+                promises.push(this.workshopProvider.getWorkshopAccessInformation(workshop.id, modOptions).then((access) => {
+                    return this.workshopProvider.getUserPlanPhases(workshop.id, modOptions).then((phases) => {
 
                         // Get submission phase info.
                         const submissionPhase = phases[AddonModWorkshopProvider.PHASE_SUBMISSION],
@@ -291,14 +306,14 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                             promises2 = [];
 
                         if (canSubmit) {
-                            promises2.push(this.workshopProvider.getSubmissions(workshop.id));
+                            promises2.push(this.workshopProvider.getSubmissions(workshop.id, modOptions));
                             // Add userId to the profiles to prefetch.
                             userIds.push(currentUserId);
                         }
 
                         let reportPromise = Promise.resolve();
                         if (access.canviewallsubmissions && workshop.phase >= AddonModWorkshopProvider.PHASE_SUBMISSION) {
-                            reportPromise = this.getAllGradesReport(workshop.id, info.groups, siteId)
+                            reportPromise = this.getAllGradesReport(workshop.id, info.groups, module.id, siteId)
                                     .then((grades) => {
                                 grades.forEach((grade) => {
                                     userIds.push(grade.userid);
@@ -322,15 +337,19 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                         if (workshop.phase >= AddonModWorkshopProvider.PHASE_ASSESSMENT && canAssess) {
                             // Wait the report promise to finish to override assessments array if needed.
                             reportPromise = reportPromise.finally(() => {
-                                return this.workshopHelper.getReviewerAssessments(workshop.id, currentUserId, undefined,
-                                        undefined, siteId).then((revAssessments) => {
+                                return this.workshopHelper.getReviewerAssessments(workshop.id, {
+                                    userId: currentUserId,
+                                    cmId: module.id,
+                                    siteId,
+                                }).then((revAssessments) => {
 
                                     const promises = [];
                                     let files = []; // Files in each submission.
 
                                     revAssessments.forEach((assessment) => {
                                         if (assessment.submission.authorid == currentUserId) {
-                                            promises.push(this.workshopProvider.getAssessment(workshop.id, assessment.id));
+                                            promises.push(this.workshopProvider.getAssessment(workshop.id, assessment.id,
+                                                    modOptions));
                                         }
                                         userIds.push(assessment.reviewerid);
                                         userIds.push(assessment.gradinggradeoverby);
@@ -350,17 +369,16 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                         reportPromise = reportPromise.finally(() => {
                             if (assessments.length > 0) {
                                 return Promise.all(assessments.map((assessment, id) => {
-                                    return this.workshopProvider.getAssessmentForm(workshop.id, id, undefined, undefined, undefined,
-                                        siteId);
+                                    return this.workshopProvider.getAssessmentForm(workshop.id, id, modOptions);
                                 }));
                             }
                         });
                         promises2.push(reportPromise);
 
                         if (workshop.phase == AddonModWorkshopProvider.PHASE_CLOSED) {
-                            promises2.push(this.workshopProvider.getGrades(workshop.id));
+                            promises2.push(this.workshopProvider.getGrades(workshop.id, modOptions));
                             if (access.canviewpublishedsubmissions) {
-                                promises2.push(this.workshopProvider.getSubmissions(workshop.id));
+                                promises2.push(this.workshopProvider.getSubmissions(workshop.id, modOptions));
                             }
                         }
 
@@ -391,3 +409,10 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
         return this.syncProvider.syncWorkshop(module.instance, siteId);
     }
 }
+
+/**
+ * Options to pass to getWorkshopInfoHelper.
+ */
+export type AddonModWorkshopGetInfoOptions = CoreSitesCommonWSOptions & {
+    omitFail?: boolean; // True to always return even if fails.
+};
