@@ -699,7 +699,7 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
      * @param courseId Course ID the module belongs to.
      * @return Promise resolved with the total size (0 if unknown)
      */
-    getModuleTotalSize(module: any, courseId: number): Promise<number> {
+    getModuleStoredSize(module: any, courseId: number): Promise<number> {
         return this.getModuleDownloadedSize(module, courseId).then((downloadedSize) => {
             if (isNaN(downloadedSize)) {
                 downloadedSize = 0;

@@ -1200,9 +1200,13 @@ export class CoreSite {
      * @param componentId Component id.
      * @return Promise resolved when the entries are deleted.
      */
-    deleteComponentFromCache(component: string, componentId?: string): Promise<any> {
+    async deleteComponentFromCache(component: string, componentId?: string): Promise<void> {
+        if (!component) {
+            return;
+        }
+
         if (!this.db) {
-            return Promise.reject(null);
+            throw new Error('Site DB not initialized');
         }
 
         const params = {

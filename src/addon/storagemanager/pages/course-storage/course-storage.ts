@@ -72,7 +72,7 @@ export class AddonStorageManagerCourseStoragePage {
                     // But these aren't necessarily consistent, for example mod_frog vs mmaModFrog.
                     // There is nothing enforcing correct values.
                     // Most modules which have large files are downloadable, so I think this is sufficient.
-                    const promise = this.prefetchDelegate.getModuleTotalSize(module, this.course.id).
+                    const promise = this.prefetchDelegate.getModuleStoredSize(module, this.course.id).
                         then((size) => {
                             // There are some cases where the return from this is not a valid number.
                             if (!isNaN(size)) {

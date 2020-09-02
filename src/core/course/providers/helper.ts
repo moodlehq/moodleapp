@@ -1136,7 +1136,7 @@ export class CoreCourseHelperProvider {
             this.prefetchDelegate.invalidateModuleStatusCache(module);
         }
 
-        promises.push(this.prefetchDelegate.getModuleTotalSize(module, courseId).then((moduleSize) => {
+        promises.push(this.prefetchDelegate.getModuleStoredSize(module, courseId).then((moduleSize) => {
             moduleInfo.size = moduleSize;
             moduleInfo.sizeReadable = this.textUtils.bytesToSize(moduleSize, 2);
         }));
