@@ -114,7 +114,8 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
     protected getPostsForPrefetch(forum: any, siteId?: string): Promise<any[]> {
         const promises = this.forumProvider.getAvailableSortOrders().map((sortOrder) => {
             // Get discussions in first 2 pages.
-            return this.forumProvider.getDiscussionsInPages(forum.id, sortOrder.value, false, 2, 0, siteId).then((response) => {
+            return this.forumProvider.getDiscussionsInPages(forum.id, forum.cmid,
+                sortOrder.value, false, 2, 0, siteId).then((response) => {
                 if (response.error) {
                     return Promise.reject(null);
                 }
@@ -122,7 +123,7 @@ export class AddonModForumPrefetchHandler extends CoreCourseActivityPrefetchHand
                 const promises = [];
 
                 response.discussions.forEach((discussion) => {
-                    promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion, siteId));
+                    promises.push(this.forumProvider.getDiscussionPosts(discussion.discussion, forum.cmid, siteId));
                 });
 
               return Promise.all(promises);

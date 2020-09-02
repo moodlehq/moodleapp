@@ -92,7 +92,10 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
         this.forceCompile = false;
 
-        return this.sitePluginsProvider.getContent(this.component, this.method, this.args, this.preSets).then((result) => {
+        const preSets = Object.assign({}, this.preSets);
+        preSets.component = preSets.component || this.component;
+
+        return this.sitePluginsProvider.getContent(this.component, this.method, this.args, preSets).then((result) => {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;

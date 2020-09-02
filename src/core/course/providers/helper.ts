@@ -425,6 +425,11 @@ export class CoreCourseHelperProvider {
 
             await this.prefetchDelegate.removeModuleFiles(module, courseId);
 
+            const handler = this.prefetchDelegate.getPrefetchHandlerFor(module);
+            if (handler) {
+                await this.sitesProvider.getCurrentSite().deleteComponentFromCache(handler.component, String(module.id));
+            }
+
             done && done();
 
         } catch (error) {
@@ -1131,7 +1136,7 @@ export class CoreCourseHelperProvider {
             this.prefetchDelegate.invalidateModuleStatusCache(module);
         }
 
-        promises.push(this.prefetchDelegate.getModuleDownloadedSize(module, courseId).then((moduleSize) => {
+        promises.push(this.prefetchDelegate.getModuleStoredSize(module, courseId).then((moduleSize) => {
             moduleInfo.size = moduleSize;
             moduleInfo.sizeReadable = this.textUtils.bytesToSize(moduleSize, 2);
         }));

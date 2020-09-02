@@ -492,15 +492,18 @@ export class AddonModForumProvider {
      * Get forum discussion posts.
      *
      * @param discussionId Discussion ID.
+     * @param cmId Forum cmid.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with forum posts and rating info.
      */
-    getDiscussionPosts(discussionId: number, siteId?: string): Promise<{posts: any[], ratinginfo?: CoreRatingInfo}> {
+    getDiscussionPosts(discussionId: number, cmId: number, siteId?: string): Promise<{posts: any[], ratinginfo?: CoreRatingInfo}> {
         const params = {
             discussionid: discussionId
         };
         const preSets = {
-            cacheKey: this.getDiscussionPostsCacheKey(discussionId)
+            cacheKey: this.getDiscussionPostsCacheKey(discussionId),
+            component: AddonModForumProvider.COMPONENT,
+            componentId: cmId
         };
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -592,6 +595,7 @@ export class AddonModForumProvider {
      * Get forum discussions.
      *
      * @param forumId Forum ID.
+     * @param cmId Forum cmid
      * @param sortOrder Sort order.
      * @param page Page.
      * @param forceCache True to always get the value from cache. false otherwise.
@@ -601,7 +605,8 @@ export class AddonModForumProvider {
      *         discussion ID is discussion.discussion.
      *         - canLoadMore: True if there may be more discussions to load.
      */
-    getDiscussions(forumId: number, sortOrder?: number, page: number = 0, forceCache?: boolean, siteId?: string): Promise<any> {
+    getDiscussions(forumId: number, cmId: number, sortOrder?: number, page: number = 0,
+            forceCache?: boolean, siteId?: string): Promise<any> {
         sortOrder = sortOrder || AddonModForumProvider.SORTORDER_LASTPOST_DESC;
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -626,7 +631,9 @@ export class AddonModForumProvider {
                 }
             }
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getDiscussionsListCacheKey(forumId, sortOrder)
+                cacheKey: this.getDiscussionsListCacheKey(forumId, sortOrder),
+                component: AddonModForumProvider.COMPONENT,
+                componentId: cmId
             };
             if (forceCache) {
                 preSets.omitExpires = true;
@@ -673,6 +680,7 @@ export class AddonModForumProvider {
      * If a page fails, the discussions until that page will be returned along with a flag indicating an error occurred.
      *
      * @param forumId Forum ID.
+     * @param cmId Forum cmid.
      * @param sortOrder Sort order.
      * @param forceCache True to always get the value from cache, false otherwise.
      * @param numPages Number of pages to get. If not defined, all pages.
@@ -682,8 +690,8 @@ export class AddonModForumProvider {
      *         - discussions: List of discussions.
      *         - error: True if an error occurred, false otherwise.
      */
-    getDiscussionsInPages(forumId: number, sortOrder?: number, forceCache?: boolean, numPages?: number, startPage?: number,
-            siteId?: string): Promise<any> {
+    getDiscussionsInPages(forumId: number, cmId: number, sortOrder?: number, forceCache?: boolean,
+            numPages?: number, startPage?: number, siteId?: string): Promise<any> {
         if (typeof numPages == 'undefined') {
             numPages = -1;
         }
@@ -700,7 +708,7 @@ export class AddonModForumProvider {
 
         const getPage = (page: number): Promise<any> => {
             // Get page discussions.
-            return this.getDiscussions(forumId, sortOrder, page, forceCache, siteId).then((response) => {
+            return this.getDiscussions(forumId, cmId, sortOrder, page, forceCache, siteId).then((response) => {
                 result.discussions = result.discussions.concat(response.discussions);
                 numPages--;
 
@@ -753,7 +761,7 @@ export class AddonModForumProvider {
 
             this.getAvailableSortOrders().forEach((sortOrder) => {
                 // We need to get the list of discussions to be able to invalidate their posts.
-                promises.push(this.getDiscussionsInPages(forum.id, sortOrder.value, true).then((response) => {
+                promises.push(this.getDiscussionsInPages(forum.id, forum.cmid, sortOrder.value, true).then((response) => {
                     // Now invalidate the WS calls.
                     const promises = [];
 

@@ -127,6 +127,17 @@ export interface CoreSiteWSPreSets {
      * Defaults to CoreSite.FREQUENCY_USUALLY.
      */
     updateFrequency?: number;
+
+    /**
+     * Component name. Optionally included if this request is being made on behalf of a specific
+     * component (e.g. activity).
+     */
+    component?: string;
+
+    /**
+     * Component id. Optionally included when 'component' is set.
+     */
+    componentId?: number;
 }
 
 /**
@@ -197,7 +208,7 @@ export class CoreSite {
     protected wsProvider: CoreWSProvider;
 
     // Variables for the database.
-    static WS_CACHE_TABLE = 'wscache';
+    static WS_CACHE_TABLE = 'wscache_2';
     static CONFIG_TABLE = 'core_site_config';
 
     // Versions of Moodle releases.
@@ -1090,6 +1101,25 @@ export class CoreSite {
     }
 
     /**
+     * Gets the size of cached data for a specific component or component instance.
+     *
+     * @param component Component name
+     * @param componentId Optional component id (if not included, returns sum for whole component)
+     * @return Promise resolved when we have calculated the size
+     */
+    getComponentCacheSize(component: string, componentId?: string): Promise<number> {
+        const params = [component];
+        let extraClause = '';
+        if (componentId) {
+            params.push(componentId);
+            extraClause = ' AND componentId = ?';
+        }
+
+        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE +
+                ' WHERE component = ?' + extraClause, params);
+    }
+
+    /**
      * Save a WS response to cache.
      *
      * @param method The WebService method.
@@ -1128,6 +1158,13 @@ export class CoreSite {
                 entry.key = preSets.cacheKey;
             }
 
+            if (preSets.component) {
+                entry.component = preSets.component;
+                if (preSets.componentId) {
+                    entry.componentId = preSets.componentId;
+                }
+            }
+
             return this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);
         });
     }
@@ -1153,6 +1190,33 @@ export class CoreSite {
         }
 
         return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id: id });
+    }
+
+    /**
+     * Deletes WS cache entries for all methods relating to a specific component (and
+     * optionally component id).
+     *
+     * @param component Component name.
+     * @param componentId Component id.
+     * @return Promise resolved when the entries are deleted.
+     */
+    async deleteComponentFromCache(component: string, componentId?: string): Promise<void> {
+        if (!component) {
+            return;
+        }
+
+        if (!this.db) {
+            throw new Error('Site DB not initialized');
+        }
+
+        const params = {
+            component: component
+        } as any;
+        if (componentId) {
+            params.componentId = componentId;
+        }
+
+        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
     }
 
     /*
@@ -1322,6 +1386,29 @@ export class CoreSite {
         } else {
             return Promise.resolve(0);
         }
+    }
+
+    /**
+     * Gets an approximation of the cache table usage of the site.
+     *
+     * Currently this is just the total length of the data fields in the cache table.
+     *
+     * @return Promise resolved with the total size of all data in the cache table (bytes)
+     */
+    getCacheUsage(): Promise<number> {
+        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+    }
+
+    /**
+     * Gets a total of the file and cache usage.
+     *
+     * @return Promise with the total of getSpaceUsage and getCacheUsage
+     */
+    async getTotalUsage(): Promise<number> {
+        const space = await this.getSpaceUsage();
+        const cache = await this.getCacheUsage();
+
+        return space + cache;
     }
 
     /**

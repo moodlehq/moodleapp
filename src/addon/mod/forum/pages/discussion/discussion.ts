@@ -323,7 +323,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         let ratingInfo;
 
         return syncPromise.then(() => {
-            return this.forumProvider.getDiscussionPosts(this.discussionId).then((response) => {
+            return this.forumProvider.getDiscussionPosts(this.discussionId, this.cmId).then((response) => {
                 onlinePosts = response.posts;
                 ratingInfo = response.ratinginfo;
             }).then(() => {
@@ -412,7 +412,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
                 // The discussion object was not passed as parameter and there is no starting post. Should not happen.
                 if (!this.discussion) {
-                    promises.push(this.loadDiscussion(this.forumId, this.discussionId));
+                    promises.push(this.loadDiscussion(this.forumId, this.cmId, this.discussionId));
                 }
 
                 return Promise.all(promises);
@@ -479,13 +479,14 @@ export class AddonModForumDiscussionPage implements OnDestroy {
      * Convenience function to load discussion.
      *
      * @param  forumId Forum ID.
+     * @param  cmId Forum cmid.
      * @param  discussionId Discussion ID.
      * @return Promise resolved when done.
      */
-    protected loadDiscussion(forumId: number, discussionId: number): Promise<void> {
+    protected loadDiscussion(forumId: number, cmId: number, discussionId: number): Promise<void> {
         // Fetch the discussion if not passed as parameter.
         if (!this.discussion && forumId) {
-            return this.forumHelper.getDiscussionById(forumId, discussionId).then((discussion) => {
+            return this.forumHelper.getDiscussionById(forumId, cmId, discussionId).then((discussion) => {
                 this.discussion = discussion;
                 this.discussionId = this.discussion.discussion;
             }).catch(() => {

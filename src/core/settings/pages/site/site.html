@@ -33,7 +33,6 @@
                     <ion-item text-wrap *ngIf="spaceUsage">
                         <h2 text-wrap>{{ 'core.settings.spaceusage' | translate }} <ion-icon name="information-circle" color="info" [attr.aria-label]="'core.info' | translate" (click)="showSpaceInfo()"></ion-icon></h2>
                         <p *ngIf="spaceUsage.spaceUsage != null">{{ spaceUsage.spaceUsage | coreBytesToSize }}</p>
-                        <p *ngIf="spaceUsage.cacheEntries != null">{{ 'core.settings.entriesincache' | translate: { $a: spaceUsage.cacheEntries } }}</p>
                         <button ion-button icon-only clear color="danger" item-end (click)="deleteSiteStorage()" [hidden]="!spaceUsage.spaceUsage > '0' && !spaceUsage.cacheEntries > '0'" [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
                             <ion-icon name="trash"></ion-icon>
                         </button>

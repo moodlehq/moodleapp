@@ -691,6 +691,36 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     }
 
     /**
+     * Gets the estimated total size of data stored for a module. This includes
+     * the files downloaded for it (getModuleDownloadedSize) and also the total
+     * size of web service requests stored for it.
+     *
+     * @param module Module to get the size.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved with the total size (0 if unknown)
+     */
+    getModuleStoredSize(module: any, courseId: number): Promise<number> {
+        return this.getModuleDownloadedSize(module, courseId).then((downloadedSize) => {
+            if (isNaN(downloadedSize)) {
+                downloadedSize = 0;
+            }
+            const handler = this.getPrefetchHandlerFor(module);
+            if (handler) {
+                const site = this.sitesProvider.getCurrentSite();
+
+                return site.getComponentCacheSize(handler.component, module.id).then((cachedSize) => {
+                    return cachedSize + downloadedSize;
+                });
+            } else {
+                // If there is no handler then we can't find out the component name.
+                // So we can't work out the cached size, so just return downloaded size.
+
+                return downloadedSize;
+            }
+        });
+    }
+
+    /**
      * Get module files.
      *
      * @param module Module to get the files.
