@@ -21,6 +21,7 @@ import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '@core/c
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
+import { CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Component that displays the index of a module site plugin.
@@ -37,10 +38,10 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     @ViewChild(CoreSitePluginsPluginContentComponent) content: CoreSitePluginsPluginContentComponent;
 
     component: string;
-    componentId: number;
     method: string;
     args: any;
     initResult: any;
+    preSets: CoreSiteWSPreSets;
 
     // Data for context menu.
     externalUrl: string;
@@ -78,7 +79,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
             if (handler) {
                 this.component = handler.plugin.component;
-                this.componentId = this.module.id;
+                this.preSets = {componentId: this.module.id};
                 this.method = handler.handlerSchema.method;
                 this.args = {
                     courseid: this.courseId,

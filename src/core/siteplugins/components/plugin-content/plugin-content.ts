@@ -32,7 +32,6 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     @ViewChild('compile') compileComponent: ElementRef;
 
     @Input() component: string;
-    @Input() componentId?: number;
     @Input() method: string;
     @Input() args: any;
     @Input() initResult: any; // Result of the init WS call of the handler.
@@ -94,10 +93,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
         this.forceCompile = false;
 
         const preSets = Object.assign({}, this.preSets);
-        preSets.component = this.component;
-        if (this.componentId) {
-            preSets.componentId = this.componentId;
-        }
+        preSets.component = preSets.component || this.component;
 
         return this.sitePluginsProvider.getContent(this.component, this.method, this.args, preSets).then((result) => {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
