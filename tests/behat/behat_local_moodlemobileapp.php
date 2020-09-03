@@ -98,20 +98,16 @@ class behat_local_moodlemobileapp extends behat_base {
     }
 
     /**
-     * Replaces $WEBSERVER for webserver env variable value, defaults to "webserver" if it is not set.
+     * Replaces $WWWROOT for the url of the Moodle site.
      *
-     * @Transform /^(.*\$WEBSERVER.*)$/
+     * @Transform /^(.*\$WWWROOT.*)$/
      * @param string $text Text.
      * @return string
      */
-    public function arg_replace_webserver_env($text) {
-        $webserver = getenv('WEBSERVER');
+    public function arg_replace_wwwroot($text) {
+        global $CFG;
 
-        if ($webserver === false) {
-            $webserver = 'webserver';
-        }
-
-        return str_replace('$WEBSERVER', $webserver, $text);
+        return str_replace('$WWWROOT', $CFG->behat_wwwroot, $text);
     }
 
 }
