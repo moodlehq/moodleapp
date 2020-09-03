@@ -50,7 +50,7 @@ print_title "Running e2e tests"
 # Run tests
 for tags in "$@"
 do
-    $dockercompose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags=\"$tags\""
+    $dockercompose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags=\"$tags\" --auto-rerun"
     notify_on_error_exit "Some e2e tests are failing, please review"
 done
 
