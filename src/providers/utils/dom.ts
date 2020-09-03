@@ -14,13 +14,13 @@
 
 import { Injectable, SimpleChange, ElementRef } from '@angular/core';
 import {
-    LoadingController, Loading, ToastController, Toast, AlertController, Alert, Platform, Content, PopoverController,
+    LoadingController, Loading, ToastController, Toast, AlertController, Alert, Content, PopoverController,
     ModalController, AlertButton, AlertOptions
 } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from './text';
-import { CoreAppProvider } from '../app';
+import { CoreApp } from '../app';
 import { CoreConfigProvider } from '../config';
 import { CoreEventsProvider } from '../events';
 import { CoreLoggerProvider } from '../logger';
@@ -71,8 +71,6 @@ export class CoreDomUtilsProvider {
             protected toastCtrl: ToastController,
             protected alertCtrl: AlertController,
             protected textUtils: CoreTextUtilsProvider,
-            protected appProvider: CoreAppProvider,
-            protected platform: Platform,
             protected configProvider: CoreConfigProvider,
             protected urlUtils: CoreUrlUtilsProvider,
             protected modalCtrl: ModalController,
@@ -147,12 +145,12 @@ export class CoreDomUtilsProvider {
         const readableSize = this.textUtils.bytesToSize(size.size, 2);
 
         const getAvailableBytes = new Promise((resolve): void => {
-            if (this.appProvider.isDesktop()) {
+            if (CoreApp.instance.isDesktop()) {
                 // Free space calculation is not supported on desktop.
                 resolve(null);
             } else {
                 this.fileProvider.calculateFreeSpace().then((availableBytes) => {
-                    if (this.platform.is('android')) {
+                    if (CoreApp.instance.isAndroid()) {
                         return availableBytes;
                     } else {
                         // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
@@ -174,7 +172,7 @@ export class CoreDomUtilsProvider {
                 return '';
             } else {
                 const availableSize = this.textUtils.bytesToSize(availableBytes, 2);
-                if (this.platform.is('android') && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
+                if (CoreApp.instance.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
                     return Promise.reject(this.translate.instant('core.course.insufficientavailablespace', { size: readableSize }));
                 }
 
@@ -187,7 +185,7 @@ export class CoreDomUtilsProvider {
             limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
             let wifiPrefix = '';
-            if (this.appProvider.isNetworkAccessLimited()) {
+            if (CoreApp.instance.isNetworkAccessLimited()) {
                 wifiPrefix = this.translate.instant('core.course.confirmlimiteddownload');
             }
 
@@ -202,7 +200,7 @@ export class CoreDomUtilsProvider {
                 return this.showConfirm(wifiPrefix + this.translate.instant('core.course.confirmpartialdownloadsize',
                     { size: readableSize, availableSpace: availableSpace }));
             } else if (alwaysConfirm || size.size >= wifiThreshold ||
-                (this.appProvider.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
+                (CoreApp.instance.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
                 message = message || (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload');
 
                 return this.showConfirm(wifiPrefix + this.translate.instant(message,
@@ -377,9 +375,9 @@ export class CoreDomUtilsProvider {
     focusElement(el: HTMLElement): void {
         if (el && el.focus) {
             el.focus();
-            if (this.platform.is('android') && this.supportsInputKeyboard(el)) {
+            if (CoreApp.instance.isAndroid() && this.supportsInputKeyboard(el)) {
                 // On some Android versions the keyboard doesn't open automatically.
-                this.appProvider.openKeyboard();
+                CoreApp.instance.openKeyboard();
             }
         }
     }
@@ -1562,7 +1560,7 @@ export class CoreDomUtilsProvider {
                     event.stopPropagation();
 
                     // We cannot use CoreDomUtilsProvider.openInBrowser due to circular dependencies.
-                    if (this.appProvider.isDesktop()) {
+                    if (CoreApp.instance.isDesktop()) {
                         // It's a desktop app, use Electron shell library to open the browser.
                         const shell = require('electron').shell;
                         if (!shell.openExternal(href)) {

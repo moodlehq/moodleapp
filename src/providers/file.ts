@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { File, FileEntry, DirectoryEntry, Entry, Metadata } from '@ionic-native/file';
-import { CoreApp } from './app';
+import { CoreApp, CoreAppProvider } from './app';
 import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
@@ -72,6 +72,7 @@ export class CoreFileProvider {
     protected isHTMLAPI = false;
 
     constructor(logger: CoreLoggerProvider,
+            appProvider: CoreAppProvider,
             protected platform: Platform,
             protected file: File,
             protected textUtils: CoreTextUtilsProvider,
@@ -80,7 +81,7 @@ export class CoreFileProvider {
 
         this.logger = logger.getInstance('CoreFileProvider');
 
-        if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
+        if (appProvider.isAndroid() && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
             // Cordova File plugin creates some getters and setter for FileReader, but Ionic's polyfills override them in Android.
             // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
             this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
@@ -176,7 +177,7 @@ export class CoreFileProvider {
 
         return this.platform.ready().then(() => {
 
-            if (this.platform.is('android')) {
+            if (CoreApp.instance.isAndroid()) {
                 this.basePath = this.file.externalApplicationStorageDirectory || this.basePath;
             } else if (CoreApp.instance.isIOS()) {
                 this.basePath = this.file.documentsDirectory || this.basePath;

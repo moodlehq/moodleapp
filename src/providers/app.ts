@@ -804,7 +804,7 @@ export class CoreAppProvider {
             this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgios);
             CoreConfigConstants.statusbarlighttextios ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) {
+        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.isAndroid()) {
             // Android Status bar properties.
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgandroid);
             CoreConfigConstants.statusbarlighttextandroid ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
@@ -815,7 +815,7 @@ export class CoreAppProvider {
             CoreConfigConstants.statusbarlighttext ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         } else {
             // Default Status bar properties.
-            this.platform.is('android') ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+            this.isAndroid() ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         }
     }
 
@@ -825,7 +825,7 @@ export class CoreAppProvider {
     resetStatusBarColor(): void {
         if (typeof CoreConfigConstants.statusbarbgremotetheme == 'string' &&
                 ((typeof CoreConfigConstants.statusbarbgios == 'string' && this.isIOS()) ||
-                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) ||
+                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.isAndroid()) ||
                 typeof CoreConfigConstants.statusbarbg == 'string')) {
             // If the status bar has been overriden and there's a fallback color for remote themes, use it now.
             this.isIOS() && this.statusBar.overlaysWebView(false);

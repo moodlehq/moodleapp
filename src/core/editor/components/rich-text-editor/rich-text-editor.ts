@@ -218,7 +218,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
 
         setTimeout(() => {
             let contentVisibleHeight = this.domUtils.getContentHeight(this.content);
-            if (!this.platform.is('android')) {
+            if (!CoreApp.instance.isAndroid()) {
                 // In Android we ignore the keyboard height because it is not part of the web view.
                 contentVisibleHeight -= this.kbHeight;
             }
@@ -233,7 +233,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
                 // Editor is ready, adjust Height if needed.
                 let height;
 
-                if (this.platform.is('android')) {
+                if (CoreApp.instance.isAndroid()) {
                     // In Android we ignore the keyboard height because it is not part of the web view.
                     height = this.domUtils.getContentHeight(this.content) - this.getSurroundingHeight(this.element);
                 } else if (CoreApp.instance.isIOS() && this.kbHeight > 0 && this.platform.version().major < 12) {

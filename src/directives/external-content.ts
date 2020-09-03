@@ -14,7 +14,7 @@
 
 import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp } from '@providers/app';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreFile } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -60,7 +60,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             protected sitesProvider: CoreSitesProvider,
             protected domUtils: CoreDomUtilsProvider,
             protected urlUtils: CoreUrlUtilsProvider,
-            protected appProvider: CoreAppProvider,
             protected utils: CoreUtilsProvider) {
 
         this.element = element.nativeElement;
@@ -104,7 +103,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         newSource.setAttribute('src', url);
 
         if (type) {
-            if (this.platform.is('android') && type == 'video/quicktime') {
+            if (CoreApp.instance.isAndroid() && type == 'video/quicktime') {
                 // Fix for VideoJS/Chrome bug https://github.com/videojs/video.js/issues/423 .
                 newSource.setAttribute('type', 'video/mp4');
             } else {
@@ -198,7 +197,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                     const track = <TextTrack> event.track;
                     if (track) {
                         track.oncuechange = (): void => {
-                            const line = this.platform.is('tablet') || this.platform.is('android') ? 90 : 80;
+                            const line = this.platform.is('tablet') || CoreApp.instance.isAndroid() ? 90 : 80;
                             // Position all subtitles to a percentage of video height.
                             Array.from(track.cues).forEach((cue: any) => {
                                 cue.snapToLines = false;
@@ -281,7 +280,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             clickableEl.addEventListener(eventName, () => {
                 // User played media or opened a downloadable link.
                 // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                if (this.appProvider.isWifi()) {
+                if (CoreApp.instance.isWifi()) {
                     // We aren't using the result, so it doesn't matter which of the 2 functions we call.
                     this.filepoolProvider.getUrlByUrl(siteId, url, this.component, this.componentId, 0, false);
                 }

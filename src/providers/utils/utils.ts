@@ -903,7 +903,7 @@ export class CoreUtilsProvider {
         const extension = this.mimetypeUtils.getFileExtension(path);
         const mimetype = this.mimetypeUtils.getMimeType(extension);
 
-        if (mimetype == 'text/html' && this.platform.is('android')) {
+        if (mimetype == 'text/html' && CoreApp.instance.isAndroid()) {
             // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
             this.openInApp(path);
 
@@ -984,7 +984,7 @@ export class CoreUtilsProvider {
                 });
             });
 
-            if (this.platform.is('android')) {
+            if (CoreApp.instance.isAndroid()) {
                 // Load stop is needed with InAppBrowser v3. Custom URL schemes no longer trigger load start, simulate it.
                 loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -1038,7 +1038,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved when opened.
      */
     openOnlineFile(url: string): Promise<void> {
-        if (this.platform.is('android')) {
+        if (CoreApp.instance.isAndroid()) {
             // In Android we need the mimetype to open it.
             return this.getMimeTypeFromUrl(url).catch(() => {
                 // Error getting mimetype, return undefined.

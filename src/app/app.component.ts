@@ -146,7 +146,7 @@ export class MoodleMobileApp implements OnInit {
                 });
                 this.utils.closeInAppBrowser(false);
 
-            } else if (this.platform.is('android')) {
+            } else if (CoreApp.instance.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
                 const urlScheme = this.urlUtils.getUrlProtocol(url);
                 if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
@@ -260,7 +260,7 @@ export class MoodleMobileApp implements OnInit {
 
         // Pause Youtube videos in Android when app is put in background or screen is locked.
         this.platform.pause.subscribe(() => {
-            if (!this.platform.is('android')) {
+            if (!CoreApp.instance.isAndroid()) {
                 return;
             }
 

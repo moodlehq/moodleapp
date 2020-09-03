@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
 import { CoreApp } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from './delegate';
@@ -28,7 +27,6 @@ export class CoreFileUploaderAudioHandler implements CoreFileUploaderHandler {
 
     constructor(
             private utils: CoreUtilsProvider,
-            private platform: Platform,
             private uploaderHelper: CoreFileUploaderHelperProvider
             ) { }
 
@@ -51,7 +49,7 @@ export class CoreFileUploaderAudioHandler implements CoreFileUploaderHandler {
         if (CoreApp.instance.isIOS()) {
             // In iOS it's recorded as WAV.
             return this.utils.filterByRegexp(mimetypes, /^audio\/wav$/);
-        } else if (this.platform.is('android')) {
+        } else if (CoreApp.instance.isAndroid()) {
             // In Android we don't know the format the audio will be recorded, so accept any audio mimetype.
             return this.utils.filterByRegexp(mimetypes, /^audio\//);
         } else {

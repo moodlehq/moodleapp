@@ -17,7 +17,6 @@ import {
 } from '@angular/core';
 import { Platform, NavController, Content } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -84,7 +83,6 @@ export class CoreFormatTextDirective implements OnChanges {
             protected urlUtils: CoreUrlUtilsProvider,
             protected loggerProvider: CoreLoggerProvider,
             protected filepoolProvider: CoreFilepoolProvider,
-            protected appProvider: CoreAppProvider,
             protected contentLinksHelper: CoreContentLinksHelperProvider,
             @Optional() protected navCtrl: NavController,
             @Optional() protected content: Content, @Optional()
@@ -124,7 +122,7 @@ export class CoreFormatTextDirective implements OnChanges {
     protected addExternalContent(element: Element): CoreExternalContentDirective {
         // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(new ElementRef(element), this.loggerProvider, this.filepoolProvider,
-            this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider, this.utils);
+            this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.utils);
 
         extContent.component = this.component;
         extContent.componentId = this.componentId;
