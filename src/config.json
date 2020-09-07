@@ -81,6 +81,7 @@
     "siteurl": "",
     "sitename": "",
     "multisitesdisplay": "",
+    "sitefindersettings": {},
     "onlyallowlistedsites": false,
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,

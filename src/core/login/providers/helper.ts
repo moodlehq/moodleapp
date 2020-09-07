@@ -21,7 +21,7 @@ import { CoreConfigProvider } from '@providers/config';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreLoginSiteInfo } from '@providers/sites';
 import { CoreWSProvider } from '@providers/ws';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -464,7 +464,7 @@ export class CoreLoginHelperProvider {
      *
      * @return Fixed site or list of fixed sites.
      */
-    getFixedSites(): string | any[] {
+    getFixedSites(): string | CoreLoginSiteInfo[] {
         return CoreConfigConstants.siteurl;
     }
 
