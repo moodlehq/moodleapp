@@ -655,6 +655,35 @@ export class CoreAppProvider {
     }
 
     /**
+     * Wait until the application is resumed.
+     *
+     * @param timeout Maximum time to wait, use null to wait forever.
+     */
+    async waitForResume(timeout: number | null = null): Promise<void> {
+        let resolve: Function;
+        let resumeSubscription: any;
+        let timeoutId: NodeJS.Timer | false;
+
+        const promise = new Promise((r): any => resolve = r);
+        const stopWaiting = (): any => {
+            if (!resolve) {
+                return;
+            }
+
+            resolve();
+            resumeSubscription.unsubscribe();
+            timeoutId && clearTimeout(timeoutId);
+
+            resolve = null;
+        };
+
+        resumeSubscription = this.platform.resume.subscribe(stopWaiting);
+        timeoutId = timeout ? setTimeout(stopWaiting, timeout) : false;
+
+        await promise;
+    }
+
+    /**
      * Retrieve redirect data.
      *
      * @return Object with siteid, state, params and timemodified.

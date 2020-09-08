@@ -25,6 +25,7 @@ import { MockLocationStrategy } from '@angular/common/testing';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+import { Diagnostic } from '@ionic-native/diagnostic';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 import { MoodleMobileApp } from './app.component';
@@ -348,6 +349,7 @@ export const WP_PROVIDER: any = null;
             useClass: CoreInterceptor,
             multi: true,
         },
+        Diagnostic,
         ScreenOrientation,
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},

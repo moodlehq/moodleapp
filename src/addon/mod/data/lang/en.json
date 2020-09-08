@@ -23,6 +23,7 @@
     "gettinglocation": "Getting location",
     "latlongboth": "Both latitude and longitude are required.",
     "locationpermissiondenied": "Permission to access your location has been denied.",
+    "locationnotenabled": "Location is not enabled",
     "menuchoose": "Choose...",
     "modulenameplural": "Databases",
     "more": "More",

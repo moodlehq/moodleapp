@@ -15,10 +15,14 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
-import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { Diagnostic } from '@singletons/core.singletons';
+import { CoreError } from '@classes/error';
+
+class AccessLocationError extends CoreError {}
 
 /**
  * Component to render data latlong field.
@@ -116,33 +120,118 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
      *
      * @param $event The event.
      */
-    getLocation(event: Event): void {
+    async getLocation(event: Event): Promise<void> {
         event.preventDefault();
 
         const modal = this.domUtils.showModalLoading('addon.mod_data.gettinglocation', true);
 
-        const options: GeolocationOptions = {
-            enableHighAccuracy: true,
-            timeout: 30000
-        };
+        try {
+            await this.updateLocation();
+        } catch (error) {
+            this.showErrorModal(error);
+        }
 
-        this.geolocation.getCurrentPosition(options).then((result) => {
-            this.form.controls['f_' + this.field.id + '_0'].setValue(result.coords.latitude);
-            this.form.controls['f_' + this.field.id + '_1'].setValue(result.coords.longitude);
-        }).catch((error) => {
-            if (this.isPermissionDeniedError(error)) {
-                this.domUtils.showErrorModal('addon.mod_data.locationpermissiondenied', true);
-
-                return;
-            }
-
-            this.domUtils.showErrorModalDefault(error,  'Error getting location');
-        }).finally(() => {
-            modal.dismiss();
-        });
+        modal.dismiss();
     }
 
+    /**
+     * Update component location.
+     */
+    protected async updateLocation(): Promise<void> {
+        await this.authorizeLocation();
+        await this.enableLocation();
+
+        const result = await this.geolocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 30000,
+        });
+
+        this.form.controls['f_' + this.field.id + '_0'].setValue(result.coords.latitude);
+        this.form.controls['f_' + this.field.id + '_1'].setValue(result.coords.longitude);
+    }
+
+    /**
+     * Make sure that using device location has been authorize and ask for permission if it hasn't.
+     *
+     * @param failOnDeniedOnce Throw an exception if the permission has been denied once.
+     */
+    protected async authorizeLocation(failOnDeniedOnce: boolean = false): Promise<void> {
+        const authorizationStatus = await Diagnostic.instance.getLocationAuthorizationStatus();
+
+        switch (authorizationStatus) {
+            // This constant is hard-coded because it is not declared in @ionic-native/diagnostic v4.
+            case 'DENIED_ONCE':
+                if (failOnDeniedOnce) {
+                    throw new AccessLocationError('addon.mod_data.locationpermissiondenied');
+                }
+            // Fall through.
+            case Diagnostic.instance.permissionStatus.NOT_REQUESTED:
+                await Diagnostic.instance.requestLocationAuthorization();
+                await CoreApp.instance.waitForResume(500);
+                await this.authorizeLocation(true);
+
+                return;
+            case Diagnostic.instance.permissionStatus.GRANTED:
+            case Diagnostic.instance.permissionStatus.GRANTED_WHEN_IN_USE:
+                // Location is authorized.
+                return;
+            case Diagnostic.instance.permissionStatus.DENIED:
+            default:
+                throw new AccessLocationError('addon.mod_data.locationpermissiondenied');
+        }
+    }
+
+    /**
+     * Make sure that location is enabled and switch to settings if it hasn't.
+     */
+    protected async enableLocation(): Promise<void> {
+        let locationEnabled = await Diagnostic.instance.isLocationEnabled();
+
+        if (locationEnabled) {
+            // Location is enabled.
+            return;
+        }
+
+        if (!CoreApp.instance.isIOS()) {
+            await Diagnostic.instance.switchToLocationSettings();
+            await CoreApp.instance.waitForResume(30000);
+
+            locationEnabled = await Diagnostic.instance.isLocationEnabled();
+        }
+
+        if (!locationEnabled) {
+            throw new AccessLocationError('addon.mod_data.locationnotenabled');
+        }
+    }
+
+    /**
+     * Check whether an error was caused by a PERMISSION_DENIED.
+     *
+     * @param error Error.
+     */
     protected isPermissionDeniedError(error?: any): boolean {
         return error && 'code' in error && 'PERMISSION_DENIED' in error && error.code === error.PERMISSION_DENIED;
     }
+
+    /**
+     * Show the appropriate error modal for the given error.
+     *
+     * @param error Error.
+     */
+    protected showErrorModal(error: any): void {
+        if (error instanceof AccessLocationError) {
+            this.domUtils.showErrorModal(error.message, true);
+
+            return;
+        }
+
+        if (this.isPermissionDeniedError(error)) {
+            this.domUtils.showErrorModal('addon.mod_data.locationpermissiondenied', true);
+
+            return;
+        }
+
+        this.domUtils.showErrorModalDefault(error,  'Error getting location');
+    }
+
 }
