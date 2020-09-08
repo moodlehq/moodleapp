@@ -47,7 +47,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
 
     loaded = false;
-    protected element: HTMLElement;
+    protected element: Element;
     protected logger;
     protected initialized = false;
 
@@ -62,8 +62,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             protected urlUtils: CoreUrlUtilsProvider,
             protected appProvider: CoreAppProvider,
             protected utils: CoreUtilsProvider) {
-        // This directive can be added dynamically. In that case, the first param is the HTMLElement.
-        this.element = element.nativeElement || element;
+
+        this.element = element.nativeElement;
         this.logger = logger.getInstance('CoreExternalContentDirective');
     }
 
@@ -120,7 +120,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     protected checkAndHandleExternalContent(): void {
         const currentSite = this.sitesProvider.getCurrentSite(),
             siteId = this.siteId || (currentSite && currentSite.getId()),
-            tagName = this.element.tagName;
+            tagName = this.element.tagName.toUpperCase();
         let targetAttr,
             url;
 
@@ -129,7 +129,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             this.logger.error('Error treating inline styles.', this.element);
         });
 
-        if (tagName === 'A') {
+        if (tagName === 'A' || tagName == 'IMAGE') {
             targetAttr = 'href';
             url = this.href;
 

@@ -37,7 +37,7 @@ export class CoreLinkDirective implements OnInit {
                                   //   "no" -> Never auto-login.
                                   //   "check" -> Auto-login only if it points to the current site. Default value.
 
-    protected element: HTMLElement;
+    protected element: Element;
 
     constructor(element: ElementRef,
             protected domUtils: CoreDomUtilsProvider,
@@ -50,8 +50,8 @@ export class CoreLinkDirective implements OnInit {
             @Optional() protected svComponent: CoreSplitViewComponent,
             protected textUtils: CoreTextUtilsProvider,
             protected urlSchemesProvider: CoreCustomURLSchemesProvider) {
-        // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
-        this.element = element.nativeElement || element;
+
+        this.element = element.nativeElement;
     }
 
     /**
@@ -70,7 +70,7 @@ export class CoreLinkDirective implements OnInit {
         this.element.addEventListener('click', (event) => {
             // If the event prevented default action, do nothing.
             if (!event.defaultPrevented) {
-                let href = this.element.getAttribute('href');
+                let href = this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
                 if (href && this.urlUtils.getUrlScheme(href) != 'javascript') {
                     event.preventDefault();
                     event.stopPropagation();
