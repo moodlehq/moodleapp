@@ -70,6 +70,7 @@
     "@ionic-native/in-app-browser": "^4.20.0",
     "@ionic-native/keyboard": "^4.20.0",
     "@ionic-native/local-notifications": "^4.20.0",
+    "@ionic-native/media": "^4.20.0",
     "@ionic-native/media-capture": "^4.20.0",
     "@ionic-native/network": "^4.20.0",
     "@ionic-native/push": "^4.20.0",
@@ -105,6 +106,7 @@
     "cordova-plugin-ionic-keyboard": "2.1.3",
     "cordova-plugin-ionic-webview": "git+https://github.com/moodlemobile/cordova-plugin-ionic-webview.git#500-moodle",
     "cordova-plugin-local-notification": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle",
+    "cordova-plugin-media": "^5.0.3",
     "cordova-plugin-media-capture": "^3.0.3",
     "cordova-plugin-network-information": "^2.0.2",
     "cordova-plugin-qrscanner": "git+https://github.com/moodlemobile/cordova-plugin-qrscanner.git#dist",
@@ -213,7 +215,10 @@
       "cordova-plugin-wkwebview-cookies": {},
       "cordova-plugin-qrscanner": {},
       "cordova-plugin-chooser": {},
-      "cordova-plugin-wkuserscript": {}
+      "cordova-plugin-wkuserscript": {},
+      "cordova-plugin-media": {
+        "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
+      }
     }
   },
   "main": "desktop/electron.js",

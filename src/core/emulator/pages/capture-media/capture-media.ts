@@ -13,15 +13,20 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { IonicPage, ViewController, NavParams } from 'ionic-angular';
+import { IonicPage, ViewController, NavParams, Platform } from 'ionic-angular';
+import { CoreApp } from '@providers/app';
 import { CoreFileProvider } from '@providers/file';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreMimetypeUtils } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+
+import { FileEntry } from '@ionic-native/file';
 import { MediaFile } from '@ionic-native/media-capture';
+import { Media, MediaObject } from '@ionic-native/media';
 
 /**
- * Page to capture media in browser or desktop.
+ * Page to capture media in browser or desktop, or to capture audio in mobile devices.
  */
 @IonicPage({ segment: 'core-emulator-capture-media' })
 @Component({
@@ -45,6 +50,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     isCapturing: boolean; // Whether it's capturing.
     maxTime: number; // The max time to capture.
     resetChrono: boolean; // Boolean to reset the chrono.
+    isCordovaAudioCapture: boolean; // Whether it's capturing audio using Cordova plugin.
 
     protected type: string; // The type to capture: audio, video, image, captureimage.
     protected isCaptureImage: boolean; // To identify if it's capturing an image using media capture plugin (instead of camera).
@@ -60,9 +66,20 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     protected mediaBlob: Blob; // A Blob where the captured data is stored.
     protected localMediaStream: MediaStream;
 
-    constructor(private viewCtrl: ViewController, params: NavParams, private domUtils: CoreDomUtilsProvider,
-            private timeUtils: CoreTimeUtilsProvider, private fileProvider: CoreFileProvider,
-            private textUtils: CoreTextUtilsProvider, private cdr: ChangeDetectorRef) {
+    // Variables for Cordova Media capture.
+    protected mediaFile: MediaObject;
+    protected filePath: string;
+    protected fileEntry: FileEntry;
+
+    constructor(protected viewCtrl: ViewController,
+            params: NavParams,
+            protected domUtils: CoreDomUtilsProvider,
+            protected timeUtils: CoreTimeUtilsProvider,
+            protected fileProvider: CoreFileProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            protected cdr: ChangeDetectorRef,
+            protected plaform: Platform,
+            protected media: Media) {
         this.window = window;
         this.type = params.get('type');
         this.maxTime = params.get('maxTime');
@@ -79,12 +96,52 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.initVariables();
 
+        if (this.isCordovaAudioCapture) {
+            this.initCordovaMediaPlugin();
+        } else {
+            this.initHtmlCapture();
+        }
+    }
+
+    /**
+     * Init recording with Cordova media plugin.
+     *
+     * @return Promise resolved when ready.
+     */
+    protected async initCordovaMediaPlugin(): Promise<void> {
+        this.filePath = this.getFilePath();
+        let absolutePath = this.textUtils.concatenatePaths(this.fileProvider.getBasePathInstant(), this.filePath);
+
+        if (this.plaform.is('ios')) {
+            // In iOS we need to remove the file:// part.
+            absolutePath = absolutePath.replace(/^file:\/\//, '');
+        }
+
+        try {
+            // First create the file.
+            this.fileEntry = await this.fileProvider.createFile(this.filePath);
+
+            // Now create the media instance.
+            this.mediaFile = this.media.create(absolutePath);
+            this.readyToCapture = true;
+            this.previewMedia = this.previewAudio.nativeElement;
+        } catch (error) {
+            this.dismissWithError(-1, error.message || error);
+        }
+    }
+
+    /**
+     * Init HTML recorder, for desktop apps.
+     *
+     * @return Promise resolved when done.
+     */
+    protected initHtmlCapture(): Promise<void> {
         const constraints = {
             video: this.isAudio ? false : { facingMode: this.facingMode },
             audio: !this.isImage
         };
 
-        navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+        return navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
             let chunks = [];
             this.localMediaStream = stream;
 
@@ -254,6 +311,13 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
             this.isImage = true;
             this.title = 'core.captureimage';
         }
+
+        this.isCordovaAudioCapture = CoreApp.instance.isMobile() && this.isAudio;
+
+        if (this.isCordovaAudioCapture) {
+            this.extension = this.plaform.is('ios') ? 'wav' : 'aac';
+            this.returnDataUrl = false;
+        }
     }
 
     /**
@@ -269,7 +333,14 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 // Start the capture.
                 this.isCapturing = true;
                 this.resetChrono = false;
-                this.mediaRecorder.start();
+
+                if (this.isCordovaAudioCapture) {
+                    this.mediaFile.startRecord();
+                    this.previewMedia.src = '';
+                } else {
+                    this.mediaRecorder && this.mediaRecorder.start();
+                }
+
                 this.cdr.detectChanges();
             } else {
                 // Get the image from the video and set it to the canvas, using video width/height.
@@ -299,6 +370,11 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     cancel(): void {
         // Send a "cancelled" error like the Cordova plugin does.
         this.dismissWithError(3, 'Canceled.', 'Camera cancelled');
+
+        if (this.isCordovaAudioCapture) {
+            // Delete the tmp file.
+            this.fileProvider.removeFile(this.filePath);
+        }
     }
 
     /**
@@ -341,7 +417,7 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
     /**
      * Done capturing, write the file.
      */
-    done(): void {
+    async done(): Promise<void> {
         if (this.returnDataUrl) {
             // Return the image as a base64 string.
             this.dismissWithData(this.imgCanvas.nativeElement.toDataURL(this.mimetype, this.quality));
@@ -349,64 +425,98 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.mediaBlob) {
+        if (!this.mediaBlob && !this.isCordovaAudioCapture) {
             // Shouldn't happen.
             this.domUtils.showErrorModal('Please capture the media first.');
 
             return;
         }
 
-        // Create the file and return it.
-        const fileName = this.type + '_' + this.timeUtils.readableTimestamp() + '.' + this.extension,
-            path = this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName),
-            loadingModal = this.domUtils.showModalLoading();
+        let fileEntry = this.fileEntry;
+        const loadingModal = this.domUtils.showModalLoading();
 
-        this.fileProvider.writeFile(path, this.mediaBlob).then((fileEntry) => {
+        try {
+            if (!this.isCordovaAudioCapture) {
+                // Capturing in browser. Write the blob in a file.
+                if (!this.mediaBlob) {
+                    // Shouldn't happen.
+                    throw new Error('Please capture the media first.');
+                }
+
+                fileEntry = await this.fileProvider.writeFile(this.getFilePath(), this.mediaBlob);
+            }
+
             if (this.isImage && !this.isCaptureImage) {
                 this.dismissWithData(fileEntry.toURL());
             } else {
                 // The capture plugin should return a MediaFile, not a FileEntry. Convert it.
-                return this.fileProvider.getMetadata(fileEntry).then((metadata) => {
-                    const mediaFile: MediaFile = {
-                        name: fileEntry.name,
-                        fullPath: fileEntry.fullPath,
-                        type: null,
-                        lastModifiedDate: metadata.modificationTime,
-                        size: metadata.size,
-                        getFormatData: (successFn, errorFn): void => {
-                            // Nothing to do.
-                        }
-                    };
+                const metadata = await this.fileProvider.getMetadata(fileEntry);
 
-                    this.dismissWithData([mediaFile]);
-                });
+                let mimetype = null;
+                if (this.extension) {
+                    mimetype = CoreMimetypeUtils.instance.getMimeType(this.extension);
+                }
+
+                const mediaFile: MediaFile = {
+                    name: fileEntry.name,
+                    fullPath: fileEntry.nativeURL || fileEntry.fullPath,
+                    type: mimetype,
+                    lastModifiedDate: metadata.modificationTime,
+                    size: metadata.size,
+                    getFormatData: (successFn, errorFn): void => {
+                        // Nothing to do.
+                    }
+                };
+
+                this.dismissWithData([mediaFile]);
             }
-        }).catch((err) => {
+        } catch (err) {
             this.domUtils.showErrorModal(err);
-        }).finally(() => {
+        } finally {
             loadingModal.dismiss();
-        });
+        }
+    }
+
+    /**
+     * Get path to the file where the media will be stored.
+     *
+     * @return Path.
+     */
+    protected getFilePath(): string {
+        const fileName = this.type + '_' + this.timeUtils.readableTimestamp() + '.' + this.extension;
+
+        return this.textUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
     }
 
     /**
      * Stop capturing. Only for video and audio.
      */
     stopCapturing(): void {
-        this.streamVideo && this.streamVideo.nativeElement.pause();
-        this.audioDrawer && this.audioDrawer.stop();
-        this.mediaRecorder && this.mediaRecorder.stop();
         this.isCapturing = false;
         this.hasCaptured = true;
+
+        if (this.isCordovaAudioCapture) {
+            this.mediaFile.stopRecord();
+            this.previewMedia.src = this.fileProvider.convertFileSrc(this.fileEntry.toURL());
+        } else {
+            this.streamVideo && this.streamVideo.nativeElement.pause();
+            this.audioDrawer && this.audioDrawer.stop();
+            this.mediaRecorder && this.mediaRecorder.stop();
+        }
     }
 
     /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
-        const tracks = this.localMediaStream.getTracks();
-        tracks.forEach((track) => {
-            track.stop();
-        });
+        this.mediaFile && this.mediaFile.release();
+
+        if (this.localMediaStream) {
+            const tracks = this.localMediaStream.getTracks();
+            tracks.forEach((track) => {
+                track.stop();
+            });
+        }
         this.streamVideo && this.streamVideo.nativeElement.pause();
         this.previewMedia && this.previewMedia.pause();
         this.audioDrawer && this.audioDrawer.stop();
