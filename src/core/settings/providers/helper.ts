@@ -264,58 +264,63 @@ export class CoreSettingsHelper {
      * @param siteId ID of the site to synchronize.
      * @return Promise resolved when synchronized, rejected if failure.
      */
-    synchronizeSite(syncOnlyOnWifi: boolean, siteId: string): Promise<any> {
+    async synchronizeSite(syncOnlyOnWifi: boolean, siteId: string): Promise<void> {
         if (this.syncPromises[siteId]) {
             // There's already a sync ongoing for this site, return the promise.
             return this.syncPromises[siteId];
         }
 
-        const promises = [];
+        const site = await this.sitesProvider.getSite(siteId);
         const hasSyncHandlers = this.cronDelegate.hasManualSyncHandlers();
 
-        if (hasSyncHandlers && !this.appProvider.isOnline()) {
+        if (site.isLoggedOut()) {
+            // Cannot sync logged out sites.
+            throw this.translate.instant('core.settings.cannotsyncloggedout');
+        } else if (hasSyncHandlers && !this.appProvider.isOnline()) {
             // We need connection to execute sync.
-            return Promise.reject(this.translate.instant('core.settings.cannotsyncoffline'));
+            throw this.translate.instant('core.settings.cannotsyncoffline');
         } else if (hasSyncHandlers && syncOnlyOnWifi && this.appProvider.isNetworkAccessLimited()) {
-            return Promise.reject(this.translate.instant('core.settings.cannotsyncwithoutwifi'));
+            throw this.translate.instant('core.settings.cannotsyncwithoutwifi');
         }
 
-        // Invalidate all the site files so they are re-downloaded.
-        promises.push(this.filePoolProvider.invalidateAllFiles(siteId).catch(() => {
-            // Ignore errors.
-        }));
+        const syncPromise = Promise.all([
+            // Invalidate all the site files so they are re-downloaded.
+            this.utils.ignoreErrors(this.filePoolProvider.invalidateAllFiles(siteId)),
+            // Invalidate and synchronize site data.
+            site.invalidateWsCache(),
+            this.checkSiteLocalMobile(site),
+            this.sitesProvider.updateSiteInfo(site.getId()),
+            this.cronDelegate.forceSyncExecution(site.getId()),
+        ]);
 
-        // Get the site to invalidate data.
-        promises.push(this.sitesProvider.getSite(siteId).then((site) => {
-            // Invalidate the WS cache.
-            return site.invalidateWsCache().then(() => {
-                const subPromises = [];
-
-                // Check if local_mobile was installed in Moodle.
-                subPromises.push(site.checkIfLocalMobileInstalledAndNotUsed().then(() => {
-                    // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-                    this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, siteId);
-
-                    return Promise.reject(this.translate.instant('core.lostconnection'));
-                }, () => {
-                    // Update site info.
-                    return this.sitesProvider.updateSiteInfo(siteId);
-                }));
-
-                // Execute cron if needed.
-                subPromises.push(this.cronDelegate.forceSyncExecution(siteId));
-
-                return Promise.all(subPromises);
-            });
-        }));
-
-        let syncPromise = Promise.all(promises);
         this.syncPromises[siteId] = syncPromise;
-        syncPromise = syncPromise.finally(() => {
-            delete this.syncPromises[siteId];
-        });
 
-        return syncPromise;
+        try {
+            await syncPromise;
+        } finally {
+            delete this.syncPromises[siteId];
+        }
+    }
+
+    /**
+     * Check if local_mobile was added to the site.
+     *
+     * @param site Site to check.
+     * @return Promise resolved if no action needed.
+     */
+    protected async checkSiteLocalMobile(site: CoreSite): Promise<void> {
+        try {
+            // Check if local_mobile was installed in Moodle.
+            await site.checkIfLocalMobileInstalledAndNotUsed();
+        } catch (error) {
+            // Not added, nothing to do.
+            return;
+        }
+
+        // Local mobile was added. Throw invalid session to force reconnect and create a new token.
+        this.eventsProvider.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, site.getId());
+
+        throw this.translate.instant('core.lostconnection');
     }
 
     /**

@@ -1984,6 +1984,7 @@
   "core.settings.about": "local_moodlemobileapp",
   "core.settings.appsettings": "local_moodlemobileapp",
   "core.settings.appversion": "local_moodlemobileapp",
+  "core.settings.cannotsyncloggedout": "local_moodlemobileapp",
   "core.settings.cannotsyncoffline": "local_moodlemobileapp",
   "core.settings.cannotsyncwithoutwifi": "local_moodlemobileapp",
   "core.settings.colorscheme": "local_moodlemobileapp",
