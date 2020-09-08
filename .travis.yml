@@ -64,6 +64,7 @@ jobs:
     - node --version
     - npm --version
     - nvm --version
+    - sudo apt-get install -y libsecret-1-dev > /dev/null
     - npm ci
     - npm install -g gulp
     script: scripts/aot.sh
@@ -83,6 +84,8 @@ jobs:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
     - BUILD_PLATFORM='linux'
+    before_install:
+    - sudo apt-get install -y libsecret-1-dev > /dev/null
     script: scripts/aot.sh
   - stage: build
     name: "Build MacOS"
