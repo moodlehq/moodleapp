@@ -19,6 +19,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 import { CoreTextUtils } from '@providers/utils/text';
 import { CoreUrlUtils } from '@providers/utils/url';
+import { CoreQueueRunner } from '@classes/queue-runner';
 
 import { CoreH5PCore } from '../classes/core';
 import { CoreH5PFramework } from '../classes/framework';
@@ -46,6 +47,7 @@ export class CoreH5PProvider {
     h5pPlayer: CoreH5PPlayer;
     h5pStorage: CoreH5PStorage;
     h5pValidator: CoreH5PValidator;
+    queueRunner: CoreQueueRunner;
 
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreH5PProvider',
@@ -271,6 +273,7 @@ export class CoreH5PProvider {
     constructor() {
 
         this.logger = CoreLogger.instance.getInstance('CoreH5PProvider');
+        this.queueRunner = new CoreQueueRunner(1);
 
         CoreSites.instance.registerSiteSchema(this.siteSchema);
 

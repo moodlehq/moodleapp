@@ -146,11 +146,28 @@ export class CoreH5PHelper {
     static async saveH5P(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<void> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
-        const folderName = CoreMimetypeUtils.instance.removeExtension(file.name);
-        const destFolder = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
-
         // Notify that the unzip is starting.
         onProgress && onProgress({message: 'core.unzipping'});
+
+        const queueId = siteId + ':saveH5P:' + fileUrl;
+
+        await CoreH5P.instance.queueRunner.run(queueId, () => CoreH5PHelper.performSave(fileUrl, file, siteId, onProgress));
+    }
+
+    /**
+     * Extract and store an H5P file.
+     *
+     * @param fileUrl The file URL used to download the file.
+     * @param file The file entry of the downloaded file.
+     * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
+     * @return Promise resolved when done.
+     */
+    protected static async performSave(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any)
+            : Promise<void> {
+
+        const folderName = CoreMimetypeUtils.instance.removeExtension(file.name);
+        const destFolder = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
 
         // Unzip the file.
         await CoreFile.instance.unzipFile(file.toURL(), destFolder, onProgress);
