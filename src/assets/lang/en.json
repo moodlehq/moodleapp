@@ -1833,6 +1833,7 @@
     "core.login.signupplugindisabled": "{{$a}} is not enabled.",
     "core.login.signuprequiredfieldnotsupported": "The signup form contains a required custom field that isn't supported in the app. Please create your account using a web browser.",
     "core.login.siteaddress": "Your site",
+    "core.login.siteaddressplaceholder": "https://campus.example.edu",
     "core.login.sitehasredirect": "Your site contains at least one HTTP redirect. The app cannot follow redirects, this could be the issue that's preventing the app from connecting to your site.",
     "core.login.siteinmaintenance": "Your site is in maintenance mode",
     "core.login.sitepolicynotagreederror": "Site policy not agreed.",

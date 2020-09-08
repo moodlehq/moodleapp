@@ -104,6 +104,7 @@
     "signupplugindisabled": "{{$a}} is not enabled.",
     "signuprequiredfieldnotsupported": "The signup form contains a required custom field that isn't supported in the app. Please create your account using a web browser.",
     "siteaddress": "Your site",
+    "siteaddressplaceholder": "https://campus.example.edu",
     "sitehasredirect": "Your site contains at least one HTTP redirect. The app cannot follow redirects, this could be the issue that's preventing the app from connecting to your site.",
     "siteinmaintenance": "Your site is in maintenance mode",
     "sitepolicynotagreederror": "Site policy not agreed.",
