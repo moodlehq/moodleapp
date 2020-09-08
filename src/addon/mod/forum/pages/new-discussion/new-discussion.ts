@@ -112,6 +112,11 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
+        if (this.syncObserver) {
+            // Already setup.
+            return;
+        }
+
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = this.eventsProvider.on(AddonModForumSyncProvider.AUTO_SYNCED, (data) => {
             if (data.forumId == this.forumId && data.userId == this.sitesProvider.getCurrentSiteUserId()) {
@@ -549,6 +554,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      */
     ionViewWillLeave(): void {
         this.syncObserver && this.syncObserver.off();
+        delete this.syncObserver;
     }
 
     /**

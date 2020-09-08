@@ -49,18 +49,20 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
     @ViewChild('menu') menu: Menu;
     @Input() when?: string | boolean = 'md';
 
+    protected VIEW_EVENTS = ['willEnter', 'didEnter', 'willLeave', 'willLeave'];
+
     protected isEnabled;
     protected masterPageName = '';
     protected masterPageIndex = 0;
     protected loadDetailPage: any = false;
     protected element: HTMLElement; // Current element.
-    protected detailsDidEnterSubscription: Subscription;
     protected masterCanLeaveOverridden = false;
     protected originalMasterCanLeave: Function;
     protected ignoreSplitChanged = false;
     protected audioCaptureSubscription: Subscription;
     protected languageChangedSubscription: Subscription;
     protected pushOngoing: boolean;
+    protected viewEventsSubscriptions: Subscription[] = [];
 
     // Empty placeholder for the 'detail' page.
     detailPage: any = null;
@@ -92,7 +94,7 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
         this.masterPageIndex = this.masterNav.indexOf(this.masterNav.getActive());
         this.emptyDetails();
 
-        this.handleCanLeave();
+        this.handleViewEvents();
     }
 
     /**
@@ -123,7 +125,7 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      */
     handleCanLeave(): void {
         // Listen for the didEnter event on the details nav to detect everytime a page is loaded.
-        this.detailsDidEnterSubscription = this.detailNav.viewDidEnter.subscribe((detailsViewController: ViewController) => {
+        this.viewEventsSubscriptions.push(this.detailNav.viewDidEnter.subscribe((detailsViewController: ViewController) => {
             if (!this.isOn()) {
                 return;
             }
@@ -166,7 +168,30 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
                     });
                 };
             }
-        });
+        }));
+    }
+
+    /**
+     * Handle Ionic Views lifecycle events in the details page.
+     */
+    handleViewEvents(): void {
+        // Handle affected view events except ionViewCanLeave, propagating them to the details view.
+        const masterActiveView = this.masterNav.getActive();
+
+        for (const i in this.VIEW_EVENTS) {
+            const viewEvent = this.VIEW_EVENTS[i];
+
+            this.viewEventsSubscriptions.push(masterActiveView[viewEvent].subscribe(() => {
+                if (!this.isOn()) {
+                    return;
+                }
+
+                const activeView = this.detailNav.getActive();
+                activeView && activeView[`_${viewEvent}`]();
+            }));
+        }
+
+        this.handleCanLeave();
     }
 
     /**
@@ -274,8 +299,10 @@ export class CoreSplitViewComponent implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.detailsDidEnterSubscription && this.detailsDidEnterSubscription.unsubscribe();
         this.audioCaptureSubscription.unsubscribe();
         this.languageChangedSubscription.unsubscribe();
+        for (const i in this.viewEventsSubscriptions) {
+            this.viewEventsSubscriptions[i].unsubscribe();
+        }
     }
 }
