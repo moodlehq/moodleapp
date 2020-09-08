@@ -1592,6 +1592,18 @@ export class CoreUtilsProvider {
             // Ignore errors.
         }
     }
+
+    /**
+     * Wait some time.
+     *
+     * @param milliseconds Number of milliseconds to wait.
+     * @return Promise resolved after the time has passed.
+     */
+    wait(milliseconds: number): Promise<void> {
+        return new Promise((resolve, reject): void => {
+            setTimeout(resolve, milliseconds);
+        });
+    }
 }
 
 export class CoreUtils extends makeSingleton(CoreUtilsProvider) {}
