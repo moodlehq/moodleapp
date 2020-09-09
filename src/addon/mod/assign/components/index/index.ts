@@ -299,7 +299,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected hasSyncSucceed(result: any): boolean {
         if (result.updated) {
-            this.submissionComponent && this.submissionComponent.invalidateAndRefresh();
+            this.submissionComponent && this.submissionComponent.invalidateAndRefresh(false);
         }
 
         return result.updated;
@@ -324,7 +324,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         return Promise.all(promises).finally(() => {
-            this.submissionComponent && this.submissionComponent.invalidateAndRefresh();
+            this.submissionComponent && this.submissionComponent.invalidateAndRefresh(true);
         });
     }
 

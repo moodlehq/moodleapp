@@ -137,7 +137,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
         }
 
         return Promise.all(promises).finally(() => {
-            this.submissionComponent && this.submissionComponent.invalidateAndRefresh();
+            this.submissionComponent && this.submissionComponent.invalidateAndRefresh(true);
 
             return this.fetchSubmission();
         });

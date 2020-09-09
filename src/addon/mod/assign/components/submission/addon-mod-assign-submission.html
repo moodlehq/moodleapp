@@ -20,7 +20,7 @@
     </ion-item>
 
     <!-- Tabs: see the submission or grade it. -->
-    <core-tabs [selectedIndex]="selectedTab" [hideUntil]="loaded" parentScrollable="true">
+    <core-tabs [selectedIndex]="selectedTab" [hideUntil]="loaded" parentScrollable="true" (ionChange)="tabSelected($event)">
         <!-- View the submission tab. -->
         <core-tab [title]="'addon.mod_assign.submission' | translate">
             <ng-template>
