@@ -1833,6 +1833,7 @@
   "core.login.signupplugindisabled": "local_moodlemobileapp",
   "core.login.signuprequiredfieldnotsupported": "local_moodlemobileapp",
   "core.login.siteaddress": "local_moodlemobileapp",
+  "core.login.siteaddressplaceholder": "donottranslate",
   "core.login.sitehasredirect": "local_moodlemobileapp",
   "core.login.siteinmaintenance": "local_moodlemobileapp",
   "core.login.sitepolicynotagreederror": "local_moodlemobileapp",
