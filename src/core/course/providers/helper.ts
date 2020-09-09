@@ -614,7 +614,7 @@ export class CoreCourseHelperProvider {
                     // Not online, get the offline file. It will fail if not found.
                     return this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl).then((path) => {
                         return this.utils.openFile(path);
-                    }).catch((error) => {
+                    }, (error) => {
                         return Promise.reject(this.translate.instant('core.networkerrormsg'));
                     });
                 }
