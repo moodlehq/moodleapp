@@ -49,6 +49,16 @@ export class CoreCourseFormatSingleActivityHandler implements CoreCourseFormatHa
     }
 
     /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks(course: any): boolean {
+        return false;
+    }
+
+    /**
      * Get the title to use in course page. If not defined, course displayname or fullname.
      * This function will be called without sections first, and then call it again when the sections are retrieved.
      *

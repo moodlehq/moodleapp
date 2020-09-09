@@ -2,7 +2,7 @@
     <ng-content></ng-content>
 </div>
 
-<div *ngIf="blocks && blocks.length > 0" [class.core-hide-blocks]="hideBlocks" class="core-course-blocks-side">
+<div *ngIf="blocks && blocks.length > 0 && !hideBlocks" [class.core-hide-blocks]="hideBottomBlocks" class="core-course-blocks-side">
     <core-loading [hideUntil]="dataLoaded" class="core-loading-center">
         <ion-list>
             <!-- Course blocks. -->

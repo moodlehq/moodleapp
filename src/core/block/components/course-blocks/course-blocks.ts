@@ -30,6 +30,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
 
     @Input() courseId: number;
     @Input() hideBlocks = false;
+    @Input() hideBottomBlocks = false;
     @Input() downloadEnabled: boolean;
 
     @ViewChildren(CoreBlockComponent) blocksComponents: QueryList<CoreBlockComponent>;
@@ -49,6 +50,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.element.classList.add('core-no-blocks');
         this.loadContent().finally(() => {
             this.dataLoaded = true;
         });
@@ -89,7 +91,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
 
             this.blocks = [];
         }).finally(() => {
-            if (this.blocks.length > 0) {
+            if (!this.hideBlocks && this.blocks.length > 0) {
                 this.element.classList.add('core-has-blocks');
                 this.element.classList.remove('core-no-blocks');
 
