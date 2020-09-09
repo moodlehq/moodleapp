@@ -493,7 +493,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
 
         const scroll = parseInt(scrollElement.scrollTop, 10);
-        if (scroll == 0) {
+        if (scroll <= 0) {
             // Ensure tabbar is shown.
             this.topTabsElement.style.transform = '';
             this.originalTabsContainer.style.transform = '';
