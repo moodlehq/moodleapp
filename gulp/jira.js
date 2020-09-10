@@ -14,7 +14,6 @@
 
 const exec = require('child_process').exec;
 const https = require('https');
-const keytar = require('keytar');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const request = require('request'); // This lib is deprecated, but it was the only way I found to make upload files work.
@@ -246,6 +245,8 @@ class Jira {
         this.uri = parsed.path;
 
         // Get the password.
+        const keytar = require('keytar');
+
         this.password = await keytar.getPassword('mdk-jira-password', this.username); // Use same service name as mdk.
 
         if (!this.password) {
