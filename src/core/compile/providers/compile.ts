@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef } from '@angular/core';
+import {
+    Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef, NO_ERRORS_SCHEMA
+} from '@angular/core';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import {
     Platform, ActionSheetController, AlertController, LoadingController, ModalController, PopoverController, ToastController,
@@ -179,7 +181,7 @@ export class CoreCompileProvider {
         const imports = this.IMPORTS.concat(extraImports);
 
         // Now create the module containing the component.
-        const module = NgModule({imports: imports, declarations: [component]})(class {});
+        const module = NgModule({imports: imports, declarations: [component], schemas: [NO_ERRORS_SCHEMA]})(class {});
 
         try {
             // Compile the module and the component.
@@ -193,6 +195,9 @@ export class CoreCompileProvider {
                 }
             });
         } catch (ex) {
+            this.logger.error('Error compiling template', template);
+            this.logger.error(ex);
+
             return Promise.reject({message: 'Template has some errors and cannot be displayed.', debuginfo: ex});
         }
     }
