@@ -26,6 +26,7 @@
     "choose": "Choose",
     "choosedots": "Choose...",
     "clearsearch": "Clear search",
+    "clearstoreddata": "Clear storage {{$a}}",
     "clicktohideshow": "Click to expand or collapse",
     "clicktoseefull": "Click to see full contents.",
     "close": "Close",

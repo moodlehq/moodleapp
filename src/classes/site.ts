@@ -1107,10 +1107,10 @@ export class CoreSite {
      * @param componentId Optional component id (if not included, returns sum for whole component)
      * @return Promise resolved when we have calculated the size
      */
-    getComponentCacheSize(component: string, componentId?: string): Promise<number> {
-        const params = [component];
+    getComponentCacheSize(component: string, componentId?: number): Promise<number> {
+        const params: any[] = [component];
         let extraClause = '';
-        if (componentId) {
+        if (componentId !== undefined && componentId !== null) {
             params.push(componentId);
             extraClause = ' AND componentId = ?';
         }
@@ -1200,7 +1200,7 @@ export class CoreSite {
      * @param componentId Component id.
      * @return Promise resolved when the entries are deleted.
      */
-    async deleteComponentFromCache(component: string, componentId?: string): Promise<void> {
+    async deleteComponentFromCache(component: string, componentId?: number): Promise<void> {
         if (!component) {
             return;
         }

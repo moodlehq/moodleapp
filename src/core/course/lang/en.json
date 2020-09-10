@@ -7,6 +7,7 @@
     "availablespace": " You currently have about {{available}} free space.",
     "cannotdeletewhiledownloading": "Files cannot be deleted while the activity is being downloaded. Please wait for the download to finish.",
     "confirmdeletemodulefiles": "Are you sure you want to delete these files?",
+    "confirmdeletestoreddata": "Are you sure you want to delete the stored data?",
     "confirmdownload": "You are about to download {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "confirmdownloadunknownsize": "It was not possible to calculate the size of the download.{{availableSpace}} Are you sure you want to continue?",
     "confirmdownloadzerosize": "You are about to start downloading.{{availableSpace}} Are you sure you want to continue?",

@@ -419,16 +419,11 @@ export class CoreCourseHelperProvider {
 
         try {
 
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
 
             modal = this.domUtils.showModalLoading();
 
-            await this.prefetchDelegate.removeModuleFiles(module, courseId);
-
-            const handler = this.prefetchDelegate.getPrefetchHandlerFor(module);
-            if (handler) {
-                await this.sitesProvider.getCurrentSite().deleteComponentFromCache(handler.component, String(module.id));
-            }
+            await this.removeModuleStoredData(module, courseId);
 
             done && done();
 
@@ -859,7 +854,7 @@ export class CoreCourseHelperProvider {
             if (typeof instance.contextFileStatusObserver == 'undefined' && component) {
                 // Debounce the update size function to prevent too many calls when downloading or deleting a whole activity.
                 const debouncedUpdateSize = this.utils.debounce(() => {
-                    this.prefetchDelegate.getModuleDownloadedSize(module, courseId).then((moduleSize) => {
+                    this.prefetchDelegate.getModuleStoredSize(module, courseId).then((moduleSize) => {
                         instance.size = moduleSize > 0 ? this.textUtils.bytesToSize(moduleSize, 2) : 0;
                     });
                 }, 1000);
@@ -1630,10 +1625,30 @@ export class CoreCourseHelperProvider {
         const modules = CoreArray.flatten(sections.map((section) => section.modules));
 
         await Promise.all(
-            modules.map((module) => this.prefetchDelegate.removeModuleFiles(module, courseId)),
+            modules.map((module) => this.removeModuleStoredData(module, courseId)),
         );
 
         await this.courseProvider.setCourseStatus(courseId, CoreConstants.NOT_DOWNLOADED);
+    }
+
+    /**
+     * Remove module stored data.
+     *
+     * @param module Module to remove the files.
+     * @param courseId Course ID the module belongs to.
+     * @return Promise resolved when done.
+     */
+    async removeModuleStoredData(module: any, courseId: number): Promise<void> {
+        const promises = [];
+
+        promises.push(this.prefetchDelegate.removeModuleFiles(module, courseId));
+
+        const handler = this.prefetchDelegate.getPrefetchHandlerFor(module);
+        if (handler) {
+            promises.push(this.sitesProvider.getCurrentSite().deleteComponentFromCache(handler.component, module.id));
+        }
+
+        await Promise.all(promises);
     }
 
 }

@@ -163,7 +163,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      */
     async deleteCourse(): Promise<void> {
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;

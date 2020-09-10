@@ -20,7 +20,6 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreConstants } from '@core/constants';
-import { CoreSitesProvider } from '@providers/sites';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -40,7 +39,6 @@ export class AddonStorageManagerCourseStoragePage {
     totalSize: number;
 
     constructor(navParams: NavParams,
-            private sitesProvider: CoreSitesProvider,
             private courseProvider: CoreCourseProvider,
             private prefetchDelegate: CoreCourseModulePrefetchDelegate,
             private courseHelperProvider: CoreCourseHelperProvider,
@@ -102,7 +100,7 @@ export class AddonStorageManagerCourseStoragePage {
      */
     async deleteForCourse(): Promise<void> {
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -132,7 +130,7 @@ export class AddonStorageManagerCourseStoragePage {
      */
     async deleteForSection(section: any): Promise<void> {
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -162,7 +160,7 @@ export class AddonStorageManagerCourseStoragePage {
         }
 
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -186,13 +184,7 @@ export class AddonStorageManagerCourseStoragePage {
         const promises = [];
         modules.forEach((module) => {
             // Remove the files.
-            const promise = this.prefetchDelegate.removeModuleFiles(module, this.course.id).then(() => {
-                const handler = this.prefetchDelegate.getPrefetchHandlerFor(module);
-                if (handler) {
-
-                    return this.sitesProvider.getCurrentSite().deleteComponentFromCache(handler.component, module.id);
-                }
-            }).then(() => {
+            const promise = this.courseHelperProvider.removeModuleStoredData(module, this.course.id).then(() => {
                 // When the files and cache are removed, update the size.
                 module.parentSection.totalSize -= module.totalSize;
                 this.totalSize -= module.totalSize;
