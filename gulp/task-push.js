@@ -248,7 +248,10 @@ class PushTask {
                 if (numConsecutive > 2) {
                     // 3 consecutive commits with different branch, probably the branch commits are over. Everything OK.
                     return true;
-                } else if (!wrongCommitCandidate) {
+
+                // Don't treat a merge pull request commit as a wrong commit between right commits.
+                // The current push could be a quick fix after a merge.
+                } else if (!wrongCommitCandidate && message.indexOf('Merge pull request') == -1) {
                     wrongCommitCandidate = {
                         message: message,
                         issue: issue,
