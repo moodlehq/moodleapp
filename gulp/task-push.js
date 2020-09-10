@@ -169,26 +169,23 @@ class PushTask {
         // Get the repository data for the project.
         let repositoryUrl = DevConfig.get(branchData.project + '.repositoryUrl');
         let diffUrlTemplate = DevConfig.get(branchData.project + '.diffUrlTemplate', '');
-        let remoteUrl;
 
         if (!repositoryUrl) {
             // Calculate the repositoryUrl based on the remote URL.
-            remoteUrl = await Git.getRemoteUrl(remote);
-
-            repositoryUrl = remoteUrl.replace(/^https?:\/\//, 'git://');
-            if (!repositoryUrl.match(/\.git$/)) {
-                repositoryUrl += '.git';
-            }
+            repositoryUrl = await Git.getRemoteUrl(remote);
         }
+
+        // Make sure the repository URL uses the regular format.
+        repositoryUrl = repositoryUrl.replace(/^(git@|git:\/\/)/, 'https://')
+                                     .replace(/\.git$/, '')
+                                     .replace('github.com:', 'github.com/');
 
         if (!diffUrlTemplate) {
-            // Calculate the diffUrlTemplate based on the remote URL.
-            if (!remoteUrl) {
-                remoteUrl = await Git.getRemoteUrl(remoteUrl);
-            }
-
-            diffUrlTemplate = remoteUrl + '/compare/%headcommit%...%branch%';
+            diffUrlTemplate = Utils.concatenatePaths([repositoryUrl, 'compare/%headcommit%...%branch%']);
         }
+
+        // Now create the git URL for the repository.
+        const repositoryGitUrl = repositoryUrl.replace(/^https?:\/\//, 'git://') + '.git';
 
         // Search HEAD commit to put in the diff URL.
         console.log ('Searching for head commit...');
@@ -209,7 +206,7 @@ class PushTask {
 
         // Update tracker fields.
         const updates = {};
-        updates[fieldRepositoryUrl] = repositoryUrl;
+        updates[fieldRepositoryUrl] = repositoryGitUrl;
         updates[fieldBranch] = branch;
         updates[fieldDiffUrl] = diffUrl;
 
