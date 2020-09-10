@@ -32,9 +32,6 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
-before_install:
-  - if [ "$TRAVIS_OS_NAME" == 'linux' ] ; then sudo apt-get install -y libsecret-1-dev > /dev/null ; fi
-
 before_script:
   - if [ "$TRAVIS_OS_NAME" != 'windows' ] ; then  npm install npm@latest -g ; fi
   - gulp
@@ -67,7 +64,6 @@ jobs:
     - node --version
     - npm --version
     - nvm --version
-    - sudo apt-get install -y libsecret-1-dev > /dev/null
     - npm ci
     - npm install -g gulp
     script: scripts/aot.sh
