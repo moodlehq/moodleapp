@@ -17,7 +17,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Platform } from 'ionic-angular';
 import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -38,10 +38,11 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
             protected geolocation: Geolocation,
             protected domUtils: CoreDomUtilsProvider,
             protected sanitizer: DomSanitizer,
-            protected appProvider: CoreAppProvider) {
+            appProvider: CoreAppProvider
+            ) {
         super(fb);
 
-        this.showGeolocation = !this.appProvider.isDesktop();
+        this.showGeolocation = !appProvider.isDesktop();
     }
 
     /**
@@ -73,7 +74,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
             const eastFixed = east ? east.toFixed(4) : '0.0000';
             let url;
 
-            if (this.platform.is('ios')) {
+            if (CoreApp.instance.isIOS()) {
                 url = 'http://maps.apple.com/?ll=' + northFixed + ',' + eastFixed + '&near=' + northFixed + ',' + eastFixed;
             } else {
                 url = 'geo:' + northFixed + ',' + eastFixed;

@@ -15,7 +15,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform, IonicApp } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -146,7 +146,7 @@ export class MoodleMobileApp implements OnInit {
                 });
                 this.utils.closeInAppBrowser(false);
 
-            } else if (this.platform.is('android')) {
+            } else if (CoreApp.instance.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
                 const urlScheme = this.urlUtils.getUrlProtocol(url);
                 if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
@@ -260,7 +260,7 @@ export class MoodleMobileApp implements OnInit {
 
         // Pause Youtube videos in Android when app is put in background or screen is locked.
         this.platform.pause.subscribe(() => {
-            if (!this.platform.is('android')) {
+            if (!CoreApp.instance.isAndroid()) {
                 return;
             }
 
@@ -285,7 +285,7 @@ export class MoodleMobileApp implements OnInit {
         // Detect orientation changes.
         this.screenOrientation.onChange().subscribe(
             () => {
-                if (this.platform.is('ios')) {
+                if (CoreApp.instance.isIOS()) {
                     // Force ios to recalculate safe areas when rotating.
                     // This can be erased when https://issues.apache.org/jira/browse/CB-13448 issue is solved or
                     // After switching to WkWebview.

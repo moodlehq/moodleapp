@@ -14,10 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ModalController, Platform } from 'ionic-angular';
+import { ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { makeSingleton } from '@singletons/core.singletons';
+import { CoreApp } from '../app';
 
 /**
  * Different type of errors the app can treat.
@@ -84,8 +85,12 @@ export class CoreTextUtilsProvider {
 
     protected template = document.createElement('template'); // A template element to convert HTML to element.
 
-    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController,
-            private sanitizer: DomSanitizer, private platform: Platform) { }
+    constructor(
+            private translate: TranslateService,
+            private langProvider: CoreLangProvider,
+            private modalCtrl: ModalController,
+            private sanitizer: DomSanitizer
+            ) { }
 
     /**
      * Add ending slash from a path or URL.
@@ -139,7 +144,7 @@ export class CoreTextUtilsProvider {
      * @return URL to view the address.
      */
     buildAddressURL(address: string): SafeUrl {
-        return this.sanitizer.bypassSecurityTrustUrl((this.platform.is('android') ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+        return this.sanitizer.bypassSecurityTrustUrl((CoreApp.instance.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
                 encodeURIComponent(address));
     }
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Platform, ModalController } from 'ionic-angular';
+import { ModalController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { MediaCapture, MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +27,7 @@ import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreWSFileUploadOptions } from '@providers/ws';
 import { Subject } from 'rxjs';
+import { CoreApp } from '@providers/app';
 
 /**
  * File upload options.
@@ -61,7 +62,6 @@ export class CoreFileUploaderProvider {
             protected timeUtils: CoreTimeUtilsProvider,
             protected mimeUtils: CoreMimetypeUtilsProvider,
             protected filepoolProvider: CoreFilepoolProvider,
-            protected platform: Platform,
             protected translate: TranslateService,
             protected mediaCapture: MediaCapture,
             protected camera: Camera,
@@ -183,7 +183,7 @@ export class CoreFileUploaderProvider {
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
         const extension = this.mimeUtils.guessExtensionFromUrl(uri);
         const mimetype = this.mimeUtils.getMimeType(extension);
-        const isIOS = this.platform.is('ios');
+        const isIOS = CoreApp.instance.isIOS();
         const options: CoreFileUploaderOptions = {
                 deleteAfterUpload: !isFromAlbum,
                 mimeType: mimetype
@@ -206,7 +206,7 @@ export class CoreFileUploaderProvider {
             // If the file was picked from the album, delete it only if it was copied to the app's folder.
             options.deleteAfterUpload = this.fileProvider.isFileInAppFolder(uri);
 
-            if (this.platform.is('android')) {
+            if (CoreApp.instance.isAndroid()) {
                 // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
                 options.fileName = options.fileName.replace(/(\.[^\.]*)\?[^\.]*$/, '$1');
             }

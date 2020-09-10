@@ -19,7 +19,7 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { FileOpener } from '@ionic-native/file-opener';
 import { WebIntent } from '@ionic-native/web-intent';
 import { QRScanner } from '@ionic-native/qr-scanner';
-import { CoreAppProvider } from '../app';
+import { CoreApp } from '../app';
 import { CoreDomUtilsProvider } from './dom';
 import { CoreMimetypeUtilsProvider } from './mimetype';
 import { CoreTextUtilsProvider } from './text';
@@ -68,7 +68,6 @@ export class CoreUtilsProvider {
     protected qrScanData: {deferred: PromiseDefer, observable: Subscription};
 
     constructor(protected iab: InAppBrowser,
-            protected appProvider: CoreAppProvider,
             protected clipboard: Clipboard,
             protected domUtils: CoreDomUtilsProvider,
             logger: CoreLoggerProvider,
@@ -285,7 +284,7 @@ export class CoreUtilsProvider {
     closeInAppBrowser(closeAll?: boolean): void {
         if (this.iabInstance) {
             this.iabInstance.close();
-            if (closeAll && this.appProvider.isDesktop()) {
+            if (closeAll && CoreApp.instance.isDesktop()) {
                 require('electron').ipcRenderer.send('closeSecondaryWindows');
             }
         }
@@ -904,7 +903,7 @@ export class CoreUtilsProvider {
         const extension = this.mimetypeUtils.getFileExtension(path);
         const mimetype = this.mimetypeUtils.getMimeType(extension);
 
-        if (mimetype == 'text/html' && this.platform.is('android')) {
+        if (mimetype == 'text/html' && CoreApp.instance.isAndroid()) {
             // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
             this.openInApp(path);
 
@@ -959,7 +958,7 @@ export class CoreUtilsProvider {
             options.allowInlineMediaPlayback = 'yes'; // Allow playing inline videos in iOS.
         }
 
-        if (!options.location && this.platform.is('ios') && url.indexOf('file://') === 0) {
+        if (!options.location && CoreApp.instance.isIOS() && url.indexOf('file://') === 0) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
             options.location = 'no';
@@ -967,7 +966,7 @@ export class CoreUtilsProvider {
 
         this.iabInstance = this.iab.create(url, '_blank', options);
 
-        if (this.appProvider.isDesktop() || this.appProvider.isMobile()) {
+        if (CoreApp.instance.isDesktop() || CoreApp.instance.isMobile()) {
             let loadStopSubscription;
             const loadStartUrls = [];
 
@@ -985,7 +984,7 @@ export class CoreUtilsProvider {
                 });
             });
 
-            if (this.platform.is('android')) {
+            if (CoreApp.instance.isAndroid()) {
                 // Load stop is needed with InAppBrowser v3. Custom URL schemes no longer trigger load start, simulate it.
                 loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -1019,7 +1018,7 @@ export class CoreUtilsProvider {
      * @param url The URL to open.
      */
     openInBrowser(url: string): void {
-        if (this.appProvider.isDesktop()) {
+        if (CoreApp.instance.isDesktop()) {
             // It's a desktop app, use Electron shell library to open the browser.
             const shell = require('electron').shell;
             if (!shell.openExternal(url)) {
@@ -1039,7 +1038,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved when opened.
      */
     openOnlineFile(url: string): Promise<void> {
-        if (this.platform.is('android')) {
+        if (CoreApp.instance.isAndroid()) {
             // In Android we need the mimetype to open it.
             return this.getMimeTypeFromUrl(url).catch(() => {
                 // Error getting mimetype, return undefined.
@@ -1471,7 +1470,7 @@ export class CoreUtilsProvider {
      * @return Whether the app can scan QR codes.
      */
     canScanQR(): boolean {
-        return this.appProvider.isMobile();
+        return CoreApp.instance.isMobile();
     }
 
     /**
@@ -1500,7 +1499,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved with the QR string, rejected if error or cancelled.
      */
     startScanQR(): Promise<string> {
-        if (!this.appProvider.isMobile()) {
+        if (!CoreApp.instance.isMobile()) {
             return Promise.reject('QRScanner isn\'t available in desktop apps.');
         }
 

@@ -17,7 +17,7 @@ import { Platform, Alert, AlertController } from 'ionic-angular';
 import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { Push } from '@ionic-native/push';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider, CoreAppSchema } from './app';
+import { CoreApp, CoreAppProvider, CoreAppSchema } from './app';
 import { CoreConfigProvider } from './config';
 import { CoreEventsProvider } from './events';
 import { CoreLoggerProvider } from './logger';
@@ -115,10 +115,19 @@ export class CoreLocalNotificationsProvider {
     protected updateSubscription: Subscription;
     protected queueRunner: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
 
-    constructor(logger: CoreLoggerProvider, private localNotifications: LocalNotifications, private platform: Platform,
-            private appProvider: CoreAppProvider, private utils: CoreUtilsProvider, private configProvider: CoreConfigProvider,
-            private textUtils: CoreTextUtilsProvider, private translate: TranslateService, private alertCtrl: AlertController,
-            eventsProvider: CoreEventsProvider, private push: Push, private zone: NgZone) {
+    constructor(
+            logger: CoreLoggerProvider,
+            private localNotifications: LocalNotifications,
+            private platform: Platform,
+            private utils: CoreUtilsProvider,
+            private configProvider: CoreConfigProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private translate: TranslateService,
+            private alertCtrl: AlertController,
+            eventsProvider: CoreEventsProvider,
+            appProvider: CoreAppProvider,
+            private push: Push,
+            private zone: NgZone) {
 
         this.logger = logger.getInstance('CoreLocalNotificationsProvider');
         this.queueRunner = new CoreQueueRunner(10);
@@ -228,7 +237,7 @@ export class CoreLocalNotificationsProvider {
      */
     canDisableSound(): boolean {
         // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
-        return this.isAvailable() && !this.appProvider.isDesktop() && this.platform.is('android') &&
+        return this.isAvailable() && !CoreApp.instance.isDesktop() && CoreApp.instance.isAndroid() &&
                 this.platform.version().major < 8;
     }
 
@@ -238,7 +247,7 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when done.
      */
     protected createDefaultChannel(): Promise<any> {
-        if (!this.platform.is('android')) {
+        if (!CoreApp.instance.isAndroid()) {
             return Promise.resolve();
         }
 
@@ -368,7 +377,7 @@ export class CoreLocalNotificationsProvider {
     isAvailable(): boolean {
         const win = <any> window;
 
-        return this.appProvider.isDesktop() || !!(win.cordova && win.cordova.plugins && win.cordova.plugins.notification &&
+        return CoreApp.instance.isDesktop() || !!(win.cordova && win.cordova.plugins && win.cordova.plugins.notification &&
                 win.cordova.plugins.notification.local);
     }
 
@@ -609,7 +618,7 @@ export class CoreLocalNotificationsProvider {
         notification.data.component = component;
         notification.data.siteId = siteId;
 
-        if (this.platform.is('android')) {
+        if (CoreApp.instance.isAndroid()) {
             notification.icon = notification.icon || 'res://icon';
             notification.smallIcon = notification.smallIcon || 'res://smallicon';
             notification.color = notification.color || CoreConfigConstants.notificoncolor;

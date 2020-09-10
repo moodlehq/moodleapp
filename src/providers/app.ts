@@ -17,6 +17,7 @@ import { Platform, App, NavController, MenuController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
 import { StatusBar } from '@ionic-native/status-bar';
+import { Device } from '@ionic-native/device';
 
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
@@ -178,6 +179,7 @@ export class CoreAppProvider {
             zone: NgZone,
             private menuCtrl: MenuController,
             private statusBar: StatusBar,
+            private device: Device,
             appRef: ApplicationRef) {
 
         this.logger = logger.getInstance('CoreAppProvider');
@@ -390,7 +392,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return this.platform.is('android');
+        return this.isMobile() && this.device.platform.toLowerCase() == 'android';
     }
 
     /**
@@ -410,7 +412,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return this.platform.is('ios');
+        return this.isMobile() && this.device.platform.toLowerCase() == 'ios';
     }
 
     /**
@@ -568,7 +570,7 @@ export class CoreAppProvider {
      */
     openKeyboard(): void {
         // Open keyboard is not supported in desktop and in iOS.
-        if (this.isMobile() && !this.platform.is('ios')) {
+        if (this.isMobile() && !this.isIOS()) {
             this.keyboard.show();
         }
     }
@@ -797,23 +799,23 @@ export class CoreAppProvider {
      * Set StatusBar color depending on platform.
      */
     setStatusBarColor(): void {
-        if (typeof CoreConfigConstants.statusbarbgios == 'string' && this.platform.is('ios')) {
+        if (typeof CoreConfigConstants.statusbarbgios == 'string' && this.isIOS()) {
             // IOS Status bar properties.
             this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgios);
             CoreConfigConstants.statusbarlighttextios ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) {
+        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.isAndroid()) {
             // Android Status bar properties.
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgandroid);
             CoreConfigConstants.statusbarlighttextandroid ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         } else if (typeof CoreConfigConstants.statusbarbg == 'string') {
             // Generic Status bar properties.
-            this.platform.is('ios') && this.statusBar.overlaysWebView(false);
+            this.isIOS() && this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbg);
             CoreConfigConstants.statusbarlighttext ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         } else {
             // Default Status bar properties.
-            this.platform.is('android') ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+            this.isAndroid() ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         }
     }
 
@@ -822,11 +824,11 @@ export class CoreAppProvider {
      */
     resetStatusBarColor(): void {
         if (typeof CoreConfigConstants.statusbarbgremotetheme == 'string' &&
-                ((typeof CoreConfigConstants.statusbarbgios == 'string' && this.platform.is('ios')) ||
-                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) ||
+                ((typeof CoreConfigConstants.statusbarbgios == 'string' && this.isIOS()) ||
+                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.isAndroid()) ||
                 typeof CoreConfigConstants.statusbarbg == 'string')) {
             // If the status bar has been overriden and there's a fallback color for remote themes, use it now.
-            this.platform.is('ios') && this.statusBar.overlaysWebView(false);
+            this.isIOS() && this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgremotetheme);
             CoreConfigConstants.statusbarlighttextremotetheme ?
                 this.statusBar.styleLightContent() : this.statusBar.styleDefault();

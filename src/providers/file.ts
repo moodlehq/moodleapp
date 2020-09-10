@@ -15,8 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { File, FileEntry, DirectoryEntry, Entry, Metadata } from '@ionic-native/file';
-
-import { CoreAppProvider } from './app';
+import { CoreApp, CoreAppProvider } from './app';
 import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
@@ -73,16 +72,16 @@ export class CoreFileProvider {
     protected isHTMLAPI = false;
 
     constructor(logger: CoreLoggerProvider,
+            appProvider: CoreAppProvider,
             protected platform: Platform,
             protected file: File,
-            protected appProvider: CoreAppProvider,
             protected textUtils: CoreTextUtilsProvider,
             protected zip: Zip,
             protected mimeUtils: CoreMimetypeUtilsProvider) {
 
         this.logger = logger.getInstance('CoreFileProvider');
 
-        if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
+        if (appProvider.isAndroid() && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
             // Cordova File plugin creates some getters and setter for FileReader, but Ionic's polyfills override them in Android.
             // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
             this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
@@ -178,9 +177,9 @@ export class CoreFileProvider {
 
         return this.platform.ready().then(() => {
 
-            if (this.platform.is('android')) {
+            if (CoreApp.instance.isAndroid()) {
                 this.basePath = this.file.externalApplicationStorageDirectory || this.basePath;
-            } else if (this.platform.is('ios')) {
+            } else if (CoreApp.instance.isIOS()) {
                 this.basePath = this.file.documentsDirectory || this.basePath;
             } else if (!this.isAvailable() || this.basePath === '') {
                 this.logger.error('Error getting device OS.');
@@ -475,7 +474,7 @@ export class CoreFileProvider {
      */
     calculateFreeSpace(): Promise<number> {
         return this.file.getFreeDiskSpace().then((size) => {
-            if (this.platform.is('ios')) {
+            if (CoreApp.instance.isIOS()) {
                 // In iOS the size is in bytes.
                 return Number(size);
             }
@@ -622,7 +621,7 @@ export class CoreFileProvider {
 
             // Create file (and parent folders) to prevent errors.
             return this.createFile(path).then((fileEntry) => {
-                if (this.isHTMLAPI && !this.appProvider.isDesktop() &&
+                if (this.isHTMLAPI && !CoreApp.instance.isDesktop() &&
                     (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
                     // We need to write Blobs.
                     const type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(path));
@@ -745,7 +744,7 @@ export class CoreFileProvider {
      */
     getBasePathToDownload(): Promise<string> {
         return this.init().then(() => {
-            if (this.platform.is('ios')) {
+            if (CoreApp.instance.isIOS()) {
                 // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
                 return this.file.resolveDirectoryUrl(this.basePath).then((dirEntry) => {
                     return dirEntry.toInternalURL();
@@ -1252,7 +1251,7 @@ export class CoreFileProvider {
      * @return Converted src.
      */
     convertFileSrc(src: string): string {
-        return this.appProvider.isIOS() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
+        return CoreApp.instance.isIOS() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
     }
 
     /**
@@ -1262,7 +1261,7 @@ export class CoreFileProvider {
      * @return Unconverted src.
      */
     unconvertFileSrc(src: string): string {
-        if (!this.appProvider.isIOS()) {
+        if (!CoreApp.instance.isIOS()) {
             return src;
         }
 

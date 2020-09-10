@@ -16,7 +16,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Config, Platform, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
-import { CoreAppProvider } from '../app';
+import { CoreApp } from '../app';
 import { CoreFileProvider } from '../file';
 import { CoreLoggerProvider } from '../logger';
 import { CoreSitesProvider } from '../sites';
@@ -39,16 +39,24 @@ export class CoreIframeUtilsProvider {
 
     protected logger;
 
-    constructor(logger: CoreLoggerProvider, private fileProvider: CoreFileProvider, private sitesProvider: CoreSitesProvider,
-            private urlUtils: CoreUrlUtilsProvider, private textUtils: CoreTextUtilsProvider, private utils: CoreUtilsProvider,
-            private domUtils: CoreDomUtilsProvider, private platform: Platform, private appProvider: CoreAppProvider,
-            private translate: TranslateService, private network: Network, private zone: NgZone, private config: Config,
-            private contentLinksHelper: CoreContentLinksHelperProvider) {
+    constructor(logger: CoreLoggerProvider,
+            private fileProvider: CoreFileProvider,
+            private sitesProvider: CoreSitesProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private utils: CoreUtilsProvider,
+            private domUtils: CoreDomUtilsProvider,
+            platform: Platform,
+            private translate: TranslateService,
+            private network: Network, private zone: NgZone,
+            private config: Config,
+            private contentLinksHelper: CoreContentLinksHelperProvider
+            ) {
         this.logger = logger.getInstance('CoreUtilsProvider');
 
         const win = <WKUserScriptWindow> window;
 
-        if (platform.is('ios') && win.WKUserScript) {
+        if (CoreApp.instance.isIOS() && win.WKUserScript) {
             platform.ready().then(() => {
                 // Inject code to the iframes because we cannot access the online ones.
                 const wwwPath = fileProvider.getWWWAbsolutePath();
@@ -78,7 +86,7 @@ export class CoreIframeUtilsProvider {
     checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
         const src = element.src || element.data;
 
-        if (src && src != 'about:blank' && !this.urlUtils.isLocalFileUrl(src) && !this.appProvider.isOnline()) {
+        if (src && src != 'about:blank' && !this.urlUtils.isLocalFileUrl(src) && !CoreApp.instance.isOnline()) {
             if (element.classList.contains('core-iframe-offline-disabled')) {
                 // Iframe already hidden, stop.
                 return true;
@@ -444,7 +452,7 @@ export class CoreIframeUtilsProvider {
             this.utils.openFile(link.href).catch((error) => {
                 this.domUtils.showErrorModal(error);
             });
-        } else if (this.platform.is('ios') && (!link.target || link.target == '_self') && element) {
+        } else if (CoreApp.instance.isIOS() && (!link.target || link.target == '_self') && element) {
             // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
             event && event.preventDefault();
             if (element.tagName.toLowerCase() == 'object') {

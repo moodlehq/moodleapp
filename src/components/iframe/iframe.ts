@@ -16,7 +16,7 @@ import {
     Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, Optional
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { NavController, Platform } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 import { CoreFile } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -25,6 +25,7 @@ import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUrl } from '@singletons/url';
+import { CoreApp } from '@providers/app';
 import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 @Component({
@@ -54,7 +55,7 @@ export class CoreIframeComponent implements OnChanges {
             protected urlUtils: CoreUrlUtilsProvider,
             protected utils: CoreUtilsProvider,
             @Optional() protected svComponent: CoreSplitViewComponent,
-            protected platform: Platform) {
+            ) {
 
         this.logger = logger.getInstance('CoreIframe');
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -106,7 +107,7 @@ export class CoreIframeComponent implements OnChanges {
         if (changes.src) {
             const url = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
 
-            if (this.platform.is('ios') && url && !this.urlUtils.isLocalFileUrl(url)) {
+            if (CoreApp.instance.isIOS() && url && !this.urlUtils.isLocalFileUrl(url)) {
                 // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
                 try {
                     const win = <WKWebViewCookiesWindow> window;

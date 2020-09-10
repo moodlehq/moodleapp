@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { CoreApp } from '@providers/app';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from '@core/fileuploader/providers/delegate';
 import { CoreSharedFilesHelperProvider } from './helper';
 /**
@@ -24,7 +24,7 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
     name = 'CoreSharedFilesUpload';
     priority = 1300;
 
-    constructor(private sharedFilesHelper: CoreSharedFilesHelperProvider, private platform: Platform) { }
+    constructor(private sharedFilesHelper: CoreSharedFilesHelperProvider) { }
 
     /**
      * Whether or not the handler is enabled on a site level.
@@ -32,7 +32,7 @@ export class CoreSharedFilesUploadHandler implements CoreFileUploaderHandler {
      * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.platform.is('ios');
+        return CoreApp.instance.isIOS();
     }
 
     /**
