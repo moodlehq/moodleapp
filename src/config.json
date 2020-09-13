@@ -1,7 +1,7 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "desktopappname": "Moodle Desktop",
+    "app_id": "com.ecurei.mobile",
+    "appname": "ECUREI Elearning",
+    "desktopappname": "ECUREI Desktop",
     "versioncode": 3920,
     "versionname": "3.9.2",
     "cache_update_frequency_usually": 420000,
@@ -78,13 +78,13 @@
         93.75
     ],
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
-    "sitename": "",
+    "siteurl": "http://elearning.ecurei.ac.ug",
+    "sitename": "ECUREI",
     "multisitesdisplay": "",
     "onlyallowlistedsites": false,
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https:\/\/moodle.net\/moodle-app-privacy\/",
+    "privacypolicy": "https:\/\/ecurei.ac.ug\/elearning-privacy\/",
     "notificoncolor": "#f98012",
     "statusbarbg": false,
     "statusbarlighttext": false,
@@ -99,10 +99,10 @@
     "forceColorScheme": "",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
-        "ios": "id633359593",
+        "android": "com.ecurei.mobile",
+        "ios": "id633359554",
         "windows": "moodle-desktop\/9p9bwvhdc8c8",
-        "mac": "id1255924440",
+        "mac": "id125592e344440",
         "linux": "https:\/\/download.moodle.org\/desktop\/download.php?platform=linux&arch=64"
     }
 }
