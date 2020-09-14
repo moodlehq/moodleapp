@@ -70,7 +70,7 @@ export class CoreLoginCredentialsPage {
 
         this.siteUrl = navParams.get('siteUrl');
         this.siteName = navParams.get('siteName') || null;
-        this.logoUrl = navParams.get('logoUrl') || null;
+        this.logoUrl = !CoreConfigConstants.forceLoginLogo && navParams.get('logoUrl') || null;
         this.siteConfig = navParams.get('siteConfig');
         this.urlToOpen = navParams.get('urlToOpen');
 
