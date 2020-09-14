@@ -13,7 +13,7 @@
 // limitations under the License.
 
 const DevConfig = require('./dev-config');
-const DEFAULT_ISSUE_REGEX = '(MOBILE)[-_]([0-9]+)';
+const DEFAULT_ISSUE_REGEX = '^(MOBILE)[-_]([0-9]+)';
 
 /**
  * Class with some utility functions.
