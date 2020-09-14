@@ -392,7 +392,8 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return this.isMobile() && this.device.platform.toLowerCase() == 'android';
+        return this.isMobile() &&
+            ((this.device.platform && this.device.platform.toLowerCase() == 'android') || this.platform.is('android'));
     }
 
     /**
@@ -412,7 +413,8 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return this.isMobile() && this.device.platform.toLowerCase() == 'ios';
+        return this.isMobile() &&
+            ((this.device.platform && this.device.platform.toLowerCase() == 'ios') || this.platform.is('ios'));
     }
 
     /**

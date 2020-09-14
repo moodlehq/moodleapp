@@ -49,31 +49,33 @@ export class CoreSharedFilesModule {
         // Register the handler.
         delegate.registerHandler(handler);
 
-        if (appsProvider.isIOS()) {
-            let lastCheck = 0;
+        platform.ready().then(() => {
+            if (appsProvider.isIOS()) {
+                let lastCheck = 0;
 
-            // Check if there are new files at app start and when the app is resumed.
-            helper.searchIOSNewSharedFiles();
-            platform.resume.subscribe(() => {
-                // Wait a bit to make sure that APP_LAUNCHED_URL is treated before this callback.
-                setTimeout(() => {
-                    if (Date.now() - lastCheck < 1000) {
-                        // Last check less than 1s ago, don't do anything.
-                        return;
+                // Check if there are new files at app start and when the app is resumed.
+                helper.searchIOSNewSharedFiles();
+                platform.resume.subscribe(() => {
+                    // Wait a bit to make sure that APP_LAUNCHED_URL is treated before this callback.
+                    setTimeout(() => {
+                        if (Date.now() - lastCheck < 1000) {
+                            // Last check less than 1s ago, don't do anything.
+                            return;
+                        }
+
+                        lastCheck = Date.now();
+                        helper.searchIOSNewSharedFiles();
+                    }, 200);
+                });
+
+                eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, (url) => {
+                    if (url && url.indexOf('file://') === 0) {
+                        // We received a file in iOS, it's probably a shared file. Treat it.
+                        lastCheck = Date.now();
+                        helper.searchIOSNewSharedFiles(url);
                     }
-
-                    lastCheck = Date.now();
-                    helper.searchIOSNewSharedFiles();
-                }, 200);
-            });
-
-            eventsProvider.on(CoreEventsProvider.APP_LAUNCHED_URL, (url) => {
-                if (url && url.indexOf('file://') === 0) {
-                    // We received a file in iOS, it's probably a shared file. Treat it.
-                    lastCheck = Date.now();
-                    helper.searchIOSNewSharedFiles(url);
-                }
-            });
-        }
+                });
+            }
+        });
     }
 }
