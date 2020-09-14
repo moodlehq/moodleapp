@@ -1,10 +1,10 @@
 {
-  "name": "moodlemobile",
+  "name": "ECUREI Elearning",
   "version": "3.9.2",
-  "description": "The official app for Moodle.",
+  "description": "The official app for ECUREI Elearning.",
   "author": {
-    "name": "Moodle Pty Ltd.",
-    "email": "mobile@moodle.com"
+    "name": "ECUREI Elearning",
+    "email": "support@ecurei.ac.ug"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
@@ -179,7 +179,7 @@
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {},
       "cordova-plugin-customurlscheme": {
-        "URL_SCHEME": "moodlemobile"
+        "URL_SCHEME": "http://elearning.ecurei.ac.ug"
       },
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
@@ -218,8 +218,8 @@
   },
   "main": "desktop/electron.js",
   "build": {
-    "appId": "com.moodle.moodledesktop",
-    "productName": "Moodle Desktop",
+    "appId": "com.ecurei.mobile",
+    "productName": "ECUREI Elearning",
     "files": [
       "desktop/electron.js",
       "www/**/*",
@@ -240,7 +240,7 @@
     },
     "protocols": [
       {
-        "name": "Moodle Mobile URL",
+        "name": "http://elearning.ecurei.ac.ug",
         "schemes": [
           "moodlemobile"
         ],
