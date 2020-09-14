@@ -1,9 +1,9 @@
 {
-  "name": "ECUREI Elearning",
+  "name": "ECUREI",
   "version": "3.9.2",
   "description": "The official app for ECUREI Elearning.",
   "author": {
-    "name": "ECUREI Elearning",
+    "name": "ECUREI",
     "email": "support@ecurei.ac.ug"
   },
   "config": {
@@ -219,7 +219,7 @@
   "main": "desktop/electron.js",
   "build": {
     "appId": "com.ecurei.mobile",
-    "productName": "ECUREI Elearning",
+    "productName": "ECUREI",
     "files": [
       "desktop/electron.js",
       "www/**/*",
