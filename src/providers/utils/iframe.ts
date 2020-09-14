@@ -16,7 +16,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Config, Platform, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
-import { CoreApp } from '../app';
+import { CoreApp, CoreAppProvider } from '../app';
 import { CoreFileProvider } from '../file';
 import { CoreLoggerProvider } from '../logger';
 import { CoreSitesProvider } from '../sites';
@@ -47,6 +47,7 @@ export class CoreIframeUtilsProvider {
             private utils: CoreUtilsProvider,
             private domUtils: CoreDomUtilsProvider,
             platform: Platform,
+            appProvider: CoreAppProvider,
             private translate: TranslateService,
             private network: Network, private zone: NgZone,
             private config: Config,
@@ -56,8 +57,8 @@ export class CoreIframeUtilsProvider {
 
         const win = <WKUserScriptWindow> window;
 
-        if (CoreApp.instance.isIOS() && win.WKUserScript) {
-            platform.ready().then(() => {
+        platform.ready().then(() => {
+            if (appProvider.isIOS() && win.WKUserScript) {
                 // Inject code to the iframes because we cannot access the online ones.
                 const wwwPath = fileProvider.getWWWAbsolutePath();
                 const linksPath = textUtils.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
@@ -72,8 +73,8 @@ export class CoreIframeUtilsProvider {
 
                 // Handle post messages received by iframes.
                 window.addEventListener('message', this.handleIframeMessage.bind(this));
-            });
-        }
+            }
+        });
     }
 
     /**
