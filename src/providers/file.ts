@@ -81,31 +81,28 @@ export class CoreFileProvider {
 
         this.logger = logger.getInstance('CoreFileProvider');
 
-        platform.ready().then(() => {
-            if (appProvider.isAndroid() && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
-                // Cordova File plugin creates some getters and setter for FileReader, but
-                // Ionic's polyfills override them in Android.
-                // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
-                this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
-                    return this._localURL ? this._readyState : this._realReader.readyState;
-                });
+        if (appProvider.isAndroid() && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
+            // Cordova File plugin creates some getters and setter for FileReader, but Ionic's polyfills override them in Android.
+            // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
+            this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
+                return this._localURL ? this._readyState : this._realReader.readyState;
+            });
 
-                this.defineGetterSetter(FileReader.prototype, 'error', function(): any {
-                    return this._localURL ? this._error : this._realReader.error;
-                });
+            this.defineGetterSetter(FileReader.prototype, 'error', function(): any {
+                return this._localURL ? this._error : this._realReader.error;
+            });
 
-                this.defineGetterSetter(FileReader.prototype, 'result', function(): any {
-                    return this._localURL ? this._result : this._realReader.result;
-                });
+            this.defineGetterSetter(FileReader.prototype, 'result', function(): any {
+                return this._localURL ? this._result : this._realReader.result;
+            });
 
-                this.defineEvent('onloadstart');
-                this.defineEvent('onprogress');
-                this.defineEvent('onload');
-                this.defineEvent('onerror');
-                this.defineEvent('onloadend');
-                this.defineEvent('onabort');
-            }
-        });
+            this.defineEvent('onloadstart');
+            this.defineEvent('onprogress');
+            this.defineEvent('onload');
+            this.defineEvent('onerror');
+            this.defineEvent('onloadend');
+            this.defineEvent('onabort');
+        }
     }
 
     /**

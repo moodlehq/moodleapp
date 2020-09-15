@@ -17,7 +17,6 @@ import { Platform, App, NavController, MenuController } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
 import { StatusBar } from '@ionic-native/status-bar';
-import { Device } from '@ionic-native/device';
 
 import { CoreDbProvider } from './db';
 import { CoreLoggerProvider } from './logger';
@@ -179,7 +178,6 @@ export class CoreAppProvider {
             zone: NgZone,
             private menuCtrl: MenuController,
             private statusBar: StatusBar,
-            private device: Device,
             appRef: ApplicationRef) {
 
         this.logger = logger.getInstance('CoreAppProvider');
@@ -392,8 +390,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return this.isMobile() &&
-            ((this.device.platform && this.device.platform.toLowerCase() == 'android') || this.platform.is('android'));
+        return this.isMobile() && this.platform.is('android');
     }
 
     /**
@@ -413,8 +410,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return this.isMobile() &&
-            ((this.device.platform && this.device.platform.toLowerCase() == 'ios') || this.platform.is('ios'));
+        return this.isMobile() && !this.platform.is('android');
     }
 
     /**
@@ -572,7 +568,7 @@ export class CoreAppProvider {
      */
     openKeyboard(): void {
         // Open keyboard is not supported in desktop and in iOS.
-        if (this.isMobile() && !this.isIOS()) {
+        if (this.isAndroid()) {
             this.keyboard.show();
         }
     }
