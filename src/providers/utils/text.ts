@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ModalController } from 'ionic-angular';
+import { ModalController, ModalOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { makeSingleton } from '@singletons/core.singletons';
@@ -1163,7 +1163,7 @@ export class CoreTextUtilsProvider {
 
             Object.assign(params, options);
 
-            const modal = this.modalCtrl.create('CoreViewerTextPage', params);
+            const modal = this.modalCtrl.create('CoreViewerTextPage', params, options.modalOptions);
             modal.present();
         }
     }
@@ -1181,6 +1181,7 @@ export type CoreTextUtilsViewTextOptions = {
     instanceId?: number; // The instance ID related to the context.
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     displayCopyButton?: boolean; // Whether to display a button to copy the text.
+    modalOptions?: ModalOptions; // Modal options.
 };
 
 export class CoreTextUtils extends makeSingleton(CoreTextUtilsProvider) {}
