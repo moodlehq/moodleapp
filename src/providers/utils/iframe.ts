@@ -57,8 +57,8 @@ export class CoreIframeUtilsProvider {
 
         const win = <WKUserScriptWindow> window;
 
-        platform.ready().then(() => {
-            if (appProvider.isIOS() && win.WKUserScript) {
+        if (appProvider.isIOS() && win.WKUserScript) {
+            platform.ready().then(() => {
                 // Inject code to the iframes because we cannot access the online ones.
                 const wwwPath = fileProvider.getWWWAbsolutePath();
                 const linksPath = textUtils.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
@@ -73,8 +73,8 @@ export class CoreIframeUtilsProvider {
 
                 // Handle post messages received by iframes.
                 window.addEventListener('message', this.handleIframeMessage.bind(this));
-            }
-        });
+            });
+        }
     }
 
     /**
