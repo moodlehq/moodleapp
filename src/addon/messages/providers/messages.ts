@@ -1961,7 +1961,8 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {
-        return this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_conversation_messages_as_read') ||
+                this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
     }
 
     /**
