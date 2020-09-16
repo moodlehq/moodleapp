@@ -71,11 +71,22 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
             });
         }
 
-        // Try to handle the appurl first.
+        // Try to handle the appurl.
         if (notification.customdata && notification.customdata.appurl) {
-            if (this.linkHelper.handleLink(notification.customdata.appurl, undefined, undefined, true)) {
-                // Link treated, stop.
-                return;
+            switch (notification.customdata.appurlopenin) {
+                case 'inappbrowser':
+                    this.utils.openInApp(notification.customdata.appurl);
+
+                    return;
+
+                case 'browser':
+                    return this.utils.openInBrowser(notification.customdata.appurl);
+
+                default:
+                    if (this.linkHelper.handleLink(notification.customdata.appurl, undefined, undefined, true)) {
+                        // Link treated, stop.
+                        return;
+                    }
             }
         }
 
