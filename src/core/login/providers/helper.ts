@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { AlertController, NavController, NavOptions } from 'ionic-angular';
+import { NavController, NavOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreApp, CoreStoreConfig } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
@@ -101,7 +101,6 @@ export class CoreLoginHelperProvider {
             private initDelegate: CoreInitDelegate,
             private sitePluginsProvider: CoreSitePluginsProvider,
             private location: Location,
-            private alertCtrl: AlertController,
             private courseProvider: CoreCourseProvider
             ) {
         this.logger = logger.getInstance('CoreLoginHelper');
@@ -1235,7 +1234,7 @@ export class CoreLoginHelperProvider {
     protected showWorkplaceNoticeModal(message: string): void {
         const link = CoreApp.instance.getAppStoreUrl({android: 'com.moodle.workplace', ios: 'id1470929705' });
 
-        this.showDownloadAppNoticeModal(message, link);
+        this.domUtils.showDownloadAppNoticeModal(message, link);
     }
 
     /**
@@ -1251,45 +1250,7 @@ export class CoreLoginHelperProvider {
 
         const link = CoreApp.instance.getAppStoreUrl(storesConfig);
 
-        this.showDownloadAppNoticeModal(message, link);
-    }
-
-    /**
-     * Show a modal warning the user that he should use a different app.
-     *
-     * @param message The warning message.
-     * @param link Link to the app to download if any.
-     */
-    protected showDownloadAppNoticeModal(message: string, link?: string): void {
-        const buttons: any[] = [
-                {
-                    text: this.translate.instant('core.ok'),
-                    role: 'cancel'
-                }
-            ];
-
-        if (link) {
-            buttons.push({
-                text: this.translate.instant('core.download'),
-                handler: (): void => {
-                    this.utils.openInBrowser(link);
-                }
-            });
-        }
-
-        const alert = this.alertCtrl.create({
-                message: message,
-                buttons: buttons
-            });
-
-        alert.present().then(() => {
-            const isDevice = CoreApp.instance.isAndroid() || CoreApp.instance.isIOS();
-            if (!isDevice) {
-                // Treat all anchors so they don't override the app.
-                const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
-                this.domUtils.treatAnchors(alertMessageEl);
-            }
-        });
+        this.domUtils.showDownloadAppNoticeModal(message, link);
     }
 
     /**

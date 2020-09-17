@@ -335,7 +335,7 @@ export class CoreLoginSitePage {
      * @return Promise resolved after logging in.
      */
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
-        return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
+        return this.sitesProvider.checkApplication(response).then(() => {
 
             this.domUtils.triggerFormSubmittedEvent(this.formElement, true);
 
