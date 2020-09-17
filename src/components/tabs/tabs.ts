@@ -52,6 +52,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     // Minimum tab's width to display fully the word "Competencies" which is the longest tab in the app.
     static MIN_TAB_WIDTH = 107;
+    // Max height that allows tab hiding.
+    static MAX_HEIGHT_TO_HIDE_TABS = 768;
 
     @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = true; // Determine when should the contents be shown.
@@ -229,9 +231,22 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      * Calculate slides.
      */
     calculateSlides(): void {
-        if (!this.isCurrentView || !this.tabsShown || !this.initialized) {
+        if (!this.isCurrentView || !this.initialized) {
             // Don't calculate if component isn't in current view, the calculations are wrong.
             return;
+        }
+
+        if (!this.tabsShown) {
+             if (window.innerHeight >= CoreTabsComponent.MAX_HEIGHT_TO_HIDE_TABS) {
+                // Ensure tabbar is shown.
+                this.tabsShown = true;
+                this.tabBarElement.classList.remove('tabs-hidden');
+                this.lastScroll = 0;
+                this.calculateTabBarHeight();
+            } else {
+                // Don't recalculate.
+                return;
+            }
         }
 
         this.calculateMaxSlides().then(() => {
@@ -477,8 +492,8 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
      * @param scrollElement Scroll element to check scroll position.
      */
     showHideTabs(scrollElement: any): void {
-        // Do not scroll on very tall screens.
-        if (window.innerHeight >= 1024) {
+        // Always show on very tall screens.
+        if (window.innerHeight >= CoreTabsComponent.MAX_HEIGHT_TO_HIDE_TABS) {
             return;
         }
 
