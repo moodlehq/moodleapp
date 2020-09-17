@@ -730,10 +730,10 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
     getModuleFiles(module: any, courseId: number): Promise<any[]> {
         const handler = this.getPrefetchHandlerFor(module);
 
-        if (handler.getFiles) {
+        if (handler && handler.getFiles) {
             // The handler defines a function to get files, use it.
             return Promise.resolve(handler.getFiles(module, courseId));
-        } else if (handler.loadContents) {
+        } else if (handler && handler.loadContents) {
             // The handler defines a function to load contents, use it before returning module contents.
             return handler.loadContents(module, courseId).then(() => {
                 return module.contents;
