@@ -1403,6 +1403,42 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Show a modal warning the user that he should use a different app.
+     *
+     * @param message The warning message.
+     * @param link Link to the app to download if any.
+     */
+    showDownloadAppNoticeModal(message: string, link?: string): void {
+        const buttons: any[] = [{
+            text: this.translate.instant('core.ok'),
+            role: 'cancel'
+        }];
+
+        if (link) {
+            buttons.push({
+                text: this.translate.instant('core.download'),
+                handler: (): void => {
+                    this.openInBrowser(link);
+                }
+            });
+        }
+
+        const alert = this.alertCtrl.create({
+            message: message,
+            buttons: buttons
+        });
+
+        alert.present().then(() => {
+            const isDevice = CoreApp.instance.isAndroid() || CoreApp.instance.isIOS();
+            if (!isDevice) {
+                // Treat all anchors so they don't override the app.
+                const alertMessageEl: HTMLElement = alert.pageRef().nativeElement.querySelector('.alert-message');
+                this.treatAnchors(alertMessageEl);
+            }
+        });
+    }
+
+    /**
      * Show a prompt modal to input some data.
      *
      * @param message Modal message.
@@ -1559,17 +1595,7 @@ export class CoreDomUtilsProvider {
                     event.preventDefault();
                     event.stopPropagation();
 
-                    // We cannot use CoreDomUtilsProvider.openInBrowser due to circular dependencies.
-                    if (CoreApp.instance.isDesktop()) {
-                        // It's a desktop app, use Electron shell library to open the browser.
-                        const shell = require('electron').shell;
-                        if (!shell.openExternal(href)) {
-                            // Open browser failed, open a new window in the app.
-                            window.open(href, '_system');
-                        }
-                    } else {
-                        window.open(href, '_system');
-                    }
+                    this.openInBrowser(href);
                 }
             });
         });
@@ -1680,6 +1706,21 @@ export class CoreDomUtilsProvider {
             online: !!online,
         }, siteId);
     }
+
+    // We cannot use CoreUtilsProvider.openInBrowser due to circular dependencies.
+    protected openInBrowser(url: string): void {
+        if (CoreApp.instance.isDesktop()) {
+            // It's a desktop app, use Electron shell library to open the browser.
+            const shell = require('electron').shell;
+            if (!shell.openExternal(url)) {
+                // Open browser failed, open a new window in the app.
+                window.open(url, '_system');
+            }
+        } else {
+            window.open(url, '_system');
+        }
+    }
+
 }
 
 export class CoreDomUtils extends makeSingleton(CoreDomUtilsProvider) {}

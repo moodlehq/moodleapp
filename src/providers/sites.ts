@@ -1024,6 +1024,15 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Check the app for a site and show a download dialogs if necessary.
+     *
+     * @param response Data obtained during site check.
+     */
+    async checkApplication(response: CoreSiteCheckResponse): Promise<void> {
+        await this.checkRequiredMinimumVersion(response.config);
+    }
+
+    /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
      * @param  config Config object of the site.
