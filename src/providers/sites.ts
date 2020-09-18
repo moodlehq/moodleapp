@@ -641,7 +641,8 @@ export class CoreSitesProvider {
      * @return A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
-        return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
+        return this.http.post(siteUrl + '/login/token.php', { appsitecheck: 1 }).
+                timeout(this.wsProvider.getRequestTimeout()).toPromise()
                 .catch(() => {
             // Default error messages are kinda bad, return our own message.
             return Promise.reject({error: this.translate.instant('core.cannotconnecttrouble')});
