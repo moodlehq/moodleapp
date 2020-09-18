@@ -221,7 +221,7 @@ export class AddonModAssignSyncProvider extends CoreSyncBaseProvider {
      */
     protected async performSyncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
 
-        this.logger.error('Try to sync assign ' + assignId + ' in site ' + siteId);
+        this.logger.debug('Try to sync assign ' + assignId + ' in site ' + siteId);
 
         const result: AddonModAssignSyncResult = {
             warnings: [],

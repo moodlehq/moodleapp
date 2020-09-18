@@ -110,6 +110,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected originalGrades: any = {}; // Object with the original grade data, to check for changes.
     protected isDestroyed: boolean; // Whether the component has been destroyed.
     protected syncObserver: CoreEventObserver;
+    protected hasOfflineGrade = false;
 
     constructor(protected navCtrl: NavController, protected appProvider: CoreAppProvider, protected domUtils: CoreDomUtilsProvider,
             sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider, protected timeUtils: CoreTimeUtilsProvider,
@@ -306,17 +307,23 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Check if there's data to save (grade).
      *
+     * @param isSubmit Whether the user is about to submit the grade.
      * @return Promise resolved with boolean: whether there's data to save.
      */
-    protected hasDataToSave(): Promise<boolean> {
+    protected async hasDataToSave(isSubmit?: boolean): Promise<boolean> {
         if (!this.canSaveGrades || !this.loaded) {
-            return Promise.resolve(false);
+            return false;
+        }
+
+        if (isSubmit && this.hasOfflineGrade) {
+            // Always allow sending if the grade is saved in offline.
+            return true;
         }
 
         // Check if numeric grade and toggles changed.
         if (this.originalGrades.grade != this.grade.grade || this.originalGrades.addAttempt != this.grade.addAttempt ||
                 this.originalGrades.applyToAll != this.grade.applyToAll) {
-            return Promise.resolve(true);
+            return true;
         }
 
         // Check if outcomes changed.
@@ -326,20 +333,21 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
                 if (this.originalGrades.outcomes[outcome.id] == 'undefined' ||
                         this.originalGrades.outcomes[outcome.id] != outcome.selectedId) {
-                    return Promise.resolve(true);
+                    return true;
                 }
             }
         }
 
         if (this.feedback && this.feedback.plugins) {
-            return this.assignHelper.hasFeedbackDataChanged(this.assign, this.userSubmission, this.feedback, this.submitId)
-                    .catch(() => {
+            try {
+                return this.assignHelper.hasFeedbackDataChanged(this.assign, this.userSubmission, this.feedback, this.submitId);
+            } catch (error) {
                 // Error ocurred, consider there are no changes.
                 return false;
-            });
+            }
         }
 
-        return Promise.resolve(false);
+        return false;
     }
 
     /**
@@ -645,11 +653,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 return this.assignOfflineProvider.getSubmissionGrade(this.assign.id, this.submitId).catch(() => {
                     // Grade not found.
                 }).then((data) => {
+                    this.hasOfflineGrade = false;
 
                     // Load offline grades.
                     if (data && (!feedback || !feedback.gradeddate || feedback.gradeddate < data.timemodified)) {
                         // If grade has been modified from gradebook, do not use offline.
                         if (this.grade.modified < data.timemodified) {
+                            this.hasOfflineGrade = true;
                             this.grade.grade = !this.grade.scale ? this.utils.formatFloat(data.grade) : data.grade;
                             this.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
                             this.gradingColor = '';
@@ -790,7 +800,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     submitGrade(): Promise<any> {
         // Check if there's something to be saved.
-        return this.hasDataToSave().then((modified) => {
+        return this.hasDataToSave(true).then((modified) => {
             if (!modified) {
                 return;
             }
