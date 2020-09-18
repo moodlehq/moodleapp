@@ -132,7 +132,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.initializeTabs();
         }
 
-        this.resizeFunction = this.calculateSlides.bind(this);
+        this.resizeFunction = this.windowResized.bind(this);
 
         window.addEventListener('resize', this.resizeFunction);
     }
@@ -629,6 +629,15 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected updateAriaHidden(): void {
         this.tabs.forEach((tab, index) => {
             tab.updateAriaHidden();
+        });
+    }
+
+    /**
+     * Adapt tabs to a window resize.
+     */
+    protected windowResized(): void {
+        setTimeout(() => {
+            this.calculateSlides();
         });
     }
 
