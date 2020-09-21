@@ -183,19 +183,7 @@ export class AddonModResourceHelperProvider {
      * @param courseId Course Id, used for completion purposes.
      * @return Resolved when done.
      */
-    async openModuleFile(module: any, courseId: number): Promise<any> {
-        // Check whether the file type excluded to open in app.
-        if (!module.contents.length) {
-            await this.courseProvider.loadModuleContents(module, courseId);
-        }
-
-        if (!this.fileHelper.isOpenableInApp(module.contents[0])) {
-            const confirmed = await this.fileHelper.showConfirmOpenUnsupportedFile();
-            if (!confirmed) {
-                return;
-            }
-        }
-
+    openModuleFile(module: any, courseId: number): Promise<any> {
         const modal = this.domUtils.showModalLoading();
 
         // Download and open the file from the resource contents.

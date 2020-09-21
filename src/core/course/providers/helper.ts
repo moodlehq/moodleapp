@@ -585,6 +585,10 @@ export class CoreCourseHelperProvider {
                 return Promise.reject(this.utils.createFakeWSError('core.filenotfound', true));
             }
 
+            if (!this.fileHelper.isOpenableInApp(module.contents[0])) {
+                return this.fileHelper.showConfirmOpenUnsupportedFile();
+            }
+        }).then(() => {
             return this.sitesProvider.getSite(siteId);
         }).then((site) => {
             const mainFile = files[0],

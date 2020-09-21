@@ -51,63 +51,58 @@ export class CoreFileHelperProvider {
      * @param siteId The site ID. If not defined, current site.
      * @return Resolved on success.
      */
-    downloadAndOpenFile(file: any, component: string, componentId: string | number, state?: string,
-            onProgress?: (event: any) => any, siteId?: string): Promise<any> {
+    async downloadAndOpenFile(file: any, component: string, componentId: string | number, state?: string,
+            onProgress?: (event: any) => any, siteId?: string): Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const fileUrl = this.getFileUrl(file),
-            timemodified = this.getFileTimemodified(file);
+        const fileUrl = this.getFileUrl(file);
+        const timemodified = this.getFileTimemodified(file);
 
-        return this.downloadFileIfNeeded(file, fileUrl, component, componentId, timemodified, state, onProgress, siteId)
-                .then((url) => {
-            if (!url) {
+        if (!this.isOpenableInApp(file)) {
+            await this.showConfirmOpenUnsupportedFile();
+        }
+
+        let url = await this.downloadFileIfNeeded(file, fileUrl, component, componentId, timemodified, state, onProgress, siteId);
+
+        if (!url) {
+            return;
+        }
+
+        if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
+            /* In iOS, if we use the same URL in embedded browser and background download then the download only
+               downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
+            url = url + '#moodlemobile-embedded';
+
+            try {
+                await this.utils.openOnlineFile(url);
+
                 return;
+            } catch (error) {
+                // Error opening the file, some apps don't allow opening online files.
+                if (!this.fileProvider.isAvailable()) {
+                    throw error;
+                }
+
+                // Get the state.
+                if (!state) {
+                    state = await this.filepoolProvider.getFileStateByUrl(siteId, fileUrl, timemodified);
+                }
+
+                if (state == CoreConstants.DOWNLOADING) {
+                    throw new Error(this.translate.instant('core.erroropenfiledownloading'));
+                }
+
+                if (state === CoreConstants.NOT_DOWNLOADED) {
+                    // File is not downloaded, download and then return the local URL.
+                    url = await this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
+                } else {
+                    // File is outdated and can't be opened in online, return the local URL.
+                    url = await this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                }
             }
+        }
 
-            if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
-                /* In iOS, if we use the same URL in embedded browser and background download then the download only
-                   downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
-                url = url + '#moodlemobile-embedded';
-
-                return this.utils.openOnlineFile(url).catch((error) => {
-                    // Error opening the file, some apps don't allow opening online files.
-                    if (!this.fileProvider.isAvailable()) {
-                        return Promise.reject(error);
-                    }
-
-                    let promise;
-
-                    // Get the state.
-                    if (state) {
-                        promise = Promise.resolve(state);
-                    } else {
-                        promise = this.filepoolProvider.getFileStateByUrl(siteId, fileUrl, timemodified);
-                    }
-
-                    return promise.then((state) => {
-                        if (state == CoreConstants.DOWNLOADING) {
-                            return Promise.reject(this.translate.instant('core.erroropenfiledownloading'));
-                        }
-
-                        let promise;
-
-                        if (state === CoreConstants.NOT_DOWNLOADED) {
-                            // File is not downloaded, download and then return the local URL.
-                            promise = this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
-                        } else {
-                            // File is outdated and can't be opened in online, return the local URL.
-                            promise = this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
-                        }
-
-                        return promise.then((url) => {
-                            return this.utils.openFile(url);
-                        });
-                    });
-                });
-            } else {
-                return this.utils.openFile(url);
-            }
-        });
+        return this.utils.openFile(url);
     }
 
     /**
@@ -357,21 +352,16 @@ export class CoreFileHelperProvider {
     }
 
     /**
-     * Is the file openable in app.
+     * Show a confirm asking the user if we wants to open the file.
      *
-     * @param file The file to check.
-     * @return bool.
+     * @param onlyDownload Whether the user is only downloading the file, not opening it.
+     * @return Promise resolved if confirmed, rejected otherwise.
      */
-    async showConfirmOpenUnsupportedFile(): Promise<boolean> {
-        try {
-            await this.domUtils.showConfirm(this.translate.instant('core.cannotopeninapp'), undefined,
-                this.translate.instant('core.openfile'));
+    showConfirmOpenUnsupportedFile(onlyDownload?: boolean): Promise<void> {
+        const message = this.translate.instant('core.cannotopeninapp' + (onlyDownload ? 'download' : ''));
+        const okButton = this.translate.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
 
-            return true;
-        }
-        catch (e) {
-            return false;
-        }
+        return this.domUtils.showConfirm(message, undefined, okButton, undefined, { cssClass: 'core-modal-force-on-top' });
     }
 
     /**
