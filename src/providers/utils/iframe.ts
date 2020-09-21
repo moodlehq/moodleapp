@@ -18,6 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Network } from '@ionic-native/network';
 import { CoreApp, CoreAppProvider } from '../app';
 import { CoreFileProvider } from '../file';
+import { CoreFileHelper } from '../file-helper';
 import { CoreLoggerProvider } from '../logger';
 import { CoreSitesProvider } from '../sites';
 import { CoreDomUtilsProvider } from './dom';
@@ -390,6 +391,16 @@ export class CoreIframeUtilsProvider {
             }
         } else if (this.urlUtils.isLocalFileUrl(url)) {
             // It's a local file.
+            const filename = url.substr(url.lastIndexOf('/') + 1);
+
+            if (!CoreFileHelper.instance.isOpenableInApp({ filename })) {
+                try {
+                    await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
             try {
                 await this.utils.openFile(url);
             } catch (error) {
@@ -409,9 +420,10 @@ export class CoreIframeUtilsProvider {
      * @param link Data of the link clicked.
      * @param element Frame element.
      * @param event Click event.
+     * @return Promise resolved when done.
      */
-    protected linkClicked(link: {href: string, target?: string}, element?: HTMLFrameElement | HTMLObjectElement, event?: Event)
-            : void {
+    protected async linkClicked(link: {href: string, target?: string}, element?: HTMLFrameElement | HTMLObjectElement,
+            event?: Event): Promise<void> {
         if (event && event.defaultPrevented) {
             // Event already prevented by some other code.
             return;
@@ -445,14 +457,27 @@ export class CoreIframeUtilsProvider {
             if (!this.sitesProvider.isLoggedIn()) {
                 this.utils.openInBrowser(link.href);
             } else {
-                this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(link.href);
+                await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(link.href);
             }
         } else if (link.target == '_parent' || link.target == '_top' || link.target == '_blank') {
             // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
             event && event.preventDefault();
-            this.utils.openFile(link.href).catch((error) => {
+
+            const filename = link.href.substr(link.href.lastIndexOf('/') + 1);
+
+            if (!CoreFileHelper.instance.isOpenableInApp({ filename })) {
+                try {
+                    await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
+            try {
+                await this.utils.openFile(link.href);
+            } catch (error) {
                 this.domUtils.showErrorModal(error);
-            });
+            }
         } else if (CoreApp.instance.isIOS() && (!link.target || link.target == '_self') && element) {
             // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
             event && event.preventDefault();

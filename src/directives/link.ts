@@ -14,6 +14,7 @@
 
 import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController, Content } from 'ionic-angular';
+import { CoreFileHelper } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -21,7 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 /**
  * Directive to open a link in external browser.
@@ -94,14 +95,27 @@ export class CoreLinkDirective implements OnInit {
      * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param href HREF to be opened.
+     * @return Promise resolved when done.
      */
-    protected navigate(href: string): void {
+    protected async navigate(href: string): Promise<void> {
 
         if (this.urlUtils.isLocalFileUrl(href)) {
             // We have a local file.
-            this.utils.openFile(href).catch((error) => {
+            const filename = href.substr(href.lastIndexOf('/') + 1);
+
+            if (!CoreFileHelper.instance.isOpenableInApp({ filename })) {
+                try {
+                    await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
+            try {
+                await this.utils.openFile(href);
+            } catch (error) {
                 this.domUtils.showErrorModal(error);
-            });
+            }
         } else if (href.charAt(0) == '#') {
             href = href.substr(1);
             // In site links
@@ -113,9 +127,11 @@ export class CoreLinkDirective implements OnInit {
                 this.domUtils.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');
             }
         } else if (this.urlSchemesProvider.isCustomURL(href)) {
-            this.urlSchemesProvider.handleCustomURL(href).catch((error: CoreCustomURLSchemesHandleError) => {
+            try {
+                await this.urlSchemesProvider.handleCustomURL(href);
+            } catch (error) {
                 this.urlSchemesProvider.treatHandleCustomURLError(error);
-            });
+            }
         } else {
 
             // It's an external link, we will open with browser. Check if we need to auto-login.
@@ -139,9 +155,9 @@ export class CoreLinkDirective implements OnInit {
 
                 if (this.autoLogin == 'yes') {
                     if (this.inApp) {
-                        this.sitesProvider.getCurrentSite().openInAppWithAutoLogin(href);
+                        await this.sitesProvider.getCurrentSite().openInAppWithAutoLogin(href);
                     } else {
-                        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(href);
+                        await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(href);
                     }
                 } else if (this.autoLogin == 'no') {
                     if (this.inApp) {
@@ -151,9 +167,9 @@ export class CoreLinkDirective implements OnInit {
                     }
                 } else {
                     if (this.inApp) {
-                        this.sitesProvider.getCurrentSite().openInAppWithAutoLoginIfSameSite(href);
+                        await this.sitesProvider.getCurrentSite().openInAppWithAutoLoginIfSameSite(href);
                     } else {
-                        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
+                        await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
                     }
                 }
             }

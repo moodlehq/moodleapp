@@ -343,10 +343,10 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @return bool.
      */
-    isOpenableInApp(file: any): boolean {
+    isOpenableInApp(file: {filename?: string, name?: string}): boolean {
         const re = /(?:\.([^.]+))?$/;
 
-        const ext = re.exec(file.filename)[1];
+        const ext = re.exec(file.filename || file.name)[1];
 
         return !this.isFileTypeExcludedInApp(ext);
     }
