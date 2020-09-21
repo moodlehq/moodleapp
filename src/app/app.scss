@@ -873,6 +873,10 @@ ion-app.app-root {
     height: 100% !important;
   }
 
+  .core-modal-force-on-top {
+    z-index: 100000 !important;
+  }
+
   @media only screen and (min-height: 400px) and (min-width: 300px) {
       .core-modal-lateral {
         @include core-split-area-end();
