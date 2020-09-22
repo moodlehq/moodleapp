@@ -281,7 +281,7 @@ export class AddonModGlossarySyncProvider extends CoreSyncBaseProvider {
                     });
                 }
                 if (result.warnings.length) {
-                    promises.push(this.glossaryProvider.getGlossary(result.itemSet.courseId, result.itemSet.instanceId, siteId)
+                    promises.push(this.glossaryProvider.getGlossary(result.itemSet.courseId, result.itemSet.instanceId, {siteId})
                             .then((glossary) => {
                         result.warnings.forEach((warning) => {
                             warnings.push(this.translate.instant('core.warningofflinedatadeleted', {

@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreGroupsProvider } from '@providers/groups';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -80,13 +80,13 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     canUseCheckUpdates(module: any, courseId: number): boolean | Promise<boolean> {
         // Teachers cannot use the WS because it doesn't check student submissions.
         return this.assignProvider.getAssignment(courseId, module.id).then((assign) => {
-            return this.assignProvider.getSubmissions(assign.id).then((data) => {
+            return this.assignProvider.getSubmissions(assign.id, {cmId: module.id}).then((data) => {
                 if (data.canviewsubmissions) {
                     return false;
                 }
 
                 // Check if the user can view their own submission.
-                return this.assignProvider.getSubmissionStatus(assign.id).then(() => {
+                return this.assignProvider.getSubmissionStatus(assign.id, {cmId: module.id}).then(() => {
                     return true;
                 });
             });
@@ -108,18 +108,18 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.assignProvider.getAssignment(courseId, module.id, false, siteId).then((assign) => {
+        return this.assignProvider.getAssignment(courseId, module.id, {siteId}).then((assign) => {
             // Get intro files and attachments.
             let files = assign.introattachments || [];
             files = files.concat(this.getIntroFilesFromInstance(module, assign));
 
             // Now get the files in the submissions.
-            return this.assignProvider.getSubmissions(assign.id, false, siteId).then((data) => {
+            return this.assignProvider.getSubmissions(assign.id, {cmId: module.id, siteId}).then((data) => {
                 const blindMarking = assign.blindmarking && !assign.revealidentities;
 
                 if (data.canviewsubmissions) {
                     // Teacher, get all submissions.
-                    return this.assignHelper.getSubmissionsUserData(assign, data.submissions, 0, false, siteId)
+                    return this.assignHelper.getSubmissionsUserData(assign, data.submissions, 0, {siteId})
                             .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                         const promises = [];
@@ -172,8 +172,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
     protected getSubmissionFiles(assign: any, submitId: number, blindMarking: boolean, siteId?: string)
             : Promise<any[]> {
 
-        return this.assignProvider.getSubmissionStatusWithRetry(assign, submitId, undefined, blindMarking, true, false, siteId)
-                .then((response) => {
+        return this.assignProvider.getSubmissionStatusWithRetry(assign, {
+            userId: submitId,
+            isBlind: blindMarking,
+            siteId,
+        }).then((response) => {
             const promises = [];
             let userSubmission: AddonModAssignSubmission;
 
@@ -261,20 +264,24 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return Promise resolved when done.
      */
     protected prefetchAssign(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        const userId = this.sitesProvider.getCurrentSiteUserId(),
-            promises = [];
+        const userId = this.sitesProvider.getCurrentSiteUserId();
+        const promises = [];
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
+        const options = {
+            cmId: module.id,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+
         // Get assignment to retrieve all its submissions.
-        promises.push(this.assignProvider.getAssignment(courseId, module.id, true, siteId).then((assign) => {
+        promises.push(this.assignProvider.getAssignment(courseId, module.id, options).then((assign) => {
             const subPromises = [],
                 blindMarking = assign.blindmarking && !assign.revealidentities;
 
             if (blindMarking) {
-                subPromises.push(this.assignProvider.getAssignmentUserMappings(assign.id, undefined, true, siteId).catch(() => {
-                    // Ignore errors.
-                }));
+                subPromises.push(this.utils.ignoreErrors(this.assignProvider.getAssignmentUserMappings(assign.id, -1, options)));
             }
 
             subPromises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
@@ -304,8 +311,14 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return Promise resolved when prefetched, rejected otherwise.
      */
     protected prefetchSubmissions(assign: any, courseId: number, moduleId: number, userId: number, siteId: string): Promise<any> {
+        const options = {
+            cmId: moduleId,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+
         // Get submissions.
-        return this.assignProvider.getSubmissions(assign.id, true, siteId).then((data) => {
+        return this.assignProvider.getSubmissions(assign.id, options).then((data) => {
             const promises = [];
 
             promises.push(this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((groupInfo) => {
@@ -317,14 +330,22 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                     }
 
                     groupInfo.groups.forEach((group) => {
-                        groupProms.push(this.assignHelper.getSubmissionsUserData(assign, data.submissions, group.id, true, siteId)
+                        groupProms.push(this.assignHelper.getSubmissionsUserData(assign, data.submissions, group.id, options)
                                 .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                             const subPromises = [];
 
                             submissions.forEach((submission) => {
-                                subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, submission.submitid,
-                                        group.id, !!submission.blindid, true, true, siteId).then((subm) => {
+                                const submissionOptions = {
+                                    userId: submission.submitid,
+                                    groupId: group.id,
+                                    isBlind: !!submission.blindid,
+                                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                                    siteId,
+                                };
+
+                                subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, submissionOptions)
+                                        .then((subm) => {
                                     return this.prefetchSubmission(assign, courseId, moduleId, subm, submission.submitid, siteId);
                                 }).catch((error) => {
                                     if (error && error.errorcode == 'nopermission') {
@@ -338,14 +359,21 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
                             if (!assign.markingworkflow) {
                                 // Get assignment grades only if workflow is not enabled to check grading date.
-                                subPromises.push(this.assignProvider.getAssignmentGrades(assign.id, true, siteId));
+                                subPromises.push(this.assignProvider.getAssignmentGrades(assign.id, options));
                             }
 
                             // Prefetch the submission of the current user even if it does not exist, this will be create it.
                             if (!data.submissions ||
                                     !data.submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid == userId)) {
-                                subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, userId, group.id,
-                                        false, true, true, siteId).then((subm) => {
+                                const submissionOptions = {
+                                    userId,
+                                    groupId: group.id,
+                                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                                    siteId,
+                                };
+
+                                subPromises.push(this.assignProvider.getSubmissionStatusWithRetry(assign, submissionOptions)
+                                        .then((subm) => {
                                     return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
                                 }));
                             }
@@ -353,7 +381,7 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
                             return Promise.all(subPromises);
                         }).then(() => {
                             // Participiants already fetched, we don't need to ignore cache now.
-                            return this.assignHelper.getParticipants(assign, group.id, false, siteId).then((participants) => {
+                            return this.assignHelper.getParticipants(assign, group.id, {siteId}).then((participants) => {
                                 return this.userProvider.prefetchUserAvatars(participants, 'profileimageurl', siteId);
                             }).catch(() => {
                                 // Fail silently (Moodle < 3.2).
@@ -367,8 +395,11 @@ export class AddonModAssignPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             // Prefetch own submission, we need to do this for teachers too so the response with error is cached.
             promises.push(
-                this.assignProvider.getSubmissionStatusWithRetry(assign, userId, undefined, false, true, true, siteId)
-                        .then((subm) => {
+                this.assignProvider.getSubmissionStatusWithRetry(assign, {
+                    userId,
+                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                    siteId,
+                }).then((subm) => {
                     return this.prefetchSubmission(assign, courseId, moduleId, subm, userId, siteId);
                 }).catch((error) => {
                     // Ignore if the user can't view their own submission.

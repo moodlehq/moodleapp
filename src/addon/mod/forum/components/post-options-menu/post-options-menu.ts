@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSite } from '@classes/site';
 import { AddonModForumProvider } from '../../providers/forum';
 
@@ -35,6 +35,8 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
     loaded = false;
     url: string;
 
+    protected cmId: number;
+
     constructor(navParams: NavParams,
             protected viewCtrl: ViewController,
             protected domUtils: CoreDomUtilsProvider,
@@ -42,6 +44,7 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
             protected sitesProvider: CoreSitesProvider) {
         this.post = navParams.get('post');
         this.forumId = navParams.get('forumId');
+        this.cmId = navParams.get('cmId');
     }
 
     /**
@@ -64,7 +67,10 @@ export class AddonForumPostOptionsMenuComponent implements OnInit {
             if (this.forumId) {
                 try {
                     this.post =
-                        await this.forumProvider.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, true);
+                        await this.forumProvider.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, {
+                            cmId: this.cmId,
+                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                        });
                 } catch (error) {
                     this.domUtils.showErrorModalDefault(error, 'Error getting discussion post.');
                 }

@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -111,7 +111,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             // Check if online attempt was finished because of the sync.
             if (onlineAttempt && !this.quizProvider.isAttemptFinished(onlineAttempt.state)) {
                 // Attempt wasn't finished at start. Check if it's finished now.
-                return this.quizProvider.getUserAttempts(quiz.id, 'all', true, false, false, siteId).then((attempts) => {
+                return this.quizProvider.getUserAttempts(quiz.id, {cmId: quiz.coursemodule, siteId}).then((attempts) => {
                     // Search the attempt.
                     for (const i in attempts) {
                         const attempt = attempts[i];
@@ -180,7 +180,11 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         }).then(() => {
             // Prefetch finished or not needed, set the right status.
-            return this.prefetchHandler.setStatusAfterPrefetch(quiz, undefined, shouldDownload, false, siteId);
+            return this.prefetchHandler.setStatusAfterPrefetch(quiz, {
+                cmId: module.id,
+                readingStrategy: shouldDownload ? CoreSitesReadingStrategy.PreferCache : undefined,
+                siteId,
+            });
         });
     }
 
@@ -226,7 +230,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
                 if (!this.syncProvider.isBlocked(AddonModQuizProvider.COMPONENT, quiz.id, siteId)) {
 
                     // Quiz not blocked, try to synchronize it.
-                    promises.push(this.quizProvider.getQuizById(quiz.courseid, quiz.id, false, false, siteId).then((quiz) => {
+                    promises.push(this.quizProvider.getQuizById(quiz.courseid, quiz.id, {siteId}).then((quiz) => {
                         const promise = force ? this.syncQuiz(quiz, false, siteId) : this.syncQuizIfNeeded(quiz, false, siteId);
 
                         return promise.then((data) => {
@@ -284,10 +288,15 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
     syncQuiz(quiz: any, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const warnings = [],
-            courseId = quiz.course;
-        let syncPromise,
-            preflightData;
+        const warnings = [];
+        const courseId = quiz.course;
+        const modOptions = {
+            cmId: quiz.coursemodule,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+        let syncPromise;
+        let preflightData;
 
         if (this.isSyncing(quiz.id, siteId)) {
             // There's already a sync ongoing for this quiz, return the promise.
@@ -318,7 +327,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             const offlineAttempt = attempts.pop();
 
             // Now get the list of online attempts to make sure this attempt exists and isn't finished.
-            return this.quizProvider.getUserAttempts(quiz.id, 'all', true, false, true, siteId).then((attempts) => {
+            return this.quizProvider.getUserAttempts(quiz.id, modOptions).then((attempts) => {
                 const lastAttemptId = attempts.length ? attempts[attempts.length - 1].id : undefined;
                 let onlineAttempt;
 
@@ -354,7 +363,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
                     let finish;
 
                     // We're going to need preflightData, get it.
-                    return this.quizProvider.getQuizAccessInformation(quiz.id, false, true, siteId).then((info) => {
+                    return this.quizProvider.getQuizAccessInformation(quiz.id, modOptions).then((info) => {
 
                         return this.prefetchHandler.getPreflightData(quiz, info, onlineAttempt, askPreflight,
                                 'core.settings.synchronization', siteId);
@@ -364,8 +373,11 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
                         // Now get the online questions data.
                         const pages = this.quizProvider.getPagesFromLayoutAndQuestions(onlineAttempt.layout, offlineQuestions);
 
-                        return this.quizProvider.getAllQuestionsData(quiz, onlineAttempt, preflightData, pages, false, true,
-                                siteId);
+                        return this.quizProvider.getAllQuestionsData(quiz, onlineAttempt, preflightData, {
+                            pages,
+                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                            siteId,
+                        });
                     }).then((onlineQuestions) => {
 
                         // Validate questions, discarding the offline answers that can't be synchronized.

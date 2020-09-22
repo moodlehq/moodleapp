@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
@@ -209,29 +209,29 @@ export class AddonModAssignHelperProvider {
      *
      * @param assign Assignment object.
      * @param groupId Group Id.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of participants and summary of submissions.
      */
-    getParticipants(assign: AddonModAssignAssign, groupId?: number, ignoreCache?: boolean, siteId?: string)
+    getParticipants(assign: AddonModAssignAssign, groupId?: number, options: CoreSitesCommonWSOptions = {})
             : Promise<AddonModAssignParticipant[]> {
 
         groupId = groupId || 0;
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.assignProvider.listParticipants(assign.id, groupId, ignoreCache, siteId).then((participants) => {
+        const modOptions = {cmId: assign.cmid, ...options}; // Create new options including all existing ones.
+
+        return this.assignProvider.listParticipants(assign.id, groupId, modOptions).then((participants) => {
             if (groupId || participants && participants.length > 0) {
                 return participants;
             }
 
             // If no participants returned and all groups specified, get participants by groups.
-            return this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, siteId).then((info) => {
+            return this.groupsProvider.getActivityGroupInfo(assign.cmid, false, undefined, modOptions.siteId).then((info) => {
                 const promises = [],
                     participants: {[id: number]: AddonModAssignParticipant} = {};
 
                 info.groups.forEach((userGroup) => {
-                    promises.push(this.assignProvider.listParticipants(assign.id, userGroup.id, ignoreCache, siteId)
-                            .then((parts) => {
+                    promises.push(this.assignProvider.listParticipants(assign.id, userGroup.id, modOptions).then((parts) => {
                         // Do not get repeated users.
                         parts.forEach((participant) => {
                             participants[participant.id] = participant;
@@ -355,14 +355,15 @@ export class AddonModAssignHelperProvider {
      * @param assign Assignment object.
      * @param submissions Submissions to get the data for.
      * @param groupId Group Id.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site id (empty for current site).
+     * @param options Other options.
      * @return Promise always resolved. Resolve param is the formatted submissions.
      */
     getSubmissionsUserData(assign: AddonModAssignAssign, submissions: AddonModAssignSubmissionFormatted[], groupId?: number,
-            ignoreCache?: boolean, siteId?: string): Promise<AddonModAssignSubmissionFormatted[]> {
+            options: CoreSitesCommonWSOptions = {}): Promise<AddonModAssignSubmissionFormatted[]> {
 
-        return this.getParticipants(assign, groupId).then((parts) => {
+        const modOptions = {cmId: assign.cmid, ...options}; // Create new options including all existing ones.
+
+        return this.getParticipants(assign, groupId, modOptions).then((parts) => {
             const blind = assign.blindmarking && !assign.revealidentities;
             const promises = [];
             const result: AddonModAssignSubmissionFormatted[] = [];
@@ -399,8 +400,8 @@ export class AddonModAssignHelperProvider {
                     // Blind but not blinded! (Moodle < 3.1.1, 3.2).
                     delete submission.userid;
 
-                    promise = this.assignProvider.getAssignmentUserMappings(assign.id, submission.submitid, ignoreCache, siteId).
-                            then((blindId) => {
+                    promise = this.assignProvider.getAssignmentUserMappings(assign.id, submission.submitid, modOptions)
+                            .then((blindId) => {
                         submission.blindid = blindId;
                     });
                 }

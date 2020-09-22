@@ -266,8 +266,13 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
 
             // Send the pages.
             pages.forEach((page) => {
-                promises.push(this.wikiProvider.newPageOnline(page.title, page.cachedcontent, subwikiId, wikiId, userId, groupId,
-                        siteId).then((pageId) => {
+                promises.push(this.wikiProvider.newPageOnline(page.title, page.cachedcontent, {
+                    subwikiId,
+                    wikiId,
+                    userId,
+                    groupId,
+                    siteId,
+                }).then((pageId) => {
 
                     result.updated = true;
 
@@ -339,7 +344,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider {
             // Ignore errors.
          }).then(() => {
             // Sync is done at subwiki level, get all the subwikis.
-            return this.wikiProvider.getSubwikis(wikiId);
+            return this.wikiProvider.getSubwikis(wikiId, {cmId});
         }).then((subwikis) => {
             const promises = [],
                 result: AddonModWikiSyncWikiResult = {

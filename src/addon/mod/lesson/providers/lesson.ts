@@ -16,14 +16,15 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGradesProvider } from '@core/grades/providers/grades';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { AddonModLessonOfflineProvider } from './lesson-offline';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Result of check answer.
@@ -314,32 +315,31 @@ export class AddonModLessonProvider {
      * Calculate some offline data like progress and ongoingscore.
      *
      * @param lesson Lesson.
-     * @param accessInfo Result of get access info.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param pageIndex Object containing all the pages indexed by ID. If not defined, it will be calculated.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the data.
      */
-    protected calculateOfflineData(lesson: any, accessInfo?: any, password?: string, review?: boolean, pageIndex?: any,
-            siteId?: string): Promise<{reviewmode: boolean, progress: number, ongoingscore: string}> {
+    protected calculateOfflineData(lesson: any, options: AddonModLessonCalculateOfflineDataOptions = {})
+            : Promise<{reviewmode: boolean, progress: number, ongoingscore: string}> {
 
-        accessInfo = accessInfo || {};
-
-        const reviewMode = review || accessInfo.reviewmode,
+        const accessInfo = options.accessInfo || {};
+        const reviewMode = options.review || accessInfo.reviewmode,
             promises = [];
         let ongoingMessage = '',
             progress: number;
 
         if (!accessInfo.canmanage) {
             if (lesson.ongoing && !reviewMode) {
-                promises.push(this.getOngoingScoreMessage(lesson, accessInfo, password, review, pageIndex, siteId)
-                        .then((message) => {
+                promises.push(this.getOngoingScoreMessage(lesson, accessInfo, options).then((message) => {
                     ongoingMessage = message;
                 }));
             }
             if (lesson.progressbar) {
-                promises.push(this.calculateProgress(lesson.id, accessInfo, password, review, pageIndex, siteId).then((p) => {
+                const modOptions = {
+                    cmId: lesson.coursemodule,
+                    ...options, // Include all options.
+                };
+
+                promises.push(this.calculateProgress(lesson.id, accessInfo, modOptions).then((p) => {
                     progress = p;
                 }));
             }
@@ -366,37 +366,45 @@ export class AddonModLessonProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with a number: the progress (scale 0-100).
      */
-    calculateProgress(lessonId: number, accessInfo: any, password?: string, review?: boolean, pageIndex?: any, siteId?: string)
-            : Promise<number> {
+    calculateProgress(lessonId: number, accessInfo: any, options: AddonModLessonCalculateProgressOptions = {}): Promise<number> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         // Check if the user is reviewing the attempt.
-        if (review) {
+        if (options.review) {
             return Promise.resolve(100);
         }
 
         const retake = accessInfo.attemptscount;
-        let viewedPagesIds,
-            promise;
+        const commonOptions = {
+            cmId: options.cmId,
+            siteId: options.siteId,
+        };
+        let viewedPagesIds;
+        let promise;
 
-        if (pageIndex) {
+        if (options.pageIndex) {
             promise = Promise.resolve();
         } else {
             // Retrieve the index.
-            promise = this.getPages(lessonId, password, true, false, siteId).then((pages) => {
-                pageIndex = this.createPagesIndex(pages);
+            promise = this.getPages(lessonId, {
+                cmId: options.cmId,
+                password: options.password,
+                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                siteId: options.siteId,
+            }).then((pages) => {
+                options.pageIndex = this.createPagesIndex(pages);
             });
         }
 
         return promise.then(() => {
             // Get the list of question pages attempted.
-            return this.getPagesIdsWithQuestionAttempts(lessonId, retake, false, siteId);
+            return this.getPagesIdsWithQuestionAttempts(lessonId, retake, commonOptions);
         }).then((ids) => {
             viewedPagesIds = ids;
 
             // Get the list of viewed content pages.
-            return this.getContentPagesViewedIds(lessonId, retake, siteId);
+            return this.getContentPagesViewedIds(lessonId, retake, commonOptions);
         }).then((viewedContentPagesIds) => {
             const validPages = {};
             let pageId = accessInfo.firstpageid;
@@ -410,7 +418,7 @@ export class AddonModLessonProvider {
             // Do not filter out Cluster Page(s) because we count a cluster as one.
             // By keeping the cluster page, we get our 1.
             while (pageId) {
-                pageId = this.validPageAndView(pageIndex, pageIndex[pageId], validPages, viewedPagesIds);
+                pageId = this.validPageAndView(options.pageIndex, options.pageIndex[pageId], validPages, viewedPagesIds);
             }
 
             // Progress calculation as a percent.
@@ -998,23 +1006,24 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param courseId Course ID the lesson belongs to.
-     * @param password Lesson password (if any).
-     * @param outOfTime If the user ran out of time.
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param offline Whether it's offline mode.
-     * @param accessInfo Result of get access info. Required if offline is true.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved in success, rejected otherwise.
      */
-    finishRetake(lesson: any, courseId: number, password?: string, outOfTime?: boolean, review?: boolean, offline?: boolean,
-            accessInfo?: any, siteId?: string): Promise<any> {
+    finishRetake(lesson: any, courseId: number, options: AddonModLessonFinishRetakeOptions = {}): Promise<any> {
 
-        if (offline) {
-            const retake = accessInfo.attemptscount;
+        if (options.offline) {
+            const retake = options.accessInfo.attemptscount;
+            const newOptions = {
+                cmId: lesson.coursemodule,
+                password: options.password,
+                review: options.review,
+                siteId: options.siteId,
+            };
 
-            return this.lessonOfflineProvider.finishRetake(lesson.id, courseId, retake, true, outOfTime, siteId).then(() => {
+            return this.lessonOfflineProvider.finishRetake(lesson.id, courseId, retake, true, options.outOfTime, options.siteId)
+                    .then(() => {
                 // Get the lesson grade.
-                return this.lessonGrade(lesson, retake, password, review, undefined, siteId).catch(() => {
+                return this.lessonGrade(lesson, retake, newOptions).catch(() => {
                     // Ignore errors.
                     return {};
                 });
@@ -1034,7 +1043,7 @@ export class AddonModLessonProvider {
                 this.addResultValueEolPage(result, 'offline', true); // Mark the result as offline.
                 this.addResultValueEolPage(result, 'gradeinfo', gradeInfo);
 
-                if (lesson.custom && !accessInfo.canmanage) {
+                if (lesson.custom && !options.accessInfo.canmanage) {
                     /* Before we calculate the custom score make sure they answered the minimum number of questions.
                        We only need to do this for custom scoring as we can not get the miniumum score the user should achieve.
                        If we are not using custom scoring (so all questions are valued as 1) then we simply check if they
@@ -1052,10 +1061,9 @@ export class AddonModLessonProvider {
                     }
                 }
 
-                if (!accessInfo.canmanage) {
+                if (!options.accessInfo.canmanage) {
                     if (gradeLesson) {
-                        promises.push(this.calculateProgress(lesson.id, accessInfo, password, review, undefined, siteId)
-                                .then((progress) => {
+                        promises.push(this.calculateProgress(lesson.id, options.accessInfo, newOptions).then((progress) => {
                             this.addResultValueEolPage(result, 'progresscompleted', progress);
                         }));
 
@@ -1094,7 +1102,7 @@ export class AddonModLessonProvider {
                         } else {
                             // User hasn't answered any question, only content pages.
                             if (lesson.timelimit) {
-                                if (outOfTime) {
+                                if (options.outOfTime) {
                                     this.addResultValueEolPage(result, 'eolstudentoutoftimenoanswers', true, true);
                                 }
                             } else {
@@ -1109,7 +1117,7 @@ export class AddonModLessonProvider {
                     }
                 }
 
-                if (lesson.modattempts && accessInfo.canmanage) {
+                if (lesson.modattempts && options.accessInfo.canmanage) {
                     this.addResultValueEolPage(result, 'modattemptsnoteacher', true, true);
                 }
 
@@ -1121,13 +1129,13 @@ export class AddonModLessonProvider {
             });
         }
 
-        return this.finishRetakeOnline(lesson.id, password, outOfTime, review, siteId).then((response) => {
+        return this.finishRetakeOnline(lesson.id, options).then((response) => {
             this.eventsProvider.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
                 lessonId: lesson.id,
                 type: 'finish',
                 courseId: courseId,
-                outOfTime: outOfTime,
-                review: review
+                outOfTime: options.outOfTime,
+                review: options.review,
             }, this.sitesProvider.getCurrentSiteId());
 
             return response;
@@ -1138,23 +1146,20 @@ export class AddonModLessonProvider {
      * Finishes a retake. It will fail if offline or cannot connect.
      *
      * @param lessonId Lesson ID.
-     * @param password Lesson password (if any).
-     * @param outOfTime If the user ran out of time.
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved in success, rejected otherwise.
      */
-    finishRetakeOnline(lessonId: number, password?: string, outOfTime?: boolean, review?: boolean, siteId?: string): Promise<any> {
+    finishRetakeOnline(lessonId: number, options: AddonModLessonFinishRetakeOnlineOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
                 lessonid: lessonId,
-                outoftime: outOfTime ? 1 : 0,
-                review: review ? 1 : 0
+                outoftime: options.outOfTime ? 1 : 0,
+                review: options.review ? 1 : 0,
             };
 
-            if (typeof password == 'string') {
-                params.password = password;
+            if (typeof options.password == 'string') {
+                params.password = options.password;
             }
 
             return site.write('mod_lesson_finish_attempt', params).then((response) => {
@@ -1180,26 +1185,21 @@ export class AddonModLessonProvider {
      * Get the access information of a certain lesson.
      *
      * @param lessonId Lesson ID.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the access information.
      */
-    getAccessInformation(lessonId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getAccessInformation(lessonId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    lessonid: lessonId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAccessInformationCacheKey(lessonId)
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+            };
+            const preSets = {
+                cacheKey: this.getAccessInformationCacheKey(lessonId),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN,
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_lesson_access_information', params, preSets);
         });
@@ -1220,10 +1220,11 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with an object with the online and offline viewed pages.
      */
-    getContentPagesViewed(lessonId: number, retake: number, siteId?: string): Promise<{online: any[], offline: any[]}> {
+    getContentPagesViewed(lessonId: number, retake: number, options: CoreCourseCommonModWSOptions = {})
+            : Promise<{online: any[], offline: any[]}> {
         const promises = [],
             type = AddonModLessonProvider.TYPE_STRUCTURE,
             result = {
@@ -1232,12 +1233,12 @@ export class AddonModLessonProvider {
             };
 
         // Get the online pages.
-        promises.push(this.getContentPagesViewedOnline(lessonId, retake, false, false, siteId).then((pages) => {
+        promises.push(this.getContentPagesViewedOnline(lessonId, retake, options).then((pages) => {
             result.online = pages;
         }));
 
         // Get the offline pages.
-        promises.push(this.lessonOfflineProvider.getRetakeAttemptsForType(lessonId, retake, type, siteId).catch(() => {
+        promises.push(this.lessonOfflineProvider.getRetakeAttemptsForType(lessonId, retake, type, options.siteId).catch(() => {
             return [];
         }).then((pages) => {
             result.offline = pages;
@@ -1274,11 +1275,11 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with list of IDs.
      */
-    getContentPagesViewedIds(lessonId: number, retake: number, siteId?: string): Promise<number[]> {
-        return this.getContentPagesViewed(lessonId, retake, siteId).then((result) => {
+    getContentPagesViewedIds(lessonId: number, retake: number, options: CoreCourseCommonModWSOptions = {}): Promise<number[]> {
+        return this.getContentPagesViewed(lessonId, retake, options).then((result) => {
             const ids = {},
                 pages = result.online.concat(result.offline);
 
@@ -1299,29 +1300,22 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the viewed pages.
      */
-    getContentPagesViewedOnline(lessonId: number, retake: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any[]> {
+    getContentPagesViewedOnline(lessonId: number, retake: number, options: CoreCourseCommonModWSOptions = {}): Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    lessonid: lessonId,
-                    lessonattempt: retake
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getContentPagesViewedCacheKey(lessonId, retake)
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+                lessonattempt: retake,
+            };
+            const preSets = {
+                cacheKey: this.getContentPagesViewedCacheKey(lessonId, retake),
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_content_pages_viewed', params, preSets).then((result) => {
                 return result.pages;
@@ -1334,11 +1328,11 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the last content page viewed.
      */
-    getLastContentPageViewed(lessonId: number, retake: number, siteId?: string): Promise<any> {
-        return this.getContentPagesViewed(lessonId, retake, siteId).then((data) => {
+    getLastContentPageViewed(lessonId: number, retake: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.getContentPagesViewed(lessonId, retake, options).then((data) => {
             let lastPage,
                 maxTime = 0;
 
@@ -1368,22 +1362,22 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the last page seen.
      */
-    getLastPageSeen(lessonId: number, retake: number, siteId?: string): Promise<number> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    getLastPageSeen(lessonId: number, retake: number, options: CoreCourseCommonModWSOptions = {}): Promise<number> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         let lastPageSeen: number;
 
         // Get the last question answered.
-        return this.lessonOfflineProvider.getLastQuestionPageAttempt(lessonId, retake, siteId).then((answer) => {
+        return this.lessonOfflineProvider.getLastQuestionPageAttempt(lessonId, retake, options.siteId).then((answer) => {
             if (answer) {
                 lastPageSeen = answer.newpageid;
             }
 
             // Now get the last content page viewed.
-            return this.getLastContentPageViewed(lessonId, retake, siteId).then((page) => {
+            return this.getLastContentPageViewed(lessonId, retake, options).then((page) => {
                 if (page) {
                     if (answer) {
                         if (page.timemodified > answer.timemodified) {
@@ -1406,13 +1400,11 @@ export class AddonModLessonProvider {
      *
      * @param courseId Course ID.
      * @param cmid Course module ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the lesson is retrieved.
      */
-    getLesson(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.getLessonByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
+    getLesson(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getLessonByField(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -1421,29 +1413,21 @@ export class AddonModLessonProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param forceCache Whether it should always return cached data.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the lesson is retrieved.
      */
-    protected getLessonByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+    protected getLessonByField(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getLessonDataCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getLessonDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModLessonProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_lessons_by_courses', params, preSets).then((response) => {
                 if (response && response.lessons) {
@@ -1466,13 +1450,11 @@ export class AddonModLessonProvider {
      *
      * @param courseId Course ID.
      * @param id Lesson ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the lesson is retrieved.
      */
-    getLessonById(courseId: number, id: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.getLessonByField(courseId, 'id', id, forceCache, ignoreCache, siteId);
+    getLessonById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getLessonByField(courseId, 'id', id, options);
     }
 
     /**
@@ -1489,34 +1471,25 @@ export class AddonModLessonProvider {
      * Get a lesson protected with password.
      *
      * @param lessonId Lesson ID.
-     * @param password Password.
-     * @param validatePassword If true, the function will fail if the password is wrong.
-     *                         If false, it will return a lesson with the basic data if password is wrong.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the lesson.
      */
-    getLessonWithPassword(lessonId: number, password?: string, validatePassword: boolean = true, forceCache?: boolean,
-            ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getLessonWithPassword(lessonId: number, options: AddonModLessonGetWithPasswordOptions = {}): Promise<any> {
+        const validatePassword = typeof options.validatePassword == 'undefined' ? true : options.validatePassword;
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
-                    lessonid: lessonId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getLessonWithPasswordCacheKey(lessonId)
-                };
+                lessonid: lessonId,
+            };
+            const preSets = {
+                cacheKey: this.getLessonWithPasswordCacheKey(lessonId),
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
-            if (typeof password == 'string') {
-                params.password = password;
-            }
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
+            if (typeof options.password == 'string') {
+                params.password = options.password;
             }
 
             return site.read('mod_lesson_get_lesson', params, preSets).then((response) => {
@@ -1574,24 +1547,20 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param accessInfo Result of get access info.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param pageIndex Object containing all the pages indexed by ID. If not provided, it will be calculated.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the ongoing score message.
      */
-    getOngoingScoreMessage(lesson: any, accessInfo: any, password?: string, review?: boolean, pageIndex?: any, siteId?: string)
-            : Promise<string> {
+    getOngoingScoreMessage(lesson: any, accessInfo: any, options: AddonModLessonGradeOptions = {}): Promise<string> {
 
         if (accessInfo.canmanage) {
             return Promise.resolve(this.translate.instant('addon.mod_lesson.teacherongoingwarning'));
         } else {
             let retake = accessInfo.attemptscount;
-            if (review) {
+            if (options.review) {
                 retake--;
             }
 
-            return this.lessonGrade(lesson, retake, password, review, pageIndex, siteId).then((gradeInfo) => {
+            return this.lessonGrade(lesson, retake, options).then((gradeInfo) => {
                 const data: any = {};
 
                 if (lesson.custom) {
@@ -1614,13 +1583,15 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param pageId Page ID.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of possible answers.
      */
-    protected getPageAnswers(lesson: any, pageId: number, password?: string, review?: boolean, siteId?: string): Promise<any[]> {
-        return this.getPageData(lesson, pageId, password, review, true, true, false, undefined, undefined, siteId).then((data) => {
+    protected getPageAnswers(lesson: any, pageId: number, options: AddonModLessonPwdReviewOptions = {}): Promise<any[]> {
+        return this.getPageData(lesson, pageId, {
+            includeContents: true,
+            ...options, // Include all options.
+            readingStrategy: options.readingStrategy || CoreSitesReadingStrategy.PreferCache,
+        }).then((data) => {
             return data.answers;
         });
     }
@@ -1630,19 +1601,16 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param pageIds List of page IDs.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with an object containing the answers.
      */
-    protected getPagesAnswers(lesson: any, pageIds: number[], password?: string, review?: boolean, siteId?: string)
-            : Promise<any> {
+    protected getPagesAnswers(lesson: any, pageIds: number[], options: AddonModLessonPwdReviewOptions = {}): Promise<any> {
 
         const answers = {},
             promises = [];
 
         pageIds.forEach((pageId) => {
-            promises.push(this.getPageAnswers(lesson, pageId, password, review, siteId).then((pageAnswers) => {
+            promises.push(this.getPageAnswers(lesson, pageId, options).then((pageAnswers) => {
                 pageAnswers.forEach((answer) => {
                     // Include the pageid in each answer and add them to the final list.
                     answer.pageid = pageId;
@@ -1661,42 +1629,30 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param pageId Page ID.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param includeContents Include the page rendered contents.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param accessInfo Result of get access info. Required if offline is true.
-     * @param jumps Result of get pages possible jumps. Required if offline is true.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the page data.
      */
-    getPageData(lesson: any, pageId: number, password?: string, review?: boolean, includeContents?: boolean, forceCache?: boolean,
-            ignoreCache?: boolean, accessInfo?: any, jumps?: any, siteId?: string): Promise<any> {
+    getPageData(lesson: any, pageId: number, options: AddonModLessonGetPageDataOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
-                    lessonid: lesson.id,
-                    pageid: Number(pageId),
-                    review: review ? 1 : 0,
-                    returncontents: includeContents ? 1 : 0
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPageDataCacheKey(lesson.id, pageId)
-                };
+                lessonid: lesson.id,
+                pageid: Number(pageId),
+                review: options.review ? 1 : 0,
+                returncontents: options.includeContents ? 1 : 0,
+            };
+            const preSets = {
+                cacheKey: this.getPageDataCacheKey(lesson.id, pageId),
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
-            if (typeof password == 'string') {
-                params.password = password;
+            if (typeof options.password == 'string') {
+                params.password = options.password;
             }
 
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
-
-            if (review) {
+            if (options.review) {
                 // Force online mode in review.
                 preSets.getFromCache = false;
                 preSets.saveToCache = false;
@@ -1704,12 +1660,15 @@ export class AddonModLessonProvider {
             }
 
             return site.read('mod_lesson_get_page_data', params, preSets).then((data) => {
-                if (forceCache && accessInfo && data.page) {
+                if (preSets.omitExpires && options.accessInfo && data.page) {
                     // Offline mode and valid page. Calculate the data that might be affected.
-                    return this.calculateOfflineData(lesson, accessInfo, password, review, undefined, siteId).then((calcData) => {
+                    return this.calculateOfflineData(lesson, options).then((calcData) => {
                         Object.assign(data, calcData);
 
-                        return this.getPageViewMessages(lesson, accessInfo, data.page, review, jumps, password, siteId);
+                        return this.getPageViewMessages(lesson, options.accessInfo, data.page, options.jumps, {
+                            password: options.password,
+                            siteId: options.siteId,
+                        });
                     }).then((messages) => {
                         data.messages = messages;
 
@@ -1747,32 +1706,25 @@ export class AddonModLessonProvider {
      * Get lesson pages.
      *
      * @param lessonId Lesson ID.
-     * @param password Lesson password (if any).
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the pages.
      */
-    getPages(lessonId: number, password?: string, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+    getPages(lessonId: number, options: AddonModLessonPwdReviewOptions = {}): Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
-                    lessonid: lessonId,
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPagesCacheKey(lessonId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
+                lessonid: lessonId,
+            };
+            const preSets = {
+                cacheKey: this.getPagesCacheKey(lessonId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
-            if (typeof password == 'string') {
-                params.password = password;
-            }
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
+            if (typeof options.password == 'string') {
+                params.password = options.password;
             }
 
             return site.read('mod_lesson_get_pages', params, preSets).then((response) => {
@@ -1795,27 +1747,21 @@ export class AddonModLessonProvider {
      * Get possible jumps for a lesson.
      *
      * @param lessonId Lesson ID.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the jumps.
      */
-    getPagesPossibleJumps(lessonId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
+    getPagesPossibleJumps(lessonId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    lessonid: lessonId,
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPagesPossibleJumpsCacheKey(lessonId)
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+            };
+            const preSets = {
+                cacheKey: this.getPagesPossibleJumpsCacheKey(lessonId),
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_pages_possible_jumps', params, preSets).then((response) => {
                 // Index the jumps by page and jumpto.
@@ -1889,15 +1835,13 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param correct True to only fetch correct attempts, false to get them all.
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined, site's user.
+     * @param options Other options.
      * @return Promise resolved with the IDs.
      */
-    getPagesIdsWithQuestionAttempts(lessonId: number, retake: number, correct?: boolean, siteId?: string, userId?: number)
+    getPagesIdsWithQuestionAttempts(lessonId: number, retake: number, options: AddonModLessonGetPagesIdsWithAttemptsOptions = {})
             : Promise<number[]> {
 
-        return this.getQuestionsAttempts(lessonId, retake, correct, undefined, siteId, userId).then((result) => {
+        return this.getQuestionsAttempts(lessonId, retake, options).then((result) => {
             const ids = {},
                 attempts = result.online.concat(result.offline);
 
@@ -1921,13 +1865,11 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param accessInfo Result of get access info. Required if offline is true.
      * @param page Page loaded.
-     * @param review If the user wants to review just after finishing (1 hour margin).
      * @param jumps Result of get pages possible jumps.
-     * @param password Lesson password (if any).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of messages.
      */
-    getPageViewMessages(lesson: any, accessInfo: any, page: any, review: boolean, jumps: any, password?: string, siteId?: string)
+    getPageViewMessages(lesson: any, accessInfo: any, page: any, jumps: any, options: AddonModLessonGetPageViewMessagesOptions = {})
             : Promise<any[]> {
 
         const messages = [];
@@ -1938,7 +1880,7 @@ export class AddonModLessonProvider {
                 // Tell student how many questions they have seen, how many are required and their grade.
                 const retake = accessInfo.attemptscount;
 
-                promise = this.lessonGrade(lesson, retake, password, review, undefined, siteId).then((gradeInfo) => {
+                promise = this.lessonGrade(lesson, retake, options).then((gradeInfo) => {
                     if (gradeInfo.attempts) {
                         if (gradeInfo.nquestions < lesson.minquestions) {
                             this.addMessage(messages, 'addon.mod_lesson.numberofpagesviewednotice', {$a: {
@@ -1947,7 +1889,7 @@ export class AddonModLessonProvider {
                             }});
                         }
 
-                        if (!review && !lesson.retake) {
+                        if (!options.review && !lesson.retake) {
                             this.addMessage(messages, 'addon.mod_lesson.numberofcorrectanswers', {$a: gradeInfo.earned});
 
                             if (lesson.grade != CoreGradesProvider.TYPE_NONE) {
@@ -1986,13 +1928,10 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param correct True to only fetch correct attempts, false to get them all.
-     * @param pageId If defined, only get attempts on this page.
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined, site's user.
+     * @param options Other options.
      * @return Promise resolved with the questions attempts.
      */
-    getQuestionsAttempts(lessonId: number, retake: number, correct?: boolean, pageId?: number, siteId?: string, userId?: number)
+    getQuestionsAttempts(lessonId: number, retake: number, options: AddonModLessonGetQuestionsAttemptsOptions = {})
             : Promise<{online: any[], offline: any[]}> {
 
         const promises = [],
@@ -2001,12 +1940,12 @@ export class AddonModLessonProvider {
                 offline: []
             };
 
-        promises.push(this.getQuestionsAttemptsOnline(lessonId, retake, correct, pageId, false, false, siteId, userId)
-                .then((attempts) => {
+        promises.push(this.getQuestionsAttemptsOnline(lessonId, retake, options).then((attempts) => {
             result.online = attempts;
         }));
 
-        promises.push(this.lessonOfflineProvider.getQuestionsAttempts(lessonId, retake, correct, pageId, siteId).catch(() => {
+        promises.push(this.lessonOfflineProvider.getQuestionsAttempts(lessonId, retake, options.correct, options.pageId,
+                options.siteId).catch(() => {
             // Error, assume no attempts.
             return [];
         }).then((attempts) => {
@@ -2045,46 +1984,37 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @param correct True to only fetch correct attempts, false to get them all.
-     * @param pageId If defined, only get attempts on this page.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined, site's user.
+     * @param options Other options.
      * @return Promise resolved with the questions attempts.
      */
-    getQuestionsAttemptsOnline(lessonId: number, retake: number, correct?: boolean, pageId?: number, forceCache?: boolean,
-            ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any[]> {
+    getQuestionsAttemptsOnline(lessonId: number, retake: number, options: AddonModLessonGetQuestionsAttemptsOptions = {})
+            : Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const userId = options.userId || site.getUserId();
 
             // Don't pass "pageId" and "correct" params, they will be filtered locally.
             const params = {
-                    lessonid: lessonId,
-                    attempt: retake,
-                    userid: userId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuestionsAttemptsCacheKey(lessonId, retake, userId)
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+                attempt: retake,
+                userid: userId,
+            };
+            const preSets = {
+                cacheKey: this.getQuestionsAttemptsCacheKey(lessonId, retake, userId),
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_questions_attempts', params, preSets).then((response) => {
-                if (pageId || correct) {
+                if (options.pageId || options.correct) {
                     // Filter the attempts.
                     return response.attempts.filter((attempt) => {
-                        if (correct && !attempt.correct) {
+                        if (options.correct && !attempt.correct) {
                             return false;
                         }
 
-                        if (pageId && attempt.pageid != pageId) {
+                        if (options.pageId && attempt.pageid != options.pageId) {
                             return false;
                         }
 
@@ -2101,33 +2031,25 @@ export class AddonModLessonProvider {
      * Get the overview of retakes in a lesson (named "attempts overview" in Moodle).
      *
      * @param lessonId Lesson ID.
-     * @param groupId The group to get. If not defined, all participants.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the retakes overview.
      */
-    getRetakesOverview(lessonId: number, groupId?: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+    getRetakesOverview(lessonId: number, options: AddonModLessonGroupOptions = {}): Promise<any> {
 
-        groupId = groupId || 0;
+        const groupId = options.groupId || 0;
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    lessonid: lessonId,
-                    groupid: groupId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId),
-                    updateFrequency: CoreSite.FREQUENCY_OFTEN
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+                groupid: groupId,
+            };
+            const preSets = {
+                cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN,
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_attempts_overview', params, preSets).then((response) => {
                 return response.data;
@@ -2204,30 +2126,23 @@ export class AddonModLessonProvider {
      * Get lesson timers.
      *
      * @param lessonId Lesson ID.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined, site's current user.
+     * @param options Other options.
      * @return Promise resolved with the pages.
      */
-    getTimers(lessonId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+    getTimers(lessonId: number, options: AddonModLessonUserOptions = {}): Promise<any[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const userId = options.userId || site.getUserId();
 
             const params = {
-                    lessonid: lessonId,
-                    userid: userId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getTimersCacheKey(lessonId, userId)
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+                userid: userId,
+            };
+            const preSets = {
+                cacheKey: this.getTimersCacheKey(lessonId, userId),
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_user_timers', params, preSets).then((response) => {
                 return response.timers;
@@ -2331,34 +2246,26 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number
-     * @param userId User ID. Undefined for current user.
-     * @param forceCache Whether it should always return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the retake data.
      */
-    getUserRetake(lessonId: number, retake: number, userId?: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+    getUserRetake(lessonId: number, retake: number, options: AddonModLessonUserOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const userId = options.userId || site.getUserId();
 
             const params = {
-                    lessonid: lessonId,
-                    userid: userId,
-                    lessonattempt: retake
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                lessonid: lessonId,
+                userid: userId,
+                lessonattempt: retake,
+            };
+            const preSets = {
+                cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModLessonProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_lesson_get_user_attempt', params, preSets);
         });
@@ -2870,15 +2777,10 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param retake Retake number.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param pageIndex Object containing all the pages indexed by ID. If not provided, it will be calculated.
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined, site's user.
+     * @param options Other options.
      * @return Promise resolved with the grade data.
      */
-    lessonGrade(lesson: any, retake: number, password?: string, review?: boolean, pageIndex?: any, siteId?: string,
-            userId?: number): Promise<AddonModLessonGrade> {
+    lessonGrade(lesson: any, retake: number, options: AddonModLessonGradeOptions = {}): Promise<AddonModLessonGrade> {
 
         // Initialize all variables.
         let nViewed      = 0,
@@ -2890,7 +2792,11 @@ export class AddonModLessonProvider {
             earned       = 0;
 
         // Get the questions attempts for the user.
-        return this.getQuestionsAttempts(lesson.id, retake, false, undefined, siteId, userId).then((attemptsData) => {
+        return this.getQuestionsAttempts(lesson.id, retake, {
+            cmId: lesson.coursemodule,
+            siteId: options.siteId,
+            userId: options.userId,
+        }).then((attemptsData) => {
             const attempts = attemptsData.online.concat(attemptsData.offline);
 
             if (!attempts.length) {
@@ -2902,9 +2808,14 @@ export class AddonModLessonProvider {
             let promise;
 
             // Create the pageIndex if it isn't provided.
-            if (!pageIndex) {
-                promise = this.getPages(lesson.id, password, true, false, siteId).then((pages) => {
-                    pageIndex = this.createPagesIndex(pages);
+            if (!options.pageIndex) {
+                promise = this.getPages(lesson.id, {
+                    password: options.password,
+                    cmId: lesson.coursemodule,
+                    readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                    siteId: options.siteId,
+                }).then((pages) => {
+                    options.pageIndex = this.createPagesIndex(pages);
                 });
             } else {
                 promise = Promise.resolve();
@@ -2933,7 +2844,7 @@ export class AddonModLessonProvider {
                 }
 
                 // Get all the answers from the pages the user answered.
-                return this.getPagesAnswers(lesson, pageIds, password, review, siteId);
+                return this.getPagesAnswers(lesson, pageIds, options);
             }).then((answers) => {
                 // Number of pages answered.
                 nQuestions = Object.keys(attemptSet).length;
@@ -2944,7 +2855,7 @@ export class AddonModLessonProvider {
 
                     if (lesson.custom) {
                         // If essay question, handle it, otherwise add to score.
-                        if (pageIndex[lastAttempt.pageid].qtype == AddonModLessonProvider.LESSON_PAGE_ESSAY) {
+                        if (options.pageIndex[lastAttempt.pageid].qtype == AddonModLessonProvider.LESSON_PAGE_ESSAY) {
                             if (lastAttempt.useranswer && typeof lastAttempt.useranswer.score != 'undefined') {
                                 earned += lastAttempt.useranswer.score;
                             }
@@ -2959,7 +2870,7 @@ export class AddonModLessonProvider {
                         });
 
                         // If essay question, increase numbers.
-                        if (pageIndex[lastAttempt.pageid].qtype == AddonModLessonProvider.LESSON_PAGE_ESSAY) {
+                        if (options.pageIndex[lastAttempt.pageid].qtype == AddonModLessonProvider.LESSON_PAGE_ESSAY) {
                             nManual++;
                             manualPoints++;
                         }
@@ -3046,31 +2957,32 @@ export class AddonModLessonProvider {
      * @param courseId Course ID the lesson belongs to.
      * @param pageData Result of getPageData for the page to process.
      * @param data Data to save.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param offline Whether it's offline mode.
-     * @param accessInfo Result of get access info. Required if offline is true.
-     * @param jumps Result of get pages possible jumps. Required if offline is true.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when done.
      */
-    processPage(lesson: any, courseId: number, pageData: any, data: any, password?: string, review?: boolean, offline?: boolean,
-            accessInfo?: boolean, jumps?: any, siteId?: string): Promise<any> {
+    processPage(lesson: any, courseId: number, pageData: any, data: any, options: AddonModLessonProcessPageOptions = {})
+            : Promise<any> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         const page = pageData.page,
             pageId = page.id;
         let result,
             pageIndex;
 
-        if (offline) {
+        if (options.offline) {
             // Get the list of pages of the lesson.
-            return this.getPages(lesson.id, password, true, false, siteId).then((pages) => {
+            return this.getPages(lesson.id, {
+                cmId: lesson.coursemodule,
+                password: options.password,
+                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                siteId: options.siteId,
+            }).then((pages) => {
                 pageIndex = this.createPagesIndex(pages);
 
                 if (pageData.answers.length) {
-                    return this.recordAttempt(lesson, courseId, pageData, data, review, accessInfo, jumps, pageIndex, siteId);
+                    return this.recordAttempt(lesson, courseId, pageData, data, options.review, options.accessInfo, options.jumps,
+                            pageIndex, options.siteId);
                 } else {
                     // The page has no answers so we will just progress to the next page (as set by newpageid).
                    return {
@@ -3080,15 +2992,21 @@ export class AddonModLessonProvider {
                 }
             }).then((res) => {
                 result = res;
-                result.newpageid = this.getNewPageId(pageData.page.id, result.newpageid, jumps);
+                result.newpageid = this.getNewPageId(pageData.page.id, result.newpageid, options.jumps);
 
                 // Calculate some needed offline data.
-                return this.calculateOfflineData(lesson, accessInfo, password, review, pageIndex, siteId);
+                return this.calculateOfflineData(lesson, {
+                    accessInfo: options.accessInfo,
+                    password: options.password,
+                    review: options.review,
+                    pageIndex,
+                    siteId: options.siteId,
+                });
             }).then((calculatedData) => {
                 // Add some default data to match the WS response.
                 result.warnings = [];
                 result.displaymenu = pageData.displaymenu; // Keep the same value since we can't calculate it in offline.
-                result.messages = this.getPageProcessMessages(lesson, accessInfo, result, review, jumps);
+                result.messages = this.getPageProcessMessages(lesson, options.accessInfo, result, options.review, options.jumps);
                 result.sent = false;
                 Object.assign(result, calculatedData);
 
@@ -3096,13 +3014,13 @@ export class AddonModLessonProvider {
             });
         }
 
-        return this.processPageOnline(lesson.id, pageId, data, password, review, siteId).then((response) => {
+        return this.processPageOnline(lesson.id, pageId, data, options).then((response) => {
             this.eventsProvider.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
                 lessonId: lesson.id,
                 type: 'process',
                 courseId: courseId,
                 pageId: pageId,
-                review: review
+                review: options.review,
             }, this.sitesProvider.getCurrentSiteId());
 
             response.sent = true;
@@ -3117,24 +3035,22 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param pageId Page ID.
      * @param data Data to save.
-     * @param password Lesson password (if any).
-     * @param review If the user wants to review just after finishing (1 hour margin).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved in success, rejected otherwise.
      */
-    processPageOnline(lessonId: number, pageId: number, data: any, password?: string, review?: boolean, siteId?: string)
+    processPageOnline(lessonId: number, pageId: number, data: any, options: AddonModLessonProcessPageOnlineOptions = {})
             : Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
                 lessonid: lessonId,
                 pageid: pageId,
                 data: this.utils.objectToArrayOfObjects(data, 'name', 'value', true),
-                review: review ? 1 : 0
+                review: options.review ? 1 : 0,
             };
 
-            if (typeof password == 'string') {
-                params.password = password;
+            if (typeof options.password == 'string') {
+                params.password = options.password;
             }
 
             return site.write('mod_lesson_process_page', params);
@@ -3189,7 +3105,11 @@ export class AddonModLessonProvider {
         } else {
             if (!accessInfo.canmanage) {
                 // Get the number of attempts that have been made on this question for this student and retake.
-                promise = this.getQuestionsAttempts(lesson.id, retake, false, pageData.page.id, siteId).then((attempts) => {
+                promise = this.getQuestionsAttempts(lesson.id, retake, {
+                    cmId: lesson.coursemodule,
+                    pageId: pageData.page.id,
+                    siteId,
+                }).then((attempts) => {
                     nAttempts = attempts.online.length + attempts.offline.length;
 
                     // Check if they have reached (or exceeded) the maximum number of attempts allowed.
@@ -3264,8 +3184,11 @@ export class AddonModLessonProvider {
                     if (lesson.review && !result.correctanswer && !result.isessayquestion) {
                         // Calculate the number of question attempt in the page if it isn't calculated already.
                         if (typeof nAttempts == 'undefined') {
-                            subPromise = this.getQuestionsAttempts(lesson.id, retake, false, pageData.page.id, siteId)
-                                    .then((result) => {
+                            subPromise = this.getQuestionsAttempts(lesson.id, retake, {
+                                cmId: lesson.coursemodule,
+                                pageId: pageData.page.id,
+                                siteId,
+                            }).then((result) => {
                                 nAttempts = result.online.length + result.offline.length;
                             });
                         } else {
@@ -3399,3 +3322,141 @@ export class AddonModLessonProvider {
         return page.nextpageid;
     }
 }
+
+/**
+ * Common options including a group ID.
+ */
+export type AddonModLessonGroupOptions = CoreCourseCommonModWSOptions & {
+    groupId?: number; // The group to get. If not defined, all participants.
+};
+
+/**
+ * Common options including a group ID.
+ */
+export type AddonModLessonUserOptions = CoreCourseCommonModWSOptions & {
+    userId?: number; // User ID. If not defined, site's current user.
+};
+
+/**
+ * Common options including a password.
+ */
+export type AddonModLessonPasswordOptions = CoreCourseCommonModWSOptions & {
+    password?: string; // Lesson password (if any).
+};
+
+/**
+ * Common options including password and review.
+ */
+export type AddonModLessonPwdReviewOptions = AddonModLessonPasswordOptions & {
+    review?: boolean; // If the user wants to review just after finishing (1 hour margin).
+};
+
+/**
+ * Options to pass to get lesson with password.
+ */
+export type AddonModLessonGetWithPasswordOptions = AddonModLessonPasswordOptions & {
+    validatePassword?: boolean; // Defauls to true. If true, the function will fail if the password is wrong.
+                                // If false, it will return a lesson with the basic data if password is wrong.
+};
+
+/**
+ * Options to pass to calculateProgress.
+ */
+export type AddonModLessonCalculateProgressBasicOptions = {
+    password?: string; // Lesson password (if any).
+    review?: boolean; // If the user wants to review just after finishing (1 hour margin).
+    pageIndex?: any; // Object containing all the pages indexed by ID. If not provided, it will be calculated.
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to pass to calculateProgress.
+ */
+export type AddonModLessonCalculateProgressOptions = AddonModLessonCalculateProgressBasicOptions & {
+    cmId?: number; // Module ID.
+};
+
+/**
+ * Options to pass to lessonGrade.
+ */
+export type AddonModLessonGradeOptions = AddonModLessonCalculateProgressBasicOptions & {
+    userId?: number; // User ID. If not defined, site's user.
+};
+
+/**
+ * Options to pass to calculateOfflineData.
+ */
+export type AddonModLessonCalculateOfflineDataOptions = AddonModLessonCalculateProgressBasicOptions & {
+    accessInfo?: any; // Result of get access info.
+};
+
+/**
+ * Options to pass to get page data.
+ */
+export type AddonModLessonGetPageDataOptions = AddonModLessonPwdReviewOptions & {
+    includeContents?: boolean; // Include the page rendered contents.
+    accessInfo?: any; // Result of get access info. Required if offline is true.
+    jumps?: any; // Result of get pages possible jumps. Required if offline is true.
+};
+
+/**
+ * Options to pass to get page data.
+ */
+export type AddonModLessonGetPageViewMessagesOptions = {
+    password?: string; // Lesson password (if any).
+    review?: boolean; // If the user wants to review just after finishing (1 hour margin).
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to pass to get questions attempts.
+ */
+export type AddonModLessonGetQuestionsAttemptsOptions = CoreCourseCommonModWSOptions & {
+    correct?: boolean; // True to only fetch correct attempts, false to get them all.
+    pageId?: number; // If defined, only get attempts on this page.
+    userId?: number; // User ID. If not defined, site's user.
+};
+
+/**
+ * Options to pass to getPagesIdsWithQuestionAttempts.
+ */
+export type AddonModLessonGetPagesIdsWithAttemptsOptions = CoreCourseCommonModWSOptions & {
+    correct?: boolean; // True to only fetch correct attempts, false to get them all.
+    userId?: number; // User ID. If not defined, site's user.
+};
+
+/**
+ * Options to pass to processPageOnline.
+ */
+export type AddonModLessonProcessPageOnlineOptions = {
+    password?: string; // Lesson password (if any).
+    review?: boolean; // If the user wants to review just after finishing (1 hour margin).
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to pass to processPage.
+ */
+export type AddonModLessonProcessPageOptions = AddonModLessonProcessPageOnlineOptions & {
+    offline?: boolean; // Whether it's offline mode.
+    accessInfo?: any; // Result of get access info. Required if offline is true.
+    jumps?: any; // Result of get pages possible jumps. Required if offline is true.
+};
+
+/**
+ * Options to pass to finishRetakeOnline.
+ */
+export type AddonModLessonFinishRetakeOnlineOptions = {
+    password?: string; // Lesson password (if any).
+    outOfTime?: boolean; // Whether the user ran out of time.
+    review?: boolean; // If the user wants to review just after finishing (1 hour margin).
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to pass to finishRetake.
+ */
+export type AddonModLessonFinishRetakeOptions = AddonModLessonFinishRetakeOnlineOptions & {
+    offline?: boolean; // Whether it's offline mode.
+    accessInfo?: any; // Result of get access info. Required if offline is true.
+};

@@ -184,7 +184,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             }
         }).then(() => {
             // Check if there are answers stored in offline.
-            return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id);
+            return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id, {cmId: this.module.id});
         }).then((accessData) => {
             this.access = accessData;
             this.showTabs = (accessData.canviewreports || accessData.canviewanalysis) && !accessData.isempty;
@@ -220,7 +220,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         const promises = [];
 
         if (accessData.cancomplete && accessData.cansubmit && accessData.isopen) {
-            promises.push(this.feedbackProvider.getResumePage(this.feedback.id).then((goPage) => {
+            promises.push(this.feedbackProvider.getResumePage(this.feedback.id, {cmId: this.module.id}).then((goPage) => {
                 this.goPage = goPage > 0 ? goPage : false;
             }));
         }
@@ -421,7 +421,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     setGroup(groupId: number): Promise<any> {
         this.group = groupId;
 
-        return this.feedbackProvider.getAnalysis(this.feedback.id, groupId).then((analysis) => {
+        return this.feedbackProvider.getAnalysis(this.feedback.id, {groupId, cmId: this.module.id}).then((analysis) => {
             this.feedback.completedCount = analysis.completedcount;
             this.feedback.itemsCount = analysis.itemscount;
 

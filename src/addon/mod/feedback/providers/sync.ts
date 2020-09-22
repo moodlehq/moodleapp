@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -192,12 +192,12 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
 
             courseId = responses[0].courseid;
 
-            return this.feedbackProvider.getFeedbackById(courseId, feedbackId, siteId).then((feedbackData) => {
+            return this.feedbackProvider.getFeedbackById(courseId, feedbackId, {siteId}).then((feedbackData) => {
                 feedback = feedbackData;
 
                 if (!feedback.multiple_submit) {
                     // If it does not admit multiple submits, check if it is completed to know if we can submit.
-                    return this.feedbackProvider.isCompleted(feedbackId);
+                    return this.feedbackProvider.isCompleted(feedbackId, {cmId: feedback.coursemodule, siteId});
                 } else {
                     return false;
                 }
@@ -220,7 +220,10 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
                     return Promise.all(promises);
                 }
 
-                return this.feedbackProvider.getCurrentCompletedTimeModified(feedbackId, true, siteId).then((timemodified) => {
+                return this.feedbackProvider.getCurrentCompletedTimeModified(feedbackId, {
+                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                    siteId,
+                }).then((timemodified) => {
                     // Sort by page.
                     responses.sort((a, b) => {
                         return a.page - b.page;

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 
 /**
@@ -47,29 +47,22 @@ export class AddonModLabelProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param forceCache True to always get the value from cache, false otherwise.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not provided, current site.
+     * @param options Other options.
      * @return Promise resolved when the label is retrieved.
      */
-    protected getLabelByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<AddonModLabelLabel> {
+    protected getLabelByField(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModLabelLabel> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getLabelDataCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-             if (forceCache) {
-                 preSets.omitExpires = true;
-             } else if (ignoreCache) {
-                 preSets.getFromCache = false;
-                 preSets.emergencyCache = false;
-             }
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getLabelDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModLabelProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_label_get_labels_by_courses', params, preSets)
                     .then((response: AddonModLabelGetLabelsByCoursesResult): any => {
@@ -91,14 +84,11 @@ export class AddonModLabelProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param forceCache True to always get the value from cache, false otherwise.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the label is retrieved.
      */
-    getLabel(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<AddonModLabelLabel> {
-        return this.getLabelByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
+    getLabel(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
+        return this.getLabelByField(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -106,14 +96,11 @@ export class AddonModLabelProvider {
      *
      * @param courseId Course ID.
      * @param labelId Label ID.
-     * @param forceCache True to always get the value from cache, false otherwise.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the label is retrieved.
      */
-    getLabelById(courseId: number, labelId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<AddonModLabelLabel> {
-        return this.getLabelByField(courseId, 'id', labelId, forceCache, ignoreCache, siteId);
+    getLabelById(courseId: number, labelId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
+        return this.getLabelByField(courseId, 'id', labelId, options);
     }
 
     /**

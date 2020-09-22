@@ -134,7 +134,11 @@ export class AddonModFeedbackRespondentsPage {
             this.feedbackLoaded = false;
         }
 
-        return this.feedbackHelper.getResponsesAnalysis(this.feedbackId, this.selectedGroup, this.page).then((responses) => {
+        return this.feedbackHelper.getResponsesAnalysis(this.feedbackId, {
+            groupId: this.selectedGroup,
+            page: this.page,
+            cmId: this.moduleId,
+        }).then((responses) => {
             this.responses.total = responses.totalattempts;
             this.anonResponses.total = responses.totalanonattempts;
 

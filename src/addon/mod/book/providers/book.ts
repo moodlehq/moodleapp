@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileProvider } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -73,11 +73,11 @@ export class AddonModBookProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the book is retrieved.
      */
-    getBook(courseId: number, cmId: number, siteId?: string): Promise<AddonModBookBook> {
-        return this.getBookByField(courseId, 'coursemodule', cmId, siteId);
+    getBook(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBookBook> {
+        return this.getBookByField(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -89,15 +89,19 @@ export class AddonModBookProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the book is retrieved.
      */
-    protected getBookByField(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModBookBook> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getBookByField(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModBookBook> {
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: this.getBookDataCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
+                courseids: [courseId]
+            };
+            const preSets = {
+                cacheKey: this.getBookDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModBookProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_book_get_books_by_courses', params, preSets)
                     .then((response: AddonModBookGetBooksByCoursesResult): any => {

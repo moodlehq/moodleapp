@@ -279,7 +279,11 @@ export class AddonModForumHelperProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const findDiscussion = (page: number): Promise<any> => {
-            return this.forumProvider.getDiscussions(forumId, cmId, undefined, page, false, siteId).then((response) => {
+            return this.forumProvider.getDiscussions(forumId, {
+                cmId,
+                page,
+                siteId,
+            }).then((response) => {
                 if (response.discussions && response.discussions.length > 0) {
                     // Note that discussion.id is the main post ID but discussion ID is discussion.discussion.
                     const discussion = response.discussions.find((discussion) => discussion.discussion == discussionId);

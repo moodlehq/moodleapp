@@ -112,8 +112,8 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
             if (!this.submission) {
                 const modal = this.domUtils.showModalLoading('core.sending', true);
 
-                this.workshopHelper.getSubmissionById(this.workshop.id, this.assessment.submissionid)
-                        .then((submissionData) => {
+                this.workshopHelper.getSubmissionById(this.workshop.id, this.assessment.submissionid,
+                        {cmId: this.workshop.coursemodule}).then((submissionData) => {
 
                     params.submission = submissionData;
                     this.navCtrl.push('AddonModWorkshopAssessmentPage', params);

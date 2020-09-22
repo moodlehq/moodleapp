@@ -13,14 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModChoiceOfflineProvider } from './offline';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Service that provides some features for choices.
@@ -173,33 +174,25 @@ export class AddonModChoiceProvider {
     /**
      * Get a choice with key=value. If more than one is found, only the first will be returned.
      *
-     * @param siteId Site ID.
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param options Other options.
      * @return Promise resolved when the choice is retrieved.
      */
-    protected getChoiceByDataKey(siteId: string, courseId: number, key: string, value: any, forceCache?: boolean,
-            ignoreCache?: boolean): Promise<AddonModChoiceChoice> {
+    protected getChoiceByDataKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModChoiceChoice> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 courseids: [courseId]
             };
-            const preSets: CoreSiteWSPreSets = {
+            const preSets = {
                 cacheKey: this.getChoiceDataCacheKey(courseId),
-                omitExpires: forceCache,
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModChoiceProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
 
             return site.read('mod_choice_get_choices_by_courses', params, preSets)
                     .then((response: AddonModChoiceGetChoicesByCoursesResult): any => {
@@ -221,14 +214,11 @@ export class AddonModChoiceProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param options Other options.
      * @return Promise resolved when the choice is retrieved.
      */
-    getChoice(courseId: number, cmId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean)
-            : Promise<AddonModChoiceChoice> {
-        return this.getChoiceByDataKey(siteId, courseId, 'coursemodule', cmId, forceCache, ignoreCache);
+    getChoice(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
+        return this.getChoiceByDataKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -236,38 +226,32 @@ export class AddonModChoiceProvider {
      *
      * @param courseId Course ID.
      * @param choiceId Choice ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param options Other options.
      * @return Promise resolved when the choice is retrieved.
      */
-    getChoiceById(courseId: number, choiceId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean)
-            : Promise<AddonModChoiceChoice> {
-        return this.getChoiceByDataKey(siteId, courseId, 'id', choiceId, forceCache, ignoreCache);
+    getChoiceById(courseId: number, choiceId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
+        return this.getChoiceByDataKey(courseId, 'id', choiceId, options);
     }
 
     /**
      * Get choice options.
      *
      * @param choiceId Choice ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with choice options.
      */
-    getOptions(choiceId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModChoiceOption[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getOptions(choiceId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChoiceOption[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 choiceid: choiceId
             };
-            const preSets: CoreSiteWSPreSets = {
+            const preSets = {
                 cacheKey: this.getChoiceOptionsCacheKey(choiceId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModChoiceProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
 
             return site.read('mod_choice_get_choice_options', params, preSets)
                     .then((response: AddonModChoiceGetChoiceOptionsResult): any => {
@@ -285,23 +269,20 @@ export class AddonModChoiceProvider {
      * Get choice results.
      *
      * @param choiceId Choice ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with choice results.
      */
-    getResults(choiceId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModChoiceResult[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getResults(choiceId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChoiceResult[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 choiceid: choiceId
             };
-            const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getChoiceResultsCacheKey(choiceId)
+            const preSets = {
+                cacheKey: this.getChoiceOptionsCacheKey(choiceId),
+                component: AddonModChoiceProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
 
             return site.read('mod_choice_get_choice_results', params, preSets)
                     .then((response: AddonModChoiceGetChoiceResults): any => {

@@ -65,7 +65,7 @@ export class AddonModFeedbackAttemptPage {
         return this.feedbackProvider.getFeedbackById(this.courseId, this.feedbackId).then((feedback) => {
             this.feedback = feedback;
 
-            return this.feedbackProvider.getItems(this.feedbackId);
+            return this.feedbackProvider.getItems(this.feedbackId, {cmId: this.feedback.coursemodule});
         }).then((items) => {
             // Add responses and format items.
             this.items = items.items.map((item) => {

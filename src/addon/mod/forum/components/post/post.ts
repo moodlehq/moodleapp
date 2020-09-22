@@ -193,7 +193,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         const popover = this.popoverCtrl.create(AddonForumPostOptionsMenuComponent, {
             post: this.post,
-            forumId: this.forum.id
+            forumId: this.forum.id,
+            cmId: this.forum.cmid,
         });
         popover.onDidDismiss((data) => {
             if (data && data.action) {

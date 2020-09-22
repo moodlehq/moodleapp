@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -122,9 +122,14 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
     protected prefetchChat(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
         // Prefetch chat and group info.
         const promises: Promise<any>[] = [
-            this.chatProvider.getChat(courseId, module.id, siteId),
+            this.chatProvider.getChat(courseId, module.id, {readingStrategy: CoreSitesReadingStrategy.OnlyNetwork, siteId}),
             this.groupsProvider.getActivityGroupInfo(module.id, false, undefined, siteId)
         ];
+        const options = {
+            cmId: module.id,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
 
         return Promise.all(promises).then(([chat, groupInfo]: [AddonModChatChat, CoreGroupInfo]) => {
             const promises = [];
@@ -136,7 +141,7 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
             groupIds.forEach((groupId) => {
                 // Prefetch complete sessions.
-                promises.push(this.chatProvider.getSessions(chat.id, groupId, false, true, siteId).catch((error) => {
+                promises.push(this.chatProvider.getSessions(chat.id, groupId, false, options).catch((error) => {
                     // Ignore group error.
                     if (error.errorcode != 'notingroup') {
                         return Promise.reject(error);
@@ -144,8 +149,9 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
                 }));
 
                 // Prefetch all sessions.
-                promises.push(this.chatProvider.getSessions(chat.id, groupId, true, true, siteId).then((sessions) => {
-                    const promises = sessions.map((session) => this.prefetchSession(chat.id, session, 0, courseId, siteId));
+                promises.push(this.chatProvider.getSessions(chat.id, groupId, true, options).then((sessions) => {
+                    const promises = sessions.map((session) => this.prefetchSession(chat.id, session, 0, courseId, module.id,
+                            siteId));
 
                     return Promise.all(promises);
                 }).catch((error) => {
@@ -170,9 +176,13 @@ export class AddonModChatPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param siteId Site ID.
      * @return Promise resolved when done.
      */
-    protected prefetchSession(chatId: number, session: any, groupId: number, courseId: number, siteId: string): Promise<any> {
-        return this.chatProvider.getSessionMessages(chatId, session.sessionstart, session.sessionend, groupId, true, siteId)
-                .then((messages) => {
+    protected prefetchSession(chatId: number, session: any, groupId: number, courseId: number, cmId: number, siteId: string)
+            : Promise<any> {
+        return this.chatProvider.getSessionMessages(chatId, session.sessionstart, session.sessionend, groupId, {
+            cmId,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        }).then((messages) => {
             const users = {};
             session.sessionusers.forEach((user) => {
                 users[user.userid] = true;

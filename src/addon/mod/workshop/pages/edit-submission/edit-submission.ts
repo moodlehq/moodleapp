@@ -149,7 +149,8 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy {
             if (this.submissionId > 0) {
                 this.editing = true;
 
-                return this.workshopHelper.getSubmissionById(this.workshopId, this.submissionId).then((submissionData) => {
+                return this.workshopHelper.getSubmissionById(this.workshopId, this.submissionId, {cmId: this.module.id})
+                        .then((submissionData) => {
                     this.submission = submissionData;
 
                     const canEdit = (this.userId == submissionData.authorid && this.access.cansubmit &&

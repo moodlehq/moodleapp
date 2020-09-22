@@ -18,7 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -1161,6 +1161,13 @@ export class CoreCourseProvider {
         }, siteId);
     }
 }
+
+/**
+ * Common options used by modules when calling a WS through CoreSite.
+ */
+export type CoreCourseCommonModWSOptions = CoreSitesCommonWSOptions & {
+    cmId?: number; // Module ID.
+};
 
 /**
  * Data returned by course_summary_exporter.

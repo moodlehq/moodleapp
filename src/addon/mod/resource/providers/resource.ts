@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
@@ -54,18 +54,22 @@ export class AddonModResourceProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the resource is retrieved.
      */
-    protected getResourceDataByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModResourceResource> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getResourceDataByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModResourceResource> {
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: this.getResourceCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getResourceCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModResourceProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_resource_get_resources_by_courses', params, preSets)
                     .then((response: AddonModResourceGetResourcesByCoursesResult): any => {
@@ -89,11 +93,11 @@ export class AddonModResourceProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the resource is retrieved.
      */
-    getResourceData(courseId: number, cmId: number, siteId?: string): Promise<AddonModResourceResource> {
-        return this.getResourceDataByKey(courseId, 'coursemodule', cmId, siteId);
+    getResourceData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModResourceResource> {
+        return this.getResourceDataByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**

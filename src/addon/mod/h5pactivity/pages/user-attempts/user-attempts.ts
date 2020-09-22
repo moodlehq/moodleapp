@@ -79,20 +79,12 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
+        this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivityById(this.courseId, this.h5pActivityId);
+
         await Promise.all([
-            this.fetchActivity(),
             this.fetchAttempts(),
             this.fetchUserProfile(),
         ]);
-    }
-
-    /**
-     * Get activity data.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async fetchActivity(): Promise<void> {
-        this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivityById(this.courseId, this.h5pActivityId);
     }
 
     /**
@@ -101,7 +93,10 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchAttempts(): Promise<void> {
-        this.attemptsData = await AddonModH5PActivity.instance.getUserAttempts(this.h5pActivityId, { userId: this.userId });
+        this.attemptsData = await AddonModH5PActivity.instance.getUserAttempts(this.h5pActivityId, {
+            cmId: this.h5pActivity.coursemodule,
+            userId: this.userId,
+        });
     }
 
     /**

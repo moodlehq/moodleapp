@@ -118,6 +118,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         let lessonReady = true;
         this.askPassword = false;
+        const options = {cmId: this.module.id};
 
         return this.lessonProvider.getLesson(this.courseId, this.module.id).then((lessonData) => {
             this.lesson = lessonData;
@@ -130,7 +131,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 return this.syncActivity(showErrors);
             }
         }).then(() => {
-            return this.lessonProvider.getAccessInformation(this.lesson.id);
+            return this.lessonProvider.getAccessInformation(this.lesson.id, options);
         }).then((info) => {
             const promises = [];
 
@@ -167,8 +168,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 }));
 
                 // Update the list of content pages viewed and question attempts.
-                promises.push(this.lessonProvider.getContentPagesViewedOnline(this.lesson.id, info.attemptscount));
-                promises.push(this.lessonProvider.getQuestionsAttemptsOnline(this.lesson.id, info.attemptscount));
+                promises.push(this.lessonProvider.getContentPagesViewedOnline(this.lesson.id, info.attemptscount, options));
+                promises.push(this.lessonProvider.getQuestionsAttemptsOnline(this.lesson.id, info.attemptscount, options));
             }
 
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
@@ -364,7 +365,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (this.hasOffline) {
             if (continueLast) {
-                promise = this.lessonProvider.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount);
+                promise = this.lessonProvider.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount, {
+                    cmId: this.module.id,
+                });
             } else {
                 promise = Promise.resolve(this.accessInfo.firstpageid);
             }
@@ -445,7 +448,10 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         // Get the overview of retakes for the group.
-        return this.lessonProvider.getRetakesOverview(this.lesson.id, groupId).then((data) => {
+        return this.lessonProvider.getRetakesOverview(this.lesson.id, {
+            groupId,
+            cmId: this.lesson.coursemodule,
+        }).then((data) => {
             const promises = [];
 
             // Format times and grades.
@@ -617,7 +623,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     protected validatePassword(password: string): Promise<any> {
-        return this.lessonProvider.getLessonWithPassword(this.lesson.id, password).then((lessonData) => {
+        return this.lessonProvider.getLessonWithPassword(this.lesson.id, {password, cmId: this.module.id}).then((lessonData) => {
             this.lesson = lessonData;
             this.password = password;
         }).catch((error) => {

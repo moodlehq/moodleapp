@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { ModalController, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModQuizProvider } from './quiz';
@@ -166,12 +166,12 @@ export class AddonModQuizHelperProvider {
      * Get a quiz ID by attempt ID.
      *
      * @param attemptId Attempt ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the quiz ID.
      */
-    getQuizIdByAttemptId(attemptId: number, siteId?: string): Promise<number> {
+    getQuizIdByAttemptId(attemptId: number, options: {cmId?: number, siteId?: string} = {}): Promise<number> {
         // Use getAttemptReview to retrieve the quiz ID.
-        return this.quizProvider.getAttemptReview(attemptId, undefined, false, siteId).then((reviewData) => {
+        return this.quizProvider.getAttemptReview(attemptId, options).then((reviewData) => {
             if (reviewData.attempt && reviewData.attempt.quiz) {
                 return reviewData.attempt.quiz;
             }
@@ -202,7 +202,7 @@ export class AddonModQuizHelperProvider {
             promise = Promise.resolve(quizId);
         } else {
             // Retrieve the quiz ID using the attempt ID.
-            promise = this.getQuizIdByAttemptId(attemptId);
+            promise = this.getQuizIdByAttemptId(attemptId, {siteId});
         }
 
         return promise.then((id) => {
@@ -298,6 +298,11 @@ export class AddonModQuizHelperProvider {
             siteId?: string): Promise<any> {
 
         const rules = accessInfo && accessInfo.activerulenames;
+        const modOptions = {
+            cmId: quiz.coursemodule,
+            readingStrategy: offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
         let promise;
 
         if (attempt) {
@@ -305,7 +310,7 @@ export class AddonModQuizHelperProvider {
                 // We're continuing an attempt. Call getAttemptData to validate the preflight data.
                 const page = attempt.currentpage;
 
-                promise = this.quizProvider.getAttemptData(attempt.id, page, preflightData, offline, true, siteId).then(() => {
+                promise = this.quizProvider.getAttemptData(attempt.id, page, preflightData, modOptions).then(() => {
                     if (offline) {
                         // Get current page stored in local.
                         return this.quizOfflineProvider.getAttemptById(attempt.id).then((localAttempt) => {
@@ -318,7 +323,7 @@ export class AddonModQuizHelperProvider {
             } else {
                 // Attempt is overdue or finished in offline, we can only see the summary.
                 // Call getAttemptSummary to validate the preflight data.
-                promise = this.quizProvider.getAttemptSummary(attempt.id, preflightData, offline, true, false, siteId);
+                promise = this.quizProvider.getAttemptSummary(attempt.id, preflightData, modOptions);
             }
         } else {
             // We're starting a new attempt, call startAttempt.

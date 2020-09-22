@@ -92,7 +92,7 @@ export class AddonStorageManagerCoursesStoragePage {
      */
     async deleteCompletelyDownloadedCourses(): Promise<void> {
         try {
-            await CoreDomUtils.instance.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await CoreDomUtils.instance.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -122,7 +122,7 @@ export class AddonStorageManagerCoursesStoragePage {
      */
     async deleteCourse(course: DownloadedCourse): Promise<void> {
         try {
-            await CoreDomUtils.instance.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await CoreDomUtils.instance.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -206,7 +206,7 @@ export class AddonStorageManagerCoursesStoragePage {
         const sections = await CoreCourse.instance.getSections(courseId);
         const modules = CoreArray.flatten(sections.map((section) => section.modules));
         const promisedModuleSizes = modules.map(async (module) => {
-            const size = await CoreCourseModulePrefetch.instance.getModuleDownloadedSize(module, courseId);
+            const size = await CoreCourseModulePrefetch.instance.getModuleStoredSize(module, courseId);
 
             return isNaN(size) ? 0 : size;
         });

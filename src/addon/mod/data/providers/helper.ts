@@ -23,7 +23,9 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
 import { AddonModDataFieldsDelegate } from './fields-delegate';
 import { AddonModDataOfflineProvider, AddonModDataOfflineAction } from './offline';
-import { AddonModDataProvider, AddonModDataEntry, AddonModDataEntryFields, AddonModDataEntries } from './data';
+import {
+    AddonModDataProvider, AddonModDataEntry, AddonModDataEntryFields, AddonModDataEntries, AddonModDataSearchEntriesOptions
+} from './data';
 import { CoreRatingInfo } from '@core/rating/providers/rating';
 import { CoreRatingOfflineProvider } from '@core/rating/providers/offline';
 
@@ -210,33 +212,21 @@ export class AddonModDataHelperProvider {
      *
      * @param data Database object.
      * @param fields The fields that define the contents.
-     * @param groupId Group ID.
-     * @param search Search text. It will be used if advSearch is not defined.
-     * @param advSearch Advanced search data.
-     * @param sort Sort the records by this field id, reserved ids are:
-     *             0: timeadded
-     *             -1: firstname
-     *             -2: lastname
-     *             -3: approved
-     *             -4: timemodified.
-     *             Empty for using the default database setting.
-     * @param order The direction of the sorting: 'ASC' or 'DESC'.
-     *              Empty for using the default database setting.
-     * @param page Page of records to return.
-     * @param perPage Records per page to return. Default on PER_PAGE.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the database is retrieved.
      */
-    fetchEntries(data: any, fields: any[], groupId: number = 0, search?: string, advSearch?: any[], sort: string = '0',
-            order: string = 'DESC', page: number = 0, perPage: number = AddonModDataProvider.PER_PAGE, siteId?: string):
-            Promise<AddonModDataEntries> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    fetchEntries(data: any, fields: any[], options: AddonModDataSearchEntriesOptions = {}): Promise<AddonModDataEntries> {
+        options.groupId = options.groupId || 0;
+        options.page = options.page || 0;
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const offlineActions = {};
             const result: AddonModDataEntries = {
                 entries: [],
                 totalcount: 0,
                 offlineEntries: []
             };
+            options.siteId = site.id;
 
             const offlinePromise = this.dataOffline.getDatabaseEntries(data.id, site.id).then((actions) => {
                 result.hasOfflineActions = !!actions.length;
@@ -248,8 +238,8 @@ export class AddonModDataHelperProvider {
                     offlineActions[action.entryid].push(action);
 
                     // We only display new entries in the first page when not searching.
-                    if (action.action == 'add' && page == 0 && !search && !advSearch &&
-                            (!action.groupid || !groupId || action.groupid == groupId)) {
+                    if (action.action == 'add' && options.page == 0 && !options.search && !options.advSearch &&
+                            (!action.groupid || !options.groupId || action.groupid == options.groupId)) {
                         result.offlineEntries.push({
                             id: action.entryid,
                             canmanageentry: true,
@@ -275,16 +265,14 @@ export class AddonModDataHelperProvider {
             });
 
             let fetchPromise: Promise<void>;
-            if (search || advSearch) {
-                fetchPromise = this.dataProvider.searchEntries(data.id, groupId, search, advSearch, sort, order, page, perPage,
-                        site.id).then((fetchResult) => {
+            if (options.search || options.advSearch) {
+                fetchPromise = this.dataProvider.searchEntries(data.id, options).then((fetchResult) => {
                     result.entries = fetchResult.entries;
                     result.totalcount = fetchResult.totalcount;
                     result.maxcount = fetchResult.maxcount;
                 });
             } else {
-                fetchPromise = this.dataProvider.getEntries(data.id, groupId, sort, order, page, perPage, false, false, site.id)
-                        .then((fetchResult) => {
+                fetchPromise = this.dataProvider.getEntries(data.id, options).then((fetchResult) => {
                     result.entries = fetchResult.entries;
                     result.totalcount = fetchResult.totalcount;
                 });
@@ -324,7 +312,7 @@ export class AddonModDataHelperProvider {
 
                 if (entryId > 0) {
                     // Online entry.
-                    promise = this.dataProvider.getEntry(data.id, entryId, false, site.id);
+                    promise = this.dataProvider.getEntry(data.id, entryId, {cmId: data.coursemodule, siteId: site.id});
                 } else  {
                     // Offline entry or new entry.
                     promise = Promise.resolve({

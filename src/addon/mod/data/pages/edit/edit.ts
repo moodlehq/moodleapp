@@ -128,7 +128,7 @@ export class AddonModDataEditPage {
             this.data = data;
             this.cssClass = 'addon-data-entries-' + data.id;
 
-            return this.dataProvider.getDatabaseAccessInformation(data.id);
+            return this.dataProvider.getDatabaseAccessInformation(data.id, {cmId: this.module.id});
         }).then((accessData) => {
             if (this.entryId) {
                 return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
@@ -137,7 +137,7 @@ export class AddonModDataEditPage {
                 });
             }
         }).then(() => {
-            return this.dataProvider.getFields(this.data.id);
+            return this.dataProvider.getFields(this.data.id, {cmId: this.module.id});
         }).then((fieldsData) => {
             this.fieldsArray = fieldsData;
             this.fields = this.utils.arrayToObject(fieldsData, 'id');

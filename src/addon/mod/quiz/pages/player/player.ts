@@ -17,7 +17,7 @@ import { IonicPage, NavParams, Content, PopoverController, ModalController, Moda
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -315,12 +315,18 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             }
 
             // Get access information for the quiz.
-            return this.quizProvider.getQuizAccessInformation(this.quiz.id, this.offline, true);
+            return this.quizProvider.getQuizAccessInformation(this.quiz.id, {
+                cmId: this.quiz.coursemodule,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            });
         }).then((info) => {
             this.quizAccessInfo = info;
 
             // Get user attempts to determine last attempt.
-            return this.quizProvider.getUserAttempts(this.quiz.id, 'all', true, this.offline, true);
+            return this.quizProvider.getUserAttempts(this.quiz.id, {
+                cmId: this.quiz.coursemodule,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            });
         }).then((attempts) => {
             if (!attempts.length) {
                 // There are no attempts, start a new one.
@@ -396,8 +402,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      */
     protected fixSequenceChecks(): Promise<any> {
         // Get current page data again to get the latest sequencechecks.
-        return this.quizProvider.getAttemptData(this.attempt.id, this.attempt.currentpage, this.preflightData, this.offline, true)
-                .then((data) => {
+        return this.quizProvider.getAttemptData(this.attempt.id, this.attempt.currentpage, this.preflightData, {
+            cmId: this.quiz.coursemodule,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        }).then((data) => {
 
             const newSequenceChecks = {};
 
@@ -443,7 +451,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected loadPage(page: number): Promise<void> {
-        return this.quizProvider.getAttemptData(this.attempt.id, page, this.preflightData, this.offline, true).then((data) => {
+        return this.quizProvider.getAttemptData(this.attempt.id, page, this.preflightData, {
+            cmId: this.quiz.coursemodule,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        }).then((data) => {
             // Update attempt, status could change during the execution.
             this.attempt = data.attempt;
             this.attempt.currentpage = page;
@@ -487,7 +498,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     protected loadSummary(): Promise<void> {
         this.summaryQuestions = [];
 
-        return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, this.offline, true, true).then((qs) => {
+        return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, {
+            cmId: this.quiz.coursemodule,
+            loadLocal: this.offline,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        }).then((qs) => {
             this.showSummary = true;
             this.summaryQuestions = qs;
 
@@ -511,8 +526,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      */
     protected loadNavigation(): Promise<void> {
         // We use the attempt summary to build the navigation because it contains all the questions.
-        return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, this.offline, true, true)
-                .then((questions) => {
+        return this.quizProvider.getAttemptSummary(this.attempt.id, this.preflightData, {
+            cmId: this.quiz.coursemodule,
+            loadLocal: this.offline,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        }).then((questions) => {
 
             questions.forEach((question) => {
                 question.stateClass = this.questionHelper.getQuestionStateClass(question.state);
@@ -652,7 +670,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
                 false, 'addon.mod_quiz.startattempt').then((attempt) => {
 
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
-            return this.quizProvider.getAttemptAccessInformation(this.quiz.id, attempt.id, this.offline, true).then((info) => {
+            return this.quizProvider.getAttemptAccessInformation(this.quiz.id, attempt.id, {
+                cmId: this.quiz.coursemodule,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            }).then((info) => {
                 this.attemptAccessInfo = info;
                 this.attempt = attempt;
 

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -65,18 +65,15 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
      *
      * @param module The module object returned by WS.
      * @param courseId The course ID.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return List of pages.
      */
-    protected getAllPages(module: any, courseId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any[]> {
+    protected getAllPages(module: any, courseId: number, options: CoreSitesCommonWSOptions = {}): Promise<any[]> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.wikiProvider.getWiki(courseId, module.id, offline, siteId).then((wiki) => {
-            return this.wikiProvider.getWikiPageList(wiki, offline, ignoreCache, siteId);
+        return this.wikiProvider.getWiki(courseId, module.id, options).then((wiki) => {
+            return this.wikiProvider.getWikiPageList(wiki, options);
         }).catch(() => {
             // Wiki not found, return empty list.
             return [];
@@ -100,7 +97,10 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             return this.pluginFileDelegate.getFilesDownloadSize(files);
         }));
 
-        promises.push(this.getAllPages(module, courseId, false, true, siteId).then((pages) => {
+        promises.push(this.getAllPages(module, courseId, {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        }).then((pages) => {
             let size = 0;
 
             pages.forEach((page) => {
@@ -133,10 +133,10 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
 
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.wikiProvider.getWiki(courseId, module.id, false, siteId).then((wiki) => {
+        return this.wikiProvider.getWiki(courseId, module.id, {siteId}).then((wiki) => {
             const introFiles = this.getIntroFilesFromInstance(module, wiki);
 
-            return this.wikiProvider.getWikiFileList(wiki, false, false, siteId).then((files) => {
+            return this.wikiProvider.getWikiFileList(wiki, {siteId}).then((files) => {
                 return introFiles.concat(files);
             });
         }).catch(() => {
@@ -191,14 +191,23 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
     protected prefetchWiki(module: any, courseId: number, single: boolean, siteId: string, downloadTime: number): Promise<any> {
         const userId = this.sitesProvider.getCurrentSiteUserId();
 
+        const commonOptions = {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+        const modOptions = {
+            cmId: module.id,
+            ...commonOptions, // Include all common options.
+        };
+
         // Get the list of pages.
-        return this.getAllPages(module, courseId, false, true, siteId).then((pages) => {
+        return this.getAllPages(module, courseId, commonOptions).then((pages) => {
             const promises = [];
 
             pages.forEach((page) => {
                 // Fetch page contents if it needs to be fetched.
                 if (page.timemodified > downloadTime) {
-                    promises.push(this.wikiProvider.getPageContents(page.id, false, true, siteId));
+                    promises.push(this.wikiProvider.getPageContents(page.id, modOptions));
                 }
             });
 
@@ -206,7 +215,7 @@ export class AddonModWikiPrefetchHandler extends CoreCourseActivityPrefetchHandl
             promises.push(this.groupsProvider.getActivityGroupInfo(module.id, false, userId, siteId));
 
             // Fetch info to provide wiki links.
-            promises.push(this.wikiProvider.getWiki(courseId, module.id, false, siteId).then((wiki) => {
+            promises.push(this.wikiProvider.getWiki(courseId, module.id, {siteId}).then((wiki) => {
                 return this.courseHelper.getModuleCourseIdByInstance(wiki.id, 'wiki', siteId);
             }));
 
