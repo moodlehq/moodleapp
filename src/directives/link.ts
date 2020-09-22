@@ -22,6 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreConfigConstants } from '../configconstants';
 import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 /**
@@ -59,7 +60,7 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        this.inApp = this.utils.isTrueOrOne(this.inApp);
+        this.inApp = typeof this.inApp == 'undefined' ? this.inApp : this.utils.isTrueOrOne(this.inApp);
 
         let navCtrl = this.navCtrl;
 
@@ -76,15 +77,17 @@ export class CoreLinkDirective implements OnInit {
                     event.preventDefault();
                     event.stopPropagation();
 
+                    const openIn = this.element.getAttribute('data-open-in');
+
                     if (this.utils.isTrueOrOne(this.capture)) {
                         href = this.textUtils.decodeURI(href);
                         this.contentLinksHelper.handleLink(href, undefined, navCtrl, true, true).then((treated) => {
                             if (!treated) {
-                                this.navigate(href);
+                                this.navigate(href, openIn);
                             }
                         });
                     } else {
-                        this.navigate(href);
+                        this.navigate(href, openIn);
                     }
                 }
             }
@@ -95,9 +98,10 @@ export class CoreLinkDirective implements OnInit {
      * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param href HREF to be opened.
+     * @param openIn Open In App value coming from data-open-in attribute.
      * @return Promise resolved when done.
      */
-    protected async navigate(href: string): Promise<void> {
+    protected async navigate(href: string, openIn: string): Promise<void> {
 
         if (this.urlUtils.isLocalFileUrl(href)) {
             // We have a local file.
@@ -166,7 +170,19 @@ export class CoreLinkDirective implements OnInit {
                         this.utils.openInBrowser(href);
                     }
                 } else {
-                    if (this.inApp) {
+                    // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
+                    let openInApp;
+                    if (typeof this.inApp == 'undefined') {
+                        if (CoreConfigConstants['forceOpenLinksIn'] == 'browser') {
+                            openInApp = false;
+                        } else if (CoreConfigConstants['forceOpenLinksIn'] == 'app' || openIn == 'app') {
+                            openInApp = true;
+                        }
+                    } else {
+                        openInApp = this.inApp;
+                    }
+
+                    if (openInApp) {
                         await this.sitesProvider.getCurrentSite().openInAppWithAutoLoginIfSameSite(href);
                     } else {
                         await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
