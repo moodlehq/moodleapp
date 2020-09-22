@@ -527,6 +527,12 @@ export class CorePushNotificationsProvider {
                             localNotif.icon = notification.image;
                             // This feature isn't supported by the official plugin, we use a fork.
                             (<any> localNotif).iconType = data['image-type'];
+
+                            localNotif.summary = data.summaryText;
+
+                            if (data.picture) {
+                                localNotif.attachments = [data.picture];
+                            }
                         }
 
                         Promise.all(promises).then(() => {
