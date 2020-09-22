@@ -1906,6 +1906,7 @@
   "core.noresults": "moodle",
   "core.noselection": "form",
   "core.notapplicable": "local_moodlemobileapp",
+  "core.notavailable": "moodle",
   "core.notenrolledprofile": "moodle",
   "core.notice": "moodle",
   "core.notingroup": "moodle",
