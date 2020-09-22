@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { NavController } from 'ionic-angular';
+import { CoreFileHelper } from '@providers/file-helper';
 import { CoreSites } from '@providers/sites';
 import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreUtils } from '@providers/utils/utils';
@@ -43,6 +44,16 @@ export class CoreWindow {
      */
     static async open(url: string, name?: string, options?: CoreWindowOpenOptions): Promise<void> {
         if (CoreUrlUtils.instance.isLocalFileUrl(url)) {
+            const filename = url.substr(url.lastIndexOf('/') + 1);
+
+            if (!CoreFileHelper.instance.isOpenableInApp({ filename })) {
+                try {
+                    await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
             await CoreUtils.instance.openFile(url);
         } else {
             let treated: boolean;

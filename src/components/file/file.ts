@@ -148,7 +148,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      * @param e Click event.
      * @param openAfterDownload Whether the file should be opened after download.
      */
-    download(e?: Event, openAfterDownload: boolean = false): void {
+    async download(e?: Event, openAfterDownload: boolean = false): Promise<void> {
         e && e.preventDefault();
         e && e.stopPropagation();
 
@@ -181,32 +181,45 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         if (openAfterDownload) {
             // File needs to be opened now.
-            this.openFile().catch((error) => {
+            try {
+                await this.openFile();
+            } catch (error) {
                 this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-            });
+            }
         } else {
-            // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-            this.pluginFileDelegate.getFileSize({fileurl: this.fileUrl, filesize: this.fileSize}, this.siteId).then((size) => {
+            // File doesn't need to be opened (it's a prefetch).
+            if (!this.fileHelper.isOpenableInApp(this.file)) {
+                try {
+                    await this.fileHelper.showConfirmOpenUnsupportedFile(true);
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
 
-                const promise = size ? this.domUtils.confirmDownloadSize({ size: size, total: true }) : Promise.resolve();
+            try {
+                // Show confirm modal if file size is defined and it's big.
+                const size = await this.pluginFileDelegate.getFileSize({fileurl: this.fileUrl, filesize: this.fileSize},
+                        this.siteId);
 
-                return promise.then(() => {
-                    // User confirmed, add the file to queue.
-                    return this.filepoolProvider.invalidateFileByUrl(this.siteId, this.fileUrl).finally(() => {
-                        this.isDownloading = true;
+                if (size) {
+                    await this.domUtils.confirmDownloadSize({ size: size, total: true });
+                }
 
-                        this.filepoolProvider.addToQueueByUrl(this.siteId, this.fileUrl, this.component,
-                            this.componentId, this.timemodified, undefined, undefined, 0, this.file).catch((error) => {
-                                this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-                                this.calculateState();
-                            });
-                    });
-                }).catch(() => {
-                    // User cancelled.
-                });
-            }).catch((error) => {
+                // User confirmed, add the file to queue.
+                await this.utils.ignoreErrors(this.filepoolProvider.invalidateFileByUrl(this.siteId, this.fileUrl));
+
+                this.isDownloading = true;
+
+                try {
+                    await this.filepoolProvider.addToQueueByUrl(this.siteId, this.fileUrl, this.component,
+                            this.componentId, this.timemodified, undefined, undefined, 0, this.file);
+                } catch (error) {
+                    this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                    this.calculateState();
+                }
+            } catch (error) {
                 this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-            });
+            }
         }
     }
 

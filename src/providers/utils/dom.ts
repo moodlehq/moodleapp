@@ -1287,7 +1287,7 @@ export class CoreDomUtilsProvider {
             ];
 
             if (!title) {
-                options.cssClass = 'core-nohead';
+                options.cssClass = (options.cssClass || '') + ' core-nohead';
             }
 
             this.showAlertWithOptions(options, 0);

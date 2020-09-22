@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from './app';
+import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreFileProvider } from './file';
 import { CoreFilepoolProvider } from './filepool';
 import { CoreSitesProvider } from './sites';
@@ -30,7 +31,8 @@ import { makeSingleton } from '@singletons/core.singletons';
 @Injectable()
 export class CoreFileHelperProvider {
 
-    constructor(protected fileProvider: CoreFileProvider,
+    constructor(protected domUtils: CoreDomUtilsProvider,
+            protected fileProvider: CoreFileProvider,
             protected filepoolProvider: CoreFilepoolProvider,
             protected sitesProvider: CoreSitesProvider,
             protected appProvider: CoreAppProvider,
@@ -49,63 +51,58 @@ export class CoreFileHelperProvider {
      * @param siteId The site ID. If not defined, current site.
      * @return Resolved on success.
      */
-    downloadAndOpenFile(file: any, component: string, componentId: string | number, state?: string,
-            onProgress?: (event: any) => any, siteId?: string): Promise<any> {
+    async downloadAndOpenFile(file: any, component: string, componentId: string | number, state?: string,
+            onProgress?: (event: any) => any, siteId?: string): Promise<void> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const fileUrl = this.getFileUrl(file),
-            timemodified = this.getFileTimemodified(file);
+        const fileUrl = this.getFileUrl(file);
+        const timemodified = this.getFileTimemodified(file);
 
-        return this.downloadFileIfNeeded(file, fileUrl, component, componentId, timemodified, state, onProgress, siteId)
-                .then((url) => {
-            if (!url) {
+        if (!this.isOpenableInApp(file)) {
+            await this.showConfirmOpenUnsupportedFile();
+        }
+
+        let url = await this.downloadFileIfNeeded(file, fileUrl, component, componentId, timemodified, state, onProgress, siteId);
+
+        if (!url) {
+            return;
+        }
+
+        if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
+            /* In iOS, if we use the same URL in embedded browser and background download then the download only
+               downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
+            url = url + '#moodlemobile-embedded';
+
+            try {
+                await this.utils.openOnlineFile(url);
+
                 return;
+            } catch (error) {
+                // Error opening the file, some apps don't allow opening online files.
+                if (!this.fileProvider.isAvailable()) {
+                    throw error;
+                }
+
+                // Get the state.
+                if (!state) {
+                    state = await this.filepoolProvider.getFileStateByUrl(siteId, fileUrl, timemodified);
+                }
+
+                if (state == CoreConstants.DOWNLOADING) {
+                    throw new Error(this.translate.instant('core.erroropenfiledownloading'));
+                }
+
+                if (state === CoreConstants.NOT_DOWNLOADED) {
+                    // File is not downloaded, download and then return the local URL.
+                    url = await this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
+                } else {
+                    // File is outdated and can't be opened in online, return the local URL.
+                    url = await this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
+                }
             }
+        }
 
-            if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
-                /* In iOS, if we use the same URL in embedded browser and background download then the download only
-                   downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
-                url = url + '#moodlemobile-embedded';
-
-                return this.utils.openOnlineFile(url).catch((error) => {
-                    // Error opening the file, some apps don't allow opening online files.
-                    if (!this.fileProvider.isAvailable()) {
-                        return Promise.reject(error);
-                    }
-
-                    let promise;
-
-                    // Get the state.
-                    if (state) {
-                        promise = Promise.resolve(state);
-                    } else {
-                        promise = this.filepoolProvider.getFileStateByUrl(siteId, fileUrl, timemodified);
-                    }
-
-                    return promise.then((state) => {
-                        if (state == CoreConstants.DOWNLOADING) {
-                            return Promise.reject(this.translate.instant('core.erroropenfiledownloading'));
-                        }
-
-                        let promise;
-
-                        if (state === CoreConstants.NOT_DOWNLOADED) {
-                            // File is not downloaded, download and then return the local URL.
-                            promise = this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
-                        } else {
-                            // File is outdated and can't be opened in online, return the local URL.
-                            promise = this.filepoolProvider.getInternalUrlByUrl(siteId, fileUrl);
-                        }
-
-                        return promise.then((url) => {
-                            return this.utils.openFile(url);
-                        });
-                    });
-                });
-            } else {
-                return this.utils.openFile(url);
-            }
-        });
+        return this.utils.openFile(url);
     }
 
     /**
@@ -338,6 +335,52 @@ export class CoreFileHelperProvider {
         }
 
         throw new Error('Couldn\'t determine file size: ' + file.fileurl);
+    }
+
+    /**
+     * Is the file openable in app.
+     *
+     * @param file The file to check.
+     * @return bool.
+     */
+    isOpenableInApp(file: {filename?: string, name?: string}): boolean {
+        const re = /(?:\.([^.]+))?$/;
+
+        const ext = re.exec(file.filename || file.name)[1];
+
+        return !this.isFileTypeExcludedInApp(ext);
+    }
+
+    /**
+     * Show a confirm asking the user if we wants to open the file.
+     *
+     * @param onlyDownload Whether the user is only downloading the file, not opening it.
+     * @return Promise resolved if confirmed, rejected otherwise.
+     */
+    showConfirmOpenUnsupportedFile(onlyDownload?: boolean): Promise<void> {
+        const message = this.translate.instant('core.cannotopeninapp' + (onlyDownload ? 'download' : ''));
+        const okButton = this.translate.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
+
+        return this.domUtils.showConfirm(message, undefined, okButton, undefined, { cssClass: 'core-modal-force-on-top' });
+    }
+
+    /**
+     * Is the file type excluded to open in app.
+     *
+     * @param file The file to check.
+     * @return bool.
+     */
+    isFileTypeExcludedInApp(fileType: string): boolean {
+        const currentSite = this.sitesProvider.getCurrentSite();
+        const fileTypeExcludeList = currentSite && currentSite.getStoredConfig('tool_mobile_filetypeexclusionlist');
+
+        if (!fileTypeExcludeList) {
+            return false;
+        }
+
+        const regEx = new RegExp('(,|^)' + fileType + '(,|$)', 'g');
+
+        return !!fileTypeExcludeList.match(regEx);
     }
 }
 
