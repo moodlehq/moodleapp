@@ -69,6 +69,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     data: any = {};
 
     displaySectionSelector: boolean;
+    displayBlocks: boolean;
     selectedSection: any;
     previousSection: any;
     nextSection: any;
@@ -158,6 +159,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
+        this.displayBlocks = this.cfDelegate.displayBlocks(this.course);
     }
 
     /**

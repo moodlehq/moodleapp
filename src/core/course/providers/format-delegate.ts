@@ -48,6 +48,14 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     canViewAllSections?(course: any): boolean;
 
     /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks?(course: any): boolean;
+
+    /**
      * Whether the option to enable section/module download should be displayed. Defaults to true.
      *
      * @param course The course to check.
@@ -189,6 +197,16 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      */
     canViewAllSections(course: any): boolean {
         return this.executeFunctionOnEnabled(course.format, 'canViewAllSections', [course]);
+    }
+
+    /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks?(course: any): boolean {
+        return this.executeFunctionOnEnabled(course.format, 'displayBlocks', [course]);
     }
 
     /**

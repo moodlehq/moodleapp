@@ -66,6 +66,16 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     }
 
     /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks(course: any): boolean {
+        return true;
+    }
+
+    /**
      * Whether the option to enable section/module download should be displayed. Defaults to true.
      *
      * @param course The course to check.
