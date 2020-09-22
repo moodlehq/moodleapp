@@ -14,10 +14,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Platform } from 'ionic-angular';
-import { Geolocation, GeolocationOptions } from '@ionic-native/geolocation';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { CoreApp, CoreAppProvider } from '@providers/app';
+import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@providers/geolocation';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 
 /**
@@ -33,13 +32,11 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     east: number;
     showGeolocation: boolean;
 
-    constructor(protected fb: FormBuilder,
-            protected platform: Platform,
-            protected geolocation: Geolocation,
+    constructor(
+            protected fb: FormBuilder,
             protected domUtils: CoreDomUtilsProvider,
             protected sanitizer: DomSanitizer,
-            appProvider: CoreAppProvider
-            ) {
+            appProvider: CoreAppProvider) {
         super(fb);
 
         this.showGeolocation = !appProvider.isDesktop();
@@ -116,33 +113,51 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
      *
      * @param $event The event.
      */
-    getLocation(event: Event): void {
+    async getLocation(event: Event): Promise<void> {
         event.preventDefault();
 
         const modal = this.domUtils.showModalLoading('addon.mod_data.gettinglocation', true);
 
-        const options: GeolocationOptions = {
-            enableHighAccuracy: true,
-            timeout: 30000
-        };
+        try {
+            const coordinates = await CoreGeolocation.instance.getCoordinates();
 
-        this.geolocation.getCurrentPosition(options).then((result) => {
-            this.form.controls['f_' + this.field.id + '_0'].setValue(result.coords.latitude);
-            this.form.controls['f_' + this.field.id + '_1'].setValue(result.coords.longitude);
-        }).catch((error) => {
-            if (this.isPermissionDeniedError(error)) {
-                this.domUtils.showErrorModal('addon.mod_data.locationpermissiondenied', true);
+            this.form.controls['f_' + this.field.id + '_0'].setValue(coordinates.latitude);
+            this.form.controls['f_' + this.field.id + '_1'].setValue(coordinates.longitude);
+        } catch (error) {
+            this.showLocationErrorModal(error);
+        }
 
-                return;
-            }
-
-            this.domUtils.showErrorModalDefault(error,  'Error getting location');
-        }).finally(() => {
-            modal.dismiss();
-        });
+        modal.dismiss();
     }
 
-    protected isPermissionDeniedError(error?: any): boolean {
-        return error && 'code' in error && 'PERMISSION_DENIED' in error && error.code === error.PERMISSION_DENIED;
+    /**
+     * Show the appropriate error modal for the given error getting the location.
+     *
+     * @param error Location error.
+     */
+    protected showLocationErrorModal(error: any): void {
+        if (error instanceof CoreGeolocationError) {
+            this.domUtils.showErrorModal(this.getGeolocationErrorMessage(error), true);
+
+            return;
+        }
+
+        this.domUtils.showErrorModalDefault(error,  'Error getting location');
     }
+
+    /**
+     * Get error message from a geolocation error.
+     *
+     * @param error Geolocation error.
+     */
+    protected getGeolocationErrorMessage(error: CoreGeolocationError): string {
+        // tslint:disable-next-line: switch-default
+        switch (error.reason) {
+            case CoreGeolocationErrorReason.PermissionDenied:
+                return 'addon.mod_data.locationpermissiondenied';
+            case CoreGeolocationErrorReason.LocationNotEnabled:
+                return 'addon.mod_data.locationnotenabled';
+        }
+    }
+
 }

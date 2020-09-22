@@ -61,6 +61,7 @@
     "@ionic-native/clipboard": "^4.20.0",
     "@ionic-native/core": "^4.20.0",
     "@ionic-native/device": "^4.20.0",
+    "@ionic-native/diagnostic": "^4.2.0",
     "@ionic-native/file": "^4.20.0",
     "@ionic-native/file-opener": "^4.20.0",
     "@ionic-native/file-transfer": "^4.20.0",
@@ -147,6 +148,7 @@
     "@types/node": "^8.10.59",
     "@types/promise.prototype.finally": "^2.0.4",
     "acorn": "^5.7.4",
+    "cordova.plugins.diagnostic": "^5.0.2",
     "electron-builder-lib": "^20.23.1",
     "electron-rebuild": "^1.10.0",
     "gulp": "4.0.2",
@@ -223,7 +225,8 @@
       "cordova-plugin-wkuserscript": {},
       "cordova-plugin-media": {
         "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
-      }
+      },
+      "cordova.plugins.diagnostic": {}
     }
   },
   "main": "desktop/electron.js",

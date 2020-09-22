@@ -69,6 +69,7 @@ import { CoreContentLinksModuleGradeHandler } from '@core/contentlinks/classes/m
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
+import { CoreGeolocationError, CoreGeolocationErrorReason } from '@providers/geolocation';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreComponentsModule } from '@components/components.module';
@@ -299,6 +300,8 @@ export class CoreCompileProvider {
         instance['CoreSitePluginsQuizAccessRuleComponent'] = CoreSitePluginsQuizAccessRuleComponent;
         instance['CoreSitePluginsAssignFeedbackComponent'] = CoreSitePluginsAssignFeedbackComponent;
         instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
+        instance['CoreGeolocationError'] = CoreGeolocationError;
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
     }
 
     /**
