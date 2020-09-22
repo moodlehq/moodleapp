@@ -98,6 +98,7 @@
     "enableanalytics": false,
     "enableonboarding": true,
     "forceColorScheme": "",
+    "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
         "android": "com.moodle.moodlemobile",

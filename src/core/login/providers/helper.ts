@@ -411,7 +411,7 @@ export class CoreLoginHelperProvider {
      * @return Logo URL.
      */
     getLogoUrl(config: any): string {
-        return config ? (config.logourl || config.compactlogourl) : null;
+        return !CoreConfigConstants.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : null;
     }
 
     /**
