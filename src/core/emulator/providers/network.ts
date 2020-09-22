@@ -17,7 +17,7 @@ import { Network } from '@ionic-native/network';
 import { Observable, Subject } from 'rxjs';
 
 /**
- * Emulates the Cordova Globalization plugin in desktop apps and in browser.
+ * Emulates the Ionic Network plugin in desktop apps and in browser.
  */
 @Injectable()
 export class NetworkMock extends Network {
