@@ -24,13 +24,20 @@
 
             <!-- Course summary. By default we only display the course progress. -->
             <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-                <ion-list no-lines *ngIf="course.imageThumb || (selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0)" class="core-format-progress-list">
+                <ion-list no-lines *ngIf="course.imageThumb || (selectedSection && (selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0) || (selectedSection.id != allSectionsId && (selectedSection.availabilityinfo || selectedSection.visible === 0)))" class="core-format-progress-list">
                     <div *ngIf="course.imageThumb" class="core-course-thumb">
                         <img [src]="course.imageThumb" core-external-content alt=""/>
                     </div>
-                    <ion-item class="core-course-progress" *ngIf="selectedSection && selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0 && course.completionusertracked !== false">
-                        <core-progress-bar [progress]="course.progress"></core-progress-bar>
-                    </ion-item>
+                    <ng-container *ngIf="selectedSection">
+                        <ion-item class="core-course-progress" *ngIf="selectedSection.id == allSectionsId && course.progress != null && course.progress >= 0 && course.completionusertracked !== false">
+                            <core-progress-bar [progress]="course.progress"></core-progress-bar>
+                        </ion-item>
+                        <ion-item *ngIf="selectedSection.id != allSectionsId && (selectedSection.availabilityinfo || selectedSection.visible === 0)" >
+                            <ion-badge color="secondary" *ngIf="selectedSection.visible === 0 && selectedSection.uservisible !== false" text-wrap>{{ 'core.course.hiddenfromstudents' | translate }}</ion-badge>
+                            <ion-badge color="secondary" *ngIf="selectedSection.visible === 0 && selectedSection.uservisible === false" text-wrap>{{ 'core.notavailable' | translate }}</ion-badge>
+                            <ion-badge color="secondary" *ngIf="selectedSection.availabilityinfo" text-wrap><core-format-text [text]=" selectedSection.availabilityinfo" contextLevel="course" [contextInstanceId]="courseId"></core-format-text></ion-badge>
+                        </ion-item>
+                    </ng-container>
                 </ion-list>
             </core-dynamic-component>
 
