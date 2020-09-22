@@ -52,6 +52,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
     forum: any = {};
     accessInfo: any = {};
     discussion: any;
+    startingPost: any;
     posts: any[];
     discussionLoaded = false;
     postSubjects: { [id: string]: string };
@@ -253,7 +254,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     }
 
                     if (typeof data.deleted != 'undefined' && data.deleted) {
-                        if (data.post.parent == 0) {
+                        if (!data.post.parentid) {
                             if (this.svComponent && this.svComponent.isOn()) {
                                 this.svComponent.emptyDetails();
                             } else {
@@ -331,6 +332,8 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             return this.forumProvider.getDiscussionPosts(this.discussionId, this.cmId).then((response) => {
                 onlinePosts = response.posts;
                 ratingInfo = response.ratinginfo;
+                this.courseId = response.courseid || this.courseId;
+                this.forumId = response.forumid || this.forumId;
             }).then(() => {
                 // Check if there are responses stored in offline.
                 return this.forumOffline.getDiscussionReplies(this.discussionId).then((replies) => {
@@ -341,7 +344,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     const posts = {};
                     onlinePosts.forEach((post) => {
                         posts[post.id] = post;
-                        hasUnreadPosts = hasUnreadPosts || !post.postread;
+                        hasUnreadPosts = hasUnreadPosts || !!post.unread;
                     });
 
                     replies.forEach((offlineReply) => {
@@ -370,18 +373,15 @@ export class AddonModForumDiscussionPage implements OnDestroy {
         }).then(() => {
             let posts = offlineReplies.concat(onlinePosts);
 
-            const startingPost = this.forumProvider.extractStartingPost(posts);
-            if (startingPost) {
-                // Update discussion data from first post.
-                this.discussion = Object.assign(this.discussion || {}, startingPost);
-            }
+            this.startingPost = this.forumProvider.extractStartingPost(posts);
 
             // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
             if (this.sort == 'nested') {
                 // Sort first by creation date to make format tree work.
                 this.forumProvider.sortDiscussionPosts(posts, 'ASC');
 
-                posts = this.utils.formatTree(posts, 'parent', 'id', this.discussion.id);
+                const rootId = this.startingPost ? this.startingPost.id : (this.discussion ? this.discussion.id : 0);
+                posts = this.utils.formatTree(posts, 'parentid', 'id', rootId);
             } else {
                 // Set default reply subject.
                 const direction = this.sort == 'flat-newest' ? 'DESC' : 'ASC';
@@ -410,7 +410,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                     // Just in case the posts were fetched from WS when the cut-off date was not reached but it is now.
                     if (this.forumHelper.isCutoffDateReached(forum) && !accessInfo.cancanoverridecutoff) {
                         posts.forEach((post) => {
-                            post.canreply = false;
+                            post.capabilities.reply = false;
                         });
                     }
                 }));
@@ -424,24 +424,26 @@ export class AddonModForumDiscussionPage implements OnDestroy {
             }).catch(() => {
                 // Ignore errors.
             }).then(() => {
-
-                if (!this.discussion) {
+                if (!this.discussion && !this.startingPost) {
                     // The discussion object was not passed as parameter and there is no starting post. Should not happen.
                     return Promise.reject('Invalid forum discussion.');
                 }
 
-                if (this.discussion.userfullname && this.discussion.parent == 0 && this.forum.type == 'single') {
-                    // Hide author for first post and type single.
-                    this.discussion.userfullname = null;
+                if (this.startingPost.author && this.forum.type == 'single') {
+                    // Hide author and groups for first post and type single.
+                    this.startingPost.author.fullname = null;
+                    this.startingPost.author.groups = null;
+
                 }
 
                 this.posts = posts;
                 this.ratingInfo = ratingInfo;
+
                 this.postSubjects = this.getAllPosts().reduce((postSubjects, post) => {
                     postSubjects[post.id] = post.subject;
 
                     return postSubjects;
-                }, { [this.discussion.id]: this.discussion.subject });
+                }, { [this.startingPost.id]: this.startingPost.subject });
             });
         }).then(() => {
             if (this.forumProvider.isSetPinStateAvailableForSite()) {
@@ -746,5 +748,4 @@ export class AddonModForumDiscussionPage implements OnDestroy {
 
         return posts;
     }
-
 }

@@ -228,7 +228,7 @@ export class CoreEditorOfflineProvider {
 
         if (entry) {
             if (entry.pageinstance != pageInstance) {
-                this.logger.warning(`Discarding draft because of pageinstance. Context '${contextLevel}' '${contextInstanceId}', ` +
+                this.logger.warn(`Discarding draft because of pageinstance. Context '${contextLevel}' '${contextInstanceId}', ` +
                         `element '${elementId}'`);
                 throw null;
             }

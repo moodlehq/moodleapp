@@ -133,7 +133,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     }
 
                     if (typeof data.deleted != 'undefined' && data.deleted) {
-                        if (data.post.parent == 0 && this.splitviewCtrl && this.splitviewCtrl.isOn()) {
+                        if (data.post.parentid == 0 && this.splitviewCtrl && this.splitviewCtrl.isOn()) {
                             // Discussion deleted, clear details page.
                             this.splitviewCtrl.emptyDetails();
                         }
