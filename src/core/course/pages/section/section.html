@@ -24,7 +24,7 @@
                     </ion-refresher>
 
                     <core-loading [hideUntil]="dataLoaded">
-                        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber" [downloadEnabled]="downloadEnabled" [moduleId]="moduleId" (completionChanged)="onCompletionChange($event)"></core-course-format>
+                        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber" [downloadEnabled]="downloadEnabled" [moduleId]="moduleId" (completionChanged)="onCompletionChange($event)" class="core-course-format-{{course.format}}"></core-course-format>
                     </core-loading>
                 </ion-content>
             </ng-template>

@@ -5,7 +5,7 @@
     </core-context-menu>
 </core-navbar-buttons>
 
-<core-block-course-blocks [courseId]="course.id" [hideBottomBlocks]="selectedSection && selectedSection.id == allSectionsId && canLoadMore" [hideBlocks]="!displayBlocks" [downloadEnabled]="downloadEnabled">
+<core-block-course-blocks *ngIf="loaded" [courseId]="course.id" [hideBottomBlocks]="selectedSection && selectedSection.id == allSectionsId && canLoadMore" [hideBlocks]="!displayBlocks" [downloadEnabled]="downloadEnabled">
     <!-- Default course format. -->
     <core-dynamic-component [component]="courseFormatComponent" [data]="data">
         <core-loading [hideUntil]="loaded">
