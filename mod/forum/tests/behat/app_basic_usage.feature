@@ -231,14 +231,10 @@ Feature: Test basic usage of forum activity in app
     Then I should see "Edit"
 
     When I press "Edit" in the app
+    And I switch offline mode to "true"
     And I set the field "Write your reply..." to "Auto-test message edited" in the app
     And I press "Save changes" in the app
-    And I switch offline mode to "true"
-    And I press "Display options" near "Reply" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
-
-    When I press "OK" in the app
-    And I should not see "Edit"
 
   @app @3.8.0
   Scenario: Delete a forum post (only online)
@@ -267,6 +263,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Cancel" in the app
     And I switch offline mode to "true"
     And I press "Display options" near "Reply" in the app
+    And I press "Delete" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
 
     When I press "OK" in the app
