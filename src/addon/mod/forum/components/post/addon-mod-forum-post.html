@@ -50,14 +50,14 @@
         <core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" [userId]="post.author.id" (onUpdate)="ratingUpdated()"></core-rating-rate>
         <core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"></core-rating-aggregate>
 
-        <ion-item no-padding text-end *ngIf="post.id && post.capabilities.reply && !post.isprivatereply" class="addon-forum-reply-button">
+        <ion-item no-padding text-end *ngIf="post.id > 0 && post.capabilities.reply && !post.isprivatereply" class="addon-forum-reply-button">
             <button ion-button icon-left clear small (click)="showReplyForm()" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
                 <core-icon name="fa-reply"></core-icon> {{ 'addon.mod_forum.reply' | translate }}
             </button>
         </ion-item>
     </div>
 
-    <form ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id && !replyData.isEditing && replyData.replyingTo == post.id) || (!post.id && replyData.isEditing && replyData.replyingTo == post.parentid)" #replyFormEl>
+    <form ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" *ngIf="(post.id > 0 && !replyData.isEditing && replyData.replyingTo == post.id) || (post.id <=0 && replyData.isEditing && replyData.replyingTo == post.parentid)" #replyFormEl>
         <ion-item>
             <ion-label stacked>{{ 'addon.mod_forum.subject' | translate }}</ion-label>
             <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>

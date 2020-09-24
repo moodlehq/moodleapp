@@ -161,24 +161,23 @@ export class AddonModForumHelperProvider {
      */
     convertOfflineReplyToOnline(offlineReply: any, siteId?: string): Promise<any> {
         const reply: any = {
-                attachments: [],
-                canreply: false,
-                children: [],
-                created: offlineReply.timecreated,
-                discussion: offlineReply.discussionid,
-                id: false,
-                mailed: 0,
-                mailnow: 0,
-                message: offlineReply.message,
-                messageformat: 1,
-                messagetrust: 0,
-                modified: false,
-                parent: offlineReply.postid,
-                postread: false,
+                id: -offlineReply.timecreated,
+                discussionid: offlineReply.discussionid,
+                parentid: offlineReply.postid,
+                hasparent: !!offlineReply.postid,
+                author: {
+                    id: offlineReply.userid,
+                },
+                timecreated: false,
                 subject: offlineReply.subject,
-                totalscore: 0,
-                userid: offlineReply.userid,
-                isprivatereply: offlineReply.options && offlineReply.options.private
+                message: offlineReply.message,
+                attachments: [],
+                capabilities: {
+                    reply: false,
+                },
+                unread: false,
+                isprivatereply: offlineReply.options && offlineReply.options.private,
+                tags: null
             },
             promises = [];
 
@@ -187,7 +186,7 @@ export class AddonModForumHelperProvider {
             reply.attachments = offlineReply.options.attachmentsid.online || [];
 
             if (offlineReply.options.attachmentsid.offline) {
-                promises.push(this.getReplyStoredFiles(offlineReply.forumid, reply.parent, siteId, reply.userid)
+                promises.push(this.getReplyStoredFiles(offlineReply.forumid, reply.parentid, siteId, offlineReply.userid)
                             .then((files) => {
                     reply.attachments = reply.attachments.concat(files);
                 }));
@@ -196,8 +195,8 @@ export class AddonModForumHelperProvider {
 
         // Get user data.
         promises.push(this.userProvider.getProfile(offlineReply.userid, offlineReply.courseid, true).then((user) => {
-            reply.userfullname = user.fullname;
-            reply.userpictureurl = user.profileimageurl;
+            reply.author.fullname = user.fullname;
+            reply.author.urls = { profileimage: user.profileimageurl };
         }).catch(() => {
             // Ignore errors.
         }));
