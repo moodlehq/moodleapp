@@ -589,8 +589,13 @@ export class AddonModForumProvider {
     sortDiscussionPosts(posts: any[], direction: string): void {
         // @todo: Check children when sorting.
         posts.sort((a, b) => {
-            a = parseInt(a.created, 10);
-            b = parseInt(b.created, 10);
+            a = parseInt(a.timecreated, 10) || 0;
+            b = parseInt(b.timecreated, 10) || 0;
+            if (a == 0 || b == 0) {
+                // Leave 0 at the end.
+                return b - a;
+            }
+
             if (direction == 'ASC') {
                 return a - b;
             } else {

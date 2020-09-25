@@ -360,7 +360,7 @@ export class AddonModForumDiscussionPage implements OnDestroy {
                             offlineReplies.push(reply);
 
                             // Disable reply of the parent. Reply in offline to the same post is not allowed, edit instead.
-                            posts[reply.parent].canreply = false;
+                            posts[reply.parentid].capabilities.reply = false;
                         }));
                     });
 

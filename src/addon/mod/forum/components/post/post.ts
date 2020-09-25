@@ -93,7 +93,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.uniqueId = this.post.id ? 'reply' + this.post.id : 'edit' + this.post.parentid;
+        this.uniqueId = this.post.id > 0 ? 'reply' + this.post.id : 'edit' + this.post.parentid;
 
         const reTranslated = this.translate.instant('addon.mod_forum.re');
         this.displaySubject = !this.parentSubject ||
@@ -102,7 +102,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
             this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
 
-        this.optionsMenuEnabled = !this.post.id || (this.forumProvider.isGetDiscussionPostAvailable() &&
+        this.optionsMenuEnabled = this.post.id < 0 || (this.forumProvider.isGetDiscussionPostAvailable() &&
                     (this.forumProvider.isDeletePostAvailable() || this.forumProvider.isUpdatePostAvailable()));
     }
 

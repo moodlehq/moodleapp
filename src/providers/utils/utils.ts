@@ -581,6 +581,10 @@ export class CoreUtilsProvider {
             parent = node[parentFieldName];
             node.children = [];
 
+            if (!id || !parent) {
+                this.logger.error(`Node with incorrect ${idFieldName}:${id} or ${parentFieldName}:${parent} found on formatTree`);
+            }
+
             // Use map to look-up the parents.
             map[id] = index;
             if (parent != rootParentId) {
@@ -597,12 +601,16 @@ export class CoreUtilsProvider {
                             mapDepth[id] = mapDepth[parent];
                             // Change the parent to be the one that is two levels up the hierarchy.
                             node.parent = parentOfParent;
+                        } else {
+                            this.logger.error(`Node parent of parent:${parentOfParent} not found on formatTree`);
                         }
                     } else {
                         parentNode.children.push(node);
                         // Increase the depth level.
                         mapDepth[id] = mapDepth[parent] + 1;
                     }
+                } else {
+                    this.logger.error(`Node parent:${parent} not found on formatTree`);
                 }
             } else {
                 tree.push(node);
