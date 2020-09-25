@@ -263,10 +263,6 @@ Feature: Test basic usage of forum activity in app
     And I press "Cancel" in the app
     And I switch offline mode to "true"
     And I press "Display options" near "Reply" in the app
-    And I press "Delete" in the app
-    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
-
-    When I press "OK" in the app
     Then I should not see "Delete"
 
     When I switch offline mode to "false"
