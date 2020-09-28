@@ -38,7 +38,6 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     course: any;
     isEnrolled: boolean;
     canAccessCourse = true;
-    component = 'CoreCoursesCoursePreview';
     selfEnrolInstances: any[] = [];
     paypalEnabled: boolean;
     dataLoaded: boolean;

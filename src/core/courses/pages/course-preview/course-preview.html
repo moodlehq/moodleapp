@@ -42,7 +42,6 @@
                 </ng-container>
             </ion-item>
 
-            <core-file *ngFor="let file of course.overviewfiles" [file]="file" [component]="component" [componentId]="course.id"></core-file>
             <div *ngIf="!isEnrolled" detail-none>
                 <ion-item text-wrap *ngFor="let instance of selfEnrolInstances">
                     <h2>{{ instance.name }}</h2>
