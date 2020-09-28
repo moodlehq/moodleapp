@@ -1911,6 +1911,7 @@
     "core.noresults": "No results",
     "core.noselection": "No selection",
     "core.notapplicable": "n/a",
+    "core.notavailable": "Not available",
     "core.notenrolledprofile": "This profile is not available because this user is not enrolled in this course.",
     "core.notice": "Notice",
     "core.notingroup": "Sorry, but you need to be part of a group to see this page.",
