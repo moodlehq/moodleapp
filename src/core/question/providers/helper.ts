@@ -16,6 +16,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreWSExternalFile } from '@providers/ws';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -419,6 +420,25 @@ export class CoreQuestionHelperProvider {
         const state = this.questionProvider.getState(name);
 
         return state ? state.class : '';
+    }
+
+    /**
+     * Return the files of a certain response file area.
+     *
+     * @param question Question.
+     * @param areaName Name of the area, e.g. 'attachments'.
+     * @return List of files.
+     */
+    getResponseFileAreaFiles(question: any, areaName: string): CoreWSExternalFile[] {
+        if (!question.responsefileareas) {
+            return [];
+        }
+
+        const area = question.responsefileareas.find((area) => {
+            return area.area == areaName;
+        });
+
+        return area && area.files || [];
     }
 
     /**

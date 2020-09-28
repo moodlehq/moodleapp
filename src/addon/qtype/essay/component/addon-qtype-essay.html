@@ -5,9 +5,10 @@
     </ion-item>
 
     <!-- Textarea. -->
-    <ion-item *ngIf="question.textarea && !question.hasDraftFiles">
-        <!-- "Format" hidden input -->
+    <ion-item *ngIf="question.textarea && (!question.hasDraftFiles || uploadFilesSupported)">
+        <!-- "Format" and draftid hidden inputs -->
         <input item-content *ngIf="question.formatInput" type="hidden" [name]="question.formatInput.name" [value]="question.formatInput.value" >
+        <input item-content *ngIf="question.answerDraftIdInput" type="hidden" [name]="question.answerDraftIdInput.name" [value]="question.answerDraftIdInput.value" >
         <!-- Plain text textarea. -->
         <ion-textarea *ngIf="question.isPlainText" class="core-question-textarea" [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.textarea.name" aria-multiline="true" [ngModel]="question.textarea.text"></ion-textarea>
         <!-- Rich text editor. -->
@@ -15,22 +16,29 @@
     </ion-item>
 
     <!-- Draft files not supported. -->
-    <ng-container *ngIf="question.textarea && question.hasDraftFiles">
+    <ng-container *ngIf="question.textarea && question.hasDraftFiles && !uploadFilesSupported">
         <ion-item text-wrap class="core-danger-item">
-            <p class="core-question-warning">{{ 'core.question.errorinlinefilesnotsupported' | translate }}</p>
+            <p class="core-question-warning">{{ 'core.question.errorinlinefilesnotsupportedinsite' | translate }}</p>
         </ion-item>
         <ion-item text-wrap>
             <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
         </ion-item>
     </ng-container>
 
-    <!-- Attachments not supported in the app yet. -->
-    <ion-item text-wrap *ngIf="question.allowsAttachments" class="core-danger-item">
-        <p class="core-question-warning">{{ 'core.question.errorattachmentsnotsupported' | translate }}</p>
-    </ion-item>
+    <!-- Attachments. -->
+    <ng-container *ngIf="question.allowsAttachments">
+        <core-attachments *ngIf="uploadFilesSupported" [files]="attachments" [component]="component" [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles"></core-attachments>
+
+        <input item-content *ngIf="uploadFilesSupported" type="hidden" [name]="question.attachmentsDraftIdInput.name" [value]="question.attachmentsDraftIdInput.value" >
+
+        <!-- Attachments not supported in this site. -->
+        <ion-item text-wrap *ngIf="!uploadFilesSupported" class="core-danger-item">
+            <p class="core-question-warning">{{ 'core.question.errorattachmentsnotsupportedinsite' | translate }}</p>
+        </ion-item>
+    </ng-container>
 
     <!-- Answer to the question and attachments (reviewing). -->
-    <ion-item text-wrap *ngIf="!question.textarea && (question.answer || (!question.attachments.length && !question.allowsAttachments))">
+    <ion-item text-wrap *ngIf="!question.textarea && (question.answer || question.answer == '')">
         <p><core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId" [text]="question.answer" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>
     </ion-item>
 

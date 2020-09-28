@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import { Injectable, Injector } from '@angular/core';
+import { CoreSites } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -68,11 +69,11 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
 
         if (element.querySelector('div[id*=filemanager]')) {
             // The question allows attachments. Since the app cannot attach files yet we will prevent submitting the question.
-            return 'core.question.errorattachmentsnotsupported';
+            return 'core.question.errorattachmentsnotsupportedinsite';
         }
 
         if (this.questionHelper.hasDraftFileUrls(element.innerHTML)) {
-            return 'core.question.errorinlinefilesnotsupported';
+            return 'core.question.errorinlinefilesnotsupportedinsite';
         }
     }
 
@@ -139,13 +140,21 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Return a promise resolved when done if async, void if sync.
      */
-    prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
+    async prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): Promise<void> {
         const element = this.domUtils.convertToElement(question.html);
 
         // Search the textarea to get its name.
         const textarea = <HTMLTextAreaElement> element.querySelector('textarea[name*=_answer]');
 
         if (textarea && typeof answers[textarea.name] != 'undefined') {
+            if (this.questionHelper.hasDraftFileUrls(question.html) && question.responsefileareas) {
+                // Restore draftfile URLs.
+                const site = await CoreSites.instance.getSite(siteId);
+
+                answers[textarea.name] = this.textUtils.restoreDraftfileUrls(site.getURL(), answers[textarea.name],
+                        question.html, this.questionHelper.getResponseFileAreaFiles(question, 'answer'));
+            }
+
             // Add some HTML to the text if needed.
             answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
         }

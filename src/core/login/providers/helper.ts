@@ -1152,7 +1152,7 @@ export class CoreLoginHelperProvider {
                     const providerToUse = identityProviders.find((provider) => {
                         const params = this.urlUtils.extractUrlParams(provider.url);
 
-                        return params.id == currentSite.getOAuthId();
+                        return Number(params.id) == currentSite.getOAuthId();
                     });
 
                     if (providerToUse) {

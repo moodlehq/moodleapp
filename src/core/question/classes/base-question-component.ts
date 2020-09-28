@@ -14,8 +14,10 @@
 
 import { Input, Output, EventEmitter, Injector, ElementRef } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
+import { CoreSites } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 
 /**
@@ -162,6 +164,8 @@ export class CoreQuestionBaseComponent {
             const input = questionEl.querySelector('input[type="text"][name*=answer]');
             this.question.optionsFirst =
                     questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(radios[0].outerHTML);
+
+            return questionEl;
         }
     }
 
@@ -201,27 +205,38 @@ export class CoreQuestionBaseComponent {
         const questionEl = this.initComponent();
 
         if (questionEl) {
-            // First search the textarea.
             const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
+            const answerDraftIdInput = <HTMLInputElement> questionEl.querySelector('input[name*="_answer:itemid"]');
+
             this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
+            this.question.allowsAnswerFiles = !!answerDraftIdInput;
             this.question.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
             this.question.isPlainText = this.question.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
-            this.question.hasDraftFiles = this.questionHelper.hasDraftFileUrls(questionEl.innerHTML);
+            this.question.hasDraftFiles = this.question.allowsAnswerFiles &&
+                    this.questionHelper.hasDraftFileUrls(questionEl.innerHTML);
 
-            if (!textarea) {
-                // Textarea not found, we might be in review. Search the answer and the attachments.
+            if (!textarea && !this.question.allowsAttachments) {
+                // Textarea and filemanager not found, we might be in review. Search the answer and the attachments.
                 this.question.answer = this.domUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
                 this.question.attachments = this.questionHelper.getQuestionAttachmentsFromHtml(
                         this.domUtils.getContentsOfElement(questionEl, '.attachments'));
-            } else {
-                // Textarea found.
-                const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=answerformat]'),
-                    content = textarea.innerHTML;
+
+                return questionEl;
+            }
+
+            if (textarea) {
+                const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=answerformat]');
+                let content = this.textUtils.decodeHTML(textarea.innerHTML || '');
+
+                if (this.question.hasDraftFiles && this.question.responsefileareas) {
+                    content = this.textUtils.replaceDraftfileUrls(CoreSites.instance.getCurrentSite().getURL(), content,
+                            this.questionHelper.getResponseFileAreaFiles(this.question, 'answer')).text;
+                }
 
                 this.question.textarea = {
                     id: textarea.id,
                     name: textarea.name,
-                    text: content ? this.textUtils.decodeHTML(content) : ''
+                    text: content,
                 };
 
                 if (input) {
@@ -231,6 +246,38 @@ export class CoreQuestionBaseComponent {
                     };
                 }
             }
+
+            if (answerDraftIdInput) {
+                this.question.answerDraftIdInput = {
+                    name: answerDraftIdInput.name,
+                    value: Number(answerDraftIdInput.value),
+                };
+            }
+
+            if (this.question.allowsAttachments) {
+                const attachmentsInput = <HTMLInputElement> questionEl.querySelector('.attachments input[name*=_attachments]');
+                const objectElement = <HTMLObjectElement> questionEl.querySelector('.attachments object');
+                const fileManagerUrl = objectElement && objectElement.data;
+
+                if (attachmentsInput) {
+                    this.question.attachmentsDraftIdInput = {
+                        name: attachmentsInput.name,
+                        value: Number(attachmentsInput.value),
+                    };
+                }
+
+                if (fileManagerUrl) {
+                    const params = CoreUrlUtils.instance.extractUrlParams(fileManagerUrl);
+                    const maxBytes = Number(params.maxbytes);
+                    const areaMaxBytes = Number(params.areamaxbytes);
+
+                    this.question.attachmentsMaxFiles = Number(params.maxfiles);
+                    this.question.attachmentsMaxBytes = maxBytes === -1 || areaMaxBytes === -1 ?
+                            Math.max(maxBytes, areaMaxBytes) : Math.min(maxBytes, areaMaxBytes);
+                }
+            }
+
+            return questionEl;
         }
     }
 
@@ -270,6 +317,8 @@ export class CoreQuestionBaseComponent {
 
         // Set the question text.
         this.question.text = content.innerHTML;
+
+        return element;
     }
 
     /**

@@ -114,10 +114,10 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Object with the params.
      */
-    extractUrlParams(url: string): any {
+    extractUrlParams(url: string): {[name: string]: string} {
         const regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
             subParamsPlaceholder = '@@@SUBPARAMS@@@',
-            params: any = {},
+            params: {[name: string]: string} = {},
             urlAndHash = url.split('#'),
             questionMarkSplit = urlAndHash[0].split('?');
         let subParams;
