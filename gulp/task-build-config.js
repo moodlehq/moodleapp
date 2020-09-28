@@ -45,6 +45,8 @@ class BuildConfigTask {
      * @param done Function to call when done.
      */
     run(path, done) {
+        const self = this;
+
         // Get the last commit.
         exec('git log -1 --pretty=format:"%H"', (err, commit, stderr) => {
             if (err) {
@@ -61,28 +63,9 @@ class BuildConfigTask {
                     let contents = LICENSE + '// tslint:disable: variable-name\n' + 'export class CoreConfigConstants {\n';
 
                     for (let key in config) {
-                        let value = config[key];
+                        let value = self.transformValue(config[key]);
 
-                        if (typeof value == 'string') {
-                            // Wrap the string in ' and escape them.
-                            value = "'" + value.replace(/([^\\])'/g, "$1\\'") + "'";
-                        } else if (typeof value != 'number' && typeof value != 'boolean') {
-                            // Stringify with 4 spaces of indentation, and then add 4 more spaces in each line.
-                            value = JSON.stringify(value, null, 4).replace(/^(?:    )/gm, '        ').replace(/^(?:})/gm, '    }');
-                            // Replace " by ' in values.
-                            value = value.replace(/: "([^"]*)"/g, ": '$1'");
-
-                            // Check if the keys have "-" in it.
-                            const matches = value.match(/"([^"]*\-[^"]*)":/g);
-                            if (matches) {
-                                // Replace " by ' in keys. We cannot remove them because keys have chars like '-'.
-                                value = value.replace(/"([^"]*)":/g, "'$1':");
-                            } else {
-                                // Remove ' in keys.
-                                value = value.replace(/"([^"]*)":/g, "$1:");
-                            }
-
-                            // Add type any to the key.
+                        if (typeof config[key] != 'number' && typeof config[key] != 'boolean' && typeof config[key] != 'string') {
                             key = key + ': any';
                         }
 
@@ -107,6 +90,48 @@ class BuildConfigTask {
                 .pipe(gulp.dest('./src'))
                 .on('end', done);
         });
+    }
+
+
+    /**
+     * Recursively transform a config value into personalized TS.
+     *
+     * @param  value Value to convert
+     * @return Converted value.
+     */
+    transformValue(value) {
+        if (typeof value == 'string') {
+            // Wrap the string in ' and escape them.
+            return "'" + value.replace(/([^\\])'/g, "$1\\'") + "'";
+        }
+
+        if (typeof value != 'number' && typeof value != 'boolean') {
+            const isArray = Array.isArray(value);
+            let contents = '';
+
+            let quoteKeys = false;
+            if (!isArray) {
+                for (let key in value) {
+                    if (key.indexOf('-') >= 0) {
+                        quoteKeys = true;
+                        break;
+                    }
+                }
+            }
+
+            for (let key in value) {
+                value[key] = this.transformValue(value[key]);
+
+                const quotedKey = quoteKeys ? "'" + key + "'" : key;
+                contents += '    ' + (isArray ? '' : quotedKey + ': ') + value[key] + ",\n";
+            }
+
+            contents += (isArray ? ']' : '}');
+
+            return (isArray ? '[' : '{') + "\n" + contents.replace(/^/gm, '    ');
+        }
+
+        return value;
     }
 }
 
