@@ -1601,7 +1601,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any, params?: any, siteId?: string): Promise<any> {
+    openCourse(navCtrl: NavController, course: any, params?: any, siteId?: string): Promise<void> {
         if (!siteId || siteId == this.sitesProvider.getCurrentSiteId()) {
             // Current site, we can open the course.
             return this.courseProvider.openCourse(navCtrl, course, params);

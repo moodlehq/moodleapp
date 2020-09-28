@@ -259,7 +259,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             return;
         }
 
-        this.courseFormatDelegate.openCourse(this.navCtrl, this.course);
+        this.courseHelper.openCourse(this.navCtrl, this.course);
     }
 
     /**
