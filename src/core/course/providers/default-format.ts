@@ -172,7 +172,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param params Params to pass to the course page.
      * @return Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<void> {
         params = params || {};
         Object.assign(params, { course: course });
 
