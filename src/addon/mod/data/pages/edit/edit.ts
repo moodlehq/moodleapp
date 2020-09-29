@@ -93,7 +93,7 @@ export class AddonModDataEditPage {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.fetchEntryData();
+        this.fetchEntryData(true);
     }
 
     /**
@@ -126,38 +126,78 @@ export class AddonModDataEditPage {
     /**
      * Fetch the entry data.
      *
+     * @param [refresh] To refresh all downloaded data.
      * @return Resolved when done.
      */
-    protected fetchEntryData(): Promise<any> {
-        return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
-            this.title = data.name || this.title;
-            this.data = data;
-            this.cssClass = 'addon-data-entries-' + data.id;
+    protected async fetchEntryData(refresh: boolean = false): Promise<void> {
+        try {
+            this.data = await this.dataProvider.getDatabase(this.courseId, this.module.id);
+            this.title = this.data.name || this.title;
+            this.cssClass = 'addon-data-entries-' + this.data.id;
 
-            return this.dataProvider.getDatabaseAccessInformation(data.id, {cmId: this.module.id});
-        }).then((accessData) => {
-            if (this.entryId) {
-                return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
-                    this.groupInfo = groupInfo;
-                    this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
-                });
-            }
-        }).then(() => {
-            return this.dataProvider.getFields(this.data.id, {cmId: this.module.id});
-        }).then((fieldsData) => {
-            this.fieldsArray = fieldsData;
-            this.fields = this.utils.arrayToObject(fieldsData, 'id');
+            this.fieldsArray = await this.dataProvider.getFields(this.data.id, {cmId: this.module.id});
+            this.fields = this.utils.arrayToObject(this.fieldsArray, 'id');
 
-            return this.dataHelper.fetchEntry(this.data, fieldsData, this.entryId);
-        }).then((entry) => {
+            const entry = await this.dataHelper.fetchEntry(this.data, this.fieldsArray, this.entryId);
+
             this.entry = entry.entry;
 
+            // Load correct group.
+            this.selectedGroup = this.selectedGroup == null ? this.entry.groupid : this.selectedGroup;
+
+            // Check permissions when adding a new entry or offline entry.
+            if (!this.isEditing) {
+                let haveAccess = false;
+
+                if (refresh) {
+                    this.groupInfo = await this.groupsProvider.getActivityGroupInfo(this.data.coursemodule);
+                    this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, this.groupInfo);
+                    this.initialSelectedGroup = this.selectedGroup;
+                }
+
+                if (this.groupInfo.groups.length > 0) {
+                    if (refresh) {
+                        const canAddGroup = {};
+
+                        await Promise.all(this.groupInfo.groups.map(async (group) => {
+                            const accessData = await this.dataProvider.getDatabaseAccessInformation(this.data.id, {
+                                cmId: this.module.id, groupId: group.id});
+
+                            canAddGroup[group.id] = accessData.canaddentry;
+                        }));
+
+                        this.groupInfo.groups = this.groupInfo.groups.filter((group) => {
+                            return !!canAddGroup[group.id];
+                        });
+
+                        haveAccess = canAddGroup[this.selectedGroup];
+                    } else {
+                        // Groups already filtered, so it have access.
+                        haveAccess = true;
+                    }
+                } else {
+                    const accessData = await this.dataProvider.getDatabaseAccessInformation(this.data.id, {cmId: this.module.id});
+                    haveAccess = accessData.canaddentry;
+                }
+
+                if (!haveAccess) {
+                    // You shall not pass, go back.
+                    this.domUtils.showErrorModal('addon.mod_data.noaccess', true);
+
+                    // Go back to entry list.
+                    this.forceLeave = true;
+                    this.navCtrl.pop();
+
+                    return;
+                }
+            }
+
             this.editFormRender = this.displayEditFields();
-        }).catch((message) => {
+        } catch (message) {
             this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
-        }).finally(() => {
-            this.loaded = true;
-        });
+        }
+
+        this.loaded = true;
     }
 
     /**
@@ -166,7 +206,7 @@ export class AddonModDataEditPage {
      * @param e Event.
      * @return Resolved when done.
      */
-    save(e: Event): Promise<any> {
+    save(e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 

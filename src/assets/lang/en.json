@@ -513,6 +513,7 @@
     "addon.mod_data.modulenameplural": "Databases",
     "addon.mod_data.more": "More",
     "addon.mod_data.mylocation": "My location",
+    "addon.mod_data.noaccess": "You do not have access to this page",
     "addon.mod_data.nomatch": "No matching entries found!",
     "addon.mod_data.norecords": "No entries in database",
     "addon.mod_data.notapproved": "Entry is not approved yet.",

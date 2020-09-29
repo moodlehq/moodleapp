@@ -18,8 +18,8 @@
             </ion-select>
         </ion-item>
 
-        <div class="addon-data-contents addon-data-entries-{{data.id}}" *ngIf="data">
-            <core-style [css]="data.csstemplate" prefix=".addon-data-entries-{{data.id}}"></core-style>
+        <div class="addon-data-contents {{cssClass}}" *ngIf="data">
+            <core-style [css]="data.csstemplate" prefix=".{{cssClass}}"></core-style>
 
             <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
                 <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
