@@ -985,6 +985,7 @@ export class CoreCourseProvider {
         await this.sitePluginsProvider.waitFetchPlugins();
 
         if (typeof course.format == 'undefined') {
+            // This block can be replaced by a call to CourseHelper.getCourse(), but it is circular dependant.
             const coursesProvider = CoreCourses.instance;
             try {
                 course = await coursesProvider.getUserCourse(course.id, true);
