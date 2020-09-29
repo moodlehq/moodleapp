@@ -23,9 +23,11 @@ import { CoreQuestionProvider, CoreQuestionState } from '@core/question/provider
  *
  * @param question The question.
  * @param answers Object with the question answers (without prefix).
+ * @param component The component the question is related to.
+ * @param componentId Component ID.
  * @return 1 if complete, 0 if not complete, -1 if cannot determine.
  */
-export type isCompleteResponseFunction = (question: any, answers: any) => number;
+export type isCompleteResponseFunction = (question: any, answers: any, component: string, componentId: string | number) => number;
 
 /**
  * Check if two responses are the same.
@@ -35,10 +37,12 @@ export type isCompleteResponseFunction = (question: any, answers: any) => number
  * @param prevBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
  * @param newAnswers Object with the new question answers.
  * @param newBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
+ * @param component The component the question is related to.
+ * @param componentId Component ID.
  * @return Whether they're the same.
  */
 export type isSameResponseFunction = (question: any, prevAnswers: any, prevBasicAnswers: any, newAnswers: any,
-        newBasicAnswers: any) => boolean;
+        newBasicAnswers: any, component: string, componentId: string | number) => boolean;
 
 /**
  * Handler to support deferred feedback question behaviour.
@@ -58,12 +62,13 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return New state (or promise resolved with state).
      */
-    determineNewState(component: string, attemptId: number, question: any, siteId?: string)
+    determineNewState(component: string, attemptId: number, question: any, componentId: string | number, siteId?: string)
             : CoreQuestionState | Promise<CoreQuestionState> {
-        return this.determineNewStateDeferred(component, attemptId, question, siteId);
+        return this.determineNewStateDeferred(component, attemptId, question, componentId, siteId);
     }
 
     /**
@@ -72,12 +77,13 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @param isCompleteFn Function to override the default isCompleteResponse check.
      * @param isSameFn Function to override the default isSameResponse check.
      * @return Promise resolved with state.
      */
-    determineNewStateDeferred(component: string, attemptId: number, question: any, siteId?: string,
+    determineNewStateDeferred(component: string, attemptId: number, question: any, componentId: string | number, siteId?: string,
             isCompleteFn?: isCompleteResponseFunction, isSameFn?: isSameResponseFunction): Promise<CoreQuestionState> {
 
         // Check if we have local data for the question.
@@ -103,11 +109,12 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
 
                 // If answers haven't changed the state is the same.
                 if (isSameFn) {
-                    if (isSameFn(question, prevAnswers, prevBasicAnswers, question.answers, newBasicAnswers)) {
+                    if (isSameFn(question, prevAnswers, prevBasicAnswers, question.answers, newBasicAnswers,
+                            component, componentId)) {
                         return state;
                     }
                 } else {
-                    if (this.questionDelegate.isSameResponse(question, prevBasicAnswers, newBasicAnswers)) {
+                    if (this.questionDelegate.isSameResponse(question, prevBasicAnswers, newBasicAnswers, component, componentId)) {
                         return state;
                     }
                 }
@@ -117,10 +124,10 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
                     newState: string;
                 if (isCompleteFn) {
                     // Pass all the answers since some behaviours might need the extra data.
-                    complete = isCompleteFn(question, question.answers);
+                    complete = isCompleteFn(question, question.answers, component, componentId);
                 } else {
                     // Only pass the basic answers since questions should be independent of extra data.
-                    complete = this.questionDelegate.isCompleteResponse(question, newBasicAnswers);
+                    complete = this.questionDelegate.isCompleteResponse(question, newBasicAnswers, component, componentId);
                 }
 
                 if (complete < 0) {

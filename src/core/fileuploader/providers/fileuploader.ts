@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { ModalController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { FileEntry } from '@ionic-native/file';
 import { MediaCapture, MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileProvider } from '@providers/file';
@@ -25,9 +26,10 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreWSFileUploadOptions } from '@providers/ws';
+import { CoreWSFileUploadOptions, CoreWSExternalFile } from '@providers/ws';
 import { Subject } from 'rxjs';
 import { CoreApp } from '@providers/app';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * File upload options.
@@ -96,7 +98,7 @@ export class CoreFileUploaderProvider {
         // Currently we are going to compare the order of the files as well.
         // This function can be improved comparing more fields or not comparing the order.
         for (let i = 0; i < a.length; i++) {
-            if ((a[i].name || a[i].filename) != (b[i].name || b[i].filename)) {
+            if (a[i].name != b[i].name || a[i].filename != b[i].filename) {
                 return true;
             }
         }
@@ -535,6 +537,37 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Given a list of files (either online files or local files), upload the local files to the draft area.
+     * Local files are not deleted from the device after upload.
+     *
+     * @param itemId Draft ID.
+     * @param files List of files.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the itemId.
+     */
+    async uploadFiles(itemId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (!files || !files.length) {
+            return;
+        }
+
+        await Promise.all(files.map(async (file) => {
+            if ((<CoreWSExternalFile> file).filename && !(<FileEntry> file).name) {
+                // File already uploaded, ignore it.
+                return;
+            }
+
+            file = <FileEntry> file;
+
+            // Now upload the file.
+            const options = this.getFileUploadOptions(file.toURL(), file.name, undefined, false, 'draft', itemId);
+
+            await this.uploadFile(file.toURL(), options, undefined, siteId);
+        }));
+    }
+
+    /**
      * Upload a file to a draft area and return the draft ID.
      *
      * If the file is an online file it will be downloaded and then re-uploaded.
@@ -615,3 +648,5 @@ export class CoreFileUploaderProvider {
         });
     }
 }
+
+export class CoreFileUploader extends makeSingleton(CoreFileUploaderProvider) {}

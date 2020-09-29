@@ -36,10 +36,11 @@ export interface CoreQuestionBehaviourHandler extends CoreDelegateHandler {
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return State (or promise resolved with state).
      */
-    determineNewState?(component: string, attemptId: number, question: any, siteId?: string)
+    determineNewState?(component: string, attemptId: number, question: any, componentId: string | number, siteId?: string)
         : CoreQuestionState | Promise<CoreQuestionState>;
 
     /**
@@ -74,15 +75,16 @@ export class CoreQuestionBehaviourDelegate extends CoreDelegate {
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with state.
      */
-    determineNewState(behaviour: string, component: string, attemptId: number, question: any, siteId?: string)
-            : Promise<CoreQuestionState> {
+    determineNewState(behaviour: string, component: string, attemptId: number, question: any, componentId: string | number,
+            siteId?: string): Promise<CoreQuestionState> {
         behaviour = this.questionDelegate.getBehaviourForQuestion(question, behaviour);
 
         return Promise.resolve(this.executeFunctionOnEnabled(behaviour, 'determineNewState',
-                [component, attemptId, question, siteId]));
+                [component, attemptId, question, componentId, siteId]));
     }
 
     /**

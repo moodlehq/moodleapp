@@ -14,9 +14,9 @@
 
 import { Component, OnInit, Injector } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSites } from '@providers/sites';
 import { CoreWSExternalFile } from '@providers/ws';
 import { CoreQuestionBaseComponent } from '@core/question/classes/base-question-component';
+import { CoreQuestion } from '@core/question/providers/question';
 import { FormControl, FormBuilder } from '@angular/forms';
 import { CoreFileSession } from '@providers/file-session';
 
@@ -42,14 +42,15 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.uploadFilesSupported = CoreSites.instance.getCurrentSite().isVersionGreaterEqualThan('3.10');
+        this.uploadFilesSupported = typeof this.question.responsefileareas != 'undefined';
         this.initEssayComponent();
 
         this.formControl = this.fb.control(this.question.textarea && this.question.textarea.text);
 
         if (this.question.allowsAttachments && this.uploadFilesSupported) {
             this.attachments = Array.from(this.questionHelper.getResponseFileAreaFiles(this.question, 'attachments'));
-            CoreFileSession.instance.setFiles(this.component, this.componentId + '_' + this.question.id, this.attachments);
+            CoreFileSession.instance.setFiles(this.component,
+                    CoreQuestion.instance.getQuestionComponentId(this.question, this.componentId), this.attachments);
         }
     }
 }

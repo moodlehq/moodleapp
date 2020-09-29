@@ -13,10 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreFile } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreTextUtils } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * An object to represent a question state.
@@ -414,6 +417,35 @@ export class CoreQuestionProvider {
     }
 
     /**
+     * Given a question and a componentId, return a componentId that is unique for the question.
+     *
+     * @param question Question.
+     * @param componentId Component ID.
+     * @return Question component ID.
+     */
+    getQuestionComponentId(question: any, componentId: string | number): string {
+        return componentId + '_' + question.number;
+    }
+
+    /**
+     * Get the path to the folder where to store files for an offline question.
+     *
+     * @param type Question type.
+     * @param component Component the question is related to.
+     * @param componentId Question component ID, returned by getQuestionComponentId.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Folder path.
+     */
+    getQuestionFolder(type: string, component: string, componentId: string, siteId?: string): string {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const siteFolderPath = CoreFile.instance.getSiteFolder(siteId);
+        const questionFolderPath = 'offlinequestion/' + type + '/' + component + '/' + componentId;
+
+        return CoreTextUtils.instance.concatenatePaths(siteFolderPath, questionFolderPath);
+    }
+
+    /**
      * Extract the question slot from a question name.
      *
      * @param name Question name.
@@ -612,3 +644,5 @@ export class CoreQuestionProvider {
         });
     }
 }
+
+export class CoreQuestion extends makeSingleton(CoreQuestionProvider) {}

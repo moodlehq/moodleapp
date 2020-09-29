@@ -61,6 +61,22 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Clear questions temporary data after the data has been saved.
+     *
+     * @param questions The list of questions.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @return Promise resolved when done.
+     */
+    async clearTmpData(questions: any[], component: string, componentId: string | number): Promise<void> {
+        questions = questions || [];
+
+        await Promise.all(questions.map(async (question) => {
+            await this.questionDelegate.clearTmpData(question, component, componentId);
+        }));
+    }
+
+    /**
      * Extract question behaviour submit buttons from the question's HTML and add them to "behaviourButtons" property.
      * The buttons aren't deleted from the content because all the im-controls block will be removed afterwards.
      *
@@ -541,7 +557,7 @@ export class CoreQuestionHelperProvider {
 
         if (!component) {
             component = CoreQuestionProvider.COMPONENT;
-            componentId = question.id;
+            componentId = question.number;
         }
 
         urls.push(...this.questionDelegate.getAdditionalDownloadableFiles(question, usageId));
@@ -572,15 +588,19 @@ export class CoreQuestionHelperProvider {
      * @param questions The list of questions.
      * @param answers The input data.
      * @param offline True if data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with answers to send to server.
      */
-    prepareAnswers(questions: any[], answers: any, offline?: boolean, siteId?: string): Promise<any> {
+    prepareAnswers(questions: any[], answers: any, offline: boolean, component: string, componentId: string | number,
+            siteId?: string): Promise<any> {
         const promises = [];
 
         questions = questions || [];
         questions.forEach((question) => {
-            promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId));
+            promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, component, componentId,
+                    siteId));
         });
 
         return this.utils.allPromises(promises).then(() => {

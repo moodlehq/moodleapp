@@ -62,9 +62,11 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse?(question: any, answers: any): number;
+    isCompleteResponse?(question: any, answers: any, component: string, componentId: string | number): number;
 
     /**
      * Check if a student has provided enough of an answer for the question to be graded automatically,
@@ -84,7 +86,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param newAnswers Object with the new question answers.
      * @return Whether they're the same.
      */
-    isSameResponse?(question: any, prevAnswers: any, newAnswers: any): boolean;
+    isSameResponse?(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean;
 
     /**
      * Prepare and add to answers the data to send to server based in the input. Return promise if async.
@@ -92,10 +94,13 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Return a promise resolved when done if async, void if sync.
      */
-    prepareAnswers?(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any>;
+    prepareAnswers?(question: any, answers: any, offline: boolean, component: string, componentId: string | number,
+            siteId?: string): void | Promise<any>;
 
     /**
      * Validate if an offline sequencecheck is valid compared with the online one.
@@ -115,6 +120,15 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @return List of URLs.
      */
     getAdditionalDownloadableFiles?(question: any, usageId: number): string[];
+
+    /**
+     * Clear temporary data after the data has been saved.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     */
+    clearTmpData?(question: any, component: string, componentId: string | number): void | Promise<void>;
 }
 
 /**
@@ -196,12 +210,14 @@ export class CoreQuestionDelegate extends CoreDelegate {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'isCompleteResponse', [question, answers]);
+        return this.executeFunctionOnEnabled(type, 'isCompleteResponse', [question, answers, component, componentId]);
     }
 
     /**
@@ -226,10 +242,10 @@ export class CoreQuestionDelegate extends CoreDelegate {
      * @param newAnswers Object with the new question answers.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'isSameResponse', [question, prevAnswers, newAnswers]);
+        return this.executeFunctionOnEnabled(type, 'isSameResponse', [question, prevAnswers, newAnswers, component, componentId]);
     }
 
     /**
@@ -248,13 +264,17 @@ export class CoreQuestionDelegate extends CoreDelegate {
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when data has been prepared.
      */
-    prepareAnswersForQuestion(question: any, answers: any, offline: boolean, siteId?: string): Promise<any> {
+    prepareAnswersForQuestion(question: any, answers: any, offline: boolean, component: string, componentId: string | number,
+            siteId?: string): Promise<any> {
         const type = this.getTypeName(question);
 
-        return Promise.resolve(this.executeFunctionOnEnabled(type, 'prepareAnswers', [question, answers, offline, siteId]));
+        return Promise.resolve(this.executeFunctionOnEnabled(type, 'prepareAnswers',
+                [question, answers, offline, component, componentId, siteId]));
     }
 
     /**
@@ -281,5 +301,18 @@ export class CoreQuestionDelegate extends CoreDelegate {
         const type = this.getTypeName(question);
 
         return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question, usageId]) || [];
+    }
+
+    /**
+     * Clear temporary data after the data has been saved.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     */
+    clearTmpData(question: any, component: string, componentId: string | number): void | Promise<void> {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'clearTmpData', [question, component, componentId]);
     }
 }

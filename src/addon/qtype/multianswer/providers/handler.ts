@@ -62,9 +62,11 @@ export class AddonQtypeMultiAnswerHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         // Get all the inputs in the question to check if they've all been answered.
         const names = this.questionProvider.getBasicAnswers(this.questionHelper.getAllInputNamesFromHtml(question.html));
         for (const name in names) {
@@ -112,9 +114,11 @@ export class AddonQtypeMultiAnswerHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         return this.questionProvider.compareAllAnswers(prevAnswers, newAnswers);
     }
 
