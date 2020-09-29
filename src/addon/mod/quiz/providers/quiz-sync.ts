@@ -21,6 +21,7 @@ import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
+import { CoreUtils } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
@@ -288,16 +289,6 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
     syncQuiz(quiz: any, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        const warnings = [];
-        const courseId = quiz.course;
-        const modOptions = {
-            cmId: quiz.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
-            siteId,
-        };
-        let syncPromise;
-        let preflightData;
-
         if (this.isSyncing(quiz.id, siteId)) {
             // There's already a sync ongoing for this quiz, return the promise.
             return this.getOngoingSync(quiz.id, siteId);
@@ -310,115 +301,116 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             return Promise.reject(this.translate.instant('core.errorsyncblocked', {$a: this.componentTranslate}));
         }
 
+        return this.addOngoingSync(quiz.id, this.performSyncQuiz(quiz, askPreflight, siteId), siteId);
+    }
+
+    /**
+     * Perform the quiz sync.
+     *
+     * @param quiz Quiz.
+     * @param askPreflight Whether we should ask for preflight data if needed.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved in success.
+     */
+    async performSyncQuiz(quiz: any, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        const warnings = [];
+        const courseId = quiz.course;
+        const modOptions = {
+            cmId: quiz.coursemodule,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+
         this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
         // Sync offline logs.
-        syncPromise = this.logHelper.syncIfNeeded(AddonModQuizProvider.COMPONENT, quiz.id, siteId).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            // Get all the offline attempts for the quiz.
-            return this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId);
-        }).then((attempts) => {
-            // Should return 0 or 1 attempt.
-            if (!attempts.length) {
-                return this.finishSync(siteId, quiz, courseId, warnings);
-            }
+        await CoreUtils.instance.ignoreErrors(this.logHelper.syncIfNeeded(AddonModQuizProvider.COMPONENT, quiz.id, siteId));
 
-            const offlineAttempt = attempts.pop();
+        // Get all the offline attempts for the quiz. It should always be 0 or 1 attempt
+        const offlineAttempts = await this.quizOfflineProvider.getQuizAttempts(quiz.id, siteId);
 
-            // Now get the list of online attempts to make sure this attempt exists and isn't finished.
-            return this.quizProvider.getUserAttempts(quiz.id, modOptions).then((attempts) => {
-                const lastAttemptId = attempts.length ? attempts[attempts.length - 1].id : undefined;
-                let onlineAttempt;
+        if (!offlineAttempts.length) {
+            // Nothing to sync, finish.
+            return this.finishSync(siteId, quiz, courseId, warnings);
+        }
 
-                // Search the attempt we retrieved from offline.
-                for (const i in attempts) {
-                    const attempt = attempts[i];
+        if (!this.appProvider.isOnline()) {
+            // Cannot sync in offline.
+            throw new Error(this.translate.instant('core.cannotconnect'));
+        }
 
-                    if (attempt.id == offlineAttempt.id) {
-                        onlineAttempt = attempt;
-                        break;
-                    }
-                }
+        const offlineAttempt = offlineAttempts.pop();
 
-                if (!onlineAttempt || this.quizProvider.isAttemptFinished(onlineAttempt.state)) {
-                    // Attempt not found or it's finished in online. Discard it.
-                    warnings.push(this.translate.instant('addon.mod_quiz.warningattemptfinished'));
+        // Now get the list of online attempts to make sure this attempt exists and isn't finished.
+        const onlineAttempts = await this.quizProvider.getUserAttempts(quiz.id, modOptions);
 
-                    return this.finishSync(siteId, quiz, courseId, warnings, offlineAttempt.id, offlineAttempt, onlineAttempt,
-                            true);
-                }
-
-                // Get the data stored in offline.
-                return this.quizOfflineProvider.getAttemptAnswers(offlineAttempt.id, siteId).then((answersList) => {
-
-                    if (!answersList.length) {
-                        // No answers stored, finish.
-                        return this.finishSync(siteId, quiz, courseId, warnings, lastAttemptId, offlineAttempt, onlineAttempt,
-                                true);
-                    }
-
-                    const answers = this.questionProvider.convertAnswersArrayToObject(answersList),
-                        offlineQuestions = this.quizOfflineProvider.classifyAnswersInQuestions(answers);
-                    let finish;
-
-                    // We're going to need preflightData, get it.
-                    return this.quizProvider.getQuizAccessInformation(quiz.id, modOptions).then((info) => {
-
-                        return this.prefetchHandler.getPreflightData(quiz, info, onlineAttempt, askPreflight,
-                                'core.settings.synchronization', siteId);
-                    }).then((data) => {
-                        preflightData = data;
-
-                        // Now get the online questions data.
-                        const pages = this.quizProvider.getPagesFromLayoutAndQuestions(onlineAttempt.layout, offlineQuestions);
-
-                        return this.quizProvider.getAllQuestionsData(quiz, onlineAttempt, preflightData, {
-                            pages,
-                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
-                            siteId,
-                        });
-                    }).then((onlineQuestions) => {
-
-                        // Validate questions, discarding the offline answers that can't be synchronized.
-                        return this.validateQuestions(onlineAttempt.id, onlineQuestions, offlineQuestions, siteId);
-                    }).then((discardedData) => {
-
-                        // Get the answers to send.
-                        const answers = this.quizOfflineProvider.extractAnswersFromQuestions(offlineQuestions);
-                        finish = offlineAttempt.finished && !discardedData;
-
-                        if (discardedData) {
-                            if (offlineAttempt.finished) {
-                                warnings.push(this.translate.instant('addon.mod_quiz.warningdatadiscardedfromfinished'));
-                            } else {
-                                warnings.push(this.translate.instant('addon.mod_quiz.warningdatadiscarded'));
-                            }
-                        }
-
-                        return this.quizProvider.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false,
-                                siteId);
-                    }).then(() => {
-
-                        // Answers sent, now set the current page if the attempt isn't finished.
-                        if (!finish) {
-                            // Don't pass the quiz instance because we don't want to trigger a Firebase event in this case.
-                            return this.quizProvider.logViewAttempt(onlineAttempt.id, offlineAttempt.currentpage, preflightData,
-                                    false, undefined, siteId).catch(() => {
-                                // Ignore errors.
-                            });
-                        }
-                    }).then(() => {
-
-                        // Data sent. Finish the sync.
-                        return this.finishSync(siteId, quiz, courseId, warnings, lastAttemptId, offlineAttempt, onlineAttempt,
-                                true, true);
-                    });
-                });
-            });
+        const lastAttemptId = onlineAttempts.length ? onlineAttempts[onlineAttempts.length - 1].id : undefined;
+        const onlineAttempt = onlineAttempts.find((attempt) => {
+            return attempt.id == offlineAttempt.id;
         });
 
-        return this.addOngoingSync(quiz.id, syncPromise, siteId);
+        if (!onlineAttempt || this.quizProvider.isAttemptFinished(onlineAttempt.state)) {
+            // Attempt not found or it's finished in online. Discard it.
+            warnings.push(this.translate.instant('addon.mod_quiz.warningattemptfinished'));
+
+            return this.finishSync(siteId, quiz, courseId, warnings, offlineAttempt.id, offlineAttempt, onlineAttempt, true);
+        }
+
+        // Get the data stored in offline.
+        const answersList = await this.quizOfflineProvider.getAttemptAnswers(offlineAttempt.id, siteId);
+
+        if (!answersList.length) {
+            // No answers stored, finish.
+            return this.finishSync(siteId, quiz, courseId, warnings, lastAttemptId, offlineAttempt, onlineAttempt, true);
+        }
+
+        const offlineAnswers = this.questionProvider.convertAnswersArrayToObject(answersList);
+        const offlineQuestions = this.quizOfflineProvider.classifyAnswersInQuestions(offlineAnswers);
+
+        // We're going to need preflightData, get it.
+        const info = await this.quizProvider.getQuizAccessInformation(quiz.id, modOptions);
+
+        const preflightData = await this.prefetchHandler.getPreflightData(quiz, info, onlineAttempt, askPreflight,
+                    'core.settings.synchronization', siteId);
+
+        // Now get the online questions data.
+        const pages = this.quizProvider.getPagesFromLayoutAndQuestions(onlineAttempt.layout, offlineQuestions);
+
+        const onlineQuestions = await this.quizProvider.getAllQuestionsData(quiz, onlineAttempt, preflightData, {
+            pages,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        });
+
+        // Validate questions, discarding the offline answers that can't be synchronized.
+        const discardedData = await this.validateQuestions(onlineAttempt.id, onlineQuestions, offlineQuestions, siteId);
+
+        // Get the answers to send.
+        const answers = this.quizOfflineProvider.extractAnswersFromQuestions(offlineQuestions);
+        const finish = offlineAttempt.finished && !discardedData;
+
+        if (discardedData) {
+            if (offlineAttempt.finished) {
+                warnings.push(this.translate.instant('addon.mod_quiz.warningdatadiscardedfromfinished'));
+            } else {
+                warnings.push(this.translate.instant('addon.mod_quiz.warningdatadiscarded'));
+            }
+        }
+
+        // Send the answers.
+        await this.quizProvider.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
+
+        if (!finish) {
+            // Answers sent, now set the current page.
+            // Don't pass the quiz instance because we don't want to trigger a Firebase event in this case.
+            await CoreUtils.instance.ignoreErrors(this.quizProvider.logViewAttempt(onlineAttempt.id, offlineAttempt.currentpage,
+                    preflightData, false, undefined, siteId));
+        }
+
+        // Data sent. Finish the sync.
+        return this.finishSync(siteId, quiz, courseId, warnings, lastAttemptId, offlineAttempt, onlineAttempt, true, true);
     }
 
     /**
