@@ -52,6 +52,8 @@ export class AddonModDataEditPage {
     protected siteId: string;
     protected offline: boolean;
     protected forceLeave = false; // To allow leaving the page without checking for changes.
+    protected initialSelectedGroup = null;
+    protected isEditing = false;
 
     title = '';
     component = AddonModDataProvider.COMPONENT;
@@ -75,7 +77,10 @@ export class AddonModDataEditPage {
         this.module = params.get('module') || {};
         this.entryId = params.get('entryId') || null;
         this.courseId = params.get('courseId');
-        this.selectedGroup = params.get('group') || 0;
+        this.selectedGroup = this.entryId ? null : (params.get('group') || 0);
+
+        // If entryId is lower than 0 or null, it is a new entry or an offline entry.
+        this.isEditing = this.entryId && this.entryId > 0;
 
         this.siteId = sitesProvider.getCurrentSiteId();
 
@@ -103,7 +108,8 @@ export class AddonModDataEditPage {
 
         const inputData = this.editForm.value;
 
-        const changed = await this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id, this.entry.contents);
+        let changed = await this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id, this.entry.contents);
+        changed = changed || (!this.isEditing && this.initialSelectedGroup != this.selectedGroup);
 
         if (changed) {
             // Show confirmation if some data has been modified.
@@ -169,6 +175,7 @@ export class AddonModDataEditPage {
         return this.dataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.data.id,
                 this.entry.contents).then((changed) => {
 
+            changed = changed || (!this.isEditing && this.initialSelectedGroup != this.selectedGroup);
             if (!changed) {
                 if (this.entryId) {
                     return this.returnToEntryList();
@@ -196,7 +203,7 @@ export class AddonModDataEditPage {
                     return Promise.reject(e);
             }).then((editData) => {
                 if (editData.length > 0) {
-                    if (this.entryId) {
+                    if (this.isEditing) {
                         return this.dataProvider.editEntry(this.data.id, this.entryId, this.courseId, editData, this.fields,
                             undefined, this.offline);
                     }
@@ -213,20 +220,20 @@ export class AddonModDataEditPage {
                 }
 
                 // This is done if entry is updated when editing or creating if not.
-                if ((this.entryId && result.updated) || (!this.entryId && result.newentryid)) {
+                if ((this.isEditing && result.updated) || (!this.isEditing && result.newentryid)) {
 
                     this.domUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.siteId);
 
-                    if (result.sent) {
-                        this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'data' });
-                    }
-
                     const promises = [];
 
-                    this.entryId = this.entryId || result.newentryid;
+                    if (result.sent) {
+                        this.eventsProvider.trigger(CoreEventsProvider.ACTIVITY_DATA_SENT, { module: 'data' });
 
-                    promises.push(this.dataProvider.invalidateEntryData(this.data.id, this.entryId, this.siteId));
-                    promises.push(this.dataProvider.invalidateEntriesData(this.data.id, this.siteId));
+                        if (this.isEditing) {
+                            promises.push(this.dataProvider.invalidateEntryData(this.data.id, this.entryId, this.siteId));
+                        }
+                        promises.push(this.dataProvider.invalidateEntriesData(this.data.id, this.siteId));
+                    }
 
                     return Promise.all(promises).then(() => {
                         this.eventsProvider.trigger(AddonModDataProvider.ENTRY_CHANGED,
@@ -264,7 +271,7 @@ export class AddonModDataEditPage {
      * @param groupId Group identifier to set.
      * @return Resolved when done.
      */
-    setGroup(groupId: number): Promise<any> {
+    setGroup(groupId: number): Promise<void> {
         this.selectedGroup = groupId;
         this.loaded = false;
 
@@ -322,7 +329,7 @@ export class AddonModDataEditPage {
      *
      * @return Resolved when done.
      */
-    protected returnToEntryList(): Promise<any> {
+    protected returnToEntryList(): Promise<void> {
         const inputData = this.editForm.value;
 
         return this.dataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.data.id,

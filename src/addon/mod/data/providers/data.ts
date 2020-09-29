@@ -133,6 +133,7 @@ export class AddonModDataProvider {
             });
         };
 
+        // Checks to store offline.
         if (!this.appProvider.isOnline() || forceOffline) {
             const notifications = this.checkFields(fields, contents);
             if (notifications) {
@@ -140,22 +141,40 @@ export class AddonModDataProvider {
                     fieldnotifications: notifications
                 });
             }
-
-            return storeOffline();
         }
 
-        return this.addEntryOnline(dataId, contents, groupId, siteId).then((result) => {
-            result.sent = true;
+        // Get other not synced actions.
+        return this.dataOffline.getEntryActions(dataId, entryId, siteId).then((entries) => {
+            if (entries && entries.length) {
+                // Found. Delete add and edit actions first.
+                const proms = [];
+                entries.forEach((entry) => {
+                    if (entry.action == 'add') {
+                        proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
+                    }
+                });
 
-            return result;
-        }).catch((error) => {
-            if (this.utils.isWebServiceError(error)) {
-                // The WebService has thrown an error, this means that responses cannot be submitted.
-                return Promise.reject(error);
+                return Promise.all(proms);
+            }
+        }).then(() => {
+            // App is offline, store the action.
+            if (!this.appProvider.isOnline() || forceOffline) {
+                return storeOffline();
             }
 
-            // Couldn't connect to server, store in offline.
-            return storeOffline();
+            return this.addEntryOnline(dataId, contents, groupId, siteId).then((result) => {
+                result.sent = true;
+
+                return result;
+            }).catch((error) => {
+                if (this.utils.isWebServiceError(error)) {
+                    // The WebService has thrown an error, this means that responses cannot be submitted.
+                    return Promise.reject(error);
+                }
+
+                // Couldn't connect to server, store in offline.
+                return storeOffline();
+            });
         });
     }
 
@@ -398,9 +417,6 @@ export class AddonModDataProvider {
             });
         };
 
-        let justAdded = false,
-            groupId;
-
         if (!this.appProvider.isOnline() || forceOffline) {
             const notifications = this.checkFields(fields, contents);
             if (notifications) {
@@ -416,11 +432,7 @@ export class AddonModDataProvider {
                 // Found. Delete add and edit actions first.
                 const proms = [];
                 entries.forEach((entry) => {
-                    if (entry.action == 'add') {
-                        justAdded = true;
-                        groupId = entry.groupid;
-                        proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
-                    } else if (entry.action == 'edit') {
+                    if (entry.action == 'edit') {
                         proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
                     }
                 });
@@ -428,17 +440,6 @@ export class AddonModDataProvider {
                 return Promise.all(proms);
             }
         }).then(() => {
-            if (justAdded) {
-                // The field was added offline, add again and stop.
-                return this.addEntry(dataId, entryId, courseId, contents, groupId, fields, siteId, forceOffline)
-                        .then((result) => {
-                    result.updated = true;
-                    result.sent = true;
-
-                    return result;
-                });
-            }
-
             if (!this.appProvider.isOnline() || forceOffline) {
                 // App is offline, store the action.
                 return storeOffline();
