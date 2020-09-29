@@ -180,69 +180,67 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
-    protected fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
+    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<any> {
         let canAdd = false,
             canSearch = false;
 
-        return this.dataProvider.getDatabase(this.courseId, this.module.id).then((data) => {
-            this.data = data;
-            this.hasComments = data.comments;
+        this.data = await this.dataProvider.getDatabase(this.courseId, this.module.id);
+        this.hasComments = this.data.comments;
 
-            this.description = data.intro || data.description;
-            this.dataRetrieved.emit(data);
+        this.description = this.data.intro || this.data.description;
+        this.dataRetrieved.emit(this.data);
 
-            if (sync) {
+        if (sync) {
+            try {
                 // Try to synchronize the data.
-                return this.syncActivity(showErrors).catch(() => {
-                    // Ignore errors.
-                });
+                await this.syncActivity(showErrors);
+            } catch (error) {
+                // Ignore errors.
             }
-        }).then(() => {
-            return this.dataProvider.getDatabaseAccessInformation(this.data.id, {cmId: this.module.id});
-        }).then((accessData) => {
-            this.access = accessData;
+        }
 
-            if (!accessData.timeavailable) {
-                const time = this.timeUtils.timestamp();
+        this.groupInfo = await this.groupsProvider.getActivityGroupInfo(this.data.coursemodule);
+        this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, this.groupInfo);
 
-                this.timeAvailableFrom = this.data.timeavailablefrom && time < this.data.timeavailablefrom ?
-                    parseInt(this.data.timeavailablefrom, 10) * 1000 : false;
-                this.timeAvailableFromReadable = this.timeAvailableFrom ? this.timeUtils.userDate(this.timeAvailableFrom) : false;
-                this.timeAvailableTo = this.data.timeavailableto && time > this.data.timeavailableto ?
-                    parseInt(this.data.timeavailableto, 10) * 1000 : false;
-                this.timeAvailableToReadable = this.timeAvailableTo ? this.timeUtils.userDate(this.timeAvailableTo) : false;
+        this.access = await this.dataProvider.getDatabaseAccessInformation(this.data.id, {
+            cmId: this.module.id,
+            groupId: this.selectedGroup || undefined
+        });
 
-                this.isEmpty = true;
-                this.groupInfo = null;
+        if (!this.access.timeavailable) {
+            const time = this.timeUtils.timestamp();
 
-                return;
-            }
+            this.timeAvailableFrom = this.data.timeavailablefrom && time < this.data.timeavailablefrom ?
+                parseInt(this.data.timeavailablefrom, 10) * 1000 : false;
+            this.timeAvailableFromReadable = this.timeAvailableFrom ? this.timeUtils.userDate(this.timeAvailableFrom) : false;
+            this.timeAvailableTo = this.data.timeavailableto && time > this.data.timeavailableto ?
+                parseInt(this.data.timeavailableto, 10) * 1000 : false;
+            this.timeAvailableToReadable = this.timeAvailableTo ? this.timeUtils.userDate(this.timeAvailableTo) : false;
 
+            this.isEmpty = true;
+            this.groupInfo = null;
+        } else {
             canSearch = true;
-            canAdd = accessData.canaddentry;
+            canAdd = this.access.canaddentry;
+        }
 
-            return this.groupsProvider.getActivityGroupInfo(this.data.coursemodule).then((groupInfo) => {
-                this.groupInfo = groupInfo;
-                this.selectedGroup = this.groupsProvider.validateGroupId(this.selectedGroup, groupInfo);
-            });
-        }).then(() => {
-            return this.dataProvider.getFields(this.data.id, {cmId: this.module.id}).then((fields) => {
-                if (fields.length == 0) {
-                    canSearch = false;
-                    canAdd = false;
-                }
-                this.search.advanced = [];
+        const fields = await this.dataProvider.getFields(this.data.id, {cmId: this.module.id});
+        this.search.advanced = [];
 
-                this.fields = this.utils.arrayToObject(fields, 'id');
-                this.fieldsArray = this.utils.objectToArray(this.fields);
+        this.fields = this.utils.arrayToObject(fields, 'id');
+        this.fieldsArray = this.utils.objectToArray(this.fields);
+        if (this.fieldsArray.length == 0) {
+            canSearch = false;
+            canAdd = false;
+        }
 
-                return this.fetchEntriesData();
-            });
-        }).finally(() => {
+        try {
+            await this.fetchEntriesData();
+        } finally {
             this.canAdd = canAdd;
             this.canSearch = canSearch;
             this.fillContextMenu(refresh);
-        });
+        }
     }
 
     /**
@@ -252,24 +250,16 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected fetchEntriesData(): Promise<any> {
 
-        return this.dataProvider.getDatabaseAccessInformation(this.data.id, {
+        const search = this.search.searching && !this.search.searchingAdvanced ? this.search.text : undefined;
+        const advSearch = this.search.searching && this.search.searchingAdvanced ? this.search.advanced : undefined;
+
+        return this.dataHelper.fetchEntries(this.data, this.fieldsArray, {
             groupId: this.selectedGroup,
-            cmId: this.module.id,
-        }).then((accessData) => {
-            // Update values for current group.
-            this.access.canaddentry = accessData.canaddentry;
-
-            const search = this.search.searching && !this.search.searchingAdvanced ? this.search.text : undefined;
-            const advSearch = this.search.searching && this.search.searchingAdvanced ? this.search.advanced : undefined;
-
-            return this.dataHelper.fetchEntries(this.data, this.fieldsArray, {
-                groupId: this.selectedGroup,
-                search,
-                advSearch,
-                sort: Number(this.search.sortBy),
-                order: this.search.sortDirection,
-                page: this.search.page,
-            });
+            search,
+            advSearch,
+            sort: Number(this.search.sortBy),
+            order: this.search.sortDirection,
+            page: this.search.page,
         }).then((entries) => {
             const numEntries = entries.entries.length;
             const numOfflineEntries = entries.offlineEntries.length;
@@ -390,18 +380,29 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @param groupId Group ID.
      * @return Resolved when new group is selected or rejected if not.
      */
-    setGroup(groupId: number): Promise<any> {
+    async setGroup(groupId: number): Promise<void> {
         this.selectedGroup = groupId;
         this.search.page = 0;
 
-        return this.fetchEntriesData().then(() => {
+        // Only update canAdd if there's any field, otheerwise, canAdd will remain false.
+        if (this.fieldsArray.length > 0) {
+            // Update values for current group.
+            this.access = await this.dataProvider.getDatabaseAccessInformation(this.data.id, {
+                groupId: this.selectedGroup,
+                cmId: this.module.id,
+            });
+
+            this.canAdd = this.access.canaddentry;
+        }
+
+        try {
+            await this.fetchEntriesData();
+
             // Log activity view for coherence with Moodle web.
             return this.logView();
-        }).catch((message) => {
-            this.domUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
-
-            return Promise.reject(null);
-        });
+        } catch (error) {
+            this.domUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+        }
     }
 
     /**
