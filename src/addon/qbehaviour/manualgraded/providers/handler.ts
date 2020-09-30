@@ -83,65 +83,69 @@ export class AddonQbehaviourManualGradedHandler implements CoreQuestionBehaviour
      * @param isSameFn Function to override the default isSameResponse check.
      * @return Promise resolved with state.
      */
-    determineNewStateManualGraded(component: string, attemptId: number, question: any, componentId: string | number,
+    async determineNewStateManualGraded(component: string, attemptId: number, question: any, componentId: string | number,
             siteId?: string, isCompleteFn?: isCompleteResponseFunction, isSameFn?: isSameResponseFunction)
             : Promise<CoreQuestionState> {
 
         // Check if we have local data for the question.
-        return this.questionProvider.getQuestion(component, attemptId, question.slot, siteId).catch(() => {
+        let dbQuestion;
+        try {
+            dbQuestion = await this.questionProvider.getQuestion(component, attemptId, question.slot, siteId);
+        } catch (error) {
             // No entry found, use the original data.
-            return question;
-        }).then((dbQuestion) => {
-            const state = this.questionProvider.getState(dbQuestion.state);
+            dbQuestion = question;
+        }
 
-            if (state.finished || !state.active) {
-                // Question is finished, it cannot change.
-                return state;
+        const state = this.questionProvider.getState(dbQuestion.state);
+
+        if (state.finished || !state.active) {
+            // Question is finished, it cannot change.
+            return state;
+        }
+
+        const newBasicAnswers = this.questionProvider.getBasicAnswers(question.answers);
+
+        if (dbQuestion.state) {
+            // Question already has a state stored. Check if answer has changed.
+            let prevAnswers = await this.questionProvider.getQuestionAnswers(component, attemptId, question.slot, false, siteId);
+
+            prevAnswers = this.questionProvider.convertAnswersArrayToObject(prevAnswers, true);
+            const prevBasicAnswers = this.questionProvider.getBasicAnswers(prevAnswers);
+
+            // If answers haven't changed the state is the same.
+            if (isSameFn) {
+                if (isSameFn(question, prevAnswers, prevBasicAnswers, question.answers, newBasicAnswers,
+                        component, componentId)) {
+                    return state;
+                }
+            } else {
+                if (this.questionDelegate.isSameResponse(question, prevBasicAnswers, newBasicAnswers, component, componentId)) {
+                    return state;
+                }
             }
+        }
 
-            // We need to check if the answers have changed. Retrieve current stored answers.
-            return this.questionProvider.getQuestionAnswers(component, attemptId, question.slot, false, siteId)
-                    .then((prevAnswers) => {
+        // Check if the response is complete and calculate the new state.
+        let complete: number;
+        let newState: string;
 
-                const newBasicAnswers = this.questionProvider.getBasicAnswers(question.answers);
+        if (isCompleteFn) {
+            // Pass all the answers since some behaviours might need the extra data.
+            complete = isCompleteFn(question, question.answers, component, componentId);
+        } else {
+            // Only pass the basic answers since questions should be independent of extra data.
+            complete = this.questionDelegate.isCompleteResponse(question, newBasicAnswers, component, componentId);
+        }
 
-                prevAnswers = this.questionProvider.convertAnswersArrayToObject(prevAnswers, true);
-                const prevBasicAnswers = this.questionProvider.getBasicAnswers(prevAnswers);
+        if (complete < 0) {
+            newState = 'cannotdeterminestatus';
+        } else if (complete > 0) {
+            newState = 'complete';
+        } else {
+            newState = 'todo';
+        }
 
-                // If answers haven't changed the state is the same.
-                if (isSameFn) {
-                    if (isSameFn(question, prevAnswers, prevBasicAnswers, question.answers, newBasicAnswers,
-                            component, componentId)) {
-                        return state;
-                    }
-                } else {
-                    if (this.questionDelegate.isSameResponse(question, prevBasicAnswers, newBasicAnswers, component, componentId)) {
-                        return state;
-                    }
-                }
-
-                // Answers have changed. Now check if the response is complete and calculate the new state.
-                let complete: number,
-                    newState: string;
-                if (isCompleteFn) {
-                    // Pass all the answers since some behaviours might need the extra data.
-                    complete = isCompleteFn(question, question.answers, component, componentId);
-                } else {
-                    // Only pass the basic answers since questions should be independent of extra data.
-                    complete = this.questionDelegate.isCompleteResponse(question, newBasicAnswers, component, componentId);
-                }
-
-                if (complete < 0) {
-                    newState = 'cannotdeterminestatus';
-                } else if (complete > 0) {
-                    newState = 'complete';
-                } else {
-                    newState = 'todo';
-                }
-
-                return this.questionProvider.getState(newState);
-            });
-        });
+        return this.questionProvider.getState(newState);
     }
 
     /**
