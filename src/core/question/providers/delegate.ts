@@ -127,8 +127,33 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param question Question.
      * @param component The component the question is related to.
      * @param componentId Component ID.
+     * @return If async, promise resolved when done.
      */
     clearTmpData?(question: any, component: string, componentId: string | number): void | Promise<void>;
+
+    /**
+     * Delete any stored data for the question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    deleteOfflineData?(question: any, component: string, componentId: string | number, siteId?: string): void | Promise<void>;
+
+    /**
+     * Prepare data to send when performing a synchronization.
+     *
+     * @param question Question.
+     * @param answers Answers of the question, without the prefix.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    prepareSyncData?(question: any, answers: {[name: string]: any}, component: string, componentId: string | number,
+            siteId?: string): void | Promise<void>;
 }
 
 /**
@@ -309,10 +334,43 @@ export class CoreQuestionDelegate extends CoreDelegate {
      * @param question Question.
      * @param component The component the question is related to.
      * @param componentId Component ID.
+     * @return If async, promise resolved when done.
      */
     clearTmpData(question: any, component: string, componentId: string | number): void | Promise<void> {
         const type = this.getTypeName(question);
 
         return this.executeFunctionOnEnabled(type, 'clearTmpData', [question, component, componentId]);
+    }
+
+    /**
+     * Clear temporary data after the data has been saved.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    deleteOfflineData(question: any, component: string, componentId: string | number, siteId?: string): void | Promise<void> {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'deleteOfflineData', [question, component, componentId, siteId]);
+    }
+
+    /**
+     * Prepare data to send when performing a synchronization.
+     *
+     * @param question Question.
+     * @param answers Answers of the question, without the prefix.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    prepareSyncData?(question: any, answers: {[name: string]: any}, component: string, componentId: string | number,
+            siteId?: string): void | Promise<void> {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'prepareSyncData', [question, answers, component, componentId, siteId]);
     }
 }

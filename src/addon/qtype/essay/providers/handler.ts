@@ -55,6 +55,19 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
     }
 
     /**
+     * Delete any stored data for the question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    deleteOfflineData(question: any, component: string, componentId: string | number, siteId?: string): Promise<void> {
+        return this.questionHelper.deleteStoredQuestionFiles(question, component, componentId, siteId);
+    }
+
+    /**
      * Return the name of the behaviour to use for the question.
      * If the question should use the default behaviour you shouldn't implement this function.
      *
@@ -186,11 +199,11 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
         const originalAttachments = this.questionHelper.getResponseFileAreaFiles(question, 'attachments');
 
-        return CoreFileUploader.instance.areFileListDifferent(attachments, originalAttachments);
+        return !CoreFileUploader.instance.areFileListDifferent(attachments, originalAttachments);
     }
 
     /**
-     * Prepare and add to answers the data to send to server based in the input. Return promise if async.
+     * Prepare and add to answers the data to send to server based in the input.
      *
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
@@ -210,29 +223,103 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         const textarea = <HTMLTextAreaElement> element.querySelector('textarea[name*=_answer]');
 
         if (textarea && typeof answers[textarea.name] != 'undefined') {
-            if (this.questionHelper.hasDraftFileUrls(question.html) && question.responsefileareas) {
-                // Restore draftfile URLs.
-                const site = await CoreSites.instance.getSite(siteId);
-
-                answers[textarea.name] = this.textUtils.restoreDraftfileUrls(site.getURL(), answers[textarea.name],
-                        question.html, this.questionHelper.getResponseFileAreaFiles(question, 'answer'));
-            }
-
-            // Add some HTML to the text if needed.
-            answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
+            await this.prepareTextAnswer(question, answers, textarea, siteId);
         }
 
         if (attachmentsInput) {
-            // Treat attachments if any.
-            const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-            const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
-            const draftId = Number(attachmentsInput.value);
-
-            if (offline) {
-                // @TODO Support offline.
-            } else {
-                await CoreFileUploader.instance.uploadFiles(draftId, attachments, siteId);
-            }
+            await this.prepareAttachments(question, answers, offline, component, componentId, attachmentsInput, siteId);
         }
+    }
+
+    /**
+     * Prepare attachments.
+     *
+     * @param question Question.
+     * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param attachmentsInput The HTML input containing the draft ID for attachments.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Return a promise resolved when done if async, void if sync.
+     */
+    async prepareAttachments(question: any, answers: any, offline: boolean, component: string, componentId: string | number,
+            attachmentsInput: HTMLInputElement, siteId?: string): Promise<void> {
+
+        // Treat attachments if any.
+        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
+        const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
+        const draftId = Number(attachmentsInput.value);
+
+        if (offline) {
+            // Get the folder where to store the files.
+            const folderPath = CoreQuestion.instance.getQuestionFolder(question.type, component, questionComponentId, siteId);
+
+            const result = await CoreFileUploader.instance.storeFilesToUpload(folderPath, attachments);
+
+            // Store the files in the answers.
+            answers[attachmentsInput.name + '_offline'] = JSON.stringify(result);
+        } else {
+            await CoreFileUploader.instance.uploadFiles(draftId, attachments, siteId);
+        }
+    }
+
+    /**
+     * Prepare data to send when performing a synchronization.
+     *
+     * @param question Question.
+     * @param answers Answers of the question, without the prefix.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async prepareSyncData(question: any, answers: {[name: string]: any}, component: string, componentId: string | number,
+            siteId?: string): Promise<void> {
+
+        const element = this.domUtils.convertToElement(question.html);
+        const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
+
+        if (attachmentsInput) {
+            // Update the draft ID, the stored one could no longer be valid.
+            answers.attachments = attachmentsInput.value;
+        }
+
+        if (answers && answers.attachments_offline) {
+            // Check if it has new attachments to upload.
+            const attachmentsData = this.textUtils.parseJSON(answers.attachments_offline, {});
+
+            if (attachmentsData.offline) {
+                // Upload the offline files.
+                const offlineFiles = await this.questionHelper.getStoredQuestionFiles(question, component, componentId, siteId);
+
+                await CoreFileUploader.instance.uploadFiles(answers.attachments, attachmentsData.online.concat(offlineFiles),
+                        siteId);
+            }
+
+            delete answers.attachments_offline;
+        }
+    }
+
+    /**
+     * Prepare the text answer.
+     *
+     * @param question Question.
+     * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
+     * @param textarea The textarea HTML element of the question.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async prepareTextAnswer(question: any, answers: any, textarea: HTMLTextAreaElement, siteId?: string): Promise<void> {
+        if (this.questionHelper.hasDraftFileUrls(question.html) && question.responsefileareas) {
+            // Restore draftfile URLs.
+            const site = await CoreSites.instance.getSite(siteId);
+
+            answers[textarea.name] = this.textUtils.restoreDraftfileUrls(site.getURL(), answers[textarea.name],
+                    question.html, this.questionHelper.getResponseFileAreaFiles(question, 'answer'));
+        }
+
+        // Add some HTML to the text if needed.
+        answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
     }
 }

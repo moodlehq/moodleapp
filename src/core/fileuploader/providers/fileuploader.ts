@@ -552,16 +552,26 @@ export class CoreFileUploaderProvider {
             return;
         }
 
-        await Promise.all(files.map(async (file) => {
-            if ((<CoreWSExternalFile> file).filename && !(<FileEntry> file).name) {
-                // File already uploaded, ignore it.
-                return;
-            }
+        // Index the online files by name.
+        const usedNames: {[name: string]: (CoreWSExternalFile | FileEntry)} = {};
+        const filesToUpload: FileEntry[] = [];
+        files.forEach((file) => {
+            const isOnlineFile = (<CoreWSExternalFile> file).filename && !(<FileEntry> file).name;
 
-            file = <FileEntry> file;
+            if (isOnlineFile) {
+                usedNames[(<CoreWSExternalFile> file).filename.toLowerCase()] = file;
+            } else {
+                filesToUpload.push(<FileEntry> file);
+            }
+        });
+
+        await Promise.all(filesToUpload.map(async (file) => {
+            // Make sure the file name is unique in the area.
+            const name = this.fileProvider.calculateUniqueName(usedNames, file.name);
+            usedNames[name] = file;
 
             // Now upload the file.
-            const options = this.getFileUploadOptions(file.toURL(), file.name, undefined, false, 'draft', itemId);
+            const options = this.getFileUploadOptions(file.toURL(), name, undefined, false, 'draft', itemId);
 
             await this.uploadFile(file.toURL(), options, undefined, siteId);
         }));

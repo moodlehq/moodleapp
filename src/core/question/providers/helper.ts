@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { Injectable, EventEmitter } from '@angular/core';
+import { FileEntry } from '@ionic-native/file';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreFile } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreWSExternalFile } from '@providers/ws';
@@ -74,6 +76,25 @@ export class CoreQuestionHelperProvider {
         await Promise.all(questions.map(async (question) => {
             await this.questionDelegate.clearTmpData(question, component, componentId);
         }));
+    }
+
+    /**
+     * Delete files stored for a question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async deleteStoredQuestionFiles(question: any, component: string, componentId: string | number, siteId?: string)
+            : Promise<void> {
+
+        const questionComponentId = this.questionProvider.getQuestionComponentId(question, componentId);
+        const folderPath = this.questionProvider.getQuestionFolder(question.type, component, questionComponentId, siteId);
+
+        // Ignore errors, maybe the folder doesn't exist.
+        await this.utils.ignoreErrors(CoreFile.instance.removeDir(folderPath));
     }
 
     /**
@@ -455,6 +476,22 @@ export class CoreQuestionHelperProvider {
         });
 
         return area && area.files || [];
+    }
+
+    /**
+     * Get files stored for a question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the files.
+     */
+    getStoredQuestionFiles(question: any, component: string, componentId: string | number, siteId?: string): Promise<FileEntry[]> {
+        const questionComponentId = this.questionProvider.getQuestionComponentId(question, componentId);
+        const folderPath = this.questionProvider.getQuestionFolder(question.type, component, questionComponentId, siteId);
+
+        return CoreFile.instance.getDirectoryContents(folderPath);
     }
 
     /**

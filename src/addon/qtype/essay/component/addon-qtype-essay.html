@@ -27,7 +27,7 @@
 
     <!-- Attachments. -->
     <ng-container *ngIf="question.allowsAttachments">
-        <core-attachments *ngIf="uploadFilesSupported" [files]="attachments" [component]="component" [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles" [allowOffline]="offline"></core-attachments>
+        <core-attachments *ngIf="uploadFilesSupported" [files]="attachments" [component]="component" [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles" [allowOffline]="offlineEnabled"></core-attachments>
 
         <input item-content *ngIf="uploadFilesSupported" type="hidden" [name]="question.attachmentsDraftIdInput.name" [value]="question.attachmentsDraftIdInput.value" >
 
