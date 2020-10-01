@@ -107,9 +107,13 @@ export class CoreQuestionBaseComponent {
                 this.question.select = selectModel;
 
                 // Check which one should be displayed first: the select or the input.
-                const input = questionEl.querySelector('input[type="text"][name*=answer]');
-                this.question.selectFirst =
-                        questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(select.outerHTML);
+                if (this.question.displayoptions) {
+                    this.question.selectFirst = this.question.displayoptions.unitsleft == '1';
+                } else {
+                    const input = questionEl.querySelector('input[type="text"][name*=answer]');
+                    this.question.selectFirst =
+                            questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(select.outerHTML);
+                }
 
                 return questionEl;
             }
@@ -161,9 +165,13 @@ export class CoreQuestionBaseComponent {
             }
 
             // Check which one should be displayed first: the options or the input.
-            const input = questionEl.querySelector('input[type="text"][name*=answer]');
-            this.question.optionsFirst =
-                    questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(radios[0].outerHTML);
+            if (this.question.displayoptions) {
+                this.question.optionsFirst = this.question.displayoptions.unitsleft == '1';
+            } else {
+                const input = questionEl.querySelector('input[type="text"][name*=answer]');
+                this.question.optionsFirst =
+                        questionEl.innerHTML.indexOf(input.outerHTML) > questionEl.innerHTML.indexOf(radios[0].outerHTML);
+            }
 
             return questionEl;
         }
@@ -208,10 +216,18 @@ export class CoreQuestionBaseComponent {
             const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
             const answerDraftIdInput = <HTMLInputElement> questionEl.querySelector('input[name*="_answer:itemid"]');
 
-            this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
-            this.question.allowsAnswerFiles = !!answerDraftIdInput;
-            this.question.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
-            this.question.isPlainText = this.question.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
+            if (this.question.displayoptions) {
+                this.question.allowsAttachments = this.question.displayoptions.attachments != '0';
+                this.question.allowsAnswerFiles = this.question.displayoptions.responseformat == 'editorfilepicker';
+                this.question.isMonospaced = this.question.displayoptions.responseformat == 'monospaced';
+                this.question.isPlainText = this.question.isMonospaced || this.question.displayoptions.responseformat == 'plain';
+            } else {
+                this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
+                this.question.allowsAnswerFiles = !!answerDraftIdInput;
+                this.question.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
+                this.question.isPlainText = this.question.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
+            }
+
             this.question.hasDraftFiles = this.question.allowsAnswerFiles &&
                     this.questionHelper.hasDraftFileUrls(questionEl.innerHTML);
 
@@ -266,12 +282,14 @@ export class CoreQuestionBaseComponent {
                     };
                 }
 
+                this.question.attachmentsMaxFiles = Number(this.question.displayoptions.attachments);
+                this.question.attachmentsAcceptedTypes = this.question.displayoptions.filetypeslist;
+
                 if (fileManagerUrl) {
                     const params = CoreUrlUtils.instance.extractUrlParams(fileManagerUrl);
                     const maxBytes = Number(params.maxbytes);
                     const areaMaxBytes = Number(params.areamaxbytes);
 
-                    this.question.attachmentsMaxFiles = Number(params.maxfiles);
                     this.question.attachmentsMaxBytes = maxBytes === -1 || areaMaxBytes === -1 ?
                             Math.max(maxBytes, areaMaxBytes) : Math.min(maxBytes, areaMaxBytes);
                 }

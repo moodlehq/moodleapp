@@ -24,6 +24,14 @@ import { AddonQtypeCalculatedComponent } from '../component/calculated';
  */
 @Injectable()
 export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
+    static UNITINPUT = '0';
+    static UNITRADIO = '1';
+    static UNITSELECT = '2';
+    static UNITNONE = '3';
+
+    static UNITGRADED = '1';
+    static UNITOPTIONAL = '0';
+
     name = 'AddonQtypeCalculated';
     type = 'qtype_calculated';
 
@@ -42,6 +50,23 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     }
 
     /**
+     * Check if the units are in a separate field for the question.
+     *
+     * @param question Question.
+     * @return Whether units are in a separate field.
+     */
+    hasSeparateUnitField(question: any): boolean {
+        if (!question.displayoptions) {
+            const element = this.domUtils.convertToElement(question.html);
+
+            return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
+        }
+
+        return question.displayoptions.showunits === AddonQtypeCalculatedHandler.UNITRADIO ||
+                question.displayoptions.showunits === AddonQtypeCalculatedHandler.UNITSELECT;
+    }
+
+    /**
      * Check if a response is complete.
      *
      * @param question The question.
@@ -51,15 +76,42 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
-        if (this.isGradableResponse(question, answers) === 0 || !this.validateUnits(answers['answer'])) {
+        if (!this.isGradableResponse(question, answers)) {
             return 0;
         }
 
-        if (this.requiresUnits(question)) {
-            return this.isValidValue(answers['unit']) ? 1 : 0;
+        const parsedAnswer = this.parseAnswer(question, answers['answer']);
+        if (parsedAnswer.answer === null) {
+            return 0;
         }
 
-        return -1;
+        if (!question.displayoptions) {
+            if (this.hasSeparateUnitField(question)) {
+                return this.isValidValue(answers['unit']) ? 1 : 0;
+            }
+
+            // We cannot know if the answer should contain units or not.
+            return -1;
+        }
+
+        if (question.displayoptions.showunits != AddonQtypeCalculatedHandler.UNITINPUT && parsedAnswer.unit) {
+            // There should be no units or be outside of the input, not valid.
+            return 0;
+        }
+
+        if (this.hasSeparateUnitField(question) && !this.isValidValue(answers['unit'])) {
+            // Unit not supplied as a separate field and it's required.
+            return 0;
+        }
+
+        if (question.displayoptions.showunits == AddonQtypeCalculatedHandler.UNITINPUT &&
+                question.displayoptions.unitgradingtype == AddonQtypeCalculatedHandler.UNITGRADED &&
+                !this.isValidValue(parsedAnswer.unit)) {
+            // Unit not supplied inside the input and it's required.
+            return 0;
+        }
+
+        return 1;
     }
 
     /**
@@ -80,13 +132,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse(question: any, answers: any): number {
-        let isGradable = this.isValidValue(answers['answer']);
-        if (isGradable && this.requiresUnits(question)) {
-            // The question requires a unit.
-            isGradable = this.isValidValue(answers['unit']);
-        }
-
-        return isGradable ? 1 : 0;
+        return this.isValidValue(answers['answer']) ? 1 : 0;
     }
 
     /**
@@ -115,36 +161,24 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
     }
 
     /**
-     * Check if a question requires units in a separate input.
+     * Parse an answer string.
      *
-     * @param question The question.
-     * @return Whether the question requires units.
-     */
-    requiresUnits(question: any): boolean {
-        const element = this.domUtils.convertToElement(question.html);
-
-        return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
-    }
-
-    /**
-     * Validate a number with units. We don't have the list of valid units and conversions, so we can't perform
-     * a full validation. If this function returns true it means we can't be sure it's valid.
-     *
+     * @param question Question.
      * @param answer Answer.
-     * @return False if answer isn't valid, true if we aren't sure if it's valid.
+     * @return 0 if answer isn't valid, 1 if answer is valid, -1 if we aren't sure if it's valid.
      */
-    validateUnits(answer: string): boolean {
+    parseAnswer(question: any, answer: string): {answer: number, unit: string} {
         if (!answer) {
-            return false;
+            return {answer: null, unit: null};
         }
 
-        const regexString = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:e[-+]?\\d+)?';
+        let regexString = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:e[-+]?\\d+)?';
 
         // Strip spaces (which may be thousands separators) and change other forms of writing e to e.
-        answer = answer.replace(' ', '');
+        answer = answer.replace(/ /g, '');
         answer = answer.replace(/(?:e|E|(?:x|\*|×)10(?:\^|\*\*))([+-]?\d+)/, 'e$1');
 
-        // If a '.' is present or there are multiple ',' (i.e. 2,456,789) assume ',' is a thousands separator and stip it.
+        // If a '.' is present or there are multiple ',' (i.e. 2,456,789) assume ',' is a thousands separator and strip it.
         // Else assume it is a decimal separator, and change it to '.'.
         if (answer.indexOf('.') != -1 || answer.split(',').length - 1 > 1) {
             answer = answer.replace(',', '');
@@ -152,11 +186,31 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
             answer = answer.replace(',', '.');
         }
 
-        // We don't know if units should be before or after so we check both.
-        if (answer.match(new RegExp('^' + regexString)) === null || answer.match(new RegExp(regexString + '$')) === null) {
-            return false;
+        let unitsLeft = false;
+        let match = null;
+
+        if (!question.displayoptions) {
+            // We don't know if units should be before or after so we check both.
+            match = answer.match(new RegExp('^' + regexString));
+            if (!match) {
+                unitsLeft = true;
+                match = answer.match(new RegExp(regexString + '$'));
+            }
+        } else {
+            unitsLeft = question.displayoptions.unitsleft == '1';
+            regexString = unitsLeft ? regexString + '$' : '^' + regexString;
+
+            match = answer.match(new RegExp(regexString));
         }
 
-        return true;
+        if (!match) {
+            return {answer: null, unit: null};
+        }
+
+        const numberString = match[0];
+        const unit = unitsLeft ? answer.substr(0, answer.length - match[0].length) : answer.substr(match[0].length);
+
+        // No need to calculate the multiplier.
+        return {answer: Number(numberString), unit: unit};
     }
 }

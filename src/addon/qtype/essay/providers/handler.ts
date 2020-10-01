@@ -68,6 +68,28 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
     }
 
     /**
+     * Check whether the question allows text and/or attachments.
+     *
+     * @param question Question to check.
+     * @return Allowed options.
+     */
+    protected getAllowedOptions(question: any): {text: boolean, attachments: boolean} {
+        if (question.displayoptions) {
+            return {
+                text: question.displayoptions.responseformat != 'noinline',
+                attachments: question.displayoptions.attachments != '0',
+            };
+        } else {
+            const element = this.domUtils.convertToElement(question.html);
+
+            return {
+                text: !!element.querySelector('textarea[name*=_answer]'),
+                attachments: !!element.querySelector('div[id*=filemanager]'),
+            };
+        }
+    }
+
+    /**
      * Return the name of the behaviour to use for the question.
      * If the question should use the default behaviour you shouldn't implement this function.
      *
@@ -122,15 +144,13 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
-        const element = this.domUtils.convertToElement(question.html);
 
-        const hasInlineText = answers['answer'] && answers['answer'] !== '';
-        const allowsInlineText = !!element.querySelector('textarea[name*=_answer]');
-        const allowsAttachments = !!element.querySelector('div[id*=filemanager]');
+        const hasTextAnswer = answers['answer'] && answers['answer'] !== '';
         const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
+        const allowedOptions = this.getAllowedOptions(question);
 
-        if (!allowsAttachments) {
-            return hasInlineText ? 1 : 0;
+        if (!allowedOptions.attachments) {
+            return hasTextAnswer ? 1 : 0;
         }
 
         if (!uploadFilesSupported) {
@@ -141,12 +161,12 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
         const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
 
-        if (!allowsInlineText) {
+        if (!allowedOptions.text) {
             return attachments && attachments.length > 0 ? 1 : 0;
         }
 
-        // If any of the fields is missing return -1 because we can't know if they're required or not.
-        return hasInlineText && attachments && attachments.length > 0 ? 1 : -1;
+        return (hasTextAnswer || question.displayoptions.responserequired == '0') &&
+                ((attachments && attachments.length > 0) || question.displayoptions.attachmentsrequired == '0') ? 1 : 0;
     }
 
     /**
@@ -181,15 +201,13 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @return Whether they're the same.
      */
     isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
-        const element = this.domUtils.convertToElement(question.html);
-        const allowsInlineText = !!element.querySelector('textarea[name*=_answer]');
-        const allowsAttachments = !!element.querySelector('div[id*=filemanager]');
         const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
+        const allowedOptions = this.getAllowedOptions(question);
 
         // First check the inline text.
-        const answerIsEqual = allowsInlineText ? this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') : true;
+        const answerIsEqual = allowedOptions.text ? this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') : true;
 
-        if (!allowsAttachments || !uploadFilesSupported || !answerIsEqual) {
+        if (!allowedOptions.attachments || !uploadFilesSupported || !answerIsEqual) {
             // No need to check attachments.
             return answerIsEqual;
         }
