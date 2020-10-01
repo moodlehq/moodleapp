@@ -278,6 +278,15 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
             // Store the files in the answers.
             answers[attachmentsInput.name + '_offline'] = JSON.stringify(result);
         } else {
+            // Check if any attachment was deleted.
+            const originalAttachments = this.questionHelper.getResponseFileAreaFiles(question, 'attachments');
+            const filesToDelete = CoreFileUploader.instance.getFilesToDelete(originalAttachments, attachments);
+
+            if (filesToDelete.length > 0) {
+                // Delete files.
+                await CoreFileUploader.instance.deleteDraftFiles(draftId, filesToDelete, siteId);
+            }
+
             await CoreFileUploader.instance.uploadFiles(draftId, attachments, siteId);
         }
     }
@@ -304,8 +313,16 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         }
 
         if (answers && answers.attachments_offline) {
-            // Check if it has new attachments to upload.
             const attachmentsData = this.textUtils.parseJSON(answers.attachments_offline, {});
+
+            // Check if any attachment was deleted.
+            const originalAttachments = this.questionHelper.getResponseFileAreaFiles(question, 'attachments');
+            const filesToDelete = CoreFileUploader.instance.getFilesToDelete(originalAttachments, attachmentsData.online);
+
+            if (filesToDelete.length > 0) {
+                // Delete files.
+                await CoreFileUploader.instance.deleteDraftFiles(answers.attachments, filesToDelete, siteId);
+            }
 
             if (attachmentsData.offline) {
                 // Upload the offline files.

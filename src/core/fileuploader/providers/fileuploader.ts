@@ -29,6 +29,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreWSFileUploadOptions, CoreWSExternalFile } from '@providers/ws';
 import { Subject } from 'rxjs';
 import { CoreApp } from '@providers/app';
+import { CoreSite } from '@classes/site';
 import { makeSingleton } from '@singletons/core.singletons';
 
 /**
@@ -107,6 +108,36 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Check if a certain site allows deleting draft files.
+     *
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if can delete.
+     * @since 3.10
+     */
+    async canDeleteDraftFiles(siteId?: string): Promise<boolean> {
+        try {
+            const site = await this.sitesProvider.getSite(siteId);
+
+            return this.canDeleteDraftFilesInSite(site);
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if a certain site allows deleting draft files.
+     *
+     * @param site Site. If not defined, use current site.
+     * @return Whether draft files can be deleted.
+     * @since 3.10
+     */
+    canDeleteDraftFilesInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_files_delete_draft_files');
+    }
+
+    /**
      * Start the audio recorder application and return information about captured audio clip files.
      *
      * @param options Options.
@@ -176,6 +207,25 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Delete draft files.
+     *
+     * @param draftId Draft ID.
+     * @param files Files to delete.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async deleteDraftFiles(draftId: number, files: {filepath: string, filename: string}[], siteId?: string): Promise<void> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        const params = {
+            draftitemid: draftId,
+            files: files,
+        };
+
+        return site.write('core_files_delete_draft_files', params);
+    }
+
+    /**
      * Get the upload options for a file taken with the Camera Cordova plugin.
      *
      * @param uri File URI.
@@ -215,6 +265,35 @@ export class CoreFileUploaderProvider {
         }
 
         return options;
+    }
+
+    /**
+     * Given a list of original files and a list of current files, return the list of files to delete.
+     *
+     * @param originalFiles Original files.
+     * @param currentFiles Current files.
+     * @return List of files to delete.
+     */
+    getFilesToDelete(originalFiles: CoreWSExternalFile[], currentFiles: (CoreWSExternalFile | FileEntry)[])
+            : {filepath: string, filename: string}[] {
+
+        const filesToDelete: {filepath: string, filename: string}[] = [];
+        currentFiles = currentFiles || [];
+
+        originalFiles.forEach((file) => {
+            const stillInList = currentFiles.some((currentFile) => {
+                return (<CoreWSExternalFile> currentFile).fileurl == file.fileurl;
+            });
+
+            if (!stillInList) {
+                filesToDelete.push({
+                    filepath: file.filepath,
+                    filename: file.filename,
+                });
+            }
+        });
+
+        return filesToDelete;
     }
 
     /**
