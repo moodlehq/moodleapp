@@ -6,7 +6,7 @@
     "complete": "Complete",
     "correct": "Correct",
     "errorattachmentsnotsupportedinsite": "Your site doesn't support attaching files to answers yet.",
-    "errorinlinefilesnotsupportedinsite": "Your site doesn't support editing inline files yet.",
+    "errorembeddedfilesnotsupportedinsite": "Your site doesn't support editing embedded files yet.",
     "errorquestionnotsupported": "This question type is not supported by the app: {{$a}}.",
     "feedback": "Feedback",
     "howtodraganddrop": "Tap to select then tap to drop.",

@@ -142,7 +142,7 @@ export class AddonQbehaviourDeferredFeedbackHandler implements CoreQuestionBehav
         } else if (complete > 0) {
             newState = 'complete';
         } else {
-            const gradable = this.questionDelegate.isGradableResponse(question, newBasicAnswers);
+            const gradable = this.questionDelegate.isGradableResponse(question, newBasicAnswers, component, componentId);
             if (gradable < 0) {
                 newState = 'cannotdeterminestatus';
             } else if (gradable > 0) {

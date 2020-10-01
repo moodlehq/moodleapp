@@ -76,7 +76,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
-        if (!this.isGradableResponse(question, answers)) {
+        if (!this.isGradableResponse(question, answers, component, componentId)) {
             return 0;
         }
 
@@ -129,9 +129,11 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
         return this.isValidValue(answers['answer']) ? 1 : 0;
     }
 

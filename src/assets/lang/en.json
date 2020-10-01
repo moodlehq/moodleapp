@@ -1946,7 +1946,7 @@
     "core.question.complete": "Complete",
     "core.question.correct": "Correct",
     "core.question.errorattachmentsnotsupportedinsite": "Your site doesn't support attaching files to answers yet.",
-    "core.question.errorinlinefilesnotsupportedinsite": "Your site doesn't support editing inline files yet.",
+    "core.question.errorembeddedfilesnotsupportedinsite": "Your site doesn't support editing embedded files yet.",
     "core.question.errorquestionnotsupported": "This question type is not supported by the app: {{$a}}.",
     "core.question.feedback": "Feedback",
     "core.question.howtodraganddrop": "Tap to select then tap to drop.",

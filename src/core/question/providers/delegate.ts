@@ -74,9 +74,11 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse?(question: any, answers: any): number;
+    isGradableResponse?(question: any, answers: any, component: string, componentId: string | number): number;
 
     /**
      * Check if two responses are the same.
@@ -251,12 +253,14 @@ export class CoreQuestionDelegate extends CoreDelegate {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'isGradableResponse', [question, answers]);
+        return this.executeFunctionOnEnabled(type, 'isGradableResponse', [question, answers, component, componentId]);
     }
 
     /**

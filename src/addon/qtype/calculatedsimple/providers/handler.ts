@@ -70,11 +70,13 @@ export class AddonQtypeCalculatedSimpleHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
         // This question type depends on calculated.
-        return this.calculatedHandler.isGradableResponse(question, answers);
+        return this.calculatedHandler.isGradableResponse(question, answers, component, componentId);
     }
 
     /**

@@ -162,11 +162,11 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
 
         if (!allowedOptions.text) {
-            return attachments && attachments.length > 0 ? 1 : 0;
+            return attachments && attachments.length >= Number(question.displayoptions.attachmentsrequired) ? 1 : 0;
         }
 
         return (hasTextAnswer || question.displayoptions.responserequired == '0') &&
-                ((attachments && attachments.length > 0) || question.displayoptions.attachmentsrequired == '0') ? 1 : 0;
+                (attachments && attachments.length > Number(question.displayoptions.attachmentsrequired)) ? 1 : 0;
     }
 
     /**
@@ -184,10 +184,20 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
-        return 0;
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
+        if (typeof question.responsefileareas == 'undefined') {
+            return -1;
+        }
+
+        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
+        const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
+
+        // Determine if the given response has online text or attachments.
+        return (answers['answer'] && answers['answer'] !== '') || (attachments && attachments.length > 0) ? 1 : 0;
     }
 
     /**
