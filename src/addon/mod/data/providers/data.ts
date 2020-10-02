@@ -117,65 +117,51 @@ export class AddonModDataProvider {
      * @param forceOffline Force editing entry in offline.
      * @return Promise resolved when the action is done.
      */
-    addEntry(dataId: number, entryId: number, courseId: number, contents: AddonModDataSubfieldData[], groupId: number = 0,
+    async addEntry(dataId: number, entryId: number, courseId: number, contents: AddonModDataSubfieldData[], groupId: number = 0,
             fields: any, siteId?: string, forceOffline: boolean = false): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a data to be synchronized later.
-        const storeOffline = (): Promise<any> => {
-            return this.dataOffline.saveEntry(dataId, entryId, 'add', courseId, groupId, contents, undefined, siteId)
-                    .then((entry) => {
-                return {
-                    // Return provissional entry Id.
-                    newentryid: entry,
-                    sent: false,
-                };
-            });
+        const storeOffline = async (): Promise<any> => {
+            const entry = await this.dataOffline.saveEntry(dataId, entryId, 'add', courseId, groupId, contents, undefined, siteId);
+
+            return {
+                // Return provissional entry Id.
+                newentryid: entry,
+                sent: false,
+            };
         };
 
         // Checks to store offline.
         if (!this.appProvider.isOnline() || forceOffline) {
             const notifications = this.checkFields(fields, contents);
             if (notifications) {
-                return Promise.resolve({
-                    fieldnotifications: notifications
-                });
+                return { fieldnotifications: notifications };
             }
         }
 
-        // Get other not synced actions.
-        return this.dataOffline.getEntryActions(dataId, entryId, siteId).then((entries) => {
-            if (entries && entries.length) {
-                // Found. Delete add and edit actions first.
-                const proms = [];
-                entries.forEach((entry) => {
-                    if (entry.action == 'add') {
-                        proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
-                    }
-                });
+        // Remove unnecessary not synced actions.
+        await this.deleteEntryOfflineAction(dataId, entryId, 'add', siteId);
 
-                return Promise.all(proms);
+        // App is offline, store the action.
+        if (!this.appProvider.isOnline() || forceOffline) {
+            return storeOffline();
+        }
+
+        try {
+            const result = await this.addEntryOnline(dataId, contents, groupId, siteId);
+            result.sent = true;
+
+            return result;
+        } catch (error) {
+            if (this.utils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                throw error;
             }
-        }).then(() => {
-            // App is offline, store the action.
-            if (!this.appProvider.isOnline() || forceOffline) {
-                return storeOffline();
-            }
 
-            return this.addEntryOnline(dataId, contents, groupId, siteId).then((result) => {
-                result.sent = true;
-
-                return result;
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
-                    // The WebService has thrown an error, this means that responses cannot be submitted.
-                    return Promise.reject(error);
-                }
-
-                // Couldn't connect to server, store in offline.
-                return storeOffline();
-            });
-        });
+            // Couldn't connect to server, store in offline.
+            return storeOffline();
+        }
     }
 
     /**
@@ -212,48 +198,49 @@ export class AddonModDataProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the action is done.
      */
-    approveEntry(dataId: number, entryId: number, approve: boolean, courseId: number, siteId?: string): Promise<any> {
+    async approveEntry(dataId: number, entryId: number, approve: boolean, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a data to be synchronized later.
-        const storeOffline = (): Promise<any> => {
+        const storeOffline = async (): Promise<any> => {
             const action = approve ? 'approve' : 'disapprove';
 
-            return this.dataOffline.saveEntry(dataId, entryId, action, courseId, undefined, undefined, undefined, siteId)
-                    .then(() => {
-                return {
-                    sent: false,
-                };
-            });
+            await this.dataOffline.saveEntry(dataId, entryId, action, courseId, undefined, undefined, undefined, siteId);
+
+            return {
+                sent: false,
+            };
         };
 
         // Get if the opposite action is not synced.
         const oppositeAction = approve ? 'disapprove' : 'approve';
 
-        return this.dataOffline.getEntry(dataId, entryId, oppositeAction, siteId).then(() => {
-            // Found. Just delete the action.
-            return this.dataOffline.deleteEntry(dataId, entryId, oppositeAction, siteId);
-        }).catch(() => {
+        const found = await this.deleteEntryOfflineAction(dataId, entryId, oppositeAction, siteId);
+        if (found) {
+            // Offline action has been found and deleted. Stop here.
+            return;
+        }
 
-            if (!this.appProvider.isOnline()) {
-                // App is offline, store the action.
-                return storeOffline();
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        try {
+            await this.approveEntryOnline(entryId, approve, siteId);
+
+            return {
+                sent: true,
+            };
+        } catch (error) {
+            if (this.utils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                throw error;
             }
 
-            return this.approveEntryOnline(entryId, approve, siteId).then(() => {
-                return {
-                    sent: true,
-                };
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
-                    // The WebService has thrown an error, this means that responses cannot be submitted.
-                    return Promise.reject(error);
-                }
-
-                // Couldn't connect to server, store in offline.
-                return storeOffline();
-            });
-        });
+            // Couldn't connect to server, store in offline.
+            return storeOffline();
+        }
     }
 
     /**
@@ -317,60 +304,45 @@ export class AddonModDataProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the action is done.
      */
-    deleteEntry(dataId: number, entryId: number, courseId: number, siteId?: string): Promise<any> {
+    async deleteEntry(dataId: number, entryId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a data to be synchronized later.
-        const storeOffline = (): Promise<any> => {
-            return this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, undefined, undefined, undefined, siteId)
-                    .then(() => {
-                return {
-                    sent: false,
-                };
-            });
+        const storeOffline = async (): Promise<any> => {
+            await this.dataOffline.saveEntry(dataId, entryId, 'delete', courseId, undefined, undefined, undefined, siteId);
+
+            return {
+                sent: false,
+            };
         };
 
-        let justAdded = false;
-
         // Check if the opposite action is not synced and just delete it.
-        return this.dataOffline.getEntryActions(dataId, entryId, siteId).then((entries) => {
-            if (entries && entries.length) {
-                // Found. Delete other actions first.
-                const proms = entries.map((entry) => {
-                    if (entry.action == 'add') {
-                        justAdded = true;
-                    }
+        const addedOffline = await this.deleteEntryOfflineAction(dataId, entryId, 'add', siteId);
+        if (addedOffline) {
+            // Offline add action found and deleted. Stop here.
+            return;
+        }
 
-                    return this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId);
-                });
+        if (!this.appProvider.isOnline()) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
 
-                return Promise.all(proms);
+        try {
+            await this.deleteEntryOnline(entryId, siteId);
+
+            return {
+                sent: true,
+            };
+        } catch (error) {
+            if (this.utils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                throw error;
             }
-        }).then(() => {
-            if (justAdded) {
-                // The field was added offline, delete and stop.
-                return;
-            }
 
-            if (!this.appProvider.isOnline()) {
-                // App is offline, store the action.
-                return storeOffline();
-            }
-
-            return this.deleteEntryOnline(entryId, siteId).then(() => {
-                return {
-                    sent: true,
-                };
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
-                    // The WebService has thrown an error, this means that responses cannot be submitted.
-                    return Promise.reject(error);
-                }
-
-                // Couldn't connect to server, store in offline.
-                return storeOffline();
-            });
-        });
+            // Couldn't connect to server, store in offline.
+            return storeOffline();
+        }
     }
 
     /**
@@ -391,6 +363,29 @@ export class AddonModDataProvider {
     }
 
     /**
+     * Delete entry offline action.
+     *
+     * @param dataId Database ID.
+     * @param entryId Entry ID.
+     * @param action Action name to delete.
+     * @param siteId Site ID.
+     * @return Resolved with true if the action has been found and deleted.
+     */
+    protected async deleteEntryOfflineAction(dataId: number, entryId: number, action: string, siteId: string): Promise<boolean> {
+        // Get other not not synced actions.
+        try {
+            await this.dataOffline.getEntry(dataId, entryId, action, siteId);
+
+            await this.dataOffline.deleteEntry(dataId, entryId, action, siteId);
+
+            return true;
+        } catch (error) {
+            // Not found.
+            return false;
+        }
+    }
+
+    /**
      * Updates an existing entry.
      *
      * @param dataId Database ID.
@@ -402,64 +397,50 @@ export class AddonModDataProvider {
      * @param forceOffline Force editing entry in offline.
      * @return Promise resolved when the action is done.
      */
-    editEntry(dataId: number, entryId: number, courseId: number, contents: AddonModDataSubfieldData[], fields: any, siteId?: string,
-            forceOffline: boolean = false): Promise<any> {
+    async editEntry(dataId: number, entryId: number, courseId: number, contents: AddonModDataSubfieldData[], fields: any,
+            siteId?: string, forceOffline: boolean = false): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a data to be synchronized later.
-        const storeOffline = (): Promise<any> => {
-            return this.dataOffline.saveEntry(dataId, entryId, 'edit', courseId, undefined, contents, undefined, siteId)
-                    .then(() => {
-                return {
-                    updated: true,
-                    sent: false,
-                };
-            });
+        const storeOffline = async (): Promise<any> => {
+            await this.dataOffline.saveEntry(dataId, entryId, 'edit', courseId, undefined, contents, undefined, siteId);
+
+            return {
+                updated: true,
+                sent: false,
+            };
         };
 
         if (!this.appProvider.isOnline() || forceOffline) {
             const notifications = this.checkFields(fields, contents);
             if (notifications) {
-                return Promise.resolve({
-                    fieldnotifications: notifications
-                });
+                return { fieldnotifications: notifications };
             }
         }
 
-        // Get other not not synced actions.
-        return this.dataOffline.getEntryActions(dataId, entryId, siteId).then((entries) => {
-            if (entries && entries.length) {
-                // Found. Delete add and edit actions first.
-                const proms = [];
-                entries.forEach((entry) => {
-                    if (entry.action == 'edit') {
-                        proms.push(this.dataOffline.deleteEntry(dataId, entryId, entry.action, siteId));
-                    }
-                });
+        // Remove unnecessary not synced actions.
+        await this.deleteEntryOfflineAction(dataId, entryId, 'edit', siteId);
 
-                return Promise.all(proms);
+        if (!this.appProvider.isOnline() || forceOffline) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        try {
+            const result = await this.editEntryOnline(entryId, contents, siteId);
+            result.sent = true;
+
+            return result;
+        } catch (error) {
+            if (this.utils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that responses cannot be submitted.
+                throw error;
             }
-        }).then(() => {
-            if (!this.appProvider.isOnline() || forceOffline) {
-                // App is offline, store the action.
-                return storeOffline();
-            }
 
-            return this.editEntryOnline(entryId, contents, siteId).then((result) => {
-                result.sent = true;
-
-                return result;
-            }).catch((error) => {
-                if (this.utils.isWebServiceError(error)) {
-                    // The WebService has thrown an error, this means that responses cannot be submitted.
-                    return Promise.reject(error);
-                }
-
-                // Couldn't connect to server, store in offline.
-                return storeOffline();
-            });
-        });
-    }
+            // Couldn't connect to server, store in offline.
+            return storeOffline();
+        }
+}
 
     /**
      * Updates an existing entry. It does not cache calls. It will fail if offline or cannot connect.
