@@ -1,20 +1,7 @@
+$core-login-reconnect-warning: $red !default;
+$core-dark-login-reconnect-warning: mix($red, white, 20%) !default;
+
 ion-app.app-root page-core-login-reconnect {
-    .box {
-        .core-login-form .item {
-            background-color: $core-login-item-background-color;
-            @include darkmode() {
-                background-color: $core-dark-login-item-background-color;
-            }
-        }
-
-        .core-login-form .item-inner {
-            background-color: $core-login-item-inner-background-color;
-            @include darkmode() {
-                background-color: $core-dark-login-item-inner-background-color;
-            }
-        }
-    }
-
     form .core-username.item p {
         @include padding-horizontal(8px);
         font-size: 16px;
@@ -31,6 +18,10 @@ ion-app.app-root page-core-login-reconnect {
     }
 
     .core-login-reconnect-warning {
-        color: $red;
+        color: $core-login-reconnect-warning;
+
+        @include darkmode() {
+            background-color: $core-dark-login-reconnect-warning;
+        }
     }
 }

@@ -47,7 +47,7 @@
     </form>
 
     <!-- Forgotten password button. -->
-    <ion-list no-lines *ngIf="showForgottenPassword && !isOAuth" class="core-login-forgotten-password">
+    <ion-list no-lines *ngIf="showForgottenPassword && !isOAuth" class="core-login-forgotten-password core-login-link">
         <a ion-item text-center text-wrap (click)="forgottenPassword()" detail-none>
             {{ 'core.login.forgotten' | translate }}
         </a>
