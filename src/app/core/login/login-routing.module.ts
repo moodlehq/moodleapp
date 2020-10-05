@@ -13,24 +13,18 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { CoreLoginInitPage } from './pages/init/init.page';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'login',
-        pathMatch: 'full',
-    },
-    {
-        path: 'login',
-        loadChildren: () => import('./core/login/login.module').then( m => m.CoreLoginModule),
+        component: CoreLoginInitPage,
     },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
-    ],
+    imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class CoreLoginRoutingModule {}

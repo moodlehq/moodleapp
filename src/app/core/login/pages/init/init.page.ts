@@ -12,25 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { Component } from '@angular/core';
 
-const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full',
-    },
-    {
-        path: 'login',
-        loadChildren: () => import('./core/login/login.module').then( m => m.CoreLoginModule),
-    },
-];
-
-@NgModule({
-    imports: [
-        RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
-    ],
-    exports: [RouterModule],
+/**
+ * Page that displays a "splash screen" while the app is being initialized.
+ */
+@Component({
+    selector: 'page-core-login-init',
+    templateUrl: 'init.html',
+    styleUrls: ['init.scss'],
 })
-export class AppRoutingModule { }
+export class CoreLoginInitPage { }
