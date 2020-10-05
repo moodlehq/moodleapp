@@ -108,7 +108,7 @@ export class CoreSettingsDelegate extends CoreDelegate {
 
             handlersData.push({
                 data: data,
-                priority: handler.priority
+                priority: handler.priority || 0,
             });
         }
 

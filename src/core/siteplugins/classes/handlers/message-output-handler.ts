@@ -32,7 +32,7 @@ export class CoreSitePluginsMessageOutputHandler extends CoreSitePluginsBaseHand
      */
     getDisplayData(): AddonMessageOutputHandlerData {
         return {
-            priority: this.handlerSchema.priority,
+            priority: this.handlerSchema.priority || 0,
             label: this.title,
             icon: this.handlerSchema.displaydata.icon,
             page: 'CoreSitePluginsPluginPage',

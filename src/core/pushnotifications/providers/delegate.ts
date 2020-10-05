@@ -177,6 +177,7 @@ export class CorePushNotificationsDelegate {
 
         this.logger.log(`Registered addon '${handler.name}'`);
         this.clickHandlers[handler.name] = handler;
+        handler.priority = handler.priority || 0;
 
         return true;
     }

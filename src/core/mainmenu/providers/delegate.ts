@@ -162,7 +162,7 @@ export class CoreMainMenuDelegate extends CoreDelegate {
             handlersData.push({
                 name: name,
                 data: data,
-                priority: handler.priority
+                priority: handler.priority || 0,
             });
         }
 
