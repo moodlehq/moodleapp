@@ -1,5 +1,7 @@
 {
   "name": "moodlemobile",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

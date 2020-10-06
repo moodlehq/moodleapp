@@ -36,6 +36,46 @@
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^5.0.0",
+    "com-darryncampbell-cordova-plugin-intent": "^2.0.0",
+    "cordova": "^10.0.0",
+    "cordova-android": "^8.1.0",
+    "cordova-android-support-gradle-release": "^3.0.1",
+    "cordova-clipboard": "^1.3.0",
+    "cordova-ios": "^5.1.1",
+    "cordova-plugin-add-swift-support": "^2.0.2",
+    "cordova-plugin-advanced-http": "^3.0.1",
+    "cordova-plugin-badge": "^0.8.8",
+    "cordova-plugin-camera": "^4.1.0",
+    "cordova-plugin-chooser": "^1.3.2",
+    "cordova-plugin-customurlscheme": "^5.0.2",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-file": "^6.0.2",
+    "cordova-plugin-file-opener2": "^3.0.5",
+    "cordova-plugin-file-transfer": "1.7.1",
+    "cordova-plugin-geolocation": "git+https://github.com/apache/cordova-plugin-geolocation.git#89cf51d222e8f225bdfb661965b3007d669c40ff",
+    "cordova-plugin-globalization": "1.11.0",
+    "cordova-plugin-inappbrowser": "git+https://github.com/moodlemobile/cordova-plugin-inappbrowser.git#moodle",
+    "cordova-plugin-ionic-keyboard": "2.1.3",
+    "cordova-plugin-ionic-webview": "git+https://github.com/moodlemobile/cordova-plugin-ionic-webview.git#500-moodle",
+    "cordova-plugin-local-notification": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle",
+    "cordova-plugin-media": "^5.0.3",
+    "cordova-plugin-media-capture": "^3.0.3",
+    "cordova-plugin-network-information": "^2.0.2",
+    "cordova-plugin-qrscanner": "git+https://github.com/moodlemobile/cordova-plugin-qrscanner.git#dist",
+    "cordova-plugin-screen-orientation": "^3.0.2",
+    "cordova-plugin-splashscreen": "^6.0.0",
+    "cordova-plugin-statusbar": "^2.4.3",
+    "cordova-plugin-whitelist": "^1.3.4",
+    "cordova-plugin-wkuserscript": "git+https://github.com/moodlemobile/cordova-plugin-wkuserscript.git",
+    "cordova-plugin-wkwebview-cookies": "git+https://github.com/moodlemobile/cordova-plugin-wkwebview-cookies.git",
+    "cordova-plugin-zip": "^3.1.0",
+    "cordova-sqlite-storage": "^5.1.0",
+    "cordova-support-google-services": "^1.2.1",
+    "cordova.plugins.diagnostic": "^6.0.2",
+    "es6-promise-plugin": "^4.2.2",
+    "nl.kingsquare.cordova.background-audio": "^1.0.1",
+    "phonegap-plugin-multidex": "^1.0.0",
+    "phonegap-plugin-push": "git+https://github.com/moodlemobile/phonegap-plugin-push.git#moodle-v3",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
@@ -66,5 +106,67 @@
   },
   "engines": {
     "node": ">=12.x"
+  },
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-advanced-http": {},
+      "cordova-clipboard": {},
+      "cordova-plugin-badge": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "cordova-plugin-chooser": {},
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "moodlemobile",
+        "ANDROID_SCHEME": " ",
+        "ANDROID_HOST": " ",
+        "ANDROID_PATHPREFIX": "/"
+      },
+      "cordova-plugin-device": {},
+      "cordova-plugin-file-opener2": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      },
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-local-notification": {
+        "ANDROID_SUPPORT_V4_VERSION": "26.+"
+      },
+      "cordova-plugin-media-capture": {},
+      "cordova-plugin-media": {
+        "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
+      },
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-qrscanner": {},
+      "cordova-plugin-screen-orientation": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-wkuserscript": {},
+      "cordova-plugin-wkwebview-cookies": {},
+      "cordova-plugin-zip": {},
+      "cordova-sqlite-storage": {},
+      "phonegap-plugin-push": {
+        "ANDROID_SUPPORT_V13_VERSION": "27.+",
+        "FCM_VERSION": "17.0.+"
+      },
+      "com-darryncampbell-cordova-plugin-intent": {},
+      "nl.kingsquare.cordova.background-audio": {},
+      "cordova-android-support-gradle-release": {
+        "ANDROID_SUPPORT_VERSION": "27.+"
+      },
+      "cordova.plugins.diagnostic": {
+        "ANDROIDX_VERSION": "1.+"
+      },
+      "cordova-plugin-globalization": {},
+      "cordova-plugin-file-transfer": {}
+    }
   }
 }
