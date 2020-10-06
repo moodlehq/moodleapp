@@ -1,11 +1,11 @@
 // TODO ionic 5
 :host-context([dir=rtl]) ion-icon {
-    &.core-icon-dir-flip,
-    &.fa-caret-right,
-    &.ion-md-send, &.ion-ios-send {
-      -webkit-transform: scale(-1, 1);
-      transform: scale(-1, 1);
-    }
+  &.core-icon-dir-flip,
+  &.fa-caret-right,
+  &.ion-md-send, &.ion-ios-send {
+    -webkit-transform: scale(-1, 1);
+    transform: scale(-1, 1);
+  }
 }
 
 // Slash
@@ -19,6 +19,8 @@
 :host {
   &.fa {
     font-size: 24px;
+    contain: none;
+    text-align: center;
   }
 
   // Center font awesome icons

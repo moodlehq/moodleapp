@@ -34,6 +34,7 @@ import { CoreLoginHelperProvider } from './services/helper';
         CommonModule,
         IonicModule,
         CoreLoginRoutingModule,
+        CoreComponentsModule,
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,

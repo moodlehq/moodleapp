@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            {{ 'core.settings.appsettings' | translate}}
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-item (click)="openSettings('general')" [class.core-split-item-selected]="'general' == selectedPage" detail>
+        <core-icon name="fa-wrench" slot="start"></core-icon>
+        <ion-label>{{ 'core.settings.general' | translate }}</ion-label>
+    </ion-item>
+    <ion-item (click)="openSettings('spaceusage')" [class.core-split-item-selected]="'spaceusage' == selectedPage" detail>
+        <core-icon name="fa-tasks" slot="start"></core-icon>
+        <ion-label>{{ 'core.settings.spaceusage' | translate }}</ion-label>
+    </ion-item>
+    <ion-item (click)="openSettings('sync')" [class.core-split-item-selected]="'sync' == selectedPage" detail>
+        <core-icon name="fa-refresh" slot="start"></core-icon>
+        <ion-label>{{ 'core.settings.synchronization' | translate }}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="isIOS" (click)="openSettings('sharedfiles', {manage: true})"
+        [class.core-split-item-selected]="'sharedfiles' == selectedPage" detail>
+        <core-icon name="fa-folder" slot="start"></core-icon>
+        <ion-label>{{ 'core.sharedfiles.sharedfiles' | translate }}</ion-label>
+    </ion-item>
+    <ion-item (click)="openSettings('about')" [class.core-split-item-selected]="'about' == selectedPage" detail>
+        <core-icon name="fa-id-card" slot="start"></core-icon>
+        <ion-label>{{ 'core.settings.about' | translate }}</ion-label>
+    </ion-item>
+</ion-content>
