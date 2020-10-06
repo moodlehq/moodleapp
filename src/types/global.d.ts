@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Prevents Angular change detection from
- * running with certain Web Component callbacks
- */
+import '';
 
-// eslint-disable-next-line no-underscore-dangle
-window.__Zone_disable_customElements = true;
+declare global {
+
+    interface Window {
+
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        __Zone_disable_customElements: boolean;
+
+    }
+
+}

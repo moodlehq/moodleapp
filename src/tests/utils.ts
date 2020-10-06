@@ -14,8 +14,9 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA, Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/compiler/src/core';
 
-export async function prepareComponentTest(component: any): Promise<void> {
+export async function prepareComponentTest(component: Type<Component>): Promise<void> {
     TestBed.configureTestingModule({
         declarations: [component],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],

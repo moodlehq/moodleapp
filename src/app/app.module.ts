@@ -96,9 +96,7 @@ import { setSingletonsInjector } from '@singletons/core.singletons';
     bootstrap: [AppComponent],
 })
 export class AppModule {
-    constructor(injector: Injector,
-            platform: Platform,
-            ) {
+    constructor(injector: Injector, platform: Platform) {
 
         // Set the injector.
         setSingletonsInjector(injector);
