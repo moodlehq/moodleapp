@@ -1,0 +1,52 @@
+// TODO ionic 5
+:host-context([dir=rtl]) ion-icon {
+    &.core-icon-dir-flip,
+    &.fa-caret-right,
+    &.ion-md-send, &.ion-ios-send {
+      -webkit-transform: scale(-1, 1);
+      transform: scale(-1, 1);
+    }
+}
+
+// Slash
+@font-face {
+  font-family: "Moodle Slash Icon";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/assets/fonts/slash-icon.woff") format("woff");
+}
+
+:host {
+  &.fa {
+    font-size: 24px;
+  }
+
+  // Center font awesome icons
+  &.fa::before {
+    width: 1em;
+    height: 1em;
+    text-align: center;
+  }
+
+  &.icon-slash {
+    position: relative;
+    &::after {
+      content: "/";
+      font-family: "Moodle Slash Icon";
+      font-size: 0.75em;
+      margin-top: 0.125em;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: var(--ion-color-danger);
+    }
+
+    &.fa::after {
+      font-size: 1em;
+      margin-top: 0;
+    }
+  }
+}
