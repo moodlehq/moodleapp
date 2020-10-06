@@ -25,7 +25,8 @@
       "@directives/*": ["app/directives/*"],
       "@pipes/*": ["app/pipes/*"],
       "@services/*": ["app/services/*"],
-      "@singletons/*": ["app/singletons/*"]
+      "@singletons/*": ["app/singletons/*"],
+      "@tests/*": ["tests/*"]
     }
   },
   "angularCompilerOptions": {

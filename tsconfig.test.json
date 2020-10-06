@@ -1,8 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": [],
+    "esModuleInterop": true,
+    "outDir": "./out-tsc/tests",
+    "types": [
+      "jest",
+      "node"
+    ],
     "paths": {
       "@/*": ["*"],
       "@addon/*": ["app/addon/*"],
@@ -13,18 +17,17 @@
       "@directives/*": ["app/directives/*"],
       "@pipes/*": ["app/pipes/*"],
       "@services/*": ["app/services/*"],
-      "@singletons/*": ["app/singletons/*"]
+      "@singletons/*": ["app/singletons/*"],
+      "@tests/*": ["tests/*"]
     }
   },
   "files": [
-    "src/main.ts",
+    "src/tests/setup.ts",
     "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
-  ],
-  "exclude": [
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/**/*.d.ts",
+    "src/tests/**/*.ts"
   ]
 }
