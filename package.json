@@ -65,6 +65,6 @@
     "typescript": "~3.9.5"
   },
   "engines": {
-    "node": ">=11.x"
+    "node": ">=12.x"
   }
 }
