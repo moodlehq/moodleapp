@@ -1,9 +1,13 @@
 // Ionic Variables and Theming. For more info, please see:
 // http://ionicframework.com/docs/theming/
 
+@import "custom.scss";
+
 /** Ionic CSS Variables **/
 :root {
-  --ion-color-primary: var(--bma-core-color, #f98012);
+  --core-color: var(--custom-main-color, #f98012);
+
+  --ion-color-primary: var(--core-color);
   --ion-color-primary-rgb: 249,128,18;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255,255,255;
@@ -79,7 +83,6 @@
     --background: #626262;
     --color: #ffffff;
   }
-
 
   ion-toolbar {
     --color: var(--ion-color-primary-contrast);
