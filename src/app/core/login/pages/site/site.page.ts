@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 
-import { IonicModule } from '@ionic/angular';
-
-import { CoreLoginRoutingModule } from './login-routing.module';
-import { CoreLoginInitPage } from './pages/init/init.page';
-import { CoreLoginSitePage } from './pages/site/site.page';
-
-
-@NgModule({
-    imports: [
-        CommonModule,
-        IonicModule,
-        CoreLoginRoutingModule,
-    ],
-    declarations: [
-        CoreLoginInitPage,
-        CoreLoginSitePage,
-    ],
+/**
+ * Page that displays a "splash screen" while the app is being initialized.
+ */
+@Component({
+    selector: 'page-core-login-site',
+    templateUrl: 'site.html',
+    styleUrls: ['site.scss'],
 })
-export class CoreLoginModule {}
+export class CoreLoginSitePage implements OnInit {
+
+    /**
+     * Initialize the component.
+     */
+    ngOnInit(): void {
+
+    }
+}

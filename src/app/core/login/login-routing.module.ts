@@ -14,12 +14,18 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { CoreLoginInitPage } from './pages/init/init.page';
+import { CoreLoginSitePage } from './pages/site/site.page';
 
 const routes: Routes = [
     {
         path: '',
         component: CoreLoginInitPage,
+    },
+    {
+        path: 'site',
+        component: CoreLoginSitePage,
     },
 ];
 
