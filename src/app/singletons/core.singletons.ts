@@ -12,9 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector } from '@angular/core';
+import { Injector, NgZone as NgZoneService } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { SplashScreen as SplashScreenPlugin } from '@ionic-native/splash-screen/ngx';
+import { Platform as PlatformService } from '@ionic/angular';
+
+import { Clipboard as ClipboardService } from '@ionic-native/clipboard/ngx';
+import { Diagnostic as DiagnosticService } from '@ionic-native/diagnostic/ngx';
+import { Device as DeviceService } from '@ionic-native/device/ngx';
+import { File as FileService } from '@ionic-native/file/ngx';
+import { FileOpener as FileOpenerService } from '@ionic-native/file-opener/ngx';
+import { FileTransfer as FileTransferService } from '@ionic-native/file-transfer/ngx';
+import { Geolocation as GeolocationService } from '@ionic-native/geolocation/ngx';
+import { Globalization as GlobalizationService } from '@ionic-native/globalization/ngx';
+import { InAppBrowser as InAppBrowserService } from '@ionic-native/in-app-browser/ngx';
+import { Keyboard as KeyboardService } from '@ionic-native/keyboard/ngx';
+import { LocalNotifications as LocalNotificationsService } from '@ionic-native/local-notifications/ngx';
+import { Network as NetworkService } from '@ionic-native/network/ngx';
+import { Push as PushService } from '@ionic-native/push/ngx';
+import { QRScanner as QRScannerService } from '@ionic-native/qr-scanner/ngx';
+import { StatusBar as StatusBarService } from '@ionic-native/status-bar/ngx';
+import { SplashScreen as SplashScreenService } from '@ionic-native/splash-screen/ngx';
+import { SQLite as SQLiteService } from '@ionic-native/sqlite/ngx';
+import { WebIntent as WebIntentService } from '@ionic-native/web-intent/ngx';
+import { Zip as ZipService } from '@ionic-native/zip/ngx';
+
+import { TranslateService } from '@ngx-translate/core';
 
 import { CoreSingletonsFactory, CoreInjectionToken, CoreSingletonClass } from '@classes/singletons-factory';
 
@@ -39,4 +62,31 @@ export function makeSingleton<Service>(injectionToken: CoreInjectionToken<Servic
     return factory.makeSingleton(injectionToken);
 }
 
-export class SplashScreen extends makeSingleton(SplashScreenPlugin) {}
+// Convert ionic-native services to singleton.
+export class Clipboard extends makeSingleton(ClipboardService) {}
+export class Device extends makeSingleton(DeviceService) {}
+export class Diagnostic extends makeSingleton(DiagnosticService) {}
+export class File extends makeSingleton(FileService) {}
+export class FileOpener extends makeSingleton(FileOpenerService) {}
+export class FileTransfer extends makeSingleton(FileTransferService) {}
+export class Geolocation extends makeSingleton(GeolocationService) {}
+export class Globalization extends makeSingleton(GlobalizationService) {}
+export class InAppBrowser extends makeSingleton(InAppBrowserService) {}
+export class Keyboard extends makeSingleton(KeyboardService) {}
+export class LocalNotifications extends makeSingleton(LocalNotificationsService) {}
+export class Network extends makeSingleton(NetworkService) {}
+export class Push extends makeSingleton(PushService) {}
+export class QRScanner extends makeSingleton(QRScannerService) {}
+export class StatusBar extends makeSingleton(StatusBarService) {}
+export class SplashScreen extends makeSingleton(SplashScreenService) {}
+export class SQLite extends makeSingleton(SQLiteService) {}
+export class WebIntent extends makeSingleton(WebIntentService) {}
+export class Zip extends makeSingleton(ZipService) {}
+
+// Convert some Angular and Ionic injectables to singletons.
+export class NgZone extends makeSingleton(NgZoneService) {}
+export class Http extends makeSingleton(HttpClient) {}
+export class Platform extends makeSingleton(PlatformService) {}
+
+// Convert external libraries injectables.
+export class Translate extends makeSingleton(TranslateService) {}

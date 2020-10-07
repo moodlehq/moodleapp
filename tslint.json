@@ -43,6 +43,7 @@
         ]
       }
     ],
+    "no-angle-bracket-type-assertion": false,
     "no-console": [
       true,
       "debug",
@@ -58,12 +59,15 @@
     ],
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
+    "no-shadowed-variable": false,
     "no-switch-case-fall-through": true,
+    "no-unused-expression": false,
     "no-var-requires": false,
     "object-literal-key-quotes": [
       true,
       "as-needed"
     ],
+    "prefer-for-of": false,
     "quotemark": [
       true,
       "single"
@@ -104,7 +108,8 @@
       "options": [
         "ban-keywords",
         "check-format",
-        "allow-pascal-case"
+        "allow-pascal-case",
+        "allow-leading-underscore"
       ]
     },
     "whitespace": {
