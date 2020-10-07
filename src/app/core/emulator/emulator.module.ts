@@ -69,6 +69,6 @@ import { Zip } from '@ionic-native/zip/ngx';
         StatusBar,
         WebIntent,
         Zip,
-    ]
+    ],
 })
 export class CoreEmulatorModule { }

@@ -28,6 +28,7 @@ export class CoreLoginSitePage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-
+        //
     }
+
 }

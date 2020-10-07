@@ -25,19 +25,22 @@ import { CoreLogger } from '@singletons/logger';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
+ *
  * @description
  * Each service or component should be responsible of creating their own database tables. Example:
  *
+ * ```ts
  * constructor(appProvider: CoreAppProvider) {
  *     this.appDB = appProvider.getDB();
  *     this.appDB.createTableFromSchema(this.tableSchema);
  * }
+ * ```
  */
 @Injectable()
 export class CoreAppProvider {
     protected DBNAME = 'MoodleMobile';
     protected db: SQLiteDB;
-    protected logger;
+    protected logger: CoreLogger;
     protected ssoAuthenticationPromise: Promise<any>;
     protected isKeyboardShown = false;
     protected _isKeyboardOpening = false;
@@ -567,18 +570,18 @@ export class CoreAppProvider {
      *
      * @return Object with siteid, state, params and timemodified.
      */
-    getRedirect(): CoreRedirectData {
+    getRedirect<Params extends Record<string, unknown> = Record<string, unknown>>(): CoreRedirectData<Params> {
         if (localStorage && localStorage.getItem) {
             try {
-                const data: CoreRedirectData = {
+                const paramsJson = localStorage.getItem('CoreRedirectParams');
+                const data: CoreRedirectData<Params> = {
                     siteId: localStorage.getItem('CoreRedirectSiteId'),
                     page: localStorage.getItem('CoreRedirectState'),
-                    params: localStorage.getItem('CoreRedirectParams'),
-                    timemodified: parseInt(localStorage.getItem('CoreRedirectTime'), 10)
+                    timemodified: parseInt(localStorage.getItem('CoreRedirectTime'), 10),
                 };
 
-                if (data.params) {
-                    data.params = JSON.parse(data.params);
+                if (paramsJson) {
+                    data.params = JSON.parse(paramsJson);
                 }
 
                 return data;
@@ -597,7 +600,7 @@ export class CoreAppProvider {
      * @param page Page to go.
      * @param params Page params.
      */
-    storeRedirect(siteId: string, page: string, params: any): void {
+    storeRedirect(siteId: string, page: string, params: Record<string, unknown>): void {
         if (localStorage && localStorage.setItem) {
             try {
                 localStorage.setItem('CoreRedirectSiteId', siteId);
@@ -704,7 +707,7 @@ export class CoreApp extends makeSingleton(CoreAppProvider) {}
 /**
  * Data stored for a redirect to another page/site.
  */
-export type CoreRedirectData = {
+export type CoreRedirectData<Params extends Record<string, unknown>> = {
     /**
      * ID of the site to load.
      */
@@ -718,7 +721,7 @@ export type CoreRedirectData = {
     /**
      * Params to pass to the page.
      */
-    params?: any;
+    params?: Params;
 
     /**
      * Timestamp when this redirect was last modified.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as moment from 'moment';
+import moment from 'moment';
 import { environment } from '@/environments/environment';
 
 /**
@@ -42,27 +42,33 @@ export class CoreLogger {
     static getInstance(className: string): CoreLogger {
         // Disable log on production.
         if (environment.production) {
-            /* tslint:next-line no-console */
+            // eslint-disable-next-line no-console
             console.warn('Log is disabled in production app');
 
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            const muted = () => {};
+
             return {
-                log: () => {},
-                info: () => {},
-                warn: () => {},
-                debug: () => {},
-                error: () => {},
+                log: muted,
+                info: muted,
+                warn: muted,
+                debug: muted,
+                error: muted,
             };
         }
 
         className = className || '';
 
-        /* tslint:disable no-console */
-
         return {
+            // eslint-disable-next-line no-console
             log: CoreLogger.prepareLogFn(console.log.bind(console), className),
+            // eslint-disable-next-line no-console
             info: CoreLogger.prepareLogFn(console.info.bind(console), className),
+            // eslint-disable-next-line no-console
             warn: CoreLogger.prepareLogFn(console.warn.bind(console), className),
+            // eslint-disable-next-line no-console
             debug: CoreLogger.prepareLogFn(console.debug.bind(console), className),
+            // eslint-disable-next-line no-console
             error: CoreLogger.prepareLogFn(console.error.bind(console), className),
         };
     }
@@ -87,4 +93,4 @@ export class CoreLogger {
 /**
  * Log function type.
  */
-type LogFunction = (...data: any[]) => void;
+type LogFunction = (...data: unknown[]) => void;

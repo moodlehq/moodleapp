@@ -71,9 +71,26 @@ module.exports = {
                     },
                 ],
                 '@typescript-eslint/member-ordering': 'error',
-                '@typescript-eslint/naming-convention': 'error',
+                '@typescript-eslint/naming-convention': [
+                    'error',
+                    {
+                        selector: 'property',
+                        modifiers: ['readonly'],
+                        format: ['UPPER_CASE'],
+                    },
+                    {
+                        selector: 'property',
+                        format: ['camelCase'],
+                    },
+                ],
                 '@typescript-eslint/no-empty-function': 'error',
-                '@typescript-eslint/no-empty-interface': 'error',
+                '@typescript-eslint/no-empty-interface': 'off',
+                '@typescript-eslint/no-explicit-any': [
+                    'warn',
+                    {
+                        fixToUnknown: true,
+                    },
+                ],
                 '@typescript-eslint/no-inferrable-types': [
                     'error',
                     {
@@ -113,15 +130,8 @@ module.exports = {
                     ],
                     1,
                 ],
-                'one-var': ['error', 'never'],
+                'arrow-body-style': ['error', 'as-needed'],
                 'comma-dangle': ['error', 'always-multiline'],
-                'capitalized-comments': [
-                    'error',
-                    'always',
-                    {
-                        ignoreConsecutiveComments: true,
-                    },
-                ],
                 'constructor-super': 'error',
                 'curly': 'error',
                 'default-case': 'error',
@@ -171,6 +181,7 @@ module.exports = {
                 'no-underscore-dangle': 'error',
                 'no-unused-labels': 'error',
                 'no-var': 'error',
+                'one-var': ['error', 'never'],
                 'padding-line-between-statements': [
                     'error',
                     {
@@ -181,9 +192,13 @@ module.exports = {
                 ],
                 'prefer-arrow/prefer-arrow-functions': [
                     'error',
-                    { allowStandaloneDeclarations: true },
+                    {
+                        singleReturnOnly: true,
+                        allowStandaloneDeclarations: true,
+                    },
                 ],
                 'prefer-const': 'error',
+                'prefer-spread': 'off',
                 'quote-props': [
                     'error',
                     'consistent-as-needed',

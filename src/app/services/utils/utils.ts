@@ -85,7 +85,7 @@ export class CoreUtilsProvider {
      * @param promises Promises.
      * @return Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
      */
-    allPromises(promises: Promise<any>[]): Promise<any> {
+    allPromises(promises: Promise<unknown>[]): Promise<void> {
         if (!promises || !promises.length) {
             return Promise.resolve();
         }
@@ -366,7 +366,7 @@ export class CoreUtilsProvider {
      *                            - blocking: Boolean. If promise should block the following.
      * @return Promise resolved when all promises are resolved.
      */
-    executeOrderedPromises(orderedPromisesData: any[]): Promise<any> {
+    executeOrderedPromises(orderedPromisesData: OrderedPromiseData[]): Promise<void> {
         const promises = [];
         let dependency = Promise.resolve();
 
@@ -377,17 +377,13 @@ export class CoreUtilsProvider {
 
             // Add the process to the dependency stack.
             promise = dependency.finally(() => {
-                let prom;
-
                 try {
-                    prom = data.func.apply(data.context, data.params || []);
+                    return data.function();
                 } catch (e) {
                     this.logger.error(e.message);
 
                     return;
                 }
-
-                return prom;
             });
             promises.push(promise);
 
@@ -1582,5 +1578,20 @@ export type PromiseDefer<T> = {
      *
      * @param reason The reject param.
      */
-    reject?: (reason?: any) => void;
+    reject?: (reason?: unknown) => void;
+};
+
+/**
+ * Data for each entry of executeOrderedPromises.
+ */
+export type OrderedPromiseData = {
+    /**
+     * Function to execute.
+     */
+    function: () => Promise<unknown>;
+
+    /**
+     * Whether the promise should block the following one.
+     */
+    blocking?: boolean;
 };

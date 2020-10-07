@@ -22,7 +22,7 @@ class CoreSingleton {}
 /**
  * Token that can be used to resolve instances from the injector.
  */
-export type CoreInjectionToken<Service> = Type<Service> | Type<any> | string;
+export type CoreInjectionToken<Service> = Type<Service> | Type<unknown> | string;
 
 /**
  * Singleton class created using the factory.
@@ -55,20 +55,20 @@ export class CoreSingletonsFactory {
      * provider was defined using a class or the string used in the `provide` key if it was defined using an object.
      */
     makeSingleton<Service>(injectionToken: CoreInjectionToken<Service>): CoreSingletonClass<Service> {
-        // tslint:disable: no-this-assignment
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const factory = this;
 
         return class {
 
-            private static _instance: Service;
+            private static serviceInstance: Service;
 
             static get instance(): Service {
                 // Initialize instances lazily.
-                if (!this._instance) {
-                    this._instance = factory.injector.get(injectionToken);
+                if (!this.serviceInstance) {
+                    this.serviceInstance = factory.injector.get(injectionToken);
                 }
 
-                return this._instance;
+                return this.serviceInstance;
             }
 
         };

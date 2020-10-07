@@ -50,8 +50,8 @@ export type CoreInitHandler = {
  */
 @Injectable()
 export class CoreInitDelegate {
-    static DEFAULT_PRIORITY = 100; // Default priority for init processes.
-    static MAX_RECOMMENDED_PRIORITY = 600;
+    static readonly DEFAULT_PRIORITY = 100; // Default priority for init processes.
+    static readonly MAX_RECOMMENDED_PRIORITY = 600;
 
     protected initProcesses = {};
     protected logger: CoreLogger;
@@ -77,16 +77,12 @@ export class CoreInitDelegate {
         for (const name in this.initProcesses) {
             ordered.push(this.initProcesses[name]);
         }
-        ordered.sort((a, b) => {
-            return b.priority - a.priority;
-        });
+        ordered.sort((a, b) => b.priority - a.priority);
 
-        ordered = ordered.map((data: CoreInitHandler) => {
-            return {
-                func: this.prepareProcess.bind(this, data),
-                blocking: !!data.blocking,
-            };
-        });
+        ordered = ordered.map((data: CoreInitHandler) => ({
+            func: this.prepareProcess.bind(this, data),
+            blocking: !!data.blocking,
+        }));
 
         // Execute all the processes in order to solve dependencies.
         CoreUtils.instance.executeOrderedPromises(ordered).finally(this.readiness.resolve);
@@ -115,20 +111,14 @@ export class CoreInitDelegate {
      * @param data The data of the process.
      * @return Promise of the process.
      */
-    protected prepareProcess(data: CoreInitHandler): Promise<any> {
-        let promise;
-
+    protected async prepareProcess(data: CoreInitHandler): Promise<void> {
         this.logger.debug(`Executing init process '${data.name}'`);
 
         try {
-            promise = data.load();
+            await data.load();
         } catch (e) {
             this.logger.error('Error while calling the init process \'' + data.name + '\'. ' + e);
-
-            return;
         }
-
-        return promise;
     }
 
     /**
@@ -136,13 +126,13 @@ export class CoreInitDelegate {
      *
      * @return Resolved when the app is initialised. Never rejected.
      */
-    ready(): Promise<any> {
+    async ready(): Promise<void> {
         if (typeof this.readiness == 'undefined') {
             // Prevent race conditions if this is called before executeInitProcesses.
             this.initReadiness();
         }
 
-        return this.readiness.promise;
+        await this.readiness.promise;
     }
 
     /**

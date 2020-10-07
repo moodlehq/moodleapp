@@ -17,7 +17,6 @@ import { Router } from '@angular/router';
 
 import { CoreApp } from '@services/app';
 import { CoreInit } from '@services/init';
-import { CoreConstants } from '@core/constants';
 import { SplashScreen } from '@singletons/core.singletons';
 
 /**
@@ -42,7 +41,7 @@ export class CoreLoginInitPage implements OnInit {
             const redirectData = CoreApp.instance.getRedirect();
             if (redirectData.siteId) {
                 // Unset redirect data.
-                CoreApp.instance.storeRedirect('', '', '');
+                CoreApp.instance.storeRedirect('', '', {});
 
                 // Only accept the redirect if it was stored less than 20 seconds ago.
                 if (Date.now() - redirectData.timemodified < 20000) {
