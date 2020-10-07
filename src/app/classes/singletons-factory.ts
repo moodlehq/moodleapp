@@ -27,7 +27,10 @@ export type CoreInjectionToken<Service> = Type<Service> | Type<unknown> | string
 /**
  * Singleton class created using the factory.
  */
-export type CoreSingletonClass<Service> = typeof CoreSingleton & { instance: Service };
+export type CoreSingletonClass<Service> = typeof CoreSingleton & {
+    instance: Service;
+    setInstance(instance: Service): void;
+};
 
 /**
  * Factory used to create CoreSingleton classes that get instances from an injector.
@@ -69,6 +72,10 @@ export class CoreSingletonsFactory {
                 }
 
                 return this.serviceInstance;
+            }
+
+            static setInstance(instance: Service): void {
+                this.serviceInstance = instance;
             }
 
         };

@@ -14,15 +14,61 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA, Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/compiler/src/core';
+import { Router } from '@angular/router';
+import { CoreSingletonClass } from '@app/classes/singletons-factory';
 
-export async function prepareComponentTest(component: Type<Component>): Promise<void> {
+export interface ComponentTestMocks {
+    //
+};
+
+export interface PageTestMocks extends ComponentTestMocks {
+    router: Router;
+}
+
+export function createMock<T>(methods: string[] = [], properties: Record<string, unknown> = {}): T {
+    const mockObject = properties;
+
+    for (const method of methods) {
+        mockObject[method] = jest.fn();
+    }
+
+    return mockObject as T;
+}
+
+export function mockSingleton(
+    singletonClass: CoreSingletonClass<unknown>,
+    methods: string[] = [],
+    properties: Record<string, unknown> = {},
+): void {
+    singletonClass.setInstance(createMock(methods, properties));
+}
+
+export async function prepareComponentTest<T>(component: Type<T>, providers: unknown[] = []): Promise<ComponentTestMocks> {
     TestBed.configureTestingModule({
         declarations: [component],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        providers,
     });
 
     await TestBed.compileComponents();
+
+    return {};
+}
+
+export async function preparePageTest<T>(component: Type<T>, providers: unknown[] = []): Promise<PageTestMocks> {
+    const mocks = {
+        router: createMock<Router>(['navigate']),
+    };
+
+    const componentTestMocks = await prepareComponentTest(component, [
+        ...providers,
+        { provide: Router, useValue: mocks.router },
+    ]);
+
+    return {
+        ...componentTestMocks,
+        ...mocks,
+    };
 }
 
 export function createComponent<T>(component: Type<T>): ComponentFixture<T> {

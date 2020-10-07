@@ -12,19 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createComponent, prepareComponentTest } from '@/tests/utils';
-
+import { CoreInit } from '@services/init';
 import { CoreLoginInitPage } from '@core/login/pages/init/init.page';
+import { CoreApp } from '@/app/services/app';
+
+import { createComponent, preparePageTest, PageTestMocks, mockSingleton } from '@/tests/utils';
 
 describe('CoreLogin Init Page', () => {
 
-    beforeEach(() => prepareComponentTest(CoreLoginInitPage));
+    let mocks: PageTestMocks;
+
+    beforeEach(async () => {
+        const initPromise = Promise.resolve();
+
+        mockSingleton(CoreInit, [], { ready: () => initPromise });
+        mockSingleton(CoreApp, [], { getRedirect: () => ({}) });
+
+        mocks = await preparePageTest(CoreLoginInitPage);
+    });
 
     it('should render', () => {
         const fixture = createComponent(CoreLoginInitPage);
 
         expect(fixture.debugElement.componentInstance).toBeTruthy();
         expect(fixture.nativeElement.querySelector('ion-spinner')).toBeTruthy();
+    });
+
+    it('navigates to site page after loading', async () => {
+        const fixture = createComponent(CoreLoginInitPage);
+
+        fixture.componentInstance.ngOnInit();
+        await CoreInit.instance.ready();
+
+        expect(mocks.router.navigate).toHaveBeenCalledWith(['/login/site']);
     });
 
 });
