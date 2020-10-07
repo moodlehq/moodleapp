@@ -109,6 +109,18 @@ module.exports = {
                     'always',
                 ],
                 '@typescript-eslint/type-annotation-spacing': 'error',
+                '@typescript-eslint/typedef': [
+                    'error',
+                    {
+                        arrayDestructuring: false,
+                        arrowParameter: false,
+                        memberVariableDeclaration: true,
+                        objectDestructuring: false,
+                        parameter: true,
+                        propertyDeclaration: true,
+                        variableDeclaration: false,
+                    },
+                ],
                 '@typescript-eslint/unified-signatures': 'error',
                 'header/header': [
                     2,
@@ -131,6 +143,7 @@ module.exports = {
                     1,
                 ],
                 'arrow-body-style': ['error', 'as-needed'],
+                'array-bracket-spacing': ['error', 'never'],
                 'comma-dangle': ['error', 'always-multiline'],
                 'constructor-super': 'error',
                 'curly': 'error',
@@ -156,6 +169,7 @@ module.exports = {
                     'error',
                     'unix',
                 ],
+                'lines-between-class-members': ['error', 'always'],
                 'max-len': [
                     'error',
                     {
@@ -181,7 +195,16 @@ module.exports = {
                 'no-underscore-dangle': 'error',
                 'no-unused-labels': 'error',
                 'no-var': 'error',
+                'object-curly-spacing': ['error', 'always'],
                 'one-var': ['error', 'never'],
+                'padded-blocks': [
+                    'error',
+                    {
+                        classes: 'always',
+                        blocks: 'never',
+                        switches: 'never',
+                    },
+                ],
                 'padding-line-between-statements': [
                     'error',
                     {
