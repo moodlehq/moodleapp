@@ -2,7 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": [],
+    "types": [
+      "cordova",
+      "cordova-plugin-file-transfer",
+      "node"
+    ],
     "paths": {
       "@/*": ["*"],
       "@addon/*": ["app/addon/*"],

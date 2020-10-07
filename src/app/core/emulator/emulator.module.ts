@@ -15,7 +15,25 @@
 import { NgModule } from '@angular/core';
 
 // Ionic Native services.
+import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { Device } from '@ionic-native/device/ngx';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { File } from '@ionic-native/file/ngx';
+import { FileOpener } from '@ionic-native/file-opener/ngx';
+import { FileTransfer } from '@ionic-native/file-transfer/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Globalization } from '@ionic-native/globalization/ngx';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { Network } from '@ionic-native/network/ngx';
+import { Push } from '@ionic-native/push/ngx';
+import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { SQLite } from '@ionic-native/sqlite/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { WebIntent } from '@ionic-native/web-intent/ngx';
+import { Zip } from '@ionic-native/zip/ngx';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -32,7 +50,25 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
     imports: [
     ],
     providers: [
+        Clipboard,
+        Device,
+        Diagnostic,
+        File,
+        FileOpener,
+        FileTransfer,
+        Geolocation,
+        Globalization,
+        InAppBrowser,
+        Keyboard,
+        LocalNotifications,
+        Network,
+        Push,
+        QRScanner,
         SplashScreen,
+        SQLite,
+        StatusBar,
+        WebIntent,
+        Zip,
     ]
 })
 export class CoreEmulatorModule { }
