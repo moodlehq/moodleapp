@@ -16,7 +16,7 @@ import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy, Platform } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -29,17 +29,17 @@ import { CoreDbProvider } from '@services/db';
 import { CoreEventsProvider } from '@services/events';
 import { CoreFileHelperProvider } from '@services/file-helper';
 import { CoreFileSessionProvider } from '@services/file-session';
-import { CoreFileProvider } from '@services/file';
+import { CoreFileProvider, CoreFile } from '@services/file';
 import { CoreFilepoolProvider } from '@services/filepool';
 import { CoreGeolocationProvider } from '@services/geolocation';
 import { CoreGroupsProvider } from '@services/groups';
-import { CoreInitDelegate } from '@services/init';
+import { CoreInitDelegate, CoreInit } from '@services/init';
 import { CoreLangProvider } from '@services/lang';
 import { CoreLocalNotificationsProvider } from '@services/local-notifications';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
-import { CoreSitesProvider } from '@services/sites';
+import { CoreSitesProvider, CoreSites } from '@services/sites';
 import { CoreSyncProvider } from '@services/sync';
-import { CoreUpdateManager } from '@services/update-manager';
+import { CoreUpdateManagerProvider, CoreUpdateManager } from '@services/update-manager';
 import { CoreWSProvider } from '@services/ws';
 import { CoreDomUtilsProvider } from '@services/utils/dom';
 import { CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -83,7 +83,7 @@ import { setSingletonsInjector } from '@singletons/core.singletons';
         CorePluginFileDelegate,
         CoreSitesProvider,
         CoreSyncProvider,
-        CoreUpdateManager,
+        CoreUpdateManagerProvider,
         CoreWSProvider,
         CoreDomUtilsProvider,
         CoreIframeUtilsProvider,
@@ -97,13 +97,42 @@ import { setSingletonsInjector } from '@singletons/core.singletons';
 })
 export class AppModule {
     constructor(injector: Injector,
-            initDelegate: CoreInitDelegate,
+            platform: Platform,
             ) {
 
         // Set the injector.
         setSingletonsInjector(injector);
 
+        // Register a handler for platform ready.
+        CoreInit.instance.registerProcess({
+            name: 'CorePlatformReady',
+            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 400,
+            blocking: true,
+            load: async () => {
+                await platform.ready();
+            },
+        });
+
+        // Register the update manager as an init process.
+        CoreInit.instance.registerProcess(CoreUpdateManager.instance);
+
+        // Restore the user's session during the init process.
+        CoreInit.instance.registerProcess({
+            name: 'CoreRestoreSession',
+            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 200,
+            blocking: false,
+            load: CoreSites.instance.restoreSession.bind(CoreSites.instance),
+        });
+
+        // Register clear app tmp folder.
+        CoreInit.instance.registerProcess({
+            name: 'CoreClearTmpFolder',
+            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 150,
+            blocking: false,
+            load: CoreFile.instance.clearTmpFolder.bind(CoreFile.instance),
+        });
+
         // Execute the init processes.
-        initDelegate.executeInitProcesses();
+        CoreInit.instance.executeInitProcesses();
     }
 }
