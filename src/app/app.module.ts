@@ -21,8 +21,32 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+// Import core services.
 import { CoreAppProvider } from '@services/app';
+import { CoreConfigProvider } from '@services/config';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreDbProvider } from '@services/db';
+import { CoreEventsProvider } from '@services/events';
+import { CoreFileHelperProvider } from '@services/file-helper';
+import { CoreFileSessionProvider } from '@services/file-session';
+import { CoreFileProvider } from '@services/file';
+import { CoreFilepoolProvider } from '@services/filepool';
+import { CoreGeolocationProvider } from '@services/geolocation';
+import { CoreGroupsProvider } from '@services/groups';
 import { CoreInitDelegate } from '@services/init';
+import { CoreLangProvider } from '@services/lang';
+import { CoreLocalNotificationsProvider } from '@services/local-notifications';
+import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
+import { CoreSitesProvider } from '@services/sites';
+import { CoreSyncProvider } from '@services/sync';
+import { CoreUpdateManager } from '@services/update-manager';
+import { CoreWSProvider } from '@services/ws';
+import { CoreDomUtilsProvider } from '@services/utils/dom';
+import { CoreIframeUtilsProvider } from '@services/utils/iframe';
+import { CoreMimetypeUtilsProvider } from '@services/utils/mimetype';
+import { CoreTextUtilsProvider } from '@services/utils/text';
+import { CoreTimeUtilsProvider } from '@services/utils/time';
+import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
 
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
@@ -43,7 +67,30 @@ import { setSingletonsInjector } from '@singletons/core.singletons';
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         CoreAppProvider,
+        CoreConfigProvider,
+        CoreCronDelegate,
+        CoreDbProvider,
+        CoreEventsProvider,
+        CoreFileHelperProvider,
+        CoreFileSessionProvider,
+        CoreFileProvider,
+        CoreFilepoolProvider,
+        CoreGeolocationProvider,
+        CoreGroupsProvider,
         CoreInitDelegate,
+        CoreLangProvider,
+        CoreLocalNotificationsProvider,
+        CorePluginFileDelegate,
+        CoreSitesProvider,
+        CoreSyncProvider,
+        CoreUpdateManager,
+        CoreWSProvider,
+        CoreDomUtilsProvider,
+        CoreIframeUtilsProvider,
+        CoreMimetypeUtilsProvider,
+        CoreTextUtilsProvider,
+        CoreTimeUtilsProvider,
+        CoreUrlUtilsProvider,
         CoreUtilsProvider,
     ],
     bootstrap: [AppComponent],
