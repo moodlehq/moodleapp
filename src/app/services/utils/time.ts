@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import * as moment from 'moment';
+import moment, { LongDateFormatKey } from 'moment';
 import { CoreConstants } from '@core/constants';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 
@@ -24,7 +24,7 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 @Injectable()
 export class CoreTimeUtilsProvider {
 
-    protected FORMAT_REPLACEMENTS = { // To convert PHP strf format to Moment format.
+    protected static readonly FORMAT_REPLACEMENTS = { // To convert PHP strf format to Moment format.
         '%a': 'ddd',
         '%A': 'dddd',
         '%d': 'DD',
@@ -65,7 +65,7 @@ export class CoreTimeUtilsProvider {
         '%x': 'L',
         '%n': '\n',
         '%t': '\t',
-        '%%': '%'
+        '%%': '%',
     };
 
     /**
@@ -97,7 +97,8 @@ export class CoreTimeUtilsProvider {
                     converted += ']';
                 }
 
-                converted += typeof this.FORMAT_REPLACEMENTS[char] != 'undefined' ? this.FORMAT_REPLACEMENTS[char] : char;
+                converted += typeof CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] != 'undefined' ?
+                    CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] : char;
             } else {
                 // Not a PHP format. We need to escape them, otherwise the letters could be confused with Moment formats.
                 if (!escaping) {
@@ -129,7 +130,7 @@ export class CoreTimeUtilsProvider {
         }
 
         // The component ion-datetime doesn't support escaping characters ([]), so we remove them.
-        let fixed = format.replace(/[\[\]]/g, '');
+        let fixed = format.replace(/[[\]]/g, '');
 
         if (fixed.indexOf('A') != -1) {
             // Do not use am/pm format because there is a bug in ion-datetime.
@@ -250,7 +251,6 @@ export class CoreTimeUtilsProvider {
      * @return Duration in a short human readable format.
      */
     formatDurationShort(duration: number): string {
-
         const minutes = Math.floor(duration / 60);
         const seconds = duration - minutes * 60;
         const durations = [];
@@ -346,7 +346,7 @@ export class CoreTimeUtilsProvider {
      * @param localizedFormat Format to use.
      * @return Localized ISO format
      */
-    getLocalizedDateFormat(localizedFormat: any): string {
+    getLocalizedDateFormat(localizedFormat: LongDateFormatKey): string {
         return moment.localeData().longDateFormat(localizedFormat);
     }
 
@@ -366,6 +366,7 @@ export class CoreTimeUtilsProvider {
             return moment().startOf('day').unix();
         }
     }
+
 }
 
 export class CoreTimeUtils extends makeSingleton(CoreTimeUtilsProvider) {}
