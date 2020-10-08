@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton } from '@singletons/core.singletons';
 
@@ -50,12 +50,13 @@ export type CoreInitHandler = {
  */
 @Injectable()
 export class CoreInitDelegate {
+
     static readonly DEFAULT_PRIORITY = 100; // Default priority for init processes.
     static readonly MAX_RECOMMENDED_PRIORITY = 600;
 
-    protected initProcesses = {};
+    protected initProcesses: { [s: string]: CoreInitHandler } = {};
     protected logger: CoreLogger;
-    protected readiness;
+    protected readiness: CoreInitReadinessPromiseDefer<void>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreInitDelegate');
@@ -163,6 +164,14 @@ export class CoreInitDelegate {
         this.logger.log(`Registering process '${handler.name}'.`);
         this.initProcesses[handler.name] = handler;
     }
+
 }
 
 export class CoreInit extends makeSingleton(CoreInitDelegate) {}
+
+/**
+ * Deferred promise for init readiness.
+ */
+type CoreInitReadinessPromiseDefer<T> = PromiseDefer<T> & {
+    resolved?: boolean; // If true, readiness have been resolved.
+};
