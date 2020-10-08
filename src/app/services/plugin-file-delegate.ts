@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { FileEntry } from '@ionic-native/file';
 
-import { CoreFilepool } from '@services/filepool';
+import { CoreFilepool, CoreFilepoolOnProgressCallback } from '@services/filepool';
 import { CoreWSExternalFile } from '@services/ws';
 import { CoreConstants } from '@core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
@@ -26,6 +26,7 @@ import { makeSingleton } from '@singletons/core.singletons';
  */
 @Injectable()
 export class CorePluginFileDelegate extends CoreDelegate {
+
     protected handlerNameProperty = 'component';
 
     constructor() {
@@ -40,14 +41,12 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<any> {
-        const handler = this.getHandlerForFile({fileurl: fileUrl});
+    async fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<void> {
+        const handler = this.getHandlerForFile({ fileurl: fileUrl });
 
         if (handler && handler.fileDeleted) {
-            return handler.fileDeleted(fileUrl, path, siteId);
+            await handler.fileDeleted(fileUrl, path, siteId);
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -71,9 +70,8 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    protected async getHandlerDownloadableFile(file: CoreWSExternalFile, handler: CorePluginFileHandler, siteId?: string)
-            : Promise<CoreWSExternalFile> {
-
+    protected async getHandlerDownloadableFile(file: CoreWSExternalFile, handler: CorePluginFileHandler, siteId?: string):
+            Promise<CoreWSExternalFile> {
         const isDownloadable = await this.isFileDownloadable(file, siteId);
 
         if (!isDownloadable.downloadable) {
@@ -132,7 +130,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number, total: boolean }> {
+    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number; total: boolean }> {
         const filteredFiles = [];
 
         await Promise.all(files.map(async (file) => {
@@ -153,10 +151,10 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number, total: boolean }> {
+    async getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number; total: boolean }> {
         const result = {
             size: 0,
-            total: true
+            total: true,
         };
 
         await Promise.all(files.map(async (file) => {
@@ -231,7 +229,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise with the data.
      */
-    isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
+    async isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
         const handler = this.getHandlerForFile(file);
 
         if (handler && handler.isFileDownloadable) {
@@ -239,7 +237,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
         }
 
         // Default to true.
-        return Promise.resolve({downloadable: true});
+        return { downloadable: true };
     }
 
     /**
@@ -272,15 +270,15 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<any> {
-        const handler = this.getHandlerForFile({fileurl: fileUrl});
+    async treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: CoreFilepoolOnProgressCallback):
+            Promise<void> {
+        const handler = this.getHandlerForFile({ fileurl: fileUrl });
 
         if (handler && handler.treatDownloadedFile) {
-            return handler.treatDownloadedFile(fileUrl, file, siteId, onProgress);
+            await handler.treatDownloadedFile(fileUrl, file, siteId, onProgress);
         }
-
-        return Promise.resolve();
     }
+
 }
 
 export class CorePluginFile extends makeSingleton(CorePluginFileDelegate) {}
@@ -320,7 +318,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    fileDeleted?(fileUrl: string, path: string, siteId?: string): Promise<any>;
+    fileDeleted?(fileUrl: string, path: string, siteId?: string): Promise<void>;
 
     /**
      * Check whether a file can be downloaded. If so, return the file to download.
@@ -375,7 +373,8 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile?(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<any>;
+    treatDownloadedFile?(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: CoreFilepoolOnProgressCallback):
+        Promise<void>;
 }
 
 /**
