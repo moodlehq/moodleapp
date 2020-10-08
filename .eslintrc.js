@@ -56,7 +56,7 @@ module.exports = {
                         accessibility: 'no-public',
                     },
                 ],
-                '@typescript-eslint/indent': 'error',
+                '@typescript-eslint/indent': 'off',
                 '@typescript-eslint/member-delimiter-style': [
                     'error',
                     {
@@ -169,7 +169,6 @@ module.exports = {
                     'error',
                     'unix',
                 ],
-                'lines-between-class-members': ['error', 'always'],
                 'max-len': [
                     'error',
                     {

@@ -13,36 +13,54 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { FileEntry } from '@ionic-native/file';
 
 import { CoreFile } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, Translate, Http } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
+import { CoreWSExternalFile } from '@services/ws';
+
+interface MimeTypeInfo {
+    type: string;
+    icon?: string;
+    groups?: string[];
+
+    // eslint-disable-next-line id-blacklist
+    string?: string;
+}
+
+interface MimeTypeGroupInfo {
+    mimetypes: string[];
+    extensions: string[];
+}
+
+const EXTENSION_REGEX = /^[a-z0-9]+$/;
 
 /*
  * "Utils" service with helper functions for mimetypes and extensions.
  */
 @Injectable()
 export class CoreMimetypeUtilsProvider {
+
     protected logger: CoreLogger;
-    protected extToMime = {}; // Object to map extensions -> mimetypes.
-    protected mimeToExt = {}; // Object to map mimetypes -> extensions.
-    protected groupsMimeInfo = {}; // Object to hold extensions and mimetypes that belong to a certain "group" (audio, video, ...).
-    protected extensionRegex = /^[a-z0-9]+$/;
+    protected extToMime: Record<string, MimeTypeInfo> = {};
+    protected mimeToExt: Record<string, string[]> = {};
+    protected groupsMimeInfo: Record<string, MimeTypeGroupInfo> = {};
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreMimetypeUtilsProvider');
 
-        Http.instance.get('assets/exttomime.json').subscribe((result) => {
+        Http.instance.get('assets/exttomime.json').subscribe((result: Record<string, MimeTypeInfo>) => {
             this.extToMime = result;
-        }, (err) => {
+        }, () => {
             // Error, shouldn't happen.
         });
 
-        Http.instance.get('assets/mimetoext.json').subscribe((result) => {
+        Http.instance.get('assets/mimetoext.json').subscribe((result: Record<string, string[]>) => {
             this.mimeToExt = result;
-        }, (err) => {
-            // Error, shouldn't happen.
+        }, () => {
+            // Error, shouldn't happen
         });
     }
 
@@ -148,31 +166,36 @@ export class CoreMimetypeUtilsProvider {
      * Set the embed type to display an embedded file and mimetype if not found.
      *
      * @param file File object.
-     * @paran path Alternative path that will override fileurl from file object.
+     * @param path Alternative path that will override fileurl from file object.
      */
-    getEmbeddedHtml(file: any, path?: string): string {
-        let ext;
-        const filename = file.filename || file.name;
+    getEmbeddedHtml(file: CoreWSExternalFile | FileEntry, path?: string): string {
+        const filename = 'isFile' in file ? (file as FileEntry).name : file.filename;
+        const extension = !('isFile' in file) && file.mimetype ? this.getExtension(file.mimetype) : this.getFileExtension(filename);
+        const mimeType = !('isFile' in file) && file.mimetype ? file.mimetype : this.getMimeType(extension);
 
-        if (file.mimetype) {
-            ext = this.getExtension(file.mimetype);
-        } else {
-            ext = this.getFileExtension(filename);
-            file.mimetype = this.getMimeType(ext);
-        }
+        // @todo linting: See if this can be removed
+        (file as CoreWSExternalFile).mimetype = mimeType;
 
-        if (this.canBeEmbedded(ext)) {
-            file.embedType = this.getExtensionType(ext);
+        if (this.canBeEmbedded(extension)) {
+            const embedType = this.getExtensionType(extension);
 
-            path = CoreFile.instance.convertFileSrc(path || file.fileurl || file.url || (file.toURL && file.toURL()));
+            // @todo linting: See if this can be removed
+            (file as { embedType: string }).embedType = embedType;
 
-            if (file.embedType == 'image') {
-                return '<img src="' + path + '">';
-            }
-            if (file.embedType == 'audio' || file.embedType == 'video') {
-                return '<' + file.embedType + ' controls title="' + filename + '" src="' + path + '">' +
-                    '<source src="' + path + '" type="' + file.mimetype + '">' +
-                    '</' + file.embedType + '>';
+            path = CoreFile.instance.convertFileSrc(path ?? ('isFile' in file ? file.toURL() : file.fileurl));
+
+            switch (embedType) {
+                case 'image':
+                    return `<img src="${path}">`;
+                case 'audio':
+                case 'video':
+                    return [
+                        `<${embedType} controls title="${filename}" src="${path}">`,
+                        `<source src="${path}" type="${mimeType}">`,
+                        `</${embedType}>`,
+                    ].join('');
+                default:
+                    return '';
             }
         }
 
@@ -290,7 +313,7 @@ export class CoreMimetypeUtilsProvider {
                 candidate = candidate.substr(0, position);
             }
 
-            if (this.extensionRegex.test(candidate)) {
+            if (EXTENSION_REGEX.test(candidate)) {
                 extension = candidate;
             }
         }
@@ -338,7 +361,7 @@ export class CoreMimetypeUtilsProvider {
      * @param field The field to get. If not supplied, all the info will be returned.
      * @return Info for the group.
      */
-    getGroupMimeInfo(group: string, field?: string): any {
+    getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo {
         if (typeof this.groupsMimeInfo[group] == 'undefined') {
             this.fillGroupMimeInfo(group);
         }
@@ -372,13 +395,13 @@ export class CoreMimetypeUtilsProvider {
      * @param capitalise If true, capitalises first character of result.
      * @return Type description.
      */
-    getMimetypeDescription(obj: any, capitalise?: boolean): string {
+    getMimetypeDescription(obj: FileEntry | { filename: string; mimetype: string } | string, capitalise?: boolean): string {
         const langPrefix = 'assets.mimetypes.';
         let filename = '';
         let mimetype = '';
         let extension = '';
 
-        if (typeof obj == 'object' && typeof obj.file == 'function') {
+        if (typeof obj == 'object' && 'isFile' in obj) {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
             filename = obj.name;
         } else if (typeof obj == 'object') {
@@ -548,6 +571,7 @@ export class CoreMimetypeUtilsProvider {
 
         return path;
     }
+
 }
 
 export class CoreMimetypeUtils extends makeSingleton(CoreMimetypeUtilsProvider) {}
