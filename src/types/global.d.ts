@@ -24,3 +24,10 @@ declare global {
     }
 
 }
+
+/**
+ * Course base definition.
+ */
+export type CoreCourseBase = {
+    id: number; // Course Id.
+};
