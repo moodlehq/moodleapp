@@ -72,7 +72,9 @@ interface UrlParts {
 export class CoreUrl {
 
     // Avoid creating singleton instances.
-    private constructor() {}
+    private constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Parse parts of a url, using an implicit protocol if it is missing from the url.
@@ -123,14 +125,14 @@ export class CoreUrl {
 
         // Match using common suffixes.
         const knownSuffixes = [
-            '\/my\/?',
-            '\/\\\?redirect=0',
-            '\/index\\\.php',
-            '\/course\/view\\\.php',
-            '\/login\/index\\\.php',
-            '\/mod\/page\/view\\\.php',
+            '/my/?',
+            '/\\?redirect=0',
+            '/index\\.php',
+            '/course/view\\.php',
+            '\\/login/index\\.php',
+            '/mod/page/view\\.php',
         ];
-        const match = url.match(new RegExp(`^https?:\/\/(.*?)(${knownSuffixes.join('|')})`));
+        const match = url.match(new RegExp(`^https?://(.*?)(${knownSuffixes.join('|')})`));
 
         if (match) {
             return match[1];
@@ -184,10 +186,10 @@ export class CoreUrl {
      */
     static sameDomainAndPath(urlA: string, urlB: string): boolean {
         // Add protocol if missing, the parse function requires it.
-        if (!urlA.match(/^[^\/:\.\?]*:\/\//)) {
+        if (!urlA.match(/^[^/:.?]*:\/\//)) {
             urlA = `https://${urlA}`;
         }
-        if (!urlB.match(/^[^\/:\.\?]*:\/\//)) {
+        if (!urlB.match(/^[^/:.?]*:\/\//)) {
             urlB = `https://${urlB}`;
         }
 
@@ -197,4 +199,5 @@ export class CoreUrl {
         return partsA.domain == partsB.domain &&
                 CoreTextUtils.instance.removeEndingSlash(partsA.path) == CoreTextUtils.instance.removeEndingSlash(partsB.path);
     }
+
 }

@@ -92,7 +92,8 @@ export class CoreNativeToAngularHttpResponse<T> extends AngularHttpResponse<T> {
             headers: new HttpHeaders(nativeResponse.headers),
             status: nativeResponse.status,
             statusText: HTTP_STATUS_MESSAGES[nativeResponse.status] || '',
-            url: nativeResponse.url || ''
+            url: nativeResponse.url || '',
         });
     }
+
 }
