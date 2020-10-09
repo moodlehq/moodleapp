@@ -63,7 +63,7 @@ export class CoreDelegate {
     /**
      * Set of promises to update a handler, to prevent doing the same operation twice.
      */
-    protected updatePromises: {[siteId: string]: {[name: string]: Promise<any>}} = {};
+    protected updatePromises: {[siteId: string]: {[name: string]: Promise<void>}} = {};
 
     /**
      * Whether handlers have been initialized.
@@ -73,7 +73,7 @@ export class CoreDelegate {
     /**
      * Promise to wait for handlers to be initialized.
      */
-    protected handlersInitPromise: Promise<any>;
+    protected handlersInitPromise: Promise<void>;
 
     /**
      * Function to resolve the handlers init promise.
@@ -136,7 +136,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    private execute(handler: any, fnName: string, params?: any[]): any {
+    private execute(handler: CoreDelegateHandler, fnName: string, params?: any[]): any {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
@@ -243,7 +243,7 @@ export class CoreDelegate {
     protected updateHandler(handler: CoreDelegateHandler, time: number): Promise<void> {
         const siteId = CoreSites.instance.getCurrentSiteId();
         const currentSite = CoreSites.instance.getCurrentSite();
-        let promise;
+        let promise: Promise<boolean>;
 
         if (this.updatePromises[siteId] && this.updatePromises[siteId][handler.name]) {
             // There's already an update ongoing for this handler, return the promise.
@@ -252,18 +252,14 @@ export class CoreDelegate {
             this.updatePromises[siteId] = {};
         }
 
-        if (!CoreSites.instance.isLoggedIn()) {
-            promise = Promise.reject(null);
-        } else if (this.isFeatureDisabled(handler, currentSite)) {
+        if (!CoreSites.instance.isLoggedIn() || this.isFeatureDisabled(handler, currentSite)) {
             promise = Promise.resolve(false);
         } else {
-            promise = Promise.resolve(handler.isEnabled());
+            promise = handler.isEnabled().catch(() => false);
         }
 
         // Checks if the handler is enabled.
-        this.updatePromises[siteId][handler.name] = promise.catch(() => {
-            return false;
-        }).then((enabled: boolean) => {
+        this.updatePromises[siteId][handler.name] = promise.then((enabled: boolean) => {
             // Check that site hasn't changed since the check started.
             if (CoreSites.instance.getCurrentSiteId() === siteId) {
                 const key = handler[this.handlerNameProperty] || handler.name;
@@ -298,9 +294,9 @@ export class CoreDelegate {
      *
      * @return Resolved when done.
      */
-    protected updateHandlers(): Promise<void> {
-        const promises = [],
-            now = Date.now();
+    protected async updateHandlers(): Promise<void> {
+        const promises = [];
+        const now = Date.now();
 
         this.logger.debug('Updating handlers for current site.');
 
@@ -311,21 +307,19 @@ export class CoreDelegate {
             promises.push(this.updateHandler(this.handlers[name], now));
         }
 
-        return Promise.all(promises).then(() => {
-            return true;
-        }, () => {
-            // Never reject.
-            return true;
-        }).then(() => {
+        try {
+            await Promise.all(promises);
+        } catch (e) {
+            // Never reject
+        }
 
-            // Verify that this call is the last one that was started.
-            if (this.isLastUpdateCall(now)) {
-                this.handlersInitialized = true;
-                this.handlersInitResolve();
+        // Verify that this call is the last one that was started.
+        if (this.isLastUpdateCall(now)) {
+            this.handlersInitialized = true;
+            this.handlersInitResolve();
 
-                this.updateData();
-            }
-        });
+            this.updateData();
+        }
     }
 
     /**
@@ -335,6 +329,7 @@ export class CoreDelegate {
     updateData(): any {
         // To be overridden.
     }
+
 }
 
 export interface CoreDelegateHandler {
@@ -346,7 +341,8 @@ export interface CoreDelegateHandler {
 
     /**
      * Whether or not the handler is enabled on a site level.
+     *
      * @return Whether or not the handler is enabled on a site level.
      */
-    isEnabled(): boolean | Promise<boolean>;
+    isEnabled(): Promise<boolean>;
 }
