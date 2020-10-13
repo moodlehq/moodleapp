@@ -130,6 +130,7 @@
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-jsdoc": "^30.6.3",
     "eslint-plugin-prefer-arrow": "^1.2.2",
+    "faker": "^5.1.0",
     "jest": "^26.5.0",
     "jest-preset-angular": "^8.3.1",
     "ts-jest": "^26.4.1",
