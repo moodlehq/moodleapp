@@ -85,19 +85,14 @@ module.exports = {
                 ],
                 '@typescript-eslint/no-empty-function': 'error',
                 '@typescript-eslint/no-empty-interface': 'off',
-                '@typescript-eslint/no-explicit-any': [
-                    'warn',
-                    {
-                        fixToUnknown: true,
-                    },
-                ],
+                '@typescript-eslint/no-explicit-any': 'warn',
                 '@typescript-eslint/no-inferrable-types': [
                     'error',
                     {
                         ignoreParameters: true,
                     },
                 ],
-                '@typescript-eslint/no-non-null-assertion': 'error',
+                '@typescript-eslint/no-non-null-assertion': 'off',
                 '@typescript-eslint/no-this-alias': 'error',
                 '@typescript-eslint/no-unused-vars': 'error',
                 '@typescript-eslint/quotes': [
@@ -147,7 +142,6 @@ module.exports = {
                 'comma-dangle': ['error', 'always-multiline'],
                 'constructor-super': 'error',
                 'curly': 'error',
-                'default-case': 'error',
                 'eol-last': 'error',
                 'id-blacklist': [
                     'error',
@@ -163,7 +157,12 @@ module.exports = {
                 ],
                 'id-match': 'error',
                 'jsdoc/check-alignment': 'error',
-                'jsdoc/check-indentation': 'error',
+                'jsdoc/check-indentation': [
+                    'error',
+                    {
+                        excludeTags: ['param'],
+                    },
+                ],
                 'jsdoc/newline-after-description': 'error',
                 'linebreak-style': [
                     'error',
