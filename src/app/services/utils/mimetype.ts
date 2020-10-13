@@ -20,6 +20,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, Translate, Http } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalFile } from '@services/ws';
+import { CoreUtils } from '@services/utils/utils';
 
 interface MimeTypeInfo {
     type: string;
@@ -169,9 +170,11 @@ export class CoreMimetypeUtilsProvider {
      * @param path Alternative path that will override fileurl from file object.
      */
     getEmbeddedHtml(file: CoreWSExternalFile | FileEntry, path?: string): string {
-        const filename = 'isFile' in file ? (file as FileEntry).name : file.filename;
-        const extension = !('isFile' in file) && file.mimetype ? this.getExtension(file.mimetype) : this.getFileExtension(filename);
-        const mimeType = !('isFile' in file) && file.mimetype ? file.mimetype : this.getMimeType(extension);
+        const filename = CoreUtils.instance.isFileEntry(file) ? (file as FileEntry).name : file.filename;
+        const extension = !CoreUtils.instance.isFileEntry(file) && file.mimetype
+            ? this.getExtension(file.mimetype)
+            : this.getFileExtension(filename);
+        const mimeType = !CoreUtils.instance.isFileEntry(file) && file.mimetype ? file.mimetype : this.getMimeType(extension);
 
         // @todo linting: See if this can be removed
         (file as CoreWSExternalFile).mimetype = mimeType;
@@ -182,7 +185,7 @@ export class CoreMimetypeUtilsProvider {
             // @todo linting: See if this can be removed
             (file as { embedType: string }).embedType = embedType;
 
-            path = CoreFile.instance.convertFileSrc(path ?? ('isFile' in file ? file.toURL() : file.fileurl));
+            path = CoreFile.instance.convertFileSrc(path ?? (CoreUtils.instance.isFileEntry(file) ? file.toURL() : file.fileurl));
 
             switch (embedType) {
                 case 'image':
@@ -401,7 +404,7 @@ export class CoreMimetypeUtilsProvider {
         let mimetype = '';
         let extension = '';
 
-        if (typeof obj == 'object' && 'isFile' in obj) {
+        if (typeof obj == 'object' && CoreUtils.instance.isFileEntry(obj)) {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
             filename = obj.name;
         } else if (typeof obj == 'object') {

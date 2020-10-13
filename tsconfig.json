@@ -18,6 +18,9 @@
       "dom"
     ],
     "types": [
+        "cordova-plugin-file-transfer",
+        "cordova-plugin-inappbrowser",
+        "cordova",
         "jest",
         "node"
     ],

@@ -202,9 +202,6 @@ export class CoreIframeUtilsProvider {
             case 'link_clicked':
                 this.linkClicked(event.data.link);
                 break;
-
-            default:
-                break;
         }
     }
 
