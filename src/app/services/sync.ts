@@ -17,6 +17,8 @@ import { CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreSites, CoreSiteSchema } from '@services/sites';
 import { makeSingleton } from '@singletons/core.singletons';
 
+const SYNC_TABLE = 'sync';
+
 /*
  * Service that provides some features regarding synchronization.
 */
@@ -24,36 +26,35 @@ import { makeSingleton } from '@singletons/core.singletons';
 export class CoreSyncProvider {
 
     // Variables for the database.
-    protected SYNC_TABLE = 'sync';
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreSyncProvider',
         version: 1,
         tables: [
             {
-                name: this.SYNC_TABLE,
+                name: SYNC_TABLE,
                 columns: [
                     {
                         name: 'component',
                         type: 'TEXT',
-                        notNull: true
+                        notNull: true,
                     },
                     {
                         name: 'id',
                         type: 'TEXT',
-                        notNull: true
+                        notNull: true,
                     },
                     {
                         name: 'time',
-                        type: 'INTEGER'
+                        type: 'INTEGER',
                     },
                     {
                         name: 'warnings',
-                        type: 'TEXT'
-                    }
+                        type: 'TEXT',
+                    },
                 ],
-                primaryKeys: ['component', 'id']
-            }
-        ]
+                primaryKeys: ['component', 'id'],
+            },
+        ],
     };
 
     // Store blocked sync objects.
@@ -63,7 +64,7 @@ export class CoreSyncProvider {
         CoreSites.instance.registerSiteSchema(this.siteSchema);
 
         // Unblock all blocks on logout.
-        CoreEvents.instance.on(CoreEventsProvider.LOGOUT, (data) => {
+        CoreEvents.instance.on(CoreEventsProvider.LOGOUT, (data: {siteId: string}) => {
             this.clearAllBlocks(data.siteId);
         });
     }
@@ -125,32 +126,33 @@ export class CoreSyncProvider {
 
     /**
      * Returns a sync record.
+     *
      * @param component Component name.
      * @param id Unique ID per component.
      * @param siteId Site ID. If not defined, current site.
      * @return Record if found or reject.
      */
-    getSyncRecord(component: string, id: string | number, siteId?: string): Promise<any> {
-        return CoreSites.instance.getSiteDb(siteId).then((db) => {
-            return db.getRecord(this.SYNC_TABLE, { component: component, id: id });
-        });
+    getSyncRecord(component: string, id: string | number, siteId?: string): Promise<Record<string, unknown>> {
+        return CoreSites.instance.getSiteDb(siteId).then((db) => db.getRecord(SYNC_TABLE, { component: component, id: id }));
     }
 
     /**
      * Inserts or Updates info of a sync record.
+     *
      * @param component Component name.
      * @param id Unique ID per component.
      * @param data Data that updates the record.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with done.
      */
-    insertOrUpdateSyncRecord(component: string, id: string | number, data: any, siteId?: string): Promise<any> {
-        return CoreSites.instance.getSiteDb(siteId).then((db) => {
-            data.component = component;
-            data.id = id;
+    async insertOrUpdateSyncRecord(component: string, id: string | number, data: Record<string, unknown>, siteId?: string):
+            Promise<void> {
+        const db = await CoreSites.instance.getSiteDb(siteId);
 
-            return db.insertRecord(this.SYNC_TABLE, data);
-        });
+        data.component = component;
+        data.id = id;
+
+        await db.insertRecord(SYNC_TABLE, data);
     }
 
     /**
@@ -206,6 +208,7 @@ export class CoreSyncProvider {
             delete this.blockedItems[siteId][uniqueId][operation];
         }
     }
+
 }
 
 export class CoreSync extends makeSingleton(CoreSyncProvider) {}
