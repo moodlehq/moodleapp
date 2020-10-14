@@ -18,36 +18,38 @@ import { CoreApp, CoreAppSchema } from '@services/app';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { makeSingleton } from '@singletons/core.singletons';
 
+const TABLE_NAME = 'core_config';
+
 /**
  * Factory to provide access to dynamic and permanent config and settings.
  * It should not be abused into a temporary storage.
  */
 @Injectable()
 export class CoreConfigProvider {
+
     protected appDB: SQLiteDB;
-    protected TABLE_NAME = 'core_config';
     protected tableSchema: CoreAppSchema = {
         name: 'CoreConfigProvider',
         version: 1,
         tables: [
             {
-                name: this.TABLE_NAME,
+                name: TABLE_NAME,
                 columns: [
                     {
                         name: 'name',
                         type: 'TEXT',
                         unique: true,
-                        notNull: true
+                        notNull: true,
                     },
                     {
-                        name: 'value'
+                        name: 'value',
                     },
                 ],
             },
         ],
     };
 
-    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
+    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
 
     constructor() {
         this.appDB = CoreApp.instance.getDB();
@@ -62,10 +64,10 @@ export class CoreConfigProvider {
      * @param name The config name.
      * @return Promise resolved when done.
      */
-    async delete(name: string): Promise<any> {
+    async delete(name: string): Promise<void> {
         await this.dbReady;
 
-        return this.appDB.deleteRecords(this.TABLE_NAME, { name });
+        await this.appDB.deleteRecords(TABLE_NAME, { name });
     }
 
     /**
@@ -75,11 +77,11 @@ export class CoreConfigProvider {
      * @param defaultValue Default value to use if the entry is not found.
      * @return Resolves upon success along with the config data. Reject on failure.
      */
-    async get(name: string, defaultValue?: any): Promise<any> {
+    async get<T>(name: string, defaultValue?: T): Promise<T> {
         await this.dbReady;
 
         try {
-            const entry = await this.appDB.getRecord(this.TABLE_NAME, { name });
+            const entry = await this.appDB.getRecord(TABLE_NAME, { name });
 
             return entry.value;
         } catch (error) {
@@ -98,11 +100,12 @@ export class CoreConfigProvider {
      * @param value The config value. Can only store number or strings.
      * @return Promise resolved when done.
      */
-    async set(name: string, value: number | string): Promise<any> {
+    async set(name: string, value: number | string): Promise<void> {
         await this.dbReady;
 
-        return this.appDB.insertRecord(this.TABLE_NAME, { name, value });
+        await this.appDB.insertRecord(TABLE_NAME, { name, value });
     }
+
 }
 
 export class CoreConfig extends makeSingleton(CoreConfigProvider) {}
