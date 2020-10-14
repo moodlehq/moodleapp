@@ -3,8 +3,9 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app",
     "types": [
-      "cordova",
       "cordova-plugin-file-transfer",
+      "cordova-plugin-inappbrowser",
+      "cordova",
       "node"
     ],
     "paths": {

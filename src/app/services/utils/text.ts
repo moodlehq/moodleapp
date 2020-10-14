@@ -18,6 +18,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { CoreWSExternalFile } from '@services/ws';
+import { Locutus } from '@singletons/locutus';
 
 /**
  * Different type of errors the app can treat.
@@ -36,53 +38,53 @@ export type CoreTextErrorObject = {
 export class CoreTextUtilsProvider {
 
     // List of regular expressions to convert the old nomenclature to new nomenclature for disabled features.
-    protected DISABLED_FEATURES_COMPAT_REGEXPS = [
-        {old: /\$mmLoginEmailSignup/g, new: 'CoreLoginEmailSignup'},
-        {old: /\$mmSideMenuDelegate/g, new: 'CoreMainMenuDelegate'},
-        {old: /\$mmCoursesDelegate/g, new: 'CoreCourseOptionsDelegate'},
-        {old: /\$mmUserDelegate/g, new: 'CoreUserDelegate'},
-        {old: /\$mmCourseDelegate/g, new: 'CoreCourseModuleDelegate'},
-        {old: /_mmCourses/g, new: '_CoreCourses'},
-        {old: /_mmaFrontpage/g, new: '_CoreSiteHome'},
-        {old: /_mmaGrades/g, new: '_CoreGrades'},
-        {old: /_mmaCompetency/g, new: '_AddonCompetency'},
-        {old: /_mmaNotifications/g, new: '_AddonNotifications'},
-        {old: /_mmaMessages/g, new: '_AddonMessages'},
-        {old: /_mmaCalendar/g, new: '_AddonCalendar'},
-        {old: /_mmaFiles/g, new: '_AddonFiles'},
-        {old: /_mmaParticipants/g, new: '_CoreUserParticipants'},
-        {old: /_mmaCourseCompletion/g, new: '_AddonCourseCompletion'},
-        {old: /_mmaNotes/g, new: '_AddonNotes'},
-        {old: /_mmaBadges/g, new: '_AddonBadges'},
-        {old: /files_privatefiles/g, new: 'AddonFilesPrivateFiles'},
-        {old: /files_sitefiles/g, new: 'AddonFilesSiteFiles'},
-        {old: /files_upload/g, new: 'AddonFilesUpload'},
-        {old: /_mmaModAssign/g, new: '_AddonModAssign'},
-        {old: /_mmaModBook/g, new: '_AddonModBook'},
-        {old: /_mmaModChat/g, new: '_AddonModChat'},
-        {old: /_mmaModChoice/g, new: '_AddonModChoice'},
-        {old: /_mmaModData/g, new: '_AddonModData'},
-        {old: /_mmaModFeedback/g, new: '_AddonModFeedback'},
-        {old: /_mmaModFolder/g, new: '_AddonModFolder'},
-        {old: /_mmaModForum/g, new: '_AddonModForum'},
-        {old: /_mmaModGlossary/g, new: '_AddonModGlossary'},
-        {old: /_mmaModH5pactivity/g, new: '_AddonModH5PActivity'},
-        {old: /_mmaModImscp/g, new: '_AddonModImscp'},
-        {old: /_mmaModLabel/g, new: '_AddonModLabel'},
-        {old: /_mmaModLesson/g, new: '_AddonModLesson'},
-        {old: /_mmaModLti/g, new: '_AddonModLti'},
-        {old: /_mmaModPage/g, new: '_AddonModPage'},
-        {old: /_mmaModQuiz/g, new: '_AddonModQuiz'},
-        {old: /_mmaModResource/g, new: '_AddonModResource'},
-        {old: /_mmaModScorm/g, new: '_AddonModScorm'},
-        {old: /_mmaModSurvey/g, new: '_AddonModSurvey'},
-        {old: /_mmaModUrl/g, new: '_AddonModUrl'},
-        {old: /_mmaModWiki/g, new: '_AddonModWiki'},
-        {old: /_mmaModWorkshop/g, new: '_AddonModWorkshop'},
-        {old: /remoteAddOn_/g, new: 'sitePlugin_'},
+    protected readonly DISABLED_FEATURES_COMPAT_REGEXPS: { old: RegExp; new: string }[] = [
+        { old: /\$mmLoginEmailSignup/g, new: 'CoreLoginEmailSignup' },
+        { old: /\$mmSideMenuDelegate/g, new: 'CoreMainMenuDelegate' },
+        { old: /\$mmCoursesDelegate/g, new: 'CoreCourseOptionsDelegate' },
+        { old: /\$mmUserDelegate/g, new: 'CoreUserDelegate' },
+        { old: /\$mmCourseDelegate/g, new: 'CoreCourseModuleDelegate' },
+        { old: /_mmCourses/g, new: '_CoreCourses' },
+        { old: /_mmaFrontpage/g, new: '_CoreSiteHome' },
+        { old: /_mmaGrades/g, new: '_CoreGrades' },
+        { old: /_mmaCompetency/g, new: '_AddonCompetency' },
+        { old: /_mmaNotifications/g, new: '_AddonNotifications' },
+        { old: /_mmaMessages/g, new: '_AddonMessages' },
+        { old: /_mmaCalendar/g, new: '_AddonCalendar' },
+        { old: /_mmaFiles/g, new: '_AddonFiles' },
+        { old: /_mmaParticipants/g, new: '_CoreUserParticipants' },
+        { old: /_mmaCourseCompletion/g, new: '_AddonCourseCompletion' },
+        { old: /_mmaNotes/g, new: '_AddonNotes' },
+        { old: /_mmaBadges/g, new: '_AddonBadges' },
+        { old: /files_privatefiles/g, new: 'AddonFilesPrivateFiles' },
+        { old: /files_sitefiles/g, new: 'AddonFilesSiteFiles' },
+        { old: /files_upload/g, new: 'AddonFilesUpload' },
+        { old: /_mmaModAssign/g, new: '_AddonModAssign' },
+        { old: /_mmaModBook/g, new: '_AddonModBook' },
+        { old: /_mmaModChat/g, new: '_AddonModChat' },
+        { old: /_mmaModChoice/g, new: '_AddonModChoice' },
+        { old: /_mmaModData/g, new: '_AddonModData' },
+        { old: /_mmaModFeedback/g, new: '_AddonModFeedback' },
+        { old: /_mmaModFolder/g, new: '_AddonModFolder' },
+        { old: /_mmaModForum/g, new: '_AddonModForum' },
+        { old: /_mmaModGlossary/g, new: '_AddonModGlossary' },
+        { old: /_mmaModH5pactivity/g, new: '_AddonModH5PActivity' },
+        { old: /_mmaModImscp/g, new: '_AddonModImscp' },
+        { old: /_mmaModLabel/g, new: '_AddonModLabel' },
+        { old: /_mmaModLesson/g, new: '_AddonModLesson' },
+        { old: /_mmaModLti/g, new: '_AddonModLti' },
+        { old: /_mmaModPage/g, new: '_AddonModPage' },
+        { old: /_mmaModQuiz/g, new: '_AddonModQuiz' },
+        { old: /_mmaModResource/g, new: '_AddonModResource' },
+        { old: /_mmaModScorm/g, new: '_AddonModScorm' },
+        { old: /_mmaModSurvey/g, new: '_AddonModSurvey' },
+        { old: /_mmaModUrl/g, new: '_AddonModUrl' },
+        { old: /_mmaModWiki/g, new: '_AddonModWiki' },
+        { old: /_mmaModWorkshop/g, new: '_AddonModWorkshop' },
+        { old: /remoteAddOn_/g, new: 'sitePlugin_' },
     ];
 
-    protected template = document.createElement('template'); // A template element to convert HTML to element.
+    protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
     constructor(private sanitizer: DomSanitizer) { }
 
@@ -200,7 +202,6 @@ export class CoreTextUtilsProvider {
      * @return Size in human readable format.
      */
     bytesToSize(bytes: number, precision: number = 2): string {
-
         if (typeof bytes == 'undefined' || bytes === null || bytes < 0) {
             return Translate.instance.instant('core.notapplicable');
         }
@@ -449,9 +450,17 @@ export class CoreTextUtilsProvider {
      * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
      * @deprecated since 3.8.3. Please use viewText instead.
      */
-    expandText(title: string, text: string, component?: string, componentId?: string | number, files?: any[],
-            filter?: boolean, contextLevel?: string, instanceId?: number, courseId?: number): void {
-
+    expandText(
+        title: string,
+        text: string,
+        component?: string,
+        componentId?: string | number,
+        files?: CoreWSExternalFile[],
+        filter?: boolean,
+        contextLevel?: string,
+        instanceId?: number,
+        courseId?: number,
+    ): void {
         return this.viewText(title, text, {
             component,
             componentId,
@@ -531,12 +540,12 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
      * @return Pluginfile URL, undefined if no files found.
      */
-    getTextPluginfileUrl(files: any[]): string {
+    getTextPluginfileUrl(files: CoreWSExternalFile[]): string {
         if (files && files.length) {
-            const fileURL = files[0].url || files[0].fileurl;
+            const url = files[0].fileurl;
 
             // Remove text after last slash (encoded or not).
-            return fileURL.substr(0, Math.max(fileURL.lastIndexOf('/'), fileURL.lastIndexOf('%2F')));
+            return url.substr(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
         }
 
         return undefined;
@@ -610,13 +619,17 @@ export class CoreTextUtilsProvider {
      * @param data Object to be checked.
      * @return If the data has any long Unicode char on it.
      */
-    hasUnicodeData(data: object): boolean {
+    hasUnicodeData(data: Record<string, unknown>): boolean {
         for (const el in data) {
             if (typeof data[el] == 'object') {
-                if (this.hasUnicodeData(data[el])) {
+                if (this.hasUnicodeData(data[el] as Record<string, unknown>)) {
                     return true;
                 }
-            } else if (typeof data[el] == 'string' && this.hasUnicode(data[el])) {
+
+                continue;
+            }
+
+            if (typeof data[el] == 'string' && this.hasUnicode(data[el] as string)) {
                 return true;
             }
         }
@@ -628,17 +641,17 @@ export class CoreTextUtilsProvider {
      * Same as Javascript's JSON.parse, but it will handle errors.
      *
      * @param json JSON text.
-     * @param defaultValue Default value t oreturn if the parse fails. Defaults to the original value.
+     * @param defaultValue Default value to return if the parse fails. Defaults to the original value.
      * @param logErrorFn An error to call with the exception to log the error. If not supplied, no error.
      * @return JSON parsed as object or what it gets.
      */
-    parseJSON(json: string, defaultValue?: any, logErrorFn?: (error?: any) => void): any {
+    parseJSON<T>(json: string, defaultValue?: T, logErrorFn?: (error?: Error) => void): T | string {
         try {
             return JSON.parse(json);
-        } catch (ex) {
+        } catch (error) {
             // Error, log the error if needed.
             if (logErrorFn) {
-                logErrorFn(ex);
+                logErrorFn(error);
             }
         }
 
@@ -675,7 +688,7 @@ export class CoreTextUtilsProvider {
             return '';
         }
 
-        return text.replace(/[#:\/\?\\]+/g, '_');
+        return text.replace(/[#:/?\\]+/g, '_');
     }
 
     /**
@@ -700,7 +713,7 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return Treated text.
      */
-    replacePluginfileUrls(text: string, files: any[]): string {
+    replacePluginfileUrls(text: string, files: CoreWSExternalFile[]): string {
         if (text && typeof text == 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
@@ -718,7 +731,7 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return Treated text.
      */
-    restorePluginfileUrls(text: string, files: any[]): string {
+    restorePluginfileUrls(text: string, files: CoreWSExternalFile[]): string {
         if (text && typeof text == 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
@@ -804,7 +817,6 @@ export class CoreTextUtilsProvider {
 
     /**
      * Replace text within a portion of a string. Equivalent to PHP's substr_replace.
-     * Credits to http://locutus.io/php/strings/substr_replace/
      *
      * @param str The string to treat.
      * @param replace The value to put inside the string.
@@ -814,22 +826,7 @@ export class CoreTextUtilsProvider {
      * @return Treated string.
      */
     substrReplace(str: string, replace: string, start: number, length?: number): string {
-        length = typeof length != 'undefined' ? length : str.length;
-
-        if (start < 0) {
-            start = start + str.length;
-        }
-
-        if (length < 0) {
-            length = length + str.length - start;
-        }
-
-        return [
-            str.slice(0, start),
-            replace.substr(0, length),
-            replace.slice(length),
-            str.slice(start + length)
-        ].join('');
+        return Locutus.substrReplace(str, replace, start, length);
     }
 
     /**
@@ -867,14 +864,14 @@ export class CoreTextUtilsProvider {
         return CoreLang.instance.getCurrentLanguage().then((language) => {
             // Match the current language.
             const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
-            let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)<\/(?:lang|span)>', 'g');
+            let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
 
             if (!text.match(currentLangRegEx)) {
                 // Current lang not found. Try to find the first language.
                 const matches = text.match(anyLangRegEx);
                 if (matches && matches[0]) {
                     language = matches[0].match(/lang="([a-zA-Z0-9_-]+)"/)[1];
-                    currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)<\/(?:lang|span)>', 'g');
+                    currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
                 } else {
                     // No multi-lang tag found, stop.
                     return text;
@@ -915,221 +912,12 @@ export class CoreTextUtilsProvider {
 
     /**
      * Unserialize Array from PHP.
-     * Taken from: https://github.com/kvz/locutus/blob/master/src/php/var/unserialize.js
      *
      * @param data String to unserialize.
-     * @param logErrorFn An error to call with the exception to log the error. If not supplied, no error.
      * @return Unserialized data.
      */
-    unserialize(data: string, logErrorFn?: (error?: string) => void): any {
-        //  Discuss at: http://locutus.io/php/unserialize/
-        // Original by: Arpad Ray (mailto:arpad@php.net)
-        // Improved by: Pedro Tainha (http://www.pedrotainha.com)
-        // Improved by: Kevin van Zonneveld (http://kvz.io)
-        // Improved by: Kevin van Zonneveld (http://kvz.io)
-        // Improved by: Chris
-        // Improved by: James
-        // Improved by: Le Torbi
-        // Improved by: Eli Skeggs
-        // Bugfixed by: dptr1988
-        // Bugfixed by: Kevin van Zonneveld (http://kvz.io)
-        // Bugfixed by: Brett Zamir (http://brett-zamir.me)
-        // Bugfixed by: philippsimon (https://github.com/philippsimon/)
-        //  Revised by: d3x
-        //    Input by: Brett Zamir (http://brett-zamir.me)
-        //    Input by: Martin (http://www.erlenwiese.de/)
-        //    Input by: kilops
-        //    Input by: Jaroslaw Czarniak
-        //    Input by: lovasoa (https://github.com/lovasoa/)
-        //      Note 1: We feel the main purpose of this function should be
-        //      Note 1: to ease the transport of data between php & js
-        //      Note 1: Aiming for PHP-compatibility, we have to translate objects to arrays
-        //   Example 1: unserialize('a:3:{i:0;s:5:"Kevin";i:1;s:3:"van";i:2;s:9:"Zonneveld";}')
-        //   Returns 1: ['Kevin', 'van', 'Zonneveld']
-        //   Example 2: unserialize('a:2:{s:9:"firstName";s:5:"Kevin";s:7:"midName";s:3:"van";}')
-        //   Returns 2: {firstName: 'Kevin', midName: 'van'}
-        //   Example 3: unserialize('a:3:{s:2:"ü";s:2:"ü";s:3:"四";s:3:"四";s:4:"𠜎";s:4:"𠜎";}')
-        //   Returns 3: {'ü': 'ü', '四': '四', '𠜎': '𠜎'}
-
-        const utf8Overhead = (str: string): number => {
-            let s = str.length;
-
-            for (let i = str.length - 1; i >= 0; i--) {
-                const code = str.charCodeAt(i);
-                if (code > 0x7f && code <= 0x7ff) {
-                    s++;
-                } else if (code > 0x7ff && code <= 0xffff) {
-                    s += 2;
-                }
-                // Trail surrogate.
-                if (code >= 0xDC00 && code <= 0xDFFF) {
-                    i--;
-                }
-            }
-
-            return s - 1;
-        };
-
-        const error = (type: string, msg: string): void => {
-            if (logErrorFn) {
-                logErrorFn(type + msg);
-            }
-        };
-
-        const readUntil = (data: string, offset: number, stopchr: string): Array<any> => {
-            let i = 2;
-            const buf = [];
-            let chr = data.slice(offset, offset + 1);
-
-            while (chr !== stopchr) {
-                if ((i + offset) > data.length) {
-                    error('Error', 'Invalid');
-                }
-                buf.push(chr);
-                chr = data.slice(offset + (i - 1), offset + i);
-                i += 1;
-            }
-
-            return [buf.length, buf.join('')];
-        };
-
-        const readChrs = (data: string, offset: number, length: number): Array<any> => {
-            let chr;
-            const buf = [];
-
-            for (let i = 0; i < length; i++) {
-                chr = data.slice(offset + (i - 1), offset + i);
-                buf.push(chr);
-                length -= utf8Overhead(chr);
-            }
-
-            return [buf.length, buf.join('')];
-        };
-
-        const _unserialize = (data: string, offset: number): any => {
-            let dtype,
-                dataoffset,
-                keyandchrs,
-                keys,
-                contig,
-                length,
-                array,
-                readdata,
-                readData,
-                ccount,
-                stringlength,
-                i,
-                key,
-                kprops,
-                kchrs,
-                vprops,
-                vchrs,
-                value,
-                chrs = 0,
-                typeconvert = (x: any): any => {
-                    return x;
-                };
-
-            if (!offset) {
-                offset = 0;
-            }
-            dtype = (data.slice(offset, offset + 1)).toLowerCase();
-
-            dataoffset = offset + 2;
-
-            switch (dtype) {
-                case 'i':
-                    typeconvert = (x: any): number => {
-                        return parseInt(x, 10);
-                    };
-                    readData = readUntil(data, dataoffset, ';');
-                    chrs = readData[0];
-                    readdata = readData[1];
-                    dataoffset += chrs + 1;
-                    break;
-                case 'b':
-                    typeconvert = (x: any): boolean => {
-                        return parseInt(x, 10) !== 0;
-                    };
-                    readData = readUntil(data, dataoffset, ';');
-                    chrs = readData[0];
-                    readdata = readData[1];
-                    dataoffset += chrs + 1;
-                    break;
-                case 'd':
-                    typeconvert = (x: any): number => {
-                        return parseFloat(x);
-                    };
-                    readData = readUntil(data, dataoffset, ';');
-                    chrs = readData[0];
-                    readdata = readData[1];
-                    dataoffset += chrs + 1;
-                    break;
-                case 'n':
-                    readdata = null;
-                    break;
-                case 's':
-                    ccount = readUntil(data, dataoffset, ':');
-                    chrs = ccount[0];
-                    stringlength = ccount[1];
-                    dataoffset += chrs + 2;
-
-                    readData = readChrs(data, dataoffset + 1, parseInt(stringlength, 10));
-                    chrs = readData[0];
-                    readdata = readData[1];
-                    dataoffset += chrs + 2;
-                    if (chrs !== parseInt(stringlength, 10) && chrs !== readdata.length) {
-                        error('SyntaxError', 'String length mismatch');
-                    }
-                    break;
-                case 'a':
-                    readdata = {};
-
-                    keyandchrs = readUntil(data, dataoffset, ':');
-                    chrs = keyandchrs[0];
-                    keys = keyandchrs[1];
-                    dataoffset += chrs + 2;
-
-                    length = parseInt(keys, 10);
-                    contig = true;
-
-                    for (let i = 0; i < length; i++) {
-                        kprops = _unserialize(data, dataoffset);
-                        kchrs = kprops[1];
-                        key = kprops[2];
-                        dataoffset += kchrs;
-
-                        vprops = _unserialize(data, dataoffset);
-                        vchrs = vprops[1];
-                        value = vprops[2];
-                        dataoffset += vchrs;
-
-                        if (key !== i) {
-                            contig = false;
-                        }
-
-                        readdata[key] = value;
-                    }
-
-                    if (contig) {
-                        array = new Array(length);
-                        for (i = 0; i < length; i++) {
-                            array[i] = readdata[i];
-                        }
-                        readdata = array;
-                    }
-
-                    dataoffset += 1;
-                    break;
-                default:
-                    error('SyntaxError', 'Unknown / Unhandled data type(s): ' + dtype);
-                    break;
-            }
-
-            return [dtype, dataoffset - offset, typeconvert(readdata)];
-        };
-
-        return _unserialize((data + ''), 0)[2];
+    unserialize<T = unknown>(data: string): T {
+        return Locutus.unserialize<T>(data);
     }
 
     /**
@@ -1138,16 +926,13 @@ export class CoreTextUtilsProvider {
      * @param title Title of the new state.
      * @param text Content of the text to be expanded.
      * @param component Component to link the embedded files to.
-     * @param componentId An ID to use in conjunction with the component.
-     * @param files List of files to display along with the text.
-     * @param filter Whether the text should be filtered.
-     * @param contextLevel The context level.
-     * @param instanceId The instance ID related to the context.
-     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
+     * @param options Options.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     viewText(title: string, text: string, options?: CoreTextUtilsViewTextOptions): void {
         // @todo
     }
+
 }
 
 /**
@@ -1156,7 +941,7 @@ export class CoreTextUtilsProvider {
 export type CoreTextUtilsViewTextOptions = {
     component?: string; // Component to link the embedded files to.
     componentId?: string | number; // An ID to use in conjunction with the component.
-    files?: any[]; // List of files to display along with the text.
+    files?: CoreWSExternalFile[]; // List of files to display along with the text.
     filter?: boolean; // Whether the text should be filtered.
     contextLevel?: string; // The context level.
     instanceId?: number; // The instance ID related to the context.

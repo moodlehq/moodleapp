@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { NavController } from '@ionic/angular';
 import { WKUserScriptWindow, WKUserScriptInjectionTime } from 'cordova-plugin-wkuserscript';
 
-import { CoreApp, CoreAppProvider } from '@services/app';
+import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
@@ -24,42 +25,35 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 
-import { makeSingleton, Translate, Network, Platform, NgZone } from '@singletons/core.singletons';
+import { makeSingleton, Network, Platform, NgZone } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
+
+/**
+ * Possible types of frame elements.
+ */
+type CoreFrameElement = (HTMLIFrameElement | HTMLFrameElement | HTMLObjectElement | HTMLEmbedElement) & {
+    window?: Window;
+    getWindow?(): Window;
+};
 
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
  */
 @Injectable()
 export class CoreIframeUtilsProvider {
-    static FRAME_TAGS = ['iframe', 'frame', 'object', 'embed'];
+
+    static readonly FRAME_TAGS = ['iframe', 'frame', 'object', 'embed'];
 
     protected logger: CoreLogger;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
 
-        const win = <WKUserScriptWindow> window;
-
-        if (CoreApp.instance.isIOS() && win.WKUserScript) {
-            Platform.instance.ready().then(() => {
-                // Inject code to the iframes because we cannot access the online ones.
-                const wwwPath = CoreFile.instance.getWWWAbsolutePath();
-                const linksPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
-                const recaptchaPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
-
-                win.WKUserScript.addScript({id: 'CoreIframeUtilsLinksScript', file: linksPath});
-                win.WKUserScript.addScript({
-                    id: 'CoreIframeUtilsRecaptchaScript',
-                    file: recaptchaPath,
-                    injectionTime: WKUserScriptInjectionTime.END,
-                });
-
-                // Handle post messages received by iframes.
-                window.addEventListener('message', this.handleIframeMessage.bind(this));
-            });
+        if (CoreApp.instance.isIOS() && 'WKUserScript' in window) {
+            // eslint-disable-next-line promise/catch-or-return
+            Platform.instance.ready().then(() => this.injectiOSScripts(window));
         }
     }
 
@@ -70,8 +64,8 @@ export class CoreIframeUtilsProvider {
      * @param isSubframe Whether it's a frame inside another frame.
      * @return True if frame is online and the app is offline, false otherwise.
      */
-    checkOnlineFrameInOffline(element: any, isSubframe?: boolean): boolean {
-        const src = element.src || element.data;
+    checkOnlineFrameInOffline(element: CoreFrameElement, isSubframe?: boolean): boolean {
+        const src = 'src' in element ? element.src : element.data;
 
         if (src && src != 'about:blank' && !CoreUrlUtils.instance.isLocalFileUrl(src) && !CoreApp.instance.isOnline()) {
             if (element.classList.contains('core-iframe-offline-disabled')) {
@@ -86,8 +80,6 @@ export class CoreIframeUtilsProvider {
             div.setAttribute('padding', '');
             div.classList.add('core-iframe-offline-warning');
 
-            const site = CoreSites.instance.getCurrentSite();
-            const username = site ? site.getInfo().username : undefined;
             // @todo Handle link
 
             // Add a class to specify that the iframe is hidden.
@@ -112,8 +104,13 @@ export class CoreIframeUtilsProvider {
             return true;
         } else if (element.classList.contains('core-iframe-offline-disabled')) {
             // Reload the frame.
-            element.src = element.src;
-            element.data = element.data;
+            if ('src' in element) {
+                // eslint-disable-next-line no-self-assign
+                element.src = element.src;
+            } else {
+                // eslint-disable-next-line no-self-assign
+                element.data = element.data;
+            }
 
             // Remove the warning and show the iframe
             CoreDomUtils.instance.removeElement(element.parentElement, 'div.core-iframe-offline-warning');
@@ -134,12 +131,14 @@ export class CoreIframeUtilsProvider {
      * @param element Element to treat (iframe, embed, ...).
      * @return Window and Document.
      */
-    getContentWindowAndDocument(element: any): { window: Window, document: Document } {
-        let contentWindow: Window = element.contentWindow;
+    getContentWindowAndDocument(element: CoreFrameElement): { window: Window; document: Document } {
+        let contentWindow: Window = 'contentWindow' in element ? element.contentWindow : undefined;
         let contentDocument: Document;
 
         try {
-            contentDocument = element.contentDocument || (contentWindow && contentWindow.document);
+            contentDocument = 'contentDocument' in element && element.contentDocument
+                ? element.contentDocument
+                : contentWindow && contentWindow.document;
         } catch (ex) {
             // Ignore errors.
         }
@@ -149,7 +148,7 @@ export class CoreIframeUtilsProvider {
             contentWindow = contentDocument.defaultView;
         }
 
-        if (!contentWindow && element.getSVGDocument) {
+        if (!contentWindow && 'getSVGDocument' in element) {
             // It's probably an <embed>. Try to get the window and the document.
             try {
                 contentDocument = element.getSVGDocument();
@@ -187,9 +186,6 @@ export class CoreIframeUtilsProvider {
             case 'link_clicked':
                 this.linkClicked(event.data.link);
                 break;
-
-            default:
-                break;
         }
     }
 
@@ -202,10 +198,15 @@ export class CoreIframeUtilsProvider {
      * @param contentDocument The document of the element contents.
      * @param navCtrl NavController to use if a link can be opened in the app.
      */
-    redefineWindowOpen(element: any, contentWindow: Window, contentDocument: Document, navCtrl?: any): void {
+    redefineWindowOpen(
+        element: CoreFrameElement,
+        contentWindow: Window,
+        contentDocument: Document,
+        navCtrl?: NavController,
+    ): void {
         if (contentWindow) {
             // Intercept window.open.
-            (<any> contentWindow).open = (url: string, name: string): Window => {
+            contentWindow.open = (url: string, name: string) => {
                 this.windowOpen(url, name, element, navCtrl);
 
                 return null;
@@ -216,7 +217,7 @@ export class CoreIframeUtilsProvider {
             // Search sub frames.
             CoreIframeUtilsProvider.FRAME_TAGS.forEach((tag) => {
                 const elements = Array.from(contentDocument.querySelectorAll(tag));
-                elements.forEach((subElement) => {
+                elements.forEach((subElement: CoreFrameElement) => {
                     this.treatFrame(subElement, true, navCtrl);
                 });
             });
@@ -231,7 +232,7 @@ export class CoreIframeUtilsProvider {
      * @param isSubframe Whether it's a frame inside another frame.
      * @param navCtrl NavController to use if a link can be opened in the app.
      */
-    treatFrame(element: any, isSubframe?: boolean, navCtrl?: any): void {
+    treatFrame(element: CoreFrameElement, isSubframe?: boolean, navCtrl?: NavController): void {
         if (element) {
             this.checkOnlineFrameInOffline(element, isSubframe);
 
@@ -266,7 +267,7 @@ export class CoreIframeUtilsProvider {
      * @param element Element to treat (iframe, embed, ...).
      * @param contentDocument The document of the element contents.
      */
-    treatFrameLinks(element: any, contentDocument: Document): void {
+    treatFrameLinks(element: CoreFrameElement, contentDocument: Document): void {
         if (!contentDocument) {
             return;
         }
@@ -292,7 +293,7 @@ export class CoreIframeUtilsProvider {
             link.treated = true;
             link.addEventListener('click', this.linkClicked.bind(this, link, element));
         }, {
-            capture: true // Use capture to fix this listener not called if the element clicked is too deep in the DOM.
+            capture: true, // Use capture to fix this listener not called if the element clicked is too deep in the DOM.
         });
     }
 
@@ -305,11 +306,13 @@ export class CoreIframeUtilsProvider {
      * @param navCtrl NavController to use if a link can be opened in the app.
      * @return Promise resolved when done.
      */
-    protected async windowOpen(url: string, name: string, element?: any, navCtrl?: any): Promise<void> {
+    protected async windowOpen(url: string, name: string, element?: CoreFrameElement, navCtrl?: NavController): Promise<void> {
         const scheme = CoreUrlUtils.instance.getUrlScheme(url);
         if (!scheme) {
             // It's a relative URL, use the frame src to create the full URL.
-            const src = element && (element.src || element.data);
+            const src = element
+                ? ('src' in element ? element.src : element.data)
+                : null;
             if (src) {
                 const dirAndFile = CoreFile.instance.getFileAndDirectoryFromPath(src);
                 if (dirAndFile.directory) {
@@ -372,8 +375,11 @@ export class CoreIframeUtilsProvider {
      * @param event Click event.
      * @return Promise resolved when done.
      */
-    protected async linkClicked(link: {href: string, target?: string}, element?: HTMLFrameElement | HTMLObjectElement,
-            event?: Event): Promise<void> {
+    protected async linkClicked(
+        link: {href: string; target?: string},
+        element?: HTMLFrameElement | HTMLObjectElement,
+        event?: Event,
+    ): Promise<void> {
         if (event && event.defaultPrevented) {
             // Event already prevented by some other code.
             return;
@@ -438,6 +444,28 @@ export class CoreIframeUtilsProvider {
             }
         }
     }
+
+    /**
+     * Inject code to the iframes because we cannot access the online ones.
+     *
+     * @param userScriptWindow Window.
+     */
+    private injectiOSScripts(userScriptWindow: WKUserScriptWindow) {
+        const wwwPath = CoreFile.instance.getWWWAbsolutePath();
+        const linksPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
+        const recaptchaPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
+
+        userScriptWindow.WKUserScript.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
+        userScriptWindow.WKUserScript.addScript({
+            id: 'CoreIframeUtilsRecaptchaScript',
+            file: recaptchaPath,
+            injectionTime: WKUserScriptInjectionTime.END,
+        });
+
+        // Handle post messages received by iframes.
+        window.addEventListener('message', this.handleIframeMessage.bind(this));
+    }
+
 }
 
 export class CoreIframeUtils extends makeSingleton(CoreIframeUtilsProvider) {}
