@@ -17,11 +17,15 @@ import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import CoreConfigConstants from '@app/config.json';
 
 import { makeSingleton, Keyboard, Network, StatusBar, Platform } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
+
+const DBNAME = 'MoodleMobile';
+const SCHEMA_VERSIONS_TABLE = 'schema_versions';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -38,23 +42,22 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Injectable()
 export class CoreAppProvider {
-    protected DBNAME = 'MoodleMobile';
+
     protected db: SQLiteDB;
     protected logger: CoreLogger;
-    protected ssoAuthenticationPromise: Promise<any>;
+    protected ssoAuthenticationDeferred: PromiseDefer<void>;
     protected isKeyboardShown = false;
-    protected _isKeyboardOpening = false;
-    protected _isKeyboardClosing = false;
-    protected backActions = [];
+    protected keyboardOpening = false;
+    protected keyboardClosing = false;
+    protected backActions: {callback: () => boolean; priority: number}[] = [];
     protected mainMenuId = 0;
     protected mainMenuOpen: number;
     protected forceOffline = false;
 
     // Variables for DB.
-    protected createVersionsTableReady: Promise<any>;
-    protected SCHEMA_VERSIONS_TABLE = 'schema_versions';
+    protected createVersionsTableReady: Promise<void>;
     protected versionsTableSchema: SQLiteDBTableSchema = {
-        name: this.SCHEMA_VERSIONS_TABLE,
+        name: SCHEMA_VERSIONS_TABLE,
         columns: [
             {
                 name: 'name',
@@ -68,11 +71,9 @@ export class CoreAppProvider {
         ],
     };
 
-    constructor(appRef: ApplicationRef,
-            zone: NgZone) {
-
+    constructor(appRef: ApplicationRef, zone: NgZone) {
         this.logger = CoreLogger.getInstance('CoreAppProvider');
-        this.db = CoreDB.instance.getDB(this.DBNAME);
+        this.db = CoreDB.instance.getDB(DBNAME);
 
         // Create the schema versions table.
         this.createVersionsTableReady = this.db.createTableFromSchema(this.versionsTableSchema);
@@ -87,7 +88,7 @@ export class CoreAppProvider {
                 CoreEvents.instance.trigger(CoreEventsProvider.KEYBOARD_CHANGE, data.keyboardHeight);
             });
         });
-        Keyboard.instance.onKeyboardHide().subscribe((data) => {
+        Keyboard.instance.onKeyboardHide().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 document.body.classList.remove('keyboard-is-open');
@@ -95,18 +96,18 @@ export class CoreAppProvider {
                 CoreEvents.instance.trigger(CoreEventsProvider.KEYBOARD_CHANGE, 0);
             });
         });
-        Keyboard.instance.onKeyboardWillShow().subscribe((data) => {
+        Keyboard.instance.onKeyboardWillShow().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
-                this._isKeyboardOpening = true;
-                this._isKeyboardClosing = false;
+                this.keyboardOpening = true;
+                this.keyboardClosing = false;
             });
         });
-        Keyboard.instance.onKeyboardWillHide().subscribe((data) => {
+        Keyboard.instance.onKeyboardWillHide().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
-                this._isKeyboardOpening = false;
-                this._isKeyboardClosing = true;
+                this.keyboardOpening = false;
+                this.keyboardClosing = true;
             });
         });
 
@@ -116,8 +117,8 @@ export class CoreAppProvider {
 
         // Export the app provider and appRef to control the application in Behat tests.
         if (CoreAppProvider.isAutomated()) {
-            (<any> window).appProvider = this;
-            (<any> window).appRef = appRef;
+            (<WindowForAutomatedTests> window).appProvider = this;
+            (<WindowForAutomatedTests> window).appRef = appRef;
         }
     }
 
@@ -145,7 +146,7 @@ export class CoreAppProvider {
      * @return Whether the function is supported.
      */
     canRecordMedia(): boolean {
-        return !!(<any> window).MediaRecorder;
+        return !!window.MediaRecorder;
     }
 
     /**
@@ -163,7 +164,7 @@ export class CoreAppProvider {
      * @param schema The schema to create.
      * @return Promise resolved when done.
      */
-    async createTablesFromSchema(schema: CoreAppSchema): Promise<any> {
+    async createTablesFromSchema(schema: CoreAppSchema): Promise<void> {
         this.logger.debug(`Apply schema to app DB: ${schema.name}`);
 
         let oldVersion;
@@ -173,7 +174,7 @@ export class CoreAppProvider {
             await this.createVersionsTableReady;
 
             // Fetch installed version of the schema.
-            const entry = await this.db.getRecord(this.SCHEMA_VERSIONS_TABLE, {name: schema.name});
+            const entry = await this.db.getRecord(SCHEMA_VERSIONS_TABLE, { name: schema.name });
             oldVersion = entry.version;
         } catch (error) {
             // No installed version yet.
@@ -195,7 +196,7 @@ export class CoreAppProvider {
         }
 
         // Set installed version.
-        await this.db.insertRecord(this.SCHEMA_VERSIONS_TABLE, {name: schema.name, version: schema.version});
+        await this.db.insertRecord(SCHEMA_VERSIONS_TABLE, { name: schema.name, version: schema.version });
     }
 
     /**
@@ -222,7 +223,7 @@ export class CoreAppProvider {
      * @param  storesConfig Config params to send the user to the right place.
      * @return Store URL.
      */
-     getAppStoreUrl(storesConfig: CoreStoreConfig): string {
+    getAppStoreUrl(storesConfig: CoreStoreConfig): string {
         if (this.isMac() && storesConfig.mac) {
             return 'itms-apps://itunes.apple.com/app/' + storesConfig.mac;
         }
@@ -260,9 +261,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in a 64 bits desktop environment (not browser).
      */
     is64Bits(): boolean {
-        const process = (<any> window).process;
-
-        return this.isDesktop() && process.arch == 'x64';
+        return this.isDesktop() && window.process.arch == 'x64';
     }
 
     /**
@@ -280,9 +279,8 @@ export class CoreAppProvider {
      * @return Whether the app is running in a desktop environment (not browser).
      */
     isDesktop(): boolean {
-        const process = (<any> window).process;
-
-        return !!(process && process.versions && typeof process.versions.electron != 'undefined');
+        // @todo
+        return false;
     }
 
     /**
@@ -300,7 +298,7 @@ export class CoreAppProvider {
      * @return Whether keyboard is closing (animating).
      */
     isKeyboardClosing(): boolean {
-        return this._isKeyboardClosing;
+        return this.keyboardClosing;
     }
 
     /**
@@ -309,7 +307,7 @@ export class CoreAppProvider {
      * @return Whether keyboard is opening (animating).
      */
     isKeyboardOpening(): boolean {
-        return this._isKeyboardOpening;
+        return this.keyboardOpening;
     }
 
     /**
@@ -462,8 +460,8 @@ export class CoreAppProvider {
      */
     protected setKeyboardShown(shown: boolean): void {
         this.isKeyboardShown = shown;
-        this._isKeyboardOpening = false;
-        this._isKeyboardClosing = false;
+        this.keyboardOpening = false;
+        this.keyboardClosing = false;
     }
 
     /**
@@ -487,23 +485,15 @@ export class CoreAppProvider {
      * NOT when the browser is opened.
      */
     startSSOAuthentication(): void {
-        let cancelTimeout;
-        let resolvePromise;
+        this.ssoAuthenticationDeferred = CoreUtils.instance.promiseDefer<void>();
 
-        this.ssoAuthenticationPromise = new Promise((resolve, reject): void => {
-            resolvePromise = resolve;
-
-            // Resolve it automatically after 10 seconds (it should never take that long).
-            cancelTimeout = setTimeout(() => {
-                this.finishSSOAuthentication();
-            }, 10000);
-        });
-
-        // Store the resolve function in the promise itself.
-        (<any> this.ssoAuthenticationPromise).resolve = resolvePromise;
+        // Resolve it automatically after 10 seconds (it should never take that long).
+        const cancelTimeout = setTimeout(() => {
+            this.finishSSOAuthentication();
+        }, 10000);
 
         // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
-        this.ssoAuthenticationPromise.then(() => {
+        this.ssoAuthenticationDeferred.promise.then(() => {
             clearTimeout(cancelTimeout);
         });
     }
@@ -512,9 +502,9 @@ export class CoreAppProvider {
      * Finish an SSO authentication process.
      */
     finishSSOAuthentication(): void {
-        if (this.ssoAuthenticationPromise) {
-            (<any> this.ssoAuthenticationPromise).resolve && (<any> this.ssoAuthenticationPromise).resolve();
-            this.ssoAuthenticationPromise = undefined;
+        if (this.ssoAuthenticationDeferred) {
+            this.ssoAuthenticationDeferred.resolve();
+            this.ssoAuthenticationDeferred = undefined;
         }
     }
 
@@ -524,7 +514,7 @@ export class CoreAppProvider {
      * @return Whether there's a SSO authentication ongoing.
      */
     isSSOAuthenticationOngoing(): boolean {
-        return !!this.ssoAuthenticationPromise;
+        return !!this.ssoAuthenticationDeferred;
     }
 
     /**
@@ -532,8 +522,8 @@ export class CoreAppProvider {
      *
      * @return Promise resolved once SSO authentication finishes.
      */
-    waitForSSOAuthentication(): Promise<any> {
-        return this.ssoAuthenticationPromise || Promise.resolve();
+    async waitForSSOAuthentication(): Promise<void> {
+        await this.ssoAuthenticationDeferred && this.ssoAuthenticationDeferred.promise;
     }
 
     /**
@@ -542,27 +532,24 @@ export class CoreAppProvider {
      * @param timeout Maximum time to wait, use null to wait forever.
      */
     async waitForResume(timeout: number | null = null): Promise<void> {
-        let resolve: (value?: any) => void;
-        let resumeSubscription: any;
-        let timeoutId: NodeJS.Timer | false;
+        let deferred = CoreUtils.instance.promiseDefer<void>();
 
-        const promise = new Promise((r): any => resolve = r);
-        const stopWaiting = (): any => {
-            if (!resolve) {
+        const stopWaiting = () => {
+            if (!deferred) {
                 return;
             }
 
-            resolve();
+            deferred.resolve();
             resumeSubscription.unsubscribe();
             timeoutId && clearTimeout(timeoutId);
 
-            resolve = null;
+            deferred = null;
         };
 
-        resumeSubscription = Platform.instance.resume.subscribe(stopWaiting);
-        timeoutId = timeout ? setTimeout(stopWaiting, timeout) : false;
+        const resumeSubscription = Platform.instance.resume.subscribe(stopWaiting);
+        const timeoutId = timeout ? setTimeout(stopWaiting, timeout) : false;
 
-        await promise;
+        await deferred.promise;
     }
 
     /**
@@ -626,23 +613,19 @@ export class CoreAppProvider {
      * button is pressed. This method decides which of the registered back button
      * actions has the highest priority and should be called.
      *
-     * @param fn Called when the back button is pressed,
-     *           if this registered action has the highest priority.
+     * @param callback Called when the back button is pressed, if this registered action has the highest priority.
      * @param priority Set the priority for this action. All actions sorted by priority will be executed since one of
      *                 them returns true.
-     *                 * Priorities higher or equal than 1000 will go before closing modals
-     *                 * Priorities lower than 500 will only be executed if you are in the first state of the app (before exit).
-     * @return A function that, when called, will unregister
-     *         the back button action.
+     *                 - Priorities higher or equal than 1000 will go before closing modals
+     *                 - Priorities lower than 500 will only be executed if you are in the first state of the app (before exit).
+     * @return A function that, when called, will unregister the back button action.
      */
-    registerBackButtonAction(fn: any, priority: number = 0): any {
-        const action = { fn, priority };
+    registerBackButtonAction(callback: () => boolean, priority: number = 0): () => boolean {
+        const action = { callback, priority };
 
         this.backActions.push(action);
 
-        this.backActions.sort((a, b) => {
-            return b.priority - a.priority;
-        });
+        this.backActions.sort((a, b) => b.priority - a.priority);
 
         return (): boolean => {
             const index = this.backActions.indexOf(action);
@@ -700,6 +683,7 @@ export class CoreAppProvider {
     setForceOffline(value: boolean): void {
         this.forceOffline = !!value;
     }
+
 }
 
 export class CoreApp extends makeSingleton(CoreAppProvider) {}
@@ -802,5 +786,13 @@ export type CoreAppSchema = {
      * @param oldVersion Old version of the schema or 0 if not installed.
      * @return Promise resolved when done.
      */
-    migrate?(db: SQLiteDB, oldVersion: number): Promise<any>;
+    migrate?(db: SQLiteDB, oldVersion: number): Promise<void>;
+};
+
+/**
+ * Extended window type for automated tests.
+ */
+export type WindowForAutomatedTests = Window & {
+    appProvider?: CoreAppProvider;
+    appRef?: ApplicationRef;
 };
