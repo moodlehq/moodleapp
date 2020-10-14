@@ -33,46 +33,47 @@ export interface CoreEventObserver {
  */
 @Injectable()
 export class CoreEventsProvider {
-    static SESSION_EXPIRED = 'session_expired';
-    static PASSWORD_CHANGE_FORCED = 'password_change_forced';
-    static USER_NOT_FULLY_SETUP = 'user_not_fully_setup';
-    static SITE_POLICY_NOT_AGREED = 'site_policy_not_agreed';
-    static LOGIN = 'login';
-    static LOGOUT = 'logout';
-    static LANGUAGE_CHANGED = 'language_changed';
-    static NOTIFICATION_SOUND_CHANGED = 'notification_sound_changed';
-    static SITE_ADDED = 'site_added';
-    static SITE_UPDATED = 'site_updated';
-    static SITE_DELETED = 'site_deleted';
-    static COMPLETION_MODULE_VIEWED = 'completion_module_viewed';
-    static USER_DELETED = 'user_deleted';
-    static PACKAGE_STATUS_CHANGED = 'package_status_changed';
-    static COURSE_STATUS_CHANGED = 'course_status_changed';
-    static SECTION_STATUS_CHANGED = 'section_status_changed';
-    static COMPONENT_FILE_ACTION = 'component_file_action';
-    static SITE_PLUGINS_LOADED = 'site_plugins_loaded';
-    static SITE_PLUGINS_COURSE_RESTRICT_UPDATED = 'site_plugins_course_restrict_updated';
-    static LOGIN_SITE_CHECKED = 'login_site_checked';
-    static LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
-    static IAB_LOAD_START = 'inappbrowser_load_start';
-    static IAB_EXIT = 'inappbrowser_exit';
-    static APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
-    static FILE_SHARED = 'file_shared';
-    static KEYBOARD_CHANGE = 'keyboard_change';
-    static CORE_LOADING_CHANGED = 'core_loading_changed';
-    static ORIENTATION_CHANGE = 'orientation_change';
-    static LOAD_PAGE_MAIN_MENU = 'load_page_main_menu';
-    static SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
-    static MAIN_MENU_OPEN = 'main_menu_open';
-    static SELECT_COURSE_TAB = 'select_course_tab';
-    static WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
-    static SITE_STORAGE_DELETED = 'site_storage_deleted';
-    static FORM_ACTION = 'form_action';
-    static ACTIVITY_DATA_SENT = 'activity_data_sent';
+
+    static readonly SESSION_EXPIRED = 'session_expired';
+    static readonly PASSWORD_CHANGE_FORCED = 'password_change_forced';
+    static readonly USER_NOT_FULLY_SETUP = 'user_not_fully_setup';
+    static readonly SITE_POLICY_NOT_AGREED = 'site_policy_not_agreed';
+    static readonly LOGIN = 'login';
+    static readonly LOGOUT = 'logout';
+    static readonly LANGUAGE_CHANGED = 'language_changed';
+    static readonly NOTIFICATION_SOUND_CHANGED = 'notification_sound_changed';
+    static readonly SITE_ADDED = 'site_added';
+    static readonly SITE_UPDATED = 'site_updated';
+    static readonly SITE_DELETED = 'site_deleted';
+    static readonly COMPLETION_MODULE_VIEWED = 'completion_module_viewed';
+    static readonly USER_DELETED = 'user_deleted';
+    static readonly PACKAGE_STATUS_CHANGED = 'package_status_changed';
+    static readonly COURSE_STATUS_CHANGED = 'course_status_changed';
+    static readonly SECTION_STATUS_CHANGED = 'section_status_changed';
+    static readonly COMPONENT_FILE_ACTION = 'component_file_action';
+    static readonly SITE_PLUGINS_LOADED = 'site_plugins_loaded';
+    static readonly SITE_PLUGINS_COURSE_RESTRICT_UPDATED = 'site_plugins_course_restrict_updated';
+    static readonly LOGIN_SITE_CHECKED = 'login_site_checked';
+    static readonly LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
+    static readonly IAB_LOAD_START = 'inappbrowser_load_start';
+    static readonly IAB_EXIT = 'inappbrowser_exit';
+    static readonly APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
+    static readonly FILE_SHARED = 'file_shared';
+    static readonly KEYBOARD_CHANGE = 'keyboard_change';
+    static readonly CORE_LOADING_CHANGED = 'core_loading_changed';
+    static readonly ORIENTATION_CHANGE = 'orientation_change';
+    static readonly LOAD_PAGE_MAIN_MENU = 'load_page_main_menu';
+    static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
+    static readonly MAIN_MENU_OPEN = 'main_menu_open';
+    static readonly SELECT_COURSE_TAB = 'select_course_tab';
+    static readonly WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
+    static readonly SITE_STORAGE_DELETED = 'site_storage_deleted';
+    static readonly FORM_ACTION = 'form_action';
+    static readonly ACTIVITY_DATA_SENT = 'activity_data_sent';
 
     protected logger: CoreLogger;
-    protected observables: { [s: string]: Subject<any> } = {};
-    protected uniqueEvents = {};
+    protected observables: { [eventName: string]: Subject<unknown> } = {};
+    protected uniqueEvents: { [eventName: string]: {data: unknown} } = {};
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreEventsProvider');
@@ -89,7 +90,7 @@ export class CoreEventsProvider {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    on(eventName: string, callBack: (value: any) => void, siteId?: string): CoreEventObserver {
+    on(eventName: string, callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
@@ -99,7 +100,7 @@ export class CoreEventsProvider {
             return {
                 off: (): void => {
                     // Nothing to do.
-                }
+                },
             };
         }
 
@@ -107,10 +108,10 @@ export class CoreEventsProvider {
 
         if (typeof this.observables[eventName] == 'undefined') {
             // No observable for this event, create a new one.
-            this.observables[eventName] = new Subject<any>();
+            this.observables[eventName] = new Subject<unknown>();
         }
 
-        const subscription = this.observables[eventName].subscribe((value: any) => {
+        const subscription = this.observables[eventName].subscribe((value: {siteId?: string; [key: string]: unknown}) => {
             if (!siteId || value.siteId == siteId) {
                 callBack(value);
             }
@@ -121,7 +122,7 @@ export class CoreEventsProvider {
             off: (): void => {
                 this.logger.debug(`Stop listening to event '${eventName}'`);
                 subscription.unsubscribe();
-            }
+            },
         };
     }
 
@@ -136,11 +137,8 @@ export class CoreEventsProvider {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    onMultiple(eventNames: string[], callBack: (value: any) => void, siteId?: string): CoreEventObserver {
-
-        const observers = eventNames.map((name) => {
-            return this.on(name, callBack, siteId);
-        });
+    onMultiple(eventNames: string[], callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
+        const observers = eventNames.map((name) => this.on(name, callBack, siteId));
 
         // Create and return a CoreEventObserver.
         return {
@@ -148,7 +146,7 @@ export class CoreEventsProvider {
                 observers.forEach((observer) => {
                     observer.off();
                 });
-            }
+            },
         };
     }
 
@@ -159,14 +157,11 @@ export class CoreEventsProvider {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    trigger(eventName: string, data?: any, siteId?: string): void {
+    trigger(eventName: string, data?: unknown, siteId?: string): void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
             if (siteId) {
-                if (!data) {
-                    data = {};
-                }
-                data.siteId = siteId;
+                data = Object.assign(data || {}, { siteId });
             }
             this.observables[eventName].next(data);
         }
@@ -179,17 +174,14 @@ export class CoreEventsProvider {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    triggerUnique(eventName: string, data: any, siteId?: string): void {
+    triggerUnique(eventName: string, data: unknown, siteId?: string): void {
         if (this.uniqueEvents[eventName]) {
             this.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
         } else {
             this.logger.debug(`Unique event '${eventName}' triggered.`);
 
             if (siteId) {
-                if (!data) {
-                    data = {};
-                }
-                data.siteId = siteId;
+                data = Object.assign(data || {}, { siteId });
             }
 
             // Store the data so it can be passed to observers that register from now on.
@@ -203,6 +195,7 @@ export class CoreEventsProvider {
             }
         }
     }
+
 }
 
 export class CoreEvents extends makeSingleton(CoreEventsProvider) {}
