@@ -24,9 +24,7 @@ import { makeSingleton, SQLite, Platform } from '@singletons/core.singletons';
 @Injectable()
 export class CoreDbProvider {
 
-    protected dbInstances = {};
-
-    constructor() { }
+    protected dbInstances: {[name: string]: SQLiteDB} = {};
 
     /**
      * Get or create a database object.
@@ -55,31 +53,31 @@ export class CoreDbProvider {
      * @param name DB name.
      * @return Promise resolved when the DB is deleted.
      */
-    deleteDB(name: string): Promise<any> {
-        let promise;
-
+    async deleteDB(name: string): Promise<void> {
         if (typeof this.dbInstances[name] != 'undefined') {
             // Close the database first.
-            promise = this.dbInstances[name].close();
-        } else {
-            promise = Promise.resolve();
-        }
+            await this.dbInstances[name].close();
 
-        return promise.then(() => {
             const db = this.dbInstances[name];
             delete this.dbInstances[name];
 
-            if (Platform.instance.is('cordova')) {
-                return SQLite.instance.deleteDatabase({
-                    name,
-                    location: 'default'
-                });
-            } else {
+            if (db instanceof SQLiteDBMock) {
                 // In WebSQL we cannot delete the database, just empty it.
                 return db.emptyDatabase();
+            } else {
+                return SQLite.instance.deleteDatabase({
+                    name,
+                    location: 'default',
+                });
             }
-        });
+        } else if (Platform.instance.is('cordova')) {
+            return SQLite.instance.deleteDatabase({
+                name,
+                location: 'default',
+            });
+        }
     }
+
 }
 
 export class CoreDB extends makeSingleton(CoreDbProvider) {}
