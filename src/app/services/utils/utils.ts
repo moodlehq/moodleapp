@@ -21,10 +21,11 @@ import { CoreApp } from '@services/app';
 import { CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreFile } from '@services/file';
 import { CoreLang } from '@services/lang';
-import { CoreWS, CoreWSError, CoreWSExternalFile } from '@services/ws';
+import { CoreWS, CoreWSExternalFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreWSError } from '@classes/errors/wserror';
 import {
     makeSingleton, Clipboard, InAppBrowser, Platform, FileOpener, WebIntent, QRScanner, Translate,
 } from '@singletons/core.singletons';
@@ -325,6 +326,7 @@ export class CoreUtilsProvider {
      * @param message The message to include in the error.
      * @param needsTranslate If the message needs to be translated.
      * @return Fake WS error.
+     * @deprecated since 3.9.5. Just create the error directly.
      */
     createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
         return CoreWS.instance.createFakeWSError(message, needsTranslate);
