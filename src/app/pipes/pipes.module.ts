@@ -28,6 +28,6 @@ import { CoreTimeAgoPipe } from './time-ago.pipe';
         CoreCreateLinksPipe,
         CoreNoTagsPipe,
         CoreTimeAgoPipe,
-    ]
+    ],
 })
 export class CorePipesModule {}

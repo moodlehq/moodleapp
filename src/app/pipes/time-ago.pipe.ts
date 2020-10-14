@@ -24,6 +24,7 @@ import moment from 'moment';
     name: 'coreTimeAgo',
 })
 export class CoreTimeAgoPipe implements PipeTransform {
+
     private logger: CoreLogger;
 
     constructor() {
@@ -48,6 +49,7 @@ export class CoreTimeAgoPipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        return Translate.instance.instant('core.ago', {$a: moment(timestamp * 1000).fromNow(true)});
+        return Translate.instance.instant('core.ago', { $a: moment(timestamp * 1000).fromNow(true) });
     }
+
 }

@@ -15,6 +15,7 @@
 import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
 import { SQLite, Platform } from '@singletons/core.singletons';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Schema of a table.
@@ -411,6 +412,7 @@ export class SQLiteDB {
      * @param params Query parameters.
      * @return Promise resolved with the result.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(sql: string, params?: SQLiteDBRecordValue[]): Promise<any> {
         await this.ready();
 
@@ -425,7 +427,8 @@ export class SQLiteDB {
      * @param sqlStatements SQL statements to execute.
      * @return Promise resolved with the result.
      */
-    async executeBatch(sqlStatements: (string | SQLiteDBRecordValue[])[][]): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async executeBatch(sqlStatements: (string | string[] | any)[]): Promise<void> {
         await this.ready();
 
         await this.db.sqlBatch(sqlStatements);
@@ -453,9 +456,10 @@ export class SQLiteDB {
      * Format the data to where params.
      *
      * @param data Object data.
+     * @return List of params.
      */
     protected formatDataToSQLParams(data: SQLiteDBRecordValues): SQLiteDBRecordValue[] {
-        return  Object.keys(data).map((key) => data[key]);
+        return Object.keys(data).map((key) => data[key]);
     }
 
     /**
@@ -464,7 +468,7 @@ export class SQLiteDB {
      * @param table The table to query.
      * @return Promise resolved with the records.
      */
-    async getAllRecords(table: string): Promise<SQLiteDBRecordValues[]> {
+    async getAllRecords<T = unknown>(table: string): Promise<T[]> {
         return this.getRecords(table);
     }
 
@@ -510,7 +514,7 @@ export class SQLiteDB {
     async getFieldSql(sql: string, params?: SQLiteDBRecordValue[]): Promise<SQLiteDBRecordValue> {
         const record = await this.getRecordSql(sql, params);
         if (!record) {
-            throw null;
+            throw new CoreError('No record found.');
         }
 
         return record[Object.keys(record)[0]];
@@ -574,10 +578,10 @@ export class SQLiteDB {
      * @param fields A comma separated list of fields to return.
      * @return Promise resolved with the record, rejected if not found.
      */
-    getRecord(table: string, conditions?: SQLiteDBRecordValues, fields: string = '*'): Promise<SQLiteDBRecordValues> {
+    getRecord<T = unknown>(table: string, conditions?: SQLiteDBRecordValues, fields: string = '*'): Promise<T> {
         const selectAndParams = this.whereClause(conditions);
 
-        return this.getRecordSelect(table, selectAndParams[0], selectAndParams[1], fields);
+        return this.getRecordSelect<T>(table, selectAndParams[0], selectAndParams[1], fields);
     }
 
     /**
@@ -589,13 +593,13 @@ export class SQLiteDB {
      * @param fields A comma separated list of fields to return.
      * @return Promise resolved with the record, rejected if not found.
      */
-    getRecordSelect(table: string, select: string = '', params: SQLiteDBRecordValue[] = [], fields: string = '*'):
-            Promise<SQLiteDBRecordValues> {
+    getRecordSelect<T = unknown>(table: string, select: string = '', params: SQLiteDBRecordValue[] = [], fields: string = '*'):
+            Promise<T> {
         if (select) {
             select = ' WHERE ' + select;
         }
 
-        return this.getRecordSql(`SELECT ${fields} FROM ${table} ${select}`, params);
+        return this.getRecordSql<T>(`SELECT ${fields} FROM ${table} ${select}`, params);
     }
 
     /**
@@ -608,11 +612,11 @@ export class SQLiteDB {
      * @param params List of sql parameters
      * @return Promise resolved with the records.
      */
-    async getRecordSql(sql: string, params?: SQLiteDBRecordValue[]): Promise<SQLiteDBRecordValues> {
-        const result = await this.getRecordsSql(sql, params, 0, 1);
+    async getRecordSql<T = unknown>(sql: string, params?: SQLiteDBRecordValue[]): Promise<T> {
+        const result = await this.getRecordsSql<T>(sql, params, 0, 1);
         if (!result || !result.length) {
             // Not found, reject.
-            throw null;
+            throw new CoreError('No records found.');
         }
 
         return result[0];
@@ -629,11 +633,11 @@ export class SQLiteDB {
      * @param limitNum Return a subset comprising this many records in total.
      * @return Promise resolved with the records.
      */
-    getRecords(table: string, conditions?: SQLiteDBRecordValues, sort: string = '', fields: string = '*', limitFrom: number = 0,
-            limitNum: number = 0): Promise<SQLiteDBRecordValues[]> {
+    getRecords<T = unknown>(table: string, conditions?: SQLiteDBRecordValues, sort: string = '', fields: string = '*',
+            limitFrom: number = 0, limitNum: number = 0): Promise<T[]> {
         const selectAndParams = this.whereClause(conditions);
 
-        return this.getRecordsSelect(table, selectAndParams[0], selectAndParams[1], sort, fields, limitFrom, limitNum);
+        return this.getRecordsSelect<T>(table, selectAndParams[0], selectAndParams[1], sort, fields, limitFrom, limitNum);
     }
 
     /**
@@ -648,11 +652,11 @@ export class SQLiteDB {
      * @param limitNum Return a subset comprising this many records in total.
      * @return Promise resolved with the records.
      */
-    getRecordsList(table: string, field: string, values: SQLiteDBRecordValue[], sort: string = '', fields: string = '*',
-            limitFrom: number = 0, limitNum: number = 0): Promise<SQLiteDBRecordValues[]> {
+    getRecordsList<T = unknown>(table: string, field: string, values: SQLiteDBRecordValue[], sort: string = '',
+            fields: string = '*', limitFrom: number = 0, limitNum: number = 0): Promise<T[]> {
         const selectAndParams = this.whereClauseList(field, values);
 
-        return this.getRecordsSelect(table, selectAndParams[0], selectAndParams[1], sort, fields, limitFrom, limitNum);
+        return this.getRecordsSelect<T>(table, selectAndParams[0], selectAndParams[1], sort, fields, limitFrom, limitNum);
     }
 
     /**
@@ -667,8 +671,8 @@ export class SQLiteDB {
      * @param limitNum Return a subset comprising this many records in total.
      * @return Promise resolved with the records.
      */
-    getRecordsSelect(table: string, select: string = '', params: SQLiteDBRecordValue[] = [], sort: string = '',
-            fields: string = '*', limitFrom: number = 0, limitNum: number = 0): Promise<SQLiteDBRecordValues[]> {
+    getRecordsSelect<T = unknown>(table: string, select: string = '', params: SQLiteDBRecordValue[] = [], sort: string = '',
+            fields: string = '*', limitFrom: number = 0, limitNum: number = 0): Promise<T[]> {
         if (select) {
             select = ' WHERE ' + select;
         }
@@ -678,7 +682,7 @@ export class SQLiteDB {
 
         const sql = `SELECT ${fields} FROM ${table} ${select} ${sort}`;
 
-        return this.getRecordsSql(sql, params, limitFrom, limitNum);
+        return this.getRecordsSql<T>(sql, params, limitFrom, limitNum);
     }
 
     /**
@@ -690,8 +694,8 @@ export class SQLiteDB {
      * @param limitNum Return a subset comprising this many records.
      * @return Promise resolved with the records.
      */
-    async getRecordsSql(sql: string, params?: SQLiteDBRecordValue[], limitFrom?: number, limitNum?: number):
-            Promise<SQLiteDBRecordValues[]> {
+    async getRecordsSql<T = unknown>(sql: string, params?: SQLiteDBRecordValue[], limitFrom?: number, limitNum?: number):
+            Promise<T[]> {
         const limits = this.normaliseLimitFromNum(limitFrom, limitNum);
 
         if (limits[0] || limits[1]) {
@@ -768,7 +772,7 @@ export class SQLiteDB {
      */
     async insertRecords(table: string, dataObjects: SQLiteDBRecordValues[]): Promise<void> {
         if (!Array.isArray(dataObjects)) {
-           throw null;
+           throw new CoreError('Invalid parameter supplied to insertRecords, it should be an array.');
         }
 
         const statements = dataObjects.map((dataObject) => {
@@ -854,7 +858,7 @@ export class SQLiteDB {
     async recordExists(table: string, conditions?: SQLiteDBRecordValues): Promise<void> {
         const record = await this.getRecord(table, conditions);
         if (!record) {
-            throw null;
+            throw new CoreError('Record does not exist.');
         }
     }
 
@@ -869,7 +873,7 @@ export class SQLiteDB {
     async recordExistsSelect(table: string, select: string = '', params: SQLiteDBRecordValue[] = []): Promise<void> {
         const record = await this.getRecordSelect(table, select, params);
         if (!record) {
-            throw null;
+            throw new CoreError('Record does not exist.');
         }
     }
 
@@ -883,7 +887,7 @@ export class SQLiteDB {
     async recordExistsSql(sql: string, params?: SQLiteDBRecordValue[]): Promise<void> {
         const record = await this.getRecordSql(sql, params);
         if (!record) {
-            throw null;
+            throw new CoreError('Record does not exist.');
         }
     }
 

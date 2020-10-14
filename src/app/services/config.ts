@@ -81,7 +81,7 @@ export class CoreConfigProvider {
         await this.dbReady;
 
         try {
-            const entry = await this.appDB.getRecord(TABLE_NAME, { name });
+            const entry = await this.appDB.getRecord<ConfigDBEntry>(TABLE_NAME, { name });
 
             return entry.value;
         } catch (error) {
@@ -109,3 +109,9 @@ export class CoreConfigProvider {
 }
 
 export class CoreConfig extends makeSingleton(CoreConfigProvider) {}
+
+type ConfigDBEntry = {
+    name: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any;
+};

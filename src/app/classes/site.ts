@@ -23,7 +23,7 @@ import { CoreWS, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets, Core
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrlUtils, CoreUrlParams } from '@services/utils/url';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
 import CoreConfigConstants from '@app/config.json';
@@ -857,7 +857,7 @@ export class CoreSite {
         let promise: Promise<any>;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            promise = this.db.getRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
+            promise = this.db.getRecords<any>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
                 if (!entries.length) {
                     // Cache key not found, get by params sent.
                     return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
@@ -901,7 +901,7 @@ export class CoreSite {
                     this.logger.info(`Cached element found, id: ${id}. Expires in expires in ${expires} seconds`);
                 }
 
-                return CoreTextUtils.instance.parseJSON(entry.data, {});
+                return <T> CoreTextUtils.instance.parseJSON(entry.data, {});
             }
 
             return Promise.reject(new CoreError('Cache entry not valid.'));
@@ -915,7 +915,7 @@ export class CoreSite {
      * @param componentId Optional component id (if not included, returns sum for whole component)
      * @return Promise resolved when we have calculated the size
      */
-    getComponentCacheSize(component: string, componentId?: number): Promise<number> {
+    async getComponentCacheSize(component: string, componentId?: number): Promise<number> {
         const params: Array<string | number> = [component];
         let extraClause = '';
         if (componentId !== undefined && componentId !== null) {
@@ -923,8 +923,10 @@ export class CoreSite {
             extraClause = ' AND componentId = ?';
         }
 
-        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE +
+        const size = <number> await this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE +
                 ' WHERE component = ?' + extraClause, params);
+
+        return size;
     }
 
     /**
@@ -1018,7 +1020,7 @@ export class CoreSite {
             params['componentId'] = componentId;
         }
 
-        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
+        await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
     }
 
     /*
@@ -1192,8 +1194,10 @@ export class CoreSite {
      *
      * @return Promise resolved with the total size of all data in the cache table (bytes)
      */
-    getCacheUsage(): Promise<number> {
-        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+    async getCacheUsage(): Promise<number> {
+        const size = <number> await this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+
+        return size;
     }
 
     /**
@@ -1228,7 +1232,7 @@ export class CoreSite {
      * @param anchor Anchor text if needed.
      * @return URL with params.
      */
-    createSiteUrl(path: string, params?: {[key: string]: unknown}, anchor?: string): string {
+    createSiteUrl(path: string, params?: CoreUrlParams, anchor?: string): string {
         return CoreUrlUtils.instance.addParamsToUrl(this.siteUrl + path, params, anchor);
     }
 
@@ -1797,7 +1801,8 @@ export class CoreSite {
      * @return Resolves upon success along with the config data. Reject on failure.
      */
     getLocalSiteConfig<T extends number | string>(name: string, defaultValue?: T): Promise<T> {
-        return this.db.getRecord(CoreSite.CONFIG_TABLE, { name }).then((entry) => entry.value).catch((error) => {
+        return this.db.getRecord<CoreSiteConfigDBRecord>(CoreSite.CONFIG_TABLE, { name }).then((entry) => <T> entry.value)
+                .catch((error) => {
             if (typeof defaultValue != 'undefined') {
                 return defaultValue;
             }
@@ -2150,4 +2155,9 @@ export type CoreSiteCallExternalFunctionsResult = {
         data?: string; // JSON-encoded response data.
         exception?: string; // JSON-encoed exception info.
     }[];
+};
+
+export type CoreSiteConfigDBRecord = {
+    name: string;
+    value: string | number;
 };

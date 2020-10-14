@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams } from '@angular/common/http';
 
+import { FileEntry } from '@ionic-native/file';
 import { FileUploadOptions } from '@ionic-native/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable } from 'rxjs';

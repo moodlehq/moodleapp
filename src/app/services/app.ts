@@ -174,7 +174,8 @@ export class CoreAppProvider {
             await this.createVersionsTableReady;
 
             // Fetch installed version of the schema.
-            const entry = await this.db.getRecord(SCHEMA_VERSIONS_TABLE, { name: schema.name });
+            const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE, { name: schema.name });
+
             oldVersion = entry.version;
         } catch (error) {
             // No installed version yet.
@@ -795,4 +796,9 @@ export type CoreAppSchema = {
 export type WindowForAutomatedTests = Window & {
     appProvider?: CoreAppProvider;
     appRef?: ApplicationRef;
+};
+
+type SchemaVersionsDBEntry = {
+    name: string;
+    version: number;
 };

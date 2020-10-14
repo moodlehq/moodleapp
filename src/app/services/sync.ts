@@ -132,7 +132,7 @@ export class CoreSyncProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Record if found or reject.
      */
-    getSyncRecord(component: string, id: string | number, siteId?: string): Promise<Record<string, unknown>> {
+    getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
         return CoreSites.instance.getSiteDb(siteId).then((db) => db.getRecord(SYNC_TABLE, { component: component, id: id }));
     }
 
@@ -145,8 +145,7 @@ export class CoreSyncProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with done.
      */
-    async insertOrUpdateSyncRecord(component: string, id: string | number, data: Record<string, unknown>, siteId?: string):
-            Promise<void> {
+    async insertOrUpdateSyncRecord(component: string, id: string, data: CoreSyncRecord, siteId?: string): Promise<void> {
         const db = await CoreSites.instance.getSiteDb(siteId);
 
         data.component = component;
@@ -212,3 +211,10 @@ export class CoreSyncProvider {
 }
 
 export class CoreSync extends makeSingleton(CoreSyncProvider) {}
+
+export type CoreSyncRecord = {
+    component: string;
+    id: string;
+    time: number;
+    warnings: string;
+};

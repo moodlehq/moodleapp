@@ -424,18 +424,16 @@ export class CoreUrlUtilsProvider {
     isLocalFileUrl(url: string): boolean {
         const urlParts = CoreUrl.parse(url);
 
-        return this.isLocalFileUrlScheme(urlParts.protocol, urlParts.domain);
+        return this.isLocalFileUrlScheme(urlParts.protocol);
     }
 
     /**
      * Check whether a URL scheme belongs to a local file.
      *
      * @param scheme Scheme to check.
-     * @param notUsed Unused parameter.
      * @return Whether the scheme belongs to a local file.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isLocalFileUrlScheme(scheme: string, notUsed?: string): boolean {
+    isLocalFileUrlScheme(scheme: string): boolean {
         if (scheme) {
             scheme = scheme.toLowerCase();
         }

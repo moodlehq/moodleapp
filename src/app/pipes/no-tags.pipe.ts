@@ -31,4 +31,5 @@ export class CoreNoTagsPipe implements PipeTransform {
     transform(text: string): string {
         return text.replace(/(<([^>]+)>)/ig, '');
     }
+
 }

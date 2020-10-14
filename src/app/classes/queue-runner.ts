@@ -17,11 +17,13 @@ import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 /**
  * Function to add to the queue.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CoreQueueRunnerFunction<T> = (...args: any[]) => T | Promise<T>;
 
 /**
  * Queue item.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CoreQueueRunnerItem<T = any> = {
     /**
      * Item ID.

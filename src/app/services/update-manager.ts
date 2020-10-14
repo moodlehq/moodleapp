@@ -51,7 +51,7 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         const promises = [];
         const versionCode = CoreConfigConstants.versioncode;
 
-        const versionApplied: number = await CoreConfig.instance.get(VERSION_APPLIED, 0);
+        const versionApplied = await CoreConfig.instance.get<number>(VERSION_APPLIED, 0);
 
         if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
             // @todo: H5P update.

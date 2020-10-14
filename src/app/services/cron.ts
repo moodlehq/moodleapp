@@ -64,7 +64,7 @@ export class CoreCronDelegate {
     protected appDB: SQLiteDB;
     protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected handlers: { [s: string]: CoreCronHandler } = {};
-    protected queuePromise = Promise.resolve();
+    protected queuePromise: Promise<void> = Promise.resolve();
 
     constructor(zone: NgZone) {
         this.logger = CoreLogger.getInstance('CoreCronDelegate');
@@ -271,8 +271,9 @@ export class CoreCronDelegate {
         const id = this.getHandlerLastExecutionId(name);
 
         try {
-            const entry = await this.appDB.getRecord(CRON_TABLE, { id });
-            const time = parseInt(entry.value, 10);
+            const entry = await this.appDB.getRecord<CronDBEntry>(CRON_TABLE, { id });
+
+            const time = Number(entry.value);
 
             return isNaN(time) ? 0 : time;
         } catch (err) {
@@ -572,4 +573,9 @@ export interface CoreCronHandler {
  */
 export type WindowForAutomatedTests = Window & {
     cronProvider?: CoreCronDelegate;
+};
+
+type CronDBEntry = {
+    id: string;
+    value: number;
 };

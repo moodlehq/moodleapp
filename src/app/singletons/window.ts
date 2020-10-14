@@ -24,6 +24,7 @@ export type CoreWindowOpenOptions = {
     /**
      * NavController to use when opening the link in the app.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     navCtrl?: any; // @todo NavController;
 };
 
@@ -36,7 +37,7 @@ export class CoreWindow {
     private constructor() {
         // Nothing to do.
     }
-    
+
     /**
      * "Safe" implementation of window.open. It will open the URL without overriding the app.
      *
@@ -60,11 +61,13 @@ export class CoreWindow {
             await CoreUtils.instance.openFile(url);
         } else {
             let treated: boolean;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             options = options || {};
 
             if (name != '_system') {
                 // Check if it can be opened in the app.
-                treated = false; // @todo await CoreContentLinksHelper.instance.handleLink(url, undefined, options.navCtrl, true, true);
+                treated = false;
+                // @todo await CoreContentLinksHelper.instance.handleLink(url, undefined, options.navCtrl, true, true);
             }
 
             if (!treated) {
