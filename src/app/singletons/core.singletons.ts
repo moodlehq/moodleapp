@@ -30,7 +30,6 @@ import { File as FileService } from '@ionic-native/file/ngx';
 import { FileOpener as FileOpenerService } from '@ionic-native/file-opener/ngx';
 import { FileTransfer as FileTransferService } from '@ionic-native/file-transfer/ngx';
 import { Geolocation as GeolocationService } from '@ionic-native/geolocation/ngx';
-import { Globalization as GlobalizationService } from '@ionic-native/globalization/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
 import { InAppBrowser as InAppBrowserService } from '@ionic-native/in-app-browser/ngx';
 import { WebView as WebViewService } from '@ionic-native/ionic-webview/ngx';
@@ -78,7 +77,6 @@ export class File extends makeSingleton(FileService) {}
 export class FileOpener extends makeSingleton(FileOpenerService) {}
 export class FileTransfer extends makeSingleton(FileTransferService) {}
 export class Geolocation extends makeSingleton(GeolocationService) {}
-export class Globalization extends makeSingleton(GlobalizationService) {}
 export class InAppBrowser extends makeSingleton(InAppBrowserService) {}
 export class Keyboard extends makeSingleton(KeyboardService) {}
 export class LocalNotifications extends makeSingleton(LocalNotificationsService) {}
