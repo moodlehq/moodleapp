@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '';
-
-declare global {
-
-    interface Window {
-
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        __Zone_disable_customElements: boolean;
-
-    }
-
-}
+import { Pipe, PipeTransform } from '@angular/core';
 
 /**
- * Course base definition.
+ * Pipe to remove HTML tags.
  */
-export type CoreCourseBase = {
-    id: number; // Course Id.
-};
+@Pipe({
+    name: 'coreNoTags',
+})
+export class CoreNoTagsPipe implements PipeTransform {
+
+    /**
+     * Takes a text and removes HTML tags.
+     *
+     * @param text The text to treat.
+     * @return Treated text.
+     */
+    transform(text: string): string {
+        return text.replace(/(<([^>]+)>)/ig, '');
+    }
+}

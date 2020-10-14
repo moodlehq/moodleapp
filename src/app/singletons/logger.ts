@@ -27,11 +27,17 @@ import { environment } from '@/environments/environment';
  * Then you can call the log function you want to use in this logger instance.
  */
 export class CoreLogger {
+
     log: LogFunction;
     info: LogFunction;
     warn: LogFunction;
     debug: LogFunction;
     error: LogFunction;
+
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Get a logger instance for a certain class, service or component.
@@ -88,6 +94,7 @@ export class CoreLogger {
             logFn.apply(null, args);
         };
     }
+
 }
 
 /**

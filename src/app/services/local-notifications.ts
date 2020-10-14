@@ -18,7 +18,7 @@ import { ILocalNotification } from '@ionic-native/local-notifications';
 
 import { CoreApp, CoreAppSchema } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEventObserver, CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
@@ -33,56 +33,57 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Injectable()
 export class CoreLocalNotificationsProvider {
+
     // Variables for the database.
-    protected SITES_TABLE = 'notification_sites'; // Store to asigne unique codes to each site.
-    protected COMPONENTS_TABLE = 'notification_components'; // Store to asigne unique codes to each component.
-    protected TRIGGERED_TABLE = 'notifications_triggered'; // Store to prevent re-triggering notifications.
+    protected static readonly SITES_TABLE = 'notification_sites'; // Store to asigne unique codes to each site.
+    protected static readonly COMPONENTS_TABLE = 'notification_components'; // Store to asigne unique codes to each component.
+    protected static readonly TRIGGERED_TABLE = 'notifications_triggered'; // Store to prevent re-triggering notifications.
     protected tablesSchema: CoreAppSchema = {
         name: 'CoreLocalNotificationsProvider',
         version: 1,
         tables: [
             {
-                name: this.SITES_TABLE,
+                name: CoreLocalNotificationsProvider.SITES_TABLE,
                 columns: [
                     {
                         name: 'id',
                         type: 'TEXT',
-                        primaryKey: true
+                        primaryKey: true,
                     },
                     {
                         name: 'code',
                         type: 'INTEGER',
-                        notNull: true
+                        notNull: true,
                     },
                 ],
             },
             {
-                name: this.COMPONENTS_TABLE,
+                name: CoreLocalNotificationsProvider.COMPONENTS_TABLE,
                 columns: [
                     {
                         name: 'id',
                         type: 'TEXT',
-                        primaryKey: true
+                        primaryKey: true,
                     },
                     {
                         name: 'code',
                         type: 'INTEGER',
-                        notNull: true
+                        notNull: true,
                     },
                 ],
             },
             {
-                name: this.TRIGGERED_TABLE,
+                name: CoreLocalNotificationsProvider.TRIGGERED_TABLE,
                 columns: [
                     {
                         name: 'id',
                         type: 'INTEGER',
-                        primaryKey: true
+                        primaryKey: true,
                     },
                     {
                         name: 'at',
                         type: 'INTEGER',
-                        notNull: true
+                        notNull: true,
                     },
                 ],
             },
@@ -91,7 +92,7 @@ export class CoreLocalNotificationsProvider {
 
     protected logger: CoreLogger;
     protected appDB: SQLiteDB;
-    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
+    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected codes: { [s: string]: number } = {};
     protected codeRequestsQueue = {};
     protected observables = {};
@@ -99,8 +100,9 @@ export class CoreLocalNotificationsProvider {
         title: '',
         texts: [],
         ids: [],
-        timeouts: []
+        timeouts: [],
     };
+
     protected triggerSubscription: Subscription;
     protected clickSubscription: Subscription;
     protected clearSubscription: Subscription;
@@ -110,7 +112,6 @@ export class CoreLocalNotificationsProvider {
     protected queueRunner: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
 
     constructor() {
-
         this.logger = CoreLogger.getInstance('CoreLocalNotificationsProvider');
         this.queueRunner = new CoreQueueRunner(10);
         this.appDB = CoreApp.instance.getDB();
@@ -149,7 +150,7 @@ export class CoreLocalNotificationsProvider {
             // Create the default channel for local notifications.
             this.createDefaultChannel();
 
-            Translate.instance.onLangChange.subscribe((event: any) => {
+            Translate.instance.onLangChange.subscribe(() => {
                 // Update the channel name.
                 this.createDefaultChannel();
             });
@@ -187,7 +188,6 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the notifications are cancelled.
      */
     async cancelSiteNotifications(siteId: string): Promise<void> {
-
         if (!this.isAvailable()) {
             return;
         } else if (!siteId) {
@@ -228,15 +228,15 @@ export class CoreLocalNotificationsProvider {
      *
      * @return Promise resolved when done.
      */
-    protected createDefaultChannel(): Promise<any> {
+    protected async createDefaultChannel(): Promise<void> {
         if (!CoreApp.instance.isAndroid()) {
-            return Promise.resolve();
+            return;
         }
 
-        return Push.instance.createChannel({
+        await Push.instance.createChannel({
             id: 'default-channel-id',
             description: Translate.instance.instant('addon.calendar.calendarreminders'),
-            importance: 4
+            importance: 4,
         }).catch((error) => {
             this.logger.error('Error changing channel name', error);
         });
@@ -297,7 +297,7 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the component code is retrieved.
      */
     protected getComponentCode(component: string): Promise<number> {
-        return this.requestCode(this.COMPONENTS_TABLE, component);
+        return this.requestCode(CoreLocalNotificationsProvider.COMPONENTS_TABLE, component);
     }
 
     /**
@@ -308,16 +308,16 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the site code is retrieved.
      */
     protected getSiteCode(siteId: string): Promise<number> {
-        return this.requestCode(this.SITES_TABLE, siteId);
+        return this.requestCode(CoreLocalNotificationsProvider.SITES_TABLE, siteId);
     }
 
     /**
      * Create a unique notification ID, trying to prevent collisions. Generated ID must be a Number (Android).
      * The generated ID shouldn't be higher than 2147483647 or it's going to cause problems in Android.
      * This function will prevent collisions and keep the number under Android limit if:
-     *     -User has used less than 21 sites.
-     *     -There are less than 11 components.
-     *     -The notificationId passed as parameter is lower than 10000000.
+     *     - User has used less than 21 sites.
+     *     - There are less than 11 components.
+     *     - The notificationId passed as parameter is lower than 10000000.
      *
      * @param notificationId Notification ID.
      * @param component Component triggering the notification.
@@ -329,12 +329,10 @@ export class CoreLocalNotificationsProvider {
             return Promise.reject(null);
         }
 
-        return this.getSiteCode(siteId).then((siteCode) => {
-            return this.getComponentCode(component).then((componentCode) => {
+        return this.getSiteCode(siteId).then((siteCode) => this.getComponentCode(component).then((componentCode) =>
                 // We use the % operation to keep the number under Android's limit.
-                return (siteCode * 100000000 + componentCode * 10000000 + notificationId) % 2147483647;
-            });
-        });
+                 (siteCode * 100000000 + componentCode * 10000000 + notificationId) % 2147483647,
+            ));
     }
 
     /**
@@ -343,7 +341,7 @@ export class CoreLocalNotificationsProvider {
      * @param eventName Name of the event.
      * @param notification Notification.
      */
-    protected handleEvent(eventName: string, notification: any): void {
+    protected handleEvent(eventName: string, notification: ILocalNotification): void {
         if (notification && notification.data) {
             this.logger.debug('Notification event: ' + eventName + '. Data:', notification.data);
 
@@ -374,7 +372,7 @@ export class CoreLocalNotificationsProvider {
         await this.dbReady;
 
         try {
-            const stored = await this.appDB.getRecord(this.TRIGGERED_TABLE, { id: notification.id });
+            const stored = await this.appDB.getRecord(CoreLocalNotificationsProvider.TRIGGERED_TABLE, { id: notification.id });
             let triggered = (notification.trigger && notification.trigger.at) || 0;
 
             if (typeof triggered != 'number') {
@@ -443,15 +441,14 @@ export class CoreLocalNotificationsProvider {
      */
     protected processNextRequest(): void {
         const nextKey = Object.keys(this.codeRequestsQueue)[0];
-        let request,
-            promise;
+        let promise: Promise<void>;
 
         if (typeof nextKey == 'undefined') {
             // No more requests in queue, stop.
             return;
         }
 
-        request = this.codeRequestsQueue[nextKey];
+        const request = this.codeRequestsQueue[nextKey];
 
         // Check if request is valid.
         if (typeof request == 'object' && typeof request.table != 'undefined' && typeof request.id != 'undefined') {
@@ -483,7 +480,7 @@ export class CoreLocalNotificationsProvider {
      * @param callback Function to call with the data received by the notification.
      * @return Object with an "off" property to stop listening for clicks.
      */
-    registerClick(component: string, callback: Function): any {
+    registerClick(component: string, callback: CoreLocalNotificationsClickCallback): CoreEventObserver {
         return this.registerObserver('click', component, callback);
     }
 
@@ -495,7 +492,7 @@ export class CoreLocalNotificationsProvider {
      * @param callback Function to call with the data received by the notification.
      * @return Object with an "off" property to stop listening for events.
      */
-    registerObserver(eventName: string, component: string, callback: Function): any {
+    registerObserver<T>(eventName: string, component: string, callback: CoreLocalNotificationsClickCallback): CoreEventObserver {
         this.logger.debug(`Register observer '${component}' for event '${eventName}'.`);
 
         if (typeof this.observables[eventName] == 'undefined') {
@@ -504,7 +501,7 @@ export class CoreLocalNotificationsProvider {
 
         if (typeof this.observables[eventName][component] == 'undefined') {
             // No observable for this component, create a new one.
-            this.observables[eventName][component] = new Subject<any>();
+            this.observables[eventName][component] = new Subject<T>();
         }
 
         this.observables[eventName][component].subscribe(callback);
@@ -512,7 +509,7 @@ export class CoreLocalNotificationsProvider {
         return {
             off: (): void => {
                 this.observables[eventName][component].unsubscribe(callback);
-            }
+            },
         };
     }
 
@@ -522,10 +519,10 @@ export class CoreLocalNotificationsProvider {
      * @param id Notification ID.
      * @return Promise resolved when it is removed.
      */
-    async removeTriggered(id: number): Promise<any> {
+    async removeTriggered(id: number): Promise<void> {
         await this.dbReady;
 
-        return this.appDB.deleteRecords(this.TRIGGERED_TABLE, { id: id });
+        await this.appDB.deleteRecords(CoreLocalNotificationsProvider.TRIGGERED_TABLE, { id: id });
     }
 
     /**
@@ -536,9 +533,9 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the code is retrieved.
      */
     protected requestCode(table: string, id: string): Promise<number> {
-        const deferred = CoreUtils.instance.promiseDefer<number>(),
-            key = table + '#' + id,
-            isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
+        const deferred = CoreUtils.instance.promiseDefer<number>();
+            const key = table + '#' + id;
+            const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
 
         if (typeof this.codeRequestsQueue[key] != 'undefined') {
             // There's already a pending request for this store and ID, add the promise to it.
@@ -548,7 +545,7 @@ export class CoreLocalNotificationsProvider {
             this.codeRequestsQueue[key] = {
                 table: table,
                 id: id,
-                promises: [deferred]
+                promises: [deferred],
             };
         }
 
@@ -591,7 +588,6 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the notification is scheduled.
      */
     async schedule(notification: ILocalNotification, component: string, siteId: string, alreadyUnique?: boolean): Promise<void> {
-
         if (!alreadyUnique) {
             notification.id = await this.getUniqueNotificationId(notification.id, component, siteId);
         }
@@ -605,12 +601,29 @@ export class CoreLocalNotificationsProvider {
             notification.smallIcon = notification.smallIcon || 'res://smallicon';
             notification.color = notification.color || CoreConfigConstants.notificoncolor;
 
-            const led: any = notification.led || {};
-            notification.led = {
-                color: led.color || 'FF9900',
-                on: led.on || 1000,
-                off: led.off || 1000
-            };
+            if (notification.led !== false) {
+                let ledColor = 'FF9900';
+                let ledOn = 1000;
+                let ledOff = 1000;
+
+                if (typeof notification.led === 'string') {
+                    ledColor = notification.led;
+                } else if (Array.isArray(notification.led)) {
+                    ledColor = notification.led[0] || ledColor;
+                    ledOn = notification.led[1] || ledOn;
+                    ledOff = notification.led[2] || ledOff;
+                } else if (typeof notification.led === 'object') {
+                    ledColor = notification.led.color || ledColor;
+                    ledOn = notification.led.on || ledOn;
+                    ledOff = notification.led.off || ledOff;
+                }
+
+                notification.led = {
+                    color: ledColor,
+                    on: ledOn,
+                    off: ledOff,
+                };
+            }
         }
 
         const queueId = 'schedule-' + notification.id;
@@ -626,36 +639,34 @@ export class CoreLocalNotificationsProvider {
      * @param notification Notification to schedule.
      * @return Promise resolved when scheduled.
      */
-    protected scheduleNotification(notification: ILocalNotification): Promise<void> {
+    protected async scheduleNotification(notification: ILocalNotification): Promise<void> {
         // Check if the notification has been triggered already.
-        return this.isTriggered(notification, false).then((triggered) => {
-            // Cancel the current notification in case it gets scheduled twice.
-            return LocalNotifications.instance.cancel(notification.id).finally(() => {
-                if (!triggered) {
-                    // Check if sound is enabled for notifications.
-                    let promise;
+        const triggered = await this.isTriggered(notification, false);
 
-                    if (this.canDisableSound()) {
-                        promise = CoreConfig.instance.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
-                    } else {
-                        promise = Promise.resolve(true);
-                    }
+        // Cancel the current notification in case it gets scheduled twice.
+        LocalNotifications.instance.cancel(notification.id).finally(async () => {
+            if (!triggered) {
+                let soundEnabled: boolean;
 
-                    return promise.then((soundEnabled) => {
-                        if (!soundEnabled) {
-                            notification.sound = null;
-                        } else {
-                            delete notification.sound; // Use default value.
-                        }
-
-                        notification.foreground = true;
-
-                        // Remove from triggered, since the notification could be in there with a different time.
-                        this.removeTriggered(notification.id);
-                        LocalNotifications.instance.schedule(notification);
-                    });
+                // Check if sound is enabled for notifications.
+                if (!this.canDisableSound()) {
+                    soundEnabled = true;
+                } else {
+                    soundEnabled = await CoreConfig.instance.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
                 }
-            });
+
+                if (!soundEnabled) {
+                    notification.sound = null;
+                } else {
+                    delete notification.sound; // Use default value.
+                }
+
+                notification.foreground = true;
+
+                // Remove from triggered, since the notification could be in there with a different time.
+                this.removeTriggered(notification.id);
+                LocalNotifications.instance.schedule(notification);
+            }
         });
     }
 
@@ -666,15 +677,15 @@ export class CoreLocalNotificationsProvider {
      * @param notification Triggered notification.
      * @return Promise resolved when stored, rejected otherwise.
      */
-    async trigger(notification: ILocalNotification): Promise<any> {
+    async trigger(notification: ILocalNotification): Promise<number> {
         await this.dbReady;
 
         const entry = {
             id: notification.id,
-            at: notification.trigger && notification.trigger.at ? notification.trigger.at : Date.now()
+            at: notification.trigger && notification.trigger.at ? notification.trigger.at : Date.now(),
         };
 
-        return this.appDB.insertRecord(this.TRIGGERED_TABLE, entry);
+        return this.appDB.insertRecord(CoreLocalNotificationsProvider.TRIGGERED_TABLE, entry);
     }
 
     /**
@@ -684,14 +695,17 @@ export class CoreLocalNotificationsProvider {
      * @param newName The new name.
      * @return Promise resolved when done.
      */
-    async updateComponentName(oldName: string, newName: string): Promise<any> {
+    async updateComponentName(oldName: string, newName: string): Promise<void> {
         await this.dbReady;
 
-        const oldId = this.COMPONENTS_TABLE + '#' + oldName,
-            newId = this.COMPONENTS_TABLE + '#' + newName;
+        const oldId = CoreLocalNotificationsProvider.COMPONENTS_TABLE + '#' + oldName;
+        const newId = CoreLocalNotificationsProvider.COMPONENTS_TABLE + '#' + newName;
 
-        return this.appDB.updateRecords(this.COMPONENTS_TABLE, {id: newId}, {id: oldId});
+        await this.appDB.updateRecords(CoreLocalNotificationsProvider.COMPONENTS_TABLE, { id: newId }, { id: oldId });
     }
+
 }
 
 export class CoreLocalNotifications extends makeSingleton(CoreLocalNotificationsProvider) {}
+
+export type CoreLocalNotificationsClickCallback<T = unknown> = (value: T) => void;

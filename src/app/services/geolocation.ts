@@ -70,7 +70,7 @@ export class CoreGeolocationProvider {
         }
 
         if (!CoreApp.instance.isIOS()) {
-            await Diagnostic.instance.switchToLocationSettings();
+            Diagnostic.instance.switchToLocationSettings();
             await CoreApp.instance.waitForResume(30000);
 
             locationEnabled = await Diagnostic.instance.isLocationEnabled();
@@ -91,8 +91,7 @@ export class CoreGeolocationProvider {
         const authorizationStatus = await Diagnostic.instance.getLocationAuthorizationStatus();
 
         switch (authorizationStatus) {
-            // This constant is hard-coded because it is not declared in @ionic-native/diagnostic v4.
-            case 'DENIED_ONCE':
+            case Diagnostic.instance.permissionStatus.DENIED_ONCE:
                 if (failOnDeniedOnce) {
                     throw new CoreGeolocationError(CoreGeolocationErrorReason.PermissionDenied);
                 }
@@ -107,7 +106,6 @@ export class CoreGeolocationProvider {
             case Diagnostic.instance.permissionStatus.GRANTED_WHEN_IN_USE:
                 // Location is authorized.
                 return;
-            case Diagnostic.instance.permissionStatus.DENIED:
             default:
                 throw new CoreGeolocationError(CoreGeolocationErrorReason.PermissionDenied);
         }
@@ -133,7 +131,7 @@ export enum CoreGeolocationErrorReason {
 
 export class CoreGeolocationError extends CoreError {
 
-    readonly reason: CoreGeolocationErrorReason;
+    reason: CoreGeolocationErrorReason;
 
     constructor(reason: CoreGeolocationErrorReason) {
         super(`GeolocationError: ${reason}`);

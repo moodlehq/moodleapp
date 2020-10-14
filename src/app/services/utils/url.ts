@@ -55,7 +55,7 @@ export class CoreUrlUtilsProvider {
      * @param boolToNumber Whether to convert bools to 1 or 0.
      * @return URL with params.
      */
-    addParamsToUrl(url: string, params?: {[key: string]: any}, anchor?: string, boolToNumber?: boolean): string {
+    addParamsToUrl(url: string, params?: CoreUrlParams, anchor?: string, boolToNumber?: boolean): string {
         let separator = url.indexOf('?') != -1 ? '&' : '?';
 
         for (const key in params) {
@@ -63,7 +63,7 @@ export class CoreUrlUtilsProvider {
 
             if (boolToNumber && typeof value == 'boolean') {
                 // Convert booleans to 1 or 0.
-                value = value ? 1 : 0;
+                value = value ? '1' : '0';
             }
 
             // Ignore objects.
@@ -102,7 +102,7 @@ export class CoreUrlUtilsProvider {
     canUseTokenPluginFile(url: string, siteUrl: string, accessKey?: string): boolean {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
-        return accessKey && !url.match(/[\&?]file=/) && (
+        return accessKey && !url.match(/[&?]file=/) && (
                 url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
                 url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
     }
@@ -113,13 +113,13 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Object with the params.
      */
-    extractUrlParams(url: string): any {
+    extractUrlParams(url: string): CoreUrlParams {
         const regex = /[?&]+([^=&]+)=?([^&]*)?/gi;
         const subParamsPlaceholder = '@@@SUBPARAMS@@@';
-        const params: any = {};
+        const params: CoreUrlParams = {};
         const urlAndHash = url.split('#');
         const questionMarkSplit = urlAndHash[0].split('?');
-        let subParams;
+        let subParams: string;
 
         if (questionMarkSplit.length > 2) {
             // There is more than one question mark in the URL. This can happen if any of the params is a URL with params.
@@ -190,10 +190,10 @@ export class CoreUrlUtilsProvider {
                 url = url.replace('/pluginfile', '/webservice/pluginfile');
             }
 
-            url = this.addParamsToUrl(url, {token});
+            url = this.addParamsToUrl(url, { token });
         }
 
-        return this.addParamsToUrl(url, {offline: 1}); // Always send offline=1 (it's for external repositories).
+        return this.addParamsToUrl(url, { offline: '1' }); // Always send offline=1 (it's for external repositories).
     }
 
     /**
@@ -206,7 +206,7 @@ export class CoreUrlUtilsProvider {
         url = url.trim();
 
         // Check if the URL starts by http or https.
-        if (! /^http(s)?\:\/\/.*/i.test(url)) {
+        if (! /^http(s)?:\/\/.*/i.test(url)) {
             // Test first allways https.
             url = 'https://' + url;
         }
@@ -228,7 +228,7 @@ export class CoreUrlUtilsProvider {
      * @param page Docs page to go to.
      * @return Promise resolved with the Moodle docs URL.
      */
-    getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
+    async getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
         let docsUrl = 'https://docs.moodle.org/en/' + page;
 
         if (typeof release != 'undefined') {
@@ -240,11 +240,13 @@ export class CoreUrlUtilsProvider {
             }
         }
 
-        return CoreLang.instance.getCurrentLanguage().then((lang) => {
+        try {
+            const lang = await CoreLang.instance.getCurrentLanguage();
+
             return docsUrl.replace('/en/', '/' + lang + '/');
-        }).catch(() => {
+        } catch (error) {
             return docsUrl;
-        });
+        }
     }
 
     /**
@@ -258,13 +260,13 @@ export class CoreUrlUtilsProvider {
             return;
         }
 
-        let videoId;
-        const params: any = {};
+        let videoId: string;
+        const params: CoreUrlParams = {};
 
         url = CoreTextUtils.instance.decodeHTML(url);
 
         // Get the video ID.
-        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
 
         if (match && match[2].length === 11) {
             videoId = match[2];
@@ -276,7 +278,7 @@ export class CoreUrlUtilsProvider {
         }
 
         // Now get the playlist (if any).
-        match = url.match(/[?&]list=([^#\&\?]+)/);
+        match = url.match(/[?&]list=([^#&?]+)/);
 
         if (match && match[1]) {
             params.list = match[1];
@@ -286,13 +288,15 @@ export class CoreUrlUtilsProvider {
         match = url.match(/[?&]start=(\d+)/);
 
         if (match && match[1]) {
-            params.start = parseInt(match[1], 10);
+            params.start = parseInt(match[1], 10).toString();
         } else {
             // No start param, but it could have a time param.
             match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
             if (match) {
-                params.start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) + (match[2] ? parseInt(match[2], 10) * 60 : 0) +
-                        (match[3] ? parseInt(match[3], 10) : 0);
+                const start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) +
+                    (match[2] ? parseInt(match[2], 10) * 60 : 0) +
+                    (match[3] ? parseInt(match[3], 10) : 0);
+                params.start = start.toString();
             }
         }
 
@@ -328,7 +332,7 @@ export class CoreUrlUtilsProvider {
             return;
         }
 
-        const matches = url.match(/^([^\/:\.\?]*):\/\//);
+        const matches = url.match(/^([^/:.?]*):\/\//);
         if (matches && matches[1]) {
             return matches[1];
         }
@@ -361,11 +365,11 @@ export class CoreUrlUtilsProvider {
     getUsernameFromUrl(url: string): string {
         if (url.indexOf('@') > -1) {
             // Get URL without protocol.
-            const withoutProtocol = url.replace(/^[^?@\/]*:\/\//, '');
+            const withoutProtocol = url.replace(/^[^?@/]*:\/\//, '');
             const matches = withoutProtocol.match(/[^@]*/);
 
             // Make sure that @ is at the start of the URL, not in a param at the end.
-            if (matches && matches.length && !matches[0].match(/[\/|?]/)) {
+            if (matches && matches.length && !matches[0].match(/[/|?]/)) {
                 return matches[0];
             }
         }
@@ -408,7 +412,7 @@ export class CoreUrlUtilsProvider {
      * @return Whether the url uses http or https protocol.
      */
     isHttpURL(url: string): boolean {
-        return /^https?\:\/\/.+/i.test(url);
+        return /^https?:\/\/.+/i.test(url);
     }
 
     /**
@@ -427,10 +431,11 @@ export class CoreUrlUtilsProvider {
      * Check whether a URL scheme belongs to a local file.
      *
      * @param scheme Scheme to check.
-     * @param domain The domain. Needed because in Android the WebView scheme is http.
+     * @param notUsed Unused parameter.
      * @return Whether the scheme belongs to a local file.
      */
-    isLocalFileUrlScheme(scheme: string, domain: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    isLocalFileUrlScheme(scheme: string, notUsed?: string): boolean {
         if (scheme) {
             scheme = scheme.toLowerCase();
         }
@@ -483,7 +488,7 @@ export class CoreUrlUtilsProvider {
      * @return URL without params.
      */
     removeUrlParams(url: string): string {
-        const matches = url.match(/^[^\?]+/);
+        const matches = url.match(/^[^?]+/);
 
         return matches && matches[0];
     }
@@ -515,6 +520,9 @@ export class CoreUrlUtilsProvider {
 
         return url;
     }
+
 }
 
 export class CoreUrlUtils extends makeSingleton(CoreUrlUtilsProvider) {}
+
+export type CoreUrlParams = {[key: string]: string};

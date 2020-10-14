@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '';
+import { NgModule } from '@angular/core';
+import { CoreCreateLinksPipe } from './create-links.pipe';
+import { CoreNoTagsPipe } from './no-tags.pipe';
+import { CoreTimeAgoPipe } from './time-ago.pipe';
 
-declare global {
-
-    interface Window {
-
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        __Zone_disable_customElements: boolean;
-
-    }
-
-}
-
-/**
- * Course base definition.
- */
-export type CoreCourseBase = {
-    id: number; // Course Id.
-};
+@NgModule({
+    declarations: [
+        CoreCreateLinksPipe,
+        CoreNoTagsPipe,
+        CoreTimeAgoPipe,
+    ],
+    imports: [],
+    exports: [
+        CoreCreateLinksPipe,
+        CoreNoTagsPipe,
+        CoreTimeAgoPipe,
+    ]
+})
+export class CorePipesModule {}

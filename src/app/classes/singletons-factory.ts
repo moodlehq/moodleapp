@@ -80,4 +80,5 @@ export class CoreSingletonsFactory {
 
         };
     }
+
 }

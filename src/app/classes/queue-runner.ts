@@ -53,6 +53,7 @@ export type CoreQueueRunnerAddOptions = {
  * A queue to prevent having too many concurrent executions.
  */
 export class CoreQueueRunner {
+
     protected queue: {[id: string]: CoreQueueRunnerItem} = {};
     protected orderedQueue: CoreQueueRunnerItem[] = [];
     protected numberRunning = 0;
@@ -140,4 +141,5 @@ export class CoreQueueRunner {
 
         return item.deferred.promise;
     }
+
 }

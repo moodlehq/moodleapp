@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import CoreConfigConstants from '@app/config.json';
-import { CoreApp, CoreAppProvider } from '@services/app';
+import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { makeSingleton, Translate, Platform, Globalization } from '@singletons/core.singletons';
 
@@ -26,6 +26,7 @@ import * as moment from 'moment';
 */
 @Injectable()
 export class CoreLangProvider {
+
     protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.
     protected defaultLanguage = CoreConfigConstants.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
     protected currentLanguage: string; // Save current language in a variable to speed up the get function.
@@ -51,7 +52,7 @@ export class CoreLangProvider {
             });
         });
 
-        Translate.instance.onLangChange.subscribe((event: any) => {
+        Translate.instance.onLangChange.subscribe(() => {
             // @todo: Set platform lang and dir.
         });
     }
@@ -63,7 +64,7 @@ export class CoreLangProvider {
      * @param strings Object with the strings to add.
      * @param prefix A prefix to add to all keys.
      */
-    addSitePluginsStrings(lang: string, strings: any, prefix?: string): void {
+    addSitePluginsStrings(lang: string, strings: string[], prefix?: string): void {
         lang = lang.replace(/_/g, '-'); // Use the app format instead of Moodle format.
 
         // Initialize structure if it doesn't exist.
@@ -109,7 +110,7 @@ export class CoreLangProvider {
      * @param language New language to use.
      * @return Promise resolved when the change is finished.
      */
-    changeCurrentLanguage(language: string): Promise<any> {
+    changeCurrentLanguage(language: string): Promise<unknown> {
         const promises = [];
 
         // Change the language, resolving the promise when we receive the first value.
@@ -127,7 +128,7 @@ export class CoreLangProvider {
                         setTimeout(() => {
                             fallbackSubs.unsubscribe();
                         });
-                    }, (error) => {
+                    }, () => {
                         // Resolve with the original language.
                         resolve(data);
 
@@ -168,7 +169,7 @@ export class CoreLangProvider {
             // Load the custom and site plugins strings for the language.
             if (this.loadLangStrings(this.customStrings, language) || this.loadLangStrings(this.sitePluginsStrings, language)) {
                 // Some lang strings have changed, emit an event to update the pipes.
-                Translate.instance.onLangChange.emit({lang: language, translations: Translate.instance.translations[language]});
+                Translate.instance.onLangChange.emit({ lang: language, translations: Translate.instance.translations[language] });
             }
         });
     }
@@ -195,7 +196,7 @@ export class CoreLangProvider {
      *
      * @return Custom strings.
      */
-    getAllCustomStrings(): any {
+    getAllCustomStrings(): unknown {
         return this.customStrings;
     }
 
@@ -204,7 +205,7 @@ export class CoreLangProvider {
      *
      * @return Site plugins strings.
      */
-    getAllSitePluginsStrings(): any {
+    getAllSitePluginsStrings(): unknown {
         return this.sitePluginsStrings;
     }
 
@@ -213,16 +214,13 @@ export class CoreLangProvider {
      *
      * @return Promise resolved with the current language.
      */
-    getCurrentLanguage(): Promise<string> {
-
+    async getCurrentLanguage(): Promise<string> {
         if (typeof this.currentLanguage != 'undefined') {
-            return Promise.resolve(this.currentLanguage);
+            return this.currentLanguage;
         }
 
         // Get current language from config (user might have changed it).
-        return CoreConfig.instance.get('current_language').then((language) => {
-            return language;
-        }).catch(() => {
+        return CoreConfig.instance.get('current_language').then((language) => language).catch(() => {
             // User hasn't defined a language. If default language is forced, use it.
             if (CoreConfigConstants.default_lang && CoreConfigConstants.forcedefaultlanguage) {
                 return CoreConfigConstants.default_lang;
@@ -237,7 +235,6 @@ export class CoreLangProvider {
                         if (CoreConfigConstants.languages && typeof CoreConfigConstants.languages[language] == 'undefined') {
                             // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
                             language = language.substr(0, language.indexOf('-'));
-
                         }
                     }
 
@@ -247,10 +244,10 @@ export class CoreLangProvider {
                     }
 
                     return language;
-                }).catch(() => {
+                }).catch(() =>
                     // Error getting locale. Use default language.
-                    return this.defaultLanguage;
-                });
+                     this.defaultLanguage,
+                );
             } catch (err) {
                 // Error getting locale. Use default language.
                 return Promise.resolve(this.defaultLanguage);
@@ -286,7 +283,7 @@ export class CoreLangProvider {
      * @param lang The language to check.
      * @return Promise resolved when done.
      */
-    getTranslationTable(lang: string): Promise<any> {
+    getTranslationTable(lang: string): Promise<unknown> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
             const observer = Translate.instance.getTranslation(lang).subscribe((table) => {
@@ -322,14 +319,13 @@ export class CoreLangProvider {
         const list: string[] = strings.split(/(?:\r\n|\r|\n)/);
         list.forEach((entry: string) => {
             const values: string[] = entry.split('|');
-            let lang: string;
 
             if (values.length < 3) {
                 // Not enough data, ignore the entry.
                 return;
             }
 
-            lang = values[2].replace(/_/g, '-'); // Use the app format instead of Moodle format.
+            const lang = values[2].replace(/_/g, '-'); // Use the app format instead of Moodle format.
 
             if (lang == this.currentLanguage) {
                 currentLangChanged = true;
@@ -353,7 +349,7 @@ export class CoreLangProvider {
             // Some lang strings have changed, emit an event to update the pipes.
             Translate.instance.onLangChange.emit({
                 lang: this.currentLanguage,
-                translations: Translate.instance.translations[this.currentLanguage]
+                translations: Translate.instance.translations[this.currentLanguage],
             });
         }
     }
@@ -365,7 +361,7 @@ export class CoreLangProvider {
      * @param lang Language to load.
      * @return Whether the translation table was modified.
      */
-    loadLangStrings(langObject: any, lang: string): boolean {
+    loadLangStrings(langObject: CoreLanguageObject, lang: string): boolean {
         let langApplied = false;
 
         if (langObject[lang]) {
@@ -396,7 +392,7 @@ export class CoreLangProvider {
      * @param key String key.
      * @param value String value.
      */
-    loadString(langObject: any, lang: string, key: string, value: string): void {
+    loadString(langObject: CoreLanguageObject, lang: string, key: string, value: string): void {
         lang = lang.replace(/_/g, '-'); // Use the app format instead of Moodle format.
 
         if (Translate.instance.translations[lang]) {
@@ -425,7 +421,7 @@ export class CoreLangProvider {
      *
      * @param strings Strings to unload.
      */
-    protected unloadStrings(strings: any): void {
+    protected unloadStrings(strings: CoreLanguageObject): void {
         // Iterate over all languages and strings.
         for (const lang in strings) {
             if (!Translate.instance.translations[lang]) {
@@ -446,6 +442,20 @@ export class CoreLangProvider {
             }
         }
     }
+
 }
 
 export class CoreLang extends makeSingleton(CoreLangProvider) {}
+
+/**
+ * Language object has two leves, first per language and second per string key.
+ */
+type CoreLanguageObject = {
+    [s: string]: { // Lang name.
+        [s: string]: { // String key.
+            value: string; // Value with replacings done.
+            original?: string; // Original value of the string.
+            applied?: boolean; // If the key is applied to the translations table or not.
+        };
+    };
+};

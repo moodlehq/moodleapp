@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '';
+import { NgModule } from '@angular/core';
+import { CoreIconComponent } from './icon/icon';
 
-declare global {
-
-    interface Window {
-
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        __Zone_disable_customElements: boolean;
-
-    }
-
-}
-
-/**
- * Course base definition.
- */
-export type CoreCourseBase = {
-    id: number; // Course Id.
-};
+@NgModule({
+    declarations: [
+        CoreIconComponent,
+    ],
+    imports: [],
+    exports: [
+        CoreIconComponent,
+    ]
+})
+export class CoreComponentsModule {}

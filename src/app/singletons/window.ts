@@ -32,6 +32,11 @@ export type CoreWindowOpenOptions = {
  */
 export class CoreWindow {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+    
     /**
      * "Safe" implementation of window.open. It will open the URL without overriding the app.
      *
@@ -73,4 +78,5 @@ export class CoreWindow {
             }
         }
     }
+
 }

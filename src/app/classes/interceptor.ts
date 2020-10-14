@@ -32,7 +32,7 @@ export class CoreInterceptor implements HttpInterceptor {
      */
     static serialize(obj: any, addNull?: boolean): string {
         let query = '';
-        let fullSubName;
+        let fullSubName: string;
         let subValue;
         let innerObj;
 
@@ -68,10 +68,11 @@ export class CoreInterceptor implements HttpInterceptor {
         const newReq = req.clone({
             headers: req.headers.set('Content-Type', 'application/x-www-form-urlencoded'),
             body: typeof req.body == 'object' && String(req.body) != '[object File]' ?
-                CoreInterceptor.serialize(req.body) : req.body
+                CoreInterceptor.serialize(req.body) : req.body,
         });
 
         // Pass on the cloned request instead of the original request.
         return next.handle(newReq);
     }
+
 }
