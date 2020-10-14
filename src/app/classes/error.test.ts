@@ -16,6 +16,7 @@ import Faker from 'faker';
 import { CoreError } from './error';
 
 describe('CoreError', () => {
+
     it('behaves like an error', () => {
         // Arrange
         const message = Faker.lorem.sentence();
@@ -70,4 +71,5 @@ describe('CoreError', () => {
         expect(error!.stack).not.toBeNull();
         expect(error!.stack).toContain('src/app/classes/error.test.ts');
     });
+
 });
