@@ -81,7 +81,7 @@ export class CoreInitDelegate {
         ordered.sort((a, b) => b.priority - a.priority);
 
         ordered = ordered.map((data: CoreInitHandler) => ({
-            func: this.prepareProcess.bind(this, data),
+            function: this.prepareProcess.bind(this, data),
             blocking: !!data.blocking,
         }));
 
