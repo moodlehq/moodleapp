@@ -48,12 +48,8 @@ export class CoreUtilsProvider {
     constructor(protected zone: NgZone) {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
 
-        Platform.instance.ready().then(() => {
-            if (window.cordova && window.cordova.InAppBrowser) {
-                // Override the default window.open with the InAppBrowser one.
-                window.open = window.cordova.InAppBrowser.open;
-            }
-        });
+        // eslint-disable-next-line promise/catch-or-return
+        Platform.instance.ready().then(() => this.overrideWindowOpen());
     }
 
     /**
@@ -76,7 +72,7 @@ export class CoreUtilsProvider {
 
         if (!this.isWebServiceError(error)) {
             // Local error. Add an extra warning.
-             errorMessage += '<br><br>' + Translate.instance.instant('core.errorsomedatanotdownloaded');
+            errorMessage += '<br><br>' + Translate.instance.instant('core.errorsomedatanotdownloaded');
         }
 
         return errorMessage;
@@ -88,35 +84,25 @@ export class CoreUtilsProvider {
      * @param promises Promises.
      * @return Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
      */
-    allPromises(promises: Promise<unknown>[]): Promise<void> {
+    async allPromises(promises: Promise<unknown>[]): Promise<void> {
         if (!promises || !promises.length) {
             return Promise.resolve();
         }
 
-        return new Promise((resolve, reject): void => {
-            const total = promises.length;
-            let count = 0;
-            let hasFailed = false;
-            let error;
+        const getPromiseError = async (promise): Promise<Error | void> => {
+            try {
+                await promise;
+            } catch (error) {
+                return error;
+            }
+        };
 
-            promises.forEach((promise) => {
-                promise.catch((err) => {
-                    hasFailed = true;
-                    error = err;
-                }).finally(() => {
-                    count++;
+        const errors = await Promise.all(promises.map(getPromiseError));
+        const error = errors.find(error => !!error);
 
-                    if (count === total) {
-                        // All promises have finished, reject/resolve.
-                        if (hasFailed) {
-                            reject(error);
-                        } else {
-                            resolve();
-                        }
-                    }
-                });
-            });
-        });
+        if (error) {
+            throw error;
+        }
     }
 
     /**
@@ -151,9 +137,13 @@ export class CoreUtilsProvider {
      * @param undefinedIsNull True if undefined is equal to null. Defaults to true.
      * @return Whether both items are equal.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    basicLeftCompare(itemA: any, itemB: any, maxLevels: number = 0,
-            level: number = 0, undefinedIsNull: boolean = true): boolean {
+    basicLeftCompare(
+        itemA: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        itemB: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        maxLevels: number = 0,
+        level: number = 0,
+        undefinedIsNull: boolean = true,
+    ): boolean {
         if (typeof itemA == 'function' || typeof itemB == 'function') {
             return true; // Don't compare functions.
         } else if (typeof itemA == 'object' && typeof itemB == 'object') {
@@ -467,19 +457,24 @@ export class CoreUtilsProvider {
      * @param ...args All the params sent after checkAll will be passed to isEnabledFn.
      * @return Promise resolved with the list of enabled sites.
      */
-    filterEnabledSites<P extends []>(siteIds: string[], isEnabledFn: (siteId, ...args: P) => boolean | Promise<boolean>,
-            checkAll?: boolean, ...args: P): Promise<string[]> {
+    filterEnabledSites<P extends unknown[]>(
+        siteIds: string[],
+        isEnabledFn: (siteId, ...args: P) => boolean | Promise<boolean>,
+        checkAll?: boolean,
+        ...args: P
+    ): Promise<string[]> {
         const promises = [];
         const enabledSites = [];
 
         for (const i in siteIds) {
             const siteId = siteIds[i];
+            const pushIfEnabled = enabled => enabled && enabledSites.push(siteId);
             if (checkAll || !promises.length) {
-                promises.push(Promise.resolve(isEnabledFn.apply(isEnabledFn, [siteId].concat(args))).then((enabled) => {
-                    if (enabled) {
-                        enabledSites.push(siteId);
-                    }
-                }));
+                promises.push(
+                    Promise
+                        .resolve(isEnabledFn(siteId, ...args))
+                        .then(pushIfEnabled),
+                );
             }
         }
 
@@ -527,8 +522,13 @@ export class CoreUtilsProvider {
      * @param maxDepth Max Depth to convert to tree. Children found will be in the last level of depth.
      * @return Array with the formatted tree, children will be on each node under children field.
      */
-    formatTree<T>(list: T[], parentFieldName: string = 'parent', idFieldName: string = 'id', rootParentId: number = 0,
-            maxDepth: number = 5): TreeNode<T>[] {
+    formatTree<T>(
+        list: T[],
+        parentFieldName: string = 'parent',
+        idFieldName: string = 'id',
+        rootParentId: number = 0,
+        maxDepth: number = 5,
+    ): TreeNode<T>[] {
         const map = {};
         const mapDepth = {};
         const tree: TreeNode<T>[] = [];
@@ -649,7 +649,7 @@ export class CoreUtilsProvider {
 
             if (fallbackLang === defaultLang) {
                 // Same language, just reject.
-                return Promise.reject('Countries not found.');
+                throw new Error('Countries not found.');
             }
 
             return this.getCountryKeysListForLanguage(fallbackLang);
@@ -786,7 +786,7 @@ export class CoreUtilsProvider {
      * @param value Value to check.
      * @return Whether the value is false, 0 or "0".
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isFalseOrZero(value: any): boolean {
         return typeof value != 'undefined' && (value === false || value === 'false' || parseInt(value, 10) === 0);
     }
@@ -797,7 +797,7 @@ export class CoreUtilsProvider {
      * @param value Value to check.
      * @return Whether the value is true, 1 or "1".
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isTrueOrOne(value: any): boolean {
         return typeof value != 'undefined' && (value === true || value === 'true' || parseInt(value, 10) === 1);
     }
@@ -808,7 +808,7 @@ export class CoreUtilsProvider {
      * @param error Error to check.
      * @return Whether the error was returned by the WebService.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isWebServiceError(error: any): boolean {
         return error && (typeof error.warningcode != 'undefined' || (typeof error.errorcode != 'undefined' &&
                 error.errorcode != 'invalidtoken' && error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
@@ -827,8 +827,12 @@ export class CoreUtilsProvider {
      * @param defaultValue Element that will become default option value. Default 0.
      * @return The now assembled array
      */
-    makeMenuFromList<T>(list: string, defaultLabel?: string, separator: string = ',',
-            defaultValue?: T): { label: string; value: T | number }[] {
+    makeMenuFromList<T>(
+        list: string,
+        defaultLabel?: string,
+        separator: string = ',',
+        defaultValue?: T,
+    ): { label: string; value: T | number }[] {
         // Split and format the list.
         const split = list.split(separator).map((label, index) => ({
             label: label.trim(),
@@ -863,7 +867,7 @@ export class CoreUtilsProvider {
      * @param value Value to check.
      * @return True if not null and not undefined.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notNullOrUndefined(value: any): boolean {
         return typeof value != 'undefined' && value !== null;
     }
@@ -1008,36 +1012,32 @@ export class CoreUtilsProvider {
      * @param url The URL of the file.
      * @return Promise resolved when opened.
      */
-    openOnlineFile(url: string): Promise<void> {
+    async openOnlineFile(url: string): Promise<void> {
         if (CoreApp.instance.isAndroid()) {
             // In Android we need the mimetype to open it.
-            return this.getMimeTypeFromUrl(url).catch(() => {
-                // Error getting mimetype, return undefined.
-            }).then((mimetype) => {
-                if (!mimetype) {
-                    // Couldn't retrieve mimetype. Return error.
-                    return Promise.reject(Translate.instance.instant('core.erroropenfilenoextension'));
-                }
+            const mimetype = await this.ignoreErrors(this.getMimeTypeFromUrl(url));
 
-                const options = {
-                    action: WebIntent.instance.ACTION_VIEW,
-                    url,
-                    type: mimetype,
-                };
+            if (!mimetype) {
+                // Couldn't retrieve mimetype. Return error.
+                throw new Error(Translate.instance.instant('core.erroropenfilenoextension'));
+            }
 
-                return WebIntent.instance.startActivity(options).catch((error) => {
-                    this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
-                    this.logger.error('Error: ', JSON.stringify(error));
+            const options = {
+                action: WebIntent.instance.ACTION_VIEW,
+                url,
+                type: mimetype,
+            };
 
-                    return Promise.reject(Translate.instance.instant('core.erroropenfilenoapp'));
-                });
+            return WebIntent.instance.startActivity(options).catch((error) => {
+                this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
+                this.logger.error('Error: ', JSON.stringify(error));
+
+                throw new Error(Translate.instance.instant('core.erroropenfilenoapp'));
             });
         }
 
         // In the rest of platforms we need to open them in InAppBrowser.
         this.openInApp(url);
-
-        return Promise.resolve();
     }
 
     /**
@@ -1062,8 +1062,13 @@ export class CoreUtilsProvider {
      * @param sortByValue True to sort values alphabetically, false otherwise.
      * @return Array of objects with the name & value of each property.
      */
-    objectToArrayOfObjects(obj: Record<string, unknown>, keyName: string, valueName: string, sortByKey?: boolean,
-            sortByValue?: boolean): Record<string, unknown>[] {
+    objectToArrayOfObjects(
+        obj: Record<string, unknown>,
+        keyName: string,
+        valueName: string,
+        sortByKey?: boolean,
+        sortByValue?: boolean,
+    ): Record<string, unknown>[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey: string, value: unknown): Record<string, unknown>[] | unknown => {
             if (typeof value == 'undefined' || value == null) {
@@ -1123,8 +1128,12 @@ export class CoreUtilsProvider {
      * @param keyPrefix Key prefix if neededs to delete it.
      * @return Object.
      */
-    objectToKeyValueMap(objects: Record<string, unknown>[], keyName: string, valueName: string,
-            keyPrefix?: string): {[name: string]: unknown} {
+    objectToKeyValueMap(
+        objects: Record<string, unknown>[],
+        keyName: string,
+        valueName: string,
+        keyPrefix?: string,
+    ): {[name: string]: unknown} {
         if (!objects) {
             return;
         }
@@ -1343,13 +1352,25 @@ export class CoreUtilsProvider {
      */
     timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T> {
         return new Promise((resolve, reject): void => {
-            const timeout = setTimeout(() => {
-                reject({ timeout: true });
-            }, time);
+            let timedOut = false;
+            const resolveBeforeTimeout = () => {
+                if (timedOut) {
+                    return;
+                }
+                resolve();
+            };
+            const timeout = setTimeout(
+                () => {
+                    reject({ timeout: true });
+                    timedOut = true;
+                },
+                time,
+            );
 
-            promise.then(resolve).catch(reject).finally(() => {
-                clearTimeout(timeout);
-            });
+            promise
+                .then(resolveBeforeTimeout)
+                .catch(reject)
+                .finally(() => clearTimeout(timeout));
         });
     }
 
@@ -1362,7 +1383,7 @@ export class CoreUtilsProvider {
      * @param strict If true, then check the input and return false if it is not a valid number.
      * @return False if bad format, empty string if empty value or the parsed float if not.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     unformatFloat(localeFloat: any, strict?: boolean): false | '' | number {
         // Bad format on input type number.
         if (typeof localeFloat == 'undefined') {
@@ -1566,6 +1587,17 @@ export class CoreUtilsProvider {
      */
     wait(milliseconds: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+    /**
+     * Override native window.open with InAppBrowser if available.
+     */
+    private overrideWindowOpen() {
+        if (!window.cordova?.InAppBrowser) {
+            return;
+        }
+
+        window.open = window.cordova.InAppBrowser.open;
     }
 
 }

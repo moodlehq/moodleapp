@@ -51,25 +51,9 @@ export class CoreIframeUtilsProvider {
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
 
-        const win = <WKUserScriptWindow> window;
-
-        if (CoreApp.instance.isIOS() && win.WKUserScript) {
-            Platform.instance.ready().then(() => {
-                // Inject code to the iframes because we cannot access the online ones.
-                const wwwPath = CoreFile.instance.getWWWAbsolutePath();
-                const linksPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
-                const recaptchaPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
-
-                win.WKUserScript.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
-                win.WKUserScript.addScript({
-                    id: 'CoreIframeUtilsRecaptchaScript',
-                    file: recaptchaPath,
-                    injectionTime: WKUserScriptInjectionTime.END,
-                });
-
-                // Handle post messages received by iframes.
-                window.addEventListener('message', this.handleIframeMessage.bind(this));
-            });
+        if (CoreApp.instance.isIOS() && 'WKUserScript' in window) {
+            // eslint-disable-next-line promise/catch-or-return
+            Platform.instance.ready().then(() => this.injectiOSScripts(window));
         }
     }
 
@@ -214,11 +198,15 @@ export class CoreIframeUtilsProvider {
      * @param contentDocument The document of the element contents.
      * @param navCtrl NavController to use if a link can be opened in the app.
      */
-    redefineWindowOpen(element: CoreFrameElement, contentWindow: Window, contentDocument: Document,
-            navCtrl?: NavController): void {
+    redefineWindowOpen(
+        element: CoreFrameElement,
+        contentWindow: Window,
+        contentDocument: Document,
+        navCtrl?: NavController,
+    ): void {
         if (contentWindow) {
             // Intercept window.open.
-            contentWindow.open = (url: string, name: string): Window => {
+            contentWindow.open = (url: string, name: string) => {
                 this.windowOpen(url, name, element, navCtrl);
 
                 return null;
@@ -387,8 +375,11 @@ export class CoreIframeUtilsProvider {
      * @param event Click event.
      * @return Promise resolved when done.
      */
-    protected async linkClicked(link: {href: string; target?: string}, element?: HTMLFrameElement | HTMLObjectElement,
-            event?: Event): Promise<void> {
+    protected async linkClicked(
+        link: {href: string; target?: string},
+        element?: HTMLFrameElement | HTMLObjectElement,
+        event?: Event,
+    ): Promise<void> {
         if (event && event.defaultPrevented) {
             // Event already prevented by some other code.
             return;
@@ -452,6 +443,27 @@ export class CoreIframeUtilsProvider {
                 element.setAttribute('src', link.href);
             }
         }
+    }
+
+    /**
+     * Inject code to the iframes because we cannot access the online ones.
+     *
+     * @param userScriptWindow Window.
+     */
+    private injectiOSScripts(userScriptWindow: WKUserScriptWindow) {
+        const wwwPath = CoreFile.instance.getWWWAbsolutePath();
+        const linksPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
+        const recaptchaPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
+
+        userScriptWindow.WKUserScript.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
+        userScriptWindow.WKUserScript.addScript({
+            id: 'CoreIframeUtilsRecaptchaScript',
+            file: recaptchaPath,
+            injectionTime: WKUserScriptInjectionTime.END,
+        });
+
+        // Handle post messages received by iframes.
+        window.addEventListener('message', this.handleIframeMessage.bind(this));
     }
 
 }

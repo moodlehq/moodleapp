@@ -15,6 +15,7 @@ module.exports = {
                 'prettier/@typescript-eslint',
                 'plugin:jest/recommended',
                 'plugin:@angular-eslint/recommended',
+                'plugin:promise/recommended',
             ],
             parser: '@typescript-eslint/parser',
             parserOptions: {
@@ -22,11 +23,12 @@ module.exports = {
                 sourceType: 'module',
             },
             plugins: [
-                'eslint-plugin-prefer-arrow',
-                'eslint-plugin-jsdoc',
                 '@typescript-eslint',
                 'header',
                 'jest',
+                'jsdoc',
+                'prefer-arrow',
+                'promise',
             ],
             rules: {
                 '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
@@ -56,7 +58,29 @@ module.exports = {
                         accessibility: 'no-public',
                     },
                 ],
-                '@typescript-eslint/indent': 'off',
+                '@typescript-eslint/explicit-module-boundary-types': [
+                    'error',
+                    {
+                        allowArgumentsExplicitlyTypedAsAny: true,
+                    },
+                ],
+                '@typescript-eslint/indent': [
+                    'error',
+                    4,
+                    {
+                        SwitchCase: 1,
+                        ignoredNodes: [
+                            'ClassProperty *',
+                        ],
+                    },
+                ],
+                '@typescript-eslint/lines-between-class-members': [
+                    'error',
+                    'always',
+                    {
+                        exceptAfterSingleLine: true,
+                    },
+                ],
                 '@typescript-eslint/member-delimiter-style': [
                     'error',
                     {
@@ -104,18 +128,6 @@ module.exports = {
                     'always',
                 ],
                 '@typescript-eslint/type-annotation-spacing': 'error',
-                '@typescript-eslint/typedef': [
-                    'error',
-                    {
-                        arrayDestructuring: false,
-                        arrowParameter: false,
-                        memberVariableDeclaration: true,
-                        objectDestructuring: false,
-                        parameter: true,
-                        propertyDeclaration: true,
-                        variableDeclaration: false,
-                    },
-                ],
                 '@typescript-eslint/unified-signatures': 'error',
                 'header/header': [
                     2,
@@ -137,12 +149,20 @@ module.exports = {
                     ],
                     1,
                 ],
+                'promise/catch-or-return': [
+                    'warn',
+                    {
+                        allowFinally: true,
+                    },
+                ],
                 'arrow-body-style': ['error', 'as-needed'],
                 'array-bracket-spacing': ['error', 'never'],
                 'comma-dangle': ['error', 'always-multiline'],
                 'constructor-super': 'error',
                 'curly': 'error',
                 'eol-last': 'error',
+                'function-call-argument-newline': ['error', 'consistent'],
+                'function-paren-newline': ['error', 'multiline-arguments'],
                 'id-blacklist': [
                     'error',
                     'any',

@@ -450,8 +450,17 @@ export class CoreTextUtilsProvider {
      * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
      * @deprecated since 3.8.3. Please use viewText instead.
      */
-    expandText(title: string, text: string, component?: string, componentId?: string | number, files?: CoreWSExternalFile[],
-            filter?: boolean, contextLevel?: string, instanceId?: number, courseId?: number): void {
+    expandText(
+        title: string,
+        text: string,
+        component?: string,
+        componentId?: string | number,
+        files?: CoreWSExternalFile[],
+        filter?: boolean,
+        contextLevel?: string,
+        instanceId?: number,
+        courseId?: number,
+    ): void {
         return this.viewText(title, text, {
             component,
             componentId,
