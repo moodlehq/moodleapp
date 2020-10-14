@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Coordinates } from '@ionic-native/geolocation';
 
 import { CoreApp } from '@services/app';
-import { CoreError } from '@classes/error';
+import { CoreError } from '@classes/errors/error';
 import { Geolocation, Diagnostic, makeSingleton } from '@singletons/core.singletons';
 
 @Injectable()
@@ -116,6 +116,7 @@ export class CoreGeolocationProvider {
      *
      * @param error Error.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     protected isCordovaPermissionDeniedError(error?: any): boolean {
         return error && 'code' in error && 'PERMISSION_DENIED' in error && error.code === error.PERMISSION_DENIED;
     }

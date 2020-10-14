@@ -20,6 +20,8 @@ import CoreConfigConstants from '@app/config.json';
 import { makeSingleton } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 
+const VERSION_APPLIED = 'version_applied';
+
 /**
  * Factory to handle app updates. This factory shouldn't be used outside of core.
  *
@@ -27,12 +29,12 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Injectable()
 export class CoreUpdateManagerProvider implements CoreInitHandler {
+
     // Data for init delegate.
     name = 'CoreUpdateManager';
     priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 300;
     blocking = true;
 
-    protected VERSION_APPLIED = 'version_applied';
     protected logger: CoreLogger;
 
     constructor() {
@@ -45,11 +47,11 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
      *
      * @return Promise resolved when the update process finishes.
      */
-    async load(): Promise<any> {
+    async load(): Promise<void> {
         const promises = [];
         const versionCode = CoreConfigConstants.versioncode;
 
-        const versionApplied: number = await CoreConfig.instance.get(this.VERSION_APPLIED, 0);
+        const versionApplied = await CoreConfig.instance.get<number>(VERSION_APPLIED, 0);
 
         if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
             // @todo: H5P update.
@@ -58,11 +60,12 @@ export class CoreUpdateManagerProvider implements CoreInitHandler {
         try {
             await Promise.all(promises);
 
-            await CoreConfig.instance.set(this.VERSION_APPLIED, versionCode);
+            await CoreConfig.instance.set(VERSION_APPLIED, versionCode);
         } catch (error) {
             this.logger.error(`Error applying update from ${versionApplied} to ${versionCode}`, error);
         }
     }
+
 }
 
 export class CoreUpdateManager extends makeSingleton(CoreUpdateManagerProvider) {}

@@ -78,7 +78,7 @@ export class CoreDelegate {
     /**
      * Function to resolve the handlers init promise.
      */
-    protected handlersInitResolve: (value?: any) => void;
+    protected handlersInitResolve: () => void;
 
     /**
      * Constructor of the Delegate.
@@ -110,8 +110,8 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    protected executeFunctionOnEnabled(handlerName: string, fnName: string, params?: any[]): any {
-        return this.execute(this.enabledHandlers[handlerName], fnName, params);
+    protected executeFunctionOnEnabled<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T {
+        return this.execute<T>(this.enabledHandlers[handlerName], fnName, params);
     }
 
     /**
@@ -123,7 +123,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    protected executeFunction(handlerName: string, fnName: string, params?: any[]): any {
+    protected executeFunction<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T {
         return this.execute(this.handlers[handlerName], fnName, params);
     }
 
@@ -136,7 +136,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    private execute(handler: CoreDelegateHandler, fnName: string, params?: any[]): any {
+    private execute<T = unknown>(handler: CoreDelegateHandler, fnName: string, params?: unknown[]): T {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
@@ -180,10 +180,10 @@ export class CoreDelegate {
      * @param onlyEnabled If check only enabled handlers or all.
      * @return Function returned value or default value.
      */
-    protected hasFunction(handlerName: string, fnName: string, onlyEnabled: boolean = true): any {
+    protected hasFunction(handlerName: string, fnName: string, onlyEnabled: boolean = true): boolean {
         const handler = onlyEnabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
 
-        return handler && handler[fnName];
+        return handler && typeof handler[fnName] == 'function';
     }
 
     /**
@@ -240,7 +240,7 @@ export class CoreDelegate {
      * @param time Time this update process started.
      * @return Resolved when done.
      */
-    protected updateHandler(handler: CoreDelegateHandler, time: number): Promise<void> {
+    protected updateHandler(handler: CoreDelegateHandler): Promise<void> {
         const siteId = CoreSites.instance.getCurrentSiteId();
         const currentSite = CoreSites.instance.getCurrentSite();
         let promise: Promise<boolean>;
@@ -255,7 +255,7 @@ export class CoreDelegate {
         if (!CoreSites.instance.isLoggedIn() || this.isFeatureDisabled(handler, currentSite)) {
             promise = Promise.resolve(false);
         } else {
-            promise = handler.isEnabled().catch(() => false);
+            promise = Promise.resolve(handler.isEnabled()).catch(() => false);
         }
 
         // Checks if the handler is enabled.
@@ -304,7 +304,7 @@ export class CoreDelegate {
 
         // Loop over all the handlers.
         for (const name in this.handlers) {
-            promises.push(this.updateHandler(this.handlers[name], now));
+            promises.push(this.updateHandler(this.handlers[name]));
         }
 
         try {
@@ -326,7 +326,7 @@ export class CoreDelegate {
      * Update handlers Data.
      * Override this function to update handlers data.
      */
-    updateData(): any {
+    updateData(): void {
         // To be overridden.
     }
 

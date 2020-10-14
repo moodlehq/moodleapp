@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { CoreCreateLinksPipe } from './create-links.pipe';
-import { CoreNoTagsPipe } from './no-tags.pipe';
-import { CoreTimeAgoPipe } from './time-ago.pipe';
+import { CoreError } from '@classes/errors/error';
 
-@NgModule({
-    declarations: [
-        CoreCreateLinksPipe,
-        CoreNoTagsPipe,
-        CoreTimeAgoPipe,
-    ],
-    imports: [],
-    exports: [
-        CoreCreateLinksPipe,
-        CoreNoTagsPipe,
-        CoreTimeAgoPipe,
-    ],
-})
-export class CorePipesModule {}
+/**
+ * Generic error returned by an Ajax call.
+ */
+export class CoreAjaxError extends CoreError {
+
+    available?: number; // Whether the AJAX call is available. 0 if unknown, 1 if available, -1 if not available.
+
+    constructor(message: string, available?: number) {
+        super(message);
+
+        this.available = typeof available == 'undefined' ? 0 : available;
+    }
+
+}

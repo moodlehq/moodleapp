@@ -15,11 +15,13 @@
 import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { IonicModule, IonicRouteStrategy, Platform } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { CoreInterceptor } from '@classes/interceptor';
 
 // Import core services.
 import { CoreAppProvider } from '@services/app';
@@ -49,10 +51,19 @@ import { CoreTimeUtilsProvider } from '@services/utils/time';
 import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
 
+// Import core modules.
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
 import { CoreLoginModule } from '@core/login/login.module';
 
 import { setSingletonsInjector } from '@singletons/core.singletons';
+
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+// For translate loader. AoT requires an exported function for factories.
+export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
+    return new TranslateHttpLoader(http, './assets/lang/', '.json');
+}
 
 @NgModule({
     declarations: [AppComponent],
@@ -60,12 +71,21 @@ import { setSingletonsInjector } from '@singletons/core.singletons';
     imports: [
         BrowserModule,
         IonicModule.forRoot(),
+        HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: (createTranslateLoader),
+                deps: [HttpClient],
+            },
+        }),
         AppRoutingModule,
         CoreEmulatorModule,
         CoreLoginModule,
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        { provide: HTTP_INTERCEPTORS, useClass: CoreInterceptor, multi: true },
         CoreAppProvider,
         CoreConfigProvider,
         CoreCronDelegate,
@@ -96,8 +116,8 @@ import { setSingletonsInjector } from '@singletons/core.singletons';
     bootstrap: [AppComponent],
 })
 export class AppModule {
-    constructor(injector: Injector, platform: Platform) {
 
+    constructor(injector: Injector, platform: Platform) {
         // Set the injector.
         setSingletonsInjector(injector);
 
@@ -133,4 +153,5 @@ export class AppModule {
         // Execute the init processes.
         CoreInit.instance.executeInitProcesses();
     }
+
 }

@@ -22,7 +22,8 @@
         "cordova-plugin-inappbrowser",
         "cordova",
         "jest",
-        "node"
+        "node",
+        "dom-mediacapture-record"
     ],
     "paths": {
       "@/*": ["*"],

@@ -400,7 +400,7 @@ function unserialize (str) {
   }
 }
 
-function substr_replace (str, replace, start, length) { // eslint-disable-line camelcase
+function substr_replace (str, replace, start, length) {
   //  discuss at: https://locutus.io/php/substr_replace/
   // original by: Brett Zamir (https://brett-zamir.me)
   //   example 1: substr_replace('ABCDEFGH:/MNRPQR/', 'bob', 0)

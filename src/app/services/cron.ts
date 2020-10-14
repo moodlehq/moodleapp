@@ -19,107 +19,52 @@ import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreError } from '@classes/errors/error';
 
 import { makeSingleton, Network } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 
-/**
- * Interface that all cron handlers must implement.
- */
-export interface CoreCronHandler {
-    /**
-     * A name to identify the handler.
-     */
-    name: string;
-
-    /**
-     * Whether the handler is running. Used internally by the provider, there's no need to set it.
-     */
-    running?: boolean;
-
-    /**
-     * Timeout ID for the handler scheduling. Used internally by the provider, there's no need to set it.
-     */
-    timeout?: number;
-
-    /**
-     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
-     *
-     * @return Interval time (in milliseconds).
-     */
-    getInterval?(): number;
-
-    /**
-     * Check whether the process uses network or not. True if not defined.
-     *
-     * @return Whether the process uses network or not
-     */
-    usesNetwork?(): boolean;
-
-    /**
-     * Check whether it's a synchronization process or not. True if not defined.
-     *
-     * @return Whether it's a synchronization process or not.
-     */
-    isSync?(): boolean;
-
-    /**
-     * Check whether the sync can be executed manually. Call isSync if not defined.
-     *
-     * @return Whether the sync can be executed manually.
-     */
-    canManualSync?(): boolean;
-
-    /**
-     * Execute the process.
-     *
-     * @param siteId ID of the site affected. If not defined, all sites.
-     * @param force Determines if it's a forced execution.
-     * @return Promise resolved when done. If the promise is rejected, this function will be called again often,
-     *         it shouldn't be abused.
-     */
-    execute?(siteId?: string, force?: boolean): Promise<any>;
-}
+const CRON_TABLE = 'cron';
 
 /*
  * Service to handle cron processes. The registered processes will be executed every certain time.
 */
 @Injectable()
 export class CoreCronDelegate {
+
     // Constants.
-    static DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
-    static MIN_INTERVAL = 300000; // Minimum interval is 5 minutes.
-    static DESKTOP_MIN_INTERVAL = 60000; // Minimum interval in desktop is 1 minute.
-    static MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
+    static readonly DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
+    static readonly MIN_INTERVAL = 300000; // Minimum interval is 5 minutes.
+    static readonly DESKTOP_MIN_INTERVAL = 60000; // Minimum interval in desktop is 1 minute.
+    static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
 
     // Variables for database.
-    protected CRON_TABLE = 'cron';
     protected tableSchema: CoreAppSchema = {
         name: 'CoreCronDelegate',
         version: 1,
         tables: [
             {
-                name: this.CRON_TABLE,
+                name: CRON_TABLE,
                 columns: [
                     {
                         name: 'id',
                         type: 'TEXT',
-                        primaryKey: true
+                        primaryKey: true,
                     },
                     {
                         name: 'value',
-                        type: 'INTEGER'
+                        type: 'INTEGER',
                     },
                 ],
             },
         ],
     };
 
-    protected logger;
+    protected logger: CoreLogger;
     protected appDB: SQLiteDB;
-    protected dbReady: Promise<any>; // Promise resolved when the app DB is initialized.
+    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected handlers: { [s: string]: CoreCronHandler } = {};
-    protected queuePromise = Promise.resolve();
+    protected queuePromise: Promise<void> = Promise.resolve();
 
     constructor(zone: NgZone) {
         this.logger = CoreLogger.getInstance('CoreCronDelegate');
@@ -139,7 +84,7 @@ export class CoreCronDelegate {
 
         // Export the sync provider so Behat tests can trigger cron tasks without waiting.
         if (CoreAppProvider.isAutomated()) {
-            (<any> window).cronProvider = this;
+            (<WindowForAutomatedTests> window).cronProvider = this;
         }
     }
 
@@ -152,12 +97,13 @@ export class CoreCronDelegate {
      * @param siteId Site ID. If not defined, all sites.
      * @return Promise resolved if handler is executed successfully, rejected otherwise.
      */
-    protected checkAndExecuteHandler(name: string, force?: boolean, siteId?: string): Promise<any> {
+    protected checkAndExecuteHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
         if (!this.handlers[name] || !this.handlers[name].execute) {
             // Invalid handler.
-            this.logger.debug('Cannot execute handler because is invalid: ' + name);
+            const message = `Cannot execute handler because is invalid: ${name}`;
+            this.logger.debug(message);
 
-            return Promise.reject(null);
+            return Promise.reject(new CoreError(message));
         }
 
         const usesNetwork = this.handlerUsesNetwork(name);
@@ -166,17 +112,17 @@ export class CoreCronDelegate {
 
         if (usesNetwork && !CoreApp.instance.isOnline()) {
             // Offline, stop executing.
-            this.logger.debug('Cannot execute handler because device is offline: ' + name);
+            const message = `Cannot execute handler because device is offline: ${name}`;
+            this.logger.debug(message);
             this.stopHandler(name);
 
-            return Promise.reject(null);
+            return Promise.reject(new CoreError(message));
         }
 
         if (isSync) {
             // Check network connection.
-            promise = CoreConfig.instance.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false).then((syncOnlyOnWifi) => {
-                return !syncOnlyOnWifi || CoreApp.instance.isWifi();
-            });
+            promise = CoreConfig.instance.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false)
+                .then((syncOnlyOnWifi) => !syncOnlyOnWifi || CoreApp.instance.isWifi());
         } else {
             promise = Promise.resolve(true);
         }
@@ -184,30 +130,30 @@ export class CoreCronDelegate {
         return promise.then((execute: boolean) => {
             if (!execute) {
                 // Cannot execute in this network connection, retry soon.
-                this.logger.debug('Cannot execute handler because device is using limited connection: ' + name);
+                const message = `Cannot execute handler because device is using limited connection: ${name}`;
+                this.logger.debug(message);
                 this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
 
-                return Promise.reject(null);
+                return Promise.reject(new CoreError(message));
             }
 
             // Add the execution to the queue.
             this.queuePromise = this.queuePromise.catch(() => {
                 // Ignore errors in previous handlers.
-            }).then(() => {
-                return this.executeHandler(name, force, siteId).then(() => {
-                    this.logger.debug(`Execution of handler '${name}' was a success.`);
+            }).then(() => this.executeHandler(name, force, siteId).then(() => {
+                this.logger.debug(`Execution of handler '${name}' was a success.`);
 
-                    return this.setHandlerLastExecutionTime(name, Date.now()).then(() => {
-                        this.scheduleNextExecution(name);
-                    });
-                }, (error) => {
-                    // Handler call failed. Retry soon.
-                    this.logger.error(`Execution of handler '${name}' failed.`, error);
-                    this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
-
-                    return Promise.reject(null);
+                return this.setHandlerLastExecutionTime(name, Date.now()).then(() => {
+                    this.scheduleNextExecution(name);
                 });
-            });
+            }, (error) => {
+                // Handler call failed. Retry soon.
+                const message = `Execution of handler '${name}' failed.`;
+                this.logger.error(message, error);
+                this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
+
+                return Promise.reject(new CoreError(message));
+            }));
 
             return this.queuePromise;
         });
@@ -221,10 +167,8 @@ export class CoreCronDelegate {
      * @param siteId Site ID. If not defined, all sites.
      * @return Promise resolved when the handler finishes or reaches max time, rejected if it fails.
      */
-    protected executeHandler(name: string, force?: boolean, siteId?: string): Promise<any> {
+    protected executeHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
         return new Promise((resolve, reject): void => {
-            let cancelTimeout;
-
             this.logger.debug('Executing handler: ' + name);
 
             // Wrap the call in Promise.resolve to make sure it's a promise.
@@ -232,7 +176,7 @@ export class CoreCronDelegate {
                 clearTimeout(cancelTimeout);
             });
 
-            cancelTimeout = setTimeout(() => {
+            const cancelTimeout = setTimeout(() => {
                 // The handler took too long. Resolve because we don't want to retry soon.
                 this.logger.debug(`Resolving execution of handler '${name}' because it took too long.`);
                 resolve();
@@ -247,7 +191,7 @@ export class CoreCronDelegate {
      * @param siteId Site ID. If not defined, all sites.
      * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
      */
-    forceSyncExecution(siteId?: string): Promise<any> {
+    async forceSyncExecution(siteId?: string): Promise<void> {
         const promises = [];
 
         for (const name in this.handlers) {
@@ -257,7 +201,7 @@ export class CoreCronDelegate {
             }
         }
 
-        return CoreUtils.instance.allPromises(promises);
+        await CoreUtils.instance.allPromises(promises);
     }
 
     /**
@@ -268,7 +212,7 @@ export class CoreCronDelegate {
      * @param siteId Site ID. If not defined, all sites.
      * @return Promise resolved if handler has been executed successfully, rejected otherwise.
      */
-    forceCronHandlerExecution(name?: string, siteId?: string): Promise<any> {
+    forceCronHandlerExecution(name?: string, siteId?: string): Promise<void> {
         const handler = this.handlers[name];
 
         // Mark the handler as running (it might be running already).
@@ -327,8 +271,9 @@ export class CoreCronDelegate {
         const id = this.getHandlerLastExecutionId(name);
 
         try {
-            const entry = await this.appDB.getRecord(this.CRON_TABLE, { id });
-            const time = parseInt(entry.value, 10);
+            const entry = await this.appDB.getRecord<CronDBEntry>(CRON_TABLE, { id });
+
+            const time = Number(entry.value);
 
             return isNaN(time) ? 0 : time;
         } catch (err) {
@@ -489,16 +434,16 @@ export class CoreCronDelegate {
      * @param time Time to set.
      * @return Promise resolved when the execution time is saved.
      */
-    protected async setHandlerLastExecutionTime(name: string, time: number): Promise<any> {
+    protected async setHandlerLastExecutionTime(name: string, time: number): Promise<void> {
         await this.dbReady;
 
         const id = this.getHandlerLastExecutionId(name);
         const entry = {
             id,
-            value: time
+            value: time,
         };
 
-        return this.appDB.insertRecord(this.CRON_TABLE, entry);
+        await this.appDB.insertRecord(CRON_TABLE, entry);
     }
 
     /**
@@ -559,6 +504,78 @@ export class CoreCronDelegate {
         clearTimeout(this.handlers[name].timeout);
         delete this.handlers[name].timeout;
     }
+
 }
 
 export class CoreCron extends makeSingleton(CoreCronDelegate) {}
+
+
+/**
+ * Interface that all cron handlers must implement.
+ */
+export interface CoreCronHandler {
+    /**
+     * A name to identify the handler.
+     */
+    name: string;
+
+    /**
+     * Whether the handler is running. Used internally by the provider, there's no need to set it.
+     */
+    running?: boolean;
+
+    /**
+     * Timeout ID for the handler scheduling. Used internally by the provider, there's no need to set it.
+     */
+    timeout?: number;
+
+    /**
+     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
+     *
+     * @return Interval time (in milliseconds).
+     */
+    getInterval?(): number;
+
+    /**
+     * Check whether the process uses network or not. True if not defined.
+     *
+     * @return Whether the process uses network or not
+     */
+    usesNetwork?(): boolean;
+
+    /**
+     * Check whether it's a synchronization process or not. True if not defined.
+     *
+     * @return Whether it's a synchronization process or not.
+     */
+    isSync?(): boolean;
+
+    /**
+     * Check whether the sync can be executed manually. Call isSync if not defined.
+     *
+     * @return Whether the sync can be executed manually.
+     */
+    canManualSync?(): boolean;
+
+    /**
+     * Execute the process.
+     *
+     * @param siteId ID of the site affected. If not defined, all sites.
+     * @param force Determines if it's a forced execution.
+     * @return Promise resolved when done. If the promise is rejected, this function will be called again often,
+     *         it shouldn't be abused.
+     */
+    execute?(siteId?: string, force?: boolean): Promise<void>;
+}
+
+/**
+ * Extended window type for automated tests.
+ */
+export type WindowForAutomatedTests = Window & {
+    cronProvider?: CoreCronDelegate;
+};
+
+type CronDBEntry = {
+    id: string;
+    value: number;
+};

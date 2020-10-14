@@ -13,16 +13,18 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { FileEntry } from '@ionic-native/file';
 
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreWS } from '@services/ws';
+import { CoreWS, CoreWSExternalFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
+import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 
 /**
@@ -42,8 +44,8 @@ export class CoreFileHelperProvider {
      * @param siteId The site ID. If not defined, current site.
      * @return Resolved on success.
      */
-    async downloadAndOpenFile(file: any, component: string, componentId: string | number, state?: string,
-            onProgress?: (event: any) => any, siteId?: string): Promise<void> {
+    async downloadAndOpenFile(file: CoreWSExternalFile, component: string, componentId: string | number, state?: string,
+            onProgress?: CoreFileHelperOnProgress, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         const fileUrl = this.getFileUrl(file);
@@ -80,7 +82,7 @@ export class CoreFileHelperProvider {
                 }
 
                 if (state == CoreConstants.DOWNLOADING) {
-                    throw new Error(Translate.instance.instant('core.erroropenfiledownloading'));
+                    throw new CoreError(Translate.instance.instant('core.erroropenfiledownloading'));
                 }
 
                 if (state === CoreConstants.NOT_DOWNLOADED) {
@@ -109,14 +111,11 @@ export class CoreFileHelperProvider {
      * @param siteId The site ID. If not defined, current site.
      * @return Resolved with the URL to use on success.
      */
-    protected downloadFileIfNeeded(file: any, fileUrl: string, component?: string, componentId?: string | number,
-            timemodified?: number, state?: string, onProgress?: (event: any) => any, siteId?: string): Promise<string> {
+    protected downloadFileIfNeeded(file: CoreWSExternalFile, fileUrl: string, component?: string, componentId?: string | number,
+            timemodified?: number, state?: string, onProgress?: CoreFileHelperOnProgress, siteId?: string): Promise<string> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
-        return CoreSites.instance.getSite(siteId).then((site) => {
-            return site.checkAndFixPluginfileURL(fileUrl);
-        }).then((fixedUrl) => {
-
+        return CoreSites.instance.getSite(siteId).then((site) => site.checkAndFixPluginfileURL(fileUrl)).then((fixedUrl) => {
             if (CoreFile.instance.isAvailable()) {
                 let promise;
                 if (state) {
@@ -134,16 +133,16 @@ export class CoreFileHelperProvider {
                     if (state == CoreConstants.DOWNLOADED) {
                         // File is downloaded, get the local file URL.
                         return CoreFilepool.instance.getUrlByUrl(
-                                siteId, fileUrl, component, componentId, timemodified, false, false, file);
+                            siteId, fileUrl, component, componentId, timemodified, false, false, file);
                     } else {
                         if (!isOnline && !this.isStateDownloaded(state)) {
                             // Not downloaded and user is offline, reject.
-                            return Promise.reject(Translate.instance.instant('core.networkerrormsg'));
+                            return Promise.reject(new CoreError(Translate.instance.instant('core.networkerrormsg')));
                         }
 
                         if (onProgress) {
                             // This call can take a while. Send a fake event to notify that we're doing some calculations.
-                            onProgress({calculating: true});
+                            onProgress({ calculating: true });
                         }
 
                         return CoreFilepool.instance.shouldDownloadBeforeOpen(fixedUrl, file.filesize).then(() => {
@@ -166,7 +165,7 @@ export class CoreFileHelperProvider {
                             } else {
                                 // Outdated but offline, so we return the local URL.
                                 return CoreFilepool.instance.getUrlByUrl(
-                                        siteId, fileUrl, component, componentId, timemodified, false, false, file);
+                                    siteId, fileUrl, component, componentId, timemodified, false, false, file);
                             }
                         });
                     }
@@ -191,27 +190,27 @@ export class CoreFileHelperProvider {
      * @return Resolved with internal URL on success, rejected otherwise.
      */
     downloadFile(fileUrl: string, component?: string, componentId?: string | number, timemodified?: number,
-            onProgress?: (event: any) => any, file?: any, siteId?: string): Promise<string> {
+        onProgress?: (event: ProgressEvent) => void, file?: CoreWSExternalFile, siteId?: string): Promise<string> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         // Get the site and check if it can download files.
         return CoreSites.instance.getSite(siteId).then((site) => {
             if (!site.canDownloadFiles()) {
-                return Promise.reject(Translate.instance.instant('core.cannotdownloadfiles'));
+                return Promise.reject(new CoreError(Translate.instance.instant('core.cannotdownloadfiles')));
             }
 
             return CoreFilepool.instance.downloadUrl(siteId, fileUrl, false, component, componentId,
-                    timemodified, onProgress, undefined, file).catch((error) => {
+                timemodified, onProgress, undefined, file).catch((error) =>
 
                 // Download failed, check the state again to see if the file was downloaded before.
-                return CoreFilepool.instance.getFileStateByUrl(siteId, fileUrl, timemodified).then((state) => {
+                CoreFilepool.instance.getFileStateByUrl(siteId, fileUrl, timemodified).then((state) => {
                     if (this.isStateDownloaded(state)) {
                         return CoreFilepool.instance.getInternalUrlByUrl(siteId, fileUrl);
                     } else {
                         return Promise.reject(error);
                     }
-                });
-            });
+                }),
+            );
         });
     }
 
@@ -219,9 +218,10 @@ export class CoreFileHelperProvider {
      * Get the file's URL.
      *
      * @param file The file.
+     * @deprecated since 3.9.5. Get directly the fileurl instead.
      */
-    getFileUrl(file: any): string {
-        return file.fileurl || file.url;
+    getFileUrl(file: CoreWSExternalFile): string {
+        return file.fileurl;
     }
 
     /**
@@ -229,7 +229,7 @@ export class CoreFileHelperProvider {
      *
      * @param file The file.
      */
-    getFileTimemodified(file: any): number {
+    getFileTimemodified(file: CoreWSExternalFile): number {
         return file.timemodified || 0;
     }
 
@@ -249,7 +249,7 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @return Whether the file should be opened in browser.
      */
-    shouldOpenInBrowser(file: any): boolean {
+    shouldOpenInBrowser(file: CoreWSExternalFile): boolean {
         if (!file || !file.isexternalfile || !file.mimetype) {
             return false;
         }
@@ -275,7 +275,7 @@ export class CoreFileHelperProvider {
      * @param files The files to check.
      * @return Total files size.
      */
-    async getTotalFilesSize(files: any[]): Promise<number> {
+    async getTotalFilesSize(files: (CoreWSExternalFile | FileEntry)[]): Promise<number> {
         let totalSize = 0;
 
         for (const file of files) {
@@ -291,27 +291,29 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @return File size.
      */
-    async getFileSize(file: any): Promise<number> {
-        if (file.filesize) {
+    async getFileSize(file: CoreWSExternalFile | FileEntry): Promise<number> {
+        if ('filesize' in file && (file.filesize || file.filesize === 0)) {
             return file.filesize;
         }
 
         // If it's a remote file. First check if we have the file downloaded since it's more reliable.
-        if (file.filename && !file.name) {
+        if ('filename' in file) {
+            const fileUrl = file.fileurl;
+
             try {
                 const siteId = CoreSites.instance.getCurrentSiteId();
 
-                const path = await CoreFilepool.instance.getFilePathByUrl(siteId, file.fileurl);
+                const path = await CoreFilepool.instance.getFilePathByUrl(siteId, fileUrl);
                 const fileEntry = await CoreFile.instance.getFile(path);
                 const fileObject = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
 
                 return fileObject.size;
             } catch (error) {
                 // Error getting the file, maybe it's not downloaded. Get remote size.
-                const size = await CoreWS.instance.getRemoteFileSize(file.fileurl);
+                const size = await CoreWS.instance.getRemoteFileSize(fileUrl);
 
                 if (size === -1) {
-                    throw new Error('Couldn\'t determine file size: ' + file.fileurl);
+                    throw new CoreError(`Couldn't determine file size: ${fileUrl}`);
                 }
 
                 return size;
@@ -319,13 +321,13 @@ export class CoreFileHelperProvider {
         }
 
         // If it's a local file, get its size.
-        if (file.name) {
+        if ('name' in file) {
             const fileObject = await CoreFile.instance.getFileObjectFromFileEntry(file);
 
             return fileObject.size;
         }
 
-        throw new Error('Couldn\'t determine file size: ' + file.fileurl);
+        throw new CoreError('Couldn\'t determine file size');
     }
 
     /**
@@ -334,7 +336,7 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @return bool.
      */
-    isOpenableInApp(file: {filename?: string, name?: string}): boolean {
+    isOpenableInApp(file: {filename?: string; name?: string}): boolean {
         const re = /(?:\.([^.]+))?$/;
 
         const ext = re.exec(file.filename || file.name)[1];
@@ -363,7 +365,7 @@ export class CoreFileHelperProvider {
      */
     isFileTypeExcludedInApp(fileType: string): boolean {
         const currentSite = CoreSites.instance.getCurrentSite();
-        const fileTypeExcludeList = currentSite && currentSite.getStoredConfig('tool_mobile_filetypeexclusionlist');
+        const fileTypeExcludeList = currentSite && <string> currentSite.getStoredConfig('tool_mobile_filetypeexclusionlist');
 
         if (!fileTypeExcludeList) {
             return false;
@@ -373,6 +375,10 @@ export class CoreFileHelperProvider {
 
         return !!fileTypeExcludeList.match(regEx);
     }
+
 }
 
 export class CoreFileHelper extends makeSingleton(CoreFileHelperProvider) {}
+
+export type CoreFileHelperOnProgress = (event?: ProgressEvent | { calculating: true }) => void;
+

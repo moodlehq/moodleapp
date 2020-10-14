@@ -30,9 +30,9 @@ export class CoreLangProvider {
     protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.
     protected defaultLanguage = CoreConfigConstants.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
     protected currentLanguage: string; // Save current language in a variable to speed up the get function.
-    protected customStrings = {}; // Strings defined using the admin tool.
+    protected customStrings: CoreLanguageObject = {}; // Strings defined using the admin tool.
     protected customStringsRaw: string;
-    protected sitePluginsStrings = {}; // Strings defined by site plugins.
+    protected sitePluginsStrings: CoreLanguageObject = {}; // Strings defined by site plugins.
 
     constructor() {
         // Set fallback language and language to use until the app determines the right language to use.
@@ -110,11 +110,11 @@ export class CoreLangProvider {
      * @param language New language to use.
      * @return Promise resolved when the change is finished.
      */
-    changeCurrentLanguage(language: string): Promise<unknown> {
+    async changeCurrentLanguage(language: string): Promise<void> {
         const promises = [];
 
         // Change the language, resolving the promise when we receive the first value.
-        promises.push(new Promise((resolve, reject): void => {
+        promises.push(new Promise((resolve, reject) => {
             const subscription = Translate.instance.use(language).subscribe((data) => {
                 // It's a language override, load the original one first.
                 const fallbackLang = Translate.instance.instant('core.parentlanguage');
@@ -165,13 +165,15 @@ export class CoreLangProvider {
 
         this.currentLanguage = language;
 
-        return Promise.all(promises).finally(() => {
+        try {
+            await Promise.all(promises);
+        } finally {
             // Load the custom and site plugins strings for the language.
             if (this.loadLangStrings(this.customStrings, language) || this.loadLangStrings(this.sitePluginsStrings, language)) {
                 // Some lang strings have changed, emit an event to update the pipes.
                 Translate.instance.onLangChange.emit({ lang: language, translations: Translate.instance.translations[language] });
             }
-        });
+        }
     }
 
     /**
@@ -196,7 +198,7 @@ export class CoreLangProvider {
      *
      * @return Custom strings.
      */
-    getAllCustomStrings(): unknown {
+    getAllCustomStrings(): CoreLanguageObject {
         return this.customStrings;
     }
 
@@ -205,7 +207,7 @@ export class CoreLangProvider {
      *
      * @return Site plugins strings.
      */
-    getAllSitePluginsStrings(): unknown {
+    getAllSitePluginsStrings(): CoreLanguageObject {
         return this.sitePluginsStrings;
     }
 
@@ -220,7 +222,7 @@ export class CoreLangProvider {
         }
 
         // Get current language from config (user might have changed it).
-        return CoreConfig.instance.get('current_language').then((language) => language).catch(() => {
+        return CoreConfig.instance.get<string>('current_language').then((language) => language).catch(() => {
             // User hasn't defined a language. If default language is forced, use it.
             if (CoreConfigConstants.default_lang && CoreConfigConstants.forcedefaultlanguage) {
                 return CoreConfigConstants.default_lang;
@@ -283,7 +285,7 @@ export class CoreLangProvider {
      * @param lang The language to check.
      * @return Promise resolved when done.
      */
-    getTranslationTable(lang: string): Promise<unknown> {
+    getTranslationTable(lang: string): Promise<Record<string, unknown>> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
             const observer = Translate.instance.getTranslation(lang).subscribe((table) => {

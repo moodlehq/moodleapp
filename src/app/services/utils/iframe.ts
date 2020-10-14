@@ -391,7 +391,7 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
-        if (!CoreUrlUtils.instance.isLocalFileUrlScheme(urlParts.protocol, urlParts.domain)) {
+        if (!CoreUrlUtils.instance.isLocalFileUrlScheme(urlParts.protocol)) {
             // Scheme suggests it's an external resource.
             event && event.preventDefault();
 

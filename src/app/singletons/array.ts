@@ -38,7 +38,7 @@ export class CoreArray {
      */
     static flatten<T>(arr: T[][]): T[] {
         if ('flat' in arr) {
-            return (arr as any).flat();
+            return (arr as any).flat(); // eslint-disable-line @typescript-eslint/no-explicit-any
         }
 
         return [].concat(...arr);

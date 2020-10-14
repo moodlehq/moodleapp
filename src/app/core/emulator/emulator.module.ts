@@ -23,7 +23,9 @@ import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Globalization } from '@ionic-native/globalization/ngx';
+import { HTTP } from '@ionic-native/http/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { Network } from '@ionic-native/network/ngx';
@@ -58,6 +60,7 @@ import { Zip } from '@ionic-native/zip/ngx';
         FileTransfer,
         Geolocation,
         Globalization,
+        HTTP,
         InAppBrowser,
         Keyboard,
         LocalNotifications,
@@ -68,6 +71,7 @@ import { Zip } from '@ionic-native/zip/ngx';
         SQLite,
         StatusBar,
         WebIntent,
+        WebView,
         Zip,
     ],
 })

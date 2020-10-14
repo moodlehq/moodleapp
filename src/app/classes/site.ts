@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector } from '@angular/core';
-
-import { InAppBrowserObject } from '@ionic-native/in-app-browser';
+import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreApp } from '@services/app';
 import { CoreDB } from '@services/db';
 import { CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreFile } from '@services/file';
-import { CoreWS, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets } from '@services/ws';
+import { CoreWS, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrlUtils, CoreUrlParams } from '@services/utils/url';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
 import CoreConfigConstants from '@app/config.json';
+import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreError } from '@classes/errors/error';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
 import { Translate } from '@singletons/core.singletons';
 
@@ -40,39 +40,40 @@ import { Translate } from '@singletons/core.singletons';
  * the tables are created in all the sites, not just the current one.
  */
 export class CoreSite {
-    static REQUEST_QUEUE_DELAY = 50; // Maximum number of miliseconds to wait before processing the queue.
-    static REQUEST_QUEUE_LIMIT = 10; // Maximum number of requests allowed in the queue.
-    static REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
+
+    static readonly REQUEST_QUEUE_DELAY = 50; // Maximum number of miliseconds to wait before processing the queue.
+    static readonly REQUEST_QUEUE_LIMIT = 10; // Maximum number of requests allowed in the queue.
+    static readonly REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
     // Constants for cache update frequency.
-    static FREQUENCY_USUALLY = 0;
-    static FREQUENCY_OFTEN = 1;
-    static FREQUENCY_SOMETIMES = 2;
-    static FREQUENCY_RARELY = 3;
+    static readonly FREQUENCY_USUALLY = 0;
+    static readonly FREQUENCY_OFTEN = 1;
+    static readonly FREQUENCY_SOMETIMES = 2;
+    static readonly FREQUENCY_RARELY = 3;
 
     // Variables for the database.
-    static WS_CACHE_TABLE = 'wscache_2';
-    static CONFIG_TABLE = 'core_site_config';
+    static readonly WS_CACHE_TABLE = 'wscache_2';
+    static readonly CONFIG_TABLE = 'core_site_config';
 
-    static MINIMUM_MOODLE_VERSION = '3.1';
+    static readonly MINIMUM_MOODLE_VERSION = '3.1';
 
     // Versions of Moodle releases.
-    protected MOODLE_RELEASES = {
+    protected readonly MOODLE_RELEASES = {
         3.1: 2016052300,
         3.2: 2016120500,
         3.3: 2017051503,
         3.4: 2017111300,
         3.5: 2018051700,
         3.6: 2018120300,
-        3.7: 2019052000
+        3.7: 2019052000,
     };
 
     // Possible cache update frequencies.
-    protected UPDATE_FREQUENCIES = [
+    protected readonly UPDATE_FREQUENCIES = [
         CoreConfigConstants.cache_update_frequency_usually || 420000,
         CoreConfigConstants.cache_update_frequency_often || 1200000,
         CoreConfigConstants.cache_update_frequency_sometimes || 3600000,
-        CoreConfigConstants.cache_update_frequency_rarely || 43200000
+        CoreConfigConstants.cache_update_frequency_rarely || 43200000,
     ];
 
     // Rest of variables.
@@ -81,9 +82,10 @@ export class CoreSite {
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected ongoingRequests: { [cacheId: string]: Promise<any> } = {};
     protected requestQueue: RequestQueueItem[] = [];
-    protected requestQueueTimeout = null;
+    protected requestQueueTimeout: number = null;
     protected tokenPluginFileWorks: boolean;
     protected tokenPluginFileWorksPromise: Promise<boolean>;
     protected oauthId: number;
@@ -99,8 +101,8 @@ export class CoreSite {
      * @param config Site public config.
      * @param loggedOut Whether user is logged out.
      */
-    constructor(public id: string, public siteUrl: string, public token?: string, public infos?: any,
-            public privateToken?: string, public config?: any, public loggedOut?: boolean) {
+    constructor(public id: string, public siteUrl: string, public token?: string, public infos?: CoreSiteInfo,
+            public privateToken?: string, public config?: CoreSiteConfig, public loggedOut?: boolean) {
         this.logger = CoreLogger.getInstance('CoreWSProvider');
         this.setInfo(infos);
         this.calculateOfflineDisabled();
@@ -149,7 +151,7 @@ export class CoreSite {
      *
      * @return Site info.
      */
-    getInfo(): any {
+    getInfo(): CoreSiteInfo {
         return this.infos;
     }
 
@@ -256,7 +258,7 @@ export class CoreSite {
      *
      * @param New info.
      */
-    setInfo(infos: any): void {
+    setInfo(infos: CoreSiteInfo): void {
         this.infos = infos;
 
         // Index function by name to speed up wsAvailable method.
@@ -273,7 +275,7 @@ export class CoreSite {
      *
      * @param config Config.
      */
-    setConfig(config: any): void {
+    setConfig(config: CoreSiteConfig): void {
         if (config) {
             config.tool_mobile_disabledfeatures = CoreTextUtils.instance.treatDisabledFeatures(config.tool_mobile_disabledfeatures);
         }
@@ -328,7 +330,7 @@ export class CoreSite {
     canDownloadFiles(): boolean {
         const infos = this.getInfo();
 
-        return infos && infos.downloadfiles;
+        return infos && infos.downloadfiles > 0;
     }
 
     /**
@@ -347,11 +349,10 @@ export class CoreSite {
         } else {
             for (const i in infos.advancedfeatures) {
                 const item = infos.advancedfeatures[i];
-                if (item.name === feature && parseInt(item.value, 10) === 0) {
+                if (item.name === feature && item.value === 0) {
                     canUse = false;
                 }
             }
-
         }
 
         return canUse;
@@ -365,7 +366,7 @@ export class CoreSite {
     canUploadFiles(): boolean {
         const infos = this.getInfo();
 
-        return infos && infos.uploadfiles;
+        return infos && infos.uploadfiles > 0;
     }
 
     /**
@@ -373,12 +374,12 @@ export class CoreSite {
      *
      * @return A promise to be resolved when the site info is retrieved.
      */
-    fetchSiteInfo(): Promise<any> {
+    fetchSiteInfo(): Promise<CoreSiteInfoResponse> {
         // The get_site_info WS call won't be cached.
         const preSets = {
             getFromCache: false,
             saveToCache: false,
-            skipQueue: true
+            skipQueue: true,
         };
 
         // Reset clean Unicode to check if it's supported again.
@@ -395,7 +396,8 @@ export class CoreSite {
      * @param preSets Extra options.
      * @return Promise resolved with the response, rejected with CoreWSError if it fails.
      */
-    read(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
         preSets = preSets || {};
         if (typeof preSets.getFromCache == 'undefined') {
             preSets.getFromCache = true;
@@ -418,7 +420,8 @@ export class CoreSite {
      * @param preSets Extra options.
      * @return Promise resolved with the response, rejected with CoreWSError if it fails.
      */
-    write(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
         preSets = preSets || {};
         if (typeof preSets.getFromCache == 'undefined') {
             preSets.getFromCache = false;
@@ -452,12 +455,13 @@ export class CoreSite {
      * This method is smart which means that it will try to map the method to a compatibility one if need be, usually this
      * means that it will fallback on the 'local_mobile_' prefixed function if it is available and the non-prefixed is not.
      */
-    request(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<T> {
         const initialToken = this.token;
         data = data || {};
 
         if (!CoreApp.instance.isOnline() && this.offlineDisabled) {
-            return Promise.reject(CoreWS.instance.createFakeWSError('core.errorofflinedisabled', true));
+            return Promise.reject(new CoreError(Translate.instance.instant('core.errorofflinedisabled')));
         }
 
         // Check if the method is available, use a prefixed version if possible.
@@ -470,7 +474,7 @@ export class CoreSite {
             } else {
                 this.logger.error(`WS function '${method}' is not available, even in compatibility mode.`);
 
-                return Promise.reject(CoreUtils.instance.createFakeWSError('core.wsfunctionnotavailable', true));
+                return Promise.reject(new CoreError(Translate.instance.instant('core.wsfunctionnotavailable')));
             }
         }
 
@@ -479,7 +483,7 @@ export class CoreSite {
             siteUrl: this.siteUrl,
             cleanUnicode: this.cleanUnicode,
             typeExpected: preSets.typeExpected,
-            responseExpected: preSets.responseExpected
+            responseExpected: preSets.responseExpected,
         };
 
         if (wsPreSets.cleanUnicode && CoreTextUtils.instance.hasUnicodeData(data)) {
@@ -501,34 +505,32 @@ export class CoreSite {
         data.moodlewssettingfilter = preSets.filter === false ? false : true;
         data.moodlewssettingfileurl = preSets.rewriteurls === false ? false : true;
 
-        const originalData = data;
-
         // Convert arguments to strings before starting the cache process.
         data = CoreWS.instance.convertValuesToString(data, wsPreSets.cleanUnicode);
         if (data == null) {
             // Empty cleaned text found.
-            return Promise.reject(CoreUtils.instance.createFakeWSError('core.unicodenotsupportedcleanerror', true));
+            return Promise.reject(new CoreError(Translate.instance.instant('core.unicodenotsupportedcleanerror')));
         }
 
         const cacheId = this.getCacheId(method, data);
 
         // Check for an ongoing identical request if we're not ignoring cache.
         if (preSets.getFromCache && this.ongoingRequests[cacheId]) {
-            return this.ongoingRequests[cacheId].then((response) => {
+            return this.ongoingRequests[cacheId].then((response) =>
                 // Clone the data, this may prevent errors if in the callback the object is modified.
-                return CoreUtils.instance.clone(response);
-            });
+                CoreUtils.instance.clone(response),
+            );
         }
 
-        const promise = this.getFromCache(method, data, preSets, false, originalData).catch(() => {
+        const promise = this.getFromCache<T>(method, data, preSets, false).catch(() => {
             if (preSets.forceOffline) {
                 // Don't call the WS, just fail.
-                return Promise.reject(CoreWS.instance.createFakeWSError('core.cannotconnect', true,
-                    {$a: CoreSite.MINIMUM_MOODLE_VERSION}));
+                return Promise.reject(new CoreError(Translate.instance.instant('core.cannotconnect',
+                    { $a: CoreSite.MINIMUM_MOODLE_VERSION })));
             }
 
             // Call the WS.
-            return this.callOrEnqueueRequest(method, data, preSets, wsPreSets).then((response) => {
+            return this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets).then((response) => {
                 if (preSets.saveToCache) {
                     this.saveToCache(method, data, response, preSets);
                 }
@@ -541,12 +543,10 @@ export class CoreSite {
                         // Token has changed, retry with the new token.
                         preSets.getFromCache = false; // Don't check cache now. Also, it will skip ongoingRequests.
 
-                        return this.request(method, data, preSets, true);
+                        return this.request<T>(method, data, preSets, true);
                     } else if (CoreApp.instance.isSSOAuthenticationOngoing()) {
                         // There's an SSO authentication ongoing, wait for it to finish and try again.
-                        return CoreApp.instance.waitForSSOAuthentication().then(() => {
-                            return this.request(method, data, preSets, true);
-                        });
+                        return CoreApp.instance.waitForSSOAuthentication().then(() => this.request<T>(method, data, preSets, true));
                     }
 
                     // Session expired, trigger event.
@@ -558,34 +558,32 @@ export class CoreSite {
                     CoreEvents.instance.trigger(CoreEventsProvider.USER_DELETED, { params: data }, this.id);
                     error.message = Translate.instance.instant('core.userdeleted');
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
                     // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
                     CoreEvents.instance.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = Translate.instance.instant('core.forcepasswordchangenotice');
-
                 } else if (error.errorcode === 'usernotfullysetup') {
                     // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
                     CoreEvents.instance.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = Translate.instance.instant('core.usernotfullysetup');
-
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     CoreEvents.instance.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
                     error.message = Translate.instance.instant('core.login.sitepolicynotagreederror');
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 } else if (error.errorcode === 'dmlwriteexception' && CoreTextUtils.instance.hasUnicodeData(data)) {
                     if (!this.cleanUnicode) {
                         // Try again cleaning unicode.
                         this.cleanUnicode = true;
 
-                        return this.request(method, data, preSets);
+                        return this.request<T>(method, data, preSets);
                     }
                     // This should not happen.
                     error.message = Translate.instance.instant('core.unicodenotsupported');
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission' ||
                         error.errorcode === 'notingroup') {
                     // Translate error messages with missing strings.
@@ -598,16 +596,16 @@ export class CoreSite {
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
                     this.saveToCache(method, data, error, preSets);
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
                     this.saveToCache(method, data, error, preSets);
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 }
 
                 if (preSets.deleteCacheIfWSError && CoreUtils.instance.isWebServiceError(error)) {
@@ -616,21 +614,20 @@ export class CoreSite {
                         // Ignore errors.
                     });
 
-                    return Promise.reject(error);
+                    return Promise.reject(new CoreWSError(error));
                 }
 
                 this.logger.debug(`WS call '${method}' failed. Trying to use the emergency cache.`);
                 preSets.omitExpires = true;
                 preSets.getFromCache = true;
 
-                return this.getFromCache(method, data, preSets, true, originalData).catch(() => {
-                    return Promise.reject(error);
-                });
+                return this.getFromCache<T>(method, data, preSets, true).catch(() => Promise.reject(new CoreWSError(error)));
             });
-        }).then((response) => {
+        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+        }).then((response: any) => {
             // Check if the response is an error, this happens if the error was stored in the cache.
             if (response && (typeof response.exception != 'undefined' || typeof response.errorcode != 'undefined')) {
-                return Promise.reject(response);
+                return Promise.reject(new CoreWSError(response));
             }
 
             return response;
@@ -644,10 +641,10 @@ export class CoreSite {
             if (this.ongoingRequests[cacheId] === promise) {
                 delete this.ongoingRequests[cacheId];
             }
-        }).then((response) => {
+        }).then((response) =>
             // We pass back a clone of the original object, this may prevent errors if in the callback the object is modified.
-            return CoreUtils.instance.clone(response);
-        });
+            CoreUtils.instance.clone(response),
+        );
     }
 
     /**
@@ -659,9 +656,15 @@ export class CoreSite {
      * @param wsPreSets Extra options related to the WS call.
      * @return Promise resolved with the response when the WS is called.
      */
-    protected callOrEnqueueRequest(method: string, data: any, preSets: CoreSiteWSPreSets, wsPreSets: CoreWSPreSets): Promise<any> {
+    protected callOrEnqueueRequest<T = unknown>(
+        method: string,
+        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+        data: any,
+        preSets: CoreSiteWSPreSets,
+        wsPreSets: CoreWSPreSets,
+    ): Promise<T> {
         if (preSets.skipQueue || !this.wsAvailable('tool_mobile_call_external_functions')) {
-            return CoreWS.instance.call(method, data, wsPreSets);
+            return CoreWS.instance.call<T>(method, data, wsPreSets);
         }
 
         const cacheId = this.getCacheId(method, data);
@@ -680,13 +683,8 @@ export class CoreSite {
             data,
             preSets,
             wsPreSets,
-            deferred: CoreUtils.instance.promiseDefer(),
+            deferred: CoreUtils.instance.promiseDefer<T>(),
         };
-
-        request.deferred.promise = new Promise((resolve, reject): void => {
-            request.deferred.resolve = resolve;
-            request.deferred.reject = reject;
-        });
 
         return this.enqueueRequest(request);
     }
@@ -697,14 +695,14 @@ export class CoreSite {
      * @param request The request to enqueue.
      * @return Promise resolved with the response when the WS is called.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     protected enqueueRequest(request: RequestQueueItem): Promise<any> {
-
         this.requestQueue.push(request);
 
         if (this.requestQueue.length >= CoreSite.REQUEST_QUEUE_LIMIT) {
             this.processRequestQueue();
         } else if (!this.requestQueueTimeout) {
-            this.requestQueueTimeout = setTimeout(this.processRequestQueue.bind(this), CoreSite.REQUEST_QUEUE_DELAY);
+            this.requestQueueTimeout = window.setTimeout(this.processRequestQueue.bind(this), CoreSite.REQUEST_QUEUE_DELAY);
         }
 
         return request.deferred.promise;
@@ -760,9 +758,9 @@ export class CoreSite {
                 return {
                     function: request.method,
                     arguments: JSON.stringify(args),
-                    ...settings
+                    ...settings,
                 };
-            })
+            }),
         };
 
         const wsPresets: CoreWSPreSets = {
@@ -770,9 +768,10 @@ export class CoreSite {
             wsToken: this.token,
         };
 
-        CoreWS.instance.call('tool_mobile_call_external_functions', data, wsPresets).then((data) => {
+        CoreWS.instance.call<CoreSiteCallExternalFunctionsResult>('tool_mobile_call_external_functions', data, wsPresets)
+                .then((data) => {
             if (!data || !data.responses) {
-                return Promise.reject(null);
+                return Promise.reject(new CoreError(Translate.instance.instant('core.errorinvalidresponse')));
             }
 
             requests.forEach((request, i) => {
@@ -793,7 +792,6 @@ export class CoreSite {
                     request.deferred.resolve(responseData);
                 }
             });
-
         }).catch((error) => {
             // Error not specific to a single request, reject all promises.
             requests.forEach((request) => {
@@ -833,19 +831,9 @@ export class CoreSite {
      * @param data Arguments to pass to the method.
      * @return Cache ID.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     protected getCacheId(method: string, data: any): string {
         return <string> Md5.hashAsciiStr(method + ':' + CoreUtils.instance.sortAndStringify(data));
-    }
-
-    /**
-     * Get the cache ID used in Ionic 1 version of the app.
-     *
-     * @param method The WebService method.
-     * @param data Arguments to pass to the method.
-     * @return Cache ID.
-     */
-    protected getCacheOldId(method: string, data: any): string {
-        return <string> Md5.hashAsciiStr(method + ':' +  JSON.stringify(data));
     }
 
     /**
@@ -858,17 +846,18 @@ export class CoreSite {
      * @param originalData Arguments to pass to the method before being converted to strings.
      * @return Promise resolved with the WS response.
      */
-    protected getFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean, originalData?: any)
-            : Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    protected getFromCache<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets, emergency?: boolean): Promise<T> {
         if (!this.db || !preSets.getFromCache) {
-            return Promise.reject(null);
+            return Promise.reject(new CoreError('Get from cache is disabled.'));
         }
 
         const id = this.getCacheId(method, data);
-        let promise;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let promise: Promise<any>;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            promise = this.db.getRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
+            promise = this.db.getRecords<any>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey }).then((entries) => {
                 if (!entries.length) {
                     // Cache key not found, get by params sent.
                     return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
@@ -885,22 +874,12 @@ export class CoreSite {
                 return entries[0];
             });
         } else {
-            promise = this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id }).catch(() => {
-                // Entry not found, try to get it using the old ID.
-                const oldId = this.getCacheOldId(method, originalData || {});
-
-                return this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id: oldId }).then((entry) => {
-                    // Update the entry ID to use the new one.
-                    this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { id }, {id: oldId});
-
-                    return entry;
-                });
-            });
+            promise = this.db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
         }
 
         return promise.then((entry) => {
             const now = Date.now();
-            let expirationTime;
+            let expirationTime: number;
 
             preSets.omitExpires = preSets.omitExpires || preSets.forceOffline || !CoreApp.instance.isOnline();
 
@@ -910,7 +889,7 @@ export class CoreSite {
                 if (now > expirationTime) {
                     this.logger.debug('Cached element found, but it is expired');
 
-                    return Promise.reject(null);
+                    return Promise.reject(new CoreError('Cache entry is expired.'));
                 }
             }
 
@@ -922,10 +901,10 @@ export class CoreSite {
                     this.logger.info(`Cached element found, id: ${id}. Expires in expires in ${expires} seconds`);
                 }
 
-                return CoreTextUtils.instance.parseJSON(entry.data, {});
+                return <T> CoreTextUtils.instance.parseJSON(entry.data, {});
             }
 
-            return Promise.reject(null);
+            return Promise.reject(new CoreError('Cache entry not valid.'));
         });
     }
 
@@ -936,16 +915,18 @@ export class CoreSite {
      * @param componentId Optional component id (if not included, returns sum for whole component)
      * @return Promise resolved when we have calculated the size
      */
-    getComponentCacheSize(component: string, componentId?: number): Promise<number> {
-        const params: any[] = [component];
+    async getComponentCacheSize(component: string, componentId?: number): Promise<number> {
+        const params: Array<string | number> = [component];
         let extraClause = '';
         if (componentId !== undefined && componentId !== null) {
             params.push(componentId);
             extraClause = ' AND componentId = ?';
         }
 
-        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE +
+        const size = <number> await this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE +
                 ' WHERE component = ?' + extraClause, params);
+
+        return size;
     }
 
     /**
@@ -957,45 +938,38 @@ export class CoreSite {
      * @param preSets Extra options.
      * @return Promise resolved when the response is saved.
      */
-    protected saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    protected async saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets): Promise<void> {
         if (!this.db) {
-            return Promise.reject(null);
+            throw new CoreError('Site DB not initialized.');
         }
-
-        let promise;
 
         if (preSets.uniqueCacheKey) {
             // Cache key must be unique, delete all entries with same cache key.
-            promise = this.deleteFromCache(method, data, preSets, true).catch(() => {
-                // Ignore errors.
-            });
-        } else {
-            promise = Promise.resolve();
+            await CoreUtils.instance.ignoreErrors(this.deleteFromCache(method, data, preSets, true));
         }
 
-        return promise.then(() => {
-            // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
-            // We decided to reuse this field to prevent modifying the database table.
-            const id = this.getCacheId(method, data);
-            const entry: any = {
-                id,
-                data: JSON.stringify(response),
-                expirationTime: Date.now()
-            };
+        // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
+        // We decided to reuse this field to prevent modifying the database table.
+        const id = this.getCacheId(method, data);
+        const entry = {
+            id,
+            data: JSON.stringify(response),
+            expirationTime: Date.now(),
+        };
 
-            if (preSets.cacheKey) {
-                entry.key = preSets.cacheKey;
+        if (preSets.cacheKey) {
+            entry['key'] = preSets.cacheKey;
+        }
+
+        if (preSets.component) {
+            entry['component'] = preSets.component;
+            if (preSets.componentId) {
+                entry['componentId'] = preSets.componentId;
             }
+        }
 
-            if (preSets.component) {
-                entry.component = preSets.component;
-                if (preSets.componentId) {
-                    entry.componentId = preSets.componentId;
-                }
-            }
-
-            return this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);
-        });
+        await this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);
     }
 
     /**
@@ -1007,18 +981,19 @@ export class CoreSite {
      * @param allCacheKey True to delete all entries with the cache key, false to delete only by ID.
      * @return Promise resolved when the entries are deleted.
      */
-    protected deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    protected async deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<void> {
         if (!this.db) {
-            return Promise.reject(null);
+            throw new CoreError('Site DB not initialized.');
         }
 
         const id = this.getCacheId(method, data);
 
         if (allCacheKey) {
-            return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
+        } else {
+            await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id });
         }
-
-        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id });
     }
 
     /**
@@ -1035,17 +1010,17 @@ export class CoreSite {
         }
 
         if (!this.db) {
-            throw new Error('Site DB not initialized');
+            throw new CoreError('Site DB not initialized');
         }
 
         const params = {
             component,
-        } as any;
+        };
         if (componentId) {
-            params.componentId = componentId;
+            params['componentId'] = componentId;
         }
 
-        return this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
+        await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
     }
 
     /*
@@ -1056,14 +1031,18 @@ export class CoreSite {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when uploaded.
      */
-    uploadFile(filePath: string, options: CoreWSFileUploadOptions, onProgress?: (event: ProgressEvent) => any): Promise<any> {
+    uploadFile<T = unknown>(
+        filePath: string,
+        options: CoreWSFileUploadOptions,
+        onProgress?: (event: ProgressEvent) => void,
+    ): Promise<T> {
         if (!options.fileArea) {
             options.fileArea = 'draft';
         }
 
-        return CoreWS.instance.uploadFile(filePath, options, {
+        return CoreWS.instance.uploadFile<T>(filePath, options, {
             siteUrl: this.siteUrl,
-            wsToken: this.token
+            wsToken: this.token,
         }, onProgress);
     }
 
@@ -1072,16 +1051,18 @@ export class CoreSite {
      *
      * @return Promise resolved when the cache entries are invalidated.
      */
-    invalidateWsCache(): Promise<any> {
+    async invalidateWsCache(): Promise<void> {
         if (!this.db) {
-            return Promise.reject(null);
+            throw new CoreError('Site DB not initialized');
         }
 
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
-        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }).finally(() => {
+        try {
+            await this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 });
+        } finally {
             CoreEvents.instance.trigger(CoreEventsProvider.WS_CACHE_INVALIDATED, {}, this.getId());
-        });
+        }
     }
 
     /**
@@ -1090,17 +1071,17 @@ export class CoreSite {
      * @param key Key to search.
      * @return Promise resolved when the cache entries are invalidated.
      */
-    invalidateWsCacheForKey(key: string): Promise<any> {
+    async invalidateWsCacheForKey(key: string): Promise<void> {
         if (!this.db) {
-            return Promise.reject(null);
+            throw new CoreError('Site DB not initialized');
         }
         if (!key) {
-            return Promise.resolve();
+            return;
         }
 
         this.logger.debug('Invalidate cache for key: ' + key);
 
-        return this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }, { key });
+        await this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }, { key });
     }
 
     /**
@@ -1109,22 +1090,16 @@ export class CoreSite {
      * @param keys Keys to search.
      * @return Promise resolved when the cache entries are invalidated.
      */
-    invalidateMultipleWsCacheForKey(keys: string[]): Promise<any> {
+    async invalidateMultipleWsCacheForKey(keys: string[]): Promise<void> {
         if (!this.db) {
-            return Promise.reject(null);
+            throw new CoreError('Site DB not initialized');
         }
         if (!keys || !keys.length) {
-            return Promise.resolve();
+            return;
         }
 
-        const promises = [];
-
         this.logger.debug('Invalidating multiple cache keys');
-        keys.forEach((key) => {
-            promises.push(this.invalidateWsCacheForKey(key));
-        });
-
-        return Promise.all(promises);
+        await Promise.all(keys.map((key) => this.invalidateWsCacheForKey(key)));
     }
 
     /**
@@ -1133,19 +1108,19 @@ export class CoreSite {
      * @param key Key to search.
      * @return Promise resolved when the cache entries are invalidated.
      */
-    invalidateWsCacheForKeyStartingWith(key: string): Promise<any> {
+    async invalidateWsCacheForKeyStartingWith(key: string): Promise<void> {
         if (!this.db) {
-            return Promise.reject(null);
+            throw new CoreError('Site DB not initialized');
         }
         if (!key) {
-            return Promise.resolve();
+            return;
         }
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
         const sql = 'UPDATE ' + CoreSite.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
 
-        return this.db.execute(sql, [key + '%']);
+        await this.db.execute(sql, [key + '%']);
     }
 
     /**
@@ -1155,9 +1130,7 @@ export class CoreSite {
      * @return Promise resolved with the fixed URL.
      */
     checkAndFixPluginfileURL(url: string): Promise<string> {
-        return this.checkTokenPluginFile(url).then(() => {
-            return this.fixPluginfileURL(url);
-        });
+        return this.checkTokenPluginFile(url).then(() => this.fixPluginfileURL(url));
     }
 
     /**
@@ -1169,7 +1142,7 @@ export class CoreSite {
      */
     fixPluginfileURL(url: string): string {
         const accessKey = this.tokenPluginFileWorks || typeof this.tokenPluginFileWorks == 'undefined' ?
-                this.infos && this.infos.userprivateaccesskey : undefined;
+            this.infos && this.infos.userprivateaccesskey : undefined;
 
         return CoreUrlUtils.instance.fixPluginfileURL(url, this.token, this.siteUrl, accessKey);
     }
@@ -1179,8 +1152,8 @@ export class CoreSite {
      *
      * @return Promise to be resolved when the DB is deleted.
      */
-    deleteDB(): Promise<any> {
-        return CoreDB.instance.deleteDB('Site-' + this.id);
+    async deleteDB(): Promise<void> {
+        await CoreDB.instance.deleteDB('Site-' + this.id);
     }
 
     /**
@@ -1188,16 +1161,15 @@ export class CoreSite {
      *
      * @return Promise to be resolved when the DB is deleted.
      */
-    deleteFolder(): Promise<any> {
-        if (CoreFile.instance.isAvailable()) {
-            const siteFolder = CoreFile.instance.getSiteFolder(this.id);
-
-            return CoreFile.instance.removeDir(siteFolder).catch(() => {
-                // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exists.
-            });
-        } else {
-            return Promise.resolve();
+    async deleteFolder(): Promise<void> {
+        if (!CoreFile.instance.isAvailable()) {
+            return;
         }
+
+        const siteFolder = CoreFile.instance.getSiteFolder(this.id);
+
+        // Ignore any errors, removeDir fails if folder doesn't exists.
+        await CoreUtils.instance.ignoreErrors(CoreFile.instance.removeDir(siteFolder));
     }
 
     /**
@@ -1209,9 +1181,7 @@ export class CoreSite {
         if (CoreFile.instance.isAvailable()) {
             const siteFolderPath = CoreFile.instance.getSiteFolder(this.id);
 
-            return CoreFile.instance.getDirectorySize(siteFolderPath).catch(() => {
-                return 0;
-            });
+            return CoreFile.instance.getDirectorySize(siteFolderPath).catch(() => 0);
         } else {
             return Promise.resolve(0);
         }
@@ -1224,8 +1194,10 @@ export class CoreSite {
      *
      * @return Promise resolved with the total size of all data in the cache table (bytes)
      */
-    getCacheUsage(): Promise<number> {
-        return this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+    async getCacheUsage(): Promise<number> {
+        const size = <number> await this.db.getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+
+        return size;
     }
 
     /**
@@ -1260,7 +1232,7 @@ export class CoreSite {
      * @param anchor Anchor text if needed.
      * @return URL with params.
      */
-    createSiteUrl(path: string, params?: {[key: string]: any}, anchor?: string): string {
+    createSiteUrl(path: string, params?: CoreUrlParams, anchor?: string): string {
         return CoreUrlUtils.instance.addParamsToUrl(this.siteUrl + path, params, anchor);
     }
 
@@ -1303,7 +1275,7 @@ export class CoreSite {
 
                 return this.checkLocalMobilePlugin(true);
             } else {
-                throw data.error;
+                throw new CoreWSError(data);
             }
         } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
             // The local_mobile returned something we didn't expect. Let's assume it's not installed.
@@ -1315,18 +1287,18 @@ export class CoreSite {
             switch (code) {
                 case 1:
                     // Site in maintenance mode.
-                    throw Translate.instance.instant('core.login.siteinmaintenance');
+                    throw new CoreError(Translate.instance.instant('core.login.siteinmaintenance'));
                 case 2:
                     // Web services not enabled.
-                    throw Translate.instance.instant('core.login.webservicesnotenabled');
+                    throw new CoreError(Translate.instance.instant('core.login.webservicesnotenabled'));
                 case 3:
                     // Extended service not enabled, but the official is enabled.
                     return { code: 0 };
                 case 4:
                     // Neither extended or official services enabled.
-                    throw Translate.instance.instant('core.login.mobileservicesnotenabled');
+                    throw new CoreError(Translate.instance.instant('core.login.mobileservicesnotenabled'));
                 default:
-                    throw Translate.instance.instant('core.unexpectederror');
+                    throw new CoreError(Translate.instance.instant('core.unexpectederror'));
             }
         } else {
             return { code, service, coreSupported: !!data.coresupported };
@@ -1359,22 +1331,20 @@ export class CoreSite {
      *
      * @return Promise resolved it local_mobile was added, rejected otherwise.
      */
-    checkIfLocalMobileInstalledAndNotUsed(): Promise<any> {
+    async checkIfLocalMobileInstalledAndNotUsed(): Promise<void> {
         const appUsesLocalMobile = this.checkIfAppUsesLocalMobile();
 
         if (appUsesLocalMobile) {
             // App already uses local_mobile, it wasn't added.
-            return Promise.reject(null);
+            throw new CoreError('Already used.');
         }
 
-        return this.checkLocalMobilePlugin().then((data: LocalMobileResponse): any => {
-            if (typeof data.service == 'undefined') {
-                // The local_mobile NOT installed. Reject.
-                return Promise.reject(null);
-            }
+        const data = await this.checkLocalMobilePlugin();
 
-            return data;
-        });
+        if (typeof data.service == 'undefined') {
+            // The local_mobile NOT installed. Reject.
+            throw new CoreError('Not installed.');
+        }
     }
 
     /**
@@ -1399,13 +1369,12 @@ export class CoreSite {
      *
      * @return Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
      */
-    getPublicConfig(): Promise<any> {
+    getPublicConfig(): Promise<CoreSitePublicConfigResponse> {
         const preSets: CoreWSAjaxPreSets = {
-            siteUrl: this.siteUrl
+            siteUrl: this.siteUrl,
         };
 
         return CoreWS.instance.callAjax('tool_mobile_get_public_config', {}, preSets).catch((error) => {
-
             if ((!this.getInfo() || this.isVersionGreaterEqualThan('3.8')) && error && error.errorcode == 'codingerror') {
                 // This error probably means that there is a redirect in the site. Try to use a GET request.
                 preSets.noLogin = true;
@@ -1423,7 +1392,7 @@ export class CoreSite {
             }
 
             return Promise.reject(error);
-        }).then((config) => {
+        }).then((config: CoreSitePublicConfigResponse) => {
             // Use the wwwroot returned by the server.
             if (config.httpswwwroot) {
                 this.siteUrl = config.httpswwwroot;
@@ -1440,8 +1409,8 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the browser.
      * @return Promise resolved when done, rejected otherwise.
      */
-    openInBrowserWithAutoLogin(url: string, alertMessage?: string): Promise<any> {
-        return this.openWithAutoLogin(false, url, undefined, alertMessage);
+    async openInBrowserWithAutoLogin(url: string, alertMessage?: string): Promise<void> {
+        await this.openWithAutoLogin(false, url, undefined, alertMessage);
     }
 
     /**
@@ -1451,8 +1420,8 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the browser.
      * @return Promise resolved when done, rejected otherwise.
      */
-    openInBrowserWithAutoLoginIfSameSite(url: string, alertMessage?: string): Promise<any> {
-        return this.openWithAutoLoginIfSameSite(false, url, undefined, alertMessage);
+    async openInBrowserWithAutoLoginIfSameSite(url: string, alertMessage?: string): Promise<void> {
+        await this.openWithAutoLoginIfSameSite(false, url, undefined, alertMessage);
     }
 
     /**
@@ -1463,8 +1432,10 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the inappbrowser.
      * @return Promise resolved when done.
      */
-    openInAppWithAutoLogin(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
-        return this.openWithAutoLogin(true, url, options, alertMessage);
+    async openInAppWithAutoLogin(url: string, options?: InAppBrowserOptions, alertMessage?: string): Promise<InAppBrowserObject> {
+        const iabInstance = <InAppBrowserObject> await this.openWithAutoLogin(true, url, options, alertMessage);
+
+        return iabInstance;
     }
 
     /**
@@ -1475,8 +1446,11 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the inappbrowser.
      * @return Promise resolved when done.
      */
-    openInAppWithAutoLoginIfSameSite(url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
-        return this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
+    async openInAppWithAutoLoginIfSameSite(url: string, options?: InAppBrowserOptions, alertMessage?: string):
+            Promise<InAppBrowserObject> {
+        const iabInstance = <InAppBrowserObject> await this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
+
+        return iabInstance;
     }
 
     /**
@@ -1488,7 +1462,8 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the browser/inappbrowser.
      * @return Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLogin(inApp: boolean, url: string, options?: any, alertMessage?: string): Promise<InAppBrowserObject | void> {
+    openWithAutoLogin(inApp: boolean, url: string, options?: InAppBrowserOptions, alertMessage?: string):
+            Promise<InAppBrowserObject | void> {
         // Get the URL to open.
         return this.getAutoLoginUrl(url).then((url) => {
             if (!alertMessage) {
@@ -1502,20 +1477,18 @@ export class CoreSite {
 
             // Show an alert first.
             return CoreDomUtils.instance.showAlert(Translate.instance.instant('core.notice'), alertMessage, undefined, 3000)
-                    .then((alert) => {
+                .then(() => new Promise<InAppBrowserObject | void>(() => {
+                    // @todo
+                    // const subscription = alert.didDismiss.subscribe(() => {
+                    //     subscription && subscription.unsubscribe();
 
-                return new Promise<InAppBrowserObject | void>((resolve, reject): void => {
-                    const subscription = alert.didDismiss.subscribe(() => {
-                        subscription && subscription.unsubscribe();
-
-                        if (inApp) {
-                            resolve(CoreUtils.instance.openInApp(url, options));
-                        } else {
-                            resolve(CoreUtils.instance.openInBrowser(url));
-                        }
-                    });
-                });
-            });
+                    //     if (inApp) {
+                    //         resolve(CoreUtils.instance.openInApp(url, options));
+                    //     } else {
+                    //         resolve(CoreUtils.instance.openInBrowser(url));
+                    //     }
+                    // });
+                }));
         });
     }
 
@@ -1528,18 +1501,16 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the browser/inappbrowser.
      * @return Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: any, alertMessage?: string)
-            : Promise<InAppBrowserObject | void> {
+    openWithAutoLoginIfSameSite(inApp: boolean, url: string, options?: InAppBrowserOptions, alertMessage?: string):
+            Promise<InAppBrowserObject | void> {
         if (this.containsUrl(url)) {
             return this.openWithAutoLogin(inApp, url, options, alertMessage);
         } else {
             if (inApp) {
-                CoreUtils.instance.openInApp(url, options);
+                return Promise.resolve(CoreUtils.instance.openInApp(url, options));
             } else {
                 CoreUtils.instance.openInBrowser(url);
             }
-
-            return Promise.resolve(null);
         }
     }
 
@@ -1551,9 +1522,9 @@ export class CoreSite {
      * @param ignoreCache True if it should ignore cached data.
      * @return Promise resolved with site config.
      */
-    getConfig(name?: string, ignoreCache?: boolean): Promise<any> {
+    getConfig(name?: string, ignoreCache?: boolean): Promise<string | CoreSiteConfig> {
         const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getConfigCacheKey()
+            cacheKey: this.getConfigCacheKey(),
         };
 
         if (ignoreCache) {
@@ -1561,7 +1532,7 @@ export class CoreSite {
             preSets.emergencyCache = false;
         }
 
-        return this.read('tool_mobile_get_config', {}, preSets).then((config) => {
+        return this.read('tool_mobile_get_config', {}, preSets).then((config: CoreSiteConfigResponse) => {
             if (name) {
                 // Return the requested setting.
                 for (const x in config.settings) {
@@ -1570,7 +1541,7 @@ export class CoreSite {
                     }
                 }
 
-                return Promise.reject(null);
+                throw new CoreError('Site config not found: ' + name);
             } else {
                 // Return all settings in the same array.
                 const settings = {};
@@ -1588,8 +1559,8 @@ export class CoreSite {
      *
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateConfig(): Promise<any> {
-        return this.invalidateWsCacheForKey(this.getConfigCacheKey());
+    async invalidateConfig(): Promise<void> {
+        await this.invalidateWsCacheForKey(this.getConfigCacheKey());
     }
 
     /**
@@ -1607,7 +1578,7 @@ export class CoreSite {
      * @param name Name of the setting to get. If not set, all settings will be returned.
      * @return Site config or a specific setting.
      */
-    getStoredConfig(name?: string): any {
+    getStoredConfig(name?: string): string | CoreSiteConfig {
         if (!this.config) {
             return;
         }
@@ -1626,7 +1597,7 @@ export class CoreSite {
      * @return Whether it's disabled.
      */
     isFeatureDisabled(name: string): boolean {
-        const disabledFeatures = this.getStoredConfig('tool_mobile_disabledfeatures');
+        const disabledFeatures = <string> this.getStoredConfig('tool_mobile_disabledfeatures');
         if (!disabledFeatures) {
             return false;
         }
@@ -1709,7 +1680,6 @@ export class CoreSite {
      * @return Promise resolved with the converted URL.
      */
     getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
-
         if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') || (this.lastAutoLogin &&
                 CoreTimeUtils.instance.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago. Don't change the URL.
@@ -1728,8 +1698,7 @@ export class CoreSite {
         }
 
         // Use write to not use cache.
-        return this.write('tool_mobile_get_autologin_key', params).then((data) => {
-
+        return this.write<CoreSiteAutologinKeyResult>('tool_mobile_get_autologin_key', params).then((data) => {
             if (!data.autologinurl || !data.key) {
                 // Not valid data, return the same URL.
                 return url;
@@ -1738,11 +1707,11 @@ export class CoreSite {
             this.lastAutoLogin = CoreTimeUtils.instance.timestamp();
 
             return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + encodeURIComponent(url);
-        }).catch(() => {
+        }).catch(() =>
 
             // Couldn't get autologin key, return the same URL.
-            return url;
-        }).finally(() => {
+            url,
+        ).finally(() => {
             modal && modal.dismiss();
         });
     }
@@ -1764,7 +1733,7 @@ export class CoreSite {
 
         if (typeof this.MOODLE_RELEASES[data.major] == 'undefined') {
             // Major version not found. Use the last one.
-            data.major = Object.keys(this.MOODLE_RELEASES).slice(-1);
+            data.major = Object.keys(this.MOODLE_RELEASES).pop();
         }
 
         return this.MOODLE_RELEASES[data.major] + data.minor;
@@ -1776,7 +1745,7 @@ export class CoreSite {
      * @param version Release version (e.g. '3.1.0').
      * @return Object with major and minor. Returns false if invalid version.
      */
-    protected getMajorAndMinor(version: string): any {
+    protected getMajorAndMinor(version: string): {major: string; minor: number} | false {
         const match = version.match(/(\d)+(?:\.(\d)+)?(?:\.(\d)+)?/);
         if (!match || !match[1]) {
             // Invalid version.
@@ -1785,7 +1754,7 @@ export class CoreSite {
 
         return {
             major: match[1] + '.' + (match[2] || '0'),
-            minor: parseInt(match[3], 10) || 0
+            minor: parseInt(match[3], 10) || 0,
         };
     }
 
@@ -1796,16 +1765,15 @@ export class CoreSite {
      * @return Next major version number.
      */
     protected getNextMajorVersionNumber(version: string): number {
-        const data = this.getMajorAndMinor(version),
-            releases = Object.keys(this.MOODLE_RELEASES);
-        let position;
+        const data = this.getMajorAndMinor(version);
+        const releases = Object.keys(this.MOODLE_RELEASES);
 
         if (!data) {
             // Invalid version.
             return 0;
         }
 
-        position = releases.indexOf(data.major);
+        const position = releases.indexOf(data.major);
 
         if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
@@ -1821,8 +1789,8 @@ export class CoreSite {
      * @param name The config name.
      * @return Promise resolved when done.
      */
-    deleteSiteConfig(name: string): Promise<any> {
-        return this.db.deleteRecords(CoreSite.CONFIG_TABLE, { name });
+    async deleteSiteConfig(name: string): Promise<void> {
+        await this.db.deleteRecords(CoreSite.CONFIG_TABLE, { name });
     }
 
     /**
@@ -1832,10 +1800,9 @@ export class CoreSite {
      * @param defaultValue Default value to use if the entry is not found.
      * @return Resolves upon success along with the config data. Reject on failure.
      */
-    getLocalSiteConfig(name: string, defaultValue?: any): Promise<any> {
-        return this.db.getRecord(CoreSite.CONFIG_TABLE, { name }).then((entry) => {
-            return entry.value;
-        }).catch((error) => {
+    getLocalSiteConfig<T extends number | string>(name: string, defaultValue?: T): Promise<T> {
+        return this.db.getRecord<CoreSiteConfigDBRecord>(CoreSite.CONFIG_TABLE, { name }).then((entry) => <T> entry.value)
+                .catch((error) => {
             if (typeof defaultValue != 'undefined') {
                 return defaultValue;
             }
@@ -1851,8 +1818,8 @@ export class CoreSite {
      * @param value The config value. Can only store number or strings.
      * @return Promise resolved when done.
      */
-    setLocalSiteConfig(name: string, value: number | string): Promise<any> {
-        return this.db.insertRecord(CoreSite.CONFIG_TABLE, { name, value });
+    async setLocalSiteConfig(name: string, value: number | string): Promise<void> {
+        await this.db.insertRecord(CoreSite.CONFIG_TABLE, { name, value });
     }
 
     /**
@@ -1895,12 +1862,7 @@ export class CoreSite {
 
         url = this.fixPluginfileURL(url);
 
-        this.tokenPluginFileWorksPromise = CoreWS.instance.performHead(url).then((result) => {
-            return result.status >= 200 && result.status < 300;
-        }).catch((error) => {
-            // Error performing head request.
-            return false;
-        }).then((result) => {
+        this.tokenPluginFileWorksPromise = CoreWS.instance.urlWorks(url).then((result) => {
             this.tokenPluginFileWorks = result;
 
             return result;
@@ -1908,6 +1870,7 @@ export class CoreSite {
 
         return this.tokenPluginFileWorksPromise;
     }
+
 }
 
 /**
@@ -2050,8 +2013,151 @@ export type LocalMobileResponse = {
 type RequestQueueItem = {
     cacheId: string;
     method: string;
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     data: any;
     preSets: CoreSiteWSPreSets;
     wsPreSets: CoreWSPreSets;
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     deferred: PromiseDefer<any>;
+};
+
+/**
+ * Result of WS core_webservice_get_site_info.
+ */
+export type CoreSiteInfoResponse = {
+    sitename: string; // Site name.
+    username: string; // Username.
+    firstname: string; // First name.
+    lastname: string; // Last name.
+    fullname: string; // User full name.
+    lang: string; // Current language.
+    userid: number; // User id.
+    siteurl: string; // Site url.
+    userpictureurl: string; // The user profile picture.
+    functions: {
+        name: string; // Function name.
+        version: string; // The version number of the component to which the function belongs.
+    }[];
+    downloadfiles?: number; // 1 if users are allowed to download files, 0 if not.
+    uploadfiles?: number; // 1 if users are allowed to upload files, 0 if not.
+    release?: string; // Moodle release number.
+    version?: string; // Moodle version number.
+    mobilecssurl?: string; // Mobile custom CSS theme.
+    advancedfeatures?: { // Advanced features availability.
+        name: string; // Feature name.
+        value: number; // Feature value. Usually 1 means enabled.
+    }[];
+    usercanmanageownfiles?: boolean; // True if the user can manage his own files.
+    userquota?: number; // User quota (bytes). 0 means user can ignore the quota.
+    usermaxuploadfilesize?: number; // User max upload file size (bytes). -1 means the user can ignore the upload file size.
+    userhomepage?: number; // The default home page for the user: 0 for the site home, 1 for dashboard.
+    userprivateaccesskey?: string; // Private user access key for fetching files.
+    siteid?: number; // Site course ID.
+    sitecalendartype?: string; // Calendar type set in the site.
+    usercalendartype?: string; // Calendar typed used by the user.
+    userissiteadmin?: boolean; // Whether the user is a site admin or not.
+    theme?: string; // Current theme for the user.
+};
+
+/**
+ * Site info, including some calculated data.
+ */
+export type CoreSiteInfo = CoreSiteInfoResponse & {
+    functionsByName?: {
+        [name: string]: {
+            name: string; // Function name.
+            version: string; // The version number of the component to which the function belongs.
+        };
+    };
+};
+
+/**
+ * Result of WS tool_mobile_get_config.
+ */
+export type CoreSiteConfigResponse = {
+    settings: { // Settings.
+        name: string; // The name of the setting.
+        value: string; // The value of the setting.
+    }[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Site config indexed by name.
+ */
+export type CoreSiteConfig = {[name: string]: string};
+
+/**
+ * Result of WS tool_mobile_get_public_config.
+ */
+export type CoreSitePublicConfigResponse = {
+    wwwroot: string; // Site URL.
+    httpswwwroot: string; // Site https URL (if httpslogin is enabled).
+    sitename: string; // Site name.
+    guestlogin: number; // Whether guest login is enabled.
+    rememberusername: number; // Values: 0 for No, 1 for Yes, 2 for optional.
+    authloginviaemail: number; // Whether log in via email is enabled.
+    registerauth: string; // Authentication method for user registration.
+    forgottenpasswordurl: string; // Forgotten password URL.
+    authinstructions: string; // Authentication instructions.
+    authnoneenabled: number; // Whether auth none is enabled.
+    enablewebservices: number; // Whether Web Services are enabled.
+    enablemobilewebservice: number; // Whether the Mobile service is enabled.
+    maintenanceenabled: number; // Whether site maintenance is enabled.
+    maintenancemessage: string; // Maintenance message.
+    logourl?: string; // The site logo URL.
+    compactlogourl?: string; // The site compact logo URL.
+    typeoflogin: number; // The type of login. 1 for app, 2 for browser, 3 for embedded.
+    launchurl?: string; // SSO login launch URL.
+    mobilecssurl?: string; // Mobile custom CSS theme.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_disabledfeatures?: string; // Disabled features in the app.
+    identityproviders?: { // Identity providers.
+        name: string; // The identity provider name.
+        iconurl: string; // The icon URL for the provider.
+        url: string; // The URL of the provider.
+    }[];
+    country?: string; // Default site country.
+    agedigitalconsentverification?: boolean; // Whether age digital consent verification is enabled.
+    supportname?: string; // Site support contact name (only if age verification is enabled).
+    supportemail?: string; // Site support contact email (only if age verification is enabled).
+    autolang?: number; // Whether to detect default language from browser setting.
+    lang?: string; // Default language for the site.
+    langmenu?: number; // Whether the language menu should be displayed.
+    langlist?: string; // Languages on language menu.
+    locale?: string; // Sitewide locale.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_minimumversion?: string; // Minimum required version to access.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_iosappid?: string; // IOS app's unique identifier.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_androidappid?: string; // Android app's unique identifier.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_setuplink?: string; // App download page.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS tool_mobile_get_autologin_key.
+ */
+export type CoreSiteAutologinKeyResult = {
+    key: string; // Auto-login key for a single usage with time expiration.
+    autologinurl: string; // Auto-login URL.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS tool_mobile_call_external_functions.
+ */
+export type CoreSiteCallExternalFunctionsResult = {
+    responses: {
+        error: boolean; // Whether an exception was thrown.
+        data?: string; // JSON-encoded response data.
+        exception?: string; // JSON-encoed exception info.
+    }[];
+};
+
+export type CoreSiteConfigDBRecord = {
+    name: string;
+    value: string | number;
 };

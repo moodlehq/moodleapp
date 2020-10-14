@@ -20,9 +20,11 @@ import { CoreApp, CoreAppSchema } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEventObserver, CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreSite } from '@classes/site';
 import { CoreQueueRunner } from '@classes/queue-runner';
+import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@core/constants';
 import CoreConfigConstants from '@app/config.json';
 import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push, Device } from '@singletons/core.singletons';
@@ -94,14 +96,9 @@ export class CoreLocalNotificationsProvider {
     protected appDB: SQLiteDB;
     protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected codes: { [s: string]: number } = {};
-    protected codeRequestsQueue = {};
-    protected observables = {};
-    protected currentNotification = {
-        title: '',
-        texts: [],
-        ids: [],
-        timeouts: [],
-    };
+    protected codeRequestsQueue: {[key: string]: CodeRequestsQueueItem} = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected observables: {[eventName: string]: {[component: string]: Subject<any>}} = {};
 
     protected triggerSubscription: Subscription;
     protected clickSubscription: Subscription;
@@ -156,7 +153,7 @@ export class CoreLocalNotificationsProvider {
             });
         });
 
-        CoreEvents.instance.on(CoreEventsProvider.SITE_DELETED, (site) => {
+        CoreEvents.instance.on(CoreEventsProvider.SITE_DELETED, (site: CoreSite) => {
             if (site) {
                 this.cancelSiteNotifications(site.id);
             }
@@ -270,13 +267,15 @@ export class CoreLocalNotificationsProvider {
 
         try {
             // Check if we already have a code stored for that ID.
-            const entry = await this.appDB.getRecord(table, { id: id });
+            const entry = await this.appDB.getRecord<{id: string; code: number}>(table, { id: id });
+
             this.codes[key] = entry.code;
 
             return entry.code;
         } catch (err) {
             // No code stored for that ID. Create a new code for it.
-            const entries = await this.appDB.getRecords(table, undefined, 'code DESC');
+            const entries = await this.appDB.getRecords<{id: string; code: number}>(table, undefined, 'code DESC');
+
             let newCode = 0;
             if (entries.length > 0) {
                 newCode = entries[0].code + 1;
@@ -326,7 +325,7 @@ export class CoreLocalNotificationsProvider {
      */
     protected getUniqueNotificationId(notificationId: number, component: string, siteId: string): Promise<number> {
         if (!siteId || !component) {
-            return Promise.reject(null);
+            return Promise.reject(new CoreError('Site ID or component not supplied.'));
         }
 
         return this.getSiteCode(siteId).then((siteCode) => this.getComponentCode(component).then((componentCode) =>
@@ -372,7 +371,9 @@ export class CoreLocalNotificationsProvider {
         await this.dbReady;
 
         try {
-            const stored = await this.appDB.getRecord(CoreLocalNotificationsProvider.TRIGGERED_TABLE, { id: notification.id });
+            const stored = await this.appDB.getRecord<{id: number; at: number}>(CoreLocalNotificationsProvider.TRIGGERED_TABLE,
+                { id: notification.id });
+
             let triggered = (notification.trigger && notification.trigger.at) || 0;
 
             if (typeof triggered != 'number') {
@@ -398,6 +399,7 @@ export class CoreLocalNotificationsProvider {
      *
      * @param data Data received by the notification.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     notifyClick(data: any): void {
         this.notifyEvent('click', data);
     }
@@ -408,6 +410,7 @@ export class CoreLocalNotificationsProvider {
      * @param eventName Name of the event to notify.
      * @param data Data received by the notification.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     notifyEvent(eventName: string, data: any): void {
         // Execute the code in the Angular zone, so change detection doesn't stop working.
         NgZone.instance.run(() => {
@@ -426,6 +429,7 @@ export class CoreLocalNotificationsProvider {
      * @param data Notification data.
      * @return Parsed data.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     protected parseNotificationData(data: any): any {
         if (!data) {
             return {};
@@ -454,11 +458,11 @@ export class CoreLocalNotificationsProvider {
         if (typeof request == 'object' && typeof request.table != 'undefined' && typeof request.id != 'undefined') {
             // Get the code and resolve/reject all the promises of this request.
             promise = this.getCode(request.table, request.id).then((code) => {
-                request.promises.forEach((p) => {
+                request.deferreds.forEach((p) => {
                     p.resolve(code);
                 });
             }).catch((error) => {
-                request.promises.forEach((p) => {
+                request.deferreds.forEach((p) => {
                     p.reject(error);
                 });
             });
@@ -508,7 +512,7 @@ export class CoreLocalNotificationsProvider {
 
         return {
             off: (): void => {
-                this.observables[eventName][component].unsubscribe(callback);
+                this.observables[eventName][component].unsubscribe();
             },
         };
     }
@@ -539,13 +543,13 @@ export class CoreLocalNotificationsProvider {
 
         if (typeof this.codeRequestsQueue[key] != 'undefined') {
             // There's already a pending request for this store and ID, add the promise to it.
-            this.codeRequestsQueue[key].promises.push(deferred);
+            this.codeRequestsQueue[key].deferreds.push(deferred);
         } else {
             // Add a pending request to the queue.
             this.codeRequestsQueue[key] = {
                 table: table,
                 id: id,
-                promises: [deferred],
+                deferreds: [deferred],
             };
         }
 
@@ -682,7 +686,7 @@ export class CoreLocalNotificationsProvider {
 
         const entry = {
             id: notification.id,
-            at: notification.trigger && notification.trigger.at ? notification.trigger.at : Date.now(),
+            at: notification.trigger && notification.trigger.at ? notification.trigger.at.getTime() : Date.now(),
         };
 
         return this.appDB.insertRecord(CoreLocalNotificationsProvider.TRIGGERED_TABLE, entry);
@@ -709,3 +713,9 @@ export class CoreLocalNotificationsProvider {
 export class CoreLocalNotifications extends makeSingleton(CoreLocalNotificationsProvider) {}
 
 export type CoreLocalNotificationsClickCallback<T = unknown> = (value: T) => void;
+
+type CodeRequestsQueueItem = {
+    table: string;
+    id: string;
+    deferreds: PromiseDefer<number>[];
+};

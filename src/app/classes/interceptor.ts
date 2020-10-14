@@ -30,28 +30,26 @@ export class CoreInterceptor implements HttpInterceptor {
      * @param addNull Add null values to the serialized as empty parameters.
      * @return Serialization of the object.
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     static serialize(obj: any, addNull?: boolean): string {
         let query = '';
-        let fullSubName: string;
-        let subValue;
-        let innerObj;
 
         for (const name in obj) {
             const value = obj[name];
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; ++i) {
-                    subValue = value[i];
-                    fullSubName = name + '[' + i + ']';
-                    innerObj = {};
+                    const subValue = value[i];
+                    const fullSubName = name + '[' + i + ']';
+                    const innerObj = {};
                     innerObj[fullSubName] = subValue;
                     query += this.serialize(innerObj) + '&';
                 }
             } else if (value instanceof Object) {
                 for (const subName in value) {
-                    subValue = value[subName];
-                    fullSubName = name + '[' + subName + ']';
-                    innerObj = {};
+                    const subValue = value[subName];
+                    const fullSubName = name + '[' + subName + ']';
+                    const innerObj = {};
                     innerObj[fullSubName] = subValue;
                     query += this.serialize(innerObj) + '&';
                 }
@@ -63,6 +61,7 @@ export class CoreInterceptor implements HttpInterceptor {
         return query.length ? query.substr(0, query.length - 1) : query;
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
         // Add the header and serialize the body if needed.
         const newReq = req.clone({

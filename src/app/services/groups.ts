@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseBase } from '@/types/global';
@@ -79,9 +80,11 @@ export class CoreGroupsProvider {
             preSets.emergencyCache = false;
         }
 
-        const response = await site.read('core_group_get_activity_allowed_groups', params, preSets);
+        const response: CoreGroupGetActivityAllowedGroupsResponse =
+            await site.read('core_group_get_activity_allowed_groups', params, preSets);
+
         if (!response || !response.groups) {
-            throw null;
+            throw new CoreError('Activity allowed groups not found.');
         }
 
         return response;
@@ -195,9 +198,11 @@ export class CoreGroupsProvider {
             preSets.emergencyCache = false;
         }
 
-        const response = await site.read('core_group_get_activity_groupmode', params, preSets);
+        const response: CoreGroupGetActivityGroupModeResponse =
+            await site.read('core_group_get_activity_groupmode', params, preSets);
+
         if (!response || typeof response.groupmode == 'undefined') {
-            throw null;
+            throw new CoreError('Activity group mode not found.');
         }
 
         return response.groupmode;
@@ -267,9 +272,11 @@ export class CoreGroupsProvider {
             updateFrequency: CoreSite.FREQUENCY_RARELY,
         };
 
-        const response = await site.read('core_group_get_course_user_groups', data, preSets);
+        const response: CoreGroupGetCourseUserGroupsResponse =
+            await site.read('core_group_get_course_user_groups', data, preSets);
+
         if (!response || !response.groups) {
-            throw null;
+            throw new CoreError('User groups in course not found.');
         }
 
         return response.groups;
@@ -459,5 +466,28 @@ export type CoreGroupInfo = {
 export type CoreGroupGetActivityAllowedGroupsResponse = {
     groups: CoreGroup[]; // List of groups.
     canaccessallgroups?: boolean; // Whether the user will be able to access all the activity groups.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_group_get_activity_groupmode.
+ */
+export type CoreGroupGetActivityGroupModeResponse = {
+    groupmode: number; // Group mode: 0 for no groups, 1 for separate groups, 2 for visible groups.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Result of WS core_group_get_course_user_groups.
+ */
+export type CoreGroupGetCourseUserGroupsResponse = {
+    groups: {
+        id: number; // Group record id.
+        name: string; // Multilang compatible name, course unique.
+        description: string; // Group description text.
+        descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        idnumber: string; // Id number.
+        courseid?: number; // Course id.
+    }[];
     warnings?: CoreWSExternalWarning[];
 };

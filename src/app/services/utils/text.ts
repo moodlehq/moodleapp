@@ -17,6 +17,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
+import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
@@ -29,6 +30,8 @@ export type CoreTextErrorObject = {
     error?: string;
     content?: string;
     body?: string;
+    debuginfo?: string;
+    backtrace?: string;
 };
 
 /*
@@ -526,9 +529,12 @@ export class CoreTextUtilsProvider {
      * @param error Error object.
      * @return Error message, undefined if not found.
      */
-    getErrorMessageFromError(error: string | CoreTextErrorObject): string {
+    getErrorMessageFromError(error: string | CoreError | CoreTextErrorObject): string {
         if (typeof error == 'string') {
             return error;
+        }
+        if (error instanceof CoreError) {
+            return error.message;
         }
 
         return error && (error.message || error.error || error.content || error.body);

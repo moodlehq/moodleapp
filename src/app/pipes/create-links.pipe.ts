@@ -21,6 +21,7 @@ import { Pipe, PipeTransform } from '@angular/core';
     name: 'coreCreateLinks',
 })
 export class CoreCreateLinksPipe implements PipeTransform {
+
     protected static replacePattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])(?![^<]*>|[^<>]*<\/)/gim;
 
     /**
@@ -32,4 +33,5 @@ export class CoreCreateLinksPipe implements PipeTransform {
     transform(text: string): string {
         return text.replace(CoreCreateLinksPipe.replacePattern, '<a href="$1">$1</a>');
     }
+
 }
