@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { CoreCreateLinksPipe } from './create-links.pipe';
+import { CoreFormatDatePipe } from './format-date.pipe';
 import { CoreNoTagsPipe } from './no-tags.pipe';
 import { CoreTimeAgoPipe } from './time-ago.pipe';
 
@@ -22,12 +23,14 @@ import { CoreTimeAgoPipe } from './time-ago.pipe';
         CoreCreateLinksPipe,
         CoreNoTagsPipe,
         CoreTimeAgoPipe,
+        CoreFormatDatePipe,
     ],
     imports: [],
     exports: [
         CoreCreateLinksPipe,
         CoreNoTagsPipe,
         CoreTimeAgoPipe,
+        CoreFormatDatePipe,
     ],
 })
 export class CorePipesModule {}
