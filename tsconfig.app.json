@@ -6,8 +6,8 @@
       "cordova-plugin-file-transfer",
       "cordova-plugin-inappbrowser",
       "cordova",
-      "node",
-      "dom-mediacapture-record"
+      "dom-mediacapture-record",
+      "node"
     ],
     "paths": {
       "@/*": ["*"],

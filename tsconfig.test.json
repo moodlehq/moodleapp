@@ -1,14 +1,15 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "outDir": "./out-tsc/tests",
     "allowJs": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
-    "outDir": "./out-tsc/tests",
     "types": [
       "cordova-plugin-file-transfer",
       "cordova-plugin-inappbrowser",
       "cordova",
+      "dom-mediacapture-record",
       "jest",
       "node"
     ],
@@ -31,8 +32,7 @@
     "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.test.ts",
-    "src/**/*.d.ts",
-    "src/tests/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.d.ts"
   ]
 }
