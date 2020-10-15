@@ -15,6 +15,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterContentInit, OnDestroy, Optional }
     from '@angular/core';
 import { TextInput, Content, Platform, Slides } from 'ionic-angular';
+import { Device } from '@ionic-native/device';
 import { CoreApp } from '@providers/app';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreFilepoolProvider } from '@providers/filepool';
@@ -118,7 +119,8 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
             protected events: CoreEventsProvider,
             protected utils: CoreUtilsProvider,
             protected platform: Platform,
-            protected editorOffline: CoreEditorOfflineProvider) {
+            protected editorOffline: CoreEditorOfflineProvider,
+            protected device: Device) {
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
         this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
@@ -236,7 +238,7 @@ export class CoreEditorRichTextEditorComponent implements AfterContentInit, OnDe
                 if (CoreApp.instance.isAndroid()) {
                     // In Android we ignore the keyboard height because it is not part of the web view.
                     height = this.domUtils.getContentHeight(this.content) - this.getSurroundingHeight(this.element);
-                } else if (CoreApp.instance.isIOS() && this.kbHeight > 0 && this.platform.version().major < 12) {
+                } else if (CoreApp.instance.isIOS() && this.kbHeight > 0 && Number(this.device.version.split('.')[0]) < 12) {
                     // Keyboard open in iOS 11 or previous. The window height changes when the keyboard is open.
                     height = window.innerHeight - this.getSurroundingHeight(this.element);
 
