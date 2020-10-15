@@ -22,7 +22,6 @@ import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { Globalization } from '@ionic-native/globalization/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
@@ -59,7 +58,6 @@ import { Zip } from '@ionic-native/zip/ngx';
         FileOpener,
         FileTransfer,
         Geolocation,
-        Globalization,
         HTTP,
         InAppBrowser,
         Keyboard,

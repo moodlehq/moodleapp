@@ -15,9 +15,10 @@
 import { Injectable } from '@angular/core';
 
 import CoreConfigConstants from '@app/config.json';
+import { LangChangeEvent } from '@ngx-translate/core';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { makeSingleton, Translate, Platform, Globalization } from '@singletons/core.singletons';
+import { makeSingleton, Translate, Platform } from '@singletons/core.singletons';
 
 import * as moment from 'moment';
 
@@ -39,22 +40,33 @@ export class CoreLangProvider {
         Translate.instance.setDefaultLang(this.fallbackLanguage);
         Translate.instance.use(this.defaultLanguage);
 
-        Platform.instance.ready().then(() => {
-            if (CoreAppProvider.isAutomated()) {
-                // Force current language to English when Behat is running.
-                this.changeCurrentLanguage('en');
+        this.initLanguage();
 
-                return;
-            }
+        Translate.instance.onLangChange.subscribe((event: LangChangeEvent) => {
+            document.documentElement.setAttribute('lang', event.lang);
 
-            this.getCurrentLanguage().then((language) => {
-                this.changeCurrentLanguage(language);
-            });
+            let dir = Translate.instance.instant('core.thisdirection');
+            dir = dir.indexOf('rtl') != -1 ? 'rtl' : 'ltr';
+            document.documentElement.setAttribute('dir', dir);
         });
+    }
 
-        Translate.instance.onLangChange.subscribe(() => {
-            // @todo: Set platform lang and dir.
-        });
+    /**
+     * Init language.
+     */
+    protected async initLanguage(): Promise<void> {
+        await Platform.instance.ready();
+
+        let language: string;
+
+        if (CoreAppProvider.isAutomated()) {
+            // Force current language to English when Behat is running.
+            language = 'en';
+        } else {
+            language = await this.getCurrentLanguage();
+        }
+
+        return this.changeCurrentLanguage(language);
     }
 
     /**
@@ -221,43 +233,45 @@ export class CoreLangProvider {
             return this.currentLanguage;
         }
 
+        this.currentLanguage = await this.detectLanguage();
+
+        return this.currentLanguage;
+    }
+
+    /**
+     * Get the current language from settings, or detect the browser one.
+     *
+     * @return Promise resolved with the selected language.
+     */
+    protected async detectLanguage(): Promise<string> {
         // Get current language from config (user might have changed it).
-        return CoreConfig.instance.get<string>('current_language').then((language) => language).catch(() => {
-            // User hasn't defined a language. If default language is forced, use it.
-            if (CoreConfigConstants.default_lang && CoreConfigConstants.forcedefaultlanguage) {
-                return CoreConfigConstants.default_lang;
+        try {
+            return await CoreConfig.instance.get<string>('current_language');
+        } catch (e) {
+            // Try will return, ignore errors here to avoid nesting.
+        }
+
+        // User hasn't defined a language. If default language is forced, use it.
+        if (CoreConfigConstants.default_lang && CoreConfigConstants.forcedefaultlanguage) {
+            return CoreConfigConstants.default_lang;
+        }
+
+        // No forced language, try to get current language from browser.
+        let preferredLanguage = navigator.language.toLowerCase();
+        if (preferredLanguage.indexOf('-') > -1) {
+            // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
+            if (CoreConfigConstants.languages && typeof CoreConfigConstants.languages[preferredLanguage] == 'undefined') {
+                // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
+                preferredLanguage = preferredLanguage.substr(0, preferredLanguage.indexOf('-'));
             }
+        }
 
-            try {
-                // No forced language, try to get current language from cordova globalization.
-                return Globalization.instance.getPreferredLanguage().then((result) => {
-                    let language = result.value.toLowerCase();
-                    if (language.indexOf('-') > -1) {
-                        // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
-                        if (CoreConfigConstants.languages && typeof CoreConfigConstants.languages[language] == 'undefined') {
-                            // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
-                            language = language.substr(0, language.indexOf('-'));
-                        }
-                    }
+        if (typeof CoreConfigConstants.languages[preferredLanguage] == 'undefined') {
+            // Language not supported, use default language.
+            return this.defaultLanguage;
+        }
 
-                    if (typeof CoreConfigConstants.languages[language] == 'undefined') {
-                        // Language not supported, use default language.
-                        return this.defaultLanguage;
-                    }
-
-                    return language;
-                }).catch(() =>
-                    // Error getting locale. Use default language.
-                    this.defaultLanguage);
-            } catch (err) {
-                // Error getting locale. Use default language.
-                return Promise.resolve(this.defaultLanguage);
-            }
-        }).then((language) => {
-            this.currentLanguage = language; // Save it for later.
-
-            return language;
-        });
+        return preferredLanguage;
     }
 
     /**
