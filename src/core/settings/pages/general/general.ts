@@ -71,17 +71,9 @@ export class CoreSettingsGeneralPage {
                 this.colorSchemes.push('light');
                 this.selectedScheme = this.colorSchemes[0];
             } else {
-                let defaultColorScheme = 'light';
+                this.colorSchemes = this.settingsHelper.getAllowedColorSchemes();
 
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches ||
-                                    window.matchMedia('(prefers-color-scheme: light)').matches) {
-                    this.colorSchemes.push('auto');
-                    defaultColorScheme = 'auto';
-                }
-                this.colorSchemes.push('light');
-                this.colorSchemes.push('dark');
-
-                this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, defaultColorScheme).then((scheme) => {
+                this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, 'light').then((scheme) => {
                     this.selectedScheme = scheme;
                 });
             }
