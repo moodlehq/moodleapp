@@ -22,7 +22,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class CoreCreateLinksPipe implements PipeTransform {
 
-    protected static replacePattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])(?![^<]*>|[^<>]*<\/)/gim;
+    protected static replacePattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])(?![^<]*>|[^<>]*<\/)/gim;
 
     /**
      * Takes some text and adds anchor tags to all links that aren't inside anchors.
