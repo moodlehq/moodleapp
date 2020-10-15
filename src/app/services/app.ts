@@ -489,14 +489,11 @@ export class CoreAppProvider {
         this.ssoAuthenticationDeferred = CoreUtils.instance.promiseDefer<void>();
 
         // Resolve it automatically after 10 seconds (it should never take that long).
-        const cancelTimeout = setTimeout(() => {
-            this.finishSSOAuthentication();
-        }, 10000);
+        const cancelTimeout = setTimeout(() => this.finishSSOAuthentication(), 10000);
 
         // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
-        this.ssoAuthenticationDeferred.promise.then(() => {
-            clearTimeout(cancelTimeout);
-        });
+        // eslint-disable-next-line promise/catch-or-return
+        this.ssoAuthenticationDeferred.promise.then(() => clearTimeout(cancelTimeout));
     }
 
     /**

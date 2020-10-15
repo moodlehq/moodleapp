@@ -248,8 +248,7 @@ export class CoreLangProvider {
                     return language;
                 }).catch(() =>
                     // Error getting locale. Use default language.
-                     this.defaultLanguage,
-                );
+                    this.defaultLanguage);
             } catch (err) {
                 // Error getting locale. Use default language.
                 return Promise.resolve(this.defaultLanguage);
@@ -339,8 +338,8 @@ export class CoreLangProvider {
 
             // Convert old keys format to new one.
             const key = values[0].replace(/^mm\.core/, 'core').replace(/^mm\./, 'core.').replace(/^mma\./, 'addon.')
-                    .replace(/^core\.sidemenu/, 'core.mainmenu').replace(/^addon\.grades/, 'core.grades')
-                    .replace(/^addon\.participants/, 'core.user');
+                .replace(/^core\.sidemenu/, 'core.mainmenu').replace(/^addon\.grades/, 'core.grades')
+                .replace(/^addon\.participants/, 'core.user');
 
             this.loadString(this.customStrings, lang, key, values[1]);
         });
