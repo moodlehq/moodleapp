@@ -26,20 +26,21 @@ import { Component, Input, OnChanges, OnDestroy, ElementRef, SimpleChange } from
     styleUrls: ['icon.scss'],
 })
 export class CoreIconComponent implements OnChanges, OnDestroy {
+
     // Common params.
     @Input() name: string;
-    @Input('color') color?: string;
-    @Input('slash') slash?: boolean; // Display a red slash over the icon.
+    @Input() color?: string;
+    @Input() slash?: boolean; // Display a red slash over the icon.
 
     // Ionicons params.
-    @Input('isActive') isActive?: boolean;
-    @Input('md') md?: string;
-    @Input('ios') ios?: string;
+    @Input() isActive?: boolean;
+    @Input() md?: string;
+    @Input() ios?: string;
 
     // FontAwesome params.
-    @Input('fixed-width') fixedWidth: string;
+    @Input('fixed-width') fixedWidth: boolean;
 
-    @Input('label') ariaLabel?: string;
+    @Input() label?: string;
     @Input() flipRtl?: boolean; // Whether to flip the icon in RTL. Defaults to false.
 
     protected element: HTMLElement;
@@ -66,18 +67,15 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
         if (this.name.startsWith('fa-')) {
             this.newElement.classList.add('fa');
             this.newElement.classList.add(this.name);
-            if (this.isTrueProperty(this.fixedWidth)) {
+            if (this.fixedWidth) {
                 this.newElement.classList.add('fa-fw');
-            }
-            if (this.color) {
-                this.newElement.classList.add('fa-' + this.color);
             }
         }
 
-        !this.ariaLabel && this.newElement.setAttribute('aria-hidden', 'true');
-        !this.ariaLabel && this.newElement.setAttribute('role', 'presentation');
-        this.ariaLabel && this.newElement.setAttribute('aria-label', this.ariaLabel);
-        this.ariaLabel && this.newElement.setAttribute('title', this.ariaLabel);
+        !this.label && this.newElement.setAttribute('aria-hidden', 'true');
+        !this.label && this.newElement.setAttribute('role', 'presentation');
+        this.label && this.newElement.setAttribute('aria-label', this.label);
+        this.label && this.newElement.setAttribute('title', this.label);
 
         const attrs = this.element.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {
@@ -91,8 +89,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
                         }
                     }
                 }
-
-            } else {
+            } else if (attrs[i].name != 'name') {
                 this.newElement.setAttribute(attrs[i].name, attrs[i].value);
             }
         }
@@ -109,22 +106,6 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Check if the value is true or on.
-     *
-     * @param val value to be checked.
-     * @return If has a value equivalent to true.
-     */
-    isTrueProperty(val: any): boolean {
-        if (typeof val === 'string') {
-            val = val.toLowerCase().trim();
-
-            return (val === 'true' || val === 'on' || val === '');
-        }
-
-        return !!val;
-    }
-
-    /**
      * Component destroyed.
      */
     ngOnDestroy(): void {
@@ -132,4 +113,5 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
             this.newElement.remove();
         }
     }
+
 }
