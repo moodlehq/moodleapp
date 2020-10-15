@@ -246,7 +246,7 @@ export class CoreLangProvider {
     protected async detectLanguage(): Promise<string> {
         // Get current language from config (user might have changed it).
         try {
-            return CoreConfig.instance.get<string>('current_language');
+            return await CoreConfig.instance.get<string>('current_language');
         } catch (e) {
             // Try will return, ignore errors here to avoid nesting.
         }

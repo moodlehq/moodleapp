@@ -12,11 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CoreLangProvider } from '@services/lang';
+import { CoreEvents, CoreEventsProvider } from '@services/events';
 
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
     styleUrls: ['app.component.scss'],
 })
-export class AppComponent { }
+export class AppComponent implements OnInit {
+
+    constructor(
+        private langProvider: CoreLangProvider,
+    ) {
+    }
+
+    /**
+     * Component being initialized.
+     */
+    ngOnInit(): void {
+        CoreEvents.instance.on(CoreEventsProvider.LOGOUT, () => {
+            // Go to sites page when user is logged out.
+            // Due to DeepLinker, we need to use the ViewCtrl instead of name.
+            // Otherwise some pages are re-created when they shouldn't.
+            // TODO
+            // CoreApp.instance.getRootNavController().setRoot(CoreLoginSitesPage);
+
+            // Unload lang custom strings.
+            this.langProvider.clearCustomStrings();
+
+            // Remove version classes from body.
+            // TODO
+            // this.removeVersionClass();
+        });
+    }
+
+}

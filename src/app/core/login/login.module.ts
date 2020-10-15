@@ -16,17 +16,18 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreLoginRoutingModule } from './login-routing.module';
 import { CoreLoginInitPage } from './pages/init/init.page';
 import { CoreLoginSitePage } from './pages/site/site.page';
-
 
 @NgModule({
     imports: [
         CommonModule,
         IonicModule,
         CoreLoginRoutingModule,
+        TranslateModule.forChild(),
     ],
     declarations: [
         CoreLoginInitPage,
