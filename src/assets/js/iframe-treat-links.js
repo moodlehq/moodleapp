@@ -49,7 +49,7 @@
 
         // Find the link being clicked.
         var el = event.target;
-        while (el && el.tagName !== 'A') {
+        while (el && (el.tagName !== 'A' && el.tagName !== 'a')) {
             el = el.parentElement;
         }
 

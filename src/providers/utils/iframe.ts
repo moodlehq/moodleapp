@@ -329,7 +329,7 @@ export class CoreIframeUtilsProvider {
 
             // Find the link being clicked.
             let el = <Element> event.target;
-            while (el && el.tagName !== 'A') {
+            while (el && el.tagName !== 'A' && el.tagName !== 'a') {
                 el = el.parentElement;
             }
 

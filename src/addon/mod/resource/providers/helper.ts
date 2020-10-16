@@ -142,7 +142,7 @@ export class AddonModResourceHelperProvider {
             mimetype = this.mimetypeUtils.getMimeType(ext);
         }
 
-        return mimetype == 'text/html';
+        return mimetype == 'text/html' || mimetype == 'application/xhtml+xml';
     }
 
     /**
