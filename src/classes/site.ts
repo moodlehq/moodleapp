@@ -20,7 +20,9 @@ import { CoreDbProvider } from '@providers/db';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreWSProvider, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets } from '@providers/ws';
+import {
+    CoreWSProvider, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets, CoreWSPreSetsSplitRequest
+} from '@providers/ws';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -138,6 +140,12 @@ export interface CoreSiteWSPreSets {
      * Component id. Optionally included when 'component' is set.
      */
     componentId?: number;
+
+    /**
+     * Whether to split a request if it has too many parameters. Sending too many parameters to the site
+     * can cause the request to fail (see PHP's max_input_vars).
+     */
+    splitRequest?: CoreWSPreSetsSplitRequest;
 }
 
 /**
@@ -650,7 +658,8 @@ export class CoreSite {
             siteUrl: this.siteUrl,
             cleanUnicode: this.cleanUnicode,
             typeExpected: preSets.typeExpected,
-            responseExpected: preSets.responseExpected
+            responseExpected: preSets.responseExpected,
+            splitRequest: preSets.splitRequest,
         };
 
         if (wsPreSets.cleanUnicode && this.textUtils.hasUnicodeData(data)) {

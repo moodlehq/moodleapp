@@ -272,7 +272,11 @@ export class CoreFilterProvider {
                 },
                 preSets = {
                     cacheKey: this.getAvailableInContextsCacheKey(contextsToSend),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
+                    updateFrequency: CoreSite.FREQUENCY_RARELY,
+                    splitRequest: {
+                        param: 'contexts',
+                        maxLength: 300,
+                    },
                 };
 
             return site.read('core_filters_get_available_in_context', data, preSets)
