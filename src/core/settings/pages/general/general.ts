@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, Segment } from 'ionic-angular';
 import { CoreConstants } from '@core/constants';
+import { CoreApp } from '@providers/app';
 import { CoreConfigProvider } from '@providers/config';
 import { CoreFileProvider } from '@providers/file';
 import { CoreEventsProvider } from '@providers/events';
@@ -46,6 +47,7 @@ export class CoreSettingsGeneralPage {
     colorSchemes = [];
     selectedScheme: string;
     colorSchemeDisabled: boolean;
+    isAndroid: boolean;
 
     constructor(protected configProvider: CoreConfigProvider,
             fileProvider: CoreFileProvider,
@@ -71,6 +73,8 @@ export class CoreSettingsGeneralPage {
                 this.colorSchemes.push('light');
                 this.selectedScheme = this.colorSchemes[0];
             } else {
+                this.isAndroid = CoreApp.instance.isAndroid();
+
                 this.colorSchemes = this.settingsHelper.getAllowedColorSchemes();
 
                 this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, 'light').then((scheme) => {

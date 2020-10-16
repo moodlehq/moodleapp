@@ -20,7 +20,7 @@
             </ion-segment-button>
         </ion-segment>
     </ion-item>
-    <ion-item text-wrap class="core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0">
+    <ion-item text-wrap class="core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0" [attr.no-lines]="selectedScheme=='auto' && isAndroid ? true : null">
         <ion-label>
             <h2>{{ 'core.settings.colorscheme' | translate }}</h2>
             <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
@@ -28,6 +28,9 @@
         <ion-select [(ngModel)]="selectedScheme" (ngModelChange)="colorSchemeChanged()" interface="action-sheet" [disabled]="colorSchemeDisabled">
             <ion-option *ngFor="let scheme of colorSchemes" [value]="scheme">{{ 'core.settings.colorscheme-' + scheme | translate }}</ion-option>
         </ion-select>
+    </ion-item>
+    <ion-item text-wrap *ngIf="colorSchemes.length > 0 && selectedScheme=='auto' && isAndroid">
+        <p class="text-danger">{{ 'core.settings.colorscheme-auto-notice' | translate }}</p>
     </ion-item>
     <ion-item text-wrap *ngIf="rteSupported">
         <ion-label>
