@@ -45,13 +45,13 @@ export class CoreAppProvider {
 
     protected db: SQLiteDB;
     protected logger: CoreLogger;
-    protected ssoAuthenticationDeferred: PromiseDefer<void>;
+    protected ssoAuthenticationDeferred?: PromiseDefer<void>;
     protected isKeyboardShown = false;
     protected keyboardOpening = false;
     protected keyboardClosing = false;
     protected backActions: {callback: () => boolean; priority: number}[] = [];
     protected mainMenuId = 0;
-    protected mainMenuOpen: number;
+    protected mainMenuOpen?: number;
     protected forceOffline = false;
 
     // Variables for DB.
@@ -224,7 +224,7 @@ export class CoreAppProvider {
      * @param  storesConfig Config params to send the user to the right place.
      * @return Store URL.
      */
-    getAppStoreUrl(storesConfig: CoreStoreConfig): string {
+    getAppStoreUrl(storesConfig: CoreStoreConfig): string | null {
         if (this.isMac() && storesConfig.mac) {
             return 'itms-apps://itunes.apple.com/app/' + storesConfig.mac;
         }
@@ -332,6 +332,8 @@ export class CoreAppProvider {
 
         try {
             // @todo return require('os').platform().indexOf('linux') === 0;
+
+            return false;
         } catch (ex) {
             return false;
         }
@@ -349,6 +351,8 @@ export class CoreAppProvider {
 
         try {
             // @todo return require('os').platform().indexOf('darwin') === 0;
+
+            return false;
         } catch (ex) {
             return false;
         }
@@ -439,6 +443,8 @@ export class CoreAppProvider {
 
         try {
             // @todo return require('os').platform().indexOf('win') === 0;
+
+            return false;
         } catch (ex) {
             return false;
         }
@@ -521,7 +527,9 @@ export class CoreAppProvider {
      * @return Promise resolved once SSO authentication finishes.
      */
     async waitForSSOAuthentication(): Promise<void> {
-        await this.ssoAuthenticationDeferred && this.ssoAuthenticationDeferred.promise;
+        const promise = this.ssoAuthenticationDeferred?.promise;
+
+        await promise;
     }
 
     /**
@@ -530,7 +538,7 @@ export class CoreAppProvider {
      * @param timeout Maximum time to wait, use null to wait forever.
      */
     async waitForResume(timeout: number | null = null): Promise<void> {
-        let deferred = CoreUtils.instance.promiseDefer<void>();
+        let deferred: PromiseDefer<void> | null = CoreUtils.instance.promiseDefer<void>();
 
         const stopWaiting = () => {
             if (!deferred) {
@@ -556,13 +564,13 @@ export class CoreAppProvider {
      * @return Object with siteid, state, params and timemodified.
      */
     getRedirect<Params extends Record<string, unknown> = Record<string, unknown>>(): CoreRedirectData<Params> {
-        if (localStorage && localStorage.getItem) {
+        if (localStorage?.getItem) {
             try {
                 const paramsJson = localStorage.getItem('CoreRedirectParams');
                 const data: CoreRedirectData<Params> = {
-                    siteId: localStorage.getItem('CoreRedirectSiteId'),
-                    page: localStorage.getItem('CoreRedirectState'),
-                    timemodified: parseInt(localStorage.getItem('CoreRedirectTime'), 10),
+                    siteId: localStorage.getItem('CoreRedirectSiteId') || undefined,
+                    page: localStorage.getItem('CoreRedirectState')  || undefined,
+                    timemodified: parseInt(localStorage.getItem('CoreRedirectTime') || '0', 10),
                 };
 
                 if (paramsJson) {

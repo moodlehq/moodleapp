@@ -20,7 +20,6 @@ import { SQLiteDB } from '@classes/sqlitedb';
  * Class to mock the interaction with the SQLite database.
  */
 export class SQLiteDBMock extends SQLiteDB {
-    promise: Promise<void>;
 
     /**
      * Create and open the database.
@@ -46,9 +45,11 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @return Promise resolved when done.
      */
-    emptyDatabase(): Promise<any> {
+    async emptyDatabase(): Promise<any> {
+        await this.ready();
+
         return new Promise((resolve, reject): void => {
-            this.db.transaction((tx) => {
+            this.db!.transaction((tx) => {
                 // Query all tables from sqlite_master that we have created and can modify.
                 const args = [];
                 const query = `SELECT * FROM sqlite_master
@@ -63,7 +64,7 @@ export class SQLiteDBMock extends SQLiteDB {
                     }
 
                     // Drop all the tables.
-                    const promises = [];
+                    const promises: Promise<void>[] = [];
 
                     for (let i = 0; i < result.rows.length; i++) {
                         promises.push(new Promise((resolve, reject): void => {
@@ -73,7 +74,7 @@ export class SQLiteDBMock extends SQLiteDB {
                         }));
                     }
 
-                    Promise.all(promises).then(resolve, reject);
+                    Promise.all(promises).then(resolve).catch(reject);
                 }, reject);
             });
         });
@@ -88,14 +89,18 @@ export class SQLiteDBMock extends SQLiteDB {
      * @param params Query parameters.
      * @return Promise resolved with the result.
      */
-    execute(sql: string, params?: any[]): Promise<any> {
+    async execute(sql: string, params?: any[]): Promise<any> {
+        await this.ready();
+
         return new Promise((resolve, reject): void => {
             // With WebSQL, all queries must be run in a transaction.
-            this.db.transaction((tx) => {
+            this.db!.transaction((tx) => {
                 tx.executeSql(sql, params, (tx, results) => {
                     resolve(results);
                 }, (tx, error) => {
+                    // eslint-disable-next-line no-console
                     console.error(sql, params, error);
+
                     reject(error);
                 });
             });
@@ -110,11 +115,13 @@ export class SQLiteDBMock extends SQLiteDB {
      * @param sqlStatements SQL statements to execute.
      * @return Promise resolved with the result.
      */
-    executeBatch(sqlStatements: any[]): Promise<any> {
+    async executeBatch(sqlStatements: any[]): Promise<any> {
+        await this.ready();
+
         return new Promise((resolve, reject): void => {
             // Create a transaction to execute the queries.
-            this.db.transaction((tx) => {
-                const promises = [];
+            this.db!.transaction((tx) => {
+                const promises: Promise<void>[] = [];
 
                 // Execute all the queries. Each statement can be a string or an array.
                 sqlStatements.forEach((statement) => {
@@ -133,7 +140,9 @@ export class SQLiteDBMock extends SQLiteDB {
                         tx.executeSql(query, params, (tx, results) => {
                             resolve(results);
                         }, (tx, error) => {
+                            // eslint-disable-next-line no-console
                             console.error(query, params, error);
+
                             reject(error);
                         });
                     }));

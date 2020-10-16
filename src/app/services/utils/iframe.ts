@@ -113,7 +113,7 @@ export class CoreIframeUtilsProvider {
             }
 
             // Remove the warning and show the iframe
-            CoreDomUtils.instance.removeElement(element.parentElement, 'div.core-iframe-offline-warning');
+            CoreDomUtils.instance.removeElement(element.parentElement!, 'div.core-iframe-offline-warning');
             element.classList.remove('core-iframe-offline-disabled');
 
             if (isSubframe) {
@@ -131,9 +131,9 @@ export class CoreIframeUtilsProvider {
      * @param element Element to treat (iframe, embed, ...).
      * @return Window and Document.
      */
-    getContentWindowAndDocument(element: CoreFrameElement): { window: Window; document: Document } {
-        let contentWindow: Window = 'contentWindow' in element ? element.contentWindow : undefined;
-        let contentDocument: Document;
+    getContentWindowAndDocument(element: CoreFrameElement): { window: Window | null; document: Document | null } {
+        let contentWindow: Window | null = 'contentWindow' in element ? element.contentWindow : null;
+        let contentDocument: Document | null = null;
 
         try {
             contentDocument = 'contentDocument' in element && element.contentDocument
@@ -209,7 +209,8 @@ export class CoreIframeUtilsProvider {
             contentWindow.open = (url: string, name: string) => {
                 this.windowOpen(url, name, element, navCtrl);
 
-                return null;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return null as any;
             };
         }
 
@@ -233,31 +234,35 @@ export class CoreIframeUtilsProvider {
      * @param navCtrl NavController to use if a link can be opened in the app.
      */
     treatFrame(element: CoreFrameElement, isSubframe?: boolean, navCtrl?: NavController): void {
-        if (element) {
+        if (!element) {
+            return;
+        }
+
+        const treatElement = (sendResizeEvent: boolean = false) => {
             this.checkOnlineFrameInOffline(element, isSubframe);
 
-            let winAndDoc = this.getContentWindowAndDocument(element);
+            const { window, document } = this.getContentWindowAndDocument(element);
+
             // Redefine window.open in this element and sub frames, it might have been loaded already.
-            this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document, navCtrl);
+            if (window && document) {
+                this.redefineWindowOpen(element, window, document, navCtrl);
+            }
+
             // Treat links.
-            this.treatFrameLinks(element, winAndDoc.document);
+            if (document) {
+                this.treatFrameLinks(element, document);
+            }
 
-            element.addEventListener('load', () => {
-                this.checkOnlineFrameInOffline(element, isSubframe);
+            // Send a resize events to the iframe so it calculates the right size if needed.
+            if (window && sendResizeEvent) {
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 1000);
+            }
+        };
 
-                // Element loaded, redefine window.open and treat links again.
-                winAndDoc = this.getContentWindowAndDocument(element);
-                this.redefineWindowOpen(element, winAndDoc.window, winAndDoc.document, navCtrl);
-                this.treatFrameLinks(element, winAndDoc.document);
+        treatElement();
 
-                if (winAndDoc.window) {
-                    // Send a resize events to the iframe so it calculates the right size if needed.
-                    setTimeout(() => {
-                        winAndDoc.window.dispatchEvent(new Event('resize'));
-                    }, 1000);
-                }
-            });
-        }
+        // Element loaded, redefine window.open and treat links again.
+        element.addEventListener('load', () => treatElement(true));
     }
 
     /**
@@ -279,7 +284,7 @@ export class CoreIframeUtilsProvider {
             }
 
             // Find the link being clicked.
-            let el = <Element> event.target;
+            let el: Element | null = event.target as Element;
             while (el && el.tagName !== 'A') {
                 el = el.parentElement;
             }
@@ -386,19 +391,24 @@ export class CoreIframeUtilsProvider {
         }
 
         const urlParts = CoreUrl.parse(link.href);
-        if (!link.href || (urlParts.protocol && urlParts.protocol == 'javascript')) {
+        if (!link.href || !urlParts || (urlParts.protocol && urlParts.protocol == 'javascript')) {
             // Links with no URL and Javascript links are ignored.
             return;
         }
 
-        if (!CoreUrlUtils.instance.isLocalFileUrlScheme(urlParts.protocol)) {
+        if (urlParts.protocol && !CoreUrlUtils.instance.isLocalFileUrlScheme(urlParts.protocol)) {
             // Scheme suggests it's an external resource.
             event && event.preventDefault();
 
             const frameSrc = element && ((<HTMLFrameElement> element).src || (<HTMLObjectElement> element).data);
 
             // If the frame is not local, check the target to identify how to treat the link.
-            if (element && !CoreUrlUtils.instance.isLocalFileUrl(frameSrc) && (!link.target || link.target == '_self')) {
+            if (
+                element &&
+                frameSrc &&
+                !CoreUrlUtils.instance.isLocalFileUrl(frameSrc) &&
+                (!link.target || link.target == '_self')
+            ) {
                 // Load the link inside the frame itself.
                 if (element.tagName.toLowerCase() == 'object') {
                     element.setAttribute('data', link.href);
@@ -455,8 +465,8 @@ export class CoreIframeUtilsProvider {
         const linksPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
         const recaptchaPath = CoreTextUtils.instance.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
 
-        userScriptWindow.WKUserScript.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
-        userScriptWindow.WKUserScript.addScript({
+        userScriptWindow.WKUserScript?.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
+        userScriptWindow.WKUserScript?.addScript({
             id: 'CoreIframeUtilsRecaptchaScript',
             file: recaptchaPath,
             injectionTime: WKUserScriptInjectionTime.END,

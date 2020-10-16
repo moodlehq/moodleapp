@@ -42,9 +42,9 @@ export class CoreUtilsProvider {
     protected readonly DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];
 
     protected logger: CoreLogger;
-    protected iabInstance: InAppBrowserObject;
+    protected iabInstance?: InAppBrowserObject;
     protected uniqueIds: {[name: string]: number} = {};
-    protected qrScanData: {deferred: PromiseDefer<string>; observable: Subscription};
+    protected qrScanData?: {deferred: PromiseDefer<string>; observable: Subscription};
 
     constructor(protected zone: NgZone) {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
@@ -61,22 +61,14 @@ export class CoreUtilsProvider {
      * @return New error message.
      */
     addDataNotDownloadedError(error: Error | string, defaultError?: string): string {
-        let errorMessage = error;
+        const errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error) || defaultError || '';
 
-        if (error && typeof error != 'string') {
-            errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error);
+        if (this.isWebServiceError(error)) {
+            return errorMessage;
         }
 
-        if (typeof errorMessage != 'string') {
-            errorMessage = defaultError || '';
-        }
-
-        if (!this.isWebServiceError(error)) {
-            // Local error. Add an extra warning.
-            errorMessage += '<br><br>' + Translate.instance.instant('core.errorsomedatanotdownloaded');
-        }
-
-        return errorMessage;
+        // Local error. Add an extra warning.
+        return errorMessage + '<br><br>' + Translate.instance.instant('core.errorsomedatanotdownloaded');
     }
 
     /**
@@ -116,12 +108,16 @@ export class CoreUtilsProvider {
      * @param result Object where to put the properties. If not defined, a new object will be created.
      * @return The object.
      */
-    arrayToObject(array: unknown[], propertyName?: string, result?: unknown): unknown {
-        result = result || {};
-        array.forEach((entry) => {
+    arrayToObject<T extends Record<string, unknown> | string>(
+        array: T[],
+        propertyName?: string,
+        result: Record<string, T> = {},
+    ): Record<string, T> {
+        for (const entry of array) {
             const key = propertyName ? entry[propertyName] : entry;
+
             result[key] = entry;
-        });
+        }
 
         return result;
     }
@@ -144,7 +140,7 @@ export class CoreUtilsProvider {
         maxLevels: number = 0,
         level: number = 0,
         undefinedIsNull: boolean = true,
-    ): boolean {
+    ): boolean | undefined {
         if (typeof itemA == 'function' || typeof itemB == 'function') {
             return true; // Don't compare functions.
         } else if (typeof itemA == 'object' && typeof itemB == 'object') {
@@ -266,9 +262,9 @@ export class CoreUtilsProvider {
             }
 
             return newArray;
-        } else if (typeof source == 'object' && source !== null) {
+        } else if (this.isObject(source)) {
             // Check if the object shouldn't be copied.
-            if (source && source.toString && this.DONT_CLONE.indexOf(source.toString()) != -1) {
+            if (source.toString && this.DONT_CLONE.indexOf(source.toString()) != -1) {
                 // Object shouldn't be copied, return it as it is.
                 return source;
             }
@@ -365,7 +361,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved when all promises are resolved.
      */
     executeOrderedPromises(orderedPromisesData: OrderedPromiseData[]): Promise<void> {
-        const promises = [];
+        const promises: Promise<void>[] = [];
         let dependency = Promise.resolve();
 
         // Execute all the processes in order.
@@ -465,8 +461,8 @@ export class CoreUtilsProvider {
         checkAll?: boolean,
         ...args: P
     ): Promise<string[]> {
-        const promises = [];
-        const enabledSites = [];
+        const promises: Promise<false | number>[] = [];
+        const enabledSites: string[] = [];
 
         for (const i in siteIds) {
             const siteId = siteIds[i];
@@ -626,7 +622,7 @@ export class CoreUtilsProvider {
         // Get the keys of the countries.
         return this.getCountryList().then((countries) => {
             // Sort translations.
-            const sortedCountries = [];
+            const sortedCountries: { code: string; name: string }[] = [];
 
             Object.keys(countries).sort((a, b) => countries[a].localeCompare(countries[b])).forEach((key) => {
                 sortedCountries.push({ code: key, name: countries[key] });
@@ -669,7 +665,7 @@ export class CoreUtilsProvider {
         const table = await CoreLang.instance.getTranslationTable(lang);
 
         // Gather all the keys for countries,
-        const keys = [];
+        const keys: string[] = [];
 
         for (const name in table) {
             if (name.indexOf('assets.countries.') === 0) {
@@ -696,7 +692,7 @@ export class CoreUtilsProvider {
     getMimeTypeFromUrl(url: string): Promise<string> {
         // First check if it can be guessed from the URL.
         const extension = CoreMimetypeUtils.instance.guessExtensionFromUrl(url);
-        const mimetype = CoreMimetypeUtils.instance.getMimeType(extension);
+        const mimetype = extension && CoreMimetypeUtils.instance.getMimeType(extension);
 
         if (mimetype) {
             return Promise.resolve(mimetype);
@@ -731,6 +727,16 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Check if a value is an object.
+     *
+     * @param object Variable.
+     * @return Type guard indicating if this is an object.
+     */
+    isObject(object: unknown): object is Record<string, unknown> {
+        return typeof object === 'object' && object !== null;
+    }
+
+    /**
      * Given a list of files, check if there are repeated names.
      *
      * @param files List of files.
@@ -741,12 +747,12 @@ export class CoreUtilsProvider {
             return false;
         }
 
-        const names = [];
+        const names: string[] = [];
 
         // Check if there are 2 files with the same name.
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const name = this.isFileEntry(file) ? file.name : file.filename;
+            const name = (this.isFileEntry(file) ? file.name : file.filename) || '';
 
             if (names.indexOf(name) > -1) {
                 return Translate.instance.instant('core.filenameexist', { $a: name });
@@ -885,7 +891,7 @@ export class CoreUtilsProvider {
         path = CoreFile.instance.unconvertFileSrc(path);
 
         const extension = CoreMimetypeUtils.instance.getFileExtension(path);
-        const mimetype = CoreMimetypeUtils.instance.getMimeType(extension);
+        const mimetype = extension && CoreMimetypeUtils.instance.getMimeType(extension);
 
         if (mimetype == 'text/html' && CoreApp.instance.isAndroid()) {
             // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
@@ -902,7 +908,7 @@ export class CoreUtilsProvider {
         }
 
         try {
-            await FileOpener.instance.open(path, mimetype);
+            await FileOpener.instance.open(path, mimetype || '');
         } catch (error) {
             this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
             this.logger.error('Error: ', JSON.stringify(error));
@@ -924,7 +930,7 @@ export class CoreUtilsProvider {
      * @param options Override default options passed to InAppBrowser.
      * @return The opened window.
      */
-    openInApp(url: string, options?: InAppBrowserOptions): InAppBrowserObject {
+    openInApp(url: string, options?: InAppBrowserOptions): InAppBrowserObject | undefined {
         if (!url) {
             return;
         }
@@ -950,7 +956,7 @@ export class CoreUtilsProvider {
 
         if (CoreApp.instance.isDesktop() || CoreApp.instance.isMobile()) {
             let loadStopSubscription;
-            const loadStartUrls = [];
+            const loadStartUrls: string[] = [];
 
             // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
             const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
@@ -1076,10 +1082,10 @@ export class CoreUtilsProvider {
             if (typeof value == 'undefined' || value == null) {
                 // Filter undefined and null values.
                 return;
-            } else if (typeof value == 'object') {
+            } else if (this.isObject(value)) {
                 // It's an object, return at least an entry for each property.
                 const keys = Object.keys(value);
-                let entries = [];
+                let entries: unknown[] = [];
 
                 keys.forEach((key) => {
                     const newElKey = elKey ? elKey + '[' + key + ']' : key;
@@ -1110,9 +1116,9 @@ export class CoreUtilsProvider {
         if (sortByKey || sortByValue) {
             return entries.sort((a, b) => {
                 if (sortByKey) {
-                    return a[keyName] >= b[keyName] ? 1 : -1;
+                    return (a[keyName] as number) >= (b[keyName] as number) ? 1 : -1;
                 } else {
-                    return a[valueName] >= b[valueName] ? 1 : -1;
+                    return (a[valueName] as number) >= (b[valueName] as number) ? 1 : -1;
                 }
             });
         }
@@ -1135,7 +1141,7 @@ export class CoreUtilsProvider {
         keyName: string,
         valueName: string,
         keyPrefix?: string,
-    ): {[name: string]: unknown} {
+    ): {[name: string]: unknown} | undefined {
         if (!objects) {
             return;
         }
@@ -1206,13 +1212,13 @@ export class CoreUtilsProvider {
      * @return The deferred promise.
      */
     promiseDefer<T>(): PromiseDefer<T> {
-        const deferred: PromiseDefer<T> = {};
+        const deferred: Partial<PromiseDefer<T>> = {};
         deferred.promise = new Promise((resolve, reject): void => {
             deferred.resolve = resolve;
             deferred.reject = reject;
         });
 
-        return deferred;
+        return deferred as PromiseDefer<T>;
     }
 
     /**
@@ -1257,7 +1263,11 @@ export class CoreUtilsProvider {
      * @param key Key to check.
      * @return Whether the two objects/arrays have the same value (or lack of one) for a given key.
      */
-    sameAtKeyMissingIsBlank(obj1: unknown, obj2: unknown, key: string): boolean {
+    sameAtKeyMissingIsBlank(
+        obj1: Record<string, unknown> | unknown[],
+        obj2: Record<string, unknown> | unknown[],
+        key: string,
+    ): boolean {
         let value1 = typeof obj1[key] != 'undefined' ? obj1[key] : '';
         let value2 = typeof obj2[key] != 'undefined' ? obj2[key] : '';
 
@@ -1426,19 +1436,19 @@ export class CoreUtilsProvider {
      * @return Array without duplicate values.
      */
     uniqueArray<T>(array: T[], key?: string): T[] {
-        const filtered = [];
         const unique = {}; // Use an object to make it faster to check if it's duplicate.
 
-        array.forEach((entry) => {
+        return array.filter(entry => {
             const value = key ? entry[key] : entry;
 
-            if (!unique[value]) {
+            if (value in unique) {
                 unique[value] = true;
-                filtered.push(entry);
-            }
-        });
 
-        return filtered;
+                return true;
+            }
+
+            return false;
+        });
     }
 
     /**
@@ -1487,7 +1497,14 @@ export class CoreUtilsProvider {
      *
      * @return Promise resolved with the QR string, rejected if error or cancelled.
      */
-    async startScanQR(): Promise<string> {
+    async startScanQR(): Promise<string | undefined> {
+        try {
+            return this.startScanQR();
+        } catch (error) {
+            // do nothing
+        }
+
+
         if (!CoreApp.instance.isMobile()) {
             return Promise.reject('QRScanner isn\'t available in desktop apps.');
         }
@@ -1613,21 +1630,21 @@ export type PromiseDefer<T> = {
     /**
      * The promise.
      */
-    promise?: Promise<T>;
+    promise: Promise<T>;
 
     /**
      * Function to resolve the promise.
      *
      * @param value The resolve value.
      */
-    resolve?: (value?: T) => void; // Function to resolve the promise.
+    resolve: (value?: T) => void; // Function to resolve the promise.
 
     /**
      * Function to reject the promise.
      *
      * @param reason The reject param.
      */
-    reject?: (reason?: unknown) => void;
+    reject: (reason?: unknown) => void;
 };
 
 /**

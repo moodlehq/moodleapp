@@ -15,6 +15,12 @@
 import moment from 'moment';
 import { environment } from '@/environments/environment';
 
+
+/**
+ * Log function type.
+ */
+type LogFunction = (...data: unknown[]) => void;
+
 /**
  * Helper service to display messages in the console.
  *
@@ -34,9 +40,13 @@ export class CoreLogger {
     debug: LogFunction;
     error: LogFunction;
 
-    // Avoid creating singleton instances.
-    private constructor() {
-        // Nothing to do.
+    // Avoid creating instances.
+    private constructor(log: LogFunction, info: LogFunction, warn: LogFunction, debug: LogFunction, error: LogFunction) {
+        this.log = log;
+        this.info = info;
+        this.warn = warn;
+        this.debug = debug;
+        this.error = error;
     }
 
     /**
@@ -54,29 +64,23 @@ export class CoreLogger {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             const muted = () => {};
 
-            return {
-                log: muted,
-                info: muted,
-                warn: muted,
-                debug: muted,
-                error: muted,
-            };
+            return new CoreLogger(muted, muted, muted, muted, muted);
         }
 
         className = className || '';
 
-        return {
+        return new CoreLogger(
             // eslint-disable-next-line no-console
-            log: CoreLogger.prepareLogFn(console.log.bind(console), className),
+            CoreLogger.prepareLogFn(console.log.bind(console), className),
             // eslint-disable-next-line no-console
-            info: CoreLogger.prepareLogFn(console.info.bind(console), className),
+            CoreLogger.prepareLogFn(console.info.bind(console), className),
             // eslint-disable-next-line no-console
-            warn: CoreLogger.prepareLogFn(console.warn.bind(console), className),
+            CoreLogger.prepareLogFn(console.warn.bind(console), className),
             // eslint-disable-next-line no-console
-            debug: CoreLogger.prepareLogFn(console.debug.bind(console), className),
+            CoreLogger.prepareLogFn(console.debug.bind(console), className),
             // eslint-disable-next-line no-console
-            error: CoreLogger.prepareLogFn(console.error.bind(console), className),
-        };
+            CoreLogger.prepareLogFn(console.error.bind(console), className),
+        );
     }
 
     /**
@@ -96,8 +100,3 @@ export class CoreLogger {
     }
 
 }
-
-/**
- * Log function type.
- */
-type LogFunction = (...data: unknown[]) => void;

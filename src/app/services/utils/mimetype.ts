@@ -116,7 +116,7 @@ export class CoreMimetypeUtilsProvider {
      */
     protected fillGroupMimeInfo(group: string): void {
         const mimetypes = {}; // Use an object to prevent duplicates.
-        const extensions = []; // Extensions are unique.
+        const extensions: string[] = []; // Extensions are unique.
 
         for (const extension in this.extToMime) {
             const data = this.extToMime[extension];
@@ -140,13 +140,13 @@ export class CoreMimetypeUtilsProvider {
      * @param url URL of the file. It will be used if there's more than one possible extension.
      * @return Extension.
      */
-    getExtension(mimetype: string, url?: string): string {
+    getExtension(mimetype: string, url?: string): string | undefined {
         mimetype = mimetype || '';
         mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
 
         if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
             // Couldn't get the right mimetype, try to guess it.
-            return this.guessExtensionFromUrl(url);
+            return url && this.guessExtensionFromUrl(url);
         }
 
         const extensions = this.mimeToExt[mimetype];
@@ -154,7 +154,7 @@ export class CoreMimetypeUtilsProvider {
             if (extensions.length > 1 && url) {
                 // There's more than one possible extension. Check if the URL has extension.
                 const candidate = this.guessExtensionFromUrl(url);
-                if (extensions.indexOf(candidate) != -1) {
+                if (candidate && extensions.indexOf(candidate) != -1) {
                     return candidate;
                 }
             }
@@ -173,19 +173,22 @@ export class CoreMimetypeUtilsProvider {
         const filename = CoreUtils.instance.isFileEntry(file) ? (file as FileEntry).name : file.filename;
         const extension = !CoreUtils.instance.isFileEntry(file) && file.mimetype
             ? this.getExtension(file.mimetype)
-            : this.getFileExtension(filename);
-        const mimeType = !CoreUtils.instance.isFileEntry(file) && file.mimetype ? file.mimetype : this.getMimeType(extension);
+            : (filename && this.getFileExtension(filename));
+        const mimeType = !CoreUtils.instance.isFileEntry(file) && file.mimetype
+            ? file.mimetype
+            : (extension && this.getMimeType(extension));
 
         // @todo linting: See if this can be removed
         (file as CoreWSExternalFile).mimetype = mimeType;
 
-        if (this.canBeEmbedded(extension)) {
+        if (extension && this.canBeEmbedded(extension)) {
             const embedType = this.getExtensionType(extension);
 
             // @todo linting: See if this can be removed
-            (file as { embedType: string }).embedType = embedType;
+            (file as { embedType?: string }).embedType = embedType;
 
-            path = CoreFile.instance.convertFileSrc(path ?? (CoreUtils.instance.isFileEntry(file) ? file.toURL() : file.fileurl));
+            path = path ?? (CoreUtils.instance.isFileEntry(file) ? file.toURL() : file.fileurl);
+            path = path && CoreFile.instance.convertFileSrc(path);
 
             switch (embedType) {
                 case 'image':
@@ -223,7 +226,7 @@ export class CoreMimetypeUtilsProvider {
      * @param extension Extension.
      * @return Icon. Undefined if not found.
      */
-    getExtensionIconName(extension: string): string {
+    getExtensionIconName(extension: string): string | undefined {
         if (this.extToMime[extension]) {
             if (this.extToMime[extension].icon) {
                 return this.extToMime[extension].icon;
@@ -242,7 +245,7 @@ export class CoreMimetypeUtilsProvider {
      * @param extension Extension.
      * @return Type of the extension.
      */
-    getExtensionType(extension: string): string {
+    getExtensionType(extension: string): string | undefined {
         extension = this.cleanExtension(extension);
 
         if (this.extToMime[extension] && this.extToMime[extension].string) {
@@ -270,8 +273,8 @@ export class CoreMimetypeUtilsProvider {
      * @return The path to a file icon.
      */
     getFileIcon(filename: string): string {
-        const ext = this.getFileExtension(filename);
-        const icon = this.getExtensionIconName(ext) || 'unknown';
+        const extension = this.getFileExtension(filename);
+        const icon = (extension && this.getExtensionIconName(extension)) || 'unknown';
 
         return this.getFileIconForType(icon);
     }
@@ -302,14 +305,14 @@ export class CoreMimetypeUtilsProvider {
      * @param fileUrl The file URL.
      * @return The lowercased extension without the dot, or undefined.
      */
-    guessExtensionFromUrl(fileUrl: string): string {
+    guessExtensionFromUrl(fileUrl: string): string | undefined {
         const split = fileUrl.split('.');
         let candidate;
         let extension;
         let position;
 
         if (split.length > 1) {
-            candidate = split.pop().toLowerCase();
+            candidate = split.pop()!.toLowerCase();
             // Remove params if any.
             position = candidate.indexOf('?');
             if (position > -1) {
@@ -338,7 +341,7 @@ export class CoreMimetypeUtilsProvider {
      * @param filename The file name.
      * @return The lowercased extension, or undefined.
      */
-    getFileExtension(filename: string): string {
+    getFileExtension(filename: string): string | undefined {
         const dot = filename.lastIndexOf('.');
         let ext;
 
@@ -382,7 +385,7 @@ export class CoreMimetypeUtilsProvider {
      * @param extension Extension.
      * @return Mimetype.
      */
-    getMimeType(extension: string): string {
+    getMimeType(extension: string): string | undefined {
         extension = this.cleanExtension(extension);
 
         if (this.extToMime[extension] && this.extToMime[extension].type) {
@@ -400,9 +403,9 @@ export class CoreMimetypeUtilsProvider {
      */
     getMimetypeDescription(obj: FileEntry | { filename: string; mimetype: string } | string, capitalise?: boolean): string {
         const langPrefix = 'assets.mimetypes.';
-        let filename = '';
-        let mimetype = '';
-        let extension = '';
+        let filename: string | undefined = '';
+        let mimetype: string | undefined = '';
+        let extension: string | undefined = '';
 
         if (typeof obj == 'object' && CoreUtils.instance.isFileEntry(obj)) {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
@@ -419,7 +422,7 @@ export class CoreMimetypeUtilsProvider {
 
             if (!mimetype) {
                 // Try to calculate the mimetype using the extension.
-                mimetype = this.getMimeType(extension);
+                mimetype = extension && this.getMimeType(extension);
             }
         }
 
@@ -478,7 +481,7 @@ export class CoreMimetypeUtilsProvider {
      * @param mimetype Mimetype.
      * @return Type of the mimetype.
      */
-    getMimetypeType(mimetype: string): string {
+    getMimetypeType(mimetype: string): string | undefined {
         mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
 
         const extensions = this.mimeToExt[mimetype];
@@ -542,9 +545,9 @@ export class CoreMimetypeUtilsProvider {
     isExtensionInGroup(extension: string, groups: string[]): boolean {
         extension = this.cleanExtension(extension);
 
-        if (groups && groups.length && this.extToMime[extension] && this.extToMime[extension].groups) {
-            for (let i = 0; i < this.extToMime[extension].groups.length; i++) {
-                const group = this.extToMime[extension].groups[i];
+        if (groups?.length && this.extToMime[extension]?.groups) {
+            for (let i = 0; i < this.extToMime[extension].groups!.length; i++) {
+                const group = this.extToMime[extension].groups![i];
                 if (groups.indexOf(group) != -1) {
                     return true;
                 }
