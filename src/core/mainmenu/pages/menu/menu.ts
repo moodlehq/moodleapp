@@ -46,6 +46,7 @@ export class CoreMainMenuPage implements OnDestroy {
     protected urlToOpen: string;
     protected mainMenuId: number;
     protected keyboardObserver: any;
+    protected resizeFunction;
 
     @ViewChild('mainTabs') mainTabs: CoreIonTabsComponent;
 
@@ -115,7 +116,8 @@ export class CoreMainMenuPage implements OnDestroy {
             }
         });
 
-        window.addEventListener('resize', this.initHandlers.bind(this));
+        this.resizeFunction = this.initHandlers.bind(this);
+        window.addEventListener('resize', this.resizeFunction);
 
         if (CoreApp.instance.isIOS()) {
             // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
@@ -241,7 +243,7 @@ export class CoreMainMenuPage implements OnDestroy {
     ngOnDestroy(): void {
         this.subscription && this.subscription.unsubscribe();
         this.redirectObs && this.redirectObs.off();
-        window.removeEventListener('resize', this.initHandlers.bind(this));
+        window.removeEventListener('resize', this.resizeFunction);
         CoreApp.instance.setMainMenuOpen(this.mainMenuId, false);
         this.keyboardObserver && this.keyboardObserver.off();
     }

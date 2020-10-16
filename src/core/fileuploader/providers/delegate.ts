@@ -177,7 +177,7 @@ export class CoreFileUploaderDelegate extends CoreDelegate {
             }
 
             const data: CoreFileUploaderHandlerDataToReturn = handler.getData();
-            data.priority = handler.priority;
+            data.priority = handler.priority || 0;
             data.mimetypes = supportedMimetypes;
             handlers.push(data);
         }

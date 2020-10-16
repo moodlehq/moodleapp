@@ -25,7 +25,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
             protected initResult: any) {
         super(name);
 
-        this.priority = handlerSchema.priority;
+        this.priority = handlerSchema.priority || 0;
     }
 
     /**

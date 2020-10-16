@@ -1549,10 +1549,15 @@ export class CoreSitesProvider {
         await this.dbReady;
 
         const site = await this.getSite(siteId);
-        const newValues = {
-            token: '', // Erase the token for security.
+        const newValues: any = {
             loggedOut: loggedOut ? 1 : 0
         };
+
+        if (loggedOut) {
+            // Erase the token for security.
+            newValues.token = '';
+            site.token = '';
+        }
 
         site.setLoggedOut(loggedOut);
 

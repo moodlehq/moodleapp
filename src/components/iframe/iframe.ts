@@ -24,9 +24,6 @@ import { CoreUrlUtilsProvider } from '@providers/utils/url';
 import { CoreIframeUtilsProvider } from '@providers/utils/iframe';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreUrl } from '@singletons/url';
-import { CoreApp } from '@providers/app';
-import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 @Component({
     selector: 'core-iframe',
@@ -107,24 +104,7 @@ export class CoreIframeComponent implements OnChanges {
         if (changes.src) {
             const url = this.urlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
 
-            if (CoreApp.instance.isIOS() && url && !this.urlUtils.isLocalFileUrl(url)) {
-                // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
-                try {
-                    const win = <WKWebViewCookiesWindow> window;
-                    const urlParts = CoreUrl.parse(url);
-
-                    if (urlParts.domain) {
-                        await win.WKWebViewCookies.setCookie({
-                            name: 'MoodleAppCookieForWKWebView',
-                            value: '1',
-                            domain: urlParts.domain,
-                        });
-                    }
-                } catch (err) {
-                    // Ignore errors.
-                    this.logger.error('Error setting cookie', err);
-                }
-            }
+            await this.iframeUtils.fixIframeCookies(url);
 
             this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.instance.convertFileSrc(url));
 

@@ -260,7 +260,7 @@ export class CoreUserDelegate extends CoreDelegate {
                         userData.handlers.push({
                             name: name,
                             data: handler.getDisplayData(user, courseId),
-                            priority: handler.priority,
+                            priority: handler.priority || 0,
                             type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE
                         });
                     }

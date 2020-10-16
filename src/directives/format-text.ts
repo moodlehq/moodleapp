@@ -450,6 +450,7 @@ export class CoreFormatTextDirective implements OnChanges {
             const div = document.createElement('div'),
                 canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']),
                 navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+            const promises = [];
 
             div.innerHTML = formatted;
 
@@ -504,7 +505,7 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             iframes.forEach((iframe) => {
-                this.treatIframe(iframe, site, canTreatVimeo, navCtrl);
+                promises.push(this.treatIframe(iframe, site, canTreatVimeo, navCtrl));
             });
 
             svgImages.forEach((image) => {
@@ -543,10 +544,9 @@ export class CoreFormatTextDirective implements OnChanges {
             this.domUtils.handleBootstrapTooltips(div);
 
             // Wait for images to load.
-            let promise: Promise<any> = null;
             if (externalImages.length) {
                 // Automatically reject the promise after 5 seconds to prevent blocking the user forever.
-                promise = this.utils.timeoutPromise(this.utils.allPromises(externalImages.map((externalImage): any => {
+                promises.push(this.utils.timeoutPromise(this.utils.allPromises(externalImages.map((externalImage): any => {
                     if (externalImage.loaded) {
                         // Image has already been loaded, no need to wait.
                         return Promise.resolve();
@@ -558,12 +558,10 @@ export class CoreFormatTextDirective implements OnChanges {
                             resolve();
                         });
                     });
-                })), 5000);
-            } else {
-                promise = Promise.resolve();
+                })), 5000));
             }
 
-            return promise.catch(() => {
+            return Promise.all(promises).catch(() => {
                 // Ignore errors. So content gets always shown.
             }).then(() => {
                 result.div = div;
@@ -665,7 +663,8 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param canTreatVimeo Whether Vimeo videos can be treated in the site.
      * @param navCtrl NavController to use.
      */
-    protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean, navCtrl: NavController): void {
+    protected async treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean, navCtrl: NavController)
+            : Promise<void> {
         const src = iframe.src,
             currentSite = this.sitesProvider.getCurrentSite();
 
@@ -673,14 +672,18 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (currentSite && currentSite.containsUrl(src)) {
             // URL points to current site, try to use auto-login.
-            currentSite.getAutoLoginUrl(src, false).then((finalUrl) => {
-                iframe.src = finalUrl;
+            const finalUrl = await currentSite.getAutoLoginUrl(src, false);
 
-                this.iframeUtils.treatFrame(iframe, false, navCtrl);
-            });
+            await this.iframeUtils.fixIframeCookies(finalUrl);
+
+            iframe.src = finalUrl;
+
+            this.iframeUtils.treatFrame(iframe, false, navCtrl);
 
             return;
         }
+
+        await this.iframeUtils.fixIframeCookies(src);
 
         if (src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
@@ -714,6 +717,9 @@ export class CoreFormatTextDirective implements OnChanges {
                 if (site && !site.isVersionGreaterEqualThan('3.7')) {
                     newUrl += '&width=' + width + '&height=' + height;
                 }
+
+                await this.iframeUtils.fixIframeCookies(newUrl);
+
                 iframe.src = newUrl;
 
                 if (!iframe.width) {

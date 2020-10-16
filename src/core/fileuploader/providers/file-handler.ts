@@ -44,8 +44,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
      * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return CoreApp.instance.isAndroid() || !CoreApp.instance.isMobile() ||
-            (CoreApp.instance.isIOS() && this.platform.version().major >= 9);
+        return true;
     }
 
     /**
