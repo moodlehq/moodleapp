@@ -202,10 +202,18 @@ export class CoreEventsProvider {
 export class CoreEvents extends makeSingleton(CoreEventsProvider) {}
 
 /**
- * Data passed to session expired event.
+ * Data passed to SESSION_EXPIRED event.
  */
 export type CoreEventSessionExpiredData = {
     pageName?: string;
     params?: Params;
     siteId?: string;
+};
+
+/**
+ * Data passed to CORE_LOADING_CHANGED event.
+ */
+export type CoreEventLoadingChangedData = {
+    loaded: boolean;
+    uniqueId: string;
 };

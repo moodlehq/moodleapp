@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEventLoadingChangedData, CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons/core.singletons';
 
@@ -109,7 +109,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 
             // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.
             setTimeout(() => {
-                CoreEvents.instance.trigger(CoreEventsProvider.CORE_LOADING_CHANGED, {
+                CoreEvents.instance.trigger(CoreEventsProvider.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
                     loaded: !!this.hideUntil,
                     uniqueId: this.uniqueId,
                 });

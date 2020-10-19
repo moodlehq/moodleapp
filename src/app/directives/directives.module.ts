@@ -13,14 +13,17 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreFormatTextDirective } from './format-text';
 import { CoreLongPressDirective } from './long-press.directive';
 
 @NgModule({
     declarations: [
+        CoreFormatTextDirective,
         CoreLongPressDirective,
     ],
     imports: [],
     exports: [
+        CoreFormatTextDirective,
         CoreLongPressDirective,
     ],
 })
