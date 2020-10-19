@@ -13,18 +13,24 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 
 import { CoreIconComponent } from './icon/icon';
+import { CoreLoadingComponent } from './loading/loading';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 
 @NgModule({
     declarations: [
         CoreIconComponent,
+        CoreLoadingComponent,
         CoreShowPasswordComponent,
     ],
-    imports: [],
+    imports: [
+        IonicModule,
+    ],
     exports: [
         CoreIconComponent,
+        CoreLoadingComponent,
         CoreShowPasswordComponent,
     ],
 })
