@@ -208,7 +208,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             }).then(() => {
                 if (result.updated) {
                     // Data has been sent to server. Now invalidate the WS calls.
-                    return this.dataProvider.invalidateContent(data.cmid, courseId, siteId).catch(() => {
+                    return this.dataProvider.invalidateContent(data.coursemodule, courseId, siteId).catch(() => {
                         // Ignore errors.
                     });
                 }
