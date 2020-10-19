@@ -28,6 +28,7 @@ import CoreConfigConstants from '@app/config.json';
 import { Translate } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreUrlUtils } from '@/app/services/utils/url';
+import { NavController } from '@ionic/angular';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -58,6 +59,7 @@ export class CoreLoginSitePage implements OnInit {
     constructor(
         protected route: ActivatedRoute,
         protected formBuilder: FormBuilder,
+        protected navCtrl: NavController,
     ) {
 
         let url = '';
@@ -368,6 +370,9 @@ export class CoreLoginSitePage implements OnInit {
             }
 
             // @todo Navigate to credentials.
+            this.navCtrl.navigateForward('/login/credentials', {
+                queryParams: pageParams,
+            });
         }
     }
 

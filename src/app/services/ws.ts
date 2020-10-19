@@ -113,9 +113,9 @@ export class CoreWSProvider {
         if (this.retryCalls.length > 0) {
             this.logger.warn('Calls locked, trying later...');
 
-            return this.addToRetryQueue<T>(method, siteUrl, data, preSets);
+            return this.addToRetryQueue<T>(method, siteUrl, dataToSend, preSets);
         } else {
-            return this.performPost<T>(method, siteUrl, data, preSets);
+            return this.performPost<T>(method, siteUrl, dataToSend, preSets);
         }
     }
 

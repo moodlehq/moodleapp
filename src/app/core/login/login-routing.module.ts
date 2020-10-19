@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
 import { CoreLoginInitPage } from './pages/init/init.page';
 import { CoreLoginSitePage } from './pages/site/site.page';
 
@@ -26,6 +27,10 @@ const routes: Routes = [
     {
         path: 'site',
         component: CoreLoginSitePage,
+    },
+    {
+        path: 'credentials',
+        component: CoreLoginCredentialsPage,
     },
 ];
 

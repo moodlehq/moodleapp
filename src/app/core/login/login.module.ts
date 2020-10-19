@@ -20,8 +20,10 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreComponentsModule } from '@/app/components/components.module';
+import { CoreDirectivesModule } from '@/app/directives/directives.module';
 
 import { CoreLoginRoutingModule } from './login-routing.module';
+import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
 import { CoreLoginInitPage } from './pages/init/init.page';
 import { CoreLoginSitePage } from './pages/site/site.page';
 import { CoreLoginHelperProvider } from './services/helper';
@@ -35,8 +37,10 @@ import { CoreLoginHelperProvider } from './services/helper';
         FormsModule,
         ReactiveFormsModule,
         CoreComponentsModule,
+        CoreDirectivesModule,
     ],
     declarations: [
+        CoreLoginCredentialsPage,
         CoreLoginInitPage,
         CoreLoginSitePage,
     ],

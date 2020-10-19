@@ -13,11 +13,15 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreIconComponent } from './icon/icon';
 import { CoreLoadingComponent } from './loading/loading';
 import { CoreShowPasswordComponent } from './show-password/show-password';
+import { CoreDirectivesModule } from '@app/directives/directives.module';
+import { CorePipesModule } from '@app/pipes/pipes.module';
 
 @NgModule({
     declarations: [
@@ -26,7 +30,11 @@ import { CoreShowPasswordComponent } from './show-password/show-password';
         CoreShowPasswordComponent,
     ],
     imports: [
-        IonicModule,
+        CommonModule,
+        IonicModule.forRoot(),
+        TranslateModule.forChild(),
+        CoreDirectivesModule,
+        CorePipesModule,
     ],
     exports: [
         CoreIconComponent,

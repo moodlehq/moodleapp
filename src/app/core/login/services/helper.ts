@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { Router, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -55,7 +55,6 @@ export class CoreLoginHelperProvider {
     waitingForBrowser = false;
 
     constructor(
-        protected router: Router,
         private location: Location,
     ) {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
@@ -162,6 +161,7 @@ export class CoreLoginHelperProvider {
      * @param siteConfig Site config.
      */
     async forgottenPasswordClicked(
+        navCtrl: NavController,
         siteUrl: string,
         username: string,
         siteConfig?: CoreSitePublicConfigResponse,
@@ -180,7 +180,7 @@ export class CoreLoginHelperProvider {
             const canReset = await this.canRequestPasswordReset(siteUrl);
 
             if (canReset) {
-                await this.router.navigate(['/login/forgottenpassword'], {
+                await navCtrl.navigateForward(['/login/forgottenpassword'], {
                     queryParams: {
                         siteUrl,
                         username,
