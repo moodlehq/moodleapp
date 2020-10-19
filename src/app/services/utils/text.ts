@@ -175,11 +175,11 @@ export class CoreTextUtilsProvider {
         // Filter invalid messages, and convert them to messages in case they're errors.
         const messages: string[] = [];
 
-        paragraphs.forEach((paragraph) => {
+        paragraphs.forEach(paragraph => {
             // If it's an error, get its message.
             const message = this.getErrorMessageFromError(paragraph);
 
-            if (paragraph) {
+            if (paragraph && message) {
                 messages.push(message);
             }
         });
@@ -248,8 +248,7 @@ export class CoreTextUtilsProvider {
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-        const element = this.convertToElement(text);
-        text = element.textContent;
+        text = this.convertToElement(text).textContent!;
         // Recover or remove new lines.
         text = this.replaceNewLines(text, singleLine ? ' ' : '<br>');
 
@@ -326,7 +325,7 @@ export class CoreTextUtilsProvider {
         text = text.replace(/_/gi, ' ');
 
         // This RegEx will detect any word change including Unicode chars. Some languages without spaces won't be counted fine.
-        return text.match(/\S+/gi).length;
+        return text.match(/\S+/gi)?.length || 0;
     }
 
     /**
@@ -359,8 +358,7 @@ export class CoreTextUtilsProvider {
      */
     decodeHTMLEntities(text: string): string {
         if (text) {
-            const element = this.convertToElement(text);
-            text = element.textContent;
+            text = this.convertToElement(text).textContent!;
         }
 
         return text;
@@ -512,7 +510,7 @@ export class CoreTextUtilsProvider {
             if (clean) {
                 formatted = this.cleanTags(formatted, singleLine);
             }
-            if (shortenLength > 0) {
+            if (shortenLength && shortenLength > 0) {
                 formatted = this.shortenText(formatted, shortenLength);
             }
             if (highlight) {
@@ -529,10 +527,11 @@ export class CoreTextUtilsProvider {
      * @param error Error object.
      * @return Error message, undefined if not found.
      */
-    getErrorMessageFromError(error: string | CoreError | CoreTextErrorObject): string {
+    getErrorMessageFromError(error?: string | CoreError | CoreTextErrorObject): string | undefined {
         if (typeof error == 'string') {
             return error;
         }
+
         if (error instanceof CoreError) {
             return error.message;
         }
@@ -546,12 +545,12 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
      * @return Pluginfile URL, undefined if no files found.
      */
-    getTextPluginfileUrl(files: CoreWSExternalFile[]): string {
-        if (files && files.length) {
+    getTextPluginfileUrl(files: CoreWSExternalFile[]): string | undefined {
+        if (files?.length) {
             const url = files[0].fileurl;
 
             // Remove text after last slash (encoded or not).
-            return url.substr(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
+            return url?.substr(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
         }
 
         return undefined;
@@ -876,7 +875,7 @@ export class CoreTextUtilsProvider {
                 // Current lang not found. Try to find the first language.
                 const matches = text.match(anyLangRegEx);
                 if (matches && matches[0]) {
-                    language = matches[0].match(/lang="([a-zA-Z0-9_-]+)"/)[1];
+                    language = matches[0].match(/lang="([a-zA-Z0-9_-]+)"/)![1];
                     currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
                 } else {
                     // No multi-lang tag found, stop.

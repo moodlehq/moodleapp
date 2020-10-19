@@ -30,9 +30,9 @@ export class CoreLangProvider {
 
     protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.
     protected defaultLanguage = CoreConfigConstants.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
-    protected currentLanguage: string; // Save current language in a variable to speed up the get function.
+    protected currentLanguage?: string; // Save current language in a variable to speed up the get function.
     protected customStrings: CoreLanguageObject = {}; // Strings defined using the admin tool.
-    protected customStringsRaw: string;
+    protected customStringsRaw?: string;
     protected sitePluginsStrings: CoreLanguageObject = {}; // Strings defined by site plugins.
 
     constructor() {
@@ -123,7 +123,7 @@ export class CoreLangProvider {
      * @return Promise resolved when the change is finished.
      */
     async changeCurrentLanguage(language: string): Promise<void> {
-        const promises = [];
+        const promises: Promise<unknown>[] = [];
 
         // Change the language, resolving the promise when we receive the first value.
         promises.push(new Promise((resolve, reject) => {
@@ -363,8 +363,8 @@ export class CoreLangProvider {
         if (currentLangChanged) {
             // Some lang strings have changed, emit an event to update the pipes.
             Translate.instance.onLangChange.emit({
-                lang: this.currentLanguage,
-                translations: Translate.instance.translations[this.currentLanguage],
+                lang: this.currentLanguage!,
+                translations: Translate.instance.translations[this.currentLanguage!],
             });
         }
     }

@@ -133,8 +133,8 @@ export interface SQLiteDBForeignKeySchema {
  */
 export class SQLiteDB {
 
-    db: SQLiteObject;
-    promise: Promise<void>;
+    db?: SQLiteObject;
+    promise!: Promise<void>;
 
     /**
      * Create and open the database.
@@ -164,7 +164,7 @@ export class SQLiteDB {
         foreignKeys?: SQLiteDBForeignKeySchema[],
         tableCheck?: string,
     ): string {
-        const columnsSql = [];
+        const columnsSql: string[] = [];
         let sql = `CREATE TABLE IF NOT EXISTS ${name} (`;
 
         // First define all the columns.
@@ -225,8 +225,8 @@ export class SQLiteDB {
         for (const index in foreignKeys) {
             const foreignKey = foreignKeys[index];
 
-            if (!foreignKey.columns || !!foreignKey.columns.length) {
-                return;
+            if (!foreignKey?.columns.length) {
+                continue;
             }
 
             sql += `, FOREIGN KEY (${foreignKey.columns.join(', ')}) REFERENCES ${foreignKey.table} `;
@@ -251,7 +251,7 @@ export class SQLiteDB {
     async close(): Promise<void> {
         await this.ready();
 
-        await this.db.close();
+        await this.db!.close();
     }
 
     /**
@@ -348,10 +348,7 @@ export class SQLiteDB {
      * @return Promise resolved when success.
      */
     async createTablesFromSchema(tables: SQLiteDBTableSchema[]): Promise<void> {
-        const promises = [];
-        tables.forEach((table) => {
-            promises.push(this.createTableFromSchema(table));
-        });
+        const promises = tables.map(table => this.createTableFromSchema(table));
 
         await Promise.all(promises);
     }
@@ -432,7 +429,7 @@ export class SQLiteDB {
     async execute(sql: string, params?: SQLiteDBRecordValue[]): Promise<any> {
         await this.ready();
 
-        return this.db.executeSql(sql, params);
+        return this.db!.executeSql(sql, params);
     }
 
     /**
@@ -447,7 +444,7 @@ export class SQLiteDB {
     async executeBatch(sqlStatements: (string | string[] | any)[]): Promise<void> {
         await this.ready();
 
-        await this.db.sqlBatch(sqlStatements);
+        await this.db!.sqlBatch(sqlStatements);
     }
 
     /**
@@ -532,7 +529,7 @@ export class SQLiteDB {
      * @return Promise resolved with the field's value.
      */
     async getFieldSql(sql: string, params?: SQLiteDBRecordValue[]): Promise<SQLiteDBRecordValue> {
-        const record = await this.getRecordSql(sql, params);
+        const record = await this.getRecordSql<Record<string, SQLiteDBRecordValue>>(sql, params);
         if (!record) {
             throw new CoreError('No record found.');
         }
@@ -552,7 +549,7 @@ export class SQLiteDB {
     getInOrEqual(
         items: SQLiteDBRecordValue | SQLiteDBRecordValue[],
         equal: boolean = true,
-        onEmptyItems?: SQLiteDBRecordValue,
+        onEmptyItems?: SQLiteDBRecordValue | null,
     ): SQLiteDBQueryParams {
         let sql = '';
         let params: SQLiteDBRecordValue[];
@@ -564,7 +561,7 @@ export class SQLiteDB {
 
         // Handle onEmptyItems on empty array of items.
         if (Array.isArray(items) && !items.length) {
-            if (onEmptyItems === null) { // Special case, NULL value.
+            if (onEmptyItems === null || typeof onEmptyItems === 'undefined') { // Special case, NULL value.
                 sql = equal ? ' IS NULL' : ' IS NOT NULL';
 
                 return { sql, params: [] };
@@ -758,7 +755,7 @@ export class SQLiteDB {
 
         const result = await this.execute(sql, params);
         // Retrieve the records.
-        const records = [];
+        const records: T[] = [];
         for (let i = 0; i < result.rows.length; i++) {
             records.push(result.rows.item(i));
         }
@@ -868,7 +865,7 @@ export class SQLiteDB {
      * @param limitNum How many results to return.
      * @return Normalised limit params in array: [limitFrom, limitNum].
      */
-    normaliseLimitFromNum(limitFrom: number, limitNum: number): number[] {
+    normaliseLimitFromNum(limitFrom?: number, limitNum?: number): number[] {
         // We explicilty treat these cases as 0.
         if (!limitFrom || limitFrom === -1) {
             limitFrom = 0;
@@ -893,7 +890,7 @@ export class SQLiteDB {
     async open(): Promise<void> {
         await this.ready();
 
-        await this.db.open();
+        await this.db!.open();
     }
 
     /**
@@ -994,11 +991,7 @@ export class SQLiteDB {
             return 0;
         }
 
-        const sets = [];
-        for (const key in data) {
-            sets.push(`${key} = ?`);
-        }
-
+        const sets = Object.keys(data).map(key => `${key} = ?`);
         let sql = `UPDATE ${table} SET ${sets.join(', ')}`;
         if (where) {
             sql += ` WHERE ${where}`;
@@ -1029,8 +1022,8 @@ export class SQLiteDB {
             };
         }
 
-        const where = [];
-        const params = [];
+        const where: string[] = [];
+        const params: SQLiteDBRecordValue[] = [];
 
         for (const key in conditions) {
             const value = conditions[key];
@@ -1064,7 +1057,7 @@ export class SQLiteDB {
             };
         }
 
-        const params = [];
+        const params: SQLiteDBRecordValue[] = [];
         let sql = '';
 
         values.forEach((value) => {

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils, PromiseDefer, OrderedPromiseData } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton } from '@singletons/core.singletons';
 
@@ -56,7 +56,7 @@ export class CoreInitDelegate {
 
     protected initProcesses: { [s: string]: CoreInitHandler } = {};
     protected logger: CoreLogger;
-    protected readiness: CoreInitReadinessPromiseDefer<void>;
+    protected readiness?: CoreInitReadinessPromiseDefer<void>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreInitDelegate');
@@ -68,7 +68,7 @@ export class CoreInitDelegate {
      * Reserved for core use, do not call directly.
      */
     executeInitProcesses(): void {
-        let ordered = [];
+        const ordered: CoreInitHandler[] = [];
 
         if (typeof this.readiness == 'undefined') {
             this.initReadiness();
@@ -78,15 +78,15 @@ export class CoreInitDelegate {
         for (const name in this.initProcesses) {
             ordered.push(this.initProcesses[name]);
         }
-        ordered.sort((a, b) => b.priority - a.priority);
+        ordered.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-        ordered = ordered.map((data: CoreInitHandler) => ({
+        const orderedPromises: OrderedPromiseData[] = ordered.map((data: CoreInitHandler) => ({
             function: this.prepareProcess.bind(this, data),
             blocking: !!data.blocking,
         }));
 
         // Execute all the processes in order to solve dependencies.
-        CoreUtils.instance.executeOrderedPromises(ordered).finally(this.readiness.resolve);
+        CoreUtils.instance.executeOrderedPromises(orderedPromises).finally(this.readiness!.resolve);
     }
 
     /**
@@ -94,7 +94,9 @@ export class CoreInitDelegate {
      */
     protected initReadiness(): void {
         this.readiness = CoreUtils.instance.promiseDefer();
-        this.readiness.promise.then(() => this.readiness.resolved = true);
+
+        // eslint-disable-next-line promise/catch-or-return
+        this.readiness.promise.then(() => this.readiness!.resolved = true);
     }
 
     /**
@@ -103,7 +105,7 @@ export class CoreInitDelegate {
      * @return Whether it's ready.
      */
     isReady(): boolean {
-        return this.readiness.resolved;
+        return this.readiness?.resolved || false;
     }
 
     /**
@@ -133,7 +135,7 @@ export class CoreInitDelegate {
             this.initReadiness();
         }
 
-        await this.readiness.promise;
+        await this.readiness!.promise;
     }
 
     /**

@@ -40,7 +40,7 @@ export class CoreSingletonsFactory {
     /**
      * Angular injector used to resolve singleton instances.
      */
-    private injector: Injector;
+    private injector?: Injector;
 
     /**
      * Set the injector that will be used to resolve instances in the singletons created with this factory.
@@ -68,6 +68,10 @@ export class CoreSingletonsFactory {
             static get instance(): Service {
                 // Initialize instances lazily.
                 if (!this.serviceInstance) {
+                    if (!factory.injector) {
+                        throw new Error('Can\'t resolve a singleton instance without an injector');
+                    }
+
                     this.serviceInstance = factory.injector.get(injectionToken);
                 }
 

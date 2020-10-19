@@ -148,6 +148,7 @@ var appConfig = {
             'warn',
             {
                 allowFinally: true,
+                terminationMethod: ['catch', 'finally'],
             },
         ],
         'arrow-body-style': ['error', 'as-needed'],
