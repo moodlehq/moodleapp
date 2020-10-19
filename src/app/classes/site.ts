@@ -2112,11 +2112,7 @@ export type CoreSitePublicConfigResponse = {
     mobilecssurl?: string; // Mobile custom CSS theme.
     // eslint-disable-next-line @typescript-eslint/naming-convention
     tool_mobile_disabledfeatures?: string; // Disabled features in the app.
-    identityproviders?: { // Identity providers.
-        name: string; // The identity provider name.
-        iconurl: string; // The icon URL for the provider.
-        url: string; // The URL of the provider.
-    }[];
+    identityproviders?: CoreSiteIdentityProvider[]; // Identity providers.
     country?: string; // Default site country.
     agedigitalconsentverification?: boolean; // Whether age digital consent verification is enabled.
     supportname?: string; // Site support contact name (only if age verification is enabled).
@@ -2135,6 +2131,15 @@ export type CoreSitePublicConfigResponse = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     tool_mobile_setuplink?: string; // App download page.
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Identity provider.
+ */
+export type CoreSiteIdentityProvider = {
+    name: string; // The identity provider name.
+    iconurl: string; // The icon URL for the provider.
+    url: string; // The URL of the provider.
 };
 
 /**

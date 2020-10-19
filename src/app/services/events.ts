@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
@@ -199,3 +200,12 @@ export class CoreEventsProvider {
 }
 
 export class CoreEvents extends makeSingleton(CoreEventsProvider) {}
+
+/**
+ * Data passed to session expired event.
+ */
+export type CoreEventSessionExpiredData = {
+    pageName?: string;
+    params?: Params;
+    siteId?: string;
+};

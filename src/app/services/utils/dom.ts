@@ -1304,6 +1304,11 @@ export class CoreDomUtilsProvider {
         needsTranslate?: boolean,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
+        if (this.isCanceledError(error)) {
+            // It's a canceled error, don't display an error.
+            return null;
+        }
+
         const message = this.getErrorMessage(error, needsTranslate);
 
         if (message === null) {

@@ -14,13 +14,17 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CoreComponentsModule } from '@/app/components/components.module';
+
 import { CoreLoginRoutingModule } from './login-routing.module';
 import { CoreLoginInitPage } from './pages/init/init.page';
 import { CoreLoginSitePage } from './pages/site/site.page';
+import { CoreLoginHelperProvider } from './services/helper';
 
 @NgModule({
     imports: [
@@ -28,10 +32,16 @@ import { CoreLoginSitePage } from './pages/site/site.page';
         IonicModule,
         CoreLoginRoutingModule,
         TranslateModule.forChild(),
+        FormsModule,
+        ReactiveFormsModule,
+        CoreComponentsModule,
     ],
     declarations: [
         CoreLoginInitPage,
         CoreLoginSitePage,
+    ],
+    providers: [
+        CoreLoginHelperProvider,
     ],
 })
 export class CoreLoginModule {}

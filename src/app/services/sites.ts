@@ -276,7 +276,7 @@ export class CoreSitesProvider {
      * @param name Name of the site to check.
      * @return Site data if it's a demo site, undefined otherwise.
      */
-    getDemoSiteData(name: string): {[name: string]: CoreSitesDemoSiteData} {
+    getDemoSiteData(name: string): CoreSitesDemoSiteData {
         const demoSites = CoreConfigConstants.demo_sites;
         name = name.toLowerCase();
 

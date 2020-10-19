@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreInit } from '@services/init';
@@ -29,7 +29,7 @@ import { SplashScreen } from '@singletons/core.singletons';
 })
 export class CoreLoginInitPage implements OnInit {
 
-    constructor(protected router: Router) {}
+    constructor(protected navCtrl: NavController) {}
 
     /**
      * Initialize the component.
@@ -90,6 +90,7 @@ export class CoreLoginInitPage implements OnInit {
         //     return this.loginHelper.goToSiteInitialPage();
         // }
 
-        await this.router.navigate(['/login/site']);
+        await this.navCtrl.navigateRoot('/login/site');
     }
+
 }
