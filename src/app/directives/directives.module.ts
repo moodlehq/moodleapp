@@ -13,21 +13,25 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+
 import { CoreAutoFocusDirective } from './auto-focus';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLongPressDirective } from './long-press.directive';
+import { CoreSupressEventsDirective } from './supress-events';
 
 @NgModule({
     declarations: [
         CoreAutoFocusDirective,
         CoreFormatTextDirective,
         CoreLongPressDirective,
+        CoreSupressEventsDirective,
     ],
     imports: [],
     exports: [
         CoreAutoFocusDirective,
         CoreFormatTextDirective,
         CoreLongPressDirective,
+        CoreSupressEventsDirective,
     ],
 })
 export class CoreDirectivesModule {}
