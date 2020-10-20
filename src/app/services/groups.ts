@@ -60,8 +60,12 @@ export class CoreGroupsProvider {
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise resolved when the groups are retrieved.
      */
-    async getActivityAllowedGroups(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean):
-            Promise<CoreGroupGetActivityAllowedGroupsResponse> {
+    async getActivityAllowedGroups(
+        cmId: number,
+        userId?: number,
+        siteId?: string,
+        ignoreCache?: boolean,
+    ): Promise<CoreGroupGetActivityAllowedGroupsResponse> {
         const site = await CoreSites.instance.getSite(siteId);
 
         userId = userId || site.getUserId();
@@ -111,7 +115,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
      */
     async getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean):
-            Promise<CoreGroupGetActivityAllowedGroupsResponse> {
+    Promise<CoreGroupGetActivityAllowedGroupsResponse> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         // Get real groupmode, in case it's forced by the course.
@@ -136,10 +140,16 @@ export class CoreGroupsProvider {
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise resolved with the group info.
      */
-    async getActivityGroupInfo(cmId: number, addAllParts?: boolean, userId?: number, siteId?: string, ignoreCache?: boolean):
-            Promise<CoreGroupInfo> {
+    async getActivityGroupInfo(
+        cmId: number,
+        addAllParts?: boolean,
+        userId?: number,
+        siteId?: string,
+        ignoreCache?: boolean,
+    ): Promise<CoreGroupInfo> {
         const groupInfo: CoreGroupInfo = {
             groups: [],
+            defaultGroupId: 0,
         };
 
         const groupMode = await this.getActivityGroupMode(cmId, siteId, ignoreCache);
@@ -163,13 +173,13 @@ export class CoreGroupsProvider {
         } else {
             // The "canaccessallgroups" field was added in 3.4. Add all participants for visible groups in previous versions.
             if (result.canaccessallgroups || (typeof result.canaccessallgroups == 'undefined' && groupInfo.visibleGroups)) {
-                groupInfo.groups.push({ id: 0, name: Translate.instance.instant('core.allparticipants') });
+                groupInfo.groups!.push({ id: 0, name: Translate.instance.instant('core.allparticipants') });
                 groupInfo.defaultGroupId = 0;
             } else {
                 groupInfo.defaultGroupId = result.groups[0].id;
             }
 
-            groupInfo.groups = groupInfo.groups.concat(result.groups);
+            groupInfo.groups = groupInfo.groups!.concat(result.groups);
         }
 
         return groupInfo;
@@ -233,6 +243,7 @@ export class CoreGroupsProvider {
         }
 
         // @todo Get courses.
+        return <CoreGroup[]>[];
     }
 
     /**
@@ -249,7 +260,7 @@ export class CoreGroupsProvider {
 
         const courseGroups = await Promise.all(promises);
 
-        return [].concat(...courseGroups);
+        return (<CoreGroup[]>[]).concat(...courseGroups);
     }
 
     /**
@@ -339,7 +350,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateActivityGroupInfo(cmId: number, userId?: number, siteId?: string): Promise<void> {
-        const promises = [];
+        const promises = <Promise<void>[]>[];
         promises.push(this.invalidateActivityAllowedGroups(cmId, userId, siteId));
         promises.push(this.invalidateActivityGroupMode(cmId, siteId));
 
@@ -457,7 +468,7 @@ export type CoreGroupInfo = {
     /**
      * The group ID to use by default. If all participants is visible, 0 will be used. First group ID otherwise.
      */
-    defaultGroupId?: number;
+    defaultGroupId: number;
 };
 
 /**

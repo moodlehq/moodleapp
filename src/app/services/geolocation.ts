@@ -116,7 +116,7 @@ export class CoreGeolocationProvider {
      *
      * @param error Error.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected isCordovaPermissionDeniedError(error?: any): boolean {
         return error && 'code' in error && 'PERMISSION_DENIED' in error && error.code === error.PERMISSION_DENIED;
     }

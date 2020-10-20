@@ -26,7 +26,7 @@ import { GestureController } from '@singletons/core.singletons';
 export class CoreLongPressDirective implements OnInit, OnDestroy {
 
     element: HTMLElement;
-    pressGesture: Gesture;
+    pressGesture?: Gesture;
 
     @Output() longPress = new EventEmitter();
 
@@ -53,7 +53,7 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
      * Destroy gesture listening.
      */
     ngOnDestroy(): void {
-        this.pressGesture.destroy();
+        this.pressGesture?.destroy();
     }
 
 }

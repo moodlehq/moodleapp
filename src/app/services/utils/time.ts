@@ -253,7 +253,7 @@ export class CoreTimeUtilsProvider {
     formatDurationShort(duration: number): string {
         const minutes = Math.floor(duration / 60);
         const seconds = duration - minutes * 60;
-        const durations = [];
+        const durations = <string[]>[];
 
         if (minutes > 0) {
             durations.push(minutes + '\'');
@@ -298,16 +298,16 @@ export class CoreTimeUtilsProvider {
         format = Translate.instance.instant(format ? format : 'core.strftimedaydatetime');
 
         if (fixDay) {
-            format = format.replace(/%d/g, '%e');
+            format = format!.replace(/%d/g, '%e');
         }
 
         if (fixHour) {
-            format = format.replace('%I', '%l');
+            format = format!.replace('%I', '%l');
         }
 
         // Format could be in PHP format, convert it to moment.
         if (convert) {
-            format = this.convertPHPToMoment(format);
+            format = this.convertPHPToMoment(format!);
         }
 
         return moment(timestamp).format(format);
