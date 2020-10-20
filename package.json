@@ -26,7 +26,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "ng lint",
-    "ionic:serve:before": "npx gulp"
+    "ionic:serve:before": "npx gulp",
+    "ionic:serve": "npx gulp watch & ng serve",
+    "ionic:build:before": "npx gulp"
   },
   "dependencies": {
     "@angular/common": "~10.0.0",

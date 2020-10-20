@@ -22,6 +22,6 @@ import { CoreIconComponent } from './icon/icon';
     imports: [],
     exports: [
         CoreIconComponent,
-    ]
+    ],
 })
 export class CoreComponentsModule {}

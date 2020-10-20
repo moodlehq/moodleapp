@@ -21,6 +21,7 @@ import {
     LoadingController as LoadingControllerService,
     ModalController as ModalControllerService,
     ToastController as ToastControllerService,
+    GestureController as GestureControllerService,
 } from '@ionic/angular';
 
 import { Clipboard as ClipboardService } from '@ionic-native/clipboard/ngx';
@@ -99,6 +100,7 @@ export class AlertController extends makeSingleton(AlertControllerService) {}
 export class LoadingController extends makeSingleton(LoadingControllerService) {}
 export class ModalController extends makeSingleton(ModalControllerService) {}
 export class ToastController extends makeSingleton(ToastControllerService) {}
+export class GestureController extends makeSingleton(GestureControllerService) {}
 
 // Convert external libraries injectables.
 export class Translate extends makeSingleton(TranslateService) {}

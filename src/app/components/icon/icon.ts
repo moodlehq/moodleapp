@@ -28,7 +28,7 @@ import { Component, Input, OnChanges, OnDestroy, ElementRef, SimpleChange } from
 export class CoreIconComponent implements OnChanges, OnDestroy {
 
     // Common params.
-    @Input() name: string;
+    @Input() name = '';
     @Input() color?: string;
     @Input() slash?: boolean; // Display a red slash over the icon.
 
@@ -48,6 +48,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
 
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
+        this.newElement = this.element
     }
 
     /**
@@ -58,7 +59,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        const oldElement = this.newElement ? this.newElement : this.element;
+        const oldElement = this.newElement;
 
         // Use a new created element to avoid ion-icon working.
         // This is necessary to make the FontAwesome stuff work.
@@ -102,7 +103,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
             this.newElement.classList.add('core-icon-dir-flip');
         }
 
-        oldElement.parentElement.replaceChild(this.newElement, oldElement);
+        oldElement.parentElement?.replaceChild(this.newElement, oldElement);
     }
 
     /**

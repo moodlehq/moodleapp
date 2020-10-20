@@ -102,9 +102,9 @@ export class CoreUrlUtilsProvider {
     canUseTokenPluginFile(url: string, siteUrl: string, accessKey?: string): boolean {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
-        return accessKey && !url.match(/[&?]file=/) && (
-                url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-                url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
+        return !!accessKey && !url.match(/[&?]file=/) && (
+            url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
+            url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
     }
 
     /**
@@ -255,12 +255,12 @@ export class CoreUrlUtilsProvider {
      * @param  url URL
      * @return Youtube Embed Video URL or null if not found.
      */
-    getYoutubeEmbedUrl(url: string): string {
+    getYoutubeEmbedUrl(url: string): string | void {
         if (!url) {
             return;
         }
 
-        let videoId: string;
+        let videoId = '';
         const params: CoreUrlParams = {};
 
         url = CoreTextUtils.instance.decodeHTML(url);
@@ -327,7 +327,7 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Protocol, undefined if no protocol found.
      */
-    getUrlProtocol(url: string): string {
+    getUrlProtocol(url: string): string | void {
         if (!url) {
             return;
         }
@@ -345,7 +345,7 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Scheme, undefined if no scheme found.
      */
-    getUrlScheme(url: string): string {
+    getUrlScheme(url: string): string | void {
         if (!url) {
             return;
         }
@@ -362,7 +362,7 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Username. Undefined if no username found.
      */
-    getUsernameFromUrl(url: string): string {
+    getUsernameFromUrl(url: string): string | void {
         if (url.indexOf('@') > -1) {
             // Get URL without protocol.
             const withoutProtocol = url.replace(/^[^?@/]*:\/\//, '');
@@ -402,7 +402,7 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is a gravatar URL.
      */
     isGravatarUrl(url: string): boolean {
-        return url && url.indexOf('gravatar.com/avatar') !== -1;
+        return url?.indexOf('gravatar.com/avatar') !== -1;
     }
 
     /**
@@ -424,7 +424,7 @@ export class CoreUrlUtilsProvider {
     isLocalFileUrl(url: string): boolean {
         const urlParts = CoreUrl.parse(url);
 
-        return this.isLocalFileUrlScheme(urlParts.protocol);
+        return this.isLocalFileUrlScheme(urlParts?.protocol || '');
     }
 
     /**
@@ -434,9 +434,10 @@ export class CoreUrlUtilsProvider {
      * @return Whether the scheme belongs to a local file.
      */
     isLocalFileUrlScheme(scheme: string): boolean {
-        if (scheme) {
-            scheme = scheme.toLowerCase();
+        if (!scheme) {
+            return false;
         }
+        scheme = scheme.toLowerCase();
 
         return scheme == 'cdvfile' ||
                 scheme == 'file' ||
@@ -451,7 +452,7 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is a pluginfile URL.
      */
     isPluginFileUrl(url: string): boolean {
-        return url && url.indexOf('/pluginfile.php') !== -1;
+        return url?.indexOf('/pluginfile.php') !== -1;
     }
 
     /**
@@ -461,7 +462,7 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is a theme image URL.
      */
     isThemeImageUrl(url: string): boolean {
-        return url && url.indexOf('/theme/image.php') !== -1;
+        return url?.indexOf('/theme/image.php') !== -1;
     }
 
     /**
@@ -488,7 +489,7 @@ export class CoreUrlUtilsProvider {
     removeUrlParams(url: string): string {
         const matches = url.match(/^[^?]+/);
 
-        return matches && matches[0];
+        return matches ? matches[0] : '';
     }
 
     /**

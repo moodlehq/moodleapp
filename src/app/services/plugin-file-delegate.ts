@@ -70,8 +70,11 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    protected async getHandlerDownloadableFile(file: CoreWSExternalFile, handler: CorePluginFileHandler, siteId?: string):
-            Promise<CoreWSExternalFile> {
+    protected async getHandlerDownloadableFile(
+        file: CoreWSExternalFile,
+        handler?: CorePluginFileHandler,
+        siteId?: string,
+    ): Promise<CoreWSExternalFile> {
         const isDownloadable = await this.isFileDownloadable(file, siteId);
 
         if (!isDownloadable.downloadable) {
@@ -93,7 +96,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
      * @return RegExp to match the revision or undefined if not found.
      */
-    getComponentRevisionRegExp(args: string[]): RegExp {
+    getComponentRevisionRegExp(args: string[]): RegExp | void {
         // Get handler based on component (args[1]).
         const handler = <CorePluginFileHandler> this.getHandler(args[1], true);
 
@@ -110,7 +113,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @return List of URLs.
      */
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
-        let files = [];
+        let files = <string[]>[];
 
         for (const component in this.enabledHandlers) {
             const handler = <CorePluginFileHandler> this.enabledHandlers[component];
@@ -130,8 +133,8 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number; total: boolean }> {
-        const filteredFiles = [];
+    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId: string): Promise<{ size: number; total: boolean }> {
+        const filteredFiles = <CoreWSExternalFile[]>[];
 
         await Promise.all(files.map(async (file) => {
             const state = await CoreFilepool.instance.getFileStateByUrl(siteId, file.fileurl, file.timemodified);
@@ -270,8 +273,12 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    async treatDownloadedFile(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: CoreFilepoolOnProgressCallback):
-            Promise<void> {
+    async treatDownloadedFile(
+        fileUrl: string,
+        file: FileEntry,
+        siteId?: string,
+        onProgress?: CoreFilepoolOnProgressCallback,
+    ): Promise<void> {
         const handler = this.getHandlerForFile({ fileurl: fileUrl });
 
         if (handler && handler.treatDownloadedFile) {
@@ -373,8 +380,12 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when done.
      */
-    treatDownloadedFile?(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: CoreFilepoolOnProgressCallback):
-        Promise<void>;
+    treatDownloadedFile?(
+        fileUrl: string,
+        file: FileEntry,
+        siteId?: string,
+        onProgress?: CoreFilepoolOnProgressCallback):
+    Promise<void>;
 }
 
 /**

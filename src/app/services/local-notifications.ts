@@ -100,13 +100,13 @@ export class CoreLocalNotificationsProvider {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected observables: {[eventName: string]: {[component: string]: Subject<any>}} = {};
 
-    protected triggerSubscription: Subscription;
-    protected clickSubscription: Subscription;
-    protected clearSubscription: Subscription;
-    protected cancelSubscription: Subscription;
-    protected addSubscription: Subscription;
-    protected updateSubscription: Subscription;
-    protected queueRunner: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
+    protected triggerSubscription?: Subscription;
+    protected clickSubscription?: Subscription;
+    protected clearSubscription?: Subscription;
+    protected cancelSubscription?: Subscription;
+    protected addSubscription?: Subscription;
+    protected updateSubscription?: Subscription;
+    protected queueRunner?: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLocalNotificationsProvider');
@@ -216,8 +216,8 @@ export class CoreLocalNotificationsProvider {
      */
     canDisableSound(): boolean {
         // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
-        return this.isAvailable() && !CoreApp.instance.isDesktop() && CoreApp.instance.isAndroid() &&
-                Device.instance.version && Number(Device.instance.version.split('.')[0]) < 8;
+        return this.isAvailable() &&!CoreApp.instance.isDesktop() && CoreApp.instance.isAndroid() &&
+            Number(Device.instance.version?.split('.')[0]) < 8;
     }
 
     /**
@@ -323,15 +323,16 @@ export class CoreLocalNotificationsProvider {
      * @param siteId Site ID.
      * @return Promise resolved when the notification ID is generated.
      */
-    protected getUniqueNotificationId(notificationId: number, component: string, siteId: string): Promise<number> {
+    protected async getUniqueNotificationId(notificationId: number, component: string, siteId: string): Promise<number> {
         if (!siteId || !component) {
             return Promise.reject(new CoreError('Site ID or component not supplied.'));
         }
 
-        return this.getSiteCode(siteId).then((siteCode) => this.getComponentCode(component).then((componentCode) =>
-                // We use the % operation to keep the number under Android's limit.
-                 (siteCode * 100000000 + componentCode * 10000000 + notificationId) % 2147483647,
-            ));
+        const siteCode = await this.getSiteCode(siteId);
+        const componentCode = await this.getComponentCode(component);
+
+        // We use the % operation to keep the number under Android's limit.
+        return (siteCode * 100000000 + componentCode * 10000000 + notificationId) % 2147483647;
     }
 
     /**
@@ -371,8 +372,10 @@ export class CoreLocalNotificationsProvider {
         await this.dbReady;
 
         try {
-            const stored = await this.appDB.getRecord<{id: number; at: number}>(CoreLocalNotificationsProvider.TRIGGERED_TABLE,
-                { id: notification.id });
+            const stored = await this.appDB.getRecord<{ id: number; at: number }>(
+                CoreLocalNotificationsProvider.TRIGGERED_TABLE,
+                { id: notification.id },
+            );
 
             let triggered = (notification.trigger && notification.trigger.at) || 0;
 
@@ -399,7 +402,7 @@ export class CoreLocalNotificationsProvider {
      *
      * @param data Data received by the notification.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notifyClick(data: any): void {
         this.notifyEvent('click', data);
     }
@@ -410,7 +413,7 @@ export class CoreLocalNotificationsProvider {
      * @param eventName Name of the event to notify.
      * @param data Data received by the notification.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notifyEvent(eventName: string, data: any): void {
         // Execute the code in the Angular zone, so change detection doesn't stop working.
         NgZone.instance.run(() => {
@@ -429,7 +432,7 @@ export class CoreLocalNotificationsProvider {
      * @param data Notification data.
      * @return Parsed data.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected parseNotificationData(data: any): any {
         if (!data) {
             return {};
@@ -538,8 +541,8 @@ export class CoreLocalNotificationsProvider {
      */
     protected requestCode(table: string, id: string): Promise<number> {
         const deferred = CoreUtils.instance.promiseDefer<number>();
-            const key = table + '#' + id;
-            const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
+        const key = table + '#' + id;
+        const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
 
         if (typeof this.codeRequestsQueue[key] != 'undefined') {
             // There's already a pending request for this store and ID, add the promise to it.

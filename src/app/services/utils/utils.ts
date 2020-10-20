@@ -308,12 +308,17 @@ export class CoreUtilsProvider {
     async copyToClipboard(text: string): Promise<void> {
         try {
             await Clipboard.instance.copy(text);
-
-            // Show toast using ionicLoading.
-            CoreDomUtils.instance.showToast('core.copiedtoclipboard', true);
         } catch {
-            // Ignore errors.
+            // Use HTML Copy command.
+            const virtualInput = document.createElement('textarea');
+            virtualInput.innerHTML = text;
+            virtualInput.select();
+            virtualInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
         }
+
+        // Show toast using ionicLoading.
+        CoreDomUtils.instance.showToast('core.copiedtoclipboard', true);
     }
 
     /**
