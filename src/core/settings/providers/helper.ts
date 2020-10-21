@@ -44,6 +44,7 @@ export interface CoreSiteSpaceUsage {
 export class CoreSettingsHelper {
     protected logger;
     protected syncPromises = {};
+    protected colorSchemes: string[] = [];
 
     constructor(loggerProvider: CoreLoggerProvider,
             protected appProvider: CoreAppProvider,
@@ -342,14 +343,7 @@ export class CoreSettingsHelper {
         if (!!CoreConfigConstants.forceColorScheme) {
             this.setColorScheme(CoreConfigConstants.forceColorScheme);
         } else {
-            let defaultColorScheme = 'light';
-
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches ||
-                    window.matchMedia('(prefers-color-scheme: light)').matches) {
-                defaultColorScheme = 'auto';
-            }
-
-            this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, defaultColorScheme).then((scheme) => {
+            this.configProvider.get(CoreConstants.SETTINGS_COLOR_SCHEME, 'light').then((scheme) => {
                 this.setColorScheme(scheme);
             });
         }
@@ -389,6 +383,40 @@ export class CoreSettingsHelper {
     }
 
     /**
+     * Get system allowed color schemes.
+     *
+     * @return Allowed color schemes.
+     */
+    getAllowedColorSchemes(): string[] {
+        if (this.colorSchemes.length > 0) {
+            return this.colorSchemes;
+        }
+
+        if (!CoreConfigConstants.forceColorScheme) {
+            this.colorSchemes.push('light');
+            this.colorSchemes.push('dark');
+            if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+                this.colorSchemes.push('auto');
+            }
+        } else {
+            this.colorSchemes = [CoreConfigConstants.forceColorScheme];
+        }
+
+        return this.colorSchemes;
+    }
+
+    /**
+     * Toggle Dark on auto mode.
+     *
+     * @param dark If dark scheme should be set or removed.
+     */
+    protected toggleDarkTheme(dark: boolean): void {
+        if (document.body.classList.contains('scheme-auto')) {
+            document.body.classList.toggle('scheme-dark', dark);
+        }
+    }
+
+    /**
      * Set body color scheme.
      *
      * @param colorScheme Name of the color scheme.
@@ -397,6 +425,10 @@ export class CoreSettingsHelper {
         document.body.classList.remove('scheme-light');
         document.body.classList.remove('scheme-dark');
         document.body.classList.remove('scheme-auto');
+
+        const colorSchemes = this.getAllowedColorSchemes();
+
+        colorScheme = colorSchemes.indexOf(colorScheme) >= 0 ? colorScheme : colorSchemes[0];
         document.body.classList.add('scheme-' + colorScheme);
     }
 }
