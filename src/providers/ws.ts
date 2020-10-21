@@ -57,7 +57,33 @@ export interface CoreWSPreSets {
      * Defaults to false. Clean multibyte Unicode chars from data.
      */
     cleanUnicode?: boolean;
+
+    /**
+     * Whether to split a request if it has too many parameters. Sending too many parameters to the site
+     * can cause the request to fail (see PHP's max_input_vars).
+     */
+    splitRequest?: CoreWSPreSetsSplitRequest;
 }
+
+/**
+ * Options to split a request.
+ */
+export type CoreWSPreSetsSplitRequest = {
+    /**
+     * Name of the parameter used to split the request if too big. Must be an array parameter.
+     */
+    param: string;
+
+    /**
+     * Max number of entries sent per request.
+     */
+    maxLength: number;
+
+    /**
+     * Callback to combine the results. If not supplied, arrays in the result will be concatenated.
+     */
+    combineCallback?: (previousValue: any, currentValue: any, currentIndex: number, array: any[]) => any;
+};
 
 /**
  * PreSets accepted by AJAX WS calls.
@@ -622,7 +648,7 @@ export class CoreWSProvider {
     }
 
     /**
-     * Perform the post call and save the promise while waiting to be resolved.
+     * Perform the post call. It can be split into several requests.
      *
      * @param method The WebService method to be called.
      * @param siteUrl Complete site url to perform the call.
@@ -638,6 +664,64 @@ export class CoreWSProvider {
             // Avalaible values are: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType
             options['responseType'] = 'text';
         }
+
+        if (!preSets.splitRequest || !ajaxData[preSets.splitRequest.param]) {
+            return this.performSinglePost(method, siteUrl, ajaxData, preSets, options);
+        }
+
+        // Split the request into several requests if needed.
+        const promises: Promise<any>[] = [];
+
+        for (let i = 0; i < ajaxData[preSets.splitRequest.param].length; i += preSets.splitRequest.maxLength) {
+            // Limit the array sent.
+            const limitedData = Object.assign({}, ajaxData);
+            limitedData[preSets.splitRequest.param] =
+                ajaxData[preSets.splitRequest.param].slice(i, i + preSets.splitRequest.maxLength);
+
+            promises.push(this.performSinglePost(method, siteUrl, limitedData, preSets, options));
+        }
+
+        return Promise.all(promises).then((results) => {
+            // Combine the results.
+            const firstResult = results.shift();
+
+            if (preSets.splitRequest.combineCallback) {
+                return results.reduce(preSets.splitRequest.combineCallback, firstResult);
+            }
+
+            return results.reduce(this.combineObjectsArrays, firstResult);
+        });
+    }
+
+    /**
+     * Combine the arrays of two objects.
+     *
+     * @param object1 First object.
+     * @param object2 Second object.
+     * @return Combined object.
+     */
+    protected combineObjectsArrays(object1: any, object2: any): any {
+        for (const name in object2) {
+            if (Array.isArray(object2[name])) {
+                object1[name] = object1[name].concat(object2[name]);
+            }
+        }
+
+        return object1;
+    }
+
+    /**
+     * Perform a single post request.
+     *
+     * @param method The WebService method to be called.
+     * @param siteUrl Complete site url to perform the call.
+     * @param ajaxData Arguments to pass to the method.
+     * @param preSets Extra settings and information.
+     * @param options Request options.
+     * @return Promise resolved with the response data in success and rejected with CoreWSError if it fails.
+     */
+    protected performSinglePost(method: string, siteUrl: string, ajaxData: any, preSets: CoreWSPreSets, options: any)
+            : Promise<any> {
 
         // We add the method name to the URL purely to help with debugging.
         // This duplicates what is in the ajaxData, but that does no harm.

@@ -471,7 +471,11 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
                     preSets: CoreSiteWSPreSets = {
                         cacheKey: this.getCourseUpdatesCacheKey(courseId),
                         emergencyCache: false, // If downloaded data has changed and offline, just fail. See MOBILE-2085.
-                        uniqueCacheKey: true
+                        uniqueCacheKey: true,
+                        splitRequest: {
+                            param: 'tocheck',
+                            maxLength: 10,
+                        },
                     };
 
                 return site.read('core_course_check_updates', params, preSets).then((response) => {
