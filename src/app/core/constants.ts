@@ -28,6 +28,7 @@ export const enum ContextLevel {
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
+
     /* eslint-disable max-len */
 
     static readonly SECONDS_YEAR = 31536000;
@@ -100,9 +101,14 @@ export class CoreConstants {
     static readonly FEATURE_SHOW_DESCRIPTION = 'showdescription'; // True if module can show description on course main page.
     static readonly FEATURE_USES_QUESTIONS = 'usesquestions'; // True if module uses the question bank.
 
-    // Possbile archetypes for modules.
+    // Possible archetypes for modules.
     static readonly MOD_ARCHETYPE_OTHER = 0; // Unspecified module archetype.
     static readonly MOD_ARCHETYPE_RESOURCE = 1; // Resource-like type module.
     static readonly MOD_ARCHETYPE_ASSIGNMENT = 2; // Assignment module archetype.
     static readonly MOD_ARCHETYPE_SYSTEM = 3; // System (not user-addable) module archetype.
+
+    // Config & environment constants.
+    static readonly CONFIG = (window as unknown as MoodleAppWindow).MoodleApp.CONFIG; // Data parsed from config.json files.
+    static readonly BUILD = (window as unknown as MoodleAppWindow).MoodleApp.BUILD; // Environment info.
+
 }

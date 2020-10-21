@@ -24,7 +24,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
-import CoreConfigConstants from '@app/config.json';
 import {
     CoreSite,
     CoreSiteWSPreSets,
@@ -278,7 +277,7 @@ export class CoreSitesProvider {
      * @return Site data if it's a demo site, undefined otherwise.
      */
     getDemoSiteData(name: string): CoreSitesDemoSiteData | undefined {
-        const demoSites = CoreConfigConstants.demo_sites;
+        const demoSites = CoreConstants.CONFIG.demo_sites;
         name = name.toLowerCase();
 
         if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
@@ -396,7 +395,7 @@ export class CoreSitesProvider {
             });
         }
 
-        data.service = data.service || CoreConfigConstants.wsservice;
+        data.service = data.service || CoreConstants.CONFIG.wsservice;
         this.services[siteUrl] = data.service; // No need to store it in DB.
 
         if (data.coreSupported || (data.code != CoreConstants.LOGIN_SSO_CODE && data.code != CoreConstants.LOGIN_SSO_INAPP_CODE)) {
@@ -746,7 +745,7 @@ export class CoreSitesProvider {
         }
 
         // Return default service.
-        return CoreConfigConstants.wsservice;
+        return CoreConstants.CONFIG.wsservice;
     }
 
     /**
@@ -883,7 +882,7 @@ export class CoreSitesProvider {
         }
 
         const requiredVersion = this.convertVersionName(config.tool_mobile_minimumversion);
-        const appVersion = this.convertVersionName(CoreConfigConstants.versionname);
+        const appVersion = this.convertVersionName(CoreConstants.CONFIG.versionname);
 
         if (requiredVersion > appVersion) {
             const storesConfig: CoreStoreConfig = {
@@ -1215,7 +1214,7 @@ export class CoreSitesProvider {
                     id: site.id,
                     siteUrl: site.siteUrl,
                     fullName: siteInfo?.fullname,
-                    siteName: CoreConfigConstants.sitename ?? siteInfo?.sitename,
+                    siteName: CoreConstants.CONFIG.sitename ?? siteInfo?.sitename,
                     avatar: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                 };
