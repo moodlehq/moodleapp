@@ -15,7 +15,7 @@
 import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
 import { NavController, IonContent } from '@ionic/angular';
 
-import { CoreEventLoadingChangedData, CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents, CoreEventsProvider } from '@services/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -38,7 +38,7 @@ import { Translate } from '@singletons/core.singletons';
 })
 export class CoreFormatTextDirective implements OnChanges {
 
-    @Input() text: string; // The text to format.
+    @Input() text?: string; // The text to format.
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component for CoreExternalContentDirective.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
@@ -56,11 +56,11 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
-    @Output() afterRender?: EventEmitter<void>; // Called when the data is rendered.
+    @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
 
     protected element: HTMLElement;
-    protected showMoreDisplayed: boolean;
-    protected loadingChangedListener;
+    protected showMoreDisplayed = false;
+    protected loadingChangedListener?: CoreEventObserver;
 
     constructor(
         element: ElementRef,
@@ -116,9 +116,9 @@ export class CoreFormatTextDirective implements OnChanges {
         const container = document.createElement('span');
         const originalWidth = img.attributes.getNamedItem('width');
 
-        const forcedWidth = parseInt(originalWidth && originalWidth.value);
+        const forcedWidth = Number(originalWidth?.value);
         if (!isNaN(forcedWidth)) {
-            if (originalWidth.value.indexOf('%') < 0) {
+            if (originalWidth!.value.indexOf('%') < 0) {
                 img.style.width = forcedWidth  + 'px';
             } else {
                 img.style.width = forcedWidth  + '%';
@@ -160,7 +160,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 return;
             }
 
-            let imgWidth = parseInt(img.getAttribute('width'));
+            let imgWidth = Number(img.getAttribute('width'));
             if (!imgWidth) {
                 // No width attribute, use real size.
                 imgWidth = img.naturalWidth;
@@ -185,7 +185,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 CoreDomUtils.instance.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId, true);
             });
 
-            img.parentNode.appendChild(anchor);
+            img.parentNode?.appendChild(anchor);
         });
     }
 
@@ -194,10 +194,13 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected calculateHeight(): void {
         // @todo: Work on calculate this height better.
+        if (!this.maxHeight) {
+            return;
+        }
 
         // Remove max-height (if any) to calculate the real height.
         const initialMaxHeight = this.element.style.maxHeight;
-        this.element.style.maxHeight = null;
+        this.element.style.maxHeight = '';
 
         const height = this.getElementHeight(this.element);
 
@@ -245,6 +248,9 @@ export class CoreFormatTextDirective implements OnChanges {
             // Ignore it if the event was prevented by some other listener.
             return;
         }
+        if (!this.text) {
+            return;
+        }
 
         const expandInFullview = CoreUtils.instance.isTrueOrOne(this.fullOnClick) || false;
 
@@ -265,14 +271,18 @@ export class CoreFormatTextDirective implements OnChanges {
             // Open a new state with the contents.
             const filter = typeof this.filter != 'undefined' ? CoreUtils.instance.isTrueOrOne(this.filter) : undefined;
 
-            CoreTextUtils.instance.viewText(this.fullTitle || Translate.instance.instant('core.description'), this.text, {
-                component: this.component,
-                componentId: this.componentId,
-                filter: filter,
-                contextLevel: this.contextLevel,
-                instanceId: this.contextInstanceId,
-                courseId: this.courseId,
-            });
+            CoreTextUtils.instance.viewText(
+                this.fullTitle || Translate.instance.instant('core.description'),
+                this.text,
+                {
+                    component: this.component,
+                    componentId: this.componentId,
+                    filter: filter,
+                    contextLevel: this.contextLevel,
+                    instanceId: this.contextInstanceId,
+                    courseId: this.courseId,
+                },
+            );
         }
     }
 
@@ -357,29 +367,17 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return Promise resolved with a div element containing the code.
      */
     protected async formatContents(): Promise<FormatContentsResult> {
-
-        const result: FormatContentsResult = {
-            div: null,
-            filters: [],
-            options: {},
-            siteId: this.siteId,
-        };
-
         // Retrieve the site since it might be needed later.
         const site = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSite(this.siteId));
 
-        if (site) {
-            result.siteId = site.getId();
-        }
-
-        if (this.contextLevel == 'course' && this.contextInstanceId <= 0) {
+        if (site && this.contextLevel == 'course' && this.contextInstanceId !== undefined && this.contextInstanceId <= 0) {
             this.contextInstanceId = site.getSiteHomeId();
         }
 
         const filter = typeof this.filter == 'undefined' ?
             !!(this.contextLevel && typeof this.contextInstanceId != 'undefined') : CoreUtils.instance.isTrueOrOne(this.filter);
 
-        result.options = {
+        const options = {
             clean: CoreUtils.instance.isTrueOrOne(this.clean),
             singleLine: CoreUtils.instance.isTrueOrOne(this.singleLine),
             highlight: this.highlight,
@@ -391,10 +389,10 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (filter) {
             // @todo
-            formatted = this.text;
+            formatted = this.text!;
         } else {
             // @todo
-            formatted = this.text;
+            formatted = this.text!;
         }
 
         formatted = this.treatWindowOpen(formatted);
@@ -405,9 +403,12 @@ export class CoreFormatTextDirective implements OnChanges {
 
         this.treatHTMLElements(div, site);
 
-        result.div = div;
-
-        return result;
+        return {
+            div,
+            filters: [],
+            options,
+            siteId: site?.getId(),
+        };
     }
 
     /**
@@ -418,7 +419,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return Promise resolved when done.
      */
     protected async treatHTMLElements(div: HTMLElement, site?: CoreSite): Promise<void> {
-        const canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
+        const canTreatVimeo = site?.isVersionGreaterEqualThan(['3.3.4', '3.4']) || false;
         const navCtrl = this.navCtrl; // @todo this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
 
         const images = Array.from(div.querySelectorAll('img'));
@@ -537,7 +538,8 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
-            const parentWidth = CoreDomUtils.instance.getElementWidth(element.parentElement, true, false, false, true);
+            const parentWidth = element.parentElement ?
+                CoreDomUtils.instance.getElementWidth(element.parentElement, true, false, false, true) : 0;
             const previousDisplay = getComputedStyle(element, null).display;
 
             element.style.display = 'inline-block';
@@ -578,7 +580,7 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.classList.remove('core-expand-in-fullview');
         this.element.classList.remove('core-text-formatted');
         this.element.classList.remove('core-shortened');
-        this.element.style.maxHeight = null;
+        this.element.style.maxHeight = '';
         this.showMoreDisplayed = false;
     }
 
@@ -595,7 +597,7 @@ export class CoreFormatTextDirective implements OnChanges {
         const tracks = Array.from(element.querySelectorAll('track'));
 
         sources.forEach((source) => {
-            source.setAttribute('target-src', source.getAttribute('src'));
+            source.setAttribute('target-src', source.getAttribute('src') || '');
             source.removeAttribute('src');
             this.addExternalContent(source);
         });
@@ -618,8 +620,12 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param canTreatVimeo Whether Vimeo videos can be treated in the site.
      * @param navCtrl NavController to use.
      */
-    protected async treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean, navCtrl: NavController):
-            Promise<void> {
+    protected async treatIframe(
+        iframe: HTMLIFrameElement,
+        site: CoreSite | undefined,
+        canTreatVimeo: boolean,
+        navCtrl: NavController,
+    ): Promise<void> {
         const src = iframe.src;
         const currentSite = CoreSites.instance.getCurrentSite();
 
@@ -636,7 +642,7 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
-        if (src && canTreatVimeo) {
+        if (site && src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
@@ -679,7 +685,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 }
 
                 // Do the iframe responsive.
-                if (iframe.parentElement.classList.contains('embed-responsive')) {
+                if (iframe.parentElement?.classList.contains('embed-responsive')) {
                     iframe.addEventListener('load', () => {
                         if (iframe.contentDocument) {
                             const css = document.createElement('style');
@@ -723,5 +729,5 @@ type FormatContentsResult = {
     div: HTMLElement;
     filters: any[];
     options: any;
-    siteId: string;
+    siteId?: string;
 };

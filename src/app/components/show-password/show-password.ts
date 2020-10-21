@@ -40,16 +40,16 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
 
-    @Input() name: string; // Name of the input affected.
+    @Input() name?: string; // Name of the input affected.
     @Input() initialShown?: boolean | string; // Whether the password should be shown at start.
-    @ContentChild(IonInput) ionInput: IonInput;
+    @ContentChild(IonInput) ionInput?: IonInput;
 
-    shown: boolean; // Whether the password is shown.
-    label: string; // Label for the button to show/hide.
-    iconName: string; // Name of the icon of the button to show/hide.
+    shown!: boolean; // Whether the password is shown.
+    label?: string; // Label for the button to show/hide.
+    iconName?: string; // Name of the icon of the button to show/hide.
     selector = ''; // Selector to identify the input.
 
-    protected input: HTMLInputElement; // Input affected.
+    protected input?: HTMLInputElement | null; // Input affected.
     protected element: HTMLElement; // Current element.
 
     constructor(element: ElementRef) {
@@ -84,7 +84,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
         }
 
         // Search the input.
-        this.input = this.element.querySelector(this.selector);
+        this.input = <HTMLInputElement> this.element.querySelector(this.selector);
 
         if (this.input) {
             // Input found. Set the right type.
@@ -128,7 +128,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
         if (isFocused && CoreApp.instance.isAndroid()) {
             // In Android, the keyboard is closed when the input type changes. Focus it again.
             setTimeout(() => {
-                CoreDomUtils.instance.focusElement(this.input);
+                CoreDomUtils.instance.focusElement(this.input!);
             }, 400);
         }
     }

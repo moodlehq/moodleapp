@@ -472,7 +472,7 @@ export class SQLiteDB {
      * @return List of params.
      */
     protected formatDataToSQLParams(data: SQLiteDBRecordValues): SQLiteDBRecordValue[] {
-        return Object.keys(data).map((key) => data[key]);
+        return Object.keys(data).map((key) => data[key]!);
     }
 
     /**
@@ -1087,7 +1087,7 @@ export class SQLiteDB {
 }
 
 export type SQLiteDBRecordValues = {
-    [key in string ]: SQLiteDBRecordValue;
+    [key in string ]: SQLiteDBRecordValue | undefined;
 };
 
 export type SQLiteDBQueryParams = {

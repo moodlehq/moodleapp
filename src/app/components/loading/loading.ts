@@ -48,9 +48,9 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 
     @Input() hideUntil: unknown; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
-    @ViewChild('content') content: ElementRef;
+    @ViewChild('content') content?: ElementRef;
 
-    protected uniqueId: string;
+    protected uniqueId!: string;
     protected element: HTMLElement; // Current element.
 
     constructor(element: ElementRef) {

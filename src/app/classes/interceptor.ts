@@ -30,7 +30,7 @@ export class CoreInterceptor implements HttpInterceptor {
      * @param addNull Add null values to the serialized as empty parameters.
      * @return Serialization of the object.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static serialize(obj: any, addNull?: boolean): string {
         let query = '';
 
@@ -61,7 +61,7 @@ export class CoreInterceptor implements HttpInterceptor {
         return query.length ? query.substr(0, query.length - 1) : query;
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
         // Add the header and serialize the body if needed.
         const newReq = req.clone({

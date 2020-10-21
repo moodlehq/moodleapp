@@ -50,7 +50,7 @@ export class CoreLoginHelperProvider {
     protected logger: CoreLogger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    protected pageToLoad: {page: string; params: Params; time: number}; // Page to load once main menu is opened.
+    protected pageToLoad?: {page: string; params: Params; time: number}; // Page to load once main menu is opened.
     protected isOpeningReconnect = false;
     waitingForBrowser = false;
 
@@ -208,7 +208,7 @@ export class CoreLoginHelperProvider {
         const categories: Record<number, AuthEmailSignupProfileFieldsCategory> = {};
 
         profileFields.forEach((field) => {
-            if (!field.signup) {
+            if (!field.signup || !field.categoryid) {
                 // Not a signup field, ignore it.
                 return;
             }
@@ -216,7 +216,7 @@ export class CoreLoginHelperProvider {
             if (!categories[field.categoryid]) {
                 categories[field.categoryid] = {
                     id: field.categoryid,
-                    name: field.categoryname,
+                    name: field.categoryname || '',
                     fields: [],
                 };
             }
@@ -233,8 +233,8 @@ export class CoreLoginHelperProvider {
      * @param config Site public config.
      * @return Disabled features.
      */
-    getDisabledFeatures(config: CoreSitePublicConfigResponse): string {
-        const disabledFeatures = config && config.tool_mobile_disabledfeatures;
+    getDisabledFeatures(config?: CoreSitePublicConfigResponse): string {
+        const disabledFeatures = config?.tool_mobile_disabledfeatures;
         if (!disabledFeatures) {
             return '';
         }
@@ -302,8 +302,8 @@ export class CoreLoginHelperProvider {
      * @param config Site public config.
      * @return Logo URL.
      */
-    getLogoUrl(config: CoreSitePublicConfigResponse): string {
-        return !CoreConfigConstants.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : null;
+    getLogoUrl(config: CoreSitePublicConfigResponse): string | undefined {
+        return !CoreConfigConstants.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
     }
 
     /**
@@ -314,7 +314,7 @@ export class CoreLoginHelperProvider {
      */
     getLogoutLabel(site?: CoreSite): string {
         site = site || CoreSites.instance.getCurrentSite();
-        const config = <CoreSiteConfig> site.getStoredConfig();
+        const config = <CoreSiteConfig> site?.getStoredConfig();
 
         return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
     }
@@ -325,7 +325,7 @@ export class CoreLoginHelperProvider {
      * @param params Params.
      * @return OAuth ID.
      */
-    getOAuthIdFromParams(params: CoreUrlParams): number {
+    getOAuthIdFromParams(params: CoreUrlParams): number | undefined {
         return params && typeof params.oauthsso != 'undefined' ? Number(params.oauthsso) : undefined;
     }
 
@@ -338,15 +338,18 @@ export class CoreLoginHelperProvider {
     async getSitePolicy(siteId?: string): Promise<string> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        let sitePolicy: string;
+        let sitePolicy: string | undefined;
 
         try {
             // Try to get the latest config, maybe the site policy was just added or has changed.
             sitePolicy = <string> await site.getConfig('sitepolicy', true);
         } catch (error) {
             // Cannot get config, try to get the site policy using auth_email_get_signup_settings.
-            const settings = <AuthEmailSignupSettings> await CoreWS.instance.callAjax('auth_email_get_signup_settings', {},
-                { siteUrl: site.getURL() });
+            const settings = <AuthEmailSignupSettings> await CoreWS.instance.callAjax(
+                'auth_email_get_signup_settings',
+                {},
+                { siteUrl: site.getURL() },
+            );
 
             sitePolicy = settings.sitepolicy;
         }
@@ -374,7 +377,10 @@ export class CoreLoginHelperProvider {
      * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @return Valid identity providers.
      */
-    getValidIdentityProviders(siteConfig: CoreSitePublicConfigResponse, disabledFeatures?: string): CoreSiteIdentityProvider[] {
+    getValidIdentityProviders(siteConfig?: CoreSitePublicConfigResponse, disabledFeatures?: string): CoreSiteIdentityProvider[] {
+        if (!siteConfig) {
+            return [];
+        }
         if (this.isFeatureDisabled('NoDelegate_IdentityProviders', siteConfig, disabledFeatures)) {
             // Identity providers are disabled, return an empty list.
             return [];
@@ -460,8 +466,8 @@ export class CoreLoginHelperProvider {
      * @return Whether there are several fixed URLs.
      */
     hasSeveralFixedSites(): boolean {
-        return CoreConfigConstants.siteurl && Array.isArray(CoreConfigConstants.siteurl) &&
-            CoreConfigConstants.siteurl.length > 1;
+        return !!(CoreConfigConstants.siteurl && Array.isArray(CoreConfigConstants.siteurl) &&
+            CoreConfigConstants.siteurl.length > 1);
     }
 
     /**
@@ -923,8 +929,14 @@ export class CoreLoginHelperProvider {
                     try {
                         this.waitingForBrowser = true;
 
-                        this.openBrowserForSSOLogin(result.siteUrl, result.code, result.service, result.config?.launchurl,
-                            data.pageName, data.params);
+                        this.openBrowserForSSOLogin(
+                            result.siteUrl,
+                            result.code,
+                            result.service,
+                            result.config?.launchurl,
+                            data.pageName,
+                            data.params,
+                        );
                     } catch (error) {
                         // User cancelled, logout him.
                         CoreSites.instance.logout();
@@ -956,8 +968,13 @@ export class CoreLoginHelperProvider {
                                 this.waitingForBrowser = true;
                                 CoreSites.instance.unsetCurrentSite(); // Unset current site to make authentication work fine.
 
-                                this.openBrowserForOAuthLogin(siteUrl, providerToUse, result.config.launchurl, data.pageName,
-                                        data.params);
+                                this.openBrowserForOAuthLogin(
+                                    siteUrl,
+                                    providerToUse,
+                                    result.config?.launchurl,
+                                    data.pageName,
+                                    data.params,
+                                );
                             } catch (error) {
                                 // User cancelled, logout him.
                                 CoreSites.instance.logout();
@@ -1067,10 +1084,13 @@ export class CoreLoginHelperProvider {
 
             try {
                 const result = <ResendConfirmationEmailResult> await CoreWS.instance.callAjax(
-                    'core_auth_resend_confirmation_email', data, preSets);
+                    'core_auth_resend_confirmation_email',
+                    data,
+                    preSets,
+                );
 
                 if (!result.status) {
-                    throw new CoreWSError(result.warnings[0]);
+                    throw new CoreWSError(result.warnings?.[0]);
                 }
 
                 const message = Translate.instance.instant('core.login.emailconfirmsentsuccess');
@@ -1096,6 +1116,8 @@ export class CoreLoginHelperProvider {
         try {
             // This call will always fail because we aren't sending parameters.
             await CoreWS.instance.callAjax('core_auth_resend_confirmation_email', {}, { siteUrl });
+
+            return true; // We should never reach here.
         } catch (error) {
             // If the WS responds with an invalid parameter error it means the WS is avaiable.
             return error?.errorcode === 'invalidparameter';
@@ -1134,13 +1156,13 @@ export class CoreLoginHelperProvider {
      */
     treatUserTokenError(siteUrl: string, error: CoreWSError, username?: string, password?: string): void {
         if (error.errorcode == 'forcepasswordchangenotice') {
-            this.openChangePassword(siteUrl, CoreTextUtils.instance.getErrorMessageFromError(error));
+            this.openChangePassword(siteUrl, CoreTextUtils.instance.getErrorMessageFromError(error)!);
         } else if (error.errorcode == 'usernotconfirmed') {
             this.showNotConfirmedModal(siteUrl, undefined, username, password);
         } else if (error.errorcode == 'connecttomoodleapp') {
-            this.showMoodleAppNoticeModal(CoreTextUtils.instance.getErrorMessageFromError(error));
+            this.showMoodleAppNoticeModal(CoreTextUtils.instance.getErrorMessageFromError(error)!);
         } else if (error.errorcode == 'connecttoworkplaceapp') {
-            this.showWorkplaceNoticeModal(CoreTextUtils.instance.getErrorMessageFromError(error));
+            this.showWorkplaceNoticeModal(CoreTextUtils.instance.getErrorMessageFromError(error)!);
         } else {
             CoreDomUtils.instance.showErrorModal(error);
         }

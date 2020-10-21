@@ -141,7 +141,7 @@ export class CoreUrl {
         // If nothing else worked, parse the domain.
         const urlParts = CoreUrl.parse(url);
 
-        return urlParts && urlParts.domain ? urlParts.domain : null;
+        return urlParts?.domain ? urlParts.domain : null;
     }
 
     /**
@@ -196,8 +196,8 @@ export class CoreUrl {
         const partsA = CoreUrl.parse(urlA);
         const partsB = CoreUrl.parse(urlB);
 
-        return partsA.domain == partsB.domain &&
-                CoreTextUtils.instance.removeEndingSlash(partsA.path) == CoreTextUtils.instance.removeEndingSlash(partsB.path);
+        return partsA?.domain == partsB?.domain &&
+            CoreTextUtils.instance.removeEndingSlash(partsA?.path) == CoreTextUtils.instance.removeEndingSlash(partsB?.path);
     }
 
 }

@@ -36,27 +36,27 @@ import { CoreEvents, CoreEventsProvider } from '@/app/services/events';
 })
 export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
-    @ViewChild('credentialsForm') formElement: ElementRef;
+    @ViewChild('credentialsForm') formElement?: ElementRef;
 
-    credForm: FormGroup;
-    siteUrl: string;
+    credForm!: FormGroup;
+    siteUrl!: string;
     siteChecked = false;
-    siteName: string;
-    logoUrl: string;
-    authInstructions: string;
-    canSignup: boolean;
-    identityProviders: CoreSiteIdentityProvider[];
+    siteName?: string;
+    logoUrl?: string;
+    authInstructions?: string;
+    canSignup?: boolean;
+    identityProviders?: CoreSiteIdentityProvider[];
     pageLoaded = false;
     isBrowserSSO = false;
     isFixedUrlSet = false;
     showForgottenPassword = true;
     showScanQR: boolean;
 
-    protected siteConfig: CoreSitePublicConfigResponse;
+    protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
     protected viewLeft = false;
-    protected siteId: string;
-    protected urlToOpen: string;
+    protected siteId?: string;
+    protected urlToOpen?: string;
 
     constructor(
         protected fb: FormBuilder,
@@ -82,8 +82,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.route.queryParams.subscribe(params => {
             this.siteUrl = params['siteUrl'];
-            this.siteName = params['siteName'] || null;
-            this.logoUrl = !CoreConfigConstants.forceLoginLogo && params['logoUrl'] || null;
+            this.siteName = params['siteName'] || undefined;
+            this.logoUrl = !CoreConfigConstants.forceLoginLogo && params['logoUrl'] || undefined;
             this.siteConfig = params['siteConfig'];
             this.urlToOpen = params['urlToOpen'];
 
@@ -138,7 +138,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 // Check that there's no SSO authentication ongoing and the view hasn't changed.
                 if (!CoreApp.instance.isSSOAuthenticationOngoing() && !this.viewLeft) {
                     CoreLoginHelper.instance.confirmAndOpenBrowserForSSOLogin(
-                        result.siteUrl, result.code, result.service, result.config?.launchurl);
+                        result.siteUrl,
+                        result.code,
+                        result.service,
+                        result.config?.launchurl,
+                    );
                 }
             } else {
                 this.isBrowserSSO = false;
@@ -171,7 +175,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 CoreEvents.instance.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, { config: this.siteConfig });
             }
         } else {
-            this.authInstructions = null;
+            this.authInstructions = undefined;
             this.canSignup = false;
             this.identityProviders = [];
         }
@@ -261,7 +265,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     forgottenPassword(): void {
         CoreLoginHelper.instance.forgottenPasswordClicked(
-            this.navCtrl, this.siteUrl, this.credForm.value.username, this.siteConfig);
+            this.navCtrl,
+            this.siteUrl,
+            this.credForm.value.username,
+            this.siteConfig,
+        );
     }
 
     /**
@@ -270,7 +278,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * @param provider The provider that was clicked.
      */
     oauthClicked(provider: CoreSiteIdentityProvider): void {
-        if (!CoreLoginHelper.instance.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig.launchurl)) {
+        if (!CoreLoginHelper.instance.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
             CoreDomUtils.instance.showErrorModal('Invalid data.');
         }
     }
@@ -289,8 +297,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         // Show some instructions first.
         CoreDomUtils.instance.showAlertWithOptions({
             header: Translate.instance.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instance.instant('core.login.faqwhereisqrcodeanswer',
-                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML }),
+            message: Translate.instance.instant(
+                'core.login.faqwhereisqrcodeanswer',
+                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
+            ),
             buttons: [
                 {
                     text: Translate.instance.instant('core.cancel'),

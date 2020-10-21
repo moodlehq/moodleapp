@@ -38,7 +38,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
     @Input() ios?: string;
 
     // FontAwesome params.
-    @Input('fixed-width') fixedWidth: boolean;
+    @Input('fixed-width') fixedWidth?: boolean; // eslint-disable-line @angular-eslint/no-input-rename
 
     @Input() label?: string;
     @Input() flipRtl?: boolean; // Whether to flip the icon in RTL. Defaults to false.
@@ -48,7 +48,7 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
 
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
-        this.newElement = this.element
+        this.newElement = this.element;
     }
 
     /**

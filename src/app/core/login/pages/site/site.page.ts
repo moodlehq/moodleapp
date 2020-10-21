@@ -40,11 +40,11 @@ import { NavController } from '@ionic/angular';
 })
 export class CoreLoginSitePage implements OnInit {
 
-    @ViewChild('siteFormEl') formElement: ElementRef;
+    @ViewChild('siteFormEl') formElement?: ElementRef;
 
     siteForm: FormGroup;
-    fixedSites: CoreLoginSiteInfoExtended[];
-    filteredSites: CoreLoginSiteInfoExtended[];
+    fixedSites?: CoreLoginSiteInfoExtended[];
+    filteredSites?: CoreLoginSiteInfoExtended[];
     siteSelector = 'sitefinder';
     showKeyboard = false;
     filter = '';
@@ -53,7 +53,7 @@ export class CoreLoginSitePage implements OnInit {
     loadingSites = false;
     searchFunction: (search: string) => void;
     showScanQR: boolean;
-    enteredSiteUrl: CoreLoginSiteInfoExtended;
+    enteredSiteUrl?: CoreLoginSiteInfoExtended;
     siteFinderSettings: SiteFinderSettings;
 
     constructor(
@@ -95,10 +95,10 @@ export class CoreLoginSitePage implements OnInit {
 
             if (search.length >= 3) {
                 // Update the sites list.
-                this.sites = await CoreSites.instance.findSites(search);
+                const sites = await CoreSites.instance.findSites(search);
 
                 // Add UI tweaks.
-                this.sites = this.extendCoreLoginSiteInfo(this.sites);
+                this.sites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> sites);
 
                 this.hasSites = !!this.sites.length;
             } else {
@@ -201,7 +201,7 @@ export class CoreLoginSitePage implements OnInit {
             let valid = value.length >= 3 && CoreUrl.isValidMoodleUrl(value);
 
             if (!valid) {
-                const demo = !!this.getDemoSiteData(value);
+                const demo = !!CoreSites.instance.getDemoSiteData(value);
 
                 if (demo) {
                     valid = true;
@@ -210,19 +210,6 @@ export class CoreLoginSitePage implements OnInit {
 
             return valid ? null : { siteUrl: { value: control.value } };
         };
-    }
-
-    /**
-     * Get the demo data for a certain "name" if it is a demo site.
-     *
-     * @param name Name of the site to check.
-     * @return Site data if it's a demo site, undefined otherwise.
-     */
-    getDemoSiteData(name: string): CoreSitesDemoSiteData {
-        const demoSites = CoreConfigConstants.demo_sites;
-        if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
-            return demoSites[name];
-        }
     }
 
     /**
@@ -361,7 +348,11 @@ export class CoreLoginSitePage implements OnInit {
         if (CoreLoginHelper.instance.isSSOLoginNeeded(response.code)) {
             // SSO. User needs to authenticate in a browser.
             CoreLoginHelper.instance.confirmAndOpenBrowserForSSOLogin(
-                response.siteUrl, response.code, response.service, response.config && response.config.launchurl);
+                response.siteUrl,
+                response.code,
+                response.service,
+                response.config?.launchurl,
+            );
         } else {
             const pageParams = { siteUrl: response.siteUrl, siteConfig: response.config };
             if (foundSite) {
@@ -382,7 +373,7 @@ export class CoreLoginSitePage implements OnInit {
      * @param url The URL the user was trying to connect to.
      * @param error Error to display.
      */
-    protected showLoginIssue(url: string, error: CoreError): void {
+    protected showLoginIssue(url: string | null, error: CoreError): void {
         let errorMessage = CoreDomUtils.instance.getErrorMessage(error);
 
         if (errorMessage == Translate.instance.instant('core.cannotconnecttrouble')) {
@@ -452,10 +443,12 @@ export class CoreLoginSitePage implements OnInit {
             this.enteredSiteUrl = {
                 url: search,
                 name: 'connect',
+                title: '',
+                location: '',
                 noProtocolUrl: CoreUrl.removeProtocol(search),
             };
         } else {
-            this.enteredSiteUrl = null;
+            this.enteredSiteUrl = undefined;
         }
 
         this.searchFunction(search.trim());
@@ -468,8 +461,10 @@ export class CoreLoginSitePage implements OnInit {
         // Show some instructions first.
         CoreDomUtils.instance.showAlertWithOptions({
             header: Translate.instance.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instance.instant('core.login.faqwhereisqrcodeanswer',
-                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML }),
+            message: Translate.instance.instant(
+                'core.login.faqwhereisqrcodeanswer',
+                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
+            ),
             buttons: [
                 {
                     text: Translate.instance.instant('core.cancel'),
@@ -505,9 +500,9 @@ export class CoreLoginSitePage implements OnInit {
  * Extended data for UI implementation.
  */
 type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
-    noProtocolUrl?: string; // Url wihtout protocol.
-    location?: string; // City + country.
-    title?: string; // Name + alias.
+    noProtocolUrl: string; // Url wihtout protocol.
+    location: string; // City + country.
+    title: string; // Name + alias.
 };
 
 type SiteFinderSettings = {

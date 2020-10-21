@@ -97,18 +97,17 @@ export class CoreCronDelegate {
      * @param siteId Site ID. If not defined, all sites.
      * @return Promise resolved if handler is executed successfully, rejected otherwise.
      */
-    protected checkAndExecuteHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
+    protected async checkAndExecuteHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
         if (!this.handlers[name] || !this.handlers[name].execute) {
             // Invalid handler.
             const message = `Cannot execute handler because is invalid: ${name}`;
             this.logger.debug(message);
 
-            return Promise.reject(new CoreError(message));
+            throw new CoreError(message);
         }
 
         const usesNetwork = this.handlerUsesNetwork(name);
         const isSync = !force && this.isHandlerSync(name);
-        let promise;
 
         if (usesNetwork && !CoreApp.instance.isOnline()) {
             // Offline, stop executing.
@@ -116,47 +115,46 @@ export class CoreCronDelegate {
             this.logger.debug(message);
             this.stopHandler(name);
 
-            return Promise.reject(new CoreError(message));
+            throw new CoreError(message);
         }
 
         if (isSync) {
             // Check network connection.
-            promise = CoreConfig.instance.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false)
-                .then((syncOnlyOnWifi) => !syncOnlyOnWifi || CoreApp.instance.isWifi());
-        } else {
-            promise = Promise.resolve(true);
-        }
+            const syncOnlyOnWifi = await CoreConfig.instance.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
 
-        return promise.then((execute: boolean) => {
-            if (!execute) {
+            if (syncOnlyOnWifi && !CoreApp.instance.isWifi()) {
                 // Cannot execute in this network connection, retry soon.
                 const message = `Cannot execute handler because device is using limited connection: ${name}`;
                 this.logger.debug(message);
                 this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
 
-                return Promise.reject(new CoreError(message));
+                throw new CoreError(message);
             }
+        }
 
-            // Add the execution to the queue.
-            this.queuePromise = this.queuePromise.catch(() => {
-                // Ignore errors in previous handlers.
-            }).then(() => this.executeHandler(name, force, siteId).then(() => {
+        // Add the execution to the queue.
+        this.queuePromise = CoreUtils.instance.ignoreErrors(this.queuePromise).then(async () => {
+            try {
+                await this.executeHandler(name, force, siteId);
+
                 this.logger.debug(`Execution of handler '${name}' was a success.`);
 
-                return this.setHandlerLastExecutionTime(name, Date.now()).then(() => {
-                    this.scheduleNextExecution(name);
-                });
-            }, (error) => {
+                await CoreUtils.instance.ignoreErrors(this.setHandlerLastExecutionTime(name, Date.now()));
+
+                this.scheduleNextExecution(name);
+
+                return;
+            } catch (error) {
                 // Handler call failed. Retry soon.
                 const message = `Execution of handler '${name}' failed.`;
                 this.logger.error(message, error);
                 this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
 
-                return Promise.reject(new CoreError(message));
-            }));
-
-            return this.queuePromise;
+                throw new CoreError(message);
+            }
         });
+
+        return this.queuePromise;
     }
 
     /**
@@ -172,7 +170,7 @@ export class CoreCronDelegate {
             this.logger.debug('Executing handler: ' + name);
 
             // Wrap the call in Promise.resolve to make sure it's a promise.
-            Promise.resolve(this.handlers[name].execute(siteId, force)).then(resolve).catch(reject).finally(() => {
+            Promise.resolve(this.handlers[name].execute!(siteId, force)).then(resolve).catch(reject).finally(() => {
                 clearTimeout(cancelTimeout);
             });
 
@@ -192,7 +190,7 @@ export class CoreCronDelegate {
      * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
      */
     async forceSyncExecution(siteId?: string): Promise<void> {
-        const promises = [];
+        const promises: Promise<void>[] = [];
 
         for (const name in this.handlers) {
             if (this.isHandlerManualSync(name)) {
@@ -208,11 +206,11 @@ export class CoreCronDelegate {
      * Force execution of a cron tasks without waiting for the scheduled time.
      * Please notice that some tasks may not be executed depending on the network connection and sync settings.
      *
-     * @param name If provided, the name of the handler.
+     * @param name Name of the handler.
      * @param siteId Site ID. If not defined, all sites.
      * @return Promise resolved if handler has been executed successfully, rejected otherwise.
      */
-    forceCronHandlerExecution(name?: string, siteId?: string): Promise<void> {
+    forceCronHandlerExecution(name: string, siteId?: string): Promise<void> {
         const handler = this.handlers[name];
 
         // Mark the handler as running (it might be running already).
@@ -240,7 +238,7 @@ export class CoreCronDelegate {
 
         // Don't allow intervals lower than the minimum.
         const minInterval = CoreApp.instance.isDesktop() ? CoreCronDelegate.DESKTOP_MIN_INTERVAL : CoreCronDelegate.MIN_INTERVAL;
-        const handlerInterval = this.handlers[name].getInterval();
+        const handlerInterval = this.handlers[name].getInterval!();
 
         if (!handlerInterval) {
             return CoreCronDelegate.DEFAULT_INTERVAL;
@@ -288,12 +286,12 @@ export class CoreCronDelegate {
      * @return True if handler uses network or not defined, false otherwise.
      */
     protected handlerUsesNetwork(name: string): boolean {
-        if (!this.handlers[name] || !this.handlers[name].usesNetwork) {
+        if (!this.handlers[name] || this.handlers[name].usesNetwork) {
             // Invalid, return default.
             return true;
         }
 
-        return this.handlers[name].usesNetwork();
+        return this.handlers[name].usesNetwork!();
     }
 
     /**
@@ -338,7 +336,7 @@ export class CoreCronDelegate {
             return this.isHandlerSync(name);
         }
 
-        return this.handlers[name].canManualSync();
+        return this.handlers[name].canManualSync!();
     }
 
     /**
@@ -353,7 +351,7 @@ export class CoreCronDelegate {
             return true;
         }
 
-        return this.handlers[name].isSync();
+        return this.handlers[name].isSync!();
     }
 
     /**
@@ -385,10 +383,10 @@ export class CoreCronDelegate {
      * Schedule a next execution for a handler.
      *
      * @param name Name of the handler.
-     * @param time Time to the next execution. If not supplied it will be calculated using the last execution and
-     *             the handler's interval. This param should be used only if it's really necessary.
+     * @param timeToNextExecution Time (in milliseconds). If not supplied it will be calculated.
+     * @return Promise resolved when done.
      */
-    protected scheduleNextExecution(name: string, time?: number): void {
+    protected async scheduleNextExecution(name: string, timeToNextExecution?: number): Promise<void> {
         if (!this.handlers[name]) {
             // Invalid handler.
             return;
@@ -398,33 +396,24 @@ export class CoreCronDelegate {
             return;
         }
 
-        let promise;
-
-        if (time) {
-            promise = Promise.resolve(time);
-        } else {
+        if (!timeToNextExecution) {
             // Get last execution time to check when do we need to execute it.
-            promise = this.getHandlerLastExecutionTime(name).then((lastExecution) => {
-                const interval = this.getHandlerInterval(name);
-                const nextExecution = lastExecution + interval;
+            const lastExecution = await this.getHandlerLastExecutionTime(name);
 
-                return nextExecution - Date.now();
-            });
+            const interval = this.getHandlerInterval(name);
+
+            timeToNextExecution = lastExecution + interval - Date.now();
         }
 
-        promise.then((nextExecution) => {
-            this.logger.debug(`Scheduling next execution of handler '${name}' in '${nextExecution}' ms`);
-            if (nextExecution < 0) {
-                nextExecution = 0; // Big negative numbers aren't executed immediately.
-            }
+        this.logger.debug(`Scheduling next execution of handler '${name}' in '${timeToNextExecution}' ms`);
+        if (timeToNextExecution < 0) {
+            timeToNextExecution = 0; // Big negative numbers aren't executed immediately.
+        }
 
-            this.handlers[name].timeout = window.setTimeout(() => {
-                delete this.handlers[name].timeout;
-                this.checkAndExecuteHandler(name).catch(() => {
-                    // Ignore errors.
-                });
-            }, nextExecution);
-        });
+        this.handlers[name].timeout = window.setTimeout(() => {
+            delete this.handlers[name].timeout;
+            CoreUtils.instance.ignoreErrors(this.checkAndExecuteHandler(name));
+        }, timeToNextExecution);
     }
 
     /**

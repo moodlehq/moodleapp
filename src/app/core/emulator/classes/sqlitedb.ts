@@ -35,6 +35,7 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     close(): Promise<any> {
         // WebSQL databases aren't closed.
         return Promise.resolve();
@@ -45,6 +46,7 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async emptyDatabase(): Promise<any> {
         await this.ready();
 
@@ -89,6 +91,7 @@ export class SQLiteDBMock extends SQLiteDB {
      * @param params Query parameters.
      * @return Promise resolved with the result.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(sql: string, params?: any[]): Promise<any> {
         await this.ready();
 
@@ -115,6 +118,7 @@ export class SQLiteDBMock extends SQLiteDB {
      * @param sqlStatements SQL statements to execute.
      * @return Promise resolved with the result.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async executeBatch(sqlStatements: any[]): Promise<any> {
         await this.ready();
 
@@ -148,6 +152,7 @@ export class SQLiteDBMock extends SQLiteDB {
                     }));
                 });
 
+                // eslint-disable-next-line promise/catch-or-return
                 Promise.all(promises).then(resolve, reject);
             });
         });
@@ -158,6 +163,7 @@ export class SQLiteDBMock extends SQLiteDB {
      */
     init(): void {
         // This DB is for desktop apps, so use a big size to be sure it isn't filled.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.db = (<any> window).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
         this.promise = Promise.resolve();
     }

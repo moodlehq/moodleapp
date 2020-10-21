@@ -106,7 +106,7 @@ export class CoreLocalNotificationsProvider {
     protected cancelSubscription?: Subscription;
     protected addSubscription?: Subscription;
     protected updateSubscription?: Subscription;
-    protected queueRunner?: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
+    protected queueRunner: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLocalNotificationsProvider');
@@ -116,46 +116,53 @@ export class CoreLocalNotificationsProvider {
             // Ignore errors.
         });
 
-        Platform.instance.ready().then(() => {
-            // Listen to events.
-            this.triggerSubscription = LocalNotifications.instance.on('trigger').subscribe((notification: ILocalNotification) => {
-                this.trigger(notification);
+        this.init();
+    }
 
-                this.handleEvent('trigger', notification);
-            });
+    /**
+     * Init some properties.
+     */
+    protected async init(): Promise<void> {
+        await Platform.instance.ready();
 
-            this.clickSubscription = LocalNotifications.instance.on('click').subscribe((notification: ILocalNotification) => {
-                this.handleEvent('click', notification);
-            });
+        // Listen to events.
+        this.triggerSubscription = LocalNotifications.instance.on('trigger').subscribe((notification: ILocalNotification) => {
+            this.trigger(notification);
 
-            this.clearSubscription = LocalNotifications.instance.on('clear').subscribe((notification: ILocalNotification) => {
-                this.handleEvent('clear', notification);
-            });
+            this.handleEvent('trigger', notification);
+        });
 
-            this.cancelSubscription = LocalNotifications.instance.on('cancel').subscribe((notification: ILocalNotification) => {
-                this.handleEvent('cancel', notification);
-            });
+        this.clickSubscription = LocalNotifications.instance.on('click').subscribe((notification: ILocalNotification) => {
+            this.handleEvent('click', notification);
+        });
 
-            this.addSubscription = LocalNotifications.instance.on('schedule').subscribe((notification: ILocalNotification) => {
-                this.handleEvent('schedule', notification);
-            });
+        this.clearSubscription = LocalNotifications.instance.on('clear').subscribe((notification: ILocalNotification) => {
+            this.handleEvent('clear', notification);
+        });
 
-            this.updateSubscription = LocalNotifications.instance.on('update').subscribe((notification: ILocalNotification) => {
-                this.handleEvent('update', notification);
-            });
+        this.cancelSubscription = LocalNotifications.instance.on('cancel').subscribe((notification: ILocalNotification) => {
+            this.handleEvent('cancel', notification);
+        });
 
-            // Create the default channel for local notifications.
+        this.addSubscription = LocalNotifications.instance.on('schedule').subscribe((notification: ILocalNotification) => {
+            this.handleEvent('schedule', notification);
+        });
+
+        this.updateSubscription = LocalNotifications.instance.on('update').subscribe((notification: ILocalNotification) => {
+            this.handleEvent('update', notification);
+        });
+
+        // Create the default channel for local notifications.
+        this.createDefaultChannel();
+
+        Translate.instance.onLangChange.subscribe(() => {
+            // Update the channel name.
             this.createDefaultChannel();
-
-            Translate.instance.onLangChange.subscribe(() => {
-                // Update the channel name.
-                this.createDefaultChannel();
-            });
         });
 
         CoreEvents.instance.on(CoreEventsProvider.SITE_DELETED, (site: CoreSite) => {
             if (site) {
-                this.cancelSiteNotifications(site.id);
+                this.cancelSiteNotifications(site.id!);
             }
         });
     }
@@ -193,13 +200,13 @@ export class CoreLocalNotificationsProvider {
 
         const scheduled = await this.getAllScheduled();
 
-        const ids = [];
+        const ids: number[] = [];
         const queueId = 'cancelSiteNotifications-' + siteId;
 
         scheduled.forEach((notif) => {
             notif.data = this.parseNotificationData(notif.data);
 
-            if (typeof notif.data == 'object' && notif.data.siteId === siteId) {
+            if (notif.id && typeof notif.data == 'object' && notif.data.siteId === siteId) {
                 ids.push(notif.id);
             }
         });
@@ -355,10 +362,9 @@ export class CoreLocalNotificationsProvider {
      * @return Whether local notifications plugin is installed.
      */
     isAvailable(): boolean {
-        const win = <any> window;
+        const win = <any> window; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-        return CoreApp.instance.isDesktop() || !!(win.cordova && win.cordova.plugins && win.cordova.plugins.notification &&
-                win.cordova.plugins.notification.local);
+        return CoreApp.instance.isDesktop() || !!win.cordova?.plugins?.notification?.local;
     }
 
     /**
@@ -388,11 +394,11 @@ export class CoreLocalNotificationsProvider {
             if (useQueue) {
                 const queueId = 'isTriggered-' + notification.id;
 
-                return this.queueRunner.run(queueId, () => LocalNotifications.instance.isTriggered(notification.id), {
+                return this.queueRunner.run(queueId, () => LocalNotifications.instance.isTriggered(notification.id!), {
                     allowRepeated: true,
                 });
             } else {
-                return LocalNotifications.instance.isTriggered(notification.id);
+                return LocalNotifications.instance.isTriggered(notification.id || 0);
             }
         }
     }
@@ -446,9 +452,8 @@ export class CoreLocalNotificationsProvider {
     /**
      * Process the next request in queue.
      */
-    protected processNextRequest(): void {
+    protected async processNextRequest(): Promise<void> {
         const nextKey = Object.keys(this.codeRequestsQueue)[0];
-        let promise: Promise<void>;
 
         if (typeof nextKey == 'undefined') {
             // No more requests in queue, stop.
@@ -457,27 +462,27 @@ export class CoreLocalNotificationsProvider {
 
         const request = this.codeRequestsQueue[nextKey];
 
-        // Check if request is valid.
-        if (typeof request == 'object' && typeof request.table != 'undefined' && typeof request.id != 'undefined') {
-            // Get the code and resolve/reject all the promises of this request.
-            promise = this.getCode(request.table, request.id).then((code) => {
-                request.deferreds.forEach((p) => {
-                    p.resolve(code);
-                });
-            }).catch((error) => {
-                request.deferreds.forEach((p) => {
-                    p.reject(error);
-                });
-            });
-        } else {
-            promise = Promise.resolve();
-        }
+        try {
+            // Check if request is valid.
+            if (typeof request != 'object' || request.table === undefined || request.id === undefined) {
+                return;
+            }
 
-        // Once this item is treated, remove it and process next.
-        promise.finally(() => {
+            // Get the code and resolve/reject all the promises of this request.
+            const code = await this.getCode(request.table, request.id);
+
+            request.deferreds.forEach((p) => {
+                p.resolve(code);
+            });
+        } catch (error) {
+            request.deferreds.forEach((p) => {
+                p.reject(error);
+            });
+        } finally {
+            // Once this item is treated, remove it and process next.
             delete this.codeRequestsQueue[nextKey];
             this.processNextRequest();
-        });
+        }
     }
 
     /**
@@ -596,7 +601,7 @@ export class CoreLocalNotificationsProvider {
      */
     async schedule(notification: ILocalNotification, component: string, siteId: string, alreadyUnique?: boolean): Promise<void> {
         if (!alreadyUnique) {
-            notification.id = await this.getUniqueNotificationId(notification.id, component, siteId);
+            notification.id = await this.getUniqueNotificationId(notification.id || 0, component, siteId);
         }
 
         notification.data = notification.data || {};
@@ -663,7 +668,7 @@ export class CoreLocalNotificationsProvider {
                 }
 
                 if (!soundEnabled) {
-                    notification.sound = null;
+                    notification.sound = undefined;
                 } else {
                     delete notification.sound; // Use default value.
                 }
@@ -671,7 +676,7 @@ export class CoreLocalNotificationsProvider {
                 notification.foreground = true;
 
                 // Remove from triggered, since the notification could be in there with a different time.
-                this.removeTriggered(notification.id);
+                this.removeTriggered(notification.id || 0);
                 LocalNotifications.instance.schedule(notification);
             }
         });

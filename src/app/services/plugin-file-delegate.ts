@@ -206,7 +206,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
             }
         }
 
-        return downloadableFile.filesize;
+        return downloadableFile.filesize || 0;
     }
 
     /**
@@ -215,7 +215,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      * @param file File data.
      * @return Handler.
      */
-    protected getHandlerForFile(file: CoreWSExternalFile): CorePluginFileHandler {
+    protected getHandlerForFile(file: CoreWSExternalFile): CorePluginFileHandler | undefined {
         for (const component in this.enabledHandlers) {
             const handler = <CorePluginFileHandler> this.enabledHandlers[component];
 
