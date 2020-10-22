@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreLangProvider } from '@services/lang';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 
 @Component({
     selector: 'app-root',
@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        CoreEvents.instance.on(CoreEventsProvider.LOGOUT, () => {
+        CoreEvents.on(CoreEvents.LOGOUT, () => {
             // Go to sites page when user is logged out.
             // Due to DeepLinker, we need to use the ViewCtrl instead of name.
             // Otherwise some pages are re-created when they shouldn't.

@@ -17,7 +17,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { timeout } from 'rxjs/operators';
 
 import { CoreApp, CoreAppSchema, CoreStoreConfig } from '@services/app';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -660,7 +660,7 @@ export class CoreSitesProvider {
                 this.login(siteId);
             }
 
-            CoreEvents.instance.trigger(CoreEventsProvider.SITE_ADDED, info, siteId);
+            CoreEvents.trigger(CoreEvents.SITE_ADDED, info, siteId);
 
             return siteId;
         } catch (error) {
@@ -966,7 +966,7 @@ export class CoreSitesProvider {
 
         if (site.isLoggedOut()) {
             // Logged out, trigger session expired event and stop.
-            CoreEvents.instance.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
                 params,
             }, site.getId());
@@ -979,7 +979,7 @@ export class CoreSitesProvider {
             await site.checkIfLocalMobileInstalledAndNotUsed();
 
             // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-            CoreEvents.instance.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
                 params,
             }, siteId);
@@ -1093,7 +1093,7 @@ export class CoreSitesProvider {
         // Site deleted from sites list, now delete the folder.
         await site.deleteFolder();
 
-        CoreEvents.instance.trigger(CoreEventsProvider.SITE_DELETED, site, siteId);
+        CoreEvents.trigger(CoreEvents.SITE_DELETED, site, siteId);
     }
 
     /**
@@ -1301,7 +1301,7 @@ export class CoreSitesProvider {
 
         await this.appDB.insertRecord(CURRENT_SITE_TABLE, entry);
 
-        CoreEvents.instance.trigger(CoreEventsProvider.LOGIN, {}, siteId);
+        CoreEvents.trigger(CoreEvents.LOGIN, {}, siteId);
     }
 
     /**
@@ -1331,7 +1331,7 @@ export class CoreSitesProvider {
         try {
             await Promise.all(promises);
         } finally {
-            CoreEvents.instance.trigger(CoreEventsProvider.LOGOUT, {}, siteId);
+            CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
         }
     }
 
@@ -1473,7 +1473,7 @@ export class CoreSitesProvider {
             try {
                 await this.appDB.updateRecords(SITES_TABLE, newValues, { id: siteId });
             } finally {
-                CoreEvents.instance.trigger(CoreEventsProvider.SITE_UPDATED, info, siteId);
+                CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
         } catch (error) {
             // Ignore that we cannot fetch site info. Probably the auth token is invalid.

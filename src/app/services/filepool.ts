@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp, CoreAppSchema } from '@services/app';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreInit } from '@services/init';
 import { CorePluginFile } from '@services/plugin-file-delegate';
@@ -2455,7 +2455,7 @@ export class CoreFilepoolProvider {
                 componentId: link.componentId,
             }, eventData);
 
-            CoreEvents.instance.trigger(CoreEventsProvider.COMPONENT_FILE_ACTION, data, siteId);
+            CoreEvents.trigger(CoreEvents.COMPONENT_FILE_ACTION, data, siteId);
         });
     }
 
@@ -2472,7 +2472,7 @@ export class CoreFilepoolProvider {
             action: CoreFilepoolFileActions.DELETED,
         };
 
-        CoreEvents.instance.trigger(this.getFileEventName(siteId, fileId), data);
+        CoreEvents.trigger(this.getFileEventName(siteId, fileId), data);
         this.notifyFileActionToComponents(siteId, data, links);
     }
 
@@ -2490,7 +2490,7 @@ export class CoreFilepoolProvider {
             success: true,
         };
 
-        CoreEvents.instance.trigger(this.getFileEventName(siteId, fileId), data);
+        CoreEvents.trigger(this.getFileEventName(siteId, fileId), data);
         this.notifyFileActionToComponents(siteId, data, links);
     }
 
@@ -2508,7 +2508,7 @@ export class CoreFilepoolProvider {
             success: false,
         };
 
-        CoreEvents.instance.trigger(this.getFileEventName(siteId, fileId), data);
+        CoreEvents.trigger(this.getFileEventName(siteId, fileId), data);
         this.notifyFileActionToComponents(siteId, data, links);
     }
 
@@ -2525,7 +2525,7 @@ export class CoreFilepoolProvider {
             action: CoreFilepoolFileActions.DOWNLOADING,
         };
 
-        CoreEvents.instance.trigger(this.getFileEventName(siteId, fileId), data);
+        CoreEvents.trigger(this.getFileEventName(siteId, fileId), data);
         this.notifyFileActionToComponents(siteId, data, links);
     }
 
@@ -2542,7 +2542,7 @@ export class CoreFilepoolProvider {
             action: CoreFilepoolFileActions.OUTDATED,
         };
 
-        CoreEvents.instance.trigger(this.getFileEventName(siteId, fileId), data);
+        CoreEvents.trigger(this.getFileEventName(siteId, fileId), data);
         this.notifyFileActionToComponents(siteId, data, links);
     }
 
@@ -3121,7 +3121,7 @@ export class CoreFilepoolProvider {
             status,
         };
 
-        CoreEvents.instance.trigger(CoreEventsProvider.PACKAGE_STATUS_CHANGED, data, siteId);
+        CoreEvents.trigger(CoreEvents.PACKAGE_STATUS_CHANGED, data, siteId);
     }
 
     /**

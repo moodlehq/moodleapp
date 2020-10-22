@@ -17,7 +17,7 @@ import { Params } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
@@ -86,7 +86,7 @@ export class CoreAppProvider {
                 this.setKeyboardShown(true);
                 // Error on iOS calculating size.
                 // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
-                CoreEvents.instance.trigger(CoreEventsProvider.KEYBOARD_CHANGE, data.keyboardHeight);
+                CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, data.keyboardHeight);
             });
         });
         Keyboard.instance.onKeyboardHide().subscribe(() => {
@@ -94,7 +94,7 @@ export class CoreAppProvider {
             zone.run(() => {
                 document.body.classList.remove('keyboard-is-open');
                 this.setKeyboardShown(false);
-                CoreEvents.instance.trigger(CoreEventsProvider.KEYBOARD_CHANGE, 0);
+                CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
             });
         });
         Keyboard.instance.onKeyboardWillShow().subscribe(() => {
@@ -481,7 +481,7 @@ export class CoreAppProvider {
     setMainMenuOpen(id: number, open: boolean): void {
         if (open) {
             this.mainMenuOpen = id;
-            CoreEvents.instance.trigger(CoreEventsProvider.MAIN_MENU_OPEN);
+            CoreEvents.trigger(CoreEvents.MAIN_MENU_OPEN);
         } else if (this.mainMenuOpen == id) {
             delete this.mainMenuOpen;
         }

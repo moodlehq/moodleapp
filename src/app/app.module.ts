@@ -28,7 +28,6 @@ import { CoreAppProvider } from '@services/app';
 import { CoreConfigProvider } from '@services/config';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreDbProvider } from '@services/db';
-import { CoreEventsProvider } from '@services/events';
 import { CoreFileHelperProvider } from '@services/file-helper';
 import { CoreFileSessionProvider } from '@services/file-session';
 import { CoreFileProvider, CoreFile } from '@services/file';
@@ -90,7 +89,6 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreConfigProvider,
         CoreCronDelegate,
         CoreDbProvider,
-        CoreEventsProvider,
         CoreFileHelperProvider,
         CoreFileSessionProvider,
         CoreFileProvider,

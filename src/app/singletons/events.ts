@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Observer instance to stop listening to an event.
@@ -32,8 +30,7 @@ export interface CoreEventObserver {
 /*
  * Service to send and listen to events.
  */
-@Injectable()
-export class CoreEventsProvider {
+export class CoreEvents {
 
     static readonly SESSION_EXPIRED = 'session_expired';
     static readonly PASSWORD_CHANGE_FORCED = 'password_change_forced';
@@ -72,13 +69,9 @@ export class CoreEventsProvider {
     static readonly FORM_ACTION = 'form_action';
     static readonly ACTIVITY_DATA_SENT = 'activity_data_sent';
 
-    protected logger: CoreLogger;
-    protected observables: { [eventName: string]: Subject<unknown> } = {};
-    protected uniqueEvents: { [eventName: string]: {data: unknown} } = {};
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreEventsProvider');
-    }
+    protected static logger = CoreLogger.getInstance('CoreEvents');
+    protected static observables: { [eventName: string]: Subject<unknown> } = {};
+    protected static uniqueEvents: { [eventName: string]: {data: unknown} } = {};
 
     /**
      * Listen for a certain event. To stop listening to the event:
@@ -91,7 +84,7 @@ export class CoreEventsProvider {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    on(eventName: string, callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
+    static on(eventName: string, callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
@@ -138,7 +131,7 @@ export class CoreEventsProvider {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    onMultiple(eventNames: string[], callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
+    static onMultiple(eventNames: string[], callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
         const observers = eventNames.map((name) => this.on(name, callBack, siteId));
 
         // Create and return a CoreEventObserver.
@@ -158,7 +151,7 @@ export class CoreEventsProvider {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    trigger(eventName: string, data?: unknown, siteId?: string): void {
+    static trigger(eventName: string, data?: unknown, siteId?: string): void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
             if (siteId) {
@@ -175,7 +168,7 @@ export class CoreEventsProvider {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    triggerUnique(eventName: string, data: unknown, siteId?: string): void {
+    static triggerUnique(eventName: string, data: unknown, siteId?: string): void {
         if (this.uniqueEvents[eventName]) {
             this.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
         } else {
@@ -198,8 +191,6 @@ export class CoreEventsProvider {
     }
 
 }
-
-export class CoreEvents extends makeSingleton(CoreEventsProvider) {}
 
 /**
  * Data passed to SESSION_EXPIRED event.

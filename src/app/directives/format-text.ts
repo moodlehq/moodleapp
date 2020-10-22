@@ -15,7 +15,7 @@
 import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
 import { NavController, IonContent } from '@ionic/angular';
 
-import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -46,9 +46,6 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() adaptImg?: boolean | string = true; // Whether to adapt images to screen width.
     @Input() clean?: boolean | string; // Whether all the HTML tags should be removed.
     @Input() singleLine?: boolean | string; // Whether new lines should be removed (all text in single line). Only if clean=true.
-    @Input() maxHeight?: number; // Max height in pixels to render the content box. It should be 50 at least to make sense.
-                                 // Using this parameter will force display: block to calculate height better.
-                                 // If you want to avoid this use class="inline" at the same time to use display: inline-block.
     @Input() fullOnClick?: boolean | string; // Whether it should open a new page with the full contents on click.
     @Input() fullTitle?: string; // Title to use in full view. Defaults to "Description".
     @Input() highlight?: string; // Text to highlight.
@@ -57,6 +54,14 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
+
+    /**
+     * Max height in pixels to render the content box. It should be 50 at least to make sense.
+     * Using this parameter will force display: block to calculate height better.
+     * If you want to avoid this use class="inline" at the same time to use display: inline-block.
+     */
+    @Input() maxHeight?: number;
+
     @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
 
     protected element: HTMLElement;
@@ -350,7 +355,7 @@ export class CoreFormatTextDirective implements OnChanges {
             if (!this.loadingChangedListener) {
                 // Recalculate the height if a parent core-loading displays the content.
                 this.loadingChangedListener =
-                    CoreEvents.instance.on(CoreEventsProvider.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
+                    CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
                         if (data.loaded && CoreDomUtils.instance.closest(this.element.parentElement, '#' + data.uniqueId)) {
                             // The format-text is inside the loading, re-calculate the height.
                             this.calculateHeight();

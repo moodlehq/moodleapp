@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSites } from '@services/sites';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/site';
 import { CoreLogger } from '@singletons/logger';
 
@@ -95,9 +95,9 @@ export class CoreDelegate {
 
         if (listenSiteEvents) {
             // Update handlers on this cases.
-            CoreEvents.instance.on(CoreEventsProvider.LOGIN, this.updateHandlers.bind(this));
-            CoreEvents.instance.on(CoreEventsProvider.SITE_UPDATED, this.updateHandlers.bind(this));
-            CoreEvents.instance.on(CoreEventsProvider.SITE_PLUGINS_LOADED, this.updateHandlers.bind(this));
+            CoreEvents.on(CoreEvents.LOGIN, this.updateHandlers.bind(this));
+            CoreEvents.on(CoreEvents.SITE_UPDATED, this.updateHandlers.bind(this));
+            CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, this.updateHandlers.bind(this));
         }
     }
 

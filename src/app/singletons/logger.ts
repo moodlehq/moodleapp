@@ -56,10 +56,12 @@ export class CoreLogger {
      * @return Instance.
      */
     static getInstance(className: string): CoreLogger {
-        // Disable log on production.
-        if (CoreConstants.BUILD.isProduction) {
-            // eslint-disable-next-line no-console
-            console.warn('Log is disabled in production app');
+        // Disable log on production and testing.
+        if (CoreConstants.BUILD.isProduction || CoreConstants.BUILD.isTesting) {
+            if (CoreConstants.BUILD.isProduction) {
+                // eslint-disable-next-line no-console
+                console.warn('Log is disabled in production app');
+            }
 
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             const muted = () => {};

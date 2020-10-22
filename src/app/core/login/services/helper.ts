@@ -20,16 +20,15 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents, CoreEventSessionExpiredData, CoreEventsProvider } from '@services/events';
+import { CoreEvents, CoreEventSessionExpiredData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import CoreConfigConstants from '@app/config.json';
 import { CoreConstants } from '@core/constants';
-import { CoreSite, CoreSiteConfig, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
@@ -60,7 +59,7 @@ export class CoreLoginHelperProvider {
     ) {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
 
-        CoreEvents.instance.on(CoreEventsProvider.MAIN_MENU_OPEN, () => {
+        CoreEvents.on(CoreEvents.MAIN_MENU_OPEN, () => {
             /* If there is any page pending to be opened, do it now. Don't open pages stored more than 5 seconds ago, probably
                the function to open the page was called when it shouldn't. */
             if (this.pageToLoad && Date.now() - this.pageToLoad.time < 5000) {
@@ -304,7 +303,7 @@ export class CoreLoginHelperProvider {
      * @return Logo URL.
      */
     getLogoUrl(config: CoreSitePublicConfigResponse): string | undefined {
-        return !CoreConfigConstants.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
+        return !CoreConstants.CONFIG.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
     }
 
     /**
@@ -368,7 +367,7 @@ export class CoreLoginHelperProvider {
      * @return Fixed site or list of fixed sites.
      */
     getFixedSites(): string | CoreLoginSiteInfo[] {
-        return CoreConfigConstants.siteurl;
+        return CoreConstants.CONFIG.siteurl;
     }
 
     /**
@@ -448,6 +447,7 @@ export class CoreLoginHelperProvider {
      * @param params Params of the page.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     goToNoSitePage(navCtrl: NavController, page: string, params?: Params): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -463,6 +463,7 @@ export class CoreLoginHelperProvider {
      * @param url URL to open once the main menu is loaded.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: Params, options?: any, url?: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -489,8 +490,8 @@ export class CoreLoginHelperProvider {
      * @return Whether there are several fixed URLs.
      */
     hasSeveralFixedSites(): boolean {
-        return !!(CoreConfigConstants.siteurl && Array.isArray(CoreConfigConstants.siteurl) &&
-            CoreConfigConstants.siteurl.length > 1);
+        return !!(CoreConstants.CONFIG.siteurl && Array.isArray(CoreConstants.CONFIG.siteurl) &&
+            CoreConstants.CONFIG.siteurl.length > 1);
     }
 
     /**
@@ -528,11 +529,11 @@ export class CoreLoginHelperProvider {
      * @return Whether there is 1 fixed URL.
      */
     isFixedUrlSet(): boolean {
-        if (Array.isArray(CoreConfigConstants.siteurl)) {
-            return CoreConfigConstants.siteurl.length == 1;
+        if (Array.isArray(CoreConstants.CONFIG.siteurl)) {
+            return CoreConstants.CONFIG.siteurl.length == 1;
         }
 
-        return !!CoreConfigConstants.siteurl;
+        return !!CoreConstants.CONFIG.siteurl;
     }
 
     /**
@@ -560,7 +561,7 @@ export class CoreLoginHelperProvider {
         }
 
         if (site.isLoggedOut()) {
-            CoreEvents.instance.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
                 params,
             }, site.getId());
@@ -585,7 +586,7 @@ export class CoreLoginHelperProvider {
             const sites = <CoreLoginSiteInfo[]> this.getFixedSites();
 
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
-        } else if (CoreConfigConstants.multisitesdisplay == 'sitefinder' && CoreConfigConstants.onlyallowlistedsites) {
+        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites) {
             // Call the sites finder to validate the site.
             const result = await CoreSites.instance.findSites(siteUrl.replace(/^https?:\/\/|\.\w{2,3}\/?$/g, ''));
 
@@ -629,6 +630,7 @@ export class CoreLoginHelperProvider {
      * @param siteId Site to load.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected loadSiteAndPage(page: string, params: Params, siteId: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -655,7 +657,7 @@ export class CoreLoginHelperProvider {
         if (page == CoreLoginHelperProvider.OPEN_COURSE) {
             // @todo Use the openCourse function.
         } else {
-            CoreEvents.instance.trigger(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
+            CoreEvents.trigger(CoreEvents.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
         }
     }
 
@@ -669,6 +671,7 @@ export class CoreLoginHelperProvider {
      * @param url URL to open once the main menu is loaded.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected openMainMenu(navCtrl: NavController, page: string, params: Params, options?: any, url?: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -828,6 +831,7 @@ export class CoreLoginHelperProvider {
      *
      * @param siteId The site ID.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     passwordChangeForced(siteId: string): void {
         // @todo
     }
@@ -852,14 +856,14 @@ export class CoreLoginHelperProvider {
         urlParams?: CoreUrlParams,
     ): string {
 
-        service = service || CoreConfigConstants.wsextservice;
+        service = service || CoreConstants.CONFIG.wsextservice;
         launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
 
         const passport = Math.random() * 1000;
         let loginUrl = launchUrl + '?service=' + service;
 
         loginUrl += '&passport=' + passport;
-        loginUrl += '&urlscheme=' + CoreConfigConstants.customurlscheme;
+        loginUrl += '&urlscheme=' + CoreConstants.CONFIG.customurlscheme;
 
         if (urlParams) {
             loginUrl = CoreUrlUtils.instance.addParamsToUrl(loginUrl, urlParams);
@@ -886,6 +890,7 @@ export class CoreLoginHelperProvider {
      * @param siteId Site to load. If not defined, current site.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
         // @todo
     }
@@ -1033,7 +1038,7 @@ export class CoreLoginHelperProvider {
      */
     shouldShowSSOConfirm(typeOfLogin: number): boolean {
         return !this.isSSOEmbeddedBrowser(typeOfLogin) &&
-            (!CoreConfigConstants.skipssoconfirmation || String(CoreConfigConstants.skipssoconfirmation) === 'false');
+            (!CoreConstants.CONFIG.skipssoconfirmation || String(CoreConstants.CONFIG.skipssoconfirmation) === 'false');
     }
 
     /**
@@ -1053,7 +1058,7 @@ export class CoreLoginHelperProvider {
      * @param message The warning message.
      */
     protected showMoodleAppNoticeModal(message: string): void {
-        const storesConfig: CoreStoreConfig = CoreConfigConstants.appstores;
+        const storesConfig: CoreStoreConfig = CoreConstants.CONFIG.appstores;
         storesConfig.desktop = 'https://download.moodle.org/desktop/';
         storesConfig.mobile = 'https://download.moodle.org/mobile/';
         storesConfig.default = 'https://download.moodle.org/mobile/';

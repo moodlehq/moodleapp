@@ -17,7 +17,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
 import { CoreDB } from '@services/db';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreWS, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -576,26 +576,26 @@ export class CoreSite {
                     }
 
                     // Session expired, trigger event.
-                    CoreEvents.instance.trigger(CoreEventsProvider.SESSION_EXPIRED, {}, this.id);
+                    CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
                     // Change error message. Try to get data from cache, the event will handle the error.
                     error.message = Translate.instance.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
-                    CoreEvents.instance.trigger(CoreEventsProvider.USER_DELETED, { params: data }, this.id);
+                    CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
                     error.message = Translate.instance.instant('core.userdeleted');
 
                     throw new CoreWSError(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
                     // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
-                    CoreEvents.instance.trigger(CoreEventsProvider.PASSWORD_CHANGE_FORCED, {}, this.id);
+                    CoreEvents.trigger(CoreEvents.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = Translate.instance.instant('core.forcepasswordchangenotice');
                 } else if (error.errorcode === 'usernotfullysetup') {
                     // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
-                    CoreEvents.instance.trigger(CoreEventsProvider.USER_NOT_FULLY_SETUP, {}, this.id);
+                    CoreEvents.trigger(CoreEvents.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = Translate.instance.instant('core.usernotfullysetup');
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
-                    CoreEvents.instance.trigger(CoreEventsProvider.SITE_POLICY_NOT_AGREED, {}, this.id);
+                    CoreEvents.trigger(CoreEvents.SITE_POLICY_NOT_AGREED, {}, this.id);
                     error.message = Translate.instance.instant('core.login.sitepolicynotagreederror');
 
                     throw new CoreWSError(error);
@@ -1100,7 +1100,7 @@ export class CoreSite {
         try {
             await this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 });
         } finally {
-            CoreEvents.instance.trigger(CoreEventsProvider.WS_CACHE_INVALIDATED, {}, this.getId());
+            CoreEvents.trigger(CoreEvents.WS_CACHE_INVALIDATED, {}, this.getId());
         }
     }
 

@@ -24,7 +24,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/helper';
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
-import CoreConfigConstants from '@app/config.json';
+import { CoreConstants } from '@/app/core/constants';
 import { Translate } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreUrlUtils } from '@/app/services/utils/url';
@@ -63,9 +63,9 @@ export class CoreLoginSitePage implements OnInit {
     ) {
 
         let url = '';
-        this.siteSelector = CoreConfigConstants.multisitesdisplay;
+        this.siteSelector = CoreConstants.CONFIG.multisitesdisplay;
 
-        const siteFinderSettings: Partial<SiteFinderSettings> = CoreConfigConstants['sitefindersettings'] || {};
+        const siteFinderSettings: Partial<SiteFinderSettings> = CoreConstants.CONFIG.sitefindersettings || {};
         this.siteFinderSettings = {
             displaysitename: true,
             displayimage: true,
@@ -79,12 +79,12 @@ export class CoreLoginSitePage implements OnInit {
         // Load fixed sites if they're set.
         if (CoreLoginHelper.instance.hasSeveralFixedSites()) {
             url = this.initSiteSelector();
-        } else if (CoreConfigConstants.enableonboarding && !CoreApp.instance.isIOS() && !CoreApp.instance.isMac()) {
+        } else if (CoreConstants.CONFIG.enableonboarding && !CoreApp.instance.isIOS() && !CoreApp.instance.isMac()) {
             this.initOnboarding();
         }
 
-        this.showScanQR = CoreUtils.instance.canScanQR() && (typeof CoreConfigConstants['displayqronsitescreen'] == 'undefined' ||
-            !!CoreConfigConstants['displayqronsitescreen']);
+        this.showScanQR = CoreUtils.instance.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
+            !!CoreConstants.CONFIG.displayqronsitescreen);
 
         this.siteForm = this.formBuilder.group({
             siteUrl: [url, this.moodleUrlValidator()],
