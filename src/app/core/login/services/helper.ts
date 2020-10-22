@@ -55,7 +55,8 @@ export class CoreLoginHelperProvider {
     waitingForBrowser = false;
 
     constructor(
-        private location: Location,
+        protected location: Location,
+        protected navCtrl: NavController,
     ) {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
 
@@ -314,7 +315,7 @@ export class CoreLoginHelperProvider {
      */
     getLogoutLabel(site?: CoreSite): string {
         site = site || CoreSites.instance.getCurrentSite();
-        const config = <CoreSiteConfig> site?.getStoredConfig();
+        const config = site?.getStoredConfig();
 
         return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
     }
@@ -342,7 +343,7 @@ export class CoreLoginHelperProvider {
 
         try {
             // Try to get the latest config, maybe the site policy was just added or has changed.
-            sitePolicy = <string> await site.getConfig('sitepolicy', true);
+            sitePolicy = await site.getConfig('sitepolicy', true);
         } catch (error) {
             // Cannot get config, try to get the site policy using auth_email_get_signup_settings.
             const settings = <AuthEmailSignupSettings> await CoreWS.instance.callAjax(
@@ -413,8 +414,30 @@ export class CoreLoginHelperProvider {
      * @return Promise resolved when done.
      */
     async goToAddSite(setRoot?: boolean, showKeyboard?: boolean): Promise<void> {
-        // @todo
-        return Promise.resolve();
+        let pageRoute: string;
+        let params: Params;
+
+        if (this.isFixedUrlSet()) {
+            // Fixed URL is set, go to credentials page.
+            const fixedSites = this.getFixedSites();
+            const url = typeof fixedSites == 'string' ? fixedSites : fixedSites[0].url;
+
+            pageRoute = '/login/credentials';
+            params = { siteUrl: url };
+        } else {
+            pageRoute = '/login/site';
+            params = { showKeyboard: showKeyboard };
+        }
+
+        if (setRoot) {
+            await this.navCtrl.navigateRoot(pageRoute, {
+                queryParams: params,
+            });
+        } else {
+            await this.navCtrl.navigateForward(pageRoute, {
+                queryParams: params,
+            });
+        }
     }
 
     /**

@@ -321,7 +321,7 @@ export class CoreLoginSitePage implements OnInit {
             CoreLoginHelper.instance.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
 
             if (error.loggedout) {
-                // @todo Send the user to sites page.
+                this.navCtrl.navigateRoot('/login/sites');
             }
         } finally {
             modal.dismiss();

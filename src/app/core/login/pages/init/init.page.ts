@@ -90,7 +90,7 @@ export class CoreLoginInitPage implements OnInit {
         //     return this.loginHelper.goToSiteInitialPage();
         // }
 
-        await this.navCtrl.navigateRoot('/login/site');
+        await this.navCtrl.navigateRoot('/login/sites');
     }
 
 }

@@ -248,7 +248,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             CoreLoginHelper.instance.treatUserTokenError(siteUrl, error, username, password);
 
             if (error.loggedout) {
-                // @todo Go to sites page.
+                this.navCtrl.navigateRoot('/login/sites');
             } else if (error.errorcode == 'forcepasswordchangenotice') {
                 // Reset password field.
                 this.credForm.controls.password.reset();

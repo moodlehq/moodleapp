@@ -26,6 +26,7 @@ import { CoreLoginRoutingModule } from './login-routing.module';
 import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
 import { CoreLoginInitPage } from './pages/init/init.page';
 import { CoreLoginSitePage } from './pages/site/site.page';
+import { CoreLoginSitesPage } from './pages/sites/sites.page';
 import { CoreLoginHelperProvider } from './services/helper';
 
 @NgModule({
@@ -43,6 +44,7 @@ import { CoreLoginHelperProvider } from './services/helper';
         CoreLoginCredentialsPage,
         CoreLoginInitPage,
         CoreLoginSitePage,
+        CoreLoginSitesPage,
     ],
     providers: [
         CoreLoginHelperProvider,

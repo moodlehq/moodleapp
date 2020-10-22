@@ -18,6 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
 import { CoreLoginInitPage } from './pages/init/init.page';
 import { CoreLoginSitePage } from './pages/site/site.page';
+import { CoreLoginSitesPage } from './pages/sites/sites.page';
 
 const routes: Routes = [
     {
@@ -31,6 +32,10 @@ const routes: Routes = [
     {
         path: 'credentials',
         component: CoreLoginCredentialsPage,
+    },
+    {
+        path: 'sites',
+        component: CoreLoginSitesPage,
     },
 ];
 
