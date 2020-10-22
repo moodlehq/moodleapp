@@ -10,9 +10,10 @@
     }
 }
 
-.item.item-block {
-    &.core-login-need-help.item {
+.item {
+    &.core-login-need-help {
         text-decoration: underline;
+        margin-top: 16px;
     }
     &.core-login-site-qrcode {
         .item-inner {
@@ -48,8 +49,8 @@
     }
     ion-icon {
         margin: 0 auto;
-        font-size: 40px;
-        line-height: 50px;
+        font-size: 35px;
+        height: 50px;
     }
 }
 
