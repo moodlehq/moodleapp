@@ -22,9 +22,9 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/helper';
-import { CoreConstants } from '@/app/core/constants';
+import { CoreConstants } from '@core/constants';
 import { Translate } from '@singletons/core.singletons';
-import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@/app/classes/site';
+import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 
 /**

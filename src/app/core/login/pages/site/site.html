@@ -1,14 +1,15 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button></ion-back-button>
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
         <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button router-direction="forward" routerLink="/settings/app" [attr.aria-label]="'core.settings.appsettings'">
-                <core-icon slot="icon-only" name="fa-cog" color="light" fixed-width="true"></core-icon>
+            <ion-button router-direction="forward" routerLink="/settings/app"
+                [attr.aria-label]="'core.settings.appsettings' | translate">
+                <core-icon slot="icon-only" name="fa-cog"></core-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>

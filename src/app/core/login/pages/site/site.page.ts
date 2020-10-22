@@ -24,10 +24,10 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/helper';
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
-import { CoreConstants } from '@/app/core/constants';
+import { CoreConstants } from '@core/constants';
 import { Translate } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
-import { CoreUrlUtils } from '@/app/services/utils/url';
+import { CoreUrlUtils } from '@services/utils/url';
 import { NavController } from '@ionic/angular';
 
 /**

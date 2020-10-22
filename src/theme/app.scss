@@ -1,1 +1,6 @@
 // Add here base app styles.
+
+ion-toolbar ion-back-button,
+ion-toolbar .in-toolbar.button-clear {
+    --color: var(--ion-color-primary-contrast);
+}

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@/app/services/utils/dom';
-import { CoreUtils } from '@/app/services/utils/utils';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 import { Component, OnInit } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
@@ -26,7 +26,6 @@ import { CoreLoginHelper } from '../../services/helper';
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
-    styleUrls: ['sites.scss'],
 })
 export class CoreLoginSitesPage implements OnInit {
 
@@ -76,13 +75,12 @@ export class CoreLoginSitesPage implements OnInit {
      * Delete a site.
      *
      * @param e Click event.
-     * @param index Position of the site.
+     * @param site Site to delete.
      * @return Promise resolved when done.
      */
-    async deleteSite(e: Event, index: number): Promise<void> {
+    async deleteSite(e: Event, site: CoreSiteBasicInfo): Promise<void> {
         e.stopPropagation();
 
-        const site = this.sites[index];
         const siteName = site.siteName || '';
 
         // @todo: Format text: siteName.
@@ -97,7 +95,8 @@ export class CoreLoginSitesPage implements OnInit {
         try {
             await CoreSites.instance.deleteSite(site.id);
 
-            this.sites.splice(index, 1);
+            const index = this.sites.findIndex((listedSite) => listedSite.id == site.id);
+            index >= 0 && this.sites.splice(index, 1);
             this.showDelete = false;
 
             // If there are no sites left, go to add site.
