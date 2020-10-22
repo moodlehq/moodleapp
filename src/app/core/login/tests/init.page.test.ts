@@ -38,13 +38,13 @@ describe('CoreLogin Init Page', () => {
         expect(fixture.nativeElement.querySelector('ion-spinner')).toBeTruthy();
     });
 
-    it('navigates to site page after loading', async () => {
+    it('navigates to sites page after loading', async () => {
         const fixture = createComponent(CoreLoginInitPage);
 
         fixture.componentInstance.ngOnInit();
         await CoreInit.instance.ready();
 
-        expect(mocks.router.navigate).toHaveBeenCalledWith(['/login/site']);
+        expect(mocks.navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
     });
 
 });

@@ -69,8 +69,9 @@ declare global {
             };
 
             BUILD: {
-                environment: string;
                 isProduction: boolean;
+                isTesting: boolean;
+                isDevelopment: boolean;
                 lastCommitHash: string;
                 compilationTime: number;
             };

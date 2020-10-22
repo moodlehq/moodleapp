@@ -14,7 +14,7 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA, Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { CoreSingletonClass } from '@app/classes/singletons-factory';
 
 export interface ComponentTestMocks {
@@ -22,7 +22,7 @@ export interface ComponentTestMocks {
 };
 
 export interface PageTestMocks extends ComponentTestMocks {
-    router: Router;
+    navController: NavController;
 }
 
 export function createMock<T>(methods: string[] = [], properties: Record<string, unknown> = {}): T {
@@ -57,12 +57,12 @@ export async function prepareComponentTest<T>(component: Type<T>, providers: unk
 
 export async function preparePageTest<T>(component: Type<T>, providers: unknown[] = []): Promise<PageTestMocks> {
     const mocks = {
-        router: createMock<Router>(['navigate']),
+        navController: createMock<NavController>(['navigateRoot']),
     };
 
     const componentTestMocks = await prepareComponentTest(component, [
         ...providers,
-        { provide: Router, useValue: mocks.router },
+        { provide: NavController, useValue: mocks.navController },
     ]);
 
     return {

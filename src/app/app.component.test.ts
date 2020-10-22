@@ -12,19 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createComponent, prepareComponentTest } from '@/tests/utils';
+import { createComponent, createMock, prepareComponentTest } from '@/tests/utils';
 
 import { AppComponent } from '@app/app.component';
+import { CoreLangProvider } from '@services/lang';
+import { CoreEvents, CoreEventsProvider } from '@services/events';
 
 describe('App component', () => {
 
-    beforeEach(() => prepareComponentTest(AppComponent));
+    let langProvider: CoreLangProvider;
+
+    beforeEach(() => {
+        langProvider = createMock<CoreLangProvider>(['clearCustomStrings']);
+
+        CoreEvents.setInstance(new CoreEventsProvider());
+        prepareComponentTest(AppComponent, [
+            { provide: CoreLangProvider, useValue: langProvider },
+        ]);
+    });
 
     it('should render', () => {
         const fixture = createComponent(AppComponent);
 
         expect(fixture.debugElement.componentInstance).toBeTruthy();
         expect(fixture.nativeElement.querySelector('ion-router-outlet')).toBeTruthy();
+    });
+
+    it('clears custom strings on logout', async () => {
+        const fixture = createComponent(AppComponent);
+
+        fixture.componentInstance.ngOnInit();
+        CoreEvents.instance.trigger(CoreEventsProvider.LOGOUT);
+
+        expect(langProvider.clearCustomStrings).toHaveBeenCalled();
     });
 
 });
