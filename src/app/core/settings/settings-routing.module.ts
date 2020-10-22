@@ -13,28 +13,33 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { CoreAppSettingsPage } from './pages/app/app.page';
+import { CoreSettingsAboutPage } from './pages/about/about.page';
+import { CoreSettingsDeviceInfoPage } from './pages/deviceinfo/deviceinfo.page';
 
 const routes: Routes = [
     {
+        path: 'about',
+        component: CoreSettingsAboutPage,
+    },
+    {
+        path: 'deviceinfo',
+        component: CoreSettingsDeviceInfoPage,
+    },
+    {
+        path: 'app',
+        component: CoreAppSettingsPage,
+    },
+    {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'app',
         pathMatch: 'full',
-    },
-    {
-        path: 'login',
-        loadChildren: () => import('./core/login/login.module').then( m => m.CoreLoginModule),
-    },
-    {
-        path: 'settings',
-        loadChildren: () => import('./core/settings/settings.module').then( m => m.CoreAppSettingsPageModule),
     },
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
-    ],
+    imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class CoreAppSettingsRoutingModule {}

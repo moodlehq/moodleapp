@@ -14,41 +14,33 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CoreAppSettingsRoutingModule } from './settings-routing.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
-import { CoreLoginRoutingModule } from './login-routing.module';
-import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
-import { CoreLoginInitPage } from './pages/init/init.page';
-import { CoreLoginSitePage } from './pages/site/site.page';
-import { CoreLoginSitesPage } from './pages/sites/sites.page';
-import { CoreLoginHelperProvider } from './services/helper';
+import { CoreAppSettingsPage } from './pages/app/app.page';
+import { CoreSettingsAboutPage } from './pages/about/about.page';
+import { CoreSettingsDeviceInfoPage } from './pages/deviceinfo/deviceinfo.page';
 
 @NgModule({
     imports: [
         CommonModule,
         IonicModule,
-        CoreLoginRoutingModule,
-        CoreComponentsModule,
-        TranslateModule.forChild(),
-        FormsModule,
-        ReactiveFormsModule,
+        CoreAppSettingsRoutingModule,
+        CorePipesModule,
         CoreComponentsModule,
         CoreDirectivesModule,
+        TranslateModule.forChild(),
     ],
     declarations: [
-        CoreLoginCredentialsPage,
-        CoreLoginInitPage,
-        CoreLoginSitePage,
-        CoreLoginSitesPage,
-    ],
-    providers: [
-        CoreLoginHelperProvider,
+        CoreAppSettingsPage,
+        CoreSettingsAboutPage,
+        CoreSettingsDeviceInfoPage,
     ],
 })
-export class CoreLoginModule {}
+export class CoreAppSettingsPageModule {}

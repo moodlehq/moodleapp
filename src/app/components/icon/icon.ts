@@ -71,6 +71,8 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
             if (this.fixedWidth) {
                 this.newElement.classList.add('fa-fw');
             }
+        } else {
+            this.newElement.setAttribute('name', this.name);
         }
 
         !this.label && this.newElement.setAttribute('aria-hidden', 'true');

@@ -14,7 +14,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { CoreSitesDemoSiteData } from '@/app/services/sites';
+import { CoreSitesDemoSiteData } from '@services/sites';
 
 declare global {
 

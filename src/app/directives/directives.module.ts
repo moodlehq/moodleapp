@@ -17,8 +17,9 @@ import { NgModule } from '@angular/core';
 import { CoreAutoFocusDirective } from './auto-focus';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreLongPressDirective } from './long-press.directive';
+import { CoreLongPressDirective } from './long-press';
 import { CoreSupressEventsDirective } from './supress-events';
+import { CoreFabDirective } from './fab';
 
 @NgModule({
     declarations: [
@@ -27,6 +28,7 @@ import { CoreSupressEventsDirective } from './supress-events';
         CoreFormatTextDirective,
         CoreLongPressDirective,
         CoreSupressEventsDirective,
+        CoreFabDirective,
     ],
     imports: [],
     exports: [
@@ -35,6 +37,7 @@ import { CoreSupressEventsDirective } from './supress-events';
         CoreFormatTextDirective,
         CoreLongPressDirective,
         CoreSupressEventsDirective,
+        CoreFabDirective,
     ],
 })
 export class CoreDirectivesModule {}
