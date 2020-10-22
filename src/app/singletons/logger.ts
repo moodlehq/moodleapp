@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import moment from 'moment';
-import { environment } from '@/environments/environment';
 
+import { CoreConstants } from '@core/constants';
 
 /**
  * Log function type.
@@ -57,7 +57,7 @@ export class CoreLogger {
      */
     static getInstance(className: string): CoreLogger {
         // Disable log on production.
-        if (environment.production) {
+        if (CoreConstants.BUILD.isProduction) {
             // eslint-disable-next-line no-console
             console.warn('Log is disabled in production app');
 

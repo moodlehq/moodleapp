@@ -26,7 +26,6 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils, CoreUrlParams } from '@services/utils/url';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
-import CoreConfigConstants from '@app/config.json';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -73,10 +72,10 @@ export class CoreSite {
 
     // Possible cache update frequencies.
     protected readonly UPDATE_FREQUENCIES = [
-        CoreConfigConstants.cache_update_frequency_usually || 420000,
-        CoreConfigConstants.cache_update_frequency_often || 1200000,
-        CoreConfigConstants.cache_update_frequency_sometimes || 3600000,
-        CoreConfigConstants.cache_update_frequency_rarely || 43200000,
+        CoreConstants.CONFIG.cache_update_frequency_usually || 420000,
+        CoreConstants.CONFIG.cache_update_frequency_often || 1200000,
+        CoreConstants.CONFIG.cache_update_frequency_sometimes || 3600000,
+        CoreConstants.CONFIG.cache_update_frequency_rarely || 43200000,
     ];
 
     // Rest of variables.
@@ -227,9 +226,9 @@ export class CoreSite {
      * @return Site name.
      */
     getSiteName(): string {
-        if (CoreConfigConstants.sitename) {
+        if (CoreConstants.CONFIG.sitename) {
             // Overridden by config.
-            return CoreConfigConstants.sitename;
+            return CoreConstants.CONFIG.sitename;
         } else {
             return this.infos?.sitename || '';
         }
@@ -1284,7 +1283,7 @@ export class CoreSite {
      */
     async checkLocalMobilePlugin(retrying?: boolean): Promise<LocalMobileResponse> {
         const checkUrl = this.siteUrl + '/local/mobile/check.php';
-        const service = CoreConfigConstants.wsextservice;
+        const service = CoreConstants.CONFIG.wsextservice;
 
         if (!service) {
             // External service not defined.

@@ -26,7 +26,6 @@ import { CoreSite } from '@classes/site';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@core/constants';
-import CoreConfigConstants from '@app/config.json';
 import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push, Device } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 
@@ -611,7 +610,7 @@ export class CoreLocalNotificationsProvider {
         if (CoreApp.instance.isAndroid()) {
             notification.icon = notification.icon || 'res://icon';
             notification.smallIcon = notification.smallIcon || 'res://smallicon';
-            notification.color = notification.color || CoreConfigConstants.notificoncolor;
+            notification.color = notification.color || CoreConstants.CONFIG.notificoncolor;
 
             if (notification.led !== false) {
                 let ledColor = 'FF9900';

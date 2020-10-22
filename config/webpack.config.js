@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const { webpack } = require('webpack');
+const webpack = require('webpack');
+const { getConfig, getBuild } = require('./utils');
 const { resolve } = require('path');
 
-module.exports = (config, options, targetOptions) => {
+module.exports = config => {
     config.resolve.alias['@'] = resolve('src');
     config.resolve.alias['@addon'] = resolve('src/app/addon');
     config.resolve.alias['@app'] = resolve('src/app');
@@ -26,6 +27,15 @@ module.exports = (config, options, targetOptions) => {
     config.resolve.alias['@pipes'] = resolve('src/app/pipes');
     config.resolve.alias['@services'] = resolve('src/app/services');
     config.resolve.alias['@singletons'] = resolve('src/app/singletons');
+
+    config.plugins.push(
+        new webpack.DefinePlugin({
+            'window.MoodleApp': {
+                CONFIG: JSON.stringify(getConfig(process.env.NODE_ENV || 'development')),
+                BUILD: JSON.stringify(getBuild(process.env.NODE_ENV || 'development')),
+            },
+        }),
+    );
 
     return config;
 };

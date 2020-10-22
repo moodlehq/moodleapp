@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import CoreConfigConstants from '@app/config.json';
+import { CoreConstants } from '@core/constants';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
@@ -29,7 +29,7 @@ import * as moment from 'moment';
 export class CoreLangProvider {
 
     protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.
-    protected defaultLanguage = CoreConfigConstants.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
+    protected defaultLanguage = CoreConstants.CONFIG.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
     protected currentLanguage?: string; // Save current language in a variable to speed up the get function.
     protected customStrings: CoreLanguageObject = {}; // Strings defined using the admin tool.
     protected customStringsRaw?: string;
@@ -252,21 +252,21 @@ export class CoreLangProvider {
         }
 
         // User hasn't defined a language. If default language is forced, use it.
-        if (CoreConfigConstants.default_lang && CoreConfigConstants.forcedefaultlanguage) {
-            return CoreConfigConstants.default_lang;
+        if (CoreConstants.CONFIG.default_lang && CoreConstants.CONFIG.forcedefaultlanguage) {
+            return CoreConstants.CONFIG.default_lang;
         }
 
         // No forced language, try to get current language from browser.
         let preferredLanguage = navigator.language.toLowerCase();
         if (preferredLanguage.indexOf('-') > -1) {
             // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
-            if (CoreConfigConstants.languages && typeof CoreConfigConstants.languages[preferredLanguage] == 'undefined') {
+            if (CoreConstants.CONFIG.languages && typeof CoreConstants.CONFIG.languages[preferredLanguage] == 'undefined') {
                 // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
                 preferredLanguage = preferredLanguage.substr(0, preferredLanguage.indexOf('-'));
             }
         }
 
-        if (typeof CoreConfigConstants.languages[preferredLanguage] == 'undefined') {
+        if (typeof CoreConstants.CONFIG.languages[preferredLanguage] == 'undefined') {
             // Language not supported, use default language.
             return this.defaultLanguage;
         }

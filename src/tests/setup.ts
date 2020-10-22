@@ -12,4 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import 'jest-preset-angular';
+
+import { getConfig, getBuild } from '../../config/utils';
+
+(window as unknown as MoodleAppWindow).MoodleApp = {
+    CONFIG: getConfig('testing'),
+    BUILD: getBuild('testing'),
+};

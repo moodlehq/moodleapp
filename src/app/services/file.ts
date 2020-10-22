@@ -21,7 +21,7 @@ import { CoreWSExternalFile } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import CoreConfigConstants from '@app/config.json';
+import { CoreConstants } from '@core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@singletons/logger';
@@ -1227,7 +1227,7 @@ export class CoreFileProvider {
             return src;
         }
 
-        return src.replace(CoreConfigConstants.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+        return src.replace(CoreConstants.CONFIG.ioswebviewscheme + '://localhost/_app_file_', 'file://');
     }
 
     /**

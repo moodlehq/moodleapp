@@ -1,4 +1,4 @@
-var appConfig = {
+const appConfig = {
     env: {
         browser: true,
         es6: true,
