@@ -38,7 +38,7 @@ declare global {
                 languages: Record<string, string>;
                 wsservice: string;
                 wsextservice: string;
-                demo_sites: Record<string, Record<string, CoreSitesDemoSiteData>>;
+                demo_sites: Record<string, CoreSitesDemoSiteData>;
                 font_sizes: number[];
                 customurlscheme: string;
                 siteurl: string;
@@ -64,6 +64,8 @@ declare global {
                 forceLoginLogo: boolean;
                 ioswebviewscheme: string;
                 appstores: Record<string, string>;
+                displayqroncredentialscreen?: boolean;
+                displayqronsitescreen?: boolean;
             };
 
             BUILD: {

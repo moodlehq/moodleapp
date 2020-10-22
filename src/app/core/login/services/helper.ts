@@ -27,7 +27,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import CoreConfigConstants from '@app/config.json';
 import { CoreConstants } from '@core/constants';
 import { CoreSite, CoreSiteConfig, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
@@ -304,7 +303,7 @@ export class CoreLoginHelperProvider {
      * @return Logo URL.
      */
     getLogoUrl(config: CoreSitePublicConfigResponse): string | undefined {
-        return !CoreConfigConstants.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
+        return !CoreConstants.CONFIG.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
     }
 
     /**
@@ -368,7 +367,7 @@ export class CoreLoginHelperProvider {
      * @return Fixed site or list of fixed sites.
      */
     getFixedSites(): string | CoreLoginSiteInfo[] {
-        return CoreConfigConstants.siteurl;
+        return CoreConstants.CONFIG.siteurl;
     }
 
     /**
@@ -489,8 +488,8 @@ export class CoreLoginHelperProvider {
      * @return Whether there are several fixed URLs.
      */
     hasSeveralFixedSites(): boolean {
-        return !!(CoreConfigConstants.siteurl && Array.isArray(CoreConfigConstants.siteurl) &&
-            CoreConfigConstants.siteurl.length > 1);
+        return !!(CoreConstants.CONFIG.siteurl && Array.isArray(CoreConstants.CONFIG.siteurl) &&
+            CoreConstants.CONFIG.siteurl.length > 1);
     }
 
     /**
@@ -528,11 +527,11 @@ export class CoreLoginHelperProvider {
      * @return Whether there is 1 fixed URL.
      */
     isFixedUrlSet(): boolean {
-        if (Array.isArray(CoreConfigConstants.siteurl)) {
-            return CoreConfigConstants.siteurl.length == 1;
+        if (Array.isArray(CoreConstants.CONFIG.siteurl)) {
+            return CoreConstants.CONFIG.siteurl.length == 1;
         }
 
-        return !!CoreConfigConstants.siteurl;
+        return !!CoreConstants.CONFIG.siteurl;
     }
 
     /**
@@ -585,7 +584,7 @@ export class CoreLoginHelperProvider {
             const sites = <CoreLoginSiteInfo[]> this.getFixedSites();
 
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
-        } else if (CoreConfigConstants.multisitesdisplay == 'sitefinder' && CoreConfigConstants.onlyallowlistedsites) {
+        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites) {
             // Call the sites finder to validate the site.
             const result = await CoreSites.instance.findSites(siteUrl.replace(/^https?:\/\/|\.\w{2,3}\/?$/g, ''));
 
@@ -852,14 +851,14 @@ export class CoreLoginHelperProvider {
         urlParams?: CoreUrlParams,
     ): string {
 
-        service = service || CoreConfigConstants.wsextservice;
+        service = service || CoreConstants.CONFIG.wsextservice;
         launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
 
         const passport = Math.random() * 1000;
         let loginUrl = launchUrl + '?service=' + service;
 
         loginUrl += '&passport=' + passport;
-        loginUrl += '&urlscheme=' + CoreConfigConstants.customurlscheme;
+        loginUrl += '&urlscheme=' + CoreConstants.CONFIG.customurlscheme;
 
         if (urlParams) {
             loginUrl = CoreUrlUtils.instance.addParamsToUrl(loginUrl, urlParams);
@@ -1033,7 +1032,7 @@ export class CoreLoginHelperProvider {
      */
     shouldShowSSOConfirm(typeOfLogin: number): boolean {
         return !this.isSSOEmbeddedBrowser(typeOfLogin) &&
-            (!CoreConfigConstants.skipssoconfirmation || String(CoreConfigConstants.skipssoconfirmation) === 'false');
+            (!CoreConstants.CONFIG.skipssoconfirmation || String(CoreConstants.CONFIG.skipssoconfirmation) === 'false');
     }
 
     /**
@@ -1053,7 +1052,7 @@ export class CoreLoginHelperProvider {
      * @param message The warning message.
      */
     protected showMoodleAppNoticeModal(message: string): void {
-        const storesConfig: CoreStoreConfig = CoreConfigConstants.appstores;
+        const storesConfig: CoreStoreConfig = CoreConstants.CONFIG.appstores;
         storesConfig.desktop = 'https://download.moodle.org/desktop/';
         storesConfig.mobile = 'https://download.moodle.org/mobile/';
         storesConfig.default = 'https://download.moodle.org/mobile/';

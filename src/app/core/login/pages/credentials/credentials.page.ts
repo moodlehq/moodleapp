@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/helper';
-import CoreConfigConstants from '@app/config.json';
+import { CoreConstants } from '@/app/core/constants';
 import { Translate } from '@singletons/core.singletons';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@/app/classes/site';
 import { CoreEvents, CoreEventsProvider } from '@/app/services/events';
@@ -66,10 +66,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
         const canScanQR = CoreUtils.instance.canScanQR();
         if (canScanQR) {
-            if (typeof CoreConfigConstants['displayqroncredentialscreen'] == 'undefined') {
+            if (typeof CoreConstants.CONFIG.displayqroncredentialscreen == 'undefined') {
                 this.showScanQR = CoreLoginHelper.instance.isFixedUrlSet();
             } else {
-                this.showScanQR = !!CoreConfigConstants['displayqroncredentialscreen'];
+                this.showScanQR = !!CoreConstants.CONFIG.displayqroncredentialscreen;
             }
         } else {
             this.showScanQR = false;
@@ -83,7 +83,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         this.route.queryParams.subscribe(params => {
             this.siteUrl = params['siteUrl'];
             this.siteName = params['siteName'] || undefined;
-            this.logoUrl = !CoreConfigConstants.forceLoginLogo && params['logoUrl'] || undefined;
+            this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && params['logoUrl'] || undefined;
             this.siteConfig = params['siteConfig'];
             this.urlToOpen = params['urlToOpen'];
 
@@ -160,7 +160,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
-            this.siteName = CoreConfigConstants.sitename ? CoreConfigConstants.sitename : this.siteConfig.sitename;
+            this.siteName = CoreConstants.CONFIG.sitename ?? this.siteConfig.sitename;
             this.logoUrl = CoreLoginHelper.instance.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || Translate.instance.instant('core.login.loginsteps');
 
