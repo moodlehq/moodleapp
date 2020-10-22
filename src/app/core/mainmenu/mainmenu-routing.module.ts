@@ -15,32 +15,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
-import { CoreLoginInitPage } from './pages/init/init.page';
-import { CoreLoginSitePage } from './pages/site/site.page';
-import { CoreLoginSitesPage } from './pages/sites/sites.page';
+import { CoreMainMenuPage } from './pages/menu/menu.page';
+import { CoreMainMenuMorePage } from './pages/more/more.page';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'init',
-        pathMatch: 'full',
-    },
-    {
-        path: 'init',
-        component: CoreLoginInitPage,
-    },
-    {
-        path: 'site',
-        component: CoreLoginSitePage,
-    },
-    {
-        path: 'credentials',
-        component: CoreLoginCredentialsPage,
-    },
-    {
-        path: 'sites',
-        component: CoreLoginSitesPage,
+        component: CoreMainMenuPage,
+        children: [
+            {
+                path: 'more',
+                component: CoreMainMenuMorePage,
+            },
+        ],
     },
 ];
 
@@ -48,4 +35,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class CoreLoginRoutingModule {}
+export class CoreMainMenuRoutingModule {}

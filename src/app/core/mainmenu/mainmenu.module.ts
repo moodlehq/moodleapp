@@ -14,37 +14,29 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreComponentsModule } from '@/app/components/components.module';
+import { CoreDirectivesModule } from '@/app/directives/directives.module';
 
-import { CoreLoginRoutingModule } from './login-routing.module';
-import { CoreLoginCredentialsPage } from './pages/credentials/credentials.page';
-import { CoreLoginInitPage } from './pages/init/init.page';
-import { CoreLoginSitePage } from './pages/site/site.page';
-import { CoreLoginSitesPage } from './pages/sites/sites.page';
+import { CoreMainMenuRoutingModule } from './mainmenu-routing.module';
+import { CoreMainMenuPage } from './pages/menu/menu.page';
+import { CoreMainMenuMorePage } from './pages/more/more.page';
 
 @NgModule({
     imports: [
         CommonModule,
         IonicModule,
-        CoreLoginRoutingModule,
-        CoreComponentsModule,
+        CoreMainMenuRoutingModule,
         TranslateModule.forChild(),
-        FormsModule,
-        ReactiveFormsModule,
         CoreComponentsModule,
         CoreDirectivesModule,
     ],
     declarations: [
-        CoreLoginCredentialsPage,
-        CoreLoginInitPage,
-        CoreLoginSitePage,
-        CoreLoginSitesPage,
+        CoreMainMenuPage,
+        CoreMainMenuMorePage,
     ],
 })
-export class CoreLoginModule {}
+export class CoreMainMenuModule {}

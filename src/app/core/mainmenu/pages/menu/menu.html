@@ -1,0 +1,23 @@
+<ion-tabs #mainTabs [hidden]="!showTabs"> <!-- [loaded]="loaded" -->
+    <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="redirect" [disabled]="true" [hidden]="true"></ion-tab-button> <!-- [show]="false" [root]="redirectPage" [rootParams]="redirectParams" -->
+
+        <ion-tab-button *ngFor="let tab of tabs" [tab]="tab.page" [disabled]="tab.hide" layout="label-hide"> <!-- [rootParams]="tab.pageParams" [tabBadge]="tab.badge" class="{{tab.class}}" [enabled]="!tab.hide" [show]="!tab.hide" -->
+            <core-icon [name]="tab.icon"></core-icon>
+            <ion-label>{{ tab.title | translate }}</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="more" layout="label-hide">
+            <core-icon name="fa-bars"></core-icon>
+            <ion-label>{{ 'core.more' | translate }}</ion-label>
+        </ion-tab-button>
+    </ion-tab-bar>
+</ion-tabs>
+<div class="core-network-message" [hidden]="!showTabs">
+    <div class="core-online-message">
+        {{ "core.youreonline" | translate }}
+    </div>
+    <div class="core-offline-message">
+        {{ "core.youreoffline" | translate }}
+    </div>
+</div>

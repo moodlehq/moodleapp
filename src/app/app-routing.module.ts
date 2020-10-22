@@ -29,6 +29,10 @@ const routes: Routes = [
         path: 'settings',
         loadChildren: () => import('./core/settings/settings.module').then( m => m.CoreAppSettingsPageModule),
     },
+    {
+        path: 'mainmenu',
+        loadChildren: () => import('./core/mainmenu/mainmenu.module').then( m => m.CoreMainMenuModule),
+    },
 ];
 
 @NgModule({

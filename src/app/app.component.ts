@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
+
 import { CoreLangProvider } from '@services/lang';
 import { CoreEvents } from '@singletons/events';
 
@@ -24,7 +26,8 @@ import { CoreEvents } from '@singletons/events';
 export class AppComponent implements OnInit {
 
     constructor(
-        private langProvider: CoreLangProvider,
+        protected langProvider: CoreLangProvider,
+        protected navCtrl: NavController,
     ) {
     }
 
@@ -34,16 +37,13 @@ export class AppComponent implements OnInit {
     ngOnInit(): void {
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             // Go to sites page when user is logged out.
-            // Due to DeepLinker, we need to use the ViewCtrl instead of name.
-            // Otherwise some pages are re-created when they shouldn't.
-            // TODO
-            // CoreApp.instance.getRootNavController().setRoot(CoreLoginSitesPage);
+            this.navCtrl.navigateRoot('/login/sites');
 
             // Unload lang custom strings.
             this.langProvider.clearCustomStrings();
 
             // Remove version classes from body.
-            // TODO
+            // @todo
             // this.removeVersionClass();
         });
     }
