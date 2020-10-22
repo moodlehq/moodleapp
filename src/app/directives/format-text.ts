@@ -23,6 +23,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';
 import { Translate } from '@singletons/core.singletons';
+import { CoreExternalContentDirective } from './external-content';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -91,10 +92,21 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param element Element to add the attributes to.
      * @return External content instance.
      */
-    protected addExternalContent(element: Element): any {
-        // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
-        // @todo
-        return null;
+    protected addExternalContent(element: Element): CoreExternalContentDirective {
+        // Angular doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
+        const extContent = new CoreExternalContentDirective(new ElementRef(element));
+
+        extContent.component = this.component;
+        extContent.componentId = this.componentId;
+        extContent.siteId = this.siteId;
+        extContent.src = element.getAttribute('src') || undefined;
+        extContent.href = element.getAttribute('href') || element.getAttribute('xlink:href') || undefined;
+        extContent.targetSrc = element.getAttribute('target-src') || undefined;
+        extContent.poster = element.getAttribute('poster') || undefined;
+
+        extContent.ngAfterViewInit();
+
+        return extContent;
     }
 
     /**
@@ -442,7 +454,7 @@ export class CoreFormatTextDirective implements OnChanges {
             this.addExternalContent(anchor);
         });
 
-        const externalImages: any[] = [];
+        const externalImages: CoreExternalContentDirective[] = [];
         if (images && images.length > 0) {
             // Walk through the content to find images, and add our directive.
             images.forEach((img: HTMLElement) => {
