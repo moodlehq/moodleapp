@@ -173,12 +173,6 @@ const appConfig = {
         ],
         'id-match': 'error',
         'jsdoc/check-alignment': 'error',
-        'jsdoc/check-indentation': [
-            'error',
-            {
-                excludeTags: ['param'],
-            },
-        ],
         'jsdoc/newline-after-description': 'error',
         'linebreak-style': [
             'error',
@@ -274,7 +268,7 @@ module.exports = {
             files: ['*.html'],
             extends: ['plugin:@angular-eslint/template/recommended'],
             rules: {
-                'max-len': ['error', { code: 140 }],
+                'max-len': ['warn', { code: 140 }],
             },
         },
         {

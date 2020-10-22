@@ -86,7 +86,7 @@ export class CoreDomUtilsProvider {
         if (!element) {
             return null;
         }
-    
+
         // Try to use closest if the browser supports it.
         if (typeof element.closest == 'function') {
             return element.closest(selector);
@@ -363,8 +363,8 @@ export class CoreDomUtilsProvider {
     fixHtml(html: string): string {
         this.template.innerHTML = html;
 
-        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>\/=]+/;
-
+        // eslint-disable-next-line no-control-regex
+        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
         const fixElement = (element: Element): void => {
             // Remove attributes with an invalid name.
             Array.from(element.attributes).forEach((attr) => {
@@ -1547,6 +1547,7 @@ export class CoreDomUtilsProvider {
      * @param placeholder Placeholder of the input element if any.
      * @return Promise resolved when modal presented.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     showTextareaPrompt(title: string, message: string, buttons: (string | any)[], placeholder?: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -1661,6 +1662,7 @@ export class CoreDomUtilsProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param fullScreen Whether the modal should be full screen.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     viewImage(image: string, title?: string | null, component?: string, componentId?: string | number, fullScreen?: boolean): void {
         // @todo
     }

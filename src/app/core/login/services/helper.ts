@@ -28,7 +28,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
-import { CoreSite, CoreSiteConfig, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
@@ -447,6 +447,7 @@ export class CoreLoginHelperProvider {
      * @param params Params of the page.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     goToNoSitePage(navCtrl: NavController, page: string, params?: Params): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -462,6 +463,7 @@ export class CoreLoginHelperProvider {
      * @param url URL to open once the main menu is loaded.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: Params, options?: any, url?: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -628,6 +630,7 @@ export class CoreLoginHelperProvider {
      * @param siteId Site to load.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected loadSiteAndPage(page: string, params: Params, siteId: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -668,6 +671,7 @@ export class CoreLoginHelperProvider {
      * @param url URL to open once the main menu is loaded.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected openMainMenu(navCtrl: NavController, page: string, params: Params, options?: any, url?: string): Promise<any> {
         // @todo
         return Promise.resolve();
@@ -827,6 +831,7 @@ export class CoreLoginHelperProvider {
      *
      * @param siteId The site ID.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     passwordChangeForced(siteId: string): void {
         // @todo
     }
@@ -885,6 +890,7 @@ export class CoreLoginHelperProvider {
      * @param siteId Site to load. If not defined, current site.
      * @return Promise resolved when done.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
         // @todo
     }

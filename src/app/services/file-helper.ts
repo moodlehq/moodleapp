@@ -174,7 +174,15 @@ export class CoreFileHelperProvider {
                 } else {
                     // Outdated but offline, so we return the local URL.
                     return CoreFilepool.instance.getUrlByUrl(
-                        siteId, fileUrl, component, componentId, timemodified, false, false, file);
+                        siteId,
+                        fileUrl,
+                        component,
+                        componentId,
+                        timemodified,
+                        false,
+                        false,
+                        file,
+                    );
                 }
             }
 
@@ -220,8 +228,17 @@ export class CoreFileHelperProvider {
         }
 
         try {
-            return await CoreFilepool.instance.downloadUrl(siteId, fileUrl, false, component, componentId, timemodified,
-                onProgress, undefined, file);
+            return await CoreFilepool.instance.downloadUrl(
+                siteId,
+                fileUrl,
+                false,
+                component,
+                componentId,
+                timemodified,
+                onProgress,
+                undefined,
+                file,
+            );
         } catch (error) {
             // Download failed, check the state again to see if the file was downloaded before.
             const state = await CoreFilepool.instance.getFileStateByUrl(siteId, fileUrl, timemodified);
@@ -405,4 +422,3 @@ export class CoreFileHelperProvider {
 export class CoreFileHelper extends makeSingleton(CoreFileHelperProvider) {}
 
 export type CoreFileHelperOnProgress = (event?: ProgressEvent | { calculating: true }) => void;
-

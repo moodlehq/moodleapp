@@ -1491,7 +1491,9 @@ export class CoreUtilsProvider {
      * @param title Title of the modal. Defaults to "QR reader".
      * @return Promise resolved with the captured text or undefined if cancelled or error.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     scanQR(title?: string): Promise<string> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         return new Promise((resolve, reject): void => {
             // @todo
         });
