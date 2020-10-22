@@ -20,7 +20,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents, CoreEventSessionExpiredData, CoreEventsProvider } from '@services/events';
+import { CoreEvents, CoreEventSessionExpiredData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -59,7 +59,7 @@ export class CoreLoginHelperProvider {
     ) {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
 
-        CoreEvents.instance.on(CoreEventsProvider.MAIN_MENU_OPEN, () => {
+        CoreEvents.on(CoreEvents.MAIN_MENU_OPEN, () => {
             /* If there is any page pending to be opened, do it now. Don't open pages stored more than 5 seconds ago, probably
                the function to open the page was called when it shouldn't. */
             if (this.pageToLoad && Date.now() - this.pageToLoad.time < 5000) {
@@ -561,7 +561,7 @@ export class CoreLoginHelperProvider {
         }
 
         if (site.isLoggedOut()) {
-            CoreEvents.instance.trigger(CoreEventsProvider.SESSION_EXPIRED, {
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
                 params,
             }, site.getId());
@@ -657,7 +657,7 @@ export class CoreLoginHelperProvider {
         if (page == CoreLoginHelperProvider.OPEN_COURSE) {
             // @todo Use the openCourse function.
         } else {
-            CoreEvents.instance.trigger(CoreEventsProvider.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
+            CoreEvents.trigger(CoreEvents.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
         }
     }
 

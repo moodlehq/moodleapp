@@ -25,7 +25,7 @@ import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/h
 import { CoreConstants } from '@/app/core/constants';
 import { Translate } from '@singletons/core.singletons';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@/app/classes/site';
-import { CoreEvents, CoreEventsProvider } from '@/app/services/events';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -172,7 +172,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;
-                CoreEvents.instance.trigger(CoreEventsProvider.LOGIN_SITE_CHECKED, { config: this.siteConfig });
+                CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
             }
         } else {
             this.authInstructions = undefined;
@@ -330,7 +330,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.viewLeft = true;
-        CoreEvents.instance.trigger(CoreEventsProvider.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
+        CoreEvents.trigger(CoreEvents.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
     }
 
 }

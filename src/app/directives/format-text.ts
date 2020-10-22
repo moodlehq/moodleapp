@@ -15,7 +15,7 @@
 import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
 import { NavController, IonContent } from '@ionic/angular';
 
-import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -355,7 +355,7 @@ export class CoreFormatTextDirective implements OnChanges {
             if (!this.loadingChangedListener) {
                 // Recalculate the height if a parent core-loading displays the content.
                 this.loadingChangedListener =
-                    CoreEvents.instance.on(CoreEventsProvider.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
+                    CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
                         if (data.loaded && CoreDomUtils.instance.closest(this.element.parentElement, '#' + data.uniqueId)) {
                             // The format-text is inside the loading, re-calculate the height.
                             this.calculateHeight();

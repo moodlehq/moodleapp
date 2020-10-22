@@ -18,7 +18,7 @@ import { FileEntry } from '@ionic-native/file';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreLang } from '@services/lang';
 import { CoreWS, CoreWSExternalFile } from '@services/ws';
@@ -973,7 +973,7 @@ export class CoreUtilsProvider {
                         loadStartUrls.shift();
                     }
 
-                    CoreEvents.instance.trigger(CoreEventsProvider.IAB_LOAD_START, event);
+                    CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
                 });
             });
 
@@ -984,7 +984,7 @@ export class CoreUtilsProvider {
                     this.zone.run(() => {
                         if (loadStartUrls.indexOf(event.url) == -1) {
                             // The URL was stopped but not started, probably a custom URL scheme.
-                            CoreEvents.instance.trigger(CoreEventsProvider.IAB_LOAD_START, event);
+                            CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
                         }
                     });
                 });
@@ -996,7 +996,7 @@ export class CoreUtilsProvider {
                     loadStartSubscription.unsubscribe();
                     loadStopSubscription && loadStopSubscription.unsubscribe();
                     exitSubscription.unsubscribe();
-                    CoreEvents.instance.trigger(CoreEventsProvider.IAB_EXIT, event);
+                    CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
                 });
             });
         }

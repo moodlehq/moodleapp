@@ -16,7 +16,7 @@ import { createComponent, createMock, prepareComponentTest } from '@/tests/utils
 
 import { AppComponent } from '@app/app.component';
 import { CoreLangProvider } from '@services/lang';
-import { CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEvents } from '@singletons/events';
 
 describe('App component', () => {
 
@@ -25,7 +25,6 @@ describe('App component', () => {
     beforeEach(() => {
         langProvider = createMock<CoreLangProvider>(['clearCustomStrings']);
 
-        CoreEvents.setInstance(new CoreEventsProvider());
         prepareComponentTest(AppComponent, [
             { provide: CoreLangProvider, useValue: langProvider },
         ]);
@@ -42,7 +41,7 @@ describe('App component', () => {
         const fixture = createComponent(AppComponent);
 
         fixture.componentInstance.ngOnInit();
-        CoreEvents.instance.trigger(CoreEventsProvider.LOGOUT);
+        CoreEvents.trigger(CoreEvents.LOGOUT);
 
         expect(langProvider.clearCustomStrings).toHaveBeenCalled();
     });

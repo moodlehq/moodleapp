@@ -18,7 +18,7 @@ import { ILocalNotification } from '@ionic-native/local-notifications';
 
 import { CoreApp, CoreAppSchema } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEventObserver, CoreEvents, CoreEventsProvider } from '@services/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
@@ -159,7 +159,7 @@ export class CoreLocalNotificationsProvider {
             this.createDefaultChannel();
         });
 
-        CoreEvents.instance.on(CoreEventsProvider.SITE_DELETED, (site: CoreSite) => {
+        CoreEvents.on(CoreEvents.SITE_DELETED, (site: CoreSite) => {
             if (site) {
                 this.cancelSiteNotifications(site.id!);
             }
