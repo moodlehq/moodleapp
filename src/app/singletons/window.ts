@@ -60,7 +60,7 @@ export class CoreWindow {
 
             await CoreUtils.instance.openFile(url);
         } else {
-            let treated: boolean;
+            let treated = false;
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             options = options || {};
 
@@ -76,7 +76,7 @@ export class CoreWindow {
                     // Not logged in, cannot auto-login.
                     CoreUtils.instance.openInBrowser(url);
                 } else {
-                    await CoreSites.instance.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
+                    await CoreSites.instance.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(url);
                 }
             }
         }

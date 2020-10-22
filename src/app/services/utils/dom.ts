@@ -30,6 +30,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
+import { CoreSilentError } from '@classes/errors/silenterror';
 
 import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -40,14 +41,15 @@ import { CoreLogger } from '@singletons/logger';
 @Injectable()
 export class CoreDomUtilsProvider {
 
+    protected readonly INSTANCE_ID_ATTR_NAME = 'core-instance-id';
+
     // List of input types that support keyboard.
     protected readonly INPUT_SUPPORT_KEYBOARD: string[] = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number',
         'password', 'search', 'tel', 'text', 'time', 'url', 'week'];
-    protected readonly INSTANCE_ID_ATTR_NAME: string = 'core-instance-id';
 
     protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
-    protected matchesFn: string; // Name of the "matches" function to use when simulating a closest call.
+    protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
     protected lastInstanceId = 0;
@@ -58,10 +60,17 @@ export class CoreDomUtilsProvider {
     constructor(protected domSanitizer: DomSanitizer) {
         this.logger = CoreLogger.getInstance('CoreDomUtilsProvider');
 
+        this.init();
+    }
+
+    /**
+     * Init some properties.
+     */
+    protected async init(): Promise<void> {
         // Check if debug messages should be displayed.
-        CoreConfig.instance.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false).then((debugDisplay) => {
-            this.debugDisplay = !!debugDisplay;
-        });
+        const debugDisplay = await CoreConfig.instance.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
+
+        this.debugDisplay = debugDisplay != 0;
     }
 
     /**
@@ -73,17 +82,21 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      * @return Closest ancestor.
      */
-    closest(element: Element, selector: string): Element {
+    closest(element: Element | undefined | null, selector: string): Element | null {
+        if (!element) {
+            return null;
+        }
+    
         // Try to use closest if the browser supports it.
         if (typeof element.closest == 'function') {
             return element.closest(selector);
         }
 
-        if (!this.matchesFn) {
+        if (!this.matchesFunctionName) {
             // Find the matches function supported by the browser.
             ['matches', 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'oMatchesSelector'].some((fn) => {
                 if (typeof document.body[fn] == 'function') {
-                    this.matchesFn = fn;
+                    this.matchesFunctionName = fn;
 
                     return true;
                 }
@@ -91,18 +104,22 @@ export class CoreDomUtilsProvider {
                 return false;
             });
 
-            if (!this.matchesFn) {
-                return;
+            if (!this.matchesFunctionName) {
+                return null;
             }
         }
 
         // Traverse parents.
-        while (element) {
-            if (element[this.matchesFn](selector)) {
-                return element;
+        let elementToTreat: Element | null = element;
+
+        while (elementToTreat) {
+            if (elementToTreat[this.matchesFunctionName](selector)) {
+                return elementToTreat;
             }
-            element = element.parentElement;
+            elementToTreat = elementToTreat.parentElement;
         }
+
+        return null;
     }
 
     /**
@@ -116,7 +133,7 @@ export class CoreDomUtilsProvider {
      * @param alwaysConfirm True to show a confirm even if the size isn't high, false otherwise.
      * @return Promise resolved when the user confirms or if no confirm needed.
      */
-    confirmDownloadSize(
+    async confirmDownloadSize(
         size: {size: number; total: boolean},
         message?: string,
         unknownMessage?: string,
@@ -126,73 +143,88 @@ export class CoreDomUtilsProvider {
     ): Promise<void> {
         const readableSize = CoreTextUtils.instance.bytesToSize(size.size, 2);
 
-        const getAvailableBytes = new Promise((resolve): void => {
+        const getAvailableBytes = async (): Promise<number | null> => {
             if (CoreApp.instance.isDesktop()) {
                 // Free space calculation is not supported on desktop.
-                resolve(null);
-            } else {
-                CoreFile.instance.calculateFreeSpace().then((availableBytes) => {
-                    if (CoreApp.instance.isAndroid()) {
-                        return availableBytes;
-                    } else {
-                        // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
-                        // We'll only use it when space is <500MB, or we're downloading more than twice the reported space.
-                        if (availableBytes < CoreConstants.IOS_FREE_SPACE_THRESHOLD || size.size > availableBytes / 2) {
-                            return availableBytes;
-                        } else {
-                            return null;
-                        }
-                    }
-                }).then((availableBytes) => {
-                    resolve(availableBytes);
-                });
+                return null;
             }
-        });
 
-        const getAvailableSpace = getAvailableBytes.then((availableBytes: number) => {
+            const availableBytes = await CoreFile.instance.calculateFreeSpace();
+
+            if (CoreApp.instance.isAndroid()) {
+                return availableBytes;
+            } else {
+                // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
+                // We'll only use it when space is <500MB, or we're downloading more than twice the reported space.
+                if (availableBytes < CoreConstants.IOS_FREE_SPACE_THRESHOLD || size.size > availableBytes / 2) {
+                    return availableBytes;
+                } else {
+                    return null;
+                }
+            }
+        };
+
+        const getAvailableSpace = (availableBytes: number | null): string => {
             if (availableBytes === null) {
                 return '';
             } else {
                 const availableSize = CoreTextUtils.instance.bytesToSize(availableBytes, 2);
+
                 if (CoreApp.instance.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
-                    return Promise.reject(new CoreError(Translate.instance.instant('core.course.insufficientavailablespace',
-                        { size: readableSize })));
+                    throw new CoreError(
+                        Translate.instance.instant(
+                            'core.course.insufficientavailablespace',
+                            { size: readableSize },
+                        ),
+                    );
                 }
 
                 return Translate.instance.instant('core.course.availablespace', { available: availableSize });
             }
-        });
+        };
 
-        return getAvailableSpace.then((availableSpace) => {
-            wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
-            limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
+        const availableBytes = await getAvailableBytes();
 
-            let wifiPrefix = '';
-            if (CoreApp.instance.isNetworkAccessLimited()) {
-                wifiPrefix = Translate.instance.instant('core.course.confirmlimiteddownload');
-            }
+        const availableSpace = getAvailableSpace(availableBytes);
 
-            if (size.size < 0 || (size.size == 0 && !size.total)) {
-                // Seems size was unable to be calculated. Show a warning.
-                unknownMessage = unknownMessage || 'core.course.confirmdownloadunknownsize';
+        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
+        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
-                return this.showConfirm(wifiPrefix + Translate.instance.instant(
-                    unknownMessage, { availableSpace: availableSpace }));
-            } else if (!size.total) {
-                // Filesize is only partial.
+        let wifiPrefix = '';
+        if (CoreApp.instance.isNetworkAccessLimited()) {
+            wifiPrefix = Translate.instance.instant('core.course.confirmlimiteddownload');
+        }
 
-                return this.showConfirm(wifiPrefix + Translate.instance.instant('core.course.confirmpartialdownloadsize',
-                    { size: readableSize, availableSpace: availableSpace }));
-            } else if (alwaysConfirm || size.size >= wifiThreshold ||
+        if (size.size < 0 || (size.size == 0 && !size.total)) {
+            // Seems size was unable to be calculated. Show a warning.
+            unknownMessage = unknownMessage || 'core.course.confirmdownloadunknownsize';
+
+            return this.showConfirm(
+                wifiPrefix + Translate.instance.instant(
+                    unknownMessage,
+                    { availableSpace: availableSpace },
+                ),
+            );
+        } else if (!size.total) {
+            // Filesize is only partial.
+
+            return this.showConfirm(
+                wifiPrefix + Translate.instance.instant(
+                    'core.course.confirmpartialdownloadsize',
+                    { size: readableSize, availableSpace: availableSpace },
+                ),
+            );
+        } else if (alwaysConfirm || size.size >= wifiThreshold ||
                 (CoreApp.instance.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
-                message = message || (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload');
+            message = message || (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload');
 
-                return this.showConfirm(wifiPrefix + Translate.instance.instant(message,
-                    { size: readableSize, availableSpace: availableSpace }));
-            }
-
-            return Promise.resolve();
-        });
+            return this.showConfirm(
+                wifiPrefix + Translate.instance.instant(
+                    message,
+                    { size: readableSize, availableSpace: availableSpace },
+                ),
+            );
+        }
     }
 
     /**
@@ -255,11 +287,10 @@ export class CoreDomUtilsProvider {
         this.logger.error('The function extractDownloadableFilesFromHtml has been moved to CoreFilepoolProvider.' +
                 ' Please use that function instead of this one.');
 
-        const urls = [];
+        const urls: string[] = [];
 
         const element = this.convertToElement(html);
-        const elements: (HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement |
-            HTMLTrackElement)[] = Array.from(element.querySelectorAll('a, img, audio, video, source, track'));
+        const elements: AnchorOrMediaElement[] = Array.from(element.querySelectorAll('a, img, audio, video, source, track'));
 
         for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
@@ -271,7 +302,7 @@ export class CoreDomUtilsProvider {
 
             // Treat video poster.
             if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
-                url = element.getAttribute('poster');
+                url = element.getAttribute('poster') || '';
                 if (url && CoreUrlUtils.instance.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                     urls.push(url);
                 }
@@ -305,7 +336,7 @@ export class CoreDomUtilsProvider {
      */
     extractUrlsFromCSS(code: string): string[] {
         // First of all, search all the url(...) occurrences that don't include "data:".
-        const urls = [];
+        const urls: string[] = [];
         const matches = code.match(/url\(\s*["']?(?!data:)([^)]+)\)/igm);
 
         if (!matches) {
@@ -394,7 +425,7 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      * @return Selection contents. Undefined if not found.
      */
-    getContentsOfElement(element: HTMLElement, selector: string): string {
+    getContentsOfElement(element: HTMLElement, selector: string): string | undefined {
         if (element) {
             const selected = element.querySelector(selector);
             if (selected) {
@@ -447,7 +478,7 @@ export class CoreDomUtilsProvider {
      * @param attribute Attribute to get.
      * @return Attribute value.
      */
-    getHTMLElementAttribute(html: string, attribute: string): string {
+    getHTMLElementAttribute(html: string, attribute: string): string | null {
         return this.convertToElement(html).children[0].getAttribute(attribute);
     }
 
@@ -584,8 +615,8 @@ export class CoreDomUtilsProvider {
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
      */
-    getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] {
-        let element: HTMLElement = <HTMLElement> (selector ? container.querySelector(selector) : container);
+    getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] | null {
+        let element: HTMLElement | null = <HTMLElement> (selector ? container.querySelector(selector) : container);
         let positionTop = 0;
         let positionLeft = 0;
 
@@ -645,9 +676,9 @@ export class CoreDomUtilsProvider {
      * @param needsTranslate Whether the error needs to be translated.
      * @return Error message, null if no error should be displayed.
      */
-    getErrorMessage(error: CoreError | CoreTextErrorObject | string, needsTranslate?: boolean): string {
+    getErrorMessage(error: CoreError | CoreTextErrorObject | string, needsTranslate?: boolean): string | null {
         let extraInfo = '';
-        let errorMessage: string;
+        let errorMessage: string | undefined;
 
         if (typeof error == 'object') {
             if (this.debugDisplay) {
@@ -657,19 +688,21 @@ export class CoreDomUtilsProvider {
                 }
                 if ('backtrace' in error && error.backtrace) {
                     extraInfo += '<br><br>' + CoreTextUtils.instance.replaceNewLines(
-                        CoreTextUtils.instance.escapeHTML(error.backtrace, false), '<br>');
+                        CoreTextUtils.instance.escapeHTML(error.backtrace, false),
+                        '<br>',
+                    );
                 }
 
                 // eslint-disable-next-line no-console
                 console.error(error);
             }
 
-            // We received an object instead of a string. Search for common properties.
-            if (this.isCanceledError(error)) {
-                // It's a canceled error, don't display an error.
+            if (this.isSilentError(error)) {
+                // It's a silent error, don't display an error.
                 return null;
             }
 
+            // We received an object instead of a string. Search for common properties.
             errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error);
             if (!errorMessage) {
                 // No common properties found, just stringify it.
@@ -712,7 +745,7 @@ export class CoreDomUtilsProvider {
     getInstanceByElement(element: Element): any {
         const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
 
-        return this.instances[id];
+        return id && this.instances[id];
     }
 
     /**
@@ -723,6 +756,16 @@ export class CoreDomUtilsProvider {
      */
     isCanceledError(error: CoreError | CoreTextErrorObject | string): boolean {
         return error instanceof CoreCanceledError;
+    }
+
+    /**
+     * Check whether an error is an error caused because the user canceled a showConfirm.
+     *
+     * @param error Error to check.
+     * @return Whether it's a canceled error.
+     */
+    isSilentError(error: CoreError | CoreTextErrorObject | string): boolean {
+        return error instanceof CoreSilentError;
     }
 
     /**
@@ -898,7 +941,7 @@ export class CoreDomUtilsProvider {
      */
     removeInstanceByElement(element: Element): void {
         const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
-        delete this.instances[id];
+        id && delete this.instances[id];
     }
 
     /**
@@ -946,7 +989,8 @@ export class CoreDomUtilsProvider {
         // Treat elements with src (img, audio, video, ...).
         const media = Array.from(element.querySelectorAll('img, video, audio, source, track'));
         media.forEach((media: HTMLElement) => {
-            let newSrc = paths[CoreTextUtils.instance.decodeURIComponent(media.getAttribute('src'))];
+            const currentSrc = media.getAttribute('src');
+            const newSrc = currentSrc ? paths[CoreTextUtils.instance.decodeURIComponent(currentSrc)] : undefined;
 
             if (typeof newSrc != 'undefined') {
                 media.setAttribute('src', newSrc);
@@ -954,9 +998,10 @@ export class CoreDomUtilsProvider {
 
             // Treat video posters.
             if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
-                newSrc = paths[CoreTextUtils.instance.decodeURIComponent(media.getAttribute('poster'))];
-                if (typeof newSrc !== 'undefined') {
-                    media.setAttribute('poster', newSrc);
+                const currentPoster = media.getAttribute('poster');
+                const newPoster = paths[CoreTextUtils.instance.decodeURIComponent(currentPoster!)];
+                if (typeof newPoster !== 'undefined') {
+                    media.setAttribute('poster', newPoster);
                 }
             }
         });
@@ -964,14 +1009,14 @@ export class CoreDomUtilsProvider {
         // Now treat links.
         const anchors = Array.from(element.querySelectorAll('a'));
         anchors.forEach((anchor: HTMLElement) => {
-            const href = CoreTextUtils.instance.decodeURIComponent(anchor.getAttribute('href'));
-            const newUrl = paths[href];
+            const currentHref = anchor.getAttribute('href');
+            const newHref = currentHref ? paths[CoreTextUtils.instance.decodeURIComponent(currentHref)] : undefined;
 
-            if (typeof newUrl != 'undefined') {
-                anchor.setAttribute('href', newUrl);
+            if (typeof newHref != 'undefined') {
+                anchor.setAttribute('href', newHref);
 
                 if (typeof anchorFn == 'function') {
-                    anchorFn(anchor, href);
+                    anchorFn(anchor, newHref);
                 }
             }
         });
@@ -990,7 +1035,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
     scrollTo(content: IonContent, x: number, y: number, duration?: number): Promise<void> {
-        return content?.scrollByPoint(x, y, duration);
+        return content?.scrollByPoint(x, y, duration || 0);
     }
 
     /**
@@ -1080,7 +1125,7 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        content?.scrollByPoint(position[0], position[1], duration);
+        content?.scrollByPoint(position[0], position[1], duration || 0);
 
         return true;
     }
@@ -1108,7 +1153,7 @@ export class CoreDomUtilsProvider {
                 return false;
             }
 
-            content?.scrollByPoint(position[0], position[1], duration);
+            content?.scrollByPoint(position[0], position[1], duration || 0);
 
             return true;
         } catch (error) {
@@ -1186,31 +1231,36 @@ export class CoreDomUtilsProvider {
 
         const alert = await AlertController.instance.create(options);
 
+        // eslint-disable-next-line promise/catch-or-return
         alert.present().then(() => {
             if (hasHTMLTags) {
                 // Treat all anchors so they don't override the app.
-                const alertMessageEl: HTMLElement = alert.querySelector('.alert-message');
-                this.treatAnchors(alertMessageEl);
+                const alertMessageEl: HTMLElement | null = alert.querySelector('.alert-message');
+                alertMessageEl && this.treatAnchors(alertMessageEl);
             }
+
+            return;
         });
 
         // Store the alert and remove it when dismissed.
         this.displayedAlerts[alertId] = alert;
 
         // // Set the callbacks to trigger an observable event.
+        // eslint-disable-next-line promise/catch-or-return, promise/always-return
         alert.onDidDismiss().then(() => {
             delete this.displayedAlerts[alertId];
         });
 
-        if (autocloseTime > 0) {
+        if (autocloseTime && autocloseTime > 0) {
             setTimeout(async () => {
                 await alert.dismiss();
 
                 if (options.buttons) {
                     // Execute dismiss function if any.
-                    const cancelButton = <AlertButton> options.buttons.find((button) => typeof button != 'string' &&
-                        typeof button.handler != 'undefined' && button.role == 'cancel');
-                    cancelButton?.handler(null);
+                    const cancelButton = <AlertButton> options.buttons.find(
+                        (button) => typeof button != 'string' && typeof button.handler != 'undefined' && button.role == 'cancel',
+                    );
+                    cancelButton.handler?.(null);
                 }
             }, autocloseTime);
         }
@@ -1248,8 +1298,13 @@ export class CoreDomUtilsProvider {
         translateArgs: Record<string, string> = {},
         options?: AlertOptions,
     ): Promise<void> {
-        return this.showConfirm(Translate.instance.instant(translateMessage, translateArgs), undefined,
-            Translate.instance.instant('core.delete'), undefined, options);
+        return this.showConfirm(
+            Translate.instance.instant(translateMessage, translateArgs),
+            undefined,
+            Translate.instance.instant('core.delete'),
+            undefined,
+            options,
+        );
     }
 
     /**
@@ -1304,6 +1359,11 @@ export class CoreDomUtilsProvider {
         needsTranslate?: boolean,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
+        if (this.isCanceledError(error)) {
+            // It's a canceled error, don't display an error.
+            return Promise.resolve(null);
+        }
+
         const message = this.getErrorMessage(error, needsTranslate);
 
         if (message === null) {
@@ -1334,7 +1394,7 @@ export class CoreDomUtilsProvider {
             return null;
         }
 
-        let errorMessage = error;
+        let errorMessage = error || undefined;
 
         if (error && typeof error != 'string') {
             errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error);
@@ -1423,8 +1483,8 @@ export class CoreDomUtilsProvider {
         const isDevice = CoreApp.instance.isAndroid() || CoreApp.instance.isIOS();
         if (!isDevice) {
             // Treat all anchors so they don't override the app.
-            const alertMessageEl: HTMLElement = alert.querySelector('.alert-message');
-            this.treatAnchors(alertMessageEl);
+            const alertMessageEl: HTMLElement | null = alert.querySelector('.alert-message');
+            alertMessageEl && this.treatAnchors(alertMessageEl);
         }
     }
 
@@ -1443,8 +1503,7 @@ export class CoreDomUtilsProvider {
         header?: string,
         placeholder?: string,
         type: TextFieldTypes | 'checkbox' | 'radio' | 'textarea' = 'password',
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any> {
+    ): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         return new Promise((resolve, reject) => {
             placeholder = placeholder ?? Translate.instance.instant('core.login.password');
 
@@ -1532,7 +1591,7 @@ export class CoreDomUtilsProvider {
      * @param instance The instance to store.
      * @return ID to identify the instance.
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     storeInstanceByElement(element: Element, instance: any): string {
         const id = String(this.lastInstanceId++);
 
@@ -1602,7 +1661,7 @@ export class CoreDomUtilsProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param fullScreen Whether the modal should be full screen.
      */
-    viewImage(image: string, title?: string, component?: string, componentId?: string | number, fullScreen?: boolean): void {
+    viewImage(image: string, title?: string | null, component?: string, componentId?: string | number, fullScreen?: boolean): void {
         // @todo
     }
 
@@ -1614,7 +1673,7 @@ export class CoreDomUtilsProvider {
      */
     waitForImages(element: HTMLElement): Promise<boolean> {
         const imgs = Array.from(element.querySelectorAll('img'));
-        const promises = [];
+        const promises: Promise<void>[] = [];
         let hasImgToLoad = false;
 
         imgs.forEach((img) => {
@@ -1646,7 +1705,7 @@ export class CoreDomUtilsProvider {
      */
     wrapElement(el: HTMLElement, wrapper: HTMLElement): void {
         // Insert the wrapper before the element.
-        el.parentNode.insertBefore(wrapper, el);
+        el.parentNode?.insertBefore(wrapper, el);
         // Now move the element into the wrapper.
         wrapper.appendChild(el);
     }
@@ -1675,7 +1734,7 @@ export class CoreDomUtilsProvider {
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    triggerFormSubmittedEvent(formRef: ElementRef, online?: boolean, siteId?: string): void {
+    triggerFormSubmittedEvent(formRef: ElementRef | undefined, online?: boolean, siteId?: string): void {
         if (!formRef) {
             return;
         }
@@ -1690,3 +1749,6 @@ export class CoreDomUtilsProvider {
 }
 
 export class CoreDomUtils extends makeSingleton(CoreDomUtilsProvider) {}
+
+type AnchorOrMediaElement =
+    HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement | HTMLTrackElement;

@@ -27,6 +27,7 @@ export class CoreWSError extends CoreError {
     debuginfo?: string; // Debug info. Only if debug mode is enabled.
     backtrace?: string; // Backtrace. Only if debug mode is enabled.
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(error: any) {
         super(error.message);
 

@@ -40,18 +40,18 @@ export class CoreDelegate {
     /**
      * Default handler
      */
-    protected defaultHandler: CoreDelegateHandler;
+    protected defaultHandler?: CoreDelegateHandler;
 
     /**
      * Time when last updateHandler functions started.
      */
-    protected lastUpdateHandlersStart: number;
+    protected lastUpdateHandlersStart = 0;
 
     /**
      * Feature prefix to check is feature is enabled or disabled in site.
      * This check is only made if not false. Override on the subclass or override isFeatureDisabled function.
      */
-    protected featurePrefix: string;
+    protected featurePrefix?: string;
 
     /**
      * Name of the property to be used to index the handlers. By default, the handler's name will be used.
@@ -78,7 +78,7 @@ export class CoreDelegate {
     /**
      * Function to resolve the handlers init promise.
      */
-    protected handlersInitResolve: () => void;
+    protected handlersInitResolve!: () => void;
 
     /**
      * Constructor of the Delegate.
@@ -110,7 +110,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    protected executeFunctionOnEnabled<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T {
+    protected executeFunctionOnEnabled<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T | undefined {
         return this.execute<T>(this.enabledHandlers[handlerName], fnName, params);
     }
 
@@ -123,7 +123,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    protected executeFunction<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T {
+    protected executeFunction<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T | undefined {
         return this.execute(this.handlers[handlerName], fnName, params);
     }
 
@@ -136,7 +136,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    private execute<T = unknown>(handler: CoreDelegateHandler, fnName: string, params?: unknown[]): T {
+    private execute<T = unknown>(handler: CoreDelegateHandler, fnName: string, params?: unknown[]): T | undefined {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
@@ -252,7 +252,7 @@ export class CoreDelegate {
             this.updatePromises[siteId] = {};
         }
 
-        if (!CoreSites.instance.isLoggedIn() || this.isFeatureDisabled(handler, currentSite)) {
+        if (!CoreSites.instance.isLoggedIn() || this.isFeatureDisabled(handler, currentSite!)) {
             promise = Promise.resolve(false);
         } else {
             promise = Promise.resolve(handler.isEnabled()).catch(() => false);
@@ -270,6 +270,8 @@ export class CoreDelegate {
                     delete this.enabledHandlers[key];
                 }
             }
+
+            return;
         }).finally(() => {
             // Update finished, delete the promise.
             delete this.updatePromises[siteId][handler.name];
@@ -295,7 +297,7 @@ export class CoreDelegate {
      * @return Resolved when done.
      */
     protected async updateHandlers(): Promise<void> {
-        const promises = [];
+        const promises: Promise<void>[] = [];
         const now = Date.now();
 
         this.logger.debug('Updating handlers for current site.');

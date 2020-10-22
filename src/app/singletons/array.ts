@@ -41,7 +41,7 @@ export class CoreArray {
             return (arr as any).flat(); // eslint-disable-line @typescript-eslint/no-explicit-any
         }
 
-        return [].concat(...arr);
+        return (<T[]> []).concat(...arr);
     }
 
     /**

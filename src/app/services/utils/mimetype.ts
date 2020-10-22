@@ -401,7 +401,7 @@ export class CoreMimetypeUtilsProvider {
      * @param capitalise If true, capitalises first character of result.
      * @return Type description.
      */
-    getMimetypeDescription(obj: FileEntry | { filename: string; mimetype: string } | string, capitalise?: boolean): string {
+    getMimetypeDescription(obj: FileEntry | CoreWSExternalFile | string, capitalise?: boolean): string {
         const langPrefix = 'assets.mimetypes.';
         let filename: string | undefined = '';
         let mimetype: string | undefined = '';

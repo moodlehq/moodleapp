@@ -39,7 +39,7 @@ export class CoreConstants {
     static readonly DOWNLOAD_THRESHOLD = 10485760; // 10MB.
     static readonly MINIMUM_FREE_SPACE = 10485760; // 10MB.
     static readonly IOS_FREE_SPACE_THRESHOLD = 524288000; // 500MB.
-    static readonly DONT_SHOW_ERROR = 'CoreDontShowError';
+    static readonly DONT_SHOW_ERROR = 'CoreDontShowError'; // @deprecated since 3.9.5. Use CoreSilentError instead.
     static readonly NO_SITE_ID = 'NoSite';
 
     // Settings constants.

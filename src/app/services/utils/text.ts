@@ -417,7 +417,7 @@ export class CoreTextUtilsProvider {
      * @param doubleEncode If false, it will not convert existing html entities. Defaults to true.
      * @return Escaped text.
      */
-    escapeHTML(text: string | number, doubleEncode: boolean = true): string {
+    escapeHTML(text?: string | number | null, doubleEncode: boolean = true): string {
         if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
@@ -670,7 +670,7 @@ export class CoreTextUtilsProvider {
      * @param text Text to treat.
      * @return Treated text.
      */
-    removeEndingSlash(text: string): string {
+    removeEndingSlash(text?: string): string {
         if (!text) {
             return '';
         }

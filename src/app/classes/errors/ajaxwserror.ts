@@ -28,7 +28,7 @@ export class CoreAjaxWSError extends CoreError {
     backtrace?: string; // Backtrace. Only if debug mode is enabled.
     available?: number; // Whether the AJAX call is available. 0 if unknown, 1 if available, -1 if not available.
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(error: any, available?: number) {
         super(error.message);
 

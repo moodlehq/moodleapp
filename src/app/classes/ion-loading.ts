@@ -25,7 +25,7 @@ export class CoreIonLoadingElement {
 
     constructor(public loading: HTMLIonLoadingElement) { }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async dismiss(data?: any, role?: string): Promise<boolean> {
         if (!this.isPresented || this.isDismissed) {
             this.isDismissed = true;

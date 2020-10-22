@@ -5,7 +5,7 @@
  */
 
 function initCache () {
-  const store = []
+  const store: any[] = []
   // cache only first element, second is length to jump ahead for the parser
   const cache = function cache (value) {
     store.push(value[0])
@@ -316,7 +316,7 @@ function expectArrayItems (str, expectedItems = 0, cache) {
   let hasStringKeys = false
   let item
   let totalOffset = 0
-  let items = []
+  let items: any[] = []
   cache([items])
 
   for (let i = 0; i < expectedItems; i++) {

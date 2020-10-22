@@ -85,7 +85,7 @@ export class CoreFileSessionProvider {
      * @param id File area identifier.
      * @param siteId Site ID. If not defined, current site.
      */
-    protected initFileArea(component: string, id: string | number, siteId?: string): void {
+    protected initFileArea(component: string, id: string | number, siteId: string): void {
         if (!this.files[siteId]) {
             this.files[siteId] = {};
         }

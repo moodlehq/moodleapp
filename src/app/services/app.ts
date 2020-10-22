@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, NgZone, ApplicationRef } from '@angular/core';
+import { Params } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
@@ -224,7 +225,7 @@ export class CoreAppProvider {
      * @param  storesConfig Config params to send the user to the right place.
      * @return Store URL.
      */
-    getAppStoreUrl(storesConfig: CoreStoreConfig): string | null {
+    getAppStoreUrl(storesConfig: CoreStoreConfig): string | undefined {
         if (this.isMac() && storesConfig.mac) {
             return 'itms-apps://itunes.apple.com/app/' + storesConfig.mac;
         }
@@ -253,7 +254,7 @@ export class CoreAppProvider {
             return storesConfig.mobile;
         }
 
-        return storesConfig.default || null;
+        return storesConfig.default;
     }
 
     /**
@@ -563,11 +564,11 @@ export class CoreAppProvider {
      *
      * @return Object with siteid, state, params and timemodified.
      */
-    getRedirect<Params extends Record<string, unknown> = Record<string, unknown>>(): CoreRedirectData<Params> {
+    getRedirect(): CoreRedirectData {
         if (localStorage?.getItem) {
             try {
                 const paramsJson = localStorage.getItem('CoreRedirectParams');
-                const data: CoreRedirectData<Params> = {
+                const data: CoreRedirectData = {
                     siteId: localStorage.getItem('CoreRedirectSiteId') || undefined,
                     page: localStorage.getItem('CoreRedirectState')  || undefined,
                     timemodified: parseInt(localStorage.getItem('CoreRedirectTime') || '0', 10),
@@ -593,7 +594,7 @@ export class CoreAppProvider {
      * @param page Page to go.
      * @param params Page params.
      */
-    storeRedirect(siteId: string, page: string, params: Record<string, unknown>): void {
+    storeRedirect(siteId: string, page: string, params: Params): void {
         if (localStorage && localStorage.setItem) {
             try {
                 localStorage.setItem('CoreRedirectSiteId', siteId);
@@ -697,7 +698,7 @@ export class CoreApp extends makeSingleton(CoreAppProvider) {}
 /**
  * Data stored for a redirect to another page/site.
  */
-export type CoreRedirectData<Params extends Record<string, unknown>> = {
+export type CoreRedirectData = {
     /**
      * ID of the site to load.
      */
