@@ -43,4 +43,4 @@ import { CoreSettingsDeviceInfoPage } from './pages/deviceinfo/deviceinfo.page';
         CoreSettingsDeviceInfoPage,
     ],
 })
-export class CoreAppSettingsPageModule {}
+export class CoreAppSettingsModule {}
