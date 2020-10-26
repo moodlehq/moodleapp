@@ -261,14 +261,19 @@
       }
     ],
     "compression": "maximum",
-    "electronVersion": "4.2.5",
+    "electronVersion": "8.0.2",
     "mac": {
       "category": "public.app-category.education",
       "icon": "resources/desktop/icon.icns",
       "target": "mas",
       "bundleVersion": "3.9.3",
       "extendInfo": {
-        "ElectronTeamID": "2NU57U5PAW"
+        "ElectronTeamID": "2NU57U5PAW",
+        "NSLocationWhenInUseUsageDescription": "We need your location so you can attach it as part of your submissions.",
+        "NSLocationAlwaysUsageDescription": "We need your location so you can attach it as part of your submissions.",
+        "NSCameraUsageDescription": "We need camera access to take pictures so you can attach them as part of your submissions.",
+        "NSMicrophoneUsageDescription": "We need microphone access to record sounds so you can attach them as part of your submissions.",
+        "NSPhotoLibraryUsageDescription": "We need photo library access to get pictures from there so you can attach them as part of your submissions."
       }
     },
     "win": {
