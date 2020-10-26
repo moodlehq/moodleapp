@@ -2,16 +2,16 @@ $core-login-page-background-color: $white !default;
 $core-login-page-text-color: $text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
-$core-login-item-inner-background-color: $white !default;
-$core-login-item-background-color: $white !default;
+$core-login-input-item-background-color: $core-login-page-background-color !default;
+$core-login-input-item-text-color: $core-login-page-text-color !default;
 
 // Dark.
 $core-dark-login-page-background-color: $black !default;
 $core-dark-login-page-text-color: $core-dark-text-color !default;
-$core-dark-login-item-inner-background-color: $core-dark-login-page-background-color !default;
-$core-dark-login-item-background-color: $core-dark-login-page-background-color !default;
 $core-dark-login-button-outline: $core-login-button-outline !default;
 $core-dark-login-loading-color: $core-dark-text-color !default;
+$core-dark-input-login-item-background-color: $core-dark-login-page-background-color !default;
+$core-dark-input-login-item-text-color: $core-dark-login-page-text-color !default;
 
 ion-app.app-root page-core-login-credentials,
 ion-app.app-root page-core-login-reconnect,
@@ -22,6 +22,13 @@ ion-app.app-root page-core-login-site {
 
         @include darkmode() {
             background: $core-dark-login-page-background-color;
+            color: $core-dark-login-page-text-color;
+        }
+    }
+
+    .item p, .item h2, .item h3, .list .item.core-oauth-icon .label, .text-input {
+        color: $core-login-page-text-color;
+        @include darkmode() {
             color: $core-dark-login-page-text-color;
         }
     }
@@ -78,6 +85,22 @@ ion-app.app-root page-core-login-site {
         margin-bottom: 20px;
     }
 
+
+    .core-login-form .item,
+    .core-login-form .item-inner {
+        background-color: $core-login-input-item-background-color;
+        @include darkmode() {
+            background-color: $core-dark-input-login-item-background-color;
+        }
+
+        p, input {
+            color: $core-login-input-item-text-color;
+            @include darkmode() {
+                color: $core-dark-input-login-item-text-color;
+            }
+        }
+    }
+
     ion-list.core-login-forgotten-password {
         margin-top: 0;
         margin-bottom: 0;
@@ -89,6 +112,8 @@ ion-app.app-root page-core-login-site {
             @include darkmode() {
                 background: transparent;
             }
+
+            color: $core-login-page-text-color;
         }
     }
 
