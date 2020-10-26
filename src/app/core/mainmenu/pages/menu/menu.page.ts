@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { NavController, IonTabs } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
@@ -22,6 +22,9 @@ import { CoreSites } from '@services/sites';
 import { CoreEvents, CoreEventObserver, CoreEventLoadPageMainMenuData } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/delegate';
+import { CoreUtils } from '@/app/services/utils/utils';
+import { CoreDomUtils } from '@/app/services/utils/dom';
+import { Translate } from '@/app/singletons/core.singletons';
 
 /**
  * Page that displays the main menu of the app.
@@ -48,13 +51,14 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     protected mainMenuId: number;
     protected keyboardObserver?: CoreEventObserver;
 
-    @ViewChild('mainTabs') mainTabs?: any; // CoreIonTabsComponent;
+    @ViewChild('mainTabs') mainTabs?: IonTabs;
 
     constructor(
         protected route: ActivatedRoute,
         protected navCtrl: NavController,
         protected menuDelegate: CoreMainMenuDelegate,
         protected changeDetector: ChangeDetectorRef,
+        protected router: Router,
     ) {
         this.mainMenuId = CoreApp.instance.getMainMenuId();
     }
@@ -154,28 +158,19 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
                 newTabs.push(tab || handler);
             }
 
-            // Maintain tab in phantom mode in case is not visible.
-            const selectedTab = this.mainTabs?.getSelected();
-            if (selectedTab) {
-                const oldTab = this.tabs.find((tab) => tab.page == selectedTab.root && tab.icon == selectedTab.tabIcon);
-
-                if (oldTab) {
-                    // Check if the selected handler is visible.
-                    const isVisible = newTabs.some((newTab) => oldTab.title == newTab.title && oldTab.icon == newTab.icon);
-
-                    if (!isVisible) {
-                        oldTab.hide = true;
-                        newTabs.push(oldTab);
-                    }
-                }
-            }
-
             this.tabs = newTabs;
 
             // Sort them by priority so new handlers are in the right position.
             this.tabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
             this.loaded = this.menuDelegate.areHandlersLoaded();
+
+            if (this.loaded && this.mainTabs && !this.mainTabs.getSelected()) {
+                // Select the first tab.
+                setTimeout(() => {
+                    this.mainTabs!.select(this.tabs[0]?.page || 'more');
+                });
+            }
         }
 
         if (this.urlToOpen) {
@@ -194,21 +189,18 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         const i = this.tabs.findIndex((tab) => tab.page == data.redirectPage);
 
         if (i >= 0) {
-            // Tab found. Set the params.
-            this.tabs[i].pageParams = Object.assign({}, data.redirectParams);
+            // Tab found. Open it with the params.
+            this.navCtrl.navigateForward(data.redirectPage, {
+                queryParams: data.redirectParams,
+                animated: false,
+            });
         } else {
             // Tab not found, use a phantom tab.
-            this.redirectPage = data.redirectPage;
-            this.redirectParams = data.redirectParams;
+            // @todo
         }
 
         // Force change detection, otherwise sometimes the tab was selected before the params were applied.
         this.changeDetector.detectChanges();
-
-        setTimeout(() => {
-            // Let the tab load the params before navigating.
-            this.mainTabs?.selectTabRootByIndex(i + 1);
-        });
     }
 
     /**
@@ -220,6 +212,44 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         window.removeEventListener('resize', this.initHandlers.bind(this));
         CoreApp.instance.setMainMenuOpen(this.mainMenuId, false);
         this.keyboardObserver?.off();
+    }
+
+    /**
+     * Tab clicked.
+     *
+     * @param e Event.
+     * @param page Page of the tab.
+     */
+    async tabClicked(e: Event, page: string): Promise<void> {
+        if (this.mainTabs?.getSelected() != page) {
+            // Just change the tab.
+            return;
+        }
+
+        // Current tab was clicked. Check if user is already at root level.
+        if (this.router.url == '/mainmenu/' + page) {
+            // Already at root level, nothing to do.
+            return;
+        }
+
+        // Ask the user if he wants to go back to the root page of the tab.
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+            const tab = this.tabs.find((tab) => tab.page == page);
+
+            if (tab?.title) {
+                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabroot', { name: tab.title }));
+            } else {
+                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabrootdefault'));
+            }
+
+            // User confirmed, go to root.
+            this.mainTabs?.select(page);
+        } catch (error) {
+            // User canceled.
+        }
     }
 
 }

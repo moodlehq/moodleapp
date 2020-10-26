@@ -163,6 +163,8 @@ export class CoreMainMenuDelegate extends CoreDelegate {
 
             data.name = name;
             data.priority = handler.priority;
+
+            displayData.push(data);
         }
 
         // Sort them by priority.
