@@ -73,6 +73,24 @@ export async function renderComponent<T>(component: Type<T>, config: Partial<Ren
     });
 }
 
+export async function renderTemplate<T>(
+    component: Type<T>,
+    template: string,
+    config: Partial<RenderConfig> = {},
+): Promise<WrapperComponentFixture<T>> {
+    config.declarations = config.declarations ?? [];
+    config.declarations.push(component);
+
+    return renderAngularComponent(
+        createWrapperComponent(template, component),
+        {
+            declarations: [],
+            providers: [],
+            ...config,
+        },
+    );
+}
+
 export async function renderWrapperComponent<T>(
     component: Type<T>,
     tag: string,
@@ -84,17 +102,7 @@ export async function renderWrapperComponent<T>(
         .map(([name, value]) => `${name}="${value.toString().replace(/"/g, '&quot;')}"`)
         .join(' ');
 
-    config.declarations = config.declarations ?? [];
-    config.declarations.push(component);
-
-    return renderAngularComponent(
-        createWrapperComponent(`<${tag} ${inputAttributes}></${tag}>`, component),
-        {
-            declarations: [],
-            providers: [],
-            ...config,
-        },
-    );
+    return renderTemplate(component, `<${tag} ${inputAttributes}></${tag}>`, config);
 }
 
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {
