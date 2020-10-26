@@ -34,11 +34,14 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
+import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
 /**
  * Helper provider that provides some common features regarding authentication.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class CoreLoginHelperProvider {
 
     static readonly OPEN_COURSE = 'open_course';
@@ -448,7 +451,7 @@ export class CoreLoginHelperProvider {
      * @return Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    goToNoSitePage(navCtrl: NavController, page: string, params?: Params): Promise<any> {
+    goToNoSitePage(page?: string, params?: Params): Promise<any> {
         // @todo
         return Promise.resolve();
     }
@@ -456,17 +459,11 @@ export class CoreLoginHelperProvider {
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
-     * @param navCtrl NavController to use. Defaults to app root NavController.
-     * @param page Name of the page to load after loading the main page.
-     * @param params Params to pass to the page.
-     * @param options Navigation options.
-     * @param url URL to open once the main menu is loaded.
+     * @param options Options.
      * @return Promise resolved when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: Params, options?: any, url?: string): Promise<any> {
-        // @todo
-        return Promise.resolve();
+    goToSiteInitialPage(options?: OpenMainMenuOptions): Promise<void> {
+        return this.openMainMenu(options);
     }
 
     /**
@@ -664,17 +661,32 @@ export class CoreLoginHelperProvider {
     /**
      * Open the main menu, loading a certain page.
      *
-     * @param navCtrl NavController.
-     * @param page Name of the page to load.
-     * @param params Params to pass to the page.
-     * @param options Navigation options.
-     * @param url URL to open once the main menu is loaded.
+     * @param options Options.
      * @return Promise resolved when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected openMainMenu(navCtrl: NavController, page: string, params: Params, options?: any, url?: string): Promise<any> {
-        // @todo
-        return Promise.resolve();
+    protected async openMainMenu(options?: OpenMainMenuOptions): Promise<void> {
+
+        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
+        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
+        // @todo this.location.replaceState('');
+
+        if (options?.redirectPage == CoreLoginHelperProvider.OPEN_COURSE) {
+            // Load the main menu first, and then open the course.
+            try {
+                await this.navCtrl.navigateRoot('/mainmenu');
+            } finally {
+                // @todo: Open course.
+            }
+        } else {
+            // Open the main menu.
+            const queryParams: Params = Object.assign({}, options);
+            delete queryParams.navigationOptions;
+
+            await this.navCtrl.navigateRoot('/mainmenu', {
+                queryParams,
+                ...options?.navigationOptions,
+            });
+        }
     }
 
     /**
@@ -1374,4 +1386,11 @@ type StoredLoginLaunchData = {
     pageName: string;
     pageParams: Params;
     ssoUrlParams: CoreUrlParams;
+};
+
+type OpenMainMenuOptions = {
+    redirectPage?: string; // Route of the page to open in main menu. If not defined, default tab will be selected.
+    redirectParams?: Params; // Params to pass to the selected tab if any.
+    urlToOpen?: string; // URL to open once the main menu is loaded.
+    navigationOptions?: NavigationOptions; // Navigation options.
 };

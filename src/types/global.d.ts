@@ -66,6 +66,7 @@ declare global {
                 appstores: Record<string, string>;
                 displayqroncredentialscreen?: boolean;
                 displayqronsitescreen?: boolean;
+                forceOpenLinksIn: 'app' | 'browser';
             };
 
             BUILD: {

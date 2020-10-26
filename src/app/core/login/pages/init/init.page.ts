@@ -15,9 +15,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
-import { CoreApp } from '@services/app';
+import { CoreApp, CoreRedirectData } from '@services/app';
 import { CoreInit } from '@services/init';
 import { SplashScreen } from '@singletons/core.singletons';
+import { CoreConstants } from '@core/constants';
+import { CoreSite } from '@/app/classes/site';
+import { CoreSites } from '@/app/services/sites';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '../../services/helper';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -40,33 +44,12 @@ export class CoreLoginInitPage implements OnInit {
 
         // Check if there was a pending redirect.
         const redirectData = CoreApp.instance.getRedirect();
+
         if (redirectData.siteId) {
-            // Unset redirect data.
-            CoreApp.instance.storeRedirect('', '', {});
-
-            // Only accept the redirect if it was stored less than 20 seconds ago.
-            if (redirectData.timemodified && Date.now() - redirectData.timemodified < 20000) {
-                // if (redirectData.siteId != CoreConstants.NO_SITE_ID) {
-                //     // The redirect is pointing to a site, load it.
-                //     return this.sitesProvider.loadSite(redirectData.siteId, redirectData.page, redirectData.params)
-                //             .then((loggedIn) => {
-
-                //         if (loggedIn) {
-                //             return this.loginHelper.goToSiteInitialPage(this.navCtrl, redirectData.page, redirectData.params,
-                //                     { animate: false });
-                //         }
-                //     }).catch(() => {
-                //         // Site doesn't exist.
-                //         return this.loadPage();
-                //     });
-                // } else {
-                //     // No site to load, open the page.
-                //     return this.loginHelper.goToNoSitePage(this.navCtrl, redirectData.page, redirectData.params);
-                // }
-            }
+            await this.handleRedirect(redirectData);
+        } else {
+            await this.loadPage();
         }
-
-        await this.loadPage();
 
         // If we hide the splash screen now, the init view is still seen for an instant. Wait a bit to make sure it isn't seen.
         setTimeout(() => {
@@ -75,20 +58,61 @@ export class CoreLoginInitPage implements OnInit {
     }
 
     /**
+     * Treat redirect data.
+     *
+     * @param redirectData Redirect data.
+     */
+    protected async handleRedirect(redirectData: CoreRedirectData): Promise<void> {
+        // Unset redirect data.
+        CoreApp.instance.storeRedirect('', '', {});
+
+        // Only accept the redirect if it was stored less than 20 seconds ago.
+        if (redirectData.timemodified && Date.now() - redirectData.timemodified < 20000) {
+            if (redirectData.siteId != CoreConstants.NO_SITE_ID) {
+                // The redirect is pointing to a site, load it.
+                try {
+                    const loggedIn = await CoreSites.instance.loadSite(
+                        redirectData.siteId!,
+                        redirectData.page,
+                        redirectData.params,
+                    );
+
+                    if (!loggedIn) {
+                        return;
+                    }
+
+                    return CoreLoginHelper.instance.goToSiteInitialPage({
+                        redirectPage: redirectData.page,
+                        redirectParams: redirectData.params,
+                    });
+                } catch (error) {
+                    // Site doesn't exist.
+                    return this.loadPage();
+                }
+            } else {
+                // No site to load, open the page.
+                return CoreLoginHelper.instance.goToNoSitePage(redirectData.page, redirectData.params);
+            }
+        }
+
+        return this.loadPage();
+    }
+
+    /**
      * Load the right page.
      *
      * @return Promise resolved when done.
      */
     protected async loadPage(): Promise<void> {
-        // if (this.sitesProvider.isLoggedIn()) {
-        //     if (this.loginHelper.isSiteLoggedOut()) {
-        //         return this.sitesProvider.logout().then(() => {
-        //             return this.loadPage();
-        //         });
-        //     }
+        if (CoreSites.instance.isLoggedIn()) {
+            if (CoreLoginHelper.instance.isSiteLoggedOut()) {
+                await CoreSites.instance.logout();
 
-        //     return this.loginHelper.goToSiteInitialPage();
-        // }
+                return this.loadPage();
+            }
+
+            return CoreLoginHelper.instance.goToSiteInitialPage();
+        }
 
         await this.navCtrl.navigateRoot('/login/sites');
     }

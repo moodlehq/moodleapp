@@ -1,0 +1,84 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <ion-title><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0"></core-format-text></ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item *ngIf="siteInfo" class="ion-text-wrap"> <!-- @todo core-user-link [userId]="siteInfo.userid" -->
+            <ion-avatar slot="start"></ion-avatar> <!-- @todo core-user-avatar [user]="siteInfo" -->
+            <ion-label>
+                <h2>{{siteInfo.fullname}}</h2>
+                <p><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true"></core-format-text></p>
+                <p>{{ siteUrl }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item-divider></ion-item-divider>
+        <ion-item class="ion-text-center" *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
+            <ion-spinner></ion-spinner>
+        </ion-item>
+        <ion-item *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']" (click)="openHandler(handler)" title="{{ handler.title | translate }}" detail="true">
+            <core-icon [name]="handler.icon" slot="start"></core-icon>
+            <ion-label>
+                <h2>{{ handler.title | translate}}</h2>
+            </ion-label>
+            <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge">{{handler.badge}}</ion-badge>
+            <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading"></ion-spinner>
+        </ion-item>
+        <div *ngFor="let item of customItems" class="core-moremenu-customitem">
+            <ion-item *ngIf="item.type != 'embedded'" [href]="item.url" title="{{item.label}}" core-link [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'">
+                <core-icon [name]="item.icon" slot="start"></core-icon>
+                <ion-label>
+                    <h2>{{item.label}}</h2>
+                </ion-label>
+            </ion-item>
+            <ion-item *ngIf="item.type == 'embedded'" (click)="openItem(item)" title="{{item.label}}">
+                <core-icon [name]="item.icon" slot="start"></core-icon>
+                <ion-label>
+                    <h2>{{item.label}}</h2>
+                </ion-label>
+            </ion-item>
+        </div>
+        <ion-item *ngIf="showScanQR" (click)="scanQR()">
+            <core-icon name="fa-qrcode" slot="start" aria-hidden="true"></core-icon>
+            <ion-label>
+                <h2>{{ 'core.scanqr' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="showWeb && siteInfo" [href]="siteInfo.siteurl" core-link autoLogin="yes" title="{{ 'core.mainmenu.website' | translate }}">
+            <ion-icon name="globe" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <h2>{{ 'core.mainmenu.website' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="showHelp" [href]="docsUrl" core-link autoLogin="no" title="{{ 'core.mainmenu.help' | translate }}">
+            <ion-icon name="help-buoy" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <h2>{{ 'core.mainmenu.help' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ion-item (click)="openSitePreferences()" title="{{ 'core.settings.preferences' | translate }}">
+            <core-icon name="fa-wrench" slot="start"></core-icon>
+            <ion-label>
+                <h2>{{ 'core.settings.preferences' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ion-item (click)="logout()" title="{{ logoutLabel | translate }}">
+            <ion-icon name="log-out" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <h2>{{ logoutLabel | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ion-item-divider></ion-item-divider>
+        <ion-item (click)="openAppSettings()" title="{{ 'core.settings.appsettings' | translate }}">
+            <core-icon name="fa-cogs" slot="start"></core-icon>
+            <ion-label>
+                <h2>{{ 'core.settings.appsettings' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>

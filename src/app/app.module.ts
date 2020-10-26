@@ -53,6 +53,7 @@ import { CoreUtilsProvider } from '@services/utils/utils';
 // Import core modules.
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
 import { CoreLoginModule } from '@core/login/login.module';
+import { CoreCoursesModule } from '@core/courses/courses.module';
 
 import { setSingletonsInjector } from '@singletons/core.singletons';
 
@@ -81,6 +82,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         AppRoutingModule,
         CoreEmulatorModule,
         CoreLoginModule,
+        CoreCoursesModule,
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

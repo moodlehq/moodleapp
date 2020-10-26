@@ -45,8 +45,8 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     @ContentChild(IonInput) ionInput?: IonInput;
 
     shown!: boolean; // Whether the password is shown.
-    label?: string; // Label for the button to show/hide.
-    iconName?: string; // Name of the icon of the button to show/hide.
+    label!: string; // Label for the button to show/hide.
+    iconName!: string; // Name of the icon of the button to show/hide.
     selector = ''; // Selector to identify the input.
 
     protected input?: HTMLInputElement | null; // Input affected.

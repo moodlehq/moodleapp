@@ -1,0 +1,26 @@
+$core-dashboard-logo: false !default;
+
+@if $core-dashboard-logo {
+    .toolbar-title-default.md .title-default .core-header-logo {
+        max-height: $toolbar-md-height - 24;
+    }
+
+    .toolbar-title-default.ios .title-default .core-header-logo {
+        max-height: $toolbar-ios-height - 24;
+    }
+
+    .toolbar-title-default .title-default core-format-text {
+        display: none;
+    }
+} @else {
+    .toolbar-title-default .core-header-logo {
+        display: none;
+    }
+}
+
+ion-badge.core-course-download-courses-progress {
+    display: block;
+    // @include float(start);
+    // @include margin(12px, 12px, null, 12px);
+}
+

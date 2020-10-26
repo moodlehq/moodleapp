@@ -208,3 +208,11 @@ export type CoreEventLoadingChangedData = {
     loaded: boolean;
     uniqueId: string;
 };
+
+/**
+ * Data passed to LOAD_PAGE_MAIN_MENU event.
+ */
+export type CoreEventLoadPageMainMenuData = {
+    redirectPage: string;
+    redirectParams?: Params;
+};

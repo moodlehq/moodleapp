@@ -417,8 +417,8 @@ export class CoreLoginSitePage implements OnInit {
      * @param event Received Event.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filterChanged(event: any): void {
-        const newValue = event.target.value?.trim().toLowerCase();
+    filterChanged(event?: any): void {
+        const newValue = event?.target.value?.trim().toLowerCase();
         if (!newValue || !this.fixedSites) {
             this.filteredSites = this.fixedSites;
         } else {

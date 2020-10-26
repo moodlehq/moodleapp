@@ -1312,7 +1312,7 @@ export class CoreSitesProvider {
     async logout(): Promise<void> {
         await this.dbReady;
 
-        let siteId;
+        let siteId: string | undefined;
         const promises: Promise<unknown>[] = [];
 
         if (this.currentSite) {

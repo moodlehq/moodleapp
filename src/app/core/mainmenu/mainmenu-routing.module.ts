@@ -15,27 +15,28 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { CoreMainMenuPage } from './pages/menu/menu.page';
+import { CoreMainMenuMorePage } from './pages/more/more.page';
+
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'init',
-        pathMatch: 'full',
-    },
-    {
-        path: 'init',
-        loadChildren: () => import('./pages/init/init.page.module').then( m => m.CoreLoginInitPageModule),
-    },
-    {
-        path: 'site',
-        loadChildren: () => import('./pages/site/site.page.module').then( m => m.CoreLoginSitePageModule),
-    },
-    {
-        path: 'credentials',
-        loadChildren: () => import('./pages/credentials/credentials.page.module').then( m => m.CoreLoginCredentialsPageModule),
-    },
-    {
-        path: 'sites',
-        loadChildren: () => import('./pages/sites/sites.page.module').then( m => m.CoreLoginSitesPageModule),
+        component: CoreMainMenuPage,
+        children: [
+            {
+                path: 'home', // @todo: Add this route dynamically.
+                loadChildren: () => import('../courses/pages/home/home.page.module').then( m => m.CoreCoursesHomePageModule),
+            },
+            {
+                path: 'more',
+                children: [
+                    {
+                        path: '',
+                        component: CoreMainMenuMorePage,
+                    },
+                ],
+            },
+        ],
     },
 ];
 
@@ -43,4 +44,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class CoreLoginRoutingModule {}
+export class CoreMainMenuRoutingModule {}

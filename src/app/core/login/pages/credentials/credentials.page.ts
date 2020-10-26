@@ -243,7 +243,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             this.siteId = id;
 
-            await CoreLoginHelper.instance.goToSiteInitialPage(undefined, undefined, undefined, undefined, this.urlToOpen);
+            await CoreLoginHelper.instance.goToSiteInitialPage({ urlToOpen: this.urlToOpen });
         } catch (error) {
             CoreLoginHelper.instance.treatUserTokenError(siteUrl, error, username, password);
 

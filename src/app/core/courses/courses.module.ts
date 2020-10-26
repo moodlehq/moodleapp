@@ -14,12 +14,17 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSettingsRoutingModule } from './settings-routing.module';
+import { CoreMainMenuDelegate } from '@core/mainmenu/services/delegate';
+import { CoreHomeMainMenuHandler } from './handlers/mainmenu';
 
 @NgModule({
-    imports: [
-        CoreSettingsRoutingModule,
-    ],
+    imports: [],
     declarations: [],
 })
-export class CoreSettingsModule {}
+export class CoreCoursesModule {
+
+    constructor(mainMenuDelegate: CoreMainMenuDelegate) {
+        mainMenuDelegate.registerHandler(new CoreHomeMainMenuHandler());
+    }
+
+}

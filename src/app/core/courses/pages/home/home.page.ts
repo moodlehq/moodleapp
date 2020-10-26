@@ -12,14 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import { CoreSettingsRoutingModule } from './settings-routing.module';
-
-@NgModule({
-    imports: [
-        CoreSettingsRoutingModule,
-    ],
-    declarations: [],
+/**
+ * Page that displays the Home.
+ */
+@Component({
+    selector: 'page-core-courses-home',
+    templateUrl: 'home.html',
+    styleUrls: ['home.scss'],
 })
-export class CoreSettingsModule {}
+export class CoreCoursesHomePage implements OnInit {
+
+    siteName = 'Hello world';
+
+    /**
+     * Initialize the component.
+     */
+    ngOnInit(): void {
+        // @todo
+    }
+
+}

@@ -20,7 +20,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
     selector: 'app-settings',
     templateUrl: 'app.html',
 })
-export class CoreAppSettingsPage {
+export class CoreSettingsAppPage {
 
     // @ViewChild(CoreSplitViewComponent) splitviewCtrl?: CoreSplitViewComponent;
 
