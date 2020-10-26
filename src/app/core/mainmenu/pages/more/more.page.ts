@@ -38,7 +38,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     handlersLoaded = false;
     siteInfo?: CoreSiteInfo;
     siteName?: string;
-    logoutLabel?: string;
+    logoutLabel = 'core.mainmenu.changesite';
     showScanQR: boolean;
     showWeb?: boolean;
     showHelp?: boolean;

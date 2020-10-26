@@ -50,20 +50,20 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() message?: string; // Message to show while loading.
     @ViewChild('content') content?: ElementRef;
 
-    protected uniqueId!: string;
+    uniqueId: string;
     protected element: HTMLElement; // Current element.
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
+
+        // Calculate the unique ID.
+        this.uniqueId = 'core-loading-content-' + CoreUtils.instance.getUniqueId('CoreLoadingComponent');
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        // Calculate the unique ID.
-        this.uniqueId = 'core-loading-content-' + CoreUtils.instance.getUniqueId('CoreLoadingComponent');
-
         if (!this.message) {
             // Default loading message.
             this.message = Translate.instance.instant('core.loading');
