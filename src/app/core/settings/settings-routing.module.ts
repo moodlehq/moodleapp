@@ -14,22 +14,19 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CoreAppSettingsPage } from './pages/app/app.page';
-import { CoreSettingsAboutPage } from './pages/about/about.page';
-import { CoreSettingsDeviceInfoPage } from './pages/deviceinfo/deviceinfo.page';
 
 const routes: Routes = [
     {
         path: 'about',
-        component: CoreSettingsAboutPage,
+        loadChildren: () => import('./pages/about/about.page.module').then( m => m.CoreSettingsAboutPageModule),
     },
     {
         path: 'deviceinfo',
-        component: CoreSettingsDeviceInfoPage,
+        loadChildren: () => import('./pages/deviceinfo/deviceinfo.page.module').then( m => m.CoreSettingsDeviceInfoPageModule),
     },
     {
         path: 'app',
-        component: CoreAppSettingsPage,
+        loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
     },
     {
         path: '',
@@ -42,4 +39,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class CoreAppSettingsRoutingModule {}
+export class CoreSettingsRoutingModule {}

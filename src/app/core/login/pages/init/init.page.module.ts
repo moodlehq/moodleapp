@@ -13,18 +13,26 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
 
-import { CoreMainMenuDelegate } from '@core/mainmenu/services/delegate';
-import { CoreHomeMainMenuHandler } from './handlers/mainmenu';
+import { CoreLoginInitPage } from './init.page';
+
+const routes: Routes = [
+    {
+        path: '',
+        component: CoreLoginInitPage,
+    },
+];
 
 @NgModule({
-    imports: [],
-    declarations: [],
+    imports: [
+        RouterModule.forChild(routes),
+        IonicModule,
+    ],
+    declarations: [
+        CoreLoginInitPage,
+    ],
+    exports: [RouterModule],
 })
-export class CoreCoursesModule {
-
-    constructor(mainMenuDelegate: CoreMainMenuDelegate) {
-        mainMenuDelegate.registerHandler(new CoreHomeMainMenuHandler());
-    }
-
-}
+export class CoreLoginInitPageModule {}

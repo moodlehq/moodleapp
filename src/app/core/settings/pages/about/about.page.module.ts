@@ -13,34 +13,35 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+
+import { CoreSettingsAboutPage } from './about.page';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'init',
-        pathMatch: 'full',
-    },
-    {
-        path: 'init',
-        loadChildren: () => import('./pages/init/init.page.module').then( m => m.CoreLoginInitPageModule),
-    },
-    {
-        path: 'site',
-        loadChildren: () => import('./pages/site/site.page.module').then( m => m.CoreLoginSitePageModule),
-    },
-    {
-        path: 'credentials',
-        loadChildren: () => import('./pages/credentials/credentials.page.module').then( m => m.CoreLoginCredentialsPageModule),
-    },
-    {
-        path: 'sites',
-        loadChildren: () => import('./pages/sites/sites.page.module').then( m => m.CoreLoginSitesPageModule),
+        component: CoreSettingsAboutPage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
+    ],
+    declarations: [
+        CoreSettingsAboutPage,
+    ],
     exports: [RouterModule],
 })
-export class CoreLoginRoutingModule {}
+export class CoreSettingsAboutPageModule {}

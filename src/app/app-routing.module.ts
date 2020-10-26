@@ -27,7 +27,7 @@ const routes: Routes = [
     },
     {
         path: 'settings',
-        loadChildren: () => import('./core/settings/settings.module').then( m => m.CoreAppSettingsModule),
+        loadChildren: () => import('./core/settings/settings.module').then( m => m.CoreSettingsModule),
     },
     {
         path: 'mainmenu',

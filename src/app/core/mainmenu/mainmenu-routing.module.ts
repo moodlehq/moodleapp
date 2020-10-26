@@ -17,7 +17,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CoreMainMenuPage } from './pages/menu/menu.page';
 import { CoreMainMenuMorePage } from './pages/more/more.page';
-import { CoreCoursesHomePage } from '../courses/pages/home/home.page';
 
 const routes: Routes = [
     {
@@ -26,7 +25,7 @@ const routes: Routes = [
         children: [
             {
                 path: 'home', // @todo: Add this route dynamically.
-                component: CoreCoursesHomePage,
+                loadChildren: () => import('../courses/pages/home/home.page.module').then( m => m.CoreCoursesHomePageModule),
             },
             {
                 path: 'more',

@@ -13,34 +13,13 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
-
-import { CoreAppSettingsRoutingModule } from './settings-routing.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
-import { CoreAppSettingsPage } from './pages/app/app.page';
-import { CoreSettingsAboutPage } from './pages/about/about.page';
-import { CoreSettingsDeviceInfoPage } from './pages/deviceinfo/deviceinfo.page';
+import { CoreSettingsRoutingModule } from './settings-routing.module';
 
 @NgModule({
     imports: [
-        CommonModule,
-        IonicModule,
-        CoreAppSettingsRoutingModule,
-        CorePipesModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        TranslateModule.forChild(),
+        CoreSettingsRoutingModule,
     ],
-    declarations: [
-        CoreAppSettingsPage,
-        CoreSettingsAboutPage,
-        CoreSettingsDeviceInfoPage,
-    ],
+    declarations: [],
 })
-export class CoreAppSettingsModule {}
+export class CoreSettingsModule {}
