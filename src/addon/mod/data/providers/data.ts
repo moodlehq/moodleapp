@@ -929,7 +929,7 @@ export class AddonModDataProvider {
      * @param options Other options.
      * @return Promise resolved when the action is done.
      */
-    searchEntries(dataId: number, options?: AddonModDataSearchEntriesOptions): Promise<AddonModDataEntries> {
+    searchEntries(dataId: number, options: AddonModDataSearchEntriesOptions = {}): Promise<AddonModDataEntries> {
         options.groupId = options.groupId || 0;
         options.sort = options.sort || 0;
         options.order || options.order || 'DESC';
