@@ -192,7 +192,13 @@ export class CoreEmulatorCaptureMediaPage implements OnInit, OnDestroy {
                 };
 
                 // Set the stream as the source of the video.
-                this.streamVideo.nativeElement.src = window.URL.createObjectURL(this.localMediaStream);
+                if ('srcObject' in this.streamVideo.nativeElement) {
+                    this.streamVideo.nativeElement.srcObject = this.localMediaStream;
+                } else {
+                    // Fallback for old browsers.
+                    // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject#Examples
+                    this.streamVideo.nativeElement.src = window.URL.createObjectURL(this.localMediaStream);
+                }
 
                 // If stream isn't ready in a while, show error.
                 waitTimeout = setTimeout(() => {
