@@ -47,7 +47,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     @Input() href?: string;
     @Input('target-src') targetSrc?: string; // eslint-disable-line @angular-eslint/no-input-rename
     @Input() poster?: string;
-    // eslint-disable-next-line @angular-eslint/no-output-on-prefix
     @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
 
     loaded = false;

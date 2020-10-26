@@ -39,7 +39,7 @@ import { Directive, ElementRef, OnInit, Input, Output, EventEmitter } from '@ang
 export class CoreSupressEventsDirective implements OnInit {
 
     @Input('core-suppress-events') suppressEvents?: string | string[];
-    @Output() onClick = new EventEmitter(); // eslint-disable-line @angular-eslint/no-output-on-prefix
+    @Output() onClick = new EventEmitter();
 
     protected element: HTMLElement;
 

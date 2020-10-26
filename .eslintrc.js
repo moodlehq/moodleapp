@@ -27,6 +27,7 @@ const appConfig = {
     reportUnusedDisableDirectives: true,
     rules: {
         '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
+        '@angular-eslint/no-output-on-prefix': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/ban-types': [
             'error',
