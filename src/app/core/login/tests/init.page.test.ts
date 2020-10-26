@@ -17,19 +17,21 @@ import { NavController } from '@ionic/angular';
 import { CoreApp } from '@/app/services/app';
 import { CoreInit } from '@services/init';
 import { CoreLoginInitPage } from '@core/login/pages/init/init.page';
+import { CoreSites } from '@/app/services/sites';
 import { SplashScreen } from '@/app/singletons/core.singletons';
 
 import { mock, mockSingleton, renderComponent, RenderConfig } from '@/tests/utils';
 
-describe('CoreLogin Init Page', () => {
+describe('CoreLoginInitPage', () => {
 
     let navController: NavController;
     let config: Partial<RenderConfig>;
 
     beforeEach(() => {
-        mockSingleton(SplashScreen, ['hide']);
-        mockSingleton(CoreInit, { ready: () => Promise.resolve() });
         mockSingleton(CoreApp, { getRedirect: () => ({}) });
+        mockSingleton(CoreInit, { ready: () => Promise.resolve() });
+        mockSingleton(CoreSites, { isLoggedIn: () => false });
+        mockSingleton(SplashScreen, ['hide']);
 
         navController = mock<NavController>(['navigateRoot']);
         config = {

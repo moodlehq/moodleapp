@@ -16,7 +16,7 @@ import { CoreIconComponent } from '@components/icon/icon';
 
 import { renderWrapperComponent } from '@/tests/utils';
 
-describe('CoreIcon', () => {
+describe('CoreIconComponent', () => {
 
     it('should render', async () => {
         // Act

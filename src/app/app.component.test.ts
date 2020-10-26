@@ -12,22 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavController } from '@ionic/angular';
+
 import { AppComponent } from '@app/app.component';
 import { CoreEvents } from '@singletons/events';
 import { CoreLangProvider } from '@services/lang';
 
 import { mock, renderComponent, RenderConfig } from '@/tests/utils';
 
-describe('App component', () => {
+describe('AppComponent', () => {
 
     let langProvider: CoreLangProvider;
+    let navController: NavController;
     let config: Partial<RenderConfig>;
 
     beforeEach(() => {
         langProvider = mock<CoreLangProvider>(['clearCustomStrings']);
+        navController = mock<NavController>(['navigateRoot']);
         config = {
             providers: [
                 { provide: CoreLangProvider, useValue: langProvider },
+                { provide: NavController, useValue: navController },
             ],
         };
     });
@@ -39,13 +44,14 @@ describe('App component', () => {
         expect(fixture.nativeElement.querySelector('ion-router-outlet')).toBeTruthy();
     });
 
-    it('clears custom strings on logout', async () => {
+    it('cleans up on logout', async () => {
         const fixture = await renderComponent(AppComponent, config);
 
         fixture.componentInstance.ngOnInit();
         CoreEvents.trigger(CoreEvents.LOGOUT);
 
         expect(langProvider.clearCustomStrings).toHaveBeenCalled();
+        expect(navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
     });
 
 });
