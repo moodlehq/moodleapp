@@ -12,39 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavController } from '@ionic/angular';
+
+import { CoreApp } from '@/app/services/app';
 import { CoreInit } from '@services/init';
 import { CoreLoginInitPage } from '@core/login/pages/init/init.page';
-import { CoreApp } from '@/app/services/app';
+import { SplashScreen } from '@/app/singletons/core.singletons';
 
-import { createComponent, preparePageTest, PageTestMocks, mockSingleton } from '@/tests/utils';
+import { mock, mockSingleton, renderComponent, RenderConfig } from '@/tests/utils';
 
 describe('CoreLogin Init Page', () => {
 
-    let mocks: PageTestMocks;
+    let navController: NavController;
+    let config: Partial<RenderConfig>;
 
-    beforeEach(async () => {
-        const initPromise = Promise.resolve();
+    beforeEach(() => {
+        mockSingleton(SplashScreen, ['hide']);
+        mockSingleton(CoreInit, { ready: () => Promise.resolve() });
+        mockSingleton(CoreApp, { getRedirect: () => ({}) });
 
-        mockSingleton(CoreInit, [], { ready: () => initPromise });
-        mockSingleton(CoreApp, [], { getRedirect: () => ({}) });
-
-        mocks = await preparePageTest(CoreLoginInitPage);
+        navController = mock<NavController>(['navigateRoot']);
+        config = {
+            providers: [
+                { provide: NavController, useValue: navController },
+            ],
+        };
     });
 
-    it('should render', () => {
-        const fixture = createComponent(CoreLoginInitPage);
+    it('should render', async () => {
+        const fixture = await renderComponent(CoreLoginInitPage, config);
 
         expect(fixture.debugElement.componentInstance).toBeTruthy();
         expect(fixture.nativeElement.querySelector('ion-spinner')).toBeTruthy();
     });
 
     it('navigates to sites page after loading', async () => {
-        const fixture = createComponent(CoreLoginInitPage);
+        const fixture = await renderComponent(CoreLoginInitPage, config);
 
         fixture.componentInstance.ngOnInit();
         await CoreInit.instance.ready();
 
-        expect(mocks.navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
+        expect(navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
     });
 
 });

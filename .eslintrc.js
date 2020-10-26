@@ -112,6 +112,7 @@ const appConfig = {
             },
         ],
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/no-this-alias': 'error',
         '@typescript-eslint/no-unused-vars': 'error',
         '@typescript-eslint/quotes': [
@@ -197,7 +198,6 @@ const appConfig = {
         'no-irregular-whitespace': 'error',
         'no-multiple-empty-lines': 'error',
         'no-new-wrappers': 'error',
-        'no-redeclare': 'error',
         'no-sequences': 'error',
         'no-trailing-spaces': 'error',
         'no-underscore-dangle': 'error',

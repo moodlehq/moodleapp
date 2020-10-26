@@ -10,6 +10,7 @@
       "cordova-plugin-inappbrowser",
       "cordova",
       "dom-mediacapture-record",
+      "faker",
       "jest",
       "node"
     ],
