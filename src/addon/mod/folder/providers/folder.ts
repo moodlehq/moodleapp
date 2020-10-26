@@ -57,7 +57,7 @@ export class AddonModFolderProvider {
      * @param options Other options.
      * @return Promise resolved when the book is retrieved.
      */
-    protected getFolderByKey(courseId: number, key: string, value: any, options?: CoreSitesCommonWSOptions)
+    protected getFolderByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
             : Promise<AddonModFolderFolder> {
         return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
