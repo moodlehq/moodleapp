@@ -22,7 +22,6 @@ import { CoreSites } from '@services/sites';
 import { CoreEvents, CoreEventObserver, CoreEventLoadPageMainMenuData } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/delegate';
-import { CoreUtils } from '@/app/services/utils/utils';
 import { CoreDomUtils } from '@/app/services/utils/dom';
 import { Translate } from '@/app/singletons/core.singletons';
 
