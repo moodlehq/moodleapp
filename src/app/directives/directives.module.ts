@@ -16,16 +16,18 @@ import { NgModule } from '@angular/core';
 
 import { CoreAutoFocusDirective } from './auto-focus';
 import { CoreExternalContentDirective } from './external-content';
+import { CoreFabDirective } from './fab';
 import { CoreFormatTextDirective } from './format-text';
+import { CoreLinkDirective } from './link';
 import { CoreLongPressDirective } from './long-press';
 import { CoreSupressEventsDirective } from './supress-events';
-import { CoreFabDirective } from './fab';
 
 @NgModule({
     declarations: [
         CoreAutoFocusDirective,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
+        CoreLinkDirective,
         CoreLongPressDirective,
         CoreSupressEventsDirective,
         CoreFabDirective,
@@ -35,6 +37,7 @@ import { CoreFabDirective } from './fab';
         CoreAutoFocusDirective,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
+        CoreLinkDirective,
         CoreLongPressDirective,
         CoreSupressEventsDirective,
         CoreFabDirective,

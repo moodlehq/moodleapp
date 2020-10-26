@@ -24,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';
 import { Translate } from '@singletons/core.singletons';
 import { CoreExternalContentDirective } from './external-content';
+import { CoreLinkDirective } from './link';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -454,7 +455,9 @@ export class CoreFormatTextDirective implements OnChanges {
         // Important: We need to look for links first because in 'img' we add new links without core-link.
         anchors.forEach((anchor) => {
             // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
-            // @todo
+            const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content);
+            linkDir.capture = true;
+            linkDir.ngOnInit();
 
             this.addExternalContent(anchor);
         });

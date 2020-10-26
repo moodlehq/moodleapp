@@ -30,7 +30,7 @@
             <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading"></ion-spinner>
         </ion-item>
         <div *ngFor="let item of customItems" class="core-moremenu-customitem">
-            <ion-item *ngIf="item.type != 'embedded'" [href]="item.url" title="{{item.label}}"> <!-- @todo core-link [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" -->
+            <ion-item *ngIf="item.type != 'embedded'" [href]="item.url" title="{{item.label}}" core-link [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'">
                 <core-icon [name]="item.icon" slot="start"></core-icon>
                 <ion-label>
                     <h2>{{item.label}}</h2>
