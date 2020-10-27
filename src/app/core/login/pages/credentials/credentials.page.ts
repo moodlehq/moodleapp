@@ -33,6 +33,7 @@ import { CoreEvents } from '@singletons/events';
 @Component({
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
+    styleUrls: ['../../login.scss'],
 })
 export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 

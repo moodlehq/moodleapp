@@ -83,3 +83,10 @@ ion-list.list-md {
 .core-modal-force-on-top {
     z-index: 100000 !important;
 }
+
+// Hidden submit button.
+.core-submit-hidden-enter {
+    position: absolute;
+    visibility: hidden;
+    left: -1000px;
+}

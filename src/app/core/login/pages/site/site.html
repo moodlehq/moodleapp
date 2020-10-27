@@ -42,7 +42,7 @@
                         <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
                     </ion-label>
                 </ion-item>
-                <ion-item *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [attr.aria-label]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
+                <ion-item button *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)" [attr.aria-label]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
                     <ion-thumbnail slot="start">
                         <ion-icon name="fa-pencil-alt"></ion-icon>
                     </ion-thumbnail>
@@ -57,7 +57,7 @@
                         <ion-spinner></ion-spinner>
                     </div>
                     <ng-container *ngFor="let site of sites">
-                        <ng-container *ngTemplateOutlet="site"></ng-container>
+                        <ng-container *ngTemplateOutlet="site; context: {site: site}"></ng-container>
                     </ng-container>
                 </div>
             </ion-list>
@@ -88,26 +88,24 @@
     </ng-container>
 
     <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
-        <div class="core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
-        <ion-item class="core-login-site-qrcode" lines="none">
-            <ion-button expand="block" class="ion-margin-top ion-text-wrap" (click)="showInstructionsAndScanQR()">
-                <ion-icon name="fa-qrcode" aria-hidden="true" slot="start"></ion-icon>
-                {{ 'core.scanqr' | translate }}
-            </ion-button>
-        </ion-item>
+        <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
+        <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()">
+            <ion-icon slot="start" name="fa-qrcode" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
+        </ion-button>
     </ng-container>
 
     <!-- Help. -->
     <ion-list lines="none" class="ion-margin-top">
-        <ion-item class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false">
+        <ion-item button class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false">
             <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
         </ion-item>
     </ion-list>
 </ion-content>
 
 <!-- Template site selector. -->
-<ng-template #site>
-    <ion-item (click)="connect($event, site.url, site)" [title]="site.name" detail>
+<ng-template #site let-site="site">
+    <ion-item button (click)="connect($event, site.url, site)" [title]="site.name" detail>
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
             <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'">
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
