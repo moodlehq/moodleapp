@@ -15,6 +15,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
@@ -25,10 +26,11 @@ import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/h
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@core/constants';
-import { Translate } from '@singletons/core.singletons';
+import { Translate, ModalController } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreUrlUtils } from '@services/utils/url';
-import { NavController } from '@ionic/angular';
+import { CoreLoginSiteHelpComponent } from '@core/login/components/site-help/site-help';
+import { CoreLoginSiteOnboardingComponent } from '@core/login/components/site-onboarding/site-onboarding';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -215,15 +217,25 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Show a help modal.
      */
-    showHelp(): void {
-        // @todo
+    async showHelp(): Promise<void> {
+        const modal = await ModalController.instance.create({
+            component: CoreLoginSiteHelpComponent,
+            cssClass: 'core-modal-fullscreen',
+        });
+
+        await modal.present();
     }
 
     /**
      * Show an onboarding modal.
      */
-    showOnboarding(): void {
-        // @todo
+    async showOnboarding(): Promise<void> {
+        const modal = await ModalController.instance.create({
+            component: CoreLoginSiteOnboardingComponent,
+            cssClass: 'core-modal-fullscreen',
+        });
+
+        await modal.present();
     }
 
     /**
@@ -360,7 +372,6 @@ export class CoreLoginSitePage implements OnInit {
                 pageParams['logoUrl'] = foundSite.imageurl;
             }
 
-            // @todo Navigate to credentials.
             this.navCtrl.navigateForward('/login/credentials', {
                 queryParams: pageParams,
             });
