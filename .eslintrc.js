@@ -27,6 +27,7 @@ const appConfig = {
     reportUnusedDisableDirectives: true,
     rules: {
         '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
+        '@angular-eslint/no-output-on-prefix': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/ban-types': [
             'error',
@@ -112,6 +113,7 @@ const appConfig = {
             },
         ],
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/no-this-alias': 'error',
         '@typescript-eslint/no-unused-vars': 'error',
         '@typescript-eslint/quotes': [
@@ -197,7 +199,6 @@ const appConfig = {
         'no-irregular-whitespace': 'error',
         'no-multiple-empty-lines': 'error',
         'no-new-wrappers': 'error',
-        'no-redeclare': 'error',
         'no-sequences': 'error',
         'no-trailing-spaces': 'error',
         'no-underscore-dangle': 'error',

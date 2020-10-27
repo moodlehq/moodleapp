@@ -19,9 +19,8 @@ import { CoreApp, CoreRedirectData } from '@services/app';
 import { CoreInit } from '@services/init';
 import { SplashScreen } from '@singletons/core.singletons';
 import { CoreConstants } from '@core/constants';
-import { CoreSite } from '@/app/classes/site';
 import { CoreSites } from '@/app/services/sites';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '../../services/helper';
+import { CoreLoginHelper } from '@/app/core/login/services/helper';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.

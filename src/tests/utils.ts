@@ -12,65 +12,127 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CUSTOM_ELEMENTS_SCHEMA, Type } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NavController } from '@ionic/angular';
+
 import { CoreSingletonClass } from '@app/classes/singletons-factory';
 
-export interface ComponentTestMocks {
-    //
+abstract class WrapperComponent<U> {
+
+    child!: U;
+
 };
 
-export interface PageTestMocks extends ComponentTestMocks {
-    navController: NavController;
+export interface RenderConfig {
+    declarations: unknown[];
+    providers: unknown[];
 }
 
-export function createMock<T>(methods: string[] = [], properties: Record<string, unknown> = {}): T {
-    const mockObject = properties;
+export type WrapperComponentFixture<T> = ComponentFixture<WrapperComponent<T>>;
+
+export function mock<T>(instance?: Record<string, unknown>): T;
+export function mock<T>(methods: string[], instance?: Record<string, unknown>): T;
+export function mock<T>(
+    methodsOrInstance: string[] | Record<string, unknown> = [],
+    instance: Record<string, unknown> = {},
+): T {
+    instance = Array.isArray(methodsOrInstance) ? instance : methodsOrInstance;
+
+    const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
 
     for (const method of methods) {
-        mockObject[method] = jest.fn();
+        instance[method] = jest.fn();
     }
 
-    return mockObject as T;
+    return instance as T;
 }
 
+export function mockSingleton(singletonClass: CoreSingletonClass<unknown>, instance?: Record<string, unknown>): void;
 export function mockSingleton(
     singletonClass: CoreSingletonClass<unknown>,
-    methods: string[] = [],
-    properties: Record<string, unknown> = {},
+    methods: string[],
+    instance?: Record<string, unknown>,
+): void;
+export function mockSingleton(
+    singletonClass: CoreSingletonClass<unknown>,
+    methodsOrInstance: string[] | Record<string, unknown> = [],
+    instance: Record<string, unknown> = {},
 ): void {
-    singletonClass.setInstance(createMock(methods, properties));
+    instance = Array.isArray(methodsOrInstance) ? instance : methodsOrInstance;
+
+    const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
+
+    singletonClass.setInstance(mock(methods, instance));
 }
 
-export async function prepareComponentTest<T>(component: Type<T>, providers: unknown[] = []): Promise<ComponentTestMocks> {
+export async function renderComponent<T>(component: Type<T>, config: Partial<RenderConfig> = {}): Promise<ComponentFixture<T>> {
+    return renderAngularComponent(component, {
+        declarations: [],
+        providers: [],
+        ...config,
+    });
+}
+
+export async function renderTemplate<T>(
+    component: Type<T>,
+    template: string,
+    config: Partial<RenderConfig> = {},
+): Promise<WrapperComponentFixture<T>> {
+    config.declarations = config.declarations ?? [];
+    config.declarations.push(component);
+
+    return renderAngularComponent(
+        createWrapperComponent(template, component),
+        {
+            declarations: [],
+            providers: [],
+            ...config,
+        },
+    );
+}
+
+export async function renderWrapperComponent<T>(
+    component: Type<T>,
+    tag: string,
+    inputs: Record<string, { toString() }> = {},
+    config: Partial<RenderConfig> = {},
+): Promise<WrapperComponentFixture<T>> {
+    const inputAttributes = Object
+        .entries(inputs)
+        .map(([name, value]) => `${name}="${value.toString().replace(/"/g, '&quot;')}"`)
+        .join(' ');
+
+    return renderTemplate(component, `<${tag} ${inputAttributes}></${tag}>`, config);
+}
+
+async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {
+    config.declarations.push(component);
+
     TestBed.configureTestingModule({
-        declarations: [component],
+        declarations: config.declarations,
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers,
+        providers: config.providers,
     });
 
     await TestBed.compileComponents();
 
-    return {};
+    const fixture = TestBed.createComponent(component);
+
+    fixture.autoDetectChanges(true);
+
+    await fixture.whenRenderingDone();
+    await fixture.whenStable();
+
+    return fixture;
 }
 
-export async function preparePageTest<T>(component: Type<T>, providers: unknown[] = []): Promise<PageTestMocks> {
-    const mocks = {
-        navController: createMock<NavController>(['navigateRoot']),
-    };
+function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
+    @Component({ template })
+    class HostComponent extends WrapperComponent<U> {
 
-    const componentTestMocks = await prepareComponentTest(component, [
-        ...providers,
-        { provide: NavController, useValue: mocks.navController },
-    ]);
+        @ViewChild(componentClass) child!: U;
 
-    return {
-        ...componentTestMocks,
-        ...mocks,
-    };
-}
+    }
 
-export function createComponent<T>(component: Type<T>): ComponentFixture<T> {
-    return TestBed.createComponent(component);
+    return HostComponent;
 }
