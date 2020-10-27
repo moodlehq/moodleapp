@@ -37,6 +37,11 @@ const routes: Routes = [
         path: 'sites',
         loadChildren: () => import('./pages/sites/sites.page.module').then( m => m.CoreLoginSitesPageModule),
     },
+    {
+        path: 'forgottenpassword',
+        loadChildren: () => import('./pages/forgotten-password/forgotten-password.module')
+            .then( m => m.CoreLoginForgottenPasswordPageModule),
+    },
 ];
 
 @NgModule({

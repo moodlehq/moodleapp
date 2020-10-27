@@ -264,12 +264,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Forgotten password button clicked.
      */
     forgottenPassword(): void {
-        CoreLoginHelper.instance.forgottenPasswordClicked(
-            this.navCtrl,
-            this.siteUrl,
-            this.credForm.value.username,
-            this.siteConfig,
-        );
+        CoreLoginHelper.instance.forgottenPasswordClicked(this.siteUrl, this.credForm.value.username, this.siteConfig);
     }
 
     /**

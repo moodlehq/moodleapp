@@ -163,12 +163,7 @@ export class CoreLoginHelperProvider {
      * @param username Username.
      * @param siteConfig Site config.
      */
-    async forgottenPasswordClicked(
-        navCtrl: NavController,
-        siteUrl: string,
-        username: string,
-        siteConfig?: CoreSitePublicConfigResponse,
-    ): Promise<void> {
+    async forgottenPasswordClicked(siteUrl: string, username: string, siteConfig?: CoreSitePublicConfigResponse): Promise<void> {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
             // URL set, open it.
             CoreUtils.instance.openInApp(siteConfig.forgottenpasswordurl);
@@ -183,7 +178,7 @@ export class CoreLoginHelperProvider {
             const canReset = await this.canRequestPasswordReset(siteUrl);
 
             if (canReset) {
-                await navCtrl.navigateForward(['/login/forgottenpassword'], {
+                await this.navCtrl.navigateForward(['/login/forgottenpassword'], {
                     queryParams: {
                         siteUrl,
                         username,
@@ -445,7 +440,6 @@ export class CoreLoginHelperProvider {
     /**
      * Open a page that doesn't belong to any site.
      *
-     * @param navCtrl Nav Controller.
      * @param page Page to open.
      * @param params Params of the page.
      * @return Promise resolved when done.
