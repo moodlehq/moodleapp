@@ -8,11 +8,11 @@
 
         <ion-buttons slot="end">
             <ion-button *ngIf="sites && sites.length > 0" (click)="toggleDelete()" [attr.aria-label]="'core.delete' | translate">
-                <core-icon slot="icon-only" name="fa-pencil"></core-icon>
+                <ion-icon slot="icon-only" name="fa-pencil-alt"></ion-icon>
             </ion-button>
             <ion-button router-direction="forward" routerLink="/settings/app"
                 [attr.aria-label]="'core.settings.appsettings' | translate">
-                <core-icon slot="icon-only" name="fa-cog"></core-icon>
+                <ion-icon slot="icon-only" name="fa-cog"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -31,13 +31,13 @@
             <ion-badge slot="end" *ngIf="!showDelete && site.badge">{{site.badge}}</ion-badge>
             <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
                 [attr.aria-label]="'core.delete' | translate">
-                <core-icon name="fa-trash" slot="icon-only"></core-icon>
+                <ion-icon name="fa-trash" slot="icon-only"></ion-icon>
         </ion-button>
     </ion-item>
 </ion-list>
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
     <ion-fab-button (click)="add()" [attr.aria-label]="'core.add' | translate">
-        <core-icon name="fa-plus"></core-icon>
+        <ion-icon name="fa-plus"></ion-icon>
     </ion-fab-button>
 </ion-fab>
 </ion-content>
