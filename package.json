@@ -100,7 +100,6 @@
     "cordova-support-google-services": "^1.2.1",
     "cordova.plugins.diagnostic": "^6.0.2",
     "es6-promise-plugin": "^4.2.2",
-    "font-awesome": "^4.7.0",
     "moment": "^2.29.0",
     "nl.kingsquare.cordova.background-audio": "^1.0.1",
     "phonegap-plugin-multidex": "^1.0.0",

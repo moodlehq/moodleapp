@@ -12,30 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, OnDestroy, ElementRef, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, ElementRef, SimpleChange } from '@angular/core';
 
 /**
- * Core Icon is a component that enables the posibility to add fontawesome icon to the html. It's recommended if both fontawesome
- * or ionicons can be used in the name attribute. To use fontawesome just place the full icon name with the fa- prefix and
+ * Core Icon is a component that enables the posibility to add fontawesome icon to the html. It
+ * To use fontawesome just place the full icon name with the fa- prefix and
  * the component will detect it.
- * Check available icons at https://fontawesome.com/v4.7.0/icons/.
+ *
+ * Check available icons at https://fontawesome.com/icons?d=gallery&m=free
+ * @deprecated since 3.9.3. Please use <ion-icon name="fa-icon"> instead.
  */
 @Component({
     selector: 'core-icon',
-    templateUrl: 'core-icon.html',
+    template: '<ion-icon [name]="name"><ng-content></ng-content></ion-icon>',
     styleUrls: ['icon.scss'],
 })
-export class CoreIconComponent implements OnChanges, OnDestroy {
+export class CoreIconComponent implements OnChanges {
 
     // Common params.
     @Input() name = '';
     @Input() color?: string;
     @Input() slash?: boolean; // Display a red slash over the icon.
-
-    // Ionicons params.
-    @Input() isActive?: boolean;
-    @Input() md?: string;
-    @Input() ios?: string;
 
     // FontAwesome params.
     @Input('fixed-width') fixedWidth?: boolean; // eslint-disable-line @angular-eslint/no-input-rename
@@ -44,11 +41,11 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
     @Input() flipRtl?: boolean; // Whether to flip the icon in RTL. Defaults to false.
 
     protected element: HTMLElement;
-    protected newElement: HTMLElement;
 
-    constructor(el: ElementRef) {
+    constructor(
+        el: ElementRef,
+    ) {
         this.element = el.nativeElement;
-        this.newElement = this.element;
     }
 
     /**
@@ -59,62 +56,57 @@ export class CoreIconComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        const oldElement = this.newElement;
+        setTimeout(() => {
+            this.updateIcon(this.element.children[0]);
+        });
+    }
 
-        // Use a new created element to avoid ion-icon working.
-        // This is necessary to make the FontAwesome stuff work.
-        // It is also required to stop Ionic overriding the aria-label attribute.
-        this.newElement = document.createElement('ion-icon');
-        if (this.name.startsWith('fa-')) {
-            this.newElement.classList.add('fa');
-            this.newElement.classList.add(this.name);
-            if (this.fixedWidth) {
-                this.newElement.classList.add('fa-fw');
-            }
-        } else {
-            this.newElement.setAttribute('name', this.name);
-        }
-
-        !this.label && this.newElement.setAttribute('aria-hidden', 'true');
-        !this.label && this.newElement.setAttribute('role', 'presentation');
-        this.label && this.newElement.setAttribute('aria-label', this.label);
-        this.label && this.newElement.setAttribute('title', this.label);
+    protected updateIcon(iconElement: Element): void {
+        !this.label && iconElement.setAttribute('aria-hidden', 'true');
+        !this.label && iconElement.setAttribute('role', 'presentation');
+        this.label && iconElement.setAttribute('aria-label', this.label);
+        this.label && iconElement.setAttribute('title', this.label);
 
         const attrs = this.element.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {
-            if (attrs[i].name == 'class') {
-                // We don't want to override the classes we already added. Add them one by one.
-                if (attrs[i].value) {
-                    const classes = attrs[i].value.split(' ');
-                    for (let j = 0; j < classes.length; j++) {
-                        if (classes[j]) {
-                            this.newElement.classList.add(classes[j]);
-                        }
-                    }
-                }
-            } else if (attrs[i].name != 'name') {
-                this.newElement.setAttribute(attrs[i].name, attrs[i].value);
+            if (attrs[i].name != 'name') {
+                iconElement.setAttribute(attrs[i].name, attrs[i].value);
             }
         }
 
-        if (this.slash) {
-            this.newElement.classList.add('icon-slash');
+        if (this.isTrueProperty(this.slash)) {
+            iconElement.classList.add('icon-slash');
+        } else {
+            iconElement.classList.remove('icon-slash');
         }
 
-        if (this.flipRtl) {
-            this.newElement.classList.add('core-icon-dir-flip');
+        if (this.isTrueProperty(this.flipRtl)) {
+            iconElement.classList.add('core-icon-dir-flip');
+        } else {
+            iconElement.classList.remove('core-icon-dir-flip');
         }
 
-        oldElement.parentElement?.replaceChild(this.newElement, oldElement);
+        if (this.isTrueProperty(this.fixedWidth)) {
+            iconElement.classList.add('fa-fw');
+        } else {
+            iconElement.classList.remove('fa-fw');
+        }
     }
 
     /**
-     * Component destroyed.
+     * Check if the value is true or on.
+     *
+     * @param val value to be checked.
+     * @return If has a value equivalent to true.
      */
-    ngOnDestroy(): void {
-        if (this.newElement) {
-            this.newElement.remove();
+    isTrueProperty(val: any): boolean {
+        if (typeof val === 'string') {
+            val = val.toLowerCase().trim();
+
+            return (val === 'true' || val === 'on' || val === '');
         }
+
+        return !!val;
     }
 
 }

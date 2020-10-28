@@ -6,13 +6,13 @@
         <ion-tab-button tab="redirect" [disabled]="true" [hidden]="true"></ion-tab-button> <!-- [root]="redirectPage" [rootParams]="redirectParams" -->
 
         <ion-tab-button (ionTabButtonClick)="tabClicked($event, tab.page)" [hidden]="!loaded && tab.hide" *ngFor="let tab of tabs" [tab]="tab.page" [disabled]="tab.hide" layout="label-hide"  class="{{tab.class}}">
-            <core-icon [name]="tab.icon"></core-icon>
+            <ion-icon [name]="tab.icon"></ion-icon>
             <ion-label>{{ tab.title | translate }}</ion-label>
             <ion-badge *ngIf="tab.badge">{{ tab.badge }}</ion-badge>
         </ion-tab-button>
 
         <ion-tab-button (ionTabButtonClick)="tabClicked($event, 'more')" [hidden]="!loaded" tab="more" layout="label-hide">
-            <core-icon name="fa-bars"></core-icon>
+            <ion-icon name="fa-bars"></ion-icon>
             <ion-label>{{ 'core.more' | translate }}</ion-label>
         </ion-tab-button>
     </ion-tab-bar>

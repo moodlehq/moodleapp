@@ -36,7 +36,7 @@ import { NavController } from '@ionic/angular';
 @Component({
     selector: 'page-core-login-site',
     templateUrl: 'site.html',
-    styleUrls: ['site.scss'],
+    styleUrls: ['site.scss', '../../login.scss'],
 })
 export class CoreLoginSitePage implements OnInit {
 
@@ -355,7 +355,7 @@ export class CoreLoginSitePage implements OnInit {
             );
         } else {
             const pageParams = { siteUrl: response.siteUrl, siteConfig: response.config };
-            if (foundSite) {
+            if (foundSite && !this.fixedSites) {
                 pageParams['siteName'] = foundSite.name;
                 pageParams['logoUrl'] = foundSite.imageurl;
             }

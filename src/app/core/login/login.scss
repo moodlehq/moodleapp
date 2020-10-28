@@ -1,0 +1,24 @@
+:host {
+    ion-content {
+        --background: var(--core-login-background);
+        --color: var(--core-login-text-color);
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    .core-sitename + .core-siteurl  {
+        margin-top: 0;
+    }
+
+    .core-sitename {
+        font-size: 1.8rem;
+    }
+
+    .core-login-site-logo {
+        width: 90%;
+        max-width: 300px;
+        margin: 5px auto;
+    }
+}
