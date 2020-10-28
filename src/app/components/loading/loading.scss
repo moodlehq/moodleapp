@@ -1,67 +1,43 @@
-ion-app.app-root {
-    core-loading {
-        // @todo @include core-transition(height, 200ms);
+:host {
+    position: static;
+    -webkit-transition: height 200ms ease-in-out;
+    transition: height 200ms ease-in-out;
 
-        .core-loading-container {
-            width: 100%;
+    > .core-loading-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        display: table;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        clear: both;
+        z-index: 3;
+        margin: 0;
+        padding: 10px 0 0 0;
+        background-color: rgba(255, 255, 255, 0.26);
+        -webkit-transition: all 200ms ease-in-out;
+        transition: all 200ms ease-in-out;
+
+        .core-loading-spinner {
+            display: table-cell;
             text-align: center;
-            padding-top: 10px;
-            clear: both;
-            /* @todo @include darkmode() {
-                color: $core-dark-text-color;
-            } */
-        }
-
-        .core-loading-content {
-            display: inline;
-            padding-bottom: 1px; /* This makes height be real */
-        }
-
-        &.core-loading-noheight .core-loading-content {
-            height: auto;
-        }
-
-        &.safe-area-page {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-
-            > .core-loading-content > *:not[padding],
-            > .core-loading-content-loading > *:not[padding] {
-                // @todo @include safe-area-padding-horizontal(0px, 0px);
-            }
+            vertical-align: middle;
         }
     }
 
-    .scroll-content > core-loading,
-    ion-content > .scroll-content > core-loading,
-    core-tab core-loading,
-    .core-loading-center {
-        position: static !important;
+    .core-loading-content {
+        display: inline;
+        padding-bottom: 1px; /* This makes height be real */
     }
 
-    .scroll-content > core-loading,
-    ion-content > .scroll-content > core-loading,
-    core-tab core-loading,
-    .core-loading-center,
-    core-loading.core-loading-loaded {
+    &.core-loading-noheight .core-loading-content {
+        height: auto;
+    }
+
+    &.core-loading-loaded {
         position: relative;
-
-        > .core-loading-container {
-            position: absolute;
-            // @todo @include position(0, 0, 0, 0);
-            display: table;
-            height: 100%;
-            width: 100%;
-            z-index: 1;
-            margin: 0;
-            padding: 0;
-            clear: both;
-
-            .core-loading-spinner {
-                display: table-cell;
-                text-align: center;
-                vertical-align: middle;
-            }
-        }
     }
 }

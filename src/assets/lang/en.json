@@ -340,6 +340,7 @@
     "core.courses.sendpaymentbutton": "Send payment via PayPal",
     "core.courses.show": "Restore to view",
     "core.courses.totalcoursesearchresults": "Total courses: {{$a}}",
+    "core.loading": "Loading",
     "core.login.auth_email": "Email-based self-registration",
     "core.login.authenticating": "Authenticating",
     "core.login.cancel": "Cancel",
