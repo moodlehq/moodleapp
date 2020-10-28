@@ -1,54 +1,153 @@
-// TODO ionic 5
-:host-context([dir=rtl]) ion-icon {
-  &.core-icon-dir-flip,
-  &.fa-caret-right,
-  &.ion-md-send, &.ion-ios-send {
-    -webkit-transform: scale(-1, 1);
-    transform: scale(-1, 1);
-  }
+:host {
+    margin: 0;
 }
 
-// Slash
-@font-face {
-  font-family: "Moodle Slash Icon";
-  font-style: normal;
-  font-weight: 400;
-  src: url("/assets/fonts/slash-icon.woff") format("woff");
+:host-context(ion-item.md) ion-icon {
+    &[slot] {
+        font-size: 1.6em;
+        color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.54);
+        font-size: 24px;
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+    &[slot=start] {
+        margin-right: 32px;
+    }
+    &[slot=end] {
+        margin-left: 16px;
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=start] {
+            margin-right: unset;
+            -webkit-margin-end: 32px;
+            margin-inline-end: 32px;
+        }
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=end] {
+            margin-left: unset;
+            -webkit-margin-start: 16px;
+            margin-inline-start: 16px;
+        }
+    }
+}
+
+:host-context(ion-item.ios) ion-icon {
+    &[slot] {
+        font-size: 1.6em;
+    }
+    &[slot=start] {
+        margin-top: 7px;
+        margin-bottom: 7px;
+        margin-left: 0;
+        margin-right: 20px;
+    }
+    &[slot=end] {
+        margin-top: 7px;
+        margin-bottom: 7px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=start] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: 0;
+            margin-inline-start: 0;
+            -webkit-margin-end: 20px;
+            margin-inline-end: 20px;
+        }
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=end] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: 10px;
+            margin-inline-start: 10px;
+            -webkit-margin-end: 10px;
+            margin-inline-end: 10px;
+        }
+    }
+}
+
+:host-context(ion-item.ion-color) {
+    color: var(--ion-color-contrast);
+}
+
+:host-context(ion-button.md) ion-icon,
+:host-context(ion-button.ios) ion-icon {
+    &[slot] {
+        font-size: 1.4em;
+        pointer-events: none;
+
+    }
+    &[slot=start] {
+        margin-left: -0.3em;
+        margin-right: 0.3em;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    &[slot=end] {
+        margin-left: 0.3em;
+        margin-right: -0.2em;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    &[slot=icon-only] {
+        font-size: 1.8em;
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=start] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: -0.3em;
+            margin-inline-start: -0.3em;
+            -webkit-margin-end: 0.3em;
+            margin-inline-end: 0.3em;
+        }
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=end] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: 0.3em;
+            margin-inline-start: 0.3em;
+            -webkit-margin-end: -0.2em;
+            margin-inline-end: -0.2em;
+        }
+    }
+}
+
+// TODO ionic 5
+:host-context([dir=rtl]) ion-icon {
+    &.core-icon-dir-flip,
+    &.fa-caret-right,
+    &.ion-md-send, &.ion-ios-send {
+        -webkit-transform: scale(-1, 1);
+        transform: scale(-1, 1);
+    }
 }
 
 :host {
-  &.fa {
-    font-size: 24px;
-    contain: none;
-    text-align: center;
-  }
-
-  // Center font awesome icons
-  &.fa::before {
-    width: 1em;
-    height: 1em;
-    text-align: center;
-  }
-
-  &.icon-slash {
-    position: relative;
-    &::after {
-      content: "/";
-      font-family: "Moodle Slash Icon";
-      font-size: 0.75em;
-      margin-top: 0.125em;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      text-align: center;
-      color: var(--ion-color-danger);
+    &.icon-slash {
+        &::after {
+            content: " ";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--ion-color-danger);
+            -webkit-mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
+            mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
+            -webkit-transform: scale(-1, 1);
+            transform: scale(-1, 1);
+        }
     }
-
-    &.fa::after {
-      font-size: 1em;
-      margin-top: 0;
-    }
-  }
 }
