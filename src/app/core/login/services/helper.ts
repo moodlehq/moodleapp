@@ -52,7 +52,7 @@ export class CoreLoginHelperProvider {
     protected logger: CoreLogger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    protected pageToLoad?: {page: string; params: Params; time: number}; // Page to load once main menu is opened.
+    protected pageToLoad?: {page: string; params?: Params; time: number}; // Page to load once main menu is opened.
     protected isOpeningReconnect = false;
     waitingForBrowser = false;
 
@@ -123,7 +123,13 @@ export class CoreLoginHelperProvider {
      * Function called when an SSO InAppBrowser is closed or the app is resumed. Check if user needs to be logged out.
      */
     checkLogout(): void {
-        // @todo
+        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentPage = CoreApp.instance.getCurrentPage();
+
+        if (!CoreApp.instance.isSSOAuthenticationOngoing() && currentSite?.isLoggedOut() && currentPage == 'login/reconnect') {
+            // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
+            CoreSites.instance.logout();
+        }
     }
 
     /**
@@ -444,10 +450,38 @@ export class CoreLoginHelperProvider {
      * @param params Params of the page.
      * @return Promise resolved when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    goToNoSitePage(page?: string, params?: Params): Promise<any> {
-        // @todo
-        return Promise.resolve();
+    async goToNoSitePage(page: string, params?: Params): Promise<void> {
+        const currentPage = CoreApp.instance.getCurrentPage();
+
+        if (currentPage == page) {
+            // Already at page, nothing to do.
+        } else if (page == '/login/sites') {
+            // Just open the page as root.
+            await this.navCtrl.navigateRoot(page, { queryParams: params });
+        } else if (page == '/login/credentials' && currentPage == '/login/site') {
+            // Just open the new page to keep the navigation history.
+            await this.navCtrl.navigateForward(page, { queryParams: params });
+        } else {
+            // Check if there is any site stored.
+            const hasSites = await CoreSites.instance.hasSites();
+
+            if (!hasSites) {
+                // There are sites stored, open sites page first to be able to go back.
+                await this.navCtrl.navigateRoot('/login/sites');
+
+                await this.navCtrl.navigateForward(page, { queryParams: params });
+            } else {
+                if (page != '/login/site') {
+                    // Open the new site page to be able to go back.
+                    await this.navCtrl.navigateRoot('/login/site');
+
+                    await this.navCtrl.navigateForward(page, { queryParams: params });
+                } else {
+                    // Just open the page as root.
+                    await this.navCtrl.navigateRoot(page, { queryParams: params });
+                }
+            }
+        }
     }
 
     /**
@@ -611,15 +645,38 @@ export class CoreLoginHelperProvider {
     /**
      * Load a site and load a certain page in that site.
      *
+     * @param siteId Site to load.
      * @param page Name of the page to load.
      * @param params Params to pass to the page.
-     * @param siteId Site to load.
      * @return Promise resolved when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected loadSiteAndPage(page: string, params: Params, siteId: string): Promise<any> {
-        // @todo
-        return Promise.resolve();
+    protected async loadSiteAndPage(siteId: string, page: string, params?: Params): Promise<void> {
+        if (siteId == CoreConstants.NO_SITE_ID) {
+            // Page doesn't belong to a site, just load the page.
+            await this.navCtrl.navigateRoot(page, params);
+
+            return;
+        }
+
+        const modal = await CoreDomUtils.instance.showModalLoading();
+
+        try {
+            const loggedIn = await CoreSites.instance.loadSite(siteId, page, params);
+
+            if (!loggedIn) {
+                return;
+            }
+
+            await this.openMainMenu({
+                redirectPage: page,
+                redirectParams: params,
+            });
+        } catch (error) {
+            // Site doesn't exist.
+            await this.navCtrl.navigateRoot('/login/sites');
+        } finally {
+            modal.dismiss();
+        }
     }
 
     /**
@@ -628,7 +685,7 @@ export class CoreLoginHelperProvider {
      * @param page Name of the page to load.
      * @param params Params to pass to the page.
      */
-    loadPageInMainMenu(page: string, params: Params): void {
+    loadPageInMainMenu(page: string, params?: Params): void {
         if (!CoreApp.instance.isMainMenuOpen()) {
             // Main menu not open. Store the page to be loaded later.
             this.pageToLoad = {
@@ -827,9 +884,20 @@ export class CoreLoginHelperProvider {
      *
      * @param siteId The site ID.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    passwordChangeForced(siteId: string): void {
-        // @todo
+    async passwordChangeForced(siteId: string): Promise<void> {
+        const currentSite = CoreSites.instance.getCurrentSite();
+        if (!currentSite || siteId !== currentSite.getId()) {
+            return; // Site that triggered the event is not current site.
+        }
+
+        const currentPage = CoreApp.instance.getCurrentPage();
+
+        // If current page is already change password, stop.
+        if (currentPage == '/login/changepassword') {
+            return;
+        }
+
+        await this.navCtrl.navigateRoot('/login/changepassword', { queryParams: { siteId } });
     }
 
     /**
@@ -886,9 +954,26 @@ export class CoreLoginHelperProvider {
      * @param siteId Site to load. If not defined, current site.
      * @return Promise resolved when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
-        // @todo
+        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+
+        if (CoreSites.instance.isLoggedIn()) {
+            if (siteId && siteId != CoreSites.instance.getCurrentSiteId()) {
+                // Target page belongs to a different site. Change site.
+                // @todo: Check site plugins.
+                await CoreSites.instance.logout();
+
+                await this.loadSiteAndPage(siteId, page, params);
+            } else {
+                this.loadPageInMainMenu(page, params);
+            }
+        } else {
+            if (siteId) {
+                await this.loadSiteAndPage(siteId, page, params);
+            } else {
+                await this.navCtrl.navigateRoot('/login/sites');
+            }
+        }
     }
 
     /**
@@ -1013,7 +1098,25 @@ export class CoreLoginHelperProvider {
 
                 const info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined' && !this.isOpeningReconnect) {
-                    // @todo
+                    // If current page is already reconnect, stop.
+                    if (CoreApp.instance.getCurrentPage() == '/login/reconnect') {
+                        return;
+                    }
+
+                    this.isOpeningReconnect = true;
+
+                    await CoreUtils.instance.ignoreErrors(this.navCtrl.navigateRoot('/login/reconnect', {
+                        queryParams: {
+                            infoSiteUrl: info.siteurl,
+                            siteUrl: result.siteUrl,
+                            siteId: siteId,
+                            pageName: data.pageName,
+                            pageParams: data.params,
+                            siteConfig: result.config,
+                        },
+                    }));
+
+                    this.isOpeningReconnect = false;
                 }
             }
         } catch (error) {
@@ -1166,7 +1269,12 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        // @todo Navigate to site policy page.
+        // If current page is already site policy, stop.
+        if (CoreApp.instance.getCurrentPage() == '/login/sitepolicy') {
+            return;
+        }
+
+        this.navCtrl.navigateRoot('/login/sitepolicy', { queryParams: { siteId: siteId } });
     }
 
     /**

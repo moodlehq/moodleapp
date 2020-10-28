@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { Injectable, NgZone, ApplicationRef } from '@angular/core';
-import { Params } from '@angular/router';
+import { Params, Router } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUrlUtils } from '@services/utils/url';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 
@@ -56,7 +57,11 @@ export class CoreAppProvider {
     // Variables for DB.
     protected createVersionsTableReady: Promise<void>;
 
-    constructor(appRef: ApplicationRef, zone: NgZone) {
+    constructor(
+        appRef: ApplicationRef,
+        zone: NgZone,
+        protected router: Router,
+    ) {
         this.logger = CoreLogger.getInstance('CoreAppProvider');
         this.db = CoreDB.instance.getDB(DBNAME);
 
@@ -183,6 +188,15 @@ export class CoreAppProvider {
 
         // Set installed version.
         await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name, version: schema.version });
+    }
+
+    /**
+     * Get current page route without params.
+     *
+     * @return Current page route.
+     */
+    getCurrentPage(): string {
+        return CoreUrlUtils.instance.removeUrlParams(this.router.url);
     }
 
     /**
