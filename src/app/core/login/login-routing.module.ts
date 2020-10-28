@@ -42,6 +42,11 @@ const routes: Routes = [
         loadChildren: () => import('./pages/forgotten-password/forgotten-password.module')
             .then( m => m.CoreLoginForgottenPasswordPageModule),
     },
+    {
+        path: 'changepassword',
+        loadChildren: () => import('./pages/change-password/change-password.module')
+            .then( m => m.CoreLoginChangePasswordPageModule),
+    },
 ];
 
 @NgModule({
