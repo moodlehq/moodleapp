@@ -16,8 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSiteSchema } from '@services/sites';
 import { makeSingleton } from '@singletons/core.singletons';
-
-const SYNC_TABLE = 'sync';
+import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/sync.db';
 
 /*
  * Service that provides some features regarding synchronization.
@@ -31,7 +30,7 @@ export class CoreSyncProvider {
         version: 1,
         tables: [
             {
-                name: SYNC_TABLE,
+                name: SYNC_TABLE_NAME,
                 columns: [
                     {
                         name: 'component',
@@ -61,8 +60,6 @@ export class CoreSyncProvider {
     protected blockedItems: { [siteId: string]: { [blockId: string]: { [operation: string]: boolean } } } = {};
 
     constructor() {
-        CoreSites.instance.registerSiteSchema(this.siteSchema);
-
         // Unblock all blocks on logout.
         CoreEvents.on(CoreEvents.LOGOUT, (data: {siteId: string}) => {
             this.clearAllBlocks(data.siteId);
@@ -133,7 +130,7 @@ export class CoreSyncProvider {
      * @return Record if found or reject.
      */
     getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
-        return CoreSites.instance.getSiteDb(siteId).then((db) => db.getRecord(SYNC_TABLE, { component: component, id: id }));
+        return CoreSites.instance.getSiteDb(siteId).then((db) => db.getRecord(SYNC_TABLE_NAME, { component: component, id: id }));
     }
 
     /**
@@ -151,7 +148,7 @@ export class CoreSyncProvider {
         data.component = component;
         data.id = id;
 
-        await db.insertRecord(SYNC_TABLE, data);
+        await db.insertRecord(SYNC_TABLE_NAME, data);
     }
 
     /**
@@ -211,10 +208,3 @@ export class CoreSyncProvider {
 }
 
 export class CoreSync extends makeSingleton(CoreSyncProvider) {}
-
-export type CoreSyncRecord = {
-    component: string;
-    id: string;
-    time: number;
-    warnings: string;
-};

@@ -50,6 +50,11 @@ import { CoreTimeUtilsProvider } from '@services/utils/time';
 import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
 
+// Import init DB functions of core services.
+import { initCoreFilepoolDB } from '@services/filepool.db';
+import { initCoreSitesDB } from '@services/sites.db';
+import { initCoreSyncDB } from '@services/sync.db';
+
 // Import core modules.
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
 import { CoreLoginModule } from '@core/login/login.module';
@@ -121,6 +126,8 @@ export class AppModule {
         // Set the injector.
         setSingletonsInjector(injector);
 
+        this.initCoreServicesDB();
+
         // Register a handler for platform ready.
         CoreInit.instance.registerProcess({
             name: 'CorePlatformReady',
@@ -152,6 +159,15 @@ export class AppModule {
 
         // Execute the init processes.
         CoreInit.instance.executeInitProcesses();
+    }
+
+    /**
+     * Init the DB of core services.
+     */
+    protected initCoreServicesDB(): void {
+        initCoreFilepoolDB();
+        initCoreSitesDB();
+        initCoreSyncDB();
     }
 
 }

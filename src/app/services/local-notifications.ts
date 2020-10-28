@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 
-import { CoreApp, CoreAppSchema } from '@services/app';
+import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
 import { CoreQueueRunner } from '@classes/queue-runner';
@@ -28,68 +28,19 @@ import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@core/constants';
 import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push, Device } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
+import {
+    APP_SCHEMA,
+    TRIGGERED_TABLE_NAME,
+    COMPONENTS_TABLE_NAME,
+    SITES_TABLE_NAME,
+    CodeRequestsQueueItem,
+} from '@services/local-notifications.db';
 
 /**
  * Service to handle local notifications.
  */
 @Injectable()
 export class CoreLocalNotificationsProvider {
-
-    // Variables for the database.
-    protected static readonly SITES_TABLE = 'notification_sites'; // Store to asigne unique codes to each site.
-    protected static readonly COMPONENTS_TABLE = 'notification_components'; // Store to asigne unique codes to each component.
-    protected static readonly TRIGGERED_TABLE = 'notifications_triggered'; // Store to prevent re-triggering notifications.
-    protected tablesSchema: CoreAppSchema = {
-        name: 'CoreLocalNotificationsProvider',
-        version: 1,
-        tables: [
-            {
-                name: CoreLocalNotificationsProvider.SITES_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'TEXT',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'code',
-                        type: 'INTEGER',
-                        notNull: true,
-                    },
-                ],
-            },
-            {
-                name: CoreLocalNotificationsProvider.COMPONENTS_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'TEXT',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'code',
-                        type: 'INTEGER',
-                        notNull: true,
-                    },
-                ],
-            },
-            {
-                name: CoreLocalNotificationsProvider.TRIGGERED_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'INTEGER',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'at',
-                        type: 'INTEGER',
-                        notNull: true,
-                    },
-                ],
-            },
-        ],
-    };
 
     protected logger: CoreLogger;
     protected appDB: SQLiteDB;
@@ -111,7 +62,7 @@ export class CoreLocalNotificationsProvider {
         this.logger = CoreLogger.getInstance('CoreLocalNotificationsProvider');
         this.queueRunner = new CoreQueueRunner(10);
         this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(this.tablesSchema).catch(() => {
+        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
             // Ignore errors.
         });
 
@@ -301,7 +252,7 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the component code is retrieved.
      */
     protected getComponentCode(component: string): Promise<number> {
-        return this.requestCode(CoreLocalNotificationsProvider.COMPONENTS_TABLE, component);
+        return this.requestCode(COMPONENTS_TABLE_NAME, component);
     }
 
     /**
@@ -312,7 +263,7 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the site code is retrieved.
      */
     protected getSiteCode(siteId: string): Promise<number> {
-        return this.requestCode(CoreLocalNotificationsProvider.SITES_TABLE, siteId);
+        return this.requestCode(SITES_TABLE_NAME, siteId);
     }
 
     /**
@@ -377,7 +328,7 @@ export class CoreLocalNotificationsProvider {
 
         try {
             const stored = await this.appDB.getRecord<{ id: number; at: number }>(
-                CoreLocalNotificationsProvider.TRIGGERED_TABLE,
+                TRIGGERED_TABLE_NAME,
                 { id: notification.id },
             );
 
@@ -532,7 +483,7 @@ export class CoreLocalNotificationsProvider {
     async removeTriggered(id: number): Promise<void> {
         await this.dbReady;
 
-        await this.appDB.deleteRecords(CoreLocalNotificationsProvider.TRIGGERED_TABLE, { id: id });
+        await this.appDB.deleteRecords(TRIGGERED_TABLE_NAME, { id: id });
     }
 
     /**
@@ -695,7 +646,7 @@ export class CoreLocalNotificationsProvider {
             at: notification.trigger && notification.trigger.at ? notification.trigger.at.getTime() : Date.now(),
         };
 
-        return this.appDB.insertRecord(CoreLocalNotificationsProvider.TRIGGERED_TABLE, entry);
+        return this.appDB.insertRecord(TRIGGERED_TABLE_NAME, entry);
     }
 
     /**
@@ -708,10 +659,10 @@ export class CoreLocalNotificationsProvider {
     async updateComponentName(oldName: string, newName: string): Promise<void> {
         await this.dbReady;
 
-        const oldId = CoreLocalNotificationsProvider.COMPONENTS_TABLE + '#' + oldName;
-        const newId = CoreLocalNotificationsProvider.COMPONENTS_TABLE + '#' + newName;
+        const oldId = COMPONENTS_TABLE_NAME + '#' + oldName;
+        const newId = COMPONENTS_TABLE_NAME + '#' + newName;
 
-        await this.appDB.updateRecords(CoreLocalNotificationsProvider.COMPONENTS_TABLE, { id: newId }, { id: oldId });
+        await this.appDB.updateRecords(COMPONENTS_TABLE_NAME, { id: newId }, { id: oldId });
     }
 
 }
@@ -719,9 +670,3 @@ export class CoreLocalNotificationsProvider {
 export class CoreLocalNotifications extends makeSingleton(CoreLocalNotificationsProvider) {}
 
 export type CoreLocalNotificationsClickCallback<T = unknown> = (value: T) => void;
-
-type CodeRequestsQueueItem = {
-    table: string;
-    id: string;
-    deferreds: PromiseDefer<number>[];
-};
