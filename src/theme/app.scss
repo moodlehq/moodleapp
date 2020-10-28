@@ -4,3 +4,35 @@ ion-toolbar ion-back-button,
 ion-toolbar .in-toolbar.button-clear {
     --color: var(--ion-color-primary-contrast);
 }
+
+// Ion icon styles.
+ion-icon {
+    &.icon-slash::after,
+    &.icon-backslash::after {
+        content: " ";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: var(--ion-color-danger);
+        -webkit-mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
+        mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
+    }
+
+    &.icon-slash::after {
+        -webkit-transform: scale(-1, 1);
+        transform: scale(-1, 1);
+    }
+
+    &.fa-fw {
+        text-align: center;
+        width: 1.25em;
+    }
+}
+
+[dir=rtl] ion-icon.icon-flip-rtl {
+    -webkit-transform: scale(-1, 1);
+    transform: scale(-1, 1);
+}
+

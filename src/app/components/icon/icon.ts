@@ -20,6 +20,7 @@ import { Component, Input, OnChanges, ElementRef, SimpleChange } from '@angular/
  * the component will detect it.
  *
  * Check available icons at https://fontawesome.com/icons?d=gallery&m=free
+ *
  * @deprecated since 3.9.3. Please use <ion-icon name="fa-icon"> instead.
  */
 @Component({
@@ -81,9 +82,9 @@ export class CoreIconComponent implements OnChanges {
         }
 
         if (this.isTrueProperty(this.flipRtl)) {
-            iconElement.classList.add('core-icon-dir-flip');
+            iconElement.classList.add('icon-flip-rtl');
         } else {
-            iconElement.classList.remove('core-icon-dir-flip');
+            iconElement.classList.remove('icon-flip-rtl');
         }
 
         if (this.isTrueProperty(this.fixedWidth)) {
@@ -96,10 +97,10 @@ export class CoreIconComponent implements OnChanges {
     /**
      * Check if the value is true or on.
      *
-     * @param val value to be checked.
+     * @param val Value to be checked.
      * @return If has a value equivalent to true.
      */
-    isTrueProperty(val: any): boolean {
+    isTrueProperty(val: unknown): boolean {
         if (typeof val === 'string') {
             val = val.toLowerCase().trim();
 

@@ -1,4 +1,3 @@
-
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
@@ -11,18 +10,18 @@
 </ion-header>
 
 <ion-content>
-    <ion-item text-wrap>
+    <ion-item class="ion-text-wrap">
         <ion-label><h2>{{ appName }} {{ versionName }}</h2></ion-label>
     </ion-item>
-    <ion-item text-wrap (click)="openPage('licenses')" detail>
+    <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" detail>
         <ion-icon name="far-copyright" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
     </ion-item>
-    <ion-item text-wrap *ngIf="privacyPolicy" [href]="privacyPolicy" core-link auto-login="no" detail>
+    <ion-item button class="ion-text-wrap" *ngIf="privacyPolicy" [href]="privacyPolicy" core-link auto-login="no" detail>
         <ion-icon name="fa-user-shield" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.privacypolicy' | translate }}</ion-label>
     </ion-item>
-    <ion-item text-wrap (click)="openPage('deviceinfo')" detail>
+    <ion-item button class="ion-text-wrap" (click)="openPage('deviceinfo')" detail>
         <ion-icon name="fa-mobile" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.deviceinfo' | translate }}</ion-label>
     </ion-item>

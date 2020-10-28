@@ -123,31 +123,3 @@
         }
     }
 }
-
-// TODO ionic 5
-:host-context([dir=rtl]) ion-icon {
-    &.core-icon-dir-flip,
-    &.fa-caret-right,
-    &.ion-md-send, &.ion-ios-send {
-        -webkit-transform: scale(-1, 1);
-        transform: scale(-1, 1);
-    }
-}
-
-:host {
-    &.icon-slash {
-        &::after {
-            content: " ";
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--ion-color-danger);
-            -webkit-mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
-            mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
-            -webkit-transform: scale(-1, 1);
-            transform: scale(-1, 1);
-        }
-    }
-}
