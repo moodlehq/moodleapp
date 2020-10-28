@@ -14,38 +14,33 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreIconComponent } from './icon/icon';
-import { CoreIframeComponent } from './iframe/iframe';
-import { CoreLoadingComponent } from './loading/loading';
-import { CoreShowPasswordComponent } from './show-password/show-password';
-import { CoreEmptyBoxComponent } from './empty-box/empty-box';
-import { CoreDirectivesModule } from '@app/directives/directives.module';
-import { CorePipesModule } from '@app/pipes/pipes.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreLoginSitePolicyPage } from './site-policy.page';
+
+const routes: Routes = [
+    {
+        path: '',
+        component: CoreLoginSitePolicyPage,
+    },
+];
 
 @NgModule({
-    declarations: [
-        CoreIconComponent,
-        CoreIframeComponent,
-        CoreLoadingComponent,
-        CoreShowPasswordComponent,
-        CoreEmptyBoxComponent,
-    ],
     imports: [
+        RouterModule.forChild(routes),
         CommonModule,
-        IonicModule.forRoot(),
+        IonicModule,
         TranslateModule.forChild(),
+        CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule,
     ],
-    exports: [
-        CoreIconComponent,
-        CoreIframeComponent,
-        CoreLoadingComponent,
-        CoreShowPasswordComponent,
-        CoreEmptyBoxComponent,
+    declarations: [
+        CoreLoginSitePolicyPage,
     ],
+    exports: [RouterModule],
 })
-export class CoreComponentsModule {}
+export class CoreLoginSitePolicyPageModule {}

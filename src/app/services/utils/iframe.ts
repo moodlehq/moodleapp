@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { WKUserScriptWindow, WKUserScriptInjectionTime } from 'cordova-plugin-wkuserscript';
+import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
@@ -474,6 +475,36 @@ export class CoreIframeUtilsProvider {
 
         // Handle post messages received by iframes.
         window.addEventListener('message', this.handleIframeMessage.bind(this));
+    }
+
+    /**
+     * Fix cookies for an iframe URL.
+     *
+     * @param url URL of the iframe.
+     * @return Promise resolved when done.
+     */
+    async fixIframeCookies(url: string): Promise<void> {
+        if (!CoreApp.instance.isIOS() || !url || CoreUrlUtils.instance.isLocalFileUrl(url)) {
+            // No need to fix cookies.
+            return;
+        }
+
+        // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
+        try {
+            const win = <WKWebViewCookiesWindow> window;
+            const urlParts = CoreUrl.parse(url);
+
+            if (urlParts?.domain && win.WKWebViewCookies) {
+                await win.WKWebViewCookies.setCookie({
+                    name: 'MoodleAppCookieForWKWebView',
+                    value: '1',
+                    domain: urlParts.domain,
+                });
+            }
+        } catch (err) {
+            // Ignore errors.
+            this.logger.error('Error setting cookie', err);
+        }
     }
 
 }

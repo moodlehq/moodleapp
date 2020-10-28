@@ -47,6 +47,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/change-password/change-password.module')
             .then( m => m.CoreLoginChangePasswordPageModule),
     },
+    {
+        path: 'sitepolicy',
+        loadChildren: () => import('./pages/site-policy/site-policy.module').then( m => m.CoreLoginSitePolicyPageModule),
+    },
 ];
 
 @NgModule({
