@@ -13,7 +13,10 @@
             <ion-avatar slot="start"></ion-avatar> <!-- @todo core-user-avatar [user]="siteInfo" -->
             <ion-label>
                 <h2>{{siteInfo.fullname}}</h2>
-                <p><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true"></core-format-text></p>
+                <p>
+                    <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
+                    </core-format-text>
+                </p>
                 <p>{{ siteUrl }}</p>
             </ion-label>
         </ion-item>
@@ -27,7 +30,8 @@
             <ion-label>
                 <h2>{{ handler.title | translate}}</h2>
             </ion-label>
-            <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge">{{handler.badge}}</ion-badge>
+            <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge">{{handler.badge}}
+            </ion-badge>
             <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading"></ion-spinner>
         </ion-item>
         <ng-container *ngFor="let item of customItems">
