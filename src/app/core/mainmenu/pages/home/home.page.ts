@@ -18,11 +18,11 @@ import { Component, OnInit } from '@angular/core';
  * Page that displays the Home.
  */
 @Component({
-    selector: 'page-core-courses-home',
+    selector: 'page-core-home',
     templateUrl: 'home.html',
     styleUrls: ['home.scss'],
 })
-export class CoreCoursesHomePage implements OnInit {
+export class CoreHomePage implements OnInit {
 
     siteName = 'Hello world';
 

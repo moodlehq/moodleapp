@@ -14,17 +14,8 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreMainMenuDelegate } from '@core/mainmenu/services/delegate';
-import { CoreHomeMainMenuHandler } from './handlers/mainmenu';
-
 @NgModule({
     imports: [],
     declarations: [],
 })
-export class CoreCoursesModule {
-
-    constructor(mainMenuDelegate: CoreMainMenuDelegate) {
-        mainMenuDelegate.registerHandler(new CoreHomeMainMenuHandler());
-    }
-
-}
+export class CoreCoursesModule { }

@@ -25,7 +25,7 @@ const routes: Routes = [
         children: [
             {
                 path: 'home', // @todo: Add this route dynamically.
-                loadChildren: () => import('../courses/pages/home/home.page.module').then( m => m.CoreCoursesHomePageModule),
+                loadChildren: () => import('./pages/home/home.page.module').then( m => m.CoreHomePageModule),
             },
             {
                 path: 'more',

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@core/mainmenu/services/delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../services/delegate';
 
 /**
  * Handler to add Home into main menu.
@@ -51,7 +51,7 @@ export class CoreHomeMainMenuHandler implements CoreMainMenuHandler {
     getDisplayData(): CoreMainMenuHandlerData {
         return {
             icon: 'fa-home',
-            title: 'core.courses.mymoodle',
+            title: 'core.mainmenu.home',
             page: 'home',
             class: 'core-home-handler',
         };
