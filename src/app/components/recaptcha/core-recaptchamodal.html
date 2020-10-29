@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>{{ 'core.login.security_question' | translate }}</ion-title>
+
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fa-times"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-iframe [src]="recaptchaUrl" (loaded)="loaded($event)"></core-iframe>
+</ion-content>
