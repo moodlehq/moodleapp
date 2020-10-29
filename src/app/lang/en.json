@@ -1,12 +1,18 @@
 {
     "back": "Back",
     "browser": "Browser",
+    "cannotconnect": "Cannot connect",
+    "cannotconnecttrouble": "We're having trouble connecting to your site.",
+    "cannotconnectverify": "<strong>Please check the address is correct.</strong>",
     "copiedtoclipboard": "Text copied to clipboard",
     "loading": "Loading",
+    "needhelp": "Need help?",
+    "networkerrormsg": "There was a problem connecting to the site. Please check your connection and try again.",
     "no": "No",
     "offline": "Offline",
     "ok": "OK",
     "online": "Online",
+    "tryagain": "Try again",
     "unknown": "Unknown",
     "yes": "Yes"
 }

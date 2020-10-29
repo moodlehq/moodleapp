@@ -1,11 +1,11 @@
-// Add here base app styles.
 
+// Ionic toolbar.
 ion-toolbar ion-back-button,
 ion-toolbar .in-toolbar.button-clear {
     --color: var(--ion-color-primary-contrast);
 }
 
-// Ion icon styles.
+// Ionic icon.
 ion-icon {
     &.icon-slash::after,
     &.icon-backslash::after {
@@ -36,3 +36,37 @@ ion-icon {
     transform: scale(-1, 1);
 }
 
+// Ionic alert.
+ion-alert.core-alert-network-error .alert-head {
+    position: relative;
+    content: " ";
+    background: url("/assets/fonts/font-awesome/solid/wifi.svg") no-repeat 50% 50%;
+    margin: 25px auto;
+
+    &::after {
+        content: " ";
+        position: absolute;
+        top: -20%;
+        right: -15%;
+        width: 50%;
+        height: 50%;
+        background-color: var(--ion-color-danger);
+        -webkit-mask: url("/assets/fonts/font-awesome/solid/exclamation-triangle.svg") no-repeat 50% 50%;
+        mask: url("/assets/fonts/font-awesome/solid/exclamation-triangle.svg") no-repeat 50% 50%;
+    }
+}
+[dir=rtl] ion-alert.core-alert-network-error .alert-head::after {
+    right: unset;
+    left: -15%;
+}
+
+// Ionic item divider.
+ion-item-divider {
+    --background: var(--gray-lighter);
+    border: 0;
+}
+
+// Ionic list.
+ion-list.list-md {
+    padding-bottom: 0;
+}

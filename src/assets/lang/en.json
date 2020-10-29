@@ -302,6 +302,9 @@
     "assets.mimetypes.video": "Video file ({{$a.EXT}})",
     "core.back": "Back",
     "core.browser": "Browser",
+    "core.cannotconnect": "Cannot connect",
+    "core.cannotconnecttrouble": "We're having trouble connecting to your site.",
+    "core.cannotconnectverify": "<strong>Please check the address is correct.</strong>",
     "core.copiedtoclipboard": "Text copied to clipboard",
     "core.courses.addtofavourites": "Star this course",
     "core.courses.allowguests": "This course allows guest users to enter",
@@ -467,6 +470,8 @@
     "core.mainmenu.help": "Help",
     "core.mainmenu.logout": "Log out",
     "core.mainmenu.website": "Website",
+    "core.needhelp": "Need help?",
+    "core.networkerrormsg": "There was a problem connecting to the site. Please check your connection and try again.",
     "core.no": "No",
     "core.offline": "Offline",
     "core.ok": "OK",
@@ -542,6 +547,7 @@
     "core.settings.syncsettings": "Synchronisation settings",
     "core.settings.total": "Total",
     "core.settings.wificonnection": "Wi-Fi connection",
+    "core.tryagain": "Try again",
     "core.unknown": "Unknown",
     "core.yes": "Yes"
 }
