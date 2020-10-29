@@ -29,7 +29,7 @@ import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/hel
 import { makeSingleton } from '@singletons/core.singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
-import { WKUserScriptWindow, WKUserScriptInjectionTime } from 'cordova-plugin-wkuserscript';
+import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 /*
@@ -70,7 +70,7 @@ export class CoreIframeUtilsProvider {
                 win.WKUserScript.addScript({
                     id: 'CoreIframeUtilsRecaptchaScript',
                     file: recaptchaPath,
-                    injectionTime: WKUserScriptInjectionTime.END,
+                    injectionTime: win.WKUserScript.InjectionTime.END,
                 });
 
                 // Handle post messages received by iframes.
