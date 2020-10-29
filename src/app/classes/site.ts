@@ -36,7 +36,7 @@ import { CoreIonLoadingElement } from './ion-loading';
 /**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
- * To add tables to the site's database, please use CoreSitesProvider.registerSiteSchema. This will make sure that
+ * To add tables to the site's database, please use registerSiteSchema exported in @services/sites.ts. This will make sure that
  * the tables are created in all the sites, not just the current one.
  *
  * @todo: Refactor this class to improve "temporary" sites support (not fully authenticated).

@@ -37,6 +37,24 @@ const routes: Routes = [
         path: 'sites',
         loadChildren: () => import('./pages/sites/sites.page.module').then( m => m.CoreLoginSitesPageModule),
     },
+    {
+        path: 'forgottenpassword',
+        loadChildren: () => import('./pages/forgotten-password/forgotten-password.module')
+            .then( m => m.CoreLoginForgottenPasswordPageModule),
+    },
+    {
+        path: 'changepassword',
+        loadChildren: () => import('./pages/change-password/change-password.module')
+            .then( m => m.CoreLoginChangePasswordPageModule),
+    },
+    {
+        path: 'sitepolicy',
+        loadChildren: () => import('./pages/site-policy/site-policy.module').then( m => m.CoreLoginSitePolicyPageModule),
+    },
+    {
+        path: 'emailsignup',
+        loadChildren: () => import('./pages/email-signup/email-signup.module').then( m => m.CoreLoginEmailSignupPageModule),
+    },
 ];
 
 @NgModule({

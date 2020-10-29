@@ -13,12 +13,32 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreLoginRoutingModule } from './login-routing.module';
+import { CoreLoginSiteHelpComponent } from './components/site-help/site-help';
+import { CoreLoginSiteOnboardingComponent } from './components/site-onboarding/site-onboarding';
 
 @NgModule({
     imports: [
         CoreLoginRoutingModule,
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
     ],
-    declarations: [],
+    declarations: [
+        CoreLoginSiteHelpComponent,
+        CoreLoginSiteOnboardingComponent,
+    ],
+    exports: [
+        CoreLoginSiteHelpComponent,
+        CoreLoginSiteOnboardingComponent,
+    ],
 })
 export class CoreLoginModule {}

@@ -13,20 +13,19 @@
 // limitations under the License.
 
 import { Injectable, NgZone, ApplicationRef } from '@angular/core';
-import { Params } from '@angular/router';
+import { Params, Router } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUrlUtils } from '@services/utils/url';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 
 import { makeSingleton, Keyboard, Network, StatusBar, Platform } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
-
-const DBNAME = 'MoodleMobile';
-const SCHEMA_VERSIONS_TABLE = 'schema_versions';
+import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/app.db';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -57,27 +56,17 @@ export class CoreAppProvider {
 
     // Variables for DB.
     protected createVersionsTableReady: Promise<void>;
-    protected versionsTableSchema: SQLiteDBTableSchema = {
-        name: SCHEMA_VERSIONS_TABLE,
-        columns: [
-            {
-                name: 'name',
-                type: 'TEXT',
-                primaryKey: true,
-            },
-            {
-                name: 'version',
-                type: 'INTEGER',
-            },
-        ],
-    };
 
-    constructor(appRef: ApplicationRef, zone: NgZone) {
+    constructor(
+        appRef: ApplicationRef,
+        zone: NgZone,
+        protected router: Router,
+    ) {
         this.logger = CoreLogger.getInstance('CoreAppProvider');
         this.db = CoreDB.instance.getDB(DBNAME);
 
         // Create the schema versions table.
-        this.createVersionsTableReady = this.db.createTableFromSchema(this.versionsTableSchema);
+        this.createVersionsTableReady = this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
         Keyboard.instance.onKeyboardShow().subscribe((data) => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -175,7 +164,7 @@ export class CoreAppProvider {
             await this.createVersionsTableReady;
 
             // Fetch installed version of the schema.
-            const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE, { name: schema.name });
+            const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name });
 
             oldVersion = entry.version;
         } catch (error) {
@@ -198,7 +187,16 @@ export class CoreAppProvider {
         }
 
         // Set installed version.
-        await this.db.insertRecord(SCHEMA_VERSIONS_TABLE, { name: schema.name, version: schema.version });
+        await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name, version: schema.version });
+    }
+
+    /**
+     * Get current page route without params.
+     *
+     * @return Current page route.
+     */
+    getCurrentPage(): string {
+        return CoreUrlUtils.instance.removeUrlParams(this.router.url);
     }
 
     /**
@@ -740,9 +738,4 @@ export type CoreAppSchema = {
 export type WindowForAutomatedTests = Window & {
     appProvider?: CoreAppProvider;
     appRef?: ApplicationRef;
-};
-
-type SchemaVersionsDBEntry = {
-    name: string;
-    version: number;
 };

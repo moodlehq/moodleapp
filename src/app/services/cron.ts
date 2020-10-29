@@ -14,7 +14,7 @@
 
 import { Injectable, NgZone } from '@angular/core';
 
-import { CoreApp, CoreAppProvider, CoreAppSchema } from '@services/app';
+import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
@@ -23,8 +23,7 @@ import { CoreError } from '@classes/errors/error';
 
 import { makeSingleton, Network } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
-
-const CRON_TABLE = 'cron';
+import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/cron.db';
 
 /*
  * Service to handle cron processes. The registered processes will be executed every certain time.
@@ -37,28 +36,6 @@ export class CoreCronDelegate {
     static readonly MIN_INTERVAL = 300000; // Minimum interval is 5 minutes.
     static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
 
-    // Variables for database.
-    protected tableSchema: CoreAppSchema = {
-        name: 'CoreCronDelegate',
-        version: 1,
-        tables: [
-            {
-                name: CRON_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'TEXT',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'value',
-                        type: 'INTEGER',
-                    },
-                ],
-            },
-        ],
-    };
-
     protected logger: CoreLogger;
     protected appDB: SQLiteDB;
     protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
@@ -69,7 +46,7 @@ export class CoreCronDelegate {
         this.logger = CoreLogger.getInstance('CoreCronDelegate');
 
         this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(this.tableSchema).catch(() => {
+        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
             // Ignore errors.
         });
 
@@ -268,7 +245,7 @@ export class CoreCronDelegate {
         const id = this.getHandlerLastExecutionId(name);
 
         try {
-            const entry = await this.appDB.getRecord<CronDBEntry>(CRON_TABLE, { id });
+            const entry = await this.appDB.getRecord<CronDBEntry>(CRON_TABLE_NAME, { id });
 
             const time = Number(entry.value);
 
@@ -431,7 +408,7 @@ export class CoreCronDelegate {
             value: time,
         };
 
-        await this.appDB.insertRecord(CRON_TABLE, entry);
+        await this.appDB.insertRecord(CRON_TABLE_NAME, entry);
     }
 
     /**
@@ -561,9 +538,4 @@ export interface CoreCronHandler {
  */
 export type WindowForAutomatedTests = Window & {
     cronProvider?: CoreCronDelegate;
-};
-
-type CronDBEntry = {
-    id: string;
-    value: number;
 };

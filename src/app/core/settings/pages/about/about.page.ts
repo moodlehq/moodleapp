@@ -16,7 +16,6 @@ import { CoreSites } from '@services/sites';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CoreConstants } from '@core/constants';
-import { CoreApp } from '@services/app';
 
 @Component({
     selector: 'settings-about',

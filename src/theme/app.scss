@@ -70,3 +70,32 @@ ion-item-divider {
 ion-list.list-md {
     padding-bottom: 0;
 }
+
+// Modals.
+.core-modal-fullscreen  .modal-wrapper {
+    position: absolute;
+    // @todo @include position(0 !important, null, null, 0 !important);
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.core-modal-force-on-top {
+    z-index: 100000 !important;
+}
+
+// Hidden submit button.
+.core-submit-hidden-enter {
+    position: absolute;
+    visibility: hidden;
+    left: -1000px;
+}
+
+// Note on foot of ion-input.
+.item .core-input-footnote {
+    width: 100%;
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+}

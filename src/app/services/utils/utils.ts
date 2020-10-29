@@ -618,7 +618,7 @@ export class CoreUtilsProvider {
      *
      * @return Promise resolved with the list of countries.
      */
-    getCountryListSorted(): Promise<{ code: string; name: string }[]> {
+    getCountryListSorted(): Promise<CoreCountry[]> {
         // Get the keys of the countries.
         return this.getCountryList().then((countries) => {
             // Sort translations.
@@ -1658,4 +1658,12 @@ export type OrderedPromiseData = {
      * Whether the promise should block the following one.
      */
     blocking?: boolean;
+};
+
+/**
+ * Data about a country.
+ */
+export type CoreCountry = {
+    code: string;
+    name: string;
 };

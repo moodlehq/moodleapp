@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
 import { timeout } from 'rxjs/operators';
 
-import { CoreApp, CoreAppSchema, CoreStoreConfig } from '@services/app';
+import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -38,113 +38,35 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { makeSingleton, Translate, Http } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
+import {
+    APP_SCHEMA,
+    SCHEMA_VERSIONS_TABLE_SCHEMA,
+    SITES_TABLE_NAME,
+    CURRENT_SITE_TABLE_NAME,
+    SCHEMA_VERSIONS_TABLE_NAME,
+    SiteDBEntry,
+    CurrentSiteDBEntry,
+    SchemaVersionsDBEntry,
+} from '@services/sites.db';
 
-const SITES_TABLE = 'sites_2';
-const CURRENT_SITE_TABLE = 'current_site';
-const SCHEMA_VERSIONS_TABLE = 'schema_versions';
+
+// Schemas for site tables. Other providers can add schemas in here using the registerSiteSchema function.
+const siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
+export const registerSiteSchema = (schema: CoreSiteSchema): void => {
+    siteSchemas[schema.name] = schema;
+};
 
 /*
  * Service to manage and interact with sites.
  * It allows creating tables in the databases of all sites. Each service or component should be responsible of creating
  * their own database tables. Example:
  *
- * constructor(sitesProvider: CoreSitesProvider) {
- *     this.sitesProvider.registerSiteSchema(this.tableSchema);
+ * import { registerSiteSchema } from '@services/sites';
  *
- * This provider will automatically create the tables in the databases of all the instantiated sites, and also to the
- * databases of sites instantiated from now on.
+ * registerSiteSchema(tableSchema);
 */
 @Injectable()
 export class CoreSitesProvider {
-
-    // Variables for the database.
-    protected appTablesSchema: CoreAppSchema = {
-        name: 'CoreSitesProvider',
-        version: 2,
-        tables: [
-            {
-                name: SITES_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'TEXT',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'siteUrl',
-                        type: 'TEXT',
-                        notNull: true,
-                    },
-                    {
-                        name: 'token',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'info',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'privateToken',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'config',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'loggedOut',
-                        type: 'INTEGER',
-                    },
-                    {
-                        name: 'oauthId',
-                        type: 'INTEGER',
-                    },
-                ],
-            },
-            {
-                name: CURRENT_SITE_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'INTEGER',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'siteId',
-                        type: 'TEXT',
-                        notNull: true,
-                        unique: true,
-                    },
-                ],
-            },
-        ],
-        async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
-            if (oldVersion < 2) {
-                const newTable = SITES_TABLE;
-                const oldTable = 'sites';
-
-                try {
-                    // Check if V1 table exists.
-                    await db.tableExists(oldTable);
-
-                    // Move the records from the old table.
-                    const sites = await db.getAllRecords<SiteDBEntry>(oldTable);
-                    const promises: Promise<number>[] = [];
-
-                    sites.forEach((site) => {
-                        promises.push(db.insertRecord(newTable, site));
-                    });
-
-                    await Promise.all(promises);
-
-                    // Data moved, drop the old table.
-                    await db.dropTable(oldTable);
-                } catch (error) {
-                    // Old table does not exist, ignore.
-                }
-            }
-        },
-    };
 
     // Constants to validate a site version.
     protected readonly WORKPLACE_APP = 3;
@@ -162,112 +84,15 @@ export class CoreSitesProvider {
     protected appDB: SQLiteDB;
     protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected siteSchemasMigration: { [siteId: string]: Promise<void> } = {};
-
-    // Schemas for site tables. Other providers can add schemas in here.
-    protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
-    protected siteTablesSchemas: SQLiteDBTableSchema[] = [
-        {
-            name: SCHEMA_VERSIONS_TABLE,
-            columns: [
-                {
-                    name: 'name',
-                    type: 'TEXT',
-                    primaryKey: true,
-                },
-                {
-                    name: 'version',
-                    type: 'INTEGER',
-                },
-            ],
-        },
-    ];
-
-    // Site schema for this provider.
-    protected siteSchema: CoreSiteSchema = {
-        name: 'CoreSitesProvider',
-        version: 2,
-        canBeCleared: [CoreSite.WS_CACHE_TABLE],
-        tables: [
-            {
-                name: CoreSite.WS_CACHE_TABLE,
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'TEXT',
-                        primaryKey: true,
-                    },
-                    {
-                        name: 'data',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'key',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'expirationTime',
-                        type: 'INTEGER',
-                    },
-                    {
-                        name: 'component',
-                        type: 'TEXT',
-                    },
-                    {
-                        name: 'componentId',
-                        type: 'INTEGER',
-                    },
-                ],
-            },
-            {
-                name: CoreSite.CONFIG_TABLE,
-                columns: [
-                    {
-                        name: 'name',
-                        type: 'TEXT',
-                        unique: true,
-                        notNull: true,
-                    },
-                    {
-                        name: 'value',
-                    },
-                ],
-            },
-        ],
-        async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
-            if (oldVersion && oldVersion < 2) {
-                const newTable = CoreSite.WS_CACHE_TABLE;
-                const oldTable = 'wscache';
-
-                try {
-                    await db.tableExists(oldTable);
-                } catch (error) {
-                    // Old table does not exist, ignore.
-                    return;
-                }
-                // Cannot use insertRecordsFrom because there are extra fields, so manually code INSERT INTO.
-                await db.execute(
-                    'INSERT INTO ' + newTable + ' ' +
-                    'SELECT id, data, key, expirationTime, NULL as component, NULL as componentId ' +
-                    'FROM ' + oldTable,
-                );
-
-                try {
-                    await db.dropTable(oldTable);
-                } catch (error) {
-                    // Error deleting old table, ignore.
-                }
-            }
-        },
-    };
+    protected pluginsSiteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
 
         this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(this.appTablesSchema).catch(() => {
+        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
             // Ignore errors.
         });
-        this.registerSiteSchema(this.siteSchema);
     }
 
     /**
@@ -857,7 +682,7 @@ export class CoreSitesProvider {
             oauthId,
         };
 
-        await this.appDB.insertRecord(SITES_TABLE, entry);
+        await this.appDB.insertRecord(SITES_TABLE_NAME, entry);
     }
 
     /**
@@ -1084,7 +909,7 @@ export class CoreSitesProvider {
         delete this.sites[siteId];
 
         try {
-            await this.appDB.deleteRecords(SITES_TABLE, { id: siteId });
+            await this.appDB.deleteRecords(SITES_TABLE_NAME, { id: siteId });
         } catch (err) {
             // DB remove shouldn't fail, but we'll go ahead even if it does.
         }
@@ -1103,7 +928,7 @@ export class CoreSitesProvider {
     async hasSites(): Promise<boolean> {
         await this.dbReady;
 
-        const count = await this.appDB.countRecords(SITES_TABLE);
+        const count = await this.appDB.countRecords(SITES_TABLE_NAME);
 
         return count > 0;
     }
@@ -1129,7 +954,7 @@ export class CoreSitesProvider {
             return this.sites[siteId];
         } else {
             // Retrieve and create the site.
-            const data = await this.appDB.getRecord<SiteDBEntry>(SITES_TABLE, { id: siteId });
+            const data = await this.appDB.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
 
             return this.makeSiteFromSiteListEntry(data);
         }
@@ -1202,7 +1027,7 @@ export class CoreSitesProvider {
     async getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         await this.dbReady;
 
-        const sites = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE);
+        const sites = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
 
         const formattedSites: CoreSiteBasicInfo[] = [];
         sites.forEach((site) => {
@@ -1266,7 +1091,7 @@ export class CoreSitesProvider {
     async getLoggedInSitesIds(): Promise<string[]> {
         await this.dbReady;
 
-        const sites = await this.appDB.getRecords<SiteDBEntry>(SITES_TABLE, { loggedOut : 0 });
+        const sites = await this.appDB.getRecords<SiteDBEntry>(SITES_TABLE_NAME, { loggedOut : 0 });
 
         return sites.map((site) => site.id);
     }
@@ -1279,7 +1104,7 @@ export class CoreSitesProvider {
     async getSitesIds(): Promise<string[]> {
         await this.dbReady;
 
-        const sites = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE);
+        const sites = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
 
         return sites.map((site) => site.id);
     }
@@ -1298,7 +1123,7 @@ export class CoreSitesProvider {
             siteId,
         };
 
-        await this.appDB.insertRecord(CURRENT_SITE_TABLE, entry);
+        await this.appDB.insertRecord(CURRENT_SITE_TABLE_NAME, entry);
 
         CoreEvents.trigger(CoreEvents.LOGIN, {}, siteId);
     }
@@ -1324,7 +1149,7 @@ export class CoreSitesProvider {
                 promises.push(this.setSiteLoggedOut(siteId, true));
             }
 
-            promises.push(this.appDB.deleteRecords(CURRENT_SITE_TABLE, { id: 1 }));
+            promises.push(this.appDB.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
         }
 
         try {
@@ -1349,7 +1174,7 @@ export class CoreSitesProvider {
         this.sessionRestored = true;
 
         try {
-            const currentSite = await this.appDB.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE, { id: 1 });
+            const currentSite = await this.appDB.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
             const siteId = currentSite.siteId;
             this.logger.debug(`Restore session in site ${siteId}`);
 
@@ -1377,7 +1202,7 @@ export class CoreSitesProvider {
 
         site.setLoggedOut(loggedOut);
 
-        await this.appDB.updateRecords(SITES_TABLE, newValues, { id: siteId });
+        await this.appDB.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
     }
 
     /**
@@ -1426,7 +1251,7 @@ export class CoreSitesProvider {
         site.privateToken = privateToken;
         site.setLoggedOut(false); // Token updated means the user authenticated again, not logged out anymore.
 
-        await this.appDB.updateRecords(SITES_TABLE, newValues, { id: siteId });
+        await this.appDB.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
     }
 
     /**
@@ -1470,7 +1295,7 @@ export class CoreSitesProvider {
             }
 
             try {
-                await this.appDB.updateRecords(SITES_TABLE, newValues, { id: siteId });
+                await this.appDB.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
             } finally {
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
@@ -1529,7 +1354,7 @@ export class CoreSitesProvider {
         }
 
         try {
-            const siteEntries = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE);
+            const siteEntries = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
             const ids: string[] = [];
             const promises: Promise<unknown>[] = [];
 
@@ -1562,7 +1387,7 @@ export class CoreSitesProvider {
     async getStoredCurrentSiteId(): Promise<string> {
         await this.dbReady;
 
-        const currentSite = await this.appDB.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE, { id: 1 });
+        const currentSite = await this.appDB.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
 
         return currentSite.siteId;
     }
@@ -1606,32 +1431,6 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Create a table in all the sites databases.
-     *
-     * @param table Table schema.
-     * @deprecated. Please use registerSiteSchema instead.
-     */
-    createTableFromSchema(table: SQLiteDBTableSchema): void {
-        this.createTablesFromSchema([table]);
-    }
-
-    /**
-     * Create several tables in all the sites databases.
-     *
-     * @param tables List of tables schema.
-     * @deprecated. Please use registerSiteSchema instead.
-     */
-    createTablesFromSchema(tables: SQLiteDBTableSchema[]): void {
-        // Add the tables to the list of schemas. This list is to create all the tables in new sites.
-        this.siteTablesSchemas = this.siteTablesSchemas.concat(tables);
-
-        // Now create these tables in current sites.
-        for (const id in this.sites) {
-            this.sites[id].getDb().createTablesFromSchema(tables);
-        }
-    }
-
-    /**
      * Check if a WS is available in the current site, if any.
      *
      * @param method WS name.
@@ -1645,40 +1444,29 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Register a site schema.
+     * Register a site schema in current site.
+     * This function is meant for site plugins to create DB tables in current site. Tables created from within the app
+     * whould use the registerSiteSchema function exported in this same file.
      *
      * @param schema The schema to register.
      * @return Promise resolved when done.
      */
     async registerSiteSchema(schema: CoreSiteSchema): Promise<void> {
-        if (this.currentSite) {
-            try {
-                // Site has already been created, apply the schema directly.
-                const schemas: {[name: string]: CoreRegisteredSiteSchema} = {};
-                schemas[schema.name] = schema;
+        if (!this.currentSite) {
+            return;
+        }
 
-                if (!schema.onlyCurrentSite) {
-                    // Apply it to all sites.
-                    const siteIds = await this.getSitesIds();
+        try {
+            // Site has already been created, apply the schema directly.
+            const schemas: {[name: string]: CoreRegisteredSiteSchema} = {};
+            schemas[schema.name] = schema;
 
-                    await Promise.all(siteIds.map(async (siteId) => {
-                        const site = await this.getSite(siteId);
+            // Apply it to the specified site only.
+            (schema as CoreRegisteredSiteSchema).siteId = this.currentSite.getId();
 
-                        return this.applySiteSchemas(site, schemas);
-                    }));
-                } else {
-                    // Apply it to the specified site only.
-                    (schema as CoreRegisteredSiteSchema).siteId = this.currentSite.getId();
-
-                    await this.applySiteSchemas(this.currentSite, schemas);
-                }
-            } finally {
-                // Add the schema to the list. It's done in the end to prevent a schema being applied twice.
-                this.siteSchemas[schema.name] = schema;
-            }
-        } else if (!schema.onlyCurrentSite) {
-            // Add the schema to the list, it will be applied when the sites are created.
-            this.siteSchemas[schema.name] = schema;
+            await this.applySiteSchemas(this.currentSite, schemas);
+        } finally {
+            this.pluginsSiteSchemas[schema.name] = schema;
         }
     }
 
@@ -1700,8 +1488,8 @@ export class CoreSitesProvider {
         this.logger.debug(`Migrating all schemas of ${site.id}`);
 
         // First create tables not registerd with name/version.
-        const promise = site.getDb().createTablesFromSchema(this.siteTablesSchemas)
-            .then(() => this.applySiteSchemas(site, this.siteSchemas));
+        const promise = site.getDb().createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA)
+            .then(() => this.applySiteSchemas(site, siteSchemas));
 
         this.siteSchemasMigration[site.id] = promise;
 
@@ -1721,7 +1509,7 @@ export class CoreSitesProvider {
         const db = site.getDb();
 
         // Fetch installed versions of the schema.
-        const records = await db.getAllRecords<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE);
+        const records = await db.getAllRecords<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME);
 
         const versions: {[name: string]: number} = {};
         records.forEach((record) => {
@@ -1768,7 +1556,7 @@ export class CoreSitesProvider {
         }
 
         // Set installed version.
-        await db.insertRecord(SCHEMA_VERSIONS_TABLE, { name, version: schema.version });
+        await db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version: schema.version });
     }
 
     /**
@@ -1814,13 +1602,13 @@ export class CoreSitesProvider {
      */
     getSiteTableSchemasToClear(site: CoreSite): string[] {
         let reset: string[] = [];
-        for (const name in this.siteSchemas) {
-            const schema = this.siteSchemas[name];
+        const schemas = Object.values(siteSchemas).concat(Object.values(this.pluginsSiteSchemas));
 
+        schemas.forEach((schema) => {
             if (schema.canBeCleared && (!schema.siteId || site.getId() == schema.siteId)) {
                 reset = reset.concat(schema.canBeCleared);
             }
-        }
+        });
 
         return reset;
     }
@@ -1981,12 +1769,6 @@ export type CoreSiteSchema = {
     canBeCleared?: string[];
 
     /**
-     * If true, the schema will only be applied to the current site. Otherwise it will be applied to all sites.
-     * If you're implementing a site plugin, please set it to true.
-     */
-    onlyCurrentSite?: boolean;
-
-    /**
      * Tables to create when installing or upgrading the schema.
      */
     tables?: SQLiteDBTableSchema[];
@@ -2087,25 +1869,4 @@ export type CoreSitesLoginTokenResponse = {
     stacktrace?: string;
     debuginfo?: string;
     reproductionlink?: string;
-};
-
-type SiteDBEntry = {
-    id: string;
-    siteUrl: string;
-    token: string;
-    info: string;
-    privateToken: string;
-    config: string;
-    loggedOut: number;
-    oauthId: number;
-};
-
-type CurrentSiteDBEntry = {
-    id: number;
-    siteId: string;
-};
-
-type SchemaVersionsDBEntry = {
-    name: string;
-    version: number;
 };

@@ -33,6 +33,7 @@ import { CoreEvents } from '@singletons/events';
 @Component({
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
+    styleUrls: ['../../login.scss'],
 })
 export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
@@ -264,12 +265,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Forgotten password button clicked.
      */
     forgottenPassword(): void {
-        CoreLoginHelper.instance.forgottenPasswordClicked(
-            this.navCtrl,
-            this.siteUrl,
-            this.credForm.value.username,
-            this.siteConfig,
-        );
+        CoreLoginHelper.instance.forgottenPasswordClicked(this.siteUrl, this.credForm.value.username, this.siteConfig);
     }
 
     /**
@@ -281,13 +277,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         if (!CoreLoginHelper.instance.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
             CoreDomUtils.instance.showErrorModal('Invalid data.');
         }
-    }
-
-    /**
-     * Signup button was clicked.
-     */
-    signup(): void {
-        // @todo Go to signup.
     }
 
     /**

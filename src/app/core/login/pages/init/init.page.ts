@@ -88,7 +88,7 @@ export class CoreLoginInitPage implements OnInit {
                     // Site doesn't exist.
                     return this.loadPage();
                 }
-            } else {
+            } else if (redirectData.page) {
                 // No site to load, open the page.
                 return CoreLoginHelper.instance.goToNoSitePage(redirectData.page, redirectData.params);
             }

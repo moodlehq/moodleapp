@@ -36,7 +36,7 @@
     "faqsetupsitequestion": "I want to set up my own Moodle site.",
     "faqtestappanswer": "To test the app in a Moodle Demo Site, type \"teacher\" or \"student\" in the \"Your site\" field and click the \"Connect to your site\" button.",
     "faqtestappquestion": "I just want to test the app, what can I do?",
-    "faqwhatisurlanswer": "<p>Every organisation has their own unique address or URL for their Moodle site. To find the address:</p><ol><li>Open a web browser and go to your Moodle site login page.</li><li>At the top of the page, in the address bar, you will see the URL of your Moodle site e.g. \"campus.example.edu\".<br>{{$image}}</li><li>Copy the address (do not copy the /login and what comes after), paste it into the Moodle app then click \"Connect to your site\"</li><li>Now you can log in to your site using your username and password.</li>",
+    "faqwhatisurlanswer": "<p>Every organisation has their own unique address or URL for their Moodle site. To find the address:</p><ol><li>Open a web browser and go to your Moodle site login page.</li><li>At the top of the page, in the address bar, you will see the URL of your Moodle site e.g. \"campus.example.edu\".<br>{{$image}}</li><li>Copy the address (do not copy the /login and what comes after), paste it into the Moodle app then click \"Connect to your site\"</li><li>Now you can log in to your site using your username and password.</li></ol>",
     "faqwhatisurlquestion": "What is my site address? How can I find my site URL?",
     "faqwhereisqrcode": "Where can I find the QR code?",
     "faqwhereisqrcodeanswer": "<p>If your organisation has enabled it, you will find a QR code on the web site at the bottom of your user profile page.</p>{{$image}}",

@@ -18,7 +18,12 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreIconComponent } from './icon/icon';
+import { CoreIframeComponent } from './iframe/iframe';
+import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreLoadingComponent } from './loading/loading';
+import { CoreMarkRequiredComponent } from './mark-required/mark-required';
+import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
+import { CoreRecaptchaModalComponent } from './recaptcha/recaptchamodal';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreDirectivesModule } from '@app/directives/directives.module';
@@ -27,7 +32,12 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
 @NgModule({
     declarations: [
         CoreIconComponent,
+        CoreIframeComponent,
+        CoreInputErrorsComponent,
         CoreLoadingComponent,
+        CoreMarkRequiredComponent,
+        CoreRecaptchaComponent,
+        CoreRecaptchaModalComponent,
         CoreShowPasswordComponent,
         CoreEmptyBoxComponent,
     ],
@@ -40,7 +50,12 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
     ],
     exports: [
         CoreIconComponent,
+        CoreIframeComponent,
+        CoreInputErrorsComponent,
         CoreLoadingComponent,
+        CoreMarkRequiredComponent,
+        CoreRecaptchaComponent,
+        CoreRecaptchaModalComponent,
         CoreShowPasswordComponent,
         CoreEmptyBoxComponent,
     ],

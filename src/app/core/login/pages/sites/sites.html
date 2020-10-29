@@ -19,9 +19,10 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item (click)="login(site.id)" *ngFor="let site of sites">
+        <ion-item button (click)="login(site.id)" *ngFor="let site of sites">
             <ion-avatar slot="start">
-                <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
+                <img [src]="site.avatar" core-external-content [siteId]="site.id" role="presentation"
+                    alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" onError="this.src='assets/img/user-avatar.png'">
             </ion-avatar>
             <ion-label>
                 <h2>{{site.fullName}}</h2>
