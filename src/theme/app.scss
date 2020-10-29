@@ -90,3 +90,12 @@ ion-list.list-md {
     visibility: hidden;
     left: -1000px;
 }
+
+// Note on foot of ion-input.
+.item .core-input-footnote {
+    width: 100%;
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+}

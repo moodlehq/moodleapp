@@ -1014,7 +1014,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
     scrollTo(content: IonContent, x: number, y: number, duration?: number): Promise<void> {
-        return content?.scrollByPoint(x, y, duration || 0);
+        return content?.scrollToPoint(x, y, duration || 0);
     }
 
     /**
@@ -1104,7 +1104,7 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        content?.scrollByPoint(position[0], position[1], duration || 0);
+        content?.scrollToPoint(position[0], position[1], duration || 0);
 
         return true;
     }
@@ -1124,6 +1124,8 @@ export class CoreDomUtilsProvider {
         scrollParentClass?: string,
         duration?: number,
     ): Promise<boolean> {
+        // @todo: This function is broken. Scroll element cannot be used because it uses shadow DOM so querySelector returns null.
+        // Also, traversing using parentElement doesn't work either, offsetParent isn't part of the parentElement tree.
         try {
             const scrollElement = await content.getScrollElement();
 
@@ -1132,7 +1134,7 @@ export class CoreDomUtilsProvider {
                 return false;
             }
 
-            content?.scrollByPoint(position[0], position[1], duration || 0);
+            content?.scrollToPoint(position[0], position[1], duration || 0);
 
             return true;
         } catch (error) {
@@ -1147,7 +1149,7 @@ export class CoreDomUtilsProvider {
      * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
      * @return True if the element is found, false otherwise.
      */
-    async scrollToInputError(content: IonContent, scrollParentClass?: string): Promise<boolean> {
+    async scrollToInputError(content?: IonContent, scrollParentClass?: string): Promise<boolean> {
         if (!content) {
             return false;
         }

@@ -204,7 +204,7 @@ export class CoreLoginHelperProvider {
      * @param profileFields Profile fields to format.
      * @return Categories with the fields to show in each one.
      */
-    formatProfileFieldsForSignup(profileFields: AuthEmailSignupProfileField[]): AuthEmailSignupProfileFieldsCategory[] {
+    formatProfileFieldsForSignup(profileFields?: AuthEmailSignupProfileField[]): AuthEmailSignupProfileFieldsCategory[] {
         if (!profileFields) {
             return [];
         }
@@ -269,8 +269,8 @@ export class CoreLoginHelperProvider {
         maxlengthMsg?: string,
         minMsg?: string,
         maxMsg?: string,
-    ): any {
-        const errors: any = {};
+    ): Record<string, string> {
+        const errors: Record<string, string> = {};
 
         if (requiredMsg) {
             errors.required = errors.requiredTrue = Translate.instance.instant(requiredMsg);

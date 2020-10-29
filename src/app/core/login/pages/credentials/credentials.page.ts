@@ -280,13 +280,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Signup button was clicked.
-     */
-    signup(): void {
-        // @todo Go to signup.
-    }
-
-    /**
      * Show instructions and scan QR code.
      */
     showInstructionsAndScanQR(): void {

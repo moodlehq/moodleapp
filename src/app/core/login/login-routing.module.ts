@@ -51,6 +51,10 @@ const routes: Routes = [
         path: 'sitepolicy',
         loadChildren: () => import('./pages/site-policy/site-policy.module').then( m => m.CoreLoginSitePolicyPageModule),
     },
+    {
+        path: 'emailsignup',
+        loadChildren: () => import('./pages/email-signup/email-signup.module').then( m => m.CoreLoginEmailSignupPageModule),
+    },
 ];
 
 @NgModule({
