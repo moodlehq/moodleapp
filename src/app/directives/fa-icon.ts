@@ -32,8 +32,6 @@ export class CoreFaIconDirective implements OnChanges {
 
     @Input() name = '';
 
-    // TODO: Support slash, RTL and fixed width.
-
     protected element: HTMLElement;
 
     protected logger: CoreLogger;

@@ -21,12 +21,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
-import { CoreCoursesHomePage } from './home.page';
+import { CoreHomePage } from './home.page';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreCoursesHomePage,
+        component: CoreHomePage,
     },
 ];
 
@@ -40,8 +40,8 @@ const routes: Routes = [
         CoreDirectivesModule,
     ],
     declarations: [
-        CoreCoursesHomePage,
+        CoreHomePage,
     ],
     exports: [RouterModule],
 })
-export class CoreCoursesHomePageModule {}
+export class CoreHomePageModule {}

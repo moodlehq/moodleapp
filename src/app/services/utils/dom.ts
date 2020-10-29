@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
 import { AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 import { Md5 } from 'ts-md5';
@@ -144,11 +144,6 @@ export class CoreDomUtilsProvider {
         const readableSize = CoreTextUtils.instance.bytesToSize(size.size, 2);
 
         const getAvailableBytes = async (): Promise<number | null> => {
-            if (CoreApp.instance.isDesktop()) {
-                // Free space calculation is not supported on desktop.
-                return null;
-            }
-
             const availableBytes = await CoreFile.instance.calculateFreeSpace();
 
             if (CoreApp.instance.isAndroid()) {
@@ -576,18 +571,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Get the HTML code to render a connection warning icon.
-     *
-     * @return HTML Code.
-     */
-    getConnectionWarningIconHtml(): string {
-        return '<div text-center><span class="core-icon-with-badge">' +
-                '<ion-icon role="img" class="icon fa fa-wifi" aria-label="wifi"></ion-icon>' +
-                '<ion-icon class="icon fa fa-exclamation-triangle core-icon-badge"></ion-icon>' +
-            '</span></div>';
-    }
-
-    /**
      * Returns width of an element.
      *
      * @param element DOM element to measure.
@@ -655,18 +638,14 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Given an error message, return a suitable error title.
+     * Given a message, it deduce if it's a network error.
      *
-     * @param message The error message.
-     * @return Title.
+     * @param message Message text.
+     * @return True if the message error is a network error, false otherwise.
      */
-    private getErrorTitle(message: string): SafeHtml | string {
-        if (message == Translate.instance.instant('core.networkerrormsg') ||
-                message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload')) {
-            return this.domSanitizer.bypassSecurityTrustHtml(this.getConnectionWarningIconHtml());
-        }
-
-        return CoreTextUtils.instance.decodeHTML(Translate.instance.instant('core.error'));
+    protected isNetworkError(message: string): boolean {
+        return message == Translate.instance.instant('core.networkerrormsg') ||
+            message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload');
     }
 
     /**
@@ -1245,7 +1224,7 @@ export class CoreDomUtilsProvider {
         // Store the alert and remove it when dismissed.
         this.displayedAlerts[alertId] = alert;
 
-        // // Set the callbacks to trigger an observable event.
+        // Set the callbacks to trigger an observable event.
         // eslint-disable-next-line promise/catch-or-return, promise/always-return
         alert.onDidDismiss().then(() => {
             delete this.displayedAlerts[alertId];
@@ -1371,7 +1350,18 @@ export class CoreDomUtilsProvider {
             return Promise.resolve(null);
         }
 
-        return this.showAlert(<string> this.getErrorTitle(message), message, undefined, autocloseTime);
+        const alertOptions: AlertOptions = {
+            message: message,
+            buttons: [Translate.instance.instant('core.ok')],
+        };
+
+        if (this.isNetworkError(message)) {
+            alertOptions.cssClass = 'core-alert-network-error';
+        } else {
+            alertOptions.header = Translate.instance.instant('core.error');
+        }
+
+        return this.showAlertWithOptions(alertOptions, autocloseTime);
     }
 
     /**

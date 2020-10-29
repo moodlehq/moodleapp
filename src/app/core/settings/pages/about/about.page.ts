@@ -33,7 +33,7 @@ export class CoreSettingsAboutPage {
     ) {
         const currentSite = CoreSites.instance.getCurrentSite();
 
-        this.appName = CoreApp.instance.isDesktop() ? CoreConstants.CONFIG.desktopappname : CoreConstants.CONFIG.appname;
+        this.appName = CoreConstants.CONFIG.appname;
         this.versionName = CoreConstants.CONFIG.versionname;
 
         // Calculate the privacy policy to use.

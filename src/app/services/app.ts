@@ -226,22 +226,6 @@ export class CoreAppProvider {
      * @return Store URL.
      */
     getAppStoreUrl(storesConfig: CoreStoreConfig): string | undefined {
-        if (this.isMac() && storesConfig.mac) {
-            return 'itms-apps://itunes.apple.com/app/' + storesConfig.mac;
-        }
-
-        if (this.isWindows() && storesConfig.windows) {
-            return 'https://www.microsoft.com/p/' + storesConfig.windows;
-        }
-
-        if (this.isLinux() && storesConfig.linux) {
-            return storesConfig.linux;
-        }
-
-        if (this.isDesktop() && storesConfig.desktop) {
-            return storesConfig.desktop;
-        }
-
         if (this.isIOS() && storesConfig.ios) {
             return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
         }
@@ -260,10 +244,11 @@ export class CoreAppProvider {
     /**
      * Checks if the app is running in a 64 bits desktop environment (not browser).
      *
-     * @return Whether the app is running in a 64 bits desktop environment (not browser).
+     * @return false.
+     * @deprecated Desktop support has been removed.
      */
     is64Bits(): boolean {
-        return this.isDesktop() && window.process.arch == 'x64';
+        return false;
     }
 
     /**
@@ -278,10 +263,10 @@ export class CoreAppProvider {
     /**
      * Checks if the app is running in a desktop environment (not browser).
      *
-     * @return Whether the app is running in a desktop environment (not browser).
+     * @return false.
+     * @deprecated Desktop support has been removed.
      */
     isDesktop(): boolean {
-        // @todo
         return false;
     }
 
@@ -324,39 +309,21 @@ export class CoreAppProvider {
     /**
      * Check if the app is running in a Linux environment.
      *
-     * @return Whether it's running in a Linux environment.
+     * @return false.
+     * @deprecated Desktop support has been removed.
      */
     isLinux(): boolean {
-        if (!this.isDesktop()) {
-            return false;
-        }
-
-        try {
-            // @todo return require('os').platform().indexOf('linux') === 0;
-
-            return false;
-        } catch (ex) {
-            return false;
-        }
+        return false;
     }
 
     /**
      * Check if the app is running in a Mac OS environment.
      *
-     * @return Whether it's running in a Mac OS environment.
+     * @return false.
+     * @deprecated Desktop support has been removed.
      */
     isMac(): boolean {
-        if (!this.isDesktop()) {
-            return false;
-        }
-
-        try {
-            // @todo return require('os').platform().indexOf('darwin') === 0;
-
-            return false;
-        } catch (ex) {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -435,20 +402,11 @@ export class CoreAppProvider {
     /**
      * Check if the app is running in a Windows environment.
      *
-     * @return Whether it's running in a Windows environment.
+     * @return false.
+     * @deprecated Desktop support has been removed.
      */
     isWindows(): boolean {
-        if (!this.isDesktop()) {
-            return false;
-        }
-
-        try {
-            // @todo return require('os').platform().indexOf('win') === 0;
-
-            return false;
-        } catch (ex) {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -724,26 +682,6 @@ export type CoreRedirectData = {
  * Store config data.
  */
 export type CoreStoreConfig = {
-    /**
-     * ID of the Apple store where the desktop Mac app is uploaded.
-     */
-    mac?: string;
-
-    /**
-     * ID of the Windows store where the desktop Windows app is uploaded.
-     */
-    windows?: string;
-
-    /**
-     * Url with the desktop linux download link.
-     */
-    linux?: string;
-
-    /**
-     * Fallback URL when the desktop options is not set.
-     */
-    desktop?: string;
-
     /**
      * ID of the Apple store where the mobile iOS app is uploaded.
      */

@@ -227,15 +227,10 @@ export class CoreUtilsProvider {
 
     /**
      * Close the InAppBrowser window.
-     *
-     * @param closeAll Desktop only. True to close all secondary windows, false to close only the "current" one.
      */
-    closeInAppBrowser(closeAll?: boolean): void {
+    closeInAppBrowser(): void {
         if (this.iabInstance) {
             this.iabInstance.close();
-            if (closeAll && CoreApp.instance.isDesktop()) {
-                // @todo require('electron').ipcRenderer.send('closeSecondaryWindows');
-            }
         }
     }
 
@@ -959,7 +954,7 @@ export class CoreUtilsProvider {
 
         this.iabInstance = InAppBrowser.instance.create(url, '_blank', options);
 
-        if (CoreApp.instance.isDesktop() || CoreApp.instance.isMobile()) {
+        if (CoreApp.instance.isMobile()) {
             let loadStopSubscription;
             const loadStartUrls: string[] = [];
 
@@ -1011,11 +1006,7 @@ export class CoreUtilsProvider {
      * @param url The URL to open.
      */
     openInBrowser(url: string): void {
-        if (CoreApp.instance.isDesktop()) {
-            // @todo
-        } else {
-            window.open(url, '_system');
-        }
+        window.open(url, '_system');
     }
 
     /**
@@ -1513,7 +1504,7 @@ export class CoreUtilsProvider {
 
 
         if (!CoreApp.instance.isMobile()) {
-            return Promise.reject('QRScanner isn\'t available in desktop apps.');
+            return Promise.reject('QRScanner isn\'t available in browser.');
         }
 
         // Ask the user for permission to use the camera.
