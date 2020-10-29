@@ -601,11 +601,6 @@ export class CoreLoginHelperProvider {
      * @return True if embedded browser, false othwerise.
      */
     isSSOEmbeddedBrowser(code: number): boolean {
-        if (CoreApp.instance.isLinux()) {
-            // In Linux desktop app, always use embedded browser.
-            return true;
-        }
-
         return code == CoreConstants.LOGIN_SSO_INAPP_CODE;
     }
 
@@ -722,16 +717,11 @@ export class CoreLoginHelperProvider {
             oauthsso: params.id,
         });
 
-        if (CoreApp.instance.isLinux()) {
-            // In Linux desktop app, always use embedded browser.
-            CoreUtils.instance.openInApp(loginUrl);
-        } else {
-            // Always open it in browser because the user might have the session stored in there.
-            CoreUtils.instance.openInBrowser(loginUrl);
+        // Always open it in browser because the user might have the session stored in there.
+        CoreUtils.instance.openInBrowser(loginUrl);
 
-            const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
-            nav.app?.exitApp();
-        }
+        const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
+        nav.app?.exitApp();
 
         return true;
     }
@@ -1071,7 +1061,6 @@ export class CoreLoginHelperProvider {
      */
     protected showMoodleAppNoticeModal(message: string): void {
         const storesConfig: CoreStoreConfig = CoreConstants.CONFIG.appstores;
-        storesConfig.desktop = 'https://download.moodle.org/desktop/';
         storesConfig.mobile = 'https://download.moodle.org/mobile/';
         storesConfig.default = 'https://download.moodle.org/mobile/';
 

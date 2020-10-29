@@ -222,8 +222,7 @@ export class CoreLocalNotificationsProvider {
      */
     canDisableSound(): boolean {
         // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
-        return this.isAvailable() &&!CoreApp.instance.isDesktop() && CoreApp.instance.isAndroid() &&
-            Number(Device.instance.version?.split('.')[0]) < 8;
+        return this.isAvailable() && CoreApp.instance.isAndroid() && Number(Device.instance.version?.split('.')[0]) < 8;
     }
 
     /**
@@ -363,7 +362,7 @@ export class CoreLocalNotificationsProvider {
     isAvailable(): boolean {
         const win = <any> window; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-        return CoreApp.instance.isDesktop() || !!win.cordova?.plugins?.notification?.local;
+        return !!win.cordova?.plugins?.notification?.local;
     }
 
     /**

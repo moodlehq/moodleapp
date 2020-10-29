@@ -144,11 +144,6 @@ export class CoreDomUtilsProvider {
         const readableSize = CoreTextUtils.instance.bytesToSize(size.size, 2);
 
         const getAvailableBytes = async (): Promise<number | null> => {
-            if (CoreApp.instance.isDesktop()) {
-                // Free space calculation is not supported on desktop.
-                return null;
-            }
-
             const availableBytes = await CoreFile.instance.calculateFreeSpace();
 
             if (CoreApp.instance.isAndroid()) {

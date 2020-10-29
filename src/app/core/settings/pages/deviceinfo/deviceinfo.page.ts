@@ -117,25 +117,14 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
                 }
             }
         } else {
-            this.deviceInfo.deviceType = appProvider.isDesktop() ? 'desktop' : 'browser';
-            if (appProvider.isLinux()) {
-                this.deviceInfo.deviceOs = 'linux';
-                this.deviceOsTranslated = 'Linux';
-            } else if (appProvider.isMac()) {
-                this.deviceInfo.deviceOs = 'mac';
-                this.deviceOsTranslated = 'MacOS';
-            } else if (appProvider.isWindows()) {
-                this.deviceInfo.deviceOs = 'windows';
-                this.deviceOsTranslated = 'Windows';
+            this.deviceInfo.deviceType = 'browser';
+            const matches = navigator.userAgent.match(/\(([^)]*)\)/);
+            if (matches && matches.length > 1) {
+                this.deviceInfo.deviceOs = matches[1];
+                this.deviceOsTranslated = matches[1];
             } else {
-                const matches = navigator.userAgent.match(/\(([^)]*)\)/);
-                if (matches && matches.length > 1) {
-                    this.deviceInfo.deviceOs = matches[1];
-                    this.deviceOsTranslated = matches[1];
-                } else {
-                    this.deviceInfo.deviceOs = 'unknown';
-                    this.deviceOsTranslated = translate.instant('core.unknown');
-                }
+                this.deviceInfo.deviceOs = 'unknown';
+                this.deviceOsTranslated = translate.instant('core.unknown');
             }
         }
 

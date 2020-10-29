@@ -1756,12 +1756,8 @@ export class CoreFilepoolProvider {
         const path = await this.getFilePath(siteId, fileId);
         const fileEntry = await CoreFile.instance.getFile(path);
 
-        // This URL is usually used to launch files or put them in HTML. In desktop we need the internal URL.
-        if (CoreApp.instance.isDesktop()) {
-            return fileEntry.toInternalURL();
-        } else {
-            return fileEntry.toURL();
-        }
+        // This URL is usually used to launch files or put them in HTML.
+        return fileEntry.toURL();
     }
 
     /**
@@ -2934,11 +2930,6 @@ export class CoreFilepoolProvider {
     async shouldDownloadBeforeOpen(url: string, size: number): Promise<void> {
         if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
             // The file is small, download it.
-            return;
-        }
-
-        if (CoreApp.instance.isDesktop()) {
-            // In desktop always download first.
             return;
         }
 

@@ -79,7 +79,7 @@ export class CoreLoginSitePage implements OnInit {
         // Load fixed sites if they're set.
         if (CoreLoginHelper.instance.hasSeveralFixedSites()) {
             url = this.initSiteSelector();
-        } else if (CoreConstants.CONFIG.enableonboarding && !CoreApp.instance.isIOS() && !CoreApp.instance.isMac()) {
+        } else if (CoreConstants.CONFIG.enableonboarding && !CoreApp.instance.isIOS()) {
             this.initOnboarding();
         }
 

@@ -888,7 +888,6 @@ export class CoreSitesProvider {
             const storesConfig: CoreStoreConfig = {
                 android: config.tool_mobile_androidappid,
                 ios: config.tool_mobile_iosappid,
-                desktop: config.tool_mobile_setuplink || 'https://download.moodle.org/desktop/',
                 mobile: config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/',
                 default: config.tool_mobile_setuplink,
             };

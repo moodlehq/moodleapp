@@ -35,7 +35,6 @@ export class CoreCronDelegate {
     // Constants.
     static readonly DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
     static readonly MIN_INTERVAL = 300000; // Minimum interval is 5 minutes.
-    static readonly DESKTOP_MIN_INTERVAL = 60000; // Minimum interval in desktop is 1 minute.
     static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
 
     // Variables for database.
@@ -237,7 +236,7 @@ export class CoreCronDelegate {
         }
 
         // Don't allow intervals lower than the minimum.
-        const minInterval = CoreApp.instance.isDesktop() ? CoreCronDelegate.DESKTOP_MIN_INTERVAL : CoreCronDelegate.MIN_INTERVAL;
+        const minInterval = CoreCronDelegate.MIN_INTERVAL;
         const handlerInterval = this.handlers[name].getInterval!();
 
         if (!handlerInterval) {

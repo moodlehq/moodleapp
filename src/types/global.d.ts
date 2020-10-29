@@ -27,7 +27,6 @@ declare global {
             CONFIG: {
                 app_id: string;
                 appname: string;
-                desktopappname: string;
                 versioncode: number;
                 versionname: string;
                 cache_update_frequency_usually: number;
