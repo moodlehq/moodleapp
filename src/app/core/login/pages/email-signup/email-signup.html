@@ -148,7 +148,7 @@
                 <ion-input type="text" name="nameField" placeholder="{{ 'core.user.' + nameField | translate }}"
                     formControlName="{{nameField}}" autocorrect="off">
                 </ion-input>
-                <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors[nameField]">
+                <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]">
                 </core-input-errors>
             </ion-item>
             <ion-item class="ion-text-wrap">
