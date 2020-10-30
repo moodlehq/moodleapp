@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CoreEventsProvider } from '@providers/events';
 import { AddonMessageOutputDelegate } from '@addon/messageoutput/providers/delegate';
 import { AddonMessageOutputAirnotifierProvider } from './providers/airnotifier';
 import { AddonMessageOutputAirnotifierHandler } from './providers/handler';
@@ -28,7 +29,13 @@ import { AddonMessageOutputAirnotifierHandler } from './providers/handler';
     ]
 })
 export class AddonMessageOutputAirnotifierModule {
-    constructor(messageOutputDelegate: AddonMessageOutputDelegate, airnotifierHandler: AddonMessageOutputAirnotifierHandler) {
+    constructor(messageOutputDelegate: AddonMessageOutputDelegate, airnotifierHandler: AddonMessageOutputAirnotifierHandler,
+            eventsProvider: CoreEventsProvider, airnotifierProvider: AddonMessageOutputAirnotifierProvider) {
         messageOutputDelegate.registerHandler(airnotifierHandler);
+
+        eventsProvider.on(CoreEventsProvider.DEVICE_REGISTERED_IN_MOODLE, async (data) => {
+            // Get user devices to make Moodle send the devices data to Airnotifier.
+            airnotifierProvider.getUserDevices(true, data.siteId);
+        });
     }
 }

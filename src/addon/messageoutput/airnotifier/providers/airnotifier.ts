@@ -74,10 +74,11 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Get user devices.
      *
+     * @param ignoreCache Whether to ignore cache.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the devices.
      */
-    getUserDevices(siteId?: string): Promise<AddonMessageOutputAirnotifierDevice[]> {
+    getUserDevices(ignoreCache?: boolean, siteId?: string): Promise<AddonMessageOutputAirnotifierDevice[]> {
         this.logger.debug('Get user devices');
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -88,6 +89,11 @@ export class AddonMessageOutputAirnotifierProvider {
                 cacheKey: this.getUserDevicesCacheKey(),
                 updateFrequency: CoreSite.FREQUENCY_RARELY
             };
+
+            if (ignoreCache) {
+                preSets['getFromCache'] = false;
+                preSets['emergencyCache'] = false;
+            }
 
             return site.read('message_airnotifier_get_user_devices', data, preSets)
                     .then((data: AddonMessageOutputAirnotifierGetUserDevicesResult) => {

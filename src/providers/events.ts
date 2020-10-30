@@ -68,6 +68,7 @@ export class CoreEventsProvider {
     static SITE_STORAGE_DELETED = 'site_storage_deleted';
     static FORM_ACTION = 'form_action';
     static ACTIVITY_DATA_SENT = 'activity_data_sent';
+    static DEVICE_REGISTERED_IN_MOODLE = 'device_registered_in_moodle';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
