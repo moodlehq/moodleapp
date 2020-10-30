@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { WKUserScriptWindow, WKUserScriptInjectionTime } from 'cordova-plugin-wkuserscript';
+import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
 import { CoreApp } from '@services/app';
@@ -470,7 +470,7 @@ export class CoreIframeUtilsProvider {
         userScriptWindow.WKUserScript?.addScript({
             id: 'CoreIframeUtilsRecaptchaScript',
             file: recaptchaPath,
-            injectionTime: WKUserScriptInjectionTime.END,
+            injectionTime: userScriptWindow.WKUserScript?.InjectionTime.END,
         });
 
         // Handle post messages received by iframes.
