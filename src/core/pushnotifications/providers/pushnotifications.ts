@@ -19,6 +19,7 @@ import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { Device } from '@ionic-native/device';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreApp, CoreAppProvider, CoreAppSchema } from '@providers/app';
+import { CoreEvents, CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
@@ -788,6 +789,8 @@ export class CorePushNotificationsProvider {
             if (result.register) {
                 // Now register the device.
                 await site.write('core_user_add_user_device', this.utils.clone(data));
+
+                CoreEvents.instance.trigger(CoreEventsProvider.DEVICE_REGISTERED_IN_MOODLE, {}, site.getId());
 
                 // Insert the device in the local DB.
                 try {
