@@ -1,0 +1,90 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+
+        <ion-title>{{ 'core.login.reconnect' | translate }}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div class="ion-text-wrap ion-text-center ion-margin-bottom" [ngClass]="{'item-avatar-center': showSiteAvatar}">
+        <ng-container *ngIf="showSiteAvatar">
+            <ion-avatar>
+                <!-- Show user avatar. -->
+                <img [src]="userAvatar" class="avatar" core-external-content [siteId]="siteId" role="presentation"
+                    alt="{{ 'core.pictureof' | translate:{$a: userFullName} }}" onError="this.src='assets/img/user-avatar.png'">
+            </ion-avatar>
+        </ng-container>
+
+        <div class="core-login-site-logo" *ngIf="!showSiteAvatar">
+            <!-- Show site logo or a default image. -->
+            <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'">
+            <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation">
+        </div>
+
+        <h6 *ngIf="siteName" class="ion-padding core-sitename">
+            <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+        </h6>
+        <p class="core-siteurl">{{siteUrl}}</p>
+
+        <ion-item *ngIf="!isLoggedOut" class="ion-text-center core-login-reconnect-warning" lines="none">
+            <ion-label color="danger">
+                <ion-icon name="fas-exclamation-circle" slot="start"></ion-icon>
+                {{ 'core.login.reconnectdescription' | translate }}
+            </ion-label>
+        </ion-item>
+    </div>
+    <form ion-list *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
+        <ion-item class="ion-text-wrap core-username">
+            <ion-label>
+                <p>{{username}}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-margin-bottom">
+            <core-show-password [name]="'password'">
+                <ion-input class="core-ioninput-password" name="password" type="password"
+                    placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false">
+                </ion-input>
+            </core-show-password>
+        </ion-item>
+        <ion-grid class="ion-padding">
+            <ion-row>
+                <ion-col>
+                    <ion-button expand="block" color="light" (click)="cancel($event)">{{ 'core.login.cancel' | translate }}</ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button type="submit" expand="block" [disabled]="!credForm.valid">{{ 'core.login.loginbutton' | translate }}</ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </form>
+
+    <!-- Forgotten password option. -->
+    <ion-list lines="none" *ngIf="showForgottenPassword && !isOAuth" class="core-login-forgotten-password ion-no-padding">
+        <ion-item button class="ion-text-center ion-text-wrap" (click)="forgottenPassword()" detail="false">
+            <ion-label>
+                {{ 'core.login.forgotten' | translate }}
+            </ion-label>
+        </ion-item>
+    </ion-list>
+
+    <!-- Identity providers. -->
+    <ion-list *ngIf="identityProviders && identityProviders.length" class="ion-padding-top core-login-identity-providers">
+        <ion-item class="ion-text-wrap" lines="none">
+            <ion-label><h3 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h3></ion-label>
+        </ion-item>
+        <ion-item button *ngFor="let provider of identityProviders" class="ion-text-wrap core-oauth-icon"
+            (click)="oauthClicked(provider)" title="{{provider.name}}">
+            <img [src]="provider.iconurl" alt="" width="32" height="32" slot="start">
+            <ion-label>{{provider.name}}</ion-label>
+        </ion-item>
+    </ion-list>
+
+    <!-- If OAuth, display cancel button since the form isn't displayed. -->
+    <ion-list *ngIf="isOAuth">
+        <ion-button expand="block" class="ion-margin" color="light" (click)="cancel($event)">
+            {{ 'core.login.cancel' | translate }}
+        </ion-button>
+    </ion-list>
+</ion-content>

@@ -35,6 +35,7 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+import { CoreObject } from '@/app/singletons/object';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -126,7 +127,7 @@ export class CoreLoginHelperProvider {
         const currentSite = CoreSites.instance.getCurrentSite();
         const currentPage = CoreApp.instance.getCurrentPage();
 
-        if (!CoreApp.instance.isSSOAuthenticationOngoing() && currentSite?.isLoggedOut() && currentPage == 'login/reconnect') {
+        if (!CoreApp.instance.isSSOAuthenticationOngoing() && currentSite?.isLoggedOut() && currentPage == '/login/reconnect') {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
             CoreSites.instance.logout();
         }
@@ -1106,14 +1107,11 @@ export class CoreLoginHelperProvider {
                     this.isOpeningReconnect = true;
 
                     await CoreUtils.instance.ignoreErrors(this.navCtrl.navigateRoot('/login/reconnect', {
-                        queryParams: {
-                            infoSiteUrl: info.siteurl,
-                            siteUrl: result.siteUrl,
-                            siteId: siteId,
+                        queryParams: CoreObject.removeUndefined({
+                            siteId,
                             pageName: data.pageName,
                             pageParams: data.params,
-                            siteConfig: result.config,
-                        },
+                        }),
                     }));
 
                     this.isOpeningReconnect = false;

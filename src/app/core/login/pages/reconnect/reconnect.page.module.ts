@@ -14,20 +14,20 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
 
-import { CoreSettingsDeviceInfoPage } from './deviceinfo.page';
+import { CoreLoginReconnectPage } from './reconnect.page';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreSettingsDeviceInfoPage,
+        component: CoreLoginReconnectPage,
     },
 ];
 
@@ -37,13 +37,14 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
+        FormsModule,
+        ReactiveFormsModule,
         CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule,
     ],
     declarations: [
-        CoreSettingsDeviceInfoPage,
+        CoreLoginReconnectPage,
     ],
     exports: [RouterModule],
 })
-export class CoreSettingsDeviceInfoPageModule {}
+export class CoreLoginReconnectPageModule {}

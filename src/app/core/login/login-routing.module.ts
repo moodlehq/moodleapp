@@ -39,21 +39,25 @@ const routes: Routes = [
     },
     {
         path: 'forgottenpassword',
-        loadChildren: () => import('./pages/forgotten-password/forgotten-password.module')
+        loadChildren: () => import('./pages/forgotten-password/forgotten-password.page.module')
             .then( m => m.CoreLoginForgottenPasswordPageModule),
     },
     {
         path: 'changepassword',
-        loadChildren: () => import('./pages/change-password/change-password.module')
+        loadChildren: () => import('./pages/change-password/change-password.page.module')
             .then( m => m.CoreLoginChangePasswordPageModule),
     },
     {
         path: 'sitepolicy',
-        loadChildren: () => import('./pages/site-policy/site-policy.module').then( m => m.CoreLoginSitePolicyPageModule),
+        loadChildren: () => import('./pages/site-policy/site-policy.page.module').then( m => m.CoreLoginSitePolicyPageModule),
     },
     {
         path: 'emailsignup',
-        loadChildren: () => import('./pages/email-signup/email-signup.module').then( m => m.CoreLoginEmailSignupPageModule),
+        loadChildren: () => import('./pages/email-signup/email-signup.page.module').then( m => m.CoreLoginEmailSignupPageModule),
+    },
+    {
+        path: 'reconnect',
+        loadChildren: () => import('./pages/reconnect/reconnect.page.module').then( m => m.CoreLoginReconnectPageModule),
     },
 ];
 

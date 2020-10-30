@@ -337,7 +337,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     /**
      * Show authentication instructions.
      */
-    protected showAuthInstructions(): void {
+    showAuthInstructions(): void {
         CoreTextUtils.instance.viewText(Translate.instance.instant('core.login.instructions'), this.authInstructions!);
     }
 

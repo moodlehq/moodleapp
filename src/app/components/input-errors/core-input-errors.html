@@ -2,12 +2,12 @@
     <ng-container *ngIf="control && control.dirty && !control.valid">
         <ng-container *ngFor="let error of errorKeys">
             <div *ngIf="control.hasError(error)" class="core-input-error">
-                <span *ngIf="errorMessages[error]">{{errorMessages[error]}}</span>
-                <span *ngIf="!errorMessages[error] && error == 'max' && control.errors.max">
-                    {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors.max.max} }}
+                <span *ngIf="errorMessages && errorMessages[error]">{{errorMessages[error]}}</span>
+                <span *ngIf="(!errorMessages || !errorMessages[error]) && error == 'max' && control.errors?.max">
+                    {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}
                 </span>
-                <span *ngIf="!errorMessages[error] && error == 'min' && control.errors.min">
-                    {{ 'core.login.invalidvaluemin' | translate:{$a: control.errors.min.min} }}
+                <span *ngIf="(!errorMessages || !errorMessages[error]) && error == 'min' && control.errors?.min">
+                    {{ 'core.login.invalidvaluemin' | translate:{$a: control.errors!.min.min} }}
                 </span>
             </div>
         </ng-container>

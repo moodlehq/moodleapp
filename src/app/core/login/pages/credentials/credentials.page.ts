@@ -28,7 +28,7 @@ import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes
 import { CoreEvents } from '@singletons/events';
 
 /**
- * Page that displays a "splash screen" while the app is being initialized.
+ * Page to enter the user credentials.
  */
 @Component({
     selector: 'page-core-login-credentials',
@@ -161,7 +161,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
-            this.siteName = CoreConstants.CONFIG.sitename ?? this.siteConfig.sitename;
+            this.siteName = CoreConstants.CONFIG.sitename ? CoreConstants.CONFIG.sitename : this.siteConfig.sitename;
             this.logoUrl = CoreLoginHelper.instance.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || Translate.instance.instant('core.login.loginsteps');
 
