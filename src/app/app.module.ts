@@ -59,6 +59,7 @@ import { initCoreSyncDB } from '@services/sync.db';
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
 import { CoreLoginModule } from '@core/login/login.module';
 import { CoreCoursesModule } from '@core/courses/courses.module';
+import { CoreSettingsInitModule } from '@core/settings/settings-init.module';
 
 import { setSingletonsInjector } from '@singletons/core.singletons';
 
@@ -88,6 +89,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreEmulatorModule,
         CoreLoginModule,
         CoreCoursesModule,
+        CoreSettingsInitModule,
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

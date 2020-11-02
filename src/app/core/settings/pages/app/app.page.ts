@@ -59,7 +59,7 @@ export class CoreSettingsAppPage {
     openSettings(page: string, params?: Params): void {
         this.selectedPage = page;
         // this.splitviewCtrl!.push(page, params);
-        this.router.navigate(['../'+page], { relativeTo: this.route, queryParams: params });
+        this.router.navigate([page], { relativeTo: this.route, queryParams: params });
     }
 
 }

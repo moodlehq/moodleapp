@@ -28,6 +28,12 @@ const routes: Routes = [
         path: '',
         component: CoreSettingsAboutPage,
     },
+    {
+        path: 'deviceinfo',
+        loadChildren: () =>
+            import('@core/settings/pages/deviceinfo/deviceinfo.page.module')
+                .then(m => m.CoreSettingsDeviceInfoPageModule),
+    },
 ];
 
 @NgModule({

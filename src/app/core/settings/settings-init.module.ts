@@ -13,21 +13,19 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
+
+import { CoreMainMenuRoutingModule } from '@core/mainmenu/mainmenu-routing.module';
 
 const routes: Routes = [
     {
-        path: 'about',
-        loadChildren: () => import('./pages/about/about.page.module').then( m => m.CoreSettingsAboutPageModule),
-    },
-    {
-        path: '',
-        loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
+        path: 'settings',
+        loadChildren: () => import('@core/settings/settings.module').then(m => m.CoreSettingsModule),
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
+    imports: [CoreMainMenuRoutingModule.forChild(routes)],
+    exports: [CoreMainMenuRoutingModule],
 })
-export class CoreSettingsRoutingModule {}
+export class CoreSettingsInitModule {}
