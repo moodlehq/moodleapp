@@ -54,4 +54,6 @@ describe('AppComponent', () => {
         expect(navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
     });
 
+    it.todo('shows loading while app isn\'t ready');
+
 });

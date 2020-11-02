@@ -15,12 +15,9 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
+import { AuthGuard } from '@guards/auth.guard';
+
 const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full',
-    },
     {
         path: 'login',
         loadChildren: () => import('./core/login/login.module').then( m => m.CoreLoginModule),
@@ -30,8 +27,10 @@ const routes: Routes = [
         loadChildren: () => import('./core/settings/settings.module').then( m => m.CoreSettingsModule),
     },
     {
-        path: 'mainmenu',
+        path: '',
         loadChildren: () => import('./core/mainmenu/mainmenu.module').then( m => m.CoreMainMenuModule),
+        canActivate: [AuthGuard],
+        canLoad: [AuthGuard],
     },
 ];
 
