@@ -13,6 +13,10 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { Platform } from '@ionic/angular';
+
+import { CoreInitDelegate } from '@services/init';
+import { CoreEmulatorHelperProvider } from './services/helper';
 
 // Ionic Native services.
 import { Clipboard } from '@ionic-native/clipboard/ngx';
@@ -36,6 +40,16 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 
+// Mock services.
+import { ClipboardMock } from './services/clipboard';
+import { FileMock } from './services/file';
+import { FileOpenerMock } from './services/file-opener';
+import { FileTransferMock } from './services/file-transfer';
+import { GeolocationMock } from './services/geolocation';
+import { InAppBrowserMock } from './services/inappbrowser';
+import { NetworkMock } from './services/network';
+import { ZipMock } from './services/zip';
+
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
  *
@@ -51,18 +65,47 @@ import { Zip } from '@ionic-native/zip/ngx';
     imports: [
     ],
     providers: [
-        Clipboard,
+        CoreEmulatorHelperProvider,
+        {
+            provide: Clipboard,
+            deps: [Platform], // Use platform instead of AppProvider to prevent errors with singleton injection.
+            useFactory: (platform: Platform): Clipboard => platform.is('cordova') ? new Clipboard() : new ClipboardMock(),
+        },
         Device,
         Diagnostic,
-        File,
-        FileOpener,
-        FileTransfer,
-        Geolocation,
+        {
+            provide: File,
+            deps: [Platform],
+            useFactory: (platform: Platform): File => platform.is('cordova') ? new File() : new FileMock(),
+        },
+        {
+            provide: FileOpener,
+            deps: [Platform],
+            useFactory: (platform: Platform): FileOpener => platform.is('cordova') ? new FileOpener() : new FileOpenerMock(),
+        },
+        {
+            provide: FileTransfer,
+            deps: [Platform],
+            useFactory: (platform: Platform): FileTransfer => platform.is('cordova') ? new FileTransfer() : new FileTransferMock(),
+        },
+        {
+            provide: Geolocation,
+            deps: [Platform],
+            useFactory: (platform: Platform): Geolocation => platform.is('cordova') ? new Geolocation() : new GeolocationMock(),
+        },
         HTTP,
-        InAppBrowser,
+        {
+            provide: InAppBrowser,
+            deps: [Platform],
+            useFactory: (platform: Platform): InAppBrowser => platform.is('cordova') ? new InAppBrowser() : new InAppBrowserMock(),
+        },
         Keyboard,
         LocalNotifications,
-        Network,
+        {
+            provide: Network,
+            deps: [Platform],
+            useFactory: (platform: Platform): Network => platform.is('cordova') ? new Network() : new NetworkMock(),
+        },
         Push,
         QRScanner,
         SplashScreen,
@@ -70,7 +113,25 @@ import { Zip } from '@ionic-native/zip/ngx';
         StatusBar,
         WebIntent,
         WebView,
-        Zip,
+        {
+            provide: Zip,
+            deps: [Platform, File],
+            useFactory: (platform: Platform, file: File): Zip => platform.is('cordova') ? new Zip() : new ZipMock(file),
+        },
     ],
 })
-export class CoreEmulatorModule { }
+export class CoreEmulatorModule {
+
+    constructor(
+        platform: Platform,
+        initDelegate: CoreInitDelegate,
+        helper: CoreEmulatorHelperProvider,
+    ) {
+
+        if (!platform.is('cordova')) {
+            // Register an init process to load the Mocks that need it.
+            initDelegate.registerProcess(helper);
+        }
+    }
+
+}

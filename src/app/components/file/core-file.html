@@ -1,0 +1,20 @@
+<ion-item *ngIf="file" button class="ion-text-wrap item-media" (click)="download($event, true)" detail="false">
+    <ion-thumbnail slot="start">
+        <img [src]="fileIcon" alt="" role="presentation" />
+    </ion-thumbnail>
+    <ion-label>
+        <h2>{{fileName}}</h2>
+        <p *ngIf="fileSizeReadable">{{ fileSizeReadable }}</p>
+        <p *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</p>
+    </ion-label>
+    <div slot="end">
+        <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading"
+            [canTrustDownload]="!alwaysDownload" (action)="download()">
+        </core-download-refresh>
+
+        <ion-button fill="clear" *ngIf="!isDownloading && canDelete" (click)="delete($event)"
+            [attr.aria-label]="'core.delete' | translate" color="danger">
+            <ion-icon slot="icon-only" name="fas-trash"></ion-icon>
+        </ion-button>
+    </div>
+</ion-item>

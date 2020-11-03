@@ -46,8 +46,8 @@ export class CoreFileHelperProvider {
      */
     async downloadAndOpenFile(
         file: CoreWSExternalFile,
-        component: string,
-        componentId: string | number,
+        component?: string,
+        componentId?: string | number,
         state?: string,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,

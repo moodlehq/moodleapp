@@ -251,7 +251,7 @@ export class CoreFileProvider {
      * @return Promise to be resolved when the file is created.
      */
     async createFile(path: string, failIfExists?: boolean): Promise<FileEntry> {
-        const entry = <FileEntry> await this.create(true, path, failIfExists);
+        const entry = <FileEntry> await this.create(false, path, failIfExists);
 
         return entry;
     }
@@ -568,8 +568,7 @@ export class CoreFileProvider {
         // Create file (and parent folders) to prevent errors.
         const fileEntry = await this.createFile(path);
 
-        if (this.isHTMLAPI &&
-                (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
+        if (this.isHTMLAPI && (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
             // We need to write Blobs.
             const extension = CoreMimetypeUtils.instance.getFileExtension(path);
             const type = extension ? CoreMimetypeUtils.instance.getMimeType(extension) : '';
