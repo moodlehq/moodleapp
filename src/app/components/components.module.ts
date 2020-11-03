@@ -17,6 +17,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
+import { CoreFileComponent } from './file/file';
 import { CoreIconComponent } from './icon/icon';
 import { CoreIframeComponent } from './iframe/iframe';
 import { CoreInputErrorsComponent } from './input-errors/input-errors';
@@ -31,6 +33,8 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
 
 @NgModule({
     declarations: [
+        CoreDownloadRefreshComponent,
+        CoreFileComponent,
         CoreIconComponent,
         CoreIframeComponent,
         CoreInputErrorsComponent,
@@ -49,6 +53,8 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
         CorePipesModule,
     ],
     exports: [
+        CoreDownloadRefreshComponent,
+        CoreFileComponent,
         CoreIconComponent,
         CoreIframeComponent,
         CoreInputErrorsComponent,

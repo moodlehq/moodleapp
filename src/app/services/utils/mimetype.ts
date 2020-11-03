@@ -17,10 +17,13 @@ import { FileEntry } from '@ionic-native/file';
 
 import { CoreFile } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
-import { makeSingleton, Translate, Http } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalFile } from '@services/ws';
 import { CoreUtils } from '@services/utils/utils';
+
+import extToMime from '@/assets/exttomime.json';
+import mimeToExt from '@/assets/mimetoext.json';
 
 interface MimeTypeInfo {
     type: string;
@@ -52,17 +55,8 @@ export class CoreMimetypeUtilsProvider {
     constructor() {
         this.logger = CoreLogger.getInstance('CoreMimetypeUtilsProvider');
 
-        Http.instance.get('assets/exttomime.json').subscribe((result: Record<string, MimeTypeInfo>) => {
-            this.extToMime = result;
-        }, () => {
-            // Error, shouldn't happen.
-        });
-
-        Http.instance.get('assets/mimetoext.json').subscribe((result: Record<string, string[]>) => {
-            this.mimeToExt = result;
-        }, () => {
-            // Error, shouldn't happen
-        });
+        this.extToMime = extToMime;
+        this.mimeToExt = mimeToExt;
     }
 
     /**
