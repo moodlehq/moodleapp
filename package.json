@@ -21,6 +21,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --prod",
     "test": "jest --verbose",
     "test:ci": "jest -ci --runInBand --verbose",
     "test:watch": "jest --watch",

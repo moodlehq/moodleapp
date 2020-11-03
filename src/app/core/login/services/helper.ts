@@ -720,7 +720,7 @@ export class CoreLoginHelperProvider {
         if (options?.redirectPage == CoreLoginHelperProvider.OPEN_COURSE) {
             // Load the main menu first, and then open the course.
             try {
-                await this.navCtrl.navigateRoot('/mainmenu');
+                await this.navCtrl.navigateRoot('/');
             } finally {
                 // @todo: Open course.
             }
@@ -729,7 +729,7 @@ export class CoreLoginHelperProvider {
             const queryParams: Params = Object.assign({}, options);
             delete queryParams.navigationOptions;
 
-            await this.navCtrl.navigateRoot('/mainmenu', {
+            await this.navCtrl.navigateRoot('/', {
                 queryParams,
                 ...options?.navigationOptions,
             });

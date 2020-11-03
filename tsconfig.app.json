@@ -17,6 +17,7 @@
       "@components/*": ["app/components/*"],
       "@core/*": ["app/core/*"],
       "@directives/*": ["app/directives/*"],
+      "@guards/*": ["app/guards/*"],
       "@pipes/*": ["app/pipes/*"],
       "@services/*": ["app/services/*"],
       "@singletons/*": ["app/singletons/*"]
