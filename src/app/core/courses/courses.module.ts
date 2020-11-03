@@ -13,9 +13,27 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { CoreHomeDelegate } from '../mainmenu/services/home.delegate';
+import { CoreCoursesDashboardHandler } from './handlers/dashboard';
+import { CoreCoursesDashboardPage } from './pages/dashboard/dashboard.page';
+
+
+const routes: Routes = [
+    {
+        path: 'dashboard',
+        component: CoreCoursesDashboardPage,
+    },
+];
 
 @NgModule({
-    imports: [],
+    imports: [RouterModule.forChild(routes)],
     declarations: [],
 })
-export class CoreCoursesModule { }
+export class CoreCoursesModule {
+
+    constructor(homeDelegate: CoreHomeDelegate) {
+        homeDelegate.registerHandler(new CoreCoursesDashboardHandler());
+    }
+
+}

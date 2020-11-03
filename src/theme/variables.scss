@@ -23,7 +23,7 @@
     --yellow:          var(--custom-yellow, #fbad1a); // Accent (never text).
     --purple:          var(--custom-purple, #8e24aa); // Accent (never text).
 
-    --core-color: var(--custom-main-color, #f98012);
+    --core-color: var(--custom-main-color, var(--orange));
 
     --ion-color-primary: var(--core-color);
     --ion-color-primary-rgb: 249,128,18;
@@ -92,21 +92,34 @@
     --ion-text-color-rgb: 58,58,58;
 
     ion-content {
-        --background: #e9e9e9;
+        --background: var(--gray-light);
     }
 
     ion-tab-bar {
-        --background: #626262;
-        --color: #ffffff;
+        --background: var(--custom-bottom-tabs-background, var(--gray-darker));
+        --color: var(--custom-bottom-tabs-color, var(--white));
     }
 
     ion-toolbar {
-        --color: var(--ion-color-primary-contrast);
-        --background: var(--ion-color-primary);
+        --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
+        --background: var(--custom-toolbar-background, var(--ion-color-primary));
     }
 
-    --core-login-background: var(--custom-login-background, white);
-    --core-login-text-color: var(--custom-login-text-color, #3a3a3a);
+    core-tabs {
+        --background: var(--custom-tabs-background, var(--white));
+        ion-slide {
+            --background: var(--custom-tab-background, var(--white));
+            --color: var(--custom-tab-background, var(--gray-dark));
+            --border-color: var(--custom-tab-border-color, var(--gray));
+            --color-active: var(--custom-tab-color-active, var(--core-color));
+            --border-color-active: var(--custom-tab-border-color-active, var(--color-active));
+        }
+    }
+
+    --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
+
+    --core-login-background: var(--custom-login-background, var(--white));
+    --core-login-text-color: var(--custom-login-text-color,  var(--black));
 }
 
 /*
@@ -114,7 +127,7 @@
 * -------------------------------------------
 */
 :root body.dark {
-    --ion-background-color: #3a3a3a;
+    --ion-background-color: #1e1e1e;
     --ion-background-color-rgb: 18,18,18;
 
     --ion-text-color: #ffffff;
@@ -144,13 +157,21 @@
 
     --ion-tab-bar-background: #1f1f1f;
 
-
     --ion-item-background: #1e1e1e;
 
     --ion-card-background: #1c1c1d;
 
     ion-content {
         --background: var(--ion-background-color);
+    }
+
+    core-tabs {
+        --background: var(--custom-tabs-background, #3a3a3a);
+        ion-slide {
+            --background: var(--custom-tab-background, #3a3a3a);
+            --color: var(--custom-tab-background, var(--white));
+            --border-color: var(--custom-tab-border-color, var(--gray-light));
+        }
     }
 
     --core-login-background: var(--custom-login-background, #3a3a3a);

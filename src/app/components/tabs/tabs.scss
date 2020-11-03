@@ -1,0 +1,72 @@
+:host {
+    --tabs-background: var(--background);
+    --tabs-color: var(--color);
+    height: 100%;
+    display: block;
+
+    ion-tabs {
+        background: transparent;
+        position: relative;
+    }
+
+    ion-tab-bar.core-tabs-bar {
+        position: relative;
+        width: 100%;
+        background: var(--tabs-background);
+        color: var(--tabs-color);
+        -webkit-filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
+        filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
+        border: 0;
+
+        ion-row {
+            width: 100%;
+        }
+
+        .tab-slide {
+            border-bottom: 2px solid transparent;
+            min-width: 100px;
+            min-height: 56px;
+            cursor: pointer;
+            overflow: hidden;
+
+            ion-tab-button {
+                ion-label {
+                    font-size: 16px;
+                    font-weight: 400;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    word-wrap: break-word;
+                    max-width: 100%;
+                    line-height: 1.2em;
+                    margin-top: 16px;
+                    margin-bottom: 16px;
+                }
+            }
+
+            &[aria-selected=true] {
+                color: var(--color-active);
+                border-bottom-color: var(--border-color-active);
+                ion-tab-button {
+                    color: var(--color-active);
+                }
+            }
+        }
+
+        ion-col {
+            text-align: center;
+            line-height: 1.6rem;
+
+            &.col-with-arrow {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        &.tabs-hidden {
+            display: none !important;
+            transform: translateY(0) !important;
+        }
+    }
+}
