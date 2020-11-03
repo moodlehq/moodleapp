@@ -15,6 +15,8 @@
 import { Injectable } from '@angular/core';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 
+import { CoreFile } from '@services/file';
+
 /**
  * Emulates the FileOpener plugin in browser.
  */
@@ -40,7 +42,24 @@ export class FileOpenerMock extends FileOpener {
      * @return Promise resolved when done.
      */
     async open(filePath: string, fileMIMEType: string): Promise<any> {
-        window.open(filePath, '_blank');
+        if (!filePath.match(/^filesystem:/)) {
+            // Just open the page.
+            window.open(filePath, '_blank');
+
+            return;
+        }
+
+        try {
+            // Opening local files in browser just display a blank page. Convert the path to an object URL.
+            const fileEntry = await CoreFile.instance.getExternalFile(filePath);
+
+            const file = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
+
+            window.open(window.URL.createObjectURL(file), '_blank');
+        } catch (error) {
+            // File not found. Just open the URL even if it ends up being a blank page.
+            window.open(filePath, '_blank');
+        }
     }
 
     /**
