@@ -105,6 +105,21 @@
         --background: var(--custom-toolbar-background, var(--ion-color-primary));
     }
 
+    ion-action-sheet {
+        --action-sheet-shadow-color: var(--custom--action-sheet-shadow-color, 0, 0, 0, 1);
+        --button-color-selected: var(--custom--action-sheet-selected-color, var(--core-color));
+        --title-border-color: var(--custom-title-border-color, var(--gray));
+
+        @media (min-height: 500px) {
+            --max-height: 50%;
+            --height: 100%;
+        }
+
+        .action-sheet-cancel {
+            --button-color: var(--ion-color-danger);
+        }
+    }
+
     core-tabs {
         --background: var(--custom-tabs-background, var(--white));
         ion-slide {

@@ -834,17 +834,14 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with boolean: true if enabled, false otherwise.
      */
     isRichTextEditorEnabled(): Promise<boolean> {
-        if (this.isRichTextEditorSupported()) {
-            return CoreConfig.instance.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((enabled) => !!enabled);
-        }
-
-        return Promise.resolve(false);
+        return CoreConfig.instance.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((enabled) => !!enabled);
     }
 
     /**
      * Check if rich text editor is supported in the platform.
      *
      * @return Whether it's supported.
+     * @deprecated since 3.9.5
      */
     isRichTextEditorSupported(): boolean {
         return true;

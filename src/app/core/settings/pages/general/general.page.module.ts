@@ -13,25 +13,36 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
+
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+
+import { CoreSettingsGeneralPage } from './general.page';
 
 const routes: Routes = [
     {
-        path: 'about',
-        loadChildren: () => import('./pages/about/about.page.module').then( m => m.CoreSettingsAboutPageModule),
-    },
-    {
-        path: 'general',
-        loadChildren: () => import('./pages/general/general.page.module').then( m => m.CoreSettingsGeneralPageModule),
-    },
-    {
         path: '',
-        loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
+        component: CoreSettingsGeneralPage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
+    declarations: [
+        CoreSettingsGeneralPage,
+    ],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        FormsModule,
+    ],
 })
-export class CoreSettingsRoutingModule {}
+export class CoreSettingsGeneralPageModule {}
