@@ -31,7 +31,7 @@
         </ion-item>
         <ion-item margin-bottom>
             <core-show-password item-content [name]="'password'">
-                <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"></ion-input>
+                <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false" autocomplete="current-password"></ion-input>
             </core-show-password>
         </ion-item>
         <ion-grid padding>
