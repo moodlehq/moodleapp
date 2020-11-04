@@ -7,15 +7,12 @@
         <ion-title>{{ 'core.login.reconnect' | translate }}</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="ion-padding">
     <div class="ion-text-wrap ion-text-center ion-margin-bottom" [ngClass]="{'item-avatar-center': showSiteAvatar}">
-        <ng-container *ngIf="showSiteAvatar">
-            <ion-avatar>
-                <!-- Show user avatar. -->
-                <img [src]="userAvatar" class="avatar" core-external-content [siteId]="siteId" role="presentation"
-                    alt="{{ 'core.pictureof' | translate:{$a: userFullName} }}" onError="this.src='assets/img/user-avatar.png'">
-            </ion-avatar>
-        </ng-container>
+        <!-- Show user avatar. -->
+        <img *ngIf="showSiteAvatar" [src]="userAvatar" class="large-avatar" core-external-content [siteId]="siteId"
+            role="presentation"
+            alt="{{ 'core.pictureof' | translate:{$a: userFullName} }}" onError="this.src='assets/img/user-avatar.png'">
 
         <div class="core-login-site-logo" *ngIf="!showSiteAvatar">
             <!-- Show site logo or a default image. -->
@@ -29,14 +26,14 @@
         <p class="core-siteurl">{{siteUrl}}</p>
 
         <ion-item *ngIf="!isLoggedOut" class="ion-text-center core-login-reconnect-warning" lines="none">
-            <ion-label color="danger">
+            <ion-label color="danger" class="ion-text-wrap">
                 <ion-icon name="fas-exclamation-circle" slot="start"></ion-icon>
                 {{ 'core.login.reconnectdescription' | translate }}
             </ion-label>
         </ion-item>
     </div>
-    <form ion-list *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
-        <ion-item class="ion-text-wrap core-username">
+    <form *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
+        <ion-item class="ion-text-wrap core-username item-interactive">
             <ion-label>
                 <p>{{username}}</p>
             </ion-label>
@@ -44,7 +41,8 @@
         <ion-item class="ion-margin-bottom">
             <core-show-password [name]="'password'">
                 <ion-input class="core-ioninput-password" name="password" type="password"
-                    placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false">
+                    placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
+                    autocomplete="current-password" enterkeyhint="go" required="true">
                 </ion-input>
             </core-show-password>
         </ion-item>
