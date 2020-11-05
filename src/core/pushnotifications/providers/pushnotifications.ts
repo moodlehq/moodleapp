@@ -34,8 +34,6 @@ import { CoreConfigConstants } from '../../../configconstants';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
-import { CoreFilterDelegate } from '@core/filter/providers/delegate';
 
 /**
  * Data needed to register a device in a Moodle site.
@@ -196,8 +194,6 @@ export class CorePushNotificationsProvider {
             platform: Platform,
             appProvider: CoreAppProvider,
             private sitesFactory: CoreSitesFactoryProvider,
-            private filterProvider: CoreFilterProvider,
-            private filterDelegate: CoreFilterDelegate
             ) {
         this.logger = logger.getInstance('CorePushNotificationsProvider');
         this.appDB = appProvider.getDB();

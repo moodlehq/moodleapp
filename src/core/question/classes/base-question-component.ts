@@ -473,8 +473,14 @@ export class CoreQuestionBaseComponent {
 
                 this.question.disabled = this.question.disabled && element.disabled;
 
-                // Get the label with the question text.
-                const label = questionEl.querySelector('label[for="' + option.id + '"]');
+                // Get the label with the question text. Try the new format first.
+                const labelId = element.getAttribute('aria-labelledby');
+                let label = labelId ? questionEl.querySelector('#' + labelId.replace(/:/g, '\\:')) : undefined;
+                if (!label) {
+                    // Not found, use the old format.
+                    label = questionEl.querySelector('label[for="' + option.id + '"]');
+                }
+
                 if (label) {
                     option.text = label.innerHTML;
 
