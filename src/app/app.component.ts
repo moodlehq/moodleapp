@@ -18,6 +18,8 @@ import { NavController } from '@ionic/angular';
 import { CoreLangProvider } from '@services/lang';
 import { CoreLoginHelperProvider } from '@core/login/services/helper';
 import { CoreEvents, CoreEventSessionExpiredData } from '@singletons/events';
+import { Network, NgZone, Platform } from '@singletons/core.singletons';
+import { CoreApp } from '@services/app';
 
 @Component({
     selector: 'app-root',
@@ -45,13 +47,72 @@ export class AppComponent implements OnInit {
             this.langProvider.clearCustomStrings();
 
             // Remove version classes from body.
-            // @todo
-            // this.removeVersionClass();
+            this.removeVersionClass();
         });
 
         // Listen for session expired events.
         CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data: CoreEventSessionExpiredData) => {
             this.loginHelper.sessionExpired(data);
+        });
+
+        this.onPlatformReady();
+    }
+
+    protected async onPlatformReady(): Promise<void> {
+        await Platform.instance.ready();
+
+        // Refresh online status when changes.
+        Network.instance.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.instance.run(() => {
+                const isOnline = CoreApp.instance.isOnline();
+                const hadOfflineMessage = document.body.classList.contains('core-offline');
+
+                document.body.classList.toggle('core-offline', !isOnline);
+
+                if (isOnline && hadOfflineMessage) {
+                    document.body.classList.add('core-online');
+
+                    setTimeout(() => {
+                        document.body.classList.remove('core-online');
+                    }, 3000);
+                } else if (!isOnline) {
+                    document.body.classList.remove('core-online');
+                }
+            });
+        });
+    }
+
+    /**
+     * Convenience function to add version to body classes.
+     *
+     * @param release Current release number of the site.
+     */
+    protected addVersionClass(release: string): void {
+        const parts = release.split('.', 3);
+
+        parts[1] = parts[1] || '0';
+        parts[2] = parts[2] || '0';
+
+        document.body.classList.add('version-' + parts[0],
+            'version-' + parts[0] + '-' + parts[1],
+            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2]);
+    }
+
+    /**
+     * Convenience function to remove all version classes form body.
+     */
+    protected removeVersionClass(): void {
+        const remove: string[] = [];
+
+        Array.from(document.body.classList).forEach((tempClass) => {
+            if (tempClass.substring(0, 8) == 'version-') {
+                remove.push(tempClass);
+            }
+        });
+
+        remove.forEach((tempClass) => {
+            document.body.classList.remove(tempClass);
         });
     }
 
