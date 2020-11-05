@@ -2,9 +2,9 @@
     .core-login-onboarding-step {
         padding: 10px 20px;
         text-align: center;
-        /* @todo @include media-breakpoint-up(md) {
+        @media (min-width: 768px) {
             max-width: 80%;
-        }*/
+        }
         margin: 0 auto;
 
         p {
@@ -14,8 +14,7 @@
         ul {
             margin-bottom: 30px;
             list-style-type: none;
-            // @todo @include text-align('start');
-            // @todo @include padding-horizontal(10px, null);
+            padding-inline-start: 10px;
             li {
                 margin-bottom: 10px;
             }

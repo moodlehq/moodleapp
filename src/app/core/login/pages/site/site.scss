@@ -80,7 +80,10 @@
 
 .core-login-site-list-loading {
     position: absolute;
-    //@todo @include position(0, 0, 0, 0);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     height: 100%;
     display: flex;
@@ -89,11 +92,12 @@
     background-color: rgba(255, 255, 255, 0.5);
     z-index: 1;
     ion-spinner {
-        flex: 1;
+        margin: 0 auto;
     }
 }
 
 .core-login-site-nolist-loading {
+    margin-top: 16px;
     text-align: center;
 }
 
@@ -102,29 +106,28 @@
         margin-top: 0;
     }
 }
-/* @todo
-@include media-breakpoint-up(md) {
-    .scroll-content > * {
+
+@media (min-width: 768px) {
+    ion-content > * {
         max-width: 600px;
         margin: 0 auto;
         width: 100%;
     }
-    .core-login-site-logo {
-        margin-top: 20%;
-    }
 
-    &.hidden {
-        margin: 0;
+    ion-content .core-login-site-logo {
+        margin-top: 20%;
+        &.hidden {
+            margin-top: 0;
+        }
     }
 }
-*/
+
 .core-login-entered-site {
-    background-color: gray; // @todo $gray-lighter;
+    background-color: var(--gray-lighter);
     ion-thumbnail {
         box-shadow: 0 0 4px #ddd;
     }
 }
-
 
 .core-login-default-icon {
     filter: grayscale(100%);
