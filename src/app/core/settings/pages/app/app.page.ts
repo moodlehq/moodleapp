@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { CoreApp } from '@services/app';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
     selector: 'app-settings',
     templateUrl: 'app.html',
 })
-export class CoreSettingsAppPage {
+export class CoreSettingsAppPage implements OnInit {
 
     // @ViewChild(CoreSplitViewComponent) splitviewCtrl?: CoreSplitViewComponent;
 
@@ -42,7 +42,7 @@ export class CoreSettingsAppPage {
     /**
      * View loaded.
      */
-    ionViewDidLoad(): void {
+    ngOnInit(): void {
         if (this.selectedPage) {
             this.openSettings(this.selectedPage);
         } /* else if (this.splitviewCtrl!.isOn()) {

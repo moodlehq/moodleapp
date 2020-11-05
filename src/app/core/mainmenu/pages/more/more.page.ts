@@ -29,7 +29,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
-    styleUrls: ['more.scss'],
 })
 export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 

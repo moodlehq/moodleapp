@@ -14,6 +14,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { CoreColorScheme } from '@core/settings/services/settings.helper';
 import { CoreSitesDemoSiteData } from '@services/sites';
 
 declare global {
@@ -59,7 +60,7 @@ declare global {
                 statusbarlighttextremotetheme: boolean;
                 enableanalytics: boolean;
                 enableonboarding: boolean;
-                forceColorScheme: string;
+                forceColorScheme: CoreColorScheme;
                 forceLoginLogo: boolean;
                 ioswebviewscheme: string;
                 appstores: Record<string, string>;

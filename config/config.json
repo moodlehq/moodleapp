@@ -84,9 +84,9 @@
         }
     },
     "font_sizes": [
-        62.5,
-        75.89,
-        93.75
+        100,
+        110,
+        120
     ],
     "customurlscheme": "moodlemobile",
     "siteurl": "",

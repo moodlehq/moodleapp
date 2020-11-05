@@ -16,7 +16,12 @@
 </ion-header>
 <ion-content>
     <!-- @todo -->
-    <core-empty-box icon="fa-home" [message]="'core.courses.nocourses' | translate">
-        <div>Home page</div>
-    </core-empty-box>
+    <core-loading [hideUntil]="loaded" *ngIf="tabs.length > 0">
+        <core-tabs [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs"></core-tabs>
+        <ng-container *ngIf="tabs.length == 0">
+            <core-empty-box icon="fa-home" [message]="'core.courses.nocourses' | translate">
+                <div>Home page</div>
+            </core-empty-box>
+        </ng-container>
+    </core-loading>
 </ion-content>

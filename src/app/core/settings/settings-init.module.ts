@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuRoutingModule } from '@core/mainmenu/mainmenu-routing.module';
+import { CoreSettingsHelperProvider } from './services/settings.helper';
 
 const routes: Routes = [
     {
@@ -25,7 +26,21 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [CoreMainMenuRoutingModule.forChild(routes)],
-    exports: [CoreMainMenuRoutingModule],
+    imports: [
+        CoreMainMenuRoutingModule.forChild(routes),
+    ],
+    exports: [
+        CoreMainMenuRoutingModule,
+    ],
+    providers: [
+        CoreSettingsHelperProvider,
+    ],
 })
-export class CoreSettingsInitModule {}
+export class CoreSettingsInitModule {
+
+    constructor(settingsHelper: CoreSettingsHelperProvider) {
+        // @todo
+        // settingsHelper.initDomSettings();
+    }
+
+}

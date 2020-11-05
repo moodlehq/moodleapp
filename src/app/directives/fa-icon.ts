@@ -44,7 +44,7 @@ export class CoreFaIconDirective implements OnChanges {
     /**
      * Detect icon name and use svg.
      */
-    setIcon(): void {
+    async setIcon(): Promise<void> {
         let library = 'ionic';
         let iconName = this.name;
         const parts = iconName.split('-', 2);
@@ -73,13 +73,11 @@ export class CoreFaIconDirective implements OnChanges {
             this.element.setAttribute('src', src);
 
             if (CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting) {
-                Http.instance.get(src).subscribe(() => {
-                    // Ignore.
-                }, (error) => {
-                    if (error.status != 200) {
-                        this.logger.error(`Icon ${this.name} not found`);
-                    }
-                });
+                try {
+                    await Http.instance.get(src, { responseType: 'text' }).toPromise();
+                } catch (error) {
+                    this.logger.error(`Icon ${this.name} not found`);
+                }
             }
         } else {
             this.element.removeAttribute('src');

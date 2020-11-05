@@ -1,3 +1,8 @@
+// Correctly inherit ion-text-wrap onto labels.
+ion-item.ion-text-wrap ion-label {
+    white-space: normal !important;
+}
+
 
 // Ionic toolbar.
 ion-toolbar ion-back-button,
@@ -99,3 +104,44 @@ ion-list.list-md {
     margin-bottom: 10px;
     font-size: 14px;
 }
+
+// Avatar
+// -------------------------
+// Large centered avatar
+img.large-avatar {
+    display: block;
+    margin: auto;
+    width: 90px;
+    height: 90px;
+    max-width: 90px;
+    max-height: 90px;
+    margin-bottom: 10px;
+    border-radius : 50%;
+    padding: 4px;
+    border: 1px solid #ddd;
+    background-color: transparent;
+}
+
+ion-avatar ion-img, ion-avatar img {
+    text-indent: -99999px;
+    background-color: --var(--gray-light);
+}
+
+// Action sheet.
+.md ion-action-sheet {
+    .action-sheet-group-cancel {
+        -webkit-filter: drop-shadow(0px 3px 3px rgba(var(--action-sheet-shadow-color)));
+        filter: drop-shadow(0px 3px 3px rgba(var(--action-sheet-shadow-color)));
+    }
+
+    .action-sheet-title {
+        border-bottom: 1px solid var(--title-border-color);
+    }
+}
+
+.ios ion-action-sheet {
+    .action-sheet-title {
+        font-size: 16px;
+    }
+}
+

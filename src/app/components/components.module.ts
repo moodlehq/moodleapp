@@ -28,6 +28,8 @@ import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
 import { CoreRecaptchaModalComponent } from './recaptcha/recaptchamodal';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
+import { CoreTabsComponent } from './tabs/tabs';
+
 import { CoreDirectivesModule } from '@app/directives/directives.module';
 import { CorePipesModule } from '@app/pipes/pipes.module';
 
@@ -44,6 +46,7 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
         CoreRecaptchaModalComponent,
         CoreShowPasswordComponent,
         CoreEmptyBoxComponent,
+        CoreTabsComponent,
     ],
     imports: [
         CommonModule,
@@ -64,6 +67,7 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
         CoreRecaptchaModalComponent,
         CoreShowPasswordComponent,
         CoreEmptyBoxComponent,
+        CoreTabsComponent,
     ],
 })
 export class CoreComponentsModule {}

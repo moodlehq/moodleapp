@@ -13,31 +13,28 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 
-import { CoreHomePage } from './home.page';
+import { CoreSettingsLicensesPage } from './licenses.page';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreHomePage,
-        children: [
-            {
-                path: 'dashboard', // @todo: Add this route dynamically.
-                loadChildren: () =>
-                    import('@core/courses/pages/dashboard/dashboard.page.module').then(m => m.CoreCoursesDashboardPageModule),
-            },
-        ],
+        component: CoreSettingsLicensesPage,
     },
 ];
 
 @NgModule({
+    declarations: [
+        CoreSettingsLicensesPage,
+    ],
     imports: [
         RouterModule.forChild(routes),
         CommonModule,
@@ -45,10 +42,7 @@ const routes: Routes = [
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
+        CorePipesModule,
     ],
-    declarations: [
-        CoreHomePage,
-    ],
-    exports: [RouterModule],
 })
-export class CoreHomePageModule {}
+export class CoreSettingsLicensesPageModule {}

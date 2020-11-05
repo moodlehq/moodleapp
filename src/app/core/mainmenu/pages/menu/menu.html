@@ -1,6 +1,5 @@
-<ion-tabs #mainTabs [hidden]="!showTabs">
-
-    <ion-tab-bar slot="bottom">
+<ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement" [class.tabshidden]="hidden">
+    <ion-tab-bar slot="bottom" [hidden]="hidden">
         <ion-spinner *ngIf="!loaded"></ion-spinner>
 
         <ion-tab-button tab="redirect" [disabled]="true" [hidden]="true"></ion-tab-button> <!-- [root]="redirectPage" [rootParams]="redirectParams" -->

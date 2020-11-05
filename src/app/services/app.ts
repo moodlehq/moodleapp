@@ -101,6 +101,7 @@ export class CoreAppProvider {
             });
         });
 
+        // @todo
         // this.platform.registerBackButtonAction(() => {
         //     this.backButtonAction();
         // }, 100);
@@ -157,7 +158,7 @@ export class CoreAppProvider {
     async createTablesFromSchema(schema: CoreAppSchema): Promise<void> {
         this.logger.debug(`Apply schema to app DB: ${schema.name}`);
 
-        let oldVersion;
+        let oldVersion: number;
 
         try {
             // Wait for the schema versions table to be created.

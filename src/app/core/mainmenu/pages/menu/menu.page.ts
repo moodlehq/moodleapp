@@ -42,6 +42,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     redirectParams?: Params;
     showTabs = false;
     tabsPlacement = 'bottom';
+    hidden = false;
 
     protected subscription?: Subscription;
     protected redirectObs?: CoreEventObserver;
@@ -179,6 +180,22 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Change tabs visibility to show/hide them from the view.
+     *
+     * @param visible If show or hide the tabs.
+     */
+    changeVisibility(visible: boolean): void {
+        if (this.hidden == visible) {
+            // Change needed.
+            this.hidden = !visible;
+
+            /* setTimeout(() => {
+                this.viewCtrl.getContent().resize();
+            });*/
+        }
+    }
+
+    /**
      * Handle a redirect.
      *
      * @param data Data received.
@@ -246,7 +263,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
             // User confirmed, go to root.
             this.mainTabs?.select(page);
-        } catch (error) {
+        } catch {
             // User canceled.
         }
     }

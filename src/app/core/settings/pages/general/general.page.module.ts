@@ -17,27 +17,24 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
-import { CoreHomePage } from './home.page';
+import { CoreSettingsGeneralPage } from './general.page';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreHomePage,
-        children: [
-            {
-                path: 'dashboard', // @todo: Add this route dynamically.
-                loadChildren: () =>
-                    import('@core/courses/pages/dashboard/dashboard.page.module').then(m => m.CoreCoursesDashboardPageModule),
-            },
-        ],
+        component: CoreSettingsGeneralPage,
     },
 ];
 
 @NgModule({
+    declarations: [
+        CoreSettingsGeneralPage,
+    ],
     imports: [
         RouterModule.forChild(routes),
         CommonModule,
@@ -45,10 +42,7 @@ const routes: Routes = [
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
+        FormsModule,
     ],
-    declarations: [
-        CoreHomePage,
-    ],
-    exports: [RouterModule],
 })
-export class CoreHomePageModule {}
+export class CoreSettingsGeneralPageModule {}
