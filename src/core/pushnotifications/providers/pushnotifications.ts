@@ -457,8 +457,19 @@ export class CorePushNotificationsProvider {
      */
     onMessageReceived(notification: any): void {
         const data = notification ? notification.additionalData : {};
+        let promise;
 
-        this.sitesProvider.getSite(data.site).then((site) => {
+        if (data.site) {
+            promise = this.sitesProvider.getSite(data.site);
+        } else if (data.siteurl) {
+            promise = this.sitesProvider.getSiteByUrl(data.siteurl);
+        } else {
+            // Notification not related to any site.
+            promise = Promise.resolve();
+        }
+
+        promise.then((site: CoreSite | undefined) => {
+            data.site = site && site.getId();
 
             if (typeof data.customdata == 'string') {
                 data.customdata = this.textUtils.parseJSON(data.customdata, {});
@@ -468,80 +479,40 @@ export class CorePushNotificationsProvider {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if (this.localNotificationsProvider.isAvailable()) {
                     const localNotif: ILocalNotification = {
-                            id: data.notId || 1,
-                            data: data,
-                            title: '',
-                            text: '',
-                            channel: 'PushPluginChannel'
-                        },
-                        options = {
-                            clean: true,
-                            singleLine: true,
-                            contextLevel: 'system',
-                            instanceId: 0,
-                            filter: true
-                        },
-                        isAndroid = CoreApp.instance.isAndroid(),
-                        extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
+                        id: data.notId || 1,
+                        data: data,
+                        title: notification.title,
+                        text: notification.message,
+                        channel: 'PushPluginChannel'
+                    };
+                    const isAndroid = CoreApp.instance.isAndroid();
+                    const extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
-                    // Get the filters to apply to text and message. Don't use FIlterHelper to prevent circular dependencies.
-                    this.filterProvider.canGetFilters(site.getId()).then((canGet) => {
-                        if (!canGet) {
-                            // We cannot check which filters are available, apply them all.
-                            return this.filterDelegate.getEnabledFilters(options.contextLevel, options.instanceId);
-                        }
-
-                        return this.filterProvider.getAvailableInContext(options.contextLevel, options.instanceId, site.getId());
-                    }).catch(() => {
-                        return [];
-                    }).then((filters) => {
-                        const promises = [];
-
-                        // Apply formatText to title and message.
-                        promises.push(this.filterProvider.formatText(notification.title, options, filters, site.getId())
-                                .then((title) => {
-                            localNotif.title = title;
-                        }).catch(() => {
-                            localNotif.title = notification.title;
-                        }));
-
-                        promises.push(this.filterProvider.formatText(notification.message, options, filters, site.getId())
-                                .catch(() => {
-                            // Error formatting, use the original message.
-                            return notification.message;
-                        }).then((formattedMessage) => {
-                            if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
-                                // It's a message, use messaging style. Ionic Native doesn't specify this option.
-                                (<any> localNotif).text = [
-                                    {
-                                        message: formattedMessage,
-                                        person: data.conversationtype == 2 ? data.userfromfullname : ''
-                                    }
-                                ];
-                            } else {
-                                localNotif.text = formattedMessage;
+                    if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
+                        // It's a message, use messaging style. Ionic Native doesn't specify this option.
+                        (<any> localNotif).text = [
+                            {
+                                message: notification.message,
+                                person: data.conversationtype == 2 ? data.userfromfullname : ''
                             }
-                        }));
+                        ];
+                    }
 
-                        if (extraFeatures && isAndroid) {
-                            // Use a different icon if needed.
-                            localNotif.icon = notification.image;
-                            // This feature isn't supported by the official plugin, we use a fork.
-                            (<any> localNotif).iconType = data['image-type'];
+                    if (extraFeatures && isAndroid) {
+                        // Use a different icon if needed.
+                        localNotif.icon = notification.image;
+                        // This feature isn't supported by the official plugin, we use a fork.
+                        (<any> localNotif).iconType = data['image-type'];
 
-                            localNotif.summary = data.summaryText;
+                        localNotif.summary = data.summaryText;
 
-                            if (data.picture) {
-                                localNotif.attachments = [data.picture];
-                            }
+                        if (data.picture) {
+                            localNotif.attachments = [data.picture];
                         }
+                    }
 
-                        Promise.all(promises).then(() => {
-                            this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site,
-                                    true);
-                        });
-
-                    });
+                    this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site || '',
+                        true);
                 }
 
                 // Trigger a notification received event.
