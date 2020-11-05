@@ -25,6 +25,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/general/general.page.module').then( m => m.CoreSettingsGeneralPageModule),
     },
     {
+        path: 'licenses',
+        loadChildren: () => import('./pages/licenses/licenses.page.module').then( m => m.CoreSettingsLicensesPageModule),
+    },
+    {
         path: '',
         loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
     },
