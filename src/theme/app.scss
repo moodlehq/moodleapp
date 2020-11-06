@@ -131,7 +131,7 @@ img.large-avatar {
 
 ion-avatar ion-img, ion-avatar img {
     text-indent: -99999px;
-    background-color: --var(--gray-light);
+    background-color: var(--gray-light);
 }
 
 // Action sheet.
@@ -152,3 +152,24 @@ ion-avatar ion-img, ion-avatar img {
     }
 }
 
+// Select.
+ion-select.core-button-select,
+.core-button-select {
+    background-color: var(--ion-color-primary-contrast);
+    color: var(--ion-color-primary);
+    white-space: normal;
+    min-height: 45px;
+}
+
+// File uploader.
+.action-sheet-button input.core-fileuploader-file-handler-input {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    opacity: 0;
+    z-index: 100;
+    cursor: pointer;
+}
