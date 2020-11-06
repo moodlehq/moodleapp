@@ -31,6 +31,7 @@ import { CoreConstants } from '@core/constants';
 })
 export class CoreLinkDirective implements OnInit {
 
+    @Input() href?: string; // Link URL.
     @Input() capture?: boolean | string; // If the link needs to be captured by the app.
     @Input() inApp?: boolean | string; // True to open in embedded browser, false to open in system browser.
     /* Whether the link should be opened with auto-login. Accepts the following values:
@@ -61,8 +62,7 @@ export class CoreLinkDirective implements OnInit {
                 return; // Link already treated, stop.
             }
 
-            let href = this.element.getAttribute('href') || this.element.getAttribute('ng-reflect-href') ||
-                this.element.getAttribute('xlink:href');
+            let href = this.href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
 
             if (!href || CoreUrlUtils.instance.getUrlScheme(href) == 'javascript') {
                 return;
