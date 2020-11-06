@@ -16,8 +16,11 @@ import { CoreApp } from '@services/app';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
+/**
+ * App settings menu page.
+ */
 @Component({
-    selector: 'app-settings',
+    selector: 'page-core-app-settings',
     templateUrl: 'app.html',
 })
 export class CoreSettingsAppPage implements OnInit {

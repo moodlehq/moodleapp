@@ -126,8 +126,8 @@
             --background: var(--custom-tab-background, var(--white));
             --color: var(--custom-tab-background, var(--gray-dark));
             --border-color: var(--custom-tab-border-color, var(--gray));
-            --color-active: var(--custom-tab-color-active, var(--core-color));
-            --border-color-active: var(--custom-tab-border-color-active, var(--color-active));
+            --color-active: var(--custom-tab-color-active, var(--color));
+            --border-color-active: var(--custom-tab-border-color-active, var(--core-color));
         }
     }
 

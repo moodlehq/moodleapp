@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSites } from '@services/sites';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { CoreConstants } from '@core/constants';
+import { ActivatedRoute, Router } from '@angular/router';
 
+import { CoreConstants } from '@core/constants';
+import { CoreSites } from '@services/sites';
+
+/**
+ * App settings about menu page.
+ */
 @Component({
-    selector: 'settings-about',
+    selector: 'page-core-app-settings-about',
     templateUrl: 'about.html',
 })
 export class CoreSettingsAboutPage {
@@ -29,6 +33,7 @@ export class CoreSettingsAboutPage {
 
     constructor(
         protected router: Router,
+        protected route: ActivatedRoute,
     ) {
         const currentSite = CoreSites.instance.getCurrentSite();
 
@@ -48,7 +53,7 @@ export class CoreSettingsAboutPage {
     openPage(page: string): void {
         // const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         // navCtrl.push(page);
-        this.router.navigate(['/settings/' + page]);
+        this.router.navigate([page], { relativeTo: this.route });
     }
 
 }
