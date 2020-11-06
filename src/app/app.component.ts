@@ -94,9 +94,11 @@ export class AppComponent implements OnInit {
         parts[1] = parts[1] || '0';
         parts[2] = parts[2] || '0';
 
-        document.body.classList.add('version-' + parts[0],
+        document.body.classList.add(
+            'version-' + parts[0],
             'version-' + parts[0] + '-' + parts[1],
-            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2]);
+            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2],
+        );
     }
 
     /**
