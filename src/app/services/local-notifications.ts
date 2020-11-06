@@ -26,7 +26,7 @@ import { CoreSite } from '@classes/site';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@core/constants';
-import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push, Device } from '@singletons/core.singletons';
+import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -173,7 +173,7 @@ export class CoreLocalNotificationsProvider {
      */
     canDisableSound(): boolean {
         // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
-        return this.isAvailable() && CoreApp.instance.isAndroid() && Number(Device.instance.version?.split('.')[0]) < 8;
+        return this.isAvailable() && CoreApp.instance.isAndroid() && CoreApp.instance.getPlatformMajorVersion() < 8;
     }
 
     /**

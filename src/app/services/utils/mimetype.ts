@@ -361,7 +361,9 @@ export class CoreMimetypeUtilsProvider {
      * @param field The field to get. If not supplied, all the info will be returned.
      * @return Info for the group.
      */
-    getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo {
+    getGroupMimeInfo(group: string): MimeTypeGroupInfo;
+    getGroupMimeInfo(group: string, field: string): string[] | undefined;
+    getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo | string[] | undefined {
         if (typeof this.groupsMimeInfo[group] == 'undefined') {
             this.fillGroupMimeInfo(group);
         }
@@ -379,7 +381,11 @@ export class CoreMimetypeUtilsProvider {
      * @param extension Extension.
      * @return Mimetype.
      */
-    getMimeType(extension: string): string | undefined {
+    getMimeType(extension?: string): string | undefined {
+        if (!extension) {
+            return;
+        }
+
         extension = this.cleanExtension(extension);
 
         if (this.extToMime[extension] && this.extToMime[extension].type) {
