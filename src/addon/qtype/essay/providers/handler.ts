@@ -74,10 +74,10 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
      * @return Allowed options.
      */
     protected getAllowedOptions(question: any): {text: boolean, attachments: boolean} {
-        if (question.displayoptions) {
+        if (question.settings) {
             return {
-                text: question.displayoptions.responseformat != 'noinline',
-                attachments: question.displayoptions.attachments != '0',
+                text: question.settings.responseformat != 'noinline',
+                attachments: question.settings.attachments != '0',
             };
         } else {
             const element = this.domUtils.convertToElement(question.html);
@@ -162,11 +162,11 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
 
         if (!allowedOptions.text) {
-            return attachments && attachments.length >= Number(question.displayoptions.attachmentsrequired) ? 1 : 0;
+            return attachments && attachments.length >= Number(question.settings.attachmentsrequired) ? 1 : 0;
         }
 
-        return (hasTextAnswer || question.displayoptions.responserequired == '0') &&
-                (attachments && attachments.length > Number(question.displayoptions.attachmentsrequired)) ? 1 : 0;
+        return (hasTextAnswer || question.settings.responserequired == '0') &&
+                (attachments && attachments.length > Number(question.settings.attachmentsrequired)) ? 1 : 0;
     }
 
     /**

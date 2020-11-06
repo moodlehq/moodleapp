@@ -1576,12 +1576,12 @@ export class AddonModQuizProvider {
         for (let i = 0; i < result.questions.length; i++) {
             const question = result.questions[i];
 
-            if (!question.displayoptions) {
-                // Site doesn't return displayoptions, stop.
+            if (!question.settings) {
+                // Site doesn't return settings, stop.
                 break;
             }
 
-            question.displayoptions = this.utils.objectToKeyValueMap(question.displayoptions, 'name', 'value');
+            question.settings = this.textUtils.parseJSON(question.settings, null);
         }
 
         return result;

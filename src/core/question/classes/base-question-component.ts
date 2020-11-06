@@ -107,8 +107,8 @@ export class CoreQuestionBaseComponent {
                 this.question.select = selectModel;
 
                 // Check which one should be displayed first: the select or the input.
-                if (this.question.displayoptions) {
-                    this.question.selectFirst = this.question.displayoptions.unitsleft == '1';
+                if (this.question.settings) {
+                    this.question.selectFirst = this.question.settings.unitsleft == '1';
                 } else {
                     const input = questionEl.querySelector('input[type="text"][name*=answer]');
                     this.question.selectFirst =
@@ -165,8 +165,8 @@ export class CoreQuestionBaseComponent {
             }
 
             // Check which one should be displayed first: the options or the input.
-            if (this.question.displayoptions) {
-                this.question.optionsFirst = this.question.displayoptions.unitsleft == '1';
+            if (this.question.settings) {
+                this.question.optionsFirst = this.question.settings.unitsleft == '1';
             } else {
                 const input = questionEl.querySelector('input[type="text"][name*=answer]');
                 this.question.optionsFirst =
@@ -216,11 +216,11 @@ export class CoreQuestionBaseComponent {
             const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
             const answerDraftIdInput = <HTMLInputElement> questionEl.querySelector('input[name*="_answer:itemid"]');
 
-            if (this.question.displayoptions) {
-                this.question.allowsAttachments = this.question.displayoptions.attachments != '0';
-                this.question.allowsAnswerFiles = this.question.displayoptions.responseformat == 'editorfilepicker';
-                this.question.isMonospaced = this.question.displayoptions.responseformat == 'monospaced';
-                this.question.isPlainText = this.question.isMonospaced || this.question.displayoptions.responseformat == 'plain';
+            if (this.question.settings) {
+                this.question.allowsAttachments = this.question.settings.attachments != '0';
+                this.question.allowsAnswerFiles = this.question.settings.responseformat == 'editorfilepicker';
+                this.question.isMonospaced = this.question.settings.responseformat == 'monospaced';
+                this.question.isPlainText = this.question.isMonospaced || this.question.settings.responseformat == 'plain';
             } else {
                 this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
                 this.question.allowsAnswerFiles = !!answerDraftIdInput;
@@ -282,8 +282,11 @@ export class CoreQuestionBaseComponent {
                     };
                 }
 
-                this.question.attachmentsMaxFiles = Number(this.question.displayoptions.attachments);
-                this.question.attachmentsAcceptedTypes = this.question.displayoptions.filetypeslist;
+                if (this.question.settings) {
+                    this.question.attachmentsMaxFiles = Number(this.question.settings.attachments);
+                    this.question.attachmentsAcceptedTypes = this.question.settings.filetypeslist &&
+                        this.question.settings.filetypeslist.join(',');
+                }
 
                 if (fileManagerUrl) {
                     const params = CoreUrlUtils.instance.extractUrlParams(fileManagerUrl);

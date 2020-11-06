@@ -56,14 +56,14 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
      * @return Whether units are in a separate field.
      */
     hasSeparateUnitField(question: any): boolean {
-        if (!question.displayoptions) {
+        if (!question.settings) {
             const element = this.domUtils.convertToElement(question.html);
 
             return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
         }
 
-        return question.displayoptions.showunits === AddonQtypeCalculatedHandler.UNITRADIO ||
-                question.displayoptions.showunits === AddonQtypeCalculatedHandler.UNITSELECT;
+        return question.settings.unitdisplay === AddonQtypeCalculatedHandler.UNITRADIO ||
+                question.settings.unitdisplay === AddonQtypeCalculatedHandler.UNITSELECT;
     }
 
     /**
@@ -85,7 +85,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
             return 0;
         }
 
-        if (!question.displayoptions) {
+        if (!question.settings) {
             if (this.hasSeparateUnitField(question)) {
                 return this.isValidValue(answers['unit']) ? 1 : 0;
             }
@@ -94,7 +94,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
             return -1;
         }
 
-        if (question.displayoptions.showunits != AddonQtypeCalculatedHandler.UNITINPUT && parsedAnswer.unit) {
+        if (question.settings.unitdisplay != AddonQtypeCalculatedHandler.UNITINPUT && parsedAnswer.unit) {
             // There should be no units or be outside of the input, not valid.
             return 0;
         }
@@ -104,8 +104,8 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
             return 0;
         }
 
-        if (question.displayoptions.showunits == AddonQtypeCalculatedHandler.UNITINPUT &&
-                question.displayoptions.unitgradingtype == AddonQtypeCalculatedHandler.UNITGRADED &&
+        if (question.settings.unitdisplay == AddonQtypeCalculatedHandler.UNITINPUT &&
+                question.settings.unitgradingtype == AddonQtypeCalculatedHandler.UNITGRADED &&
                 !this.isValidValue(parsedAnswer.unit)) {
             // Unit not supplied inside the input and it's required.
             return 0;
@@ -191,7 +191,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
         let unitsLeft = false;
         let match = null;
 
-        if (!question.displayoptions) {
+        if (!question.settings) {
             // We don't know if units should be before or after so we check both.
             match = answer.match(new RegExp('^' + regexString));
             if (!match) {
@@ -199,7 +199,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
                 match = answer.match(new RegExp(regexString + '$'));
             }
         } else {
-            unitsLeft = question.displayoptions.unitsleft == '1';
+            unitsLeft = question.settings.unitsleft == '1';
             regexString = unitsLeft ? regexString + '$' : '^' + regexString;
 
             match = answer.match(new RegExp(regexString));
