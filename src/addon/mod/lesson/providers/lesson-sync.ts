@@ -411,7 +411,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
                                 const params = this.urlUtils.extractUrlParams(response.data.reviewlesson.value);
                                 if (params && params.pageid) {
                                     // The retake can be reviewed, mark it as finished. Don't block the user for this.
-                                    this.setRetakeFinishedInSync(lessonId, retake.retake, params.pageid, siteId);
+                                    this.setRetakeFinishedInSync(lessonId, retake.retake, Number(params.pageid), siteId);
                                 }
                             }
                         }

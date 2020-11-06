@@ -39,8 +39,8 @@ import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/hel
 })
 export class CoreAttachmentsComponent implements OnInit {
     @Input() files: any[]; // List of attachments. New attachments will be added to this array.
-    @Input() maxSize: number; // Max size for attachments. If not defined, 0 or -1, unknown size.
-    @Input() maxSubmissions: number; // Max number of attachments. If -1 or not defined, unknown limit.
+    @Input() maxSize: number; // Max size for attachments. -1 means unlimited, not defined or 0 means unknown limit.
+    @Input() maxSubmissions: number; // Max number of attachments. -1 means unlimited, not defined means unknown limit.
     @Input() component: string; // Component the downloaded files will be linked to.
     @Input() componentId: string | number; // Component ID.
     @Input() allowOffline: boolean | string; // Whether to allow selecting files in offline.
@@ -61,17 +61,18 @@ export class CoreAttachmentsComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.maxSize = Number(this.maxSize); // Make sure it's defined and it's a number.
-        this.maxSize = !isNaN(this.maxSize) && this.maxSize > 0 ? this.maxSize : -1;
+        this.maxSize = Number(this.maxSize) || 0; // Make sure it's defined and it's a number.
 
-        if (this.maxSize == -1) {
+        if (this.maxSize === 0) {
             this.maxSizeReadable = this.translate.instant('core.unknown');
-        } else {
+        } else if (this.maxSize > 0) {
             this.maxSizeReadable = this.textUtils.bytesToSize(this.maxSize, 2);
+        } else {
+            this.maxSizeReadable = this.translate.instant('core.unlimited');
         }
 
         if (typeof this.maxSubmissions == 'undefined' || this.maxSubmissions < 0) {
-            this.maxSubmissionsReadable = this.translate.instant('core.unknown');
+            this.maxSubmissionsReadable = this.maxSubmissions < 0 ? undefined : this.translate.instant('core.unknown');
             this.unlimitedFiles = true;
         } else {
             this.maxSubmissionsReadable = String(this.maxSubmissions);

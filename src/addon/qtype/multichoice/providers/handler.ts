@@ -45,9 +45,11 @@ export class AddonQtypeMultichoiceHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         let isSingle = true,
             isMultiComplete = false;
 
@@ -95,10 +97,12 @@ export class AddonQtypeMultichoiceHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
-        return this.isCompleteResponse(question, answers);
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
+        return this.isCompleteResponse(question, answers, component, componentId);
     }
 
     /**
@@ -118,9 +122,11 @@ export class AddonQtypeMultichoiceHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         let isSingle = true,
             isMultiSame = true;
 
@@ -158,10 +164,13 @@ export class AddonQtypeMultichoiceHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Return a promise resolved when done if async, void if sync.
      */
-    prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
+    prepareAnswers(question: any, answers: any, offline: boolean, component: string, componentId: string | number, siteId?: string)
+            : void | Promise<any> {
         if (question && !question.multi && typeof answers[question.optionsName] != 'undefined' && !answers[question.optionsName]) {
             /* It's a single choice and the user hasn't answered. Delete the answer because
                sending an empty string (default value) will mark the first option as selected. */

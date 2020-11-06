@@ -215,6 +215,8 @@ export class AddonModQuizProvider {
             };
 
             return site.read('mod_quiz_get_attempt_data', params, preSets);
+        }).then((result) => {
+            return this.parseQuestions(result);
         });
     }
 
@@ -389,7 +391,9 @@ export class AddonModQuizProvider {
                 ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
-            return site.read('mod_quiz_get_attempt_review', params, preSets);
+            return site.read('mod_quiz_get_attempt_review', params, preSets).then((result) => {
+                return this.parseQuestions(result);
+            });
         });
     }
 
@@ -427,6 +431,8 @@ export class AddonModQuizProvider {
 
             return site.read('mod_quiz_get_attempt_summary', params, preSets).then((response) => {
                 if (response && response.questions) {
+                    response = this.parseQuestions(response);
+
                     if (options.loadLocal) {
                         return this.quizOfflineProvider.loadQuestionsLocalStates(attemptId, response.questions, site.getId());
                     }
@@ -1558,6 +1564,27 @@ export class AddonModQuizProvider {
 
         return this.logHelper.logSingle('mod_quiz_view_quiz', params, AddonModQuizProvider.COMPONENT, id, name, 'quiz', {},
                 siteId);
+    }
+
+    /**
+     * Parse questions of a WS response.
+     *
+     * @param result Result to parse.
+     * @return Parsed result.
+     */
+    parseQuestions(result: any): any {
+        for (let i = 0; i < result.questions.length; i++) {
+            const question = result.questions[i];
+
+            if (!question.settings) {
+                // Site doesn't return settings, stop.
+                break;
+            }
+
+            question.settings = this.textUtils.parseJSON(question.settings, null);
+        }
+
+        return result;
     }
 
     /**

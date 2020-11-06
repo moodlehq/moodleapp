@@ -569,7 +569,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
     // Prepare the answers to be sent for the attempt.
     protected prepareAnswers(): Promise<any> {
-        return this.questionHelper.prepareAnswers(this.questions, this.getAnswers(), this.offline);
+        return this.questionHelper.prepareAnswers(this.questions, this.getAnswers(), this.offline, this.component,
+                this.quiz.coursemodule);
     }
 
     /**
@@ -612,6 +613,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             if (this.formElement) {
                 this.domUtils.triggerFormSubmittedEvent(this.formElement, !this.offline, this.sitesProvider.getCurrentSiteId());
             }
+
+            return this.questionHelper.clearTmpData(this.questions, this.component, this.quiz.coursemodule);
         });
     }
 

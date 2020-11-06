@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { ModalController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { FileEntry } from '@ionic-native/file';
 import { MediaCapture, MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFileProvider } from '@providers/file';
@@ -25,9 +26,11 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreWSFileUploadOptions } from '@providers/ws';
+import { CoreWSFileUploadOptions, CoreWSExternalFile } from '@providers/ws';
 import { Subject } from 'rxjs';
 import { CoreApp } from '@providers/app';
+import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * File upload options.
@@ -96,12 +99,42 @@ export class CoreFileUploaderProvider {
         // Currently we are going to compare the order of the files as well.
         // This function can be improved comparing more fields or not comparing the order.
         for (let i = 0; i < a.length; i++) {
-            if ((a[i].name || a[i].filename) != (b[i].name || b[i].filename)) {
+            if (a[i].name != b[i].name || a[i].filename != b[i].filename) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Check if a certain site allows deleting draft files.
+     *
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if can delete.
+     * @since 3.10
+     */
+    async canDeleteDraftFiles(siteId?: string): Promise<boolean> {
+        try {
+            const site = await this.sitesProvider.getSite(siteId);
+
+            return this.canDeleteDraftFilesInSite(site);
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if a certain site allows deleting draft files.
+     *
+     * @param site Site. If not defined, use current site.
+     * @return Whether draft files can be deleted.
+     * @since 3.10
+     */
+    canDeleteDraftFilesInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.wsAvailable('core_files_delete_draft_files');
     }
 
     /**
@@ -174,6 +207,25 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Delete draft files.
+     *
+     * @param draftId Draft ID.
+     * @param files Files to delete.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async deleteDraftFiles(draftId: number, files: {filepath: string, filename: string}[], siteId?: string): Promise<void> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        const params = {
+            draftitemid: draftId,
+            files: files,
+        };
+
+        return site.write('core_files_delete_draft_files', params);
+    }
+
+    /**
      * Get the upload options for a file taken with the Camera Cordova plugin.
      *
      * @param uri File URI.
@@ -213,6 +265,35 @@ export class CoreFileUploaderProvider {
         }
 
         return options;
+    }
+
+    /**
+     * Given a list of original files and a list of current files, return the list of files to delete.
+     *
+     * @param originalFiles Original files.
+     * @param currentFiles Current files.
+     * @return List of files to delete.
+     */
+    getFilesToDelete(originalFiles: CoreWSExternalFile[], currentFiles: (CoreWSExternalFile | FileEntry)[])
+            : {filepath: string, filename: string}[] {
+
+        const filesToDelete: {filepath: string, filename: string}[] = [];
+        currentFiles = currentFiles || [];
+
+        originalFiles.forEach((file) => {
+            const stillInList = currentFiles.some((currentFile) => {
+                return (<CoreWSExternalFile> currentFile).fileurl == file.fileurl;
+            });
+
+            if (!stillInList) {
+                filesToDelete.push({
+                    filepath: file.filepath,
+                    filename: file.filename,
+                });
+            }
+        });
+
+        return filesToDelete;
     }
 
     /**
@@ -535,6 +616,47 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Given a list of files (either online files or local files), upload the local files to the draft area.
+     * Local files are not deleted from the device after upload.
+     *
+     * @param itemId Draft ID.
+     * @param files List of files.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the itemId.
+     */
+    async uploadFiles(itemId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<void> {
+        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+
+        if (!files || !files.length) {
+            return;
+        }
+
+        // Index the online files by name.
+        const usedNames: {[name: string]: (CoreWSExternalFile | FileEntry)} = {};
+        const filesToUpload: FileEntry[] = [];
+        files.forEach((file) => {
+            const isOnlineFile = (<CoreWSExternalFile> file).filename && !(<FileEntry> file).name;
+
+            if (isOnlineFile) {
+                usedNames[(<CoreWSExternalFile> file).filename.toLowerCase()] = file;
+            } else {
+                filesToUpload.push(<FileEntry> file);
+            }
+        });
+
+        await Promise.all(filesToUpload.map(async (file) => {
+            // Make sure the file name is unique in the area.
+            const name = this.fileProvider.calculateUniqueName(usedNames, file.name);
+            usedNames[name] = file;
+
+            // Now upload the file.
+            const options = this.getFileUploadOptions(file.toURL(), name, undefined, false, 'draft', itemId);
+
+            await this.uploadFile(file.toURL(), options, undefined, siteId);
+        }));
+    }
+
+    /**
      * Upload a file to a draft area and return the draft ID.
      *
      * If the file is an online file it will be downloaded and then re-uploaded.
@@ -615,3 +737,5 @@ export class CoreFileUploaderProvider {
         });
     }
 }
+
+export class CoreFileUploader extends makeSingleton(CoreFileUploaderProvider) {}

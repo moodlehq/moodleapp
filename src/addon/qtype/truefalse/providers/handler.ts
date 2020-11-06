@@ -46,9 +46,11 @@ export class AddonQtypeTrueFalseHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         return answers['answer'] ? 1 : 0;
     }
 
@@ -67,10 +69,12 @@ export class AddonQtypeTrueFalseHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
-        return this.isCompleteResponse(question, answers);
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
+        return this.isCompleteResponse(question, answers, null, null);
     }
 
     /**
@@ -79,9 +83,11 @@ export class AddonQtypeTrueFalseHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         return this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
@@ -91,10 +97,13 @@ export class AddonQtypeTrueFalseHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Return a promise resolved when done if async, void if sync.
      */
-    prepareAnswers(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any> {
+    prepareAnswers(question: any, answers: any, offline: boolean, component: string, componentId: string | number, siteId?: string)
+            : void | Promise<any> {
         if (question && typeof answers[question.optionsName] != 'undefined' && !answers[question.optionsName]) {
             // The user hasn't answered. Delete the answer to prevent marking one of the answers automatically.
             delete answers[question.optionsName];

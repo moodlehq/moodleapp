@@ -40,13 +40,14 @@ export class AddonQbehaviourDeferredCBMHandler implements CoreQuestionBehaviourH
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return New state (or promise resolved with state).
      */
-    determineNewState(component: string, attemptId: number, question: any, siteId?: string)
+    determineNewState(component: string, attemptId: number, question: any, componentId: string | number, siteId?: string)
             : CoreQuestionState | Promise<CoreQuestionState> {
         // Depends on deferredfeedback.
-        return this.deferredFeedbackHandler.determineNewStateDeferred(component, attemptId, question, siteId,
+        return this.deferredFeedbackHandler.determineNewStateDeferred(component, attemptId, question, componentId, siteId,
             this.isCompleteResponse.bind(this), this.isSameResponse.bind(this));
     }
 
@@ -71,11 +72,13 @@ export class AddonQbehaviourDeferredCBMHandler implements CoreQuestionBehaviourH
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    protected isCompleteResponse(question: any, answers: any): number {
+    protected isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         // First check if the question answer is complete.
-        const complete = this.questionDelegate.isCompleteResponse(question, answers);
+        const complete = this.questionDelegate.isCompleteResponse(question, answers, component, componentId);
         if (complete > 0) {
             // Answer is complete, check the user answered CBM too.
             return answers['-certainty'] ? 1 : 0;
@@ -101,12 +104,14 @@ export class AddonQbehaviourDeferredCBMHandler implements CoreQuestionBehaviourH
      * @param prevBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
      * @param newAnswers Object with the new question answers.
      * @param newBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return Whether they're the same.
      */
-    protected isSameResponse(question: any, prevAnswers: any, prevBasicAnswers: any, newAnswers: any, newBasicAnswers: any)
-            : boolean {
+    protected isSameResponse(question: any, prevAnswers: any, prevBasicAnswers: any, newAnswers: any, newBasicAnswers: any,
+            component: string, componentId: string | number): boolean {
         // First check if the question answer is the same.
-        const same = this.questionDelegate.isSameResponse(question, prevBasicAnswers, newBasicAnswers);
+        const same = this.questionDelegate.isSameResponse(question, prevBasicAnswers, newBasicAnswers, component, componentId);
         if (same) {
             // Same response, check the CBM is the same too.
             return prevAnswers['-certainty'] == newAnswers['-certainty'];

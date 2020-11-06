@@ -19,6 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { makeSingleton } from '@singletons/core.singletons';
 import { CoreApp } from '../app';
+import { CoreWSExternalFile } from '../ws';
 
 /**
  * Different type of errors the app can treat.
@@ -700,6 +701,60 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Replace draftfile URLs with the equivalent pluginfile URL.
+     *
+     * @param siteUrl URL of the site.
+     * @param text Text to treat, including draftfile URLs.
+     * @param files List of files of the area, using pluginfile URLs.
+     * @return Treated text and map with the replacements.
+     */
+    replaceDraftfileUrls(siteUrl: string, text: string, files: CoreWSExternalFile[])
+            : {text: string, replaceMap?: {[url: string]: string}} {
+
+        if (!text || !files || !files.length) {
+            return {text};
+        }
+
+        const draftfileUrl = this.concatenatePaths(siteUrl, 'draftfile.php');
+        const matches = text.match(new RegExp(this.escapeForRegex(draftfileUrl) + '[^\'" ]+', 'ig'));
+
+        if (!matches || !matches.length) {
+            return {text};
+        }
+
+        // Index the pluginfile URLs by file name.
+        const pluginfileMap: {[name: string]: string} = {};
+        files.forEach((file) => {
+            pluginfileMap[file.filename] = file.fileurl;
+        });
+
+        // Replace each draftfile with the corresponding pluginfile URL.
+        const replaceMap: {[url: string]: string} = {};
+        matches.forEach((url) => {
+            if (replaceMap[url]) {
+                // URL already treated, same file embedded more than once.
+                return;
+            }
+
+            // Get the filename from the URL.
+            let filename = url.substr(url.lastIndexOf('/') + 1);
+            if (filename.indexOf('?') != -1) {
+                filename = filename.substr(0, filename.indexOf('?'));
+            }
+
+            if (pluginfileMap[filename]) {
+                replaceMap[url] = pluginfileMap[filename];
+                text = text.replace(new RegExp(this.escapeForRegex(url), 'g'), pluginfileMap[filename]);
+            }
+        });
+
+        return {
+            text,
+            replaceMap,
+        };
+    }
+
+    /**
      * Replace @@PLUGINFILE@@ wildcards with the real URL in a text.
      *
      * @param Text to treat.
@@ -715,6 +770,36 @@ export class CoreTextUtilsProvider {
         }
 
         return text;
+    }
+
+    /**
+     * Restore original draftfile URLs.
+     *
+     * @param text Text to treat, including pluginfile URLs.
+     * @param replaceMap Map of the replacements that were done.
+     * @return Treated text.
+     */
+    restoreDraftfileUrls(siteUrl: string, treatedText: string, originalText: string, files: CoreWSExternalFile[]): string {
+        if (!treatedText || !files || !files.length) {
+            return treatedText;
+        }
+
+        const draftfileUrl = this.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrlRegexPrefix = this.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
+
+        files.forEach((file) => {
+            // Search the draftfile URL in the original text.
+            const matches = originalText.match(new RegExp(
+                    draftfileUrlRegexPrefix + this.escapeForRegex(file.filename) + '[^\'" ]*', 'i'));
+
+            if (!matches || !matches[0]) {
+                return; // Original URL not found, skip.
+            }
+
+            treatedText = treatedText.replace(new RegExp(this.escapeForRegex(file.fileurl), 'g'), matches[0]);
+        });
+
+        return treatedText;
     }
 
     /**

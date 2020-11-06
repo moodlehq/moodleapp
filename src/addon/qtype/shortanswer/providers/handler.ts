@@ -45,9 +45,11 @@ export class AddonQtypeShortAnswerHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         return (answers['answer'] || answers['answer'] === 0) ? 1 : 0;
     }
 
@@ -66,10 +68,12 @@ export class AddonQtypeShortAnswerHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
-        return this.isCompleteResponse(question, answers);
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
+        return this.isCompleteResponse(question, answers, null, null);
     }
 
     /**
@@ -78,9 +82,11 @@ export class AddonQtypeShortAnswerHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         return this.utils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 }

@@ -342,8 +342,8 @@ export class AddonModQuizOfflineProvider {
         for (const slot in questionsWithAnswers) {
             const question = questionsWithAnswers[slot];
 
-            promises.push(this.behaviourDelegate.determineNewState(
-                        quiz.preferredbehaviour, AddonModQuizProvider.COMPONENT, attempt.id, question, siteId).then((state) => {
+            promises.push(this.behaviourDelegate.determineNewState(quiz.preferredbehaviour, AddonModQuizProvider.COMPONENT,
+                    attempt.id, question, quiz.coursemodule, siteId).then((state) => {
                 // Check if state has changed.
                 if (state && state.name != question.state) {
                     newStates[question.slot] = state.name;
