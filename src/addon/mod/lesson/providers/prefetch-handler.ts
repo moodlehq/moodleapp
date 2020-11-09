@@ -361,6 +361,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                         // Get the page data. We don't pass accessInfo because we don't need to calculate the offline data.
                         subPromises.push(this.lessonProvider.getPageData(lesson, data.page.id, {
                             includeContents: true,
+                            includeOfflineData: false,
                             ...passwordOptions, // Include all options.
                         }).then((pageData) => {
 

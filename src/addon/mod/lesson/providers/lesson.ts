@@ -1591,6 +1591,7 @@ export class AddonModLessonProvider {
             includeContents: true,
             ...options, // Include all options.
             readingStrategy: options.readingStrategy || CoreSitesReadingStrategy.PreferCache,
+            includeOfflineData: false,
         }).then((data) => {
             return data.answers;
         });
@@ -1660,7 +1661,7 @@ export class AddonModLessonProvider {
             }
 
             return site.read('mod_lesson_get_page_data', params, preSets).then((data) => {
-                if (preSets.omitExpires && options.accessInfo && data.page) {
+                if (preSets.omitExpires && options.includeOfflineData && data.page) {
                     // Offline mode and valid page. Calculate the data that might be affected.
                     return this.calculateOfflineData(lesson, options).then((calcData) => {
                         Object.assign(data, calcData);
@@ -2833,14 +2834,16 @@ export class AddonModLessonProvider {
                     attemptSet[attempt.pageid].push(attempt);
                 });
 
-                // Drop all attempts that go beyond max attempts for the lesson.
-                for (const pageId in attemptSet) {
-                    // Sort the list by time in ascending order.
-                    const attempts = attemptSet[pageId].sort((a, b) => {
-                        return (a.timeseen || a.timemodified) - (b.timeseen || b.timemodified);
-                    });
+                if (lesson.maxattempts > 0) {
+                    // Drop all attempts that go beyond max attempts for the lesson.
+                    for (const pageId in attemptSet) {
+                        // Sort the list by time in ascending order.
+                        const attempts = attemptSet[pageId].sort((a, b) => {
+                            return (a.timeseen || a.timemodified) - (b.timeseen || b.timemodified);
+                        });
 
-                    attemptSet[pageId] = attempts.slice(0, lesson.maxattempts);
+                        attemptSet[pageId] = attempts.slice(0, lesson.maxattempts);
+                    }
                 }
 
                 // Get all the answers from the pages the user answered.
@@ -3113,7 +3116,7 @@ export class AddonModLessonProvider {
                     nAttempts = attempts.online.length + attempts.offline.length;
 
                     // Check if they have reached (or exceeded) the maximum number of attempts allowed.
-                    if (nAttempts >= lesson.maxattempts) {
+                    if (lesson.maxattempts > 0 && nAttempts >= lesson.maxattempts) {
                         result.maxattemptsreached = true;
                         result.feedback = this.translate.instant('addon.mod_lesson.maximumnumberofattemptsreached');
                         result.newpageid = AddonModLessonProvider.LESSON_NEXTPAGE;
@@ -3139,12 +3142,12 @@ export class AddonModLessonProvider {
                     // Check if "number of attempts remaining" message is needed.
                     if (!result.correctanswer && !result.newpageid) {
                         // Retreive the number of attempts left counter.
-                        if (nAttempts >= lesson.maxattempts) {
+                        if (lesson.maxattempts > 0 && nAttempts >= lesson.maxattempts) {
                             if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt.
                                 result.maxattemptsreached = true;
                             }
                             result.newpageid =  AddonModLessonProvider.LESSON_NEXTPAGE;
-                        } else if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt
+                        } else if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt or unlimited.
                             result.attemptsremaining = lesson.maxattempts - nAttempts;
                         }
                     }
@@ -3395,6 +3398,7 @@ export type AddonModLessonCalculateOfflineDataOptions = AddonModLessonCalculateP
  */
 export type AddonModLessonGetPageDataOptions = AddonModLessonPwdReviewOptions & {
     includeContents?: boolean; // Include the page rendered contents.
+    includeOfflineData?: boolean; // Whether to include calculated offline data. Only when ignoring cache.
     accessInfo?: any; // Result of get access info. Required if offline is true.
     jumps?: any; // Result of get pages possible jumps. Required if offline is true.
 };

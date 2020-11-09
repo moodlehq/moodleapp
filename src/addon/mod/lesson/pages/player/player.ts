@@ -528,11 +528,12 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy {
         const options = {
             password: this.password,
             review: this.review,
-            inludeContents: true,
+            includeContents: true,
             cmId: this.lesson.coursemodule,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
             accessInfo: this.accessInfo,
             jumps: this.jumps,
+            includeOfflineData: true,
         };
         const args = [this.lesson, pageId, options];
 
