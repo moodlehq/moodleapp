@@ -16,7 +16,7 @@ import { Component, Input, Output, OnInit, OnDestroy, EventEmitter } from '@angu
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
-import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
+import { CorePluginFileDelegate } from '@services/plugin-file.delegate';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';

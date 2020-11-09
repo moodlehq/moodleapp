@@ -37,7 +37,7 @@ import { CoreGroupsProvider } from '@services/groups';
 import { CoreInitDelegate, CoreInit } from '@services/init';
 import { CoreLangProvider } from '@services/lang';
 import { CoreLocalNotificationsProvider } from '@services/local-notifications';
-import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
+import { CorePluginFileDelegate } from '@services/plugin-file.delegate';
 import { CoreSitesProvider, CoreSites } from '@services/sites';
 import { CoreSyncProvider } from '@services/sync';
 import { CoreUpdateManagerProvider, CoreUpdateManager } from '@services/update-manager';

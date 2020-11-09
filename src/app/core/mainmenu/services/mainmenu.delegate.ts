@@ -19,14 +19,14 @@ import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/dele
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
 
 /**
- * Interface that all home handlers must implement.
+ * Interface that all main menu handlers must implement.
  */
-export type CoreHomeHandler = CoreDelegateDisplayHandler<CoreHomeHandlerToDisplay>;
+export type CoreMainMenuHandler = CoreDelegateDisplayHandler<CoreMainMenuHandlerToDisplay>;
 
 /**
  * Data needed to render a main menu handler. It's returned by the handler.
  */
-export interface CoreHomeHandlerData {
+export interface CoreMainMenuHandlerData {
     /**
      * Name of the page to load for the handler.
      */
@@ -38,19 +38,14 @@ export interface CoreHomeHandlerData {
     title: string;
 
     /**
+     * Name of the icon to display for the handler.
+     */
+    icon: string; // Name of the icon to display in the tab.
+
+    /**
      * Class to add to the displayed handler.
      */
     class?: string;
-
-    /**
-     * If true, the badge number is being loaded. Only used if showBadge is true.
-     */
-    loading?: boolean;
-
-    /**
-     * Params to pass to the page.
-     */
-    pageParams?: Params;
 
     /**
      * If the handler has badge to show or not.
@@ -63,19 +58,29 @@ export interface CoreHomeHandlerData {
     badge?: string;
 
     /**
-     * Name of the icon to display for the handler.
+     * If true, the badge number is being loaded. Only used if showBadge is true.
      */
-    icon?: string; // Name of the icon to display in the tab.
+    loading?: boolean;
+
+    /**
+     * Params to pass to the page.
+     */
+    pageParams?: Params;
+
+    /**
+     * Whether the handler should only appear in More menu.
+     */
+    onlyInMore?: boolean;
 }
 
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreHomeHandlerData {
+export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, CoreMainMenuHandlerData {
     /**
-     * Priority to select handler.
+     * Hide tab. Used then resizing.
      */
-    selectPriority?: number;
+    hide?: boolean;
 }
 
 /**
@@ -85,12 +90,12 @@ export interface CoreHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreHom
 @Injectable({
     providedIn: 'root',
 })
-export class CoreHomeDelegate extends CoreSortedDelegate<CoreHomeHandlerToDisplay, CoreHomeHandler> {
+export class CoreMainMenuDelegate extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
 
-    protected featurePrefix = 'CoreHomeDelegate_';
+    protected featurePrefix = 'CoreMainMenuDelegate_';
 
     constructor() {
-        super('CoreHomeDelegate');
+        super('CoreMainMenuDelegate');
     }
 
 }

@@ -19,7 +19,7 @@ import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@core/constants';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './delegate';
+import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu.delegate';
 import { makeSingleton } from '@singletons/core.singletons';
 
 /**
@@ -47,7 +47,7 @@ export class CoreMainMenuProvider {
     getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
         const deferred = CoreUtils.instance.promiseDefer<CoreMainMenuHandlerToDisplay[]>();
 
-        const subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+        const subscription = this.menuDelegate.getHandlersObservable().subscribe((handlers) => {
             subscription?.unsubscribe();
 
             // Remove the handlers that should only appear in the More menu.
