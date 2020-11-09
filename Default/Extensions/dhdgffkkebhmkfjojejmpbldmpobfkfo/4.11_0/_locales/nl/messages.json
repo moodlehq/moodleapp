@@ -1,0 +1,1615 @@
+{
+   "0count0_changes_exported": {
+      "message": "$count$ wijzigingen geëxporteerd",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_changes_imported": {
+      "message": "$count$ wijzigingen geïmporteerd",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_errors_or_hints_were_found_": {
+      "message": "$count$ fouten of hints zijn gevonden.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ is beschikbaar.\nHerstart de browser om het bijwerken te starten!",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "1": {
+      "message": "1"
+   },
+   "10": {
+      "message": "10"
+   },
+   "11": {
+      "message": "11"
+   },
+   "15_Seconds": {
+      "message": "15 seconden"
+   },
+   "1_Hour": {
+      "message": "1 uur"
+   },
+   "1_Minute": {
+      "message": "1 minuut"
+   },
+   "2": {
+      "message": "2"
+   },
+   "3": {
+      "message": "3"
+   },
+   "30_Seconds": {
+      "message": "30 seconden"
+   },
+   "4": {
+      "message": "4"
+   },
+   "5": {
+      "message": "5"
+   },
+   "5_Minutes": {
+      "message": "5 minuten"
+   },
+   "6": {
+      "message": "6"
+   },
+   "7": {
+      "message": "7"
+   },
+   "8": {
+      "message": "8"
+   },
+   "9": {
+      "message": "9"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "Een hercontrole van de GreaseMonkey/FF-compitabiliteitsopties kunnen nodig zijn om dit script uit te voeren."
+   },
+   "A_reload_is_required": {
+      "message": "Een herlading is nodig: \nAlle niet-opgeslagen wijzigingen zullen verloren gaan!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "Een verzoek om toegang tot een bron van kruislingse herkomst is niets vreemds.\nU hoeft alleen maar te controleren of dit script een goede reden heeft om toegang te krijgen tot dit domein.\nZo zijn er erg weinig redenen voor een script om toegang te krijgen tot uw bank.\n\nMerkop dat auteurs deze melding kunnen ontwijken door [url=$connect$]@connect tags[/url] toe te voegen aan hun scripts.\n\nHet maakt niet uit wat u kiest, u kunt uw mening altijd veranderen bij het [url=$settings$]instellingentabblad[/url].",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "Een UserScript wil toegang tot een bron van kruislingse herkomst."
+   },
+   "Action": {
+      "message": "Actie"
+   },
+   "Action_Menu": {
+      "message": "Actiemenu"
+   },
+   "Actions": {
+      "message": "Acties"
+   },
+   "Add": {
+      "message": "Toevoegen"
+   },
+   "Add_Selection_Above": {
+      "message": "Boven aan selectie toevoegen"
+   },
+   "Add_Selection_Below": {
+      "message": "Onder aan selectoe toevoegen"
+   },
+   "Add_TM_to_CSP": {
+      "message": "Tampermonkey toevoegen aan de content security policy (CSP) van deze site toevoegen als er een is"
+   },
+   "Add_as_0clude0": {
+      "message": "Toevoegen als $clude$",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "Een nieuw script maken..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "Compitabiliteitsfuncties toevoegen aan Object en Array"
+   },
+   "Advanced": {
+      "message": "Geavanceerd"
+   },
+   "All_local_files": {
+      "message": "Alle lokale bestanden"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "Alle wijzigingen worden alleen bewaard totdat deze incognito-sessie wordt gesloten!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "Alle scriptinstellingen zullen worden gereset!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Sta Tampermonkey toe om met Google Analytics anonieme statistieken te verzamelen. Dit helpt me bij het verbeteren van Tampermonkey en om te bepalen op welke voorwaarden ik het ontwikkelen moet concentreren. U kunt het rustig uitschakelen als u dit niet wilt."
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "Communicatie met samenwerkende pagina's toestaan"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "HTTP-headers toestaan om gewijzigd te worden door scripts"
+   },
+   "Allow_once": {
+      "message": "Een keer toestaan"
+   },
+   "Always": {
+      "message": "Altijd"
+   },
+   "Always_allow": {
+      "message": "Altijd toestaan"
+   },
+   "Always_allow_all_domains": {
+      "message": "Altijd op alle domeinen toestaan"
+   },
+   "Always_allow_domain": {
+      "message": "Altijd toestaan op dit domein"
+   },
+   "Always_ask": {
+      "message": "Altijd vragen"
+   },
+   "Always_forbid": {
+      "message": "Altijd weigeren"
+   },
+   "Always_forbid_domain": {
+      "message": "Altijd weigeren op dit domein"
+   },
+   "An_error_occured_during_import_": {
+      "message": "Er is een fout opgetreden tijdens het importeren."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "Er is een interne fout opgetreden. Als dit probleem er nog steeds is na het herstarten van de browser, klik dan op OK en rapporteer dit probleem op het forum.\n\nWIlt u het Tampermonkey-forum bezoeken?"
+   },
+   "Anonymous_statistics": {
+      "message": "Anonieme statistieken"
+   },
+   "Appearance": {
+      "message": "Uiterlijk"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "Pas compitabiliteitsopties toe om ook gebruik te maken van @require"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "Dit toepassen op alle geselecteerde scripts"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "Wanneer Tampermonkey wordt herstart door uw browser wordt het ook herstart. Helaas kan dit op dat moment uitgevoerde scripts breken!\n\nDus weet u zeker dat u geen meldingen wilt krijgen over updates?"
+   },
+   "Ask_if_unknown": {
+      "message": "Vragen indien onbekend"
+   },
+   "At_least_one_new_connect_statement_was_added_": {
+      "message": "Minstens één nieuwe @connect-verklaring is toegevoegd."
+   },
+   "At_least_one_of_the_include_match_or_exclude_statements_was_changed_": {
+      "message": "Minstens één van de @include-, @match- of @exclude-verklaringen zijn gewijzigd."
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "Minstens een deel van deze pagina is in de verboden pagina's-instelling!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": "Let op: De exclude-lijst is ingekort.\nControleer hem alstub,ieft handmatig!"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": "Let op: de include-lijst is ingekort.\nControleer hem alstublieft handmatig!"
+   },
+   "Author": {
+      "message": "Auteur"
+   },
+   "Auto": {
+      "message": "Automatisch"
+   },
+   "Auto_Indent_all": {
+      "message": "Alles automatisch inspringen"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "Pagina's automatisch herladen"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "Herlaad pagina's als een script aan of uit is gezet"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "Maximale lengte voor de automatische syntaxiscontrole"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "Automatische syntaxiscontrole tijdens het typen"
+   },
+   "Automatically_added_user_includes_for_compatibility_reasons_": {
+      "message": "Een aantal gebruikersincludes zijn automatisch toegevoegd om compitabiliteitsredenen."
+   },
+   "Beginner": {
+      "message": "Beginner"
+   },
+   "BlackCheck": {
+      "message": "BlackCheck"
+   },
+   "Blacklist": {
+      "message": "Blacklist"
+   },
+   "Blacklist_Severity": {
+      "message": "Blokkereren vanaf strengheidsniveau"
+   },
+   "Blacklisted_Pages": {
+      "message": "Geblackliste pagina's"
+   },
+   "Bookmarks": {
+      "message": "Bladwijzers"
+   },
+   "Both": {
+      "message": "Beide"
+   },
+   "Browser_API": {
+      "message": "Browser-API"
+   },
+   "Browser_API_Downloads": {
+      "message": "Browser-API Downloads"
+   },
+   "Browser_Sync": {
+      "message": "Browsersynchronisatie"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "CONFLICT:\nDit script is $t$ seconde(n) geleden door een ander tabblad bewerkt!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "Annuleren"
+   },
+   "Casual": {
+      "message": "Informeel"
+   },
+   "Center_Cursor": {
+      "message": "Aanwijzer centreren"
+   },
+   "Changelog": {
+      "message": "Changelog"
+   },
+   "Changes": {
+      "message": "Wijzigingen"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "Verandert het aantal zichtbare configuratieopties"
+   },
+   "Check_disabled_scripts": {
+      "message": "Uitgeschakelde scripts bijwerken"
+   },
+   "Check_for_Updates": {
+      "message": "Controleer op updates"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "Op updates voor UserScripts controleren"
+   },
+   "Check_interval": {
+      "message": "Controle-interval"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "Controleer alleen scripts tot deze grootte automatisch."
+   },
+   "Classic": {
+      "message": "Klassiek"
+   },
+   "Clear_All": {
+      "message": "Alles verwijderen"
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "Klik op OK om Tampermonkey toe te staan om downloads meteen te starten."
+   },
+   "Click_here_to_install_it_": {
+      "message": "Klik hier om het te installeren."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "Klik hier om dit script te verplaatsen"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "Klik hier om de recente wijzigingen te bekijken"
+   },
+   "Close": {
+      "message": "Sluiten"
+   },
+   "Closing_Bracket": {
+      "message": "Sluitend haakje"
+   },
+   "Cloud": {
+      "message": "Cloud"
+   },
+   "Columns": {
+      "message": "Kolommen"
+   },
+   "Comment": {
+      "message": "Opmerking"
+   },
+   "Config_Mode": {
+      "message": "Configuratiemodus"
+   },
+   "Convert_Array_Assignements": {
+      "message": "'[blub, bla] = s.split(':')'-opdrachten vervangen"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "CDATA-secties naar een browsergeschikt formaat omzetten"
+   },
+   "Copy": {
+      "message": "Kopiëren"
+   },
+   "Current_Version": {
+      "message": "Huidige versie"
+   },
+   "Custom_CSS": {
+      "message": "Aangepaste CSS"
+   },
+   "Custom_Linter_Config": {
+      "message": "Aangepaste Linter-configuratie"
+   },
+   "Cut": {
+      "message": "Knippen"
+   },
+   "Dashboard": {
+      "message": "Dashboard"
+   },
+   "Debug": {
+      "message": "Debuggen"
+   },
+   "Debug_scripts": {
+      "message": "Scripts debuggen"
+   },
+   "Default": {
+      "message": "Standaard"
+   },
+   "Default_Dark": {
+      "message": "Standaard - Donker"
+   },
+   "Delete": {
+      "message": "Verwijderen"
+   },
+   "Delete_Line": {
+      "message": "Regel verwijderen"
+   },
+   "Delete_Line_Left": {
+      "message": "Regel links verwijder"
+   },
+   "Delete_Line_Right": {
+      "message": "Regel rechts verwijderen"
+   },
+   "Delete_to_Next_Word_Boundary": {
+      "message": "Verwijderen tot volgende woordgrens"
+   },
+   "Delete_to_Previous_Word_Boundary": {
+      "message": "Verwijderen tot vorige woordgrens"
+   },
+   "Delete_to_Sublime_Mark": {
+      "message": "Verwijderen naar subliem merk"
+   },
+   "Description": {
+      "message": "Beschrijving"
+   },
+   "Destination_URL": {
+      "message": "Bestemmings-URL"
+   },
+   "Destination_domain": {
+      "message": "Domein van de bestemming"
+   },
+   "Details": {
+      "message": "Details"
+   },
+   "Developer": {
+      "message": "Ontwikkelaar"
+   },
+   "Disable": {
+      "message": "Uitschakelen"
+   },
+   "Disabled": {
+      "message": "Uitgeschakeld"
+   },
+   "Disabled_scripts": {
+      "message": "Uitgeschakelde scripts"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "De optie '$option$' is ingeschakeld!\n\nWilt u echt de opgeloste broncode opslaan?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Document_End": {
+      "message": "Documenteinde"
+   },
+   "Document_Start": {
+      "message": "Documentstart"
+   },
+   "Dont_ask_again": {
+      "message": "Niet weer vragen"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "Vraag me niet voor simpele script-updates"
+   },
+   "Downgrade": {
+      "message": "Downgraden"
+   },
+   "Download_Mode": {
+      "message": "Downloadmodus"
+   },
+   "Downloaded_from_0url0": {
+      "message": "Gedownload van: $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "Downloads"
+   },
+   "DuckDuckGo": {
+      "message": "DuckDuckGo"
+   },
+   "Duplicate_Lines": {
+      "message": "Regels dupliceren"
+   },
+   "Edit": {
+      "message": "Bewerken"
+   },
+   "Editor": {
+      "message": "Editor"
+   },
+   "Editor_reset": {
+      "message": "Editor-reset"
+   },
+   "Emacs": {
+      "message": "Emacs"
+   },
+   "Enable": {
+      "message": "Inschakelen"
+   },
+   "Enable_Editor": {
+      "message": "Geavanceerde editor inschakelen"
+   },
+   "Enable_Script_Sync": {
+      "message": "Scriptsynchronisatie inschakelen"
+   },
+   "Enable_autoSave": {
+      "message": "Inhoud opslaan wanneer de editor gesloten wordt"
+   },
+   "Enable_easySave": {
+      "message": "Geen confirmatie weergeven bij sluiten"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "Schakel deze optie in om de code automatisch te controleren tijdens het typen."
+   },
+   "Enabled": {
+      "message": "Ingeschakeld"
+   },
+   "Enforce": {
+      "message": "Forceren"
+   },
+   "Enter_the_new_rule": {
+      "message": "Voer de nieuwe regel in"
+   },
+   "Error": {
+      "message": "Fout"
+   },
+   "Every_12_Hour": {
+      "message": "Iedere 12 uur"
+   },
+   "Every_6_Hours": {
+      "message": "Iedere 6 uur"
+   },
+   "Every_Day": {
+      "message": "Dagelijks"
+   },
+   "Every_Hour": {
+      "message": "Uurlijks"
+   },
+   "Every_Month": {
+      "message": "Maandelijks"
+   },
+   "Every_Week": {
+      "message": "Wekelijks"
+   },
+   "Exclude_0domain0": {
+      "message": "$domain$ uitsluiten",
+      "placeholders": {
+         "domain": {
+            "content": "$1"
+         }
+      }
+   },
+   "Exclude_s__": {
+      "message": "Exclude(s)"
+   },
+   "Experimental": {
+      "message": "Experimenteel"
+   },
+   "Export": {
+      "message": "Exporteren"
+   },
+   "Externals": {
+      "message": "Externen"
+   },
+   "Factory_Reset": {
+      "message": "Fabrieksreset"
+   },
+   "Fast": {
+      "message": "Snel"
+   },
+   "Favicon_Service": {
+      "message": "Favicon-dienst"
+   },
+   "Features": {
+      "message": "Functionaliteiten"
+   },
+   "File": {
+      "message": "Bestand"
+   },
+   "Filter_by": {
+      "message": "Filteren op"
+   },
+   "Find": {
+      "message": "Zoeken"
+   },
+   "Find_All_Under": {
+      "message": "Zoeken onder alles"
+   },
+   "Find_Next": {
+      "message": "Volgende zoeken"
+   },
+   "Find_Previous": {
+      "message": "Vorige zoeken"
+   },
+   "Find_Under": {
+      "message": "Zoeken onder"
+   },
+   "Find_Under_Previous": {
+      "message": "Zoeken onder vorige"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "'for (var j in x)'-opdrachten oplossen"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "Toegang tot wrappedJSObject-eigenschappen oplossen"
+   },
+   "Focus_tab": {
+      "message": "Focus op het bron-tabblad"
+   },
+   "Fold": {
+      "message": "Invouwen"
+   },
+   "Fold_All": {
+      "message": "Alles invouwen"
+   },
+   "Folding": {
+      "message": "Vouwen"
+   },
+   "Font_Size": {
+      "message": "Lettergrootte"
+   },
+   "Forbid_once": {
+      "message": "Een keer weigeren"
+   },
+   "Full_reset": {
+      "message": "Fabrieksreset"
+   },
+   "GM_compat_options_": {
+      "message": "GreaseMonkey/FF-compitabiliteitsopties"
+   },
+   "General": {
+      "message": "Algemeen"
+   },
+   "Get_new_scripts___": {
+      "message": "Nieuwe scripts zoeken..."
+   },
+   "Get_some_scripts___": {
+      "message": "Krijg wat scripts..."
+   },
+   "Global_Settings": {
+      "message": "Globale instellingen"
+   },
+   "Global_settings_import": {
+      "message": "Globale intestellingen import"
+   },
+   "GoTo": {
+      "message": "GaNaar"
+   },
+   "Google": {
+      "message": "Google"
+   },
+   "Group_Left": {
+      "message": "Groeps Links"
+   },
+   "Group_Right": {
+      "message": "Groep Rechts"
+   },
+   "Help": {
+      "message": "Help"
+   },
+   "Hide_disabled_scripts": {
+      "message": "Uitgeschakelde scripts verbergen"
+   },
+   "Hide_notification_after": {
+      "message": "Melding verbergen na"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "Achterlopende witruimte markeren"
+   },
+   "Homepage": {
+      "message": "Homepagina"
+   },
+   "I_contributed_already": {
+      "message": "Ik heb al gedoneerd"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "Ik wil niet doneren"
+   },
+   "Icon_badge_color": {
+      "message": "Icoon-Badgekleur"
+   },
+   "Icon_badge_info": {
+      "message": "Icoon-Badge-informatie"
+   },
+   "Import": {
+      "message": "Importeren"
+   },
+   "Imported": {
+      "message": "Geïmporteerd"
+   },
+   "Include_TM_settings": {
+      "message": "Tampermonkey-instellingen bijvoegen"
+   },
+   "Include_s__": {
+      "message": "Include(s)"
+   },
+   "Include_script_externals": {
+      "message": "Externe scriptbronnen bijvoegen"
+   },
+   "Include_script_storage": {
+      "message": "Script-opslag bijvoegen"
+   },
+   "Includes_Excludes": {
+      "message": "Includes/Excludes"
+   },
+   "Incremental_Find": {
+      "message": "Incrementeel zoeken"
+   },
+   "Indent": {
+      "message": "Inspringen"
+   },
+   "Indent_Less": {
+      "message": "Minder inspringen"
+   },
+   "Indent_More": {
+      "message": "Meer inspringen"
+   },
+   "Indent_with": {
+      "message": "Inspringbreedthe"
+   },
+   "Indentation_Width": {
+      "message": "Inspringbreedte"
+   },
+   "Info": {
+      "message": "Informatie"
+   },
+   "Inject_Mode": {
+      "message": "Injectiemodus"
+   },
+   "Insert_Line_After": {
+      "message": "Een regel hierna invoegen"
+   },
+   "Insert_Line_Before": {
+      "message": "Een regel hiervoor invoegen"
+   },
+   "Insert_constructor": {
+      "message": "Constructor invoegen"
+   },
+   "Install": {
+      "message": "Installeren"
+   },
+   "Install_this_script": {
+      "message": "Dit script installeren"
+   },
+   "Installed_Version_": {
+      "message": "Geïnstalleerde versie"
+   },
+   "Installed_userscripts": {
+      "message": "Geïnstalleerde UserScripts"
+   },
+   "Instant": {
+      "message": "Meteen"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "Ongeldig UserScript! Sorry!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "Ongeldige UserScriptnaam. Sorry!"
+   },
+   "Join_Lines": {
+      "message": "Regels samenvoegen"
+   },
+   "Jump_to_line": {
+      "message": "Naar regel springen"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "Gewoon een andere dienst geleverd door uw vriendelijke script-updater"
+   },
+   "Key_Mapping": {
+      "message": "Toetsverwijzing"
+   },
+   "Language": {
+      "message": "Taal"
+   },
+   "Last_updated": {
+      "message": "Laatst bijgewerkt"
+   },
+   "Layout": {
+      "message": "Layout"
+   },
+   "Limited_runtime_host_permissions_might_break_some_Tampermonkey_features_": {
+      "message": "Beperkte runtime host-rechten zouden sommige Tampermonkey-functionaliteiten zoals automatische script-updates, GM_xmlhttpRequest en anderen kapot kunnen maken!"
+   },
+   "Line_Case_Insensitive": {
+      "message": "Regel niet hoofdlettergevoelig"
+   },
+   "Line_Down": {
+      "message": "Regel omlaag"
+   },
+   "Line_Up": {
+      "message": "Regel omhoog"
+   },
+   "Line_break": {
+      "message": "Regelbreuk"
+   },
+   "Lines": {
+      "message": "Regels"
+   },
+   "LogLevel": {
+      "message": "Loglevel"
+   },
+   "Login": {
+      "message": "Inloggen"
+   },
+   "Lower_Case": {
+      "message": "Kleine letters"
+   },
+   "MIME_Type": {
+      "message": "MIME-type"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "Kwaadaardige scripts kunnen uw privacy schenden en namens u handelen!\nU moet alleen scripts installeren van bronnen die u vertrouwt."
+   },
+   "Manual_Script_Blacklist": {
+      "message": "Handmatige UserScript- en @require-blacklist"
+   },
+   "Matching_URL": {
+      "message": "Overeenkomende URL"
+   },
+   "Modify": {
+      "message": "Wijzigen"
+   },
+   "Move_Line_Down": {
+      "message": "Regel naar onderen verplaatsen"
+   },
+   "Move_Line_Up": {
+      "message": "Regel naar boven verplaatsen"
+   },
+   "Name": {
+      "message": "Naam"
+   },
+   "Native": {
+      "message": "Inheems"
+   },
+   "Never": {
+      "message": "Nooit"
+   },
+   "New_Version": {
+      "message": "Nieuwe versie"
+   },
+   "New_script_template_": {
+      "message": "Nieuwe UserScript-template"
+   },
+   "New_userscript": {
+      "message": "\u003CNieuw UserScript>"
+   },
+   "Next_Bookmark": {
+      "message": "Volgende bladwijzer"
+   },
+   "No": {
+      "message": "Nee"
+   },
+   "No_backups_found": {
+      "message": "Geen back-ups gevonden"
+   },
+   "No_entry_found": {
+      "message": "Geen invoer gevonden"
+   },
+   "No_frames": {
+      "message": "Alleen uitvoeren in hoogste frame"
+   },
+   "No_script_is_installed": {
+      "message": "Er zijn geen scripts geïnstalleerd"
+   },
+   "No_script_is_running": {
+      "message": "Er worden geen scripts uitgevoerd!"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "Er zijn geen syntaxisfouten gevonden.."
+   },
+   "No_update_found__sry_": {
+      "message": "Geen updates gevonden, sorry!"
+   },
+   "Normal": {
+      "message": "Normaal"
+   },
+   "Note": {
+      "message": "Opmerking"
+   },
+   "Novice": {
+      "message": "Onervaren"
+   },
+   "Off": {
+      "message": "Uit"
+   },
+   "Ok": {
+      "message": "Oké"
+   },
+   "On": {
+      "message": "Aan"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "Er is één fout of hint gevonden."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "Eén of meer compitabiliteitsinstellingen zijn ingesteld. Het is verstandig om ze te bekijken."
+   },
+   "Only_Manual": {
+      "message": "Alleen handmatig"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "Alleen bestanden met deze extensies kunnen opgeslagen worden op de harde schijf.\nPas op dat u geen extensies toestaat die uitvoerbare bestanden voorstellen op uw besturingssysteem!"
+   },
+   "Open_changelog": {
+      "message": "De changelog openen"
+   },
+   "Operation_completed_successfully": {
+      "message": "Handeling met succes uitgevoerd"
+   },
+   "Original_domain_whitelist": {
+      "message": "Originele domein-whitelist"
+   },
+   "Original_excludes": {
+      "message": "Originele excludes"
+   },
+   "Original_includes": {
+      "message": "Originele includes"
+   },
+   "Original_matches": {
+      "message": "Originele matches"
+   },
+   "Page_Filter_Mode": {
+      "message": "Paginafiltermodus"
+   },
+   "Password": {
+      "message": "Wachtwoord"
+   },
+   "Paste": {
+      "message": "Plakken"
+   },
+   "Permanent": {
+      "message": "Permanent"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "Bekijk de $editor$-documentatie voor meer details.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "Geef alstublieft een donatie"
+   },
+   "Please_select_a_file": {
+      "message": "Selecteer een bestand"
+   },
+   "Please_wait___": {
+      "message": "Even geduld, alstublieft..."
+   },
+   "Position_": {
+      "message": "Positie"
+   },
+   "Prev_Bookmark": {
+      "message": "Vorige bladwijzer"
+   },
+   "Process_with_Chrome": {
+      "message": "Uitvoeren met de browser"
+   },
+   "Really_delete_0name0__": {
+      "message": "Wilt u '$name$' echt verwijderen?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "Wilt u echt alle geselecteerde voorwerpen verijwderen??"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "Wilt u echt de geselecteerde voorwerpen fabrieksresetten?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "Wilt u echt dit script fabrieksresetten?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "Echt alle wijzigingen resetten?"
+   },
+   "Redo": {
+      "message": "Hergedaan maken"
+   },
+   "Reindent_on_typing": {
+      "message": "Herinspringen tijdens typen"
+   },
+   "Reinstall": {
+      "message": "Herinstalleren"
+   },
+   "Remind_me_later": {
+      "message": "Herinner me later"
+   },
+   "Remove": {
+      "message": "Verwijderen"
+   },
+   "Replace": {
+      "message": "Vervangen"
+   },
+   "Replace_": {
+      "message": "Vervangen?"
+   },
+   "Replace_All": {
+      "message": "Alles vervangen"
+   },
+   "Replace_all_with": {
+      "message": "Alle vervangen"
+   },
+   "Replace_for_each_statements": {
+      "message": "'for each'-opdrachten vervanfen"
+   },
+   "Replace_with": {
+      "message": "Vervangen door"
+   },
+   "Report_a_bug": {
+      "message": "Een bug rapporteren"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "Misbruik rapporteren.\n(Een gebruikersaccount kan nodig zijn)"
+   },
+   "Requires": {
+      "message": "Requires"
+   },
+   "Reset_Section": {
+      "message": "Resetten"
+   },
+   "Resources": {
+      "message": "Bronnen"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Tampermonkey herstarten"
+   },
+   "Run_at": {
+      "message": "Uitvoeren op"
+   },
+   "Run_syntax_check": {
+      "message": "Syntaxiscontrole uitvoeren"
+   },
+   "Running_scripts": {
+      "message": "Uitgevoerde instanties van scripts"
+   },
+   "Save": {
+      "message": "Opslaan"
+   },
+   "Save_to_disk": {
+      "message": "Naar schijf opslaan"
+   },
+   "Script_0name0_is_slowing_down_some_page_loads_": {
+      "message": "Het script '$name$' vertraagt het laden van pagina's",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_Blacklist_Source": {
+      "message": "SourceScript-blacklistbron"
+   },
+   "Script_Sync": {
+      "message": "Scriptsynchronisatie"
+   },
+   "Script_URL_detection": {
+      "message": "Script-URL-detectie"
+   },
+   "Script_Update": {
+      "message": "Script-update"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "Script-auteurs kunnen externe bronnen beveiligen door een SRI-hash toe te voegen aan de URL van de bron."
+   },
+   "Script_local_files_access": {
+      "message": "Scripts toegang geven tot lokale bestanden"
+   },
+   "Script_name_0name0": {
+      "message": "UserScript-naam: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "Scriptvolgorde"
+   },
+   "Search": {
+      "message": "Zoeken"
+   },
+   "Search_for": {
+      "message": "Zoeken naar"
+   },
+   "Security": {
+      "message": "Beveiliging"
+   },
+   "Select_All": {
+      "message": "Alles selecteren"
+   },
+   "Select_Bookmarks": {
+      "message": "Bladwijzers selecteren"
+   },
+   "Select_Line": {
+      "message": "Regel selecteren"
+   },
+   "Select_Next_Occurrence": {
+      "message": "Volgende voorkomen selecteren"
+   },
+   "Select_Scope": {
+      "message": "Bereik selecteren"
+   },
+   "Select_between_Brackets": {
+      "message": "Selecteer tussen haakjes"
+   },
+   "Select_to_Sublime_Mark": {
+      "message": "Selecteren naar subliem merk"
+   },
+   "Selection": {
+      "message": "Selectie"
+   },
+   "Server_And_Manual": {
+      "message": "Afstand en handmatig"
+   },
+   "Set_Sublime_Mark": {
+      "message": "Subliem merk instellen"
+   },
+   "Settings": {
+      "message": "Instellingen"
+   },
+   "Show_backups": {
+      "message": "Back-ups laten zien"
+   },
+   "Show_fixed_source": {
+      "message": "Gefixeerde bron weergeven"
+   },
+   "Show_notification": {
+      "message": "Een melding weergeven"
+   },
+   "Sites": {
+      "message": "Sites"
+   },
+   "Size": {
+      "message": "Formaat"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Timeout overslaan ($seconds$ seconden)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "Slim"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "Sommige scripts kunnen geblokkeerd zijn door de JavaScript-instellingen voor deze pagina of een script blocker!"
+   },
+   "Sort": {
+      "message": "Sorteren"
+   },
+   "Source": {
+      "message": "Bron"
+   },
+   "Source_Code": {
+      "message": "Broncode"
+   },
+   "Spaces": {
+      "message": "Spaties"
+   },
+   "Split_into_Lines": {
+      "message": "Naar regels splitsen"
+   },
+   "Start": {
+      "message": "Starten"
+   },
+   "Stop": {
+      "message": "Stoppen"
+   },
+   "Storage": {
+      "message": "Opslag"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "Data in incognito-modus opslaan"
+   },
+   "Strict": {
+      "message": "Streng"
+   },
+   "Sublime": {
+      "message": "Sublime Text"
+   },
+   "Sublime_Mark": {
+      "message": "Subliem merk"
+   },
+   "Subresource_Integrity": {
+      "message": "Subbron-integriteit"
+   },
+   "Swap_with_Sublime_Mark": {
+      "message": "Wisselen met subliem merk"
+   },
+   "Sync_Reset": {
+      "message": "Synchronisatie resetten"
+   },
+   "Sync_Type": {
+      "message": "Type"
+   },
+   "Sync_finished": {
+      "message": "Synchronisatie afgerond"
+   },
+   "Sync_is_running": {
+      "message": "Synchronisatie wordt uitgevoerd"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "Synchroniseer uw scripts over browsers en besturingssystemen"
+   },
+   "TabMode": {
+      "message": "TabModus"
+   },
+   "Tab_URL": {
+      "message": "Tabblad-URL"
+   },
+   "Tabs": {
+      "message": "Tabs"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey- en scriptversie"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey heeft geen recht op toegang tot lokale bestanden!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "Het zou kunnen dat Tampermonkey geen toegang kan geven tot de onveilige context (unsafeWindow, functies en variabeles van pagina's) als dit uitgeschakeld is."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "Tampermonkey moet herstart worden om deze wijziging toe te passen.\n\nWilt u doorgaan?"
+   },
+   "Tampermonkey_version": {
+      "message": "Alleen Tampermonkey-versie"
+   },
+   "Templates": {
+      "message": "Templates"
+   },
+   "Temporarily_allow": {
+      "message": "Tijdelijk toestaan"
+   },
+   "Temporary": {
+      "message": "Tijdelijk"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "Tijdelijke domein-whitelist"
+   },
+   "Text": {
+      "message": "Tekst"
+   },
+   "TextArea": {
+      "message": "TextArea"
+   },
+   "Thank_you_very_much_": {
+      "message": "Heel erg bedankt!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "De Browser-API-modus heeft een speciaal recht nodig."
+   },
+   "The_diff_for_this_script_is_too_large_to_render": {
+      "message": "Het verschil voor dit script is te groot om het te renderen"
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "Het gedowngrade script kan problemen hebben met opgeslagen data laden!"
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "De update-url is veranderd van:\n    '$oldurl$'\n    naar:\n    '$newurl$'\n",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "Thema"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "Er zijn wijzigingen nog niet opgeslagen.\nWilt u de editor echt sluiten?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "Er is een update voor '$name$' beschikbaar. :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_external_resource_will_not_auto_update__Please_delete_it_in_order_to_enable_updates_again_": {
+      "message": "Deze externe bron zal niet automatisch bijwerken! Verwijder het om updates weer in te schakelen."
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "Dit geeft het script de mogelijkheid om data op te halen van en te verzenden naar elke webpagina. Dit kan onveilig zijn!\n\nWeet u zeker dat u door wilt gaan?"
+   },
+   "This_is_a_system_script": {
+      "message": "Dit is een systeemscript."
+   },
+   "This_is_a_userscript": {
+      "message": "Dit is een UserScript geschreven in JavaScript."
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "Deze optie staat de Tampermonkey-homepagina en een aantal script-hostingpagina's toe om de Tampermonkey-versie en beperkte scriptinformatie (geïnstalleerd, versie, ingeschakeld) te determineren."
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "Geblacklist door beveiligingsinstellingen"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "Dit script heeft geen @include-informatie."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "Dit voorwerp heeft toegang tot https-pagina's."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "Dit script heeft volledige toegang tot de webpagina."
+   },
+   "This_script_has_full_web_access": {
+      "message": "Dit script heeft volledige toegang tot het internet."
+   },
+   "This_script_is_blacklisted_": {
+      "message": "Dit script is geblacklist!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "Dit script wordt uitgevoerd in Chrome-modus."
+   },
+   "This_script_stores_data": {
+      "message": "Dit script slaat data op bij Tampermonkey."
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "Dit script gebruikt een deel van de Greasemonkey 10 API (unsafeWindow.gmonkey)\ndie niet ondersteund wordt door Tampermonkey of andere script handlers."
+   },
+   "This_script_was_deleted": {
+      "message": "Dit script is verwijderd"
+   },
+   "This_script_was_executed_0count0_times": {
+      "message": "Dit script is $count$ keer uitgevoerd",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_not_executed_yet": {
+      "message": "Dit script is nog niet uitgevoerd"
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "Dit zal uw globale instellingen overschrijven!"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "Wilt u echt alle data van de synchronisatie verwijderen?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "Wilt u echt alle scripts verwijderen en alle instellingen resetten?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "Wilt u Tampermonkey echt herstarten?"
+   },
+   "Today": {
+      "message": "Vandaag"
+   },
+   "Toggle": {
+      "message": "Schakelen"
+   },
+   "Toggle_Block_Comment": {
+      "message": "Blok-opmerking schakelen"
+   },
+   "Toggle_Comment": {
+      "message": "Opmerking schakelen"
+   },
+   "Toggle_Comment_Indented": {
+      "message": "Opmerking ingesprongen schakelen"
+   },
+   "Toggle_Enable": {
+      "message": "Inschakelen schakelen"
+   },
+   "Trace": {
+      "message": "Volgen"
+   },
+   "Transpose": {
+      "message": "Omzetten"
+   },
+   "Trigger_Update": {
+      "message": "Update activeren"
+   },
+   "Trim_trailing_whitespace_from_modified_lines": {
+      "message": "Achterlopende witruimte van gewijzigde regels weghalen"
+   },
+   "Try_to_install_as_script": {
+      "message": "Dit script proberen te installeren"
+   },
+   "Type": {
+      "message": "Type"
+   },
+   "URL": {
+      "message": "URL"
+   },
+   "UUID": {
+      "message": "UUID"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "Kan script niet laden van URL: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_0name0": {
+      "message": "Kan $name$ niet lezen",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "Kan dit niet lezen! :("
+   },
+   "Undo": {
+      "message": "Ongedaan maken"
+   },
+   "Unfold": {
+      "message": "Uitklappen"
+   },
+   "Unfold_All": {
+      "message": "Alles uitklappen"
+   },
+   "Unique_running_scripts": {
+      "message": "Unieke uitgevoerde scripts"
+   },
+   "Unknown_method_0name0": {
+      "message": "Onbekende methode $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "Bijwerken"
+   },
+   "Update_Notification": {
+      "message": "Tampermonkey-updatemeldingen weergeven"
+   },
+   "Update_URL_": {
+      "message": "Update-URL"
+   },
+   "Update_check_is_disabled": {
+      "message": "Script-updatecontrole is uitgeschakeld of niet mogelijk"
+   },
+   "Update_interval": {
+      "message": "Update-interval"
+   },
+   "Updated_to__0version0": {
+      "message": "Bijgewerkt naar: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "Updates"
+   },
+   "Upper_Case": {
+      "message": "Hoofdletters"
+   },
+   "User_domain_blacklist": {
+      "message": "Gebruikersdomein-blacklist"
+   },
+   "User_domain_whitelist": {
+      "message": "Gebruikersdomein-whitelist"
+   },
+   "User_excludes": {
+      "message": "Gebruikersexcludes"
+   },
+   "User_includes": {
+      "message": "Gebruikersincludes"
+   },
+   "User_matches": {
+      "message": "Gebruikersmatches"
+   },
+   "User_modified": {
+      "message": "Gewijzigd"
+   },
+   "Userscripts": {
+      "message": "UserScripts"
+   },
+   "Utilities": {
+      "message": "Voorzieningen"
+   },
+   "Validate_if_given": {
+      "message": "Valideren indien gegeven"
+   },
+   "Validate_if_supported": {
+      "message": "Valideren indien mogelijk"
+   },
+   "Verbose": {
+      "message": "Uitgebreid"
+   },
+   "Version": {
+      "message": "Versie"
+   },
+   "Vim": {
+      "message": "Vim"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "Aan het wachten tot de synchronisatie klaar is"
+   },
+   "Warning": {
+      "message": "Waarschuwing"
+   },
+   "Warning_unsafe_site_warnings_might_appear_": {
+      "message": "Waarschuwing: onveilige site-waarschuwingen kunnen verschijnen als een script potentieel schadelijke URL's bevat."
+   },
+   "Whitelist": {
+      "message": "Whitelist"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "Gewhiteliste bestandsextensies"
+   },
+   "Whitelisted_Pages": {
+      "message": "Gewhiteliste pagina's"
+   },
+   "Windows": {
+      "message": "Windows"
+   },
+   "XHR_Security": {
+      "message": "XHR-beveiliging"
+   },
+   "Yank_Sublime_Mark": {
+      "message": "Subliem merk trekken"
+   },
+   "Yes": {
+      "message": "Ja"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "Let op! UserScript downgrade"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "UserScript installeren"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "UserScript wijzigen"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "UserScript herinstallatie"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "UserScript updaten"
+   },
+   "You_can_add_your_custom_CSS_rules_here_": {
+      "message": "U kunt uw eigen CSS-regels voor de Tampermonkey-gebruikersinterface hier toevoegen. Als dit iets kapot maakt, kunt u de standaard layout krijgen door ?layout=reset achter de optiespagina-URL te zetten."
+   },
+   "You_can_add_your_custom_linter_config_here_": {
+      "message": "U kunt uw aangepaste linter-configuratie hier toevoegen."
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "Wordt uw taal niet ondersteund?\nKlik hier voor instructies om Tampermonkey te vertalen!"
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "Uw whitelist bevat uitvoerbare bestanden!\nDit betekent dat UserScripts mal- of spyware kunnen opslaan op uw harde schijf!!"
+   },
+   "Zip": {
+      "message": "Zip"
+   },
+   "__Please_choose__": {
+      "message": "-- Kies een optie --"
+   },
+   "_not_set_": {
+      "message": "\u003Cniet ingesteld>"
+   },
+   "connect_mode": {
+      "message": "Controleer @connect"
+   },
+   "fatal_error": {
+      "message": "fatale fout"
+   },
+   "overwritten_by_user": {
+      "message": "overschreven door gebruikersinstelling"
+   },
+   "require_and_resource": {
+      "message": "Externen (@require en @resource)"
+   },
+   "severity_1": {
+      "message": "1 (veiligst)"
+   },
+   "severity_10": {
+      "message": "10 (onveiligst)"
+   },
+   "severity_2": {
+      "message": "2"
+   },
+   "severity_3": {
+      "message": "3"
+   },
+   "severity_4": {
+      "message": "4"
+   },
+   "severity_5": {
+      "message": "5"
+   },
+   "severity_6": {
+      "message": "6"
+   },
+   "severity_7": {
+      "message": "7"
+   },
+   "severity_8": {
+      "message": "8"
+   },
+   "severity_9": {
+      "message": "9"
+   },
+   "some_secs": {
+      "message": "enige"
+   },
+   "strict_mode": {
+      "message": "strenge modus"
+   }
+}

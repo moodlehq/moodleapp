@@ -1,0 +1,1492 @@
+{
+   "0count0_errors_or_hints_were_found_": {
+      "message": "$count$ त्रुटि या संकेत पाए गए।",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ उपलब्ध है।\nअपडेट प्रारंभ करने के लिए कृपया अपने ब्राउज़र को फिर से शुरू करें!",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "15_Seconds": {
+      "message": "15 सेकेंड"
+   },
+   "1_Hour": {
+      "message": "1 घंटा"
+   },
+   "1_Minute": {
+      "message": "1 मिनट"
+   },
+   "30_Seconds": {
+      "message": "30 सेकंड"
+   },
+   "5_Minutes": {
+      "message": "5 मिनट"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "इस स्क्रिप्ट को चलाने के लिए ग्रीजमंकी/FF अनुकूलता विकल्पों में से एक की पुनः जांच आवश्यक हो सकती है।"
+   },
+   "A_reload_is_required": {
+      "message": "एक बार रीलोड करने की आवश्यकता है:\nबिना सहेजे गए सभी परिवर्तन खो जाएँगे!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "क्रॉस-ओरिजिन संसाधन के लिए अनुरोध असामान्य बात नहीं है।\nआपको सिर्फ यह देखना है कि इस डोमेन का उपयोग करने के लिए इस स्क्रिप्ट के पास पर्याप्त कारण है।\nउदाहरण के लिए यूजरस्क्रिप्ट को अपने बैंक से संपर्क के लिए बहुत ही कम कारण हैं ।\n\nकृपया ध्यान दें कि यूजरस्क्रिप्ट लेखक अपनी स्क्रिप्ट में [url=$connect$]@connect tags[/url]  इस संवाद को जोड़कर बच सकते हैं।\n\nकोई फर्क नहीं पड़ता कि आप कैसे तय करेंगे, आप किसी भी समय स्क्रिप्ट की [url=$settings$] सेटिंग्स टैब[/ url] पर अपनी राय बदल सकते हैं।",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "एक यूजरस्क्रिप्ट क्रॉस-ओरिजिन संसाधन का उपयोग करना चाहता है।"
+   },
+   "Action": {
+      "message": "कार्य"
+   },
+   "Action_Menu": {
+      "message": "कार्रवाई मेनू"
+   },
+   "Actions": {
+      "message": "क्रिया"
+   },
+   "Add": {
+      "message": "जोड़ें"
+   },
+   "Add_Selection_Above": {
+      "message": "चयन ऊपर से जोड़ें"
+   },
+   "Add_Selection_Below": {
+      "message": "चयन नीचे से जोड़ें"
+   },
+   "Add_TM_to_CSP": {
+      "message": "Tampermonkey को साइट की सामग्री सुरक्षा नीति (CSP) से जोड़े अगर वहाँ कोई है"
+   },
+   "Add_as_0clude0": {
+      "message": "$clude$ के रूप में जोड़ें",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "एक नई स्क्रिप्ट बनाएं..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "ऑब्जेक्ट और ऐरे में संगतता फंक्शन शामिल करें"
+   },
+   "Advanced": {
+      "message": "उन्नत"
+   },
+   "All_local_files": {
+      "message": "सभी स्थानीय फ़ाइलें"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "सभी संशोधन केवल तब तक रखे जाते हैं जब तक यह अज्ञात सत्र बंद न हो जाए !"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "सभी स्क्रिप्ट सेटिंग्स को रीसेट कर दिया जाएगा!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Tampermonkey को गूगल एनालिटिक्स के माध्यम से अज्ञात आंकड़े एकत्रित करने की अनुमति दें। यह मुझे Tampermonkey में सुधार करने और अपने विकास पर ध्यान केंद्रित करने के लिए मापदंड निर्धारित करने में मदद करता है। अगर आप इसे नापसंद करते हैं तो बस इसे निष्क्रिय करें ।"
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "सहयोगी पेज के साथ संचार की अनुमति दें"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "HTTP हेडर स्क्रिप्ट द्वारा संशोधित करने की अनुमति दें"
+   },
+   "Allow_once": {
+      "message": "एकबार अनुमति दें"
+   },
+   "Always": {
+      "message": "हमेशा"
+   },
+   "Always_allow": {
+      "message": "हमेशा अनुमति दें"
+   },
+   "Always_allow_all_domains": {
+      "message": "हमेशा सभी डोमेन की अनुमति दें"
+   },
+   "Always_allow_domain": {
+      "message": "हमेशा डोमेन की अनुमति दें"
+   },
+   "Always_ask": {
+      "message": "हमेशा पूछें"
+   },
+   "Always_forbid": {
+      "message": "हमेशा बाधित करें"
+   },
+   "Always_forbid_domain": {
+      "message": "हमेशा डोमेन बाधित करें"
+   },
+   "An_error_occured_during_import_": {
+      "message": "इम्पोर्ट के दौरान एक त्रुटि हुई।"
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "एक आंतरिक त्रुटि मिली । अगर यह समस्या ब्राउज़र को पुन: प्रारंभ करने के बाद भी बनी रहती है, कृपया OK  दबाएं और फोरम पर इस मामले की रिपोर्ट करें।\n\nक्या आप Tampermonkey फोरम पर जाना चाहते हैं?"
+   },
+   "Anonymous_statistics": {
+      "message": "अनाम आंकड़े"
+   },
+   "Appearance": {
+      "message": "प्रस्तुति"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "संगतता विकल्प के लिए @require स्क्रिप्ट पर भी आवेदन करें"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "सभी चयनित स्क्रिप्ट पर यह लागू करें"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "Tampermonkey आपके ब्राउज़र द्वारा अपडेट किया जाता है यह फिर से शुरू होता है। दुर्भाग्य से यह वर्तमान में स्क्रिप्ट चलना तोड़ सकता है!\n\nतो आपको लगता है कि आप अपडेट की सूचना प्राप्त नहीं करना चाहते हैं?"
+   },
+   "Ask_if_unknown": {
+      "message": "पूछें अगर अज्ञात हो"
+   },
+   "At_least_one_new_connect_statement_was_added_": {
+      "message": "कम से कम एक नया @connect स्टेटमेंट जोड़ दिया गया।"
+   },
+   "At_least_one_of_the_include_match_or_exclude_statements_was_changed_": {
+      "message": "@include, @match या @exclude स्टेटमेंट में से कम से कम एक को बदल दिया गया।"
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "इस पेज का कम से कम एक हिस्सा 'forbidden pages' सेटिंग में सूचीबद्ध किया गया है!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": "ध्यान दें: समावेश सूची छोटी कर दी गई है।\nकृपया इसे स्वतः जाँच लें!"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": "ध्यान दें: समावेश सूची छोटी कर दी गई है।\nकृपया इसे स्वतः जाँच लें!"
+   },
+   "Author": {
+      "message": "लेखक"
+   },
+   "Auto": {
+      "message": "ऑटो"
+   },
+   "Auto_Indent_all": {
+      "message": "सभी को ऑटो-इंडेंट करें"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "ऑटो रीलोड पेज"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "प्रभावित पेज रीलोड अगर कोई स्क्रिप्ट चालू या बंद की गई हो"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "स्वचालित सिंटेक्स अधिकतम आकार की जांच करता है"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "टाइपिंग पर स्वचालित सिंटेक्स की जांच"
+   },
+   "Automatically_added_user_includes_for_compatibility_reasons_": {
+      "message": "संगतता कारणों के लिए कुछ उपयोगकर्ता समवेशों को स्वचालित रूप से  जोड़ा गया था!"
+   },
+   "Beginner": {
+      "message": "शुरुआती"
+   },
+   "BlackCheck": {
+      "message": "ब्लैकचेक"
+   },
+   "Blacklist": {
+      "message": "ब्लैक लिस्ट"
+   },
+   "Blacklist_Severity": {
+      "message": "गंभीरता स्तर से ब्लॉक"
+   },
+   "Blacklisted_Pages": {
+      "message": "ब्लैक लिस्ट किए गए पेज"
+   },
+   "Bookmarks": {
+      "message": "बुकमार्क"
+   },
+   "Both": {
+      "message": "दोनों"
+   },
+   "Browser_API": {
+      "message": "ब्राउज़र API"
+   },
+   "Browser_API_Downloads": {
+      "message": "ब्राउज़र API डाउनलोड करता है"
+   },
+   "Browser_Sync": {
+      "message": "ब्राउज़र सिंक"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "विवाद:\nयह स्क्रिप्ट सेकंड (सेकंडों) पहले अन्य टैब $t$ द्वारा  संशोधित की गई!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "रद्द करें"
+   },
+   "Casual": {
+      "message": "आकस्मिक"
+   },
+   "Center_Cursor": {
+      "message": "मध्य कर्सर"
+   },
+   "Changelog": {
+      "message": "चेंजलॉग"
+   },
+   "Changes": {
+      "message": "परिवर्तन"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "दिखाई देने वाले कॉन्फिग विकल्पों की संख्या में परिवर्तन"
+   },
+   "Check_disabled_scripts": {
+      "message": "असक्रिय स्क्रिप्ट अपडेट"
+   },
+   "Check_for_Updates": {
+      "message": "अपडेट के लिए जाँच"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "यूजरस्क्रिप्ट जानकारियां देखें"
+   },
+   "Check_interval": {
+      "message": "अंतराल की जाँच करें"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "स्वचालित रूप से केवल इस आकार तक की स्क्रिप्ट की जाँच करें।"
+   },
+   "Classic": {
+      "message": "क्लासिक"
+   },
+   "Clear_All": {
+      "message": "सब क्लियर करें"
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "Tampermonkey तत्काल डाउनलोड शुरू करने की अनुमति देने के लिए क्लिक करें।"
+   },
+   "Click_here_to_install_it_": {
+      "message": "इसे इन्स्टॉल करने हेतु यहाँ क्लिक करें।"
+   },
+   "Click_here_to_move_this_script": {
+      "message": "इस स्क्रिप्ट को स्थानांतरित करने के लिए यहाँ क्लिक करें"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "हाल ही में हुए परिवर्तन देखने के लिए यहाँ क्लिक करें"
+   },
+   "Close": {
+      "message": "बंद करें"
+   },
+   "Closing_Bracket": {
+      "message": "समापन ब्रैकेट"
+   },
+   "Cloud": {
+      "message": "क्लाउड"
+   },
+   "Columns": {
+      "message": "कॉलम"
+   },
+   "Comment": {
+      "message": "टिप्पणी"
+   },
+   "Config_Mode": {
+      "message": "कॉन्फ़िग मोड"
+   },
+   "Convert_Array_Assignements": {
+      "message": "[blub, bla] = s.split(':') स्टेटमेंट परिवर्तित करें"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "ब्राउज़र संगत प्रारूप में CDATA भाग परिवर्तित करें"
+   },
+   "Copy": {
+      "message": "कॉपी"
+   },
+   "Current_Version": {
+      "message": "वर्तमान संस्करण"
+   },
+   "Custom_CSS": {
+      "message": "उपयोगकर्ता CSS"
+   },
+   "Cut": {
+      "message": "कट"
+   },
+   "Dashboard": {
+      "message": "डैशबोर्ड"
+   },
+   "Debug": {
+      "message": "डिबग"
+   },
+   "Debug_scripts": {
+      "message": "डिबग स्क्रिप्ट"
+   },
+   "Default": {
+      "message": "डिफ़ॉल्ट"
+   },
+   "Default_Dark": {
+      "message": "डिफ़ॉल्ट - डार्क"
+   },
+   "Delete": {
+      "message": "हटाएं"
+   },
+   "Delete_Line": {
+      "message": "लाइन को हटाएँ"
+   },
+   "Delete_Line_Left": {
+      "message": "बाईं लाइन हटाएं"
+   },
+   "Delete_Line_Right": {
+      "message": "दाईं लाइन हटाएं"
+   },
+   "Delete_to_Next_Word_Boundary": {
+      "message": "अगली शब्द सीमा हटाएं"
+   },
+   "Delete_to_Previous_Word_Boundary": {
+      "message": "पिछली शब्द सीमा हटाएं"
+   },
+   "Delete_to_Sublime_Mark": {
+      "message": "सबलाइम मार्क हटाएं"
+   },
+   "Description": {
+      "message": "विवरण"
+   },
+   "Destination_URL": {
+      "message": "गंतव्य यूआरल"
+   },
+   "Destination_domain": {
+      "message": "गंतव्य डोमेन"
+   },
+   "Details": {
+      "message": "विवरण"
+   },
+   "Developer": {
+      "message": "डेवलपर"
+   },
+   "Disable": {
+      "message": "अक्षम करें"
+   },
+   "Disabled": {
+      "message": "असक्रिय किया गया"
+   },
+   "Disabled_scripts": {
+      "message": "स्क्रिप्ट अक्षम की गयी"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "विकल्प '$option$' सक्षम किया गया है!\n\nक्या आप सच में तय स्रोत स्टोर करना चाहते हैं?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Document_End": {
+      "message": "दस्तावेज़ समाप्ति"
+   },
+   "Document_Start": {
+      "message": "दस्तावेज़ प्रारंभ"
+   },
+   "Dont_ask_again": {
+      "message": "फिर से न पूछें"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "मुझे सरल स्क्रिप्ट के अपडेट न मांगें"
+   },
+   "Downgrade": {
+      "message": "डाउनग्रेड करें"
+   },
+   "Download_Mode": {
+      "message": "डाउनलोड मोड"
+   },
+   "Downloaded_from_0url0": {
+      "message": "$url$: से डाउनलोड किया गया",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "डाउनलोड"
+   },
+   "DuckDuckGo": {
+      "message": "DuckDuckGo"
+   },
+   "Duplicate_Lines": {
+      "message": "डुप्लिकेट लाइन"
+   },
+   "Edit": {
+      "message": "संपादित करें"
+   },
+   "Editor": {
+      "message": "संपादक"
+   },
+   "Editor_reset": {
+      "message": "संपादक रीसेट"
+   },
+   "Emacs": {
+      "message": "Emacs"
+   },
+   "Enable": {
+      "message": "सक्षम करें"
+   },
+   "Enable_Editor": {
+      "message": "वर्धित संपादक सक्षम करें"
+   },
+   "Enable_Script_Sync": {
+      "message": "TESLA सक्षम करें"
+   },
+   "Enable_autoSave": {
+      "message": "सूची को सहेजें जब संपादक फोकस खो देता है"
+   },
+   "Enable_easySave": {
+      "message": "सहेजने पर पुष्टिकरण संवाद न दिखाएँ"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "स्वचालित रूप से टाइपिंग पर कोड की जाँच करने के लिए इस विकल्प को सक्षम करें।"
+   },
+   "Enabled": {
+      "message": "सक्रिय किया गया"
+   },
+   "Enforce": {
+      "message": "लागू करें"
+   },
+   "Enter_the_new_rule": {
+      "message": "नए नियम दर्ज करें"
+   },
+   "Error": {
+      "message": "त्रुटि"
+   },
+   "Every_12_Hour": {
+      "message": "प्रति 12 घंटे"
+   },
+   "Every_6_Hours": {
+      "message": "प्रति 6 घंटे"
+   },
+   "Every_Day": {
+      "message": "प्रति दिन"
+   },
+   "Every_Hour": {
+      "message": "प्रत्येक घंटे"
+   },
+   "Every_Month": {
+      "message": "प्रति महीने"
+   },
+   "Every_Week": {
+      "message": "प्रति सप्ताह"
+   },
+   "Exclude_s__": {
+      "message": "वर्जन"
+   },
+   "Experimental": {
+      "message": "प्रयोगात्मक"
+   },
+   "Export": {
+      "message": "एक्सपोर्ट"
+   },
+   "Externals": {
+      "message": "बाहरी"
+   },
+   "Factory_Reset": {
+      "message": "फैक्ट्री रिसेट"
+   },
+   "Fast": {
+      "message": "तेज"
+   },
+   "Favicon_Service": {
+      "message": "फ़ेविकॉन सेवा"
+   },
+   "Features": {
+      "message": "विशेषताएं"
+   },
+   "File": {
+      "message": "फ़ाइल"
+   },
+   "Filter_by": {
+      "message": "के द्वारा फ़िल्टर"
+   },
+   "Find": {
+      "message": "खोज"
+   },
+   "Find_All_Under": {
+      "message": "के तहत सभी का पता लगाएं"
+   },
+   "Find_Next": {
+      "message": "अगला ढूंढें"
+   },
+   "Find_Previous": {
+      "message": "पिछला ढूंढें"
+   },
+   "Find_Under": {
+      "message": "के तहत पता लगाएं"
+   },
+   "Find_Under_Previous": {
+      "message": "पिछले के तहत खोजें"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "'for (var j in x)' स्टेटमेंट फिक्स करें"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "wrappedJSObject प्रॉपर्टी एक्सेस निश्चित करें"
+   },
+   "Focus_tab": {
+      "message": "स्रोत टैब पर ध्यान केन्द्रित करें"
+   },
+   "Fold": {
+      "message": "फोल्ड"
+   },
+   "Fold_All": {
+      "message": "सब फोल्ड करें"
+   },
+   "Folding": {
+      "message": "फोल्डिंग"
+   },
+   "Font_Size": {
+      "message": "फ़ॉन्ट आकार"
+   },
+   "Forbid_once": {
+      "message": "एक बार बाधित करें"
+   },
+   "Full_reset": {
+      "message": "फैक्ट्री रिसेट"
+   },
+   "GM_compat_options_": {
+      "message": "GM/FF अनुकूलता विकल्प"
+   },
+   "General": {
+      "message": "सामान्य"
+   },
+   "Get_new_scripts___": {
+      "message": "नई स्क्रिप्ट प्राप्त करें ..."
+   },
+   "Get_some_scripts___": {
+      "message": "कुछ स्क्रिप्ट प्राप्त करें ..."
+   },
+   "Global_Settings": {
+      "message": "ग्लोबल सेटिंग्स"
+   },
+   "Global_settings_import": {
+      "message": "ग्लोबल सेटिंग्स इम्पोर्ट"
+   },
+   "GoTo": {
+      "message": "पर जाएं"
+   },
+   "Google": {
+      "message": "Google"
+   },
+   "Group_Left": {
+      "message": "बायाँ समूह"
+   },
+   "Group_Right": {
+      "message": "दायाँ समूह"
+   },
+   "Help": {
+      "message": "सहायता"
+   },
+   "Hide_disabled_scripts": {
+      "message": "अक्षम स्क्रिप्ट छुपाएं"
+   },
+   "Hide_notification_after": {
+      "message": "बाद की सूचना छिपाएं"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "अनुगामी वाइटस्पेस हाइलाइट करें"
+   },
+   "Homepage": {
+      "message": "मुखपृष्ठ"
+   },
+   "I_contributed_already": {
+      "message": "मैंने पहले ही दान दे दिया"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "मैं दान नहीं करना चाहता हूं"
+   },
+   "Icon_badge_color": {
+      "message": "आइकॉन बैज रंग"
+   },
+   "Icon_badge_info": {
+      "message": "आइकॉन बैज जानकारी"
+   },
+   "Import": {
+      "message": "इम्पोर्ट"
+   },
+   "Imported": {
+      "message": "आयातित"
+   },
+   "Include_TM_settings": {
+      "message": "Tampermonkey सेटिंग शामिल करें"
+   },
+   "Include_s__": {
+      "message": "समावेश"
+   },
+   "Include_script_storage": {
+      "message": "स्क्रिप्ट स्टोरेज शामिल करें"
+   },
+   "Includes_Excludes": {
+      "message": "समावेश/वर्जित"
+   },
+   "Incremental_Find": {
+      "message": "इंक्रीमेंटल खोजें"
+   },
+   "Indent": {
+      "message": "इंडेंट"
+   },
+   "Indent_Less": {
+      "message": "कम इंडेंट करें"
+   },
+   "Indent_More": {
+      "message": "अधिक इंडेंट करें"
+   },
+   "Indent_with": {
+      "message": "के साथ इंडेंट"
+   },
+   "Indentation_Width": {
+      "message": "इंडेंटेशन चौड़ाई"
+   },
+   "Info": {
+      "message": "जानकारी"
+   },
+   "Inject_Mode": {
+      "message": "इंजेक्ट मोड"
+   },
+   "Insert_Line_After": {
+      "message": "इससे बाद लाइन डालें"
+   },
+   "Insert_Line_Before": {
+      "message": "इससे पहले लाइन डालें"
+   },
+   "Insert_constructor": {
+      "message": "निर्माता सम्मिलित"
+   },
+   "Install": {
+      "message": "इंस्टॉल करें"
+   },
+   "Install_this_script": {
+      "message": "इस स्क्रिप्ट को इनस्टॉल करें"
+   },
+   "Installed_Version_": {
+      "message": "स्थापित संस्करण"
+   },
+   "Installed_userscripts": {
+      "message": "यूजरस्क्रिप्ट इनस्टॉल की गयी"
+   },
+   "Instant": {
+      "message": "तुरंत"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "अमान्य यूजर स्क्रिप्ट | खेद है!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "अमान्य यूजर स्क्रिप्ट नाम | खेद है!"
+   },
+   "Join_Lines": {
+      "message": "लाइन को शामिल करें"
+   },
+   "Jump_to_line": {
+      "message": "लाइन पर जाएं"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "आपके अनुकूल स्क्रिप्ट अपडेटर द्वारा प्रदान एक और सेवा"
+   },
+   "Key_Mapping": {
+      "message": "की मैपिंग"
+   },
+   "Language": {
+      "message": "भाषा"
+   },
+   "Last_updated": {
+      "message": "पिछला अपडेट"
+   },
+   "Layout": {
+      "message": "लेआउट"
+   },
+   "Line_Case_Insensitive": {
+      "message": "रेखा केस संवेदी"
+   },
+   "Line_Down": {
+      "message": "नीचे पंक्ति बनायें"
+   },
+   "Line_Up": {
+      "message": "ऊपर पंक्ति बनायें"
+   },
+   "Line_break": {
+      "message": "लाइन ब्रेक"
+   },
+   "Lines": {
+      "message": "लाइन्स"
+   },
+   "LogLevel": {
+      "message": "लॉगिंग स्तर"
+   },
+   "Lower_Case": {
+      "message": "लोअर केस"
+   },
+   "MIME_Type": {
+      "message": "माइम प्रकार"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "दुर्भावनापूर्ण स्क्रिप्ट आपकी गोपनीयता का उल्लंघन और आपकी ओर से कार्रवाई कर सकते हैं!\nआपको केवल विश्वसनीय स्रोतों से स्क्रिप्ट इंस्टॉल करनी चाहिए।"
+   },
+   "Manual_Script_Blacklist": {
+      "message": "मैनुअल यूजरस्क्रिप्ट और @require ब्लैकलिस्ट"
+   },
+   "Matching_URL": {
+      "message": "मिलते हुए यूआरएल"
+   },
+   "Modify": {
+      "message": "संशोधित करें"
+   },
+   "Move_Line_Down": {
+      "message": "लाइन नीचे ले जाएँ"
+   },
+   "Move_Line_Up": {
+      "message": "लाइन ऊपर ले जाएँ"
+   },
+   "Name": {
+      "message": "नाम"
+   },
+   "Native": {
+      "message": "नेटिव"
+   },
+   "Never": {
+      "message": "कभी नहीँ"
+   },
+   "New_Version": {
+      "message": "नया संस्करण"
+   },
+   "New_script_template_": {
+      "message": "नया यूजरस्क्रिप्ट टेम्पलेट"
+   },
+   "New_userscript": {
+      "message": "\u003Cनई यूजरस्क्रिप्ट>"
+   },
+   "Next_Bookmark": {
+      "message": "अगला बुकमार्क"
+   },
+   "No": {
+      "message": "नहीं"
+   },
+   "No_backups_found": {
+      "message": "कोई बैकअप नहीं मिला"
+   },
+   "No_entry_found": {
+      "message": "कोई एंट्री नहीं मिली"
+   },
+   "No_frames": {
+      "message": "केवल शीर्ष फ़्रेम में चलाएँ"
+   },
+   "No_script_is_installed": {
+      "message": "कोई स्क्रिप्ट इनस्टॉल नहीं की गई है"
+   },
+   "No_script_is_running": {
+      "message": "कोई स्क्रिप्ट नहीं चल रही है"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "कोई सिंटेक्स त्रुटि नहीं पाई गई।"
+   },
+   "No_update_found__sry_": {
+      "message": "कोई अद्यतन नहीं मिला, खेद है!"
+   },
+   "Normal": {
+      "message": "सामान्य"
+   },
+   "Note": {
+      "message": "ध्यान दें"
+   },
+   "Novice": {
+      "message": "नौसिखिया"
+   },
+   "Off": {
+      "message": "बंद"
+   },
+   "Ok": {
+      "message": "ओके"
+   },
+   "On": {
+      "message": "चालू"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "एक त्रुटि या संकेत मिला।"
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "एक या अधिक संगतता विकल्प सेट किए गए हैं। आपको उनकी समीक्षा करनी चाहिए/चाह सकते हैं।"
+   },
+   "Only_Manual": {
+      "message": "केवल मैनुअल"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "केवल इन एक्सटेंशन के साथ फ़ाइलें हार्डडिस्क में सेव की जा सकती है।\nआपके ऑपरेटिंग सिस्टम पर निष्पादनयोग्य प्रतिनिधित्व करने वाली फ़ाइल एक्सटेंशन को अनुमति न दे!"
+   },
+   "Open_changelog": {
+      "message": "चेंजलॉग खोलें"
+   },
+   "Operation_completed_successfully": {
+      "message": "ऑपरेशन सफलता पूर्वक सम्पन्न हुआ"
+   },
+   "Original_domain_whitelist": {
+      "message": "मूल डोमेन व्हाइटलिस्ट"
+   },
+   "Original_excludes": {
+      "message": "मूल वर्जित"
+   },
+   "Original_includes": {
+      "message": "मूल समावेश"
+   },
+   "Original_matches": {
+      "message": "मूल जोड़ियाँ"
+   },
+   "Page_Filter_Mode": {
+      "message": "पेज फ़िल्टर मोड"
+   },
+   "Paste": {
+      "message": "पेस्ट"
+   },
+   "Permanent": {
+      "message": "स्थायी"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "अधिक जानकारी के लिए $editor$ प्रलेखन की जांच करें।",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "कृपया दान भेजें"
+   },
+   "Please_select_a_file": {
+      "message": "कृपया फ़ाइल चुनें"
+   },
+   "Please_wait___": {
+      "message": "कृपया प्रतीक्षा करें..."
+   },
+   "Position_": {
+      "message": "पद"
+   },
+   "Prev_Bookmark": {
+      "message": "पिछला बुकमार्क"
+   },
+   "Process_with_Chrome": {
+      "message": "ब्राउज़र के साथ प्रक्रिया"
+   },
+   "Really_delete_0name0__": {
+      "message": "क्या आप वाकई '$name$' को हटाना चाहते हैं?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "क्या आप वाकई चयनित आइटम को हटाना चाहते हैं?"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "क्या आप वाकई चयनित आइटम को फैक्ट्री रिसेट करना चाहते हैं?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "क्या आप वाकई इस स्क्रिप्ट को फैक्ट्री रिसेट करना चाहते हैं?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "वास्तव में सभी परिवर्तनों को रीसेट करें?"
+   },
+   "Redo": {
+      "message": "फिर से करें"
+   },
+   "Reindent_on_typing": {
+      "message": "टाइपिंग में री-इंडेंट"
+   },
+   "Reinstall": {
+      "message": "पुनः इंस्टॉल करें"
+   },
+   "Remind_me_later": {
+      "message": "मुझे बाद में याद दिलाना"
+   },
+   "Remove": {
+      "message": "हटाएं"
+   },
+   "Replace": {
+      "message": "बदलें"
+   },
+   "Replace_": {
+      "message": "बदलना?"
+   },
+   "Replace_All": {
+      "message": "सबको रीप्लेस करें"
+   },
+   "Replace_all_with": {
+      "message": "सबकी बदली करें"
+   },
+   "Replace_for_each_statements": {
+      "message": "'for each' स्टेटमेंट परिवर्तित करें"
+   },
+   "Replace_with": {
+      "message": "से बदलें"
+   },
+   "Report_a_bug": {
+      "message": "बग सूचित करें"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "दुरुपयोग होने की सूचना दें।\n(उपयोगकर्ता खाते की जरुरत हो सकती है)"
+   },
+   "Requires": {
+      "message": "आवश्यक"
+   },
+   "Reset_Section": {
+      "message": "रीसेट"
+   },
+   "Resources": {
+      "message": "साधन"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Tampermonkey फिर से शुरू करें"
+   },
+   "Run_at": {
+      "message": "पर रन करें"
+   },
+   "Run_syntax_check": {
+      "message": "सिंटेक्स जाँच चलाएं"
+   },
+   "Running_scripts": {
+      "message": "स्क्रिप्ट घटनाएँ चल रही हैं"
+   },
+   "Save": {
+      "message": "सेव करें"
+   },
+   "Save_to_disk": {
+      "message": "डिस्क में सहेजें"
+   },
+   "Script_Blacklist_Source": {
+      "message": "स्क्रिप्ट ब्लैकलिस्ट स्रोत"
+   },
+   "Script_URL_detection": {
+      "message": "स्क्रिप्ट यूआरएल की खोज"
+   },
+   "Script_Update": {
+      "message": "स्क्रिप्ट अद्यतन"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "स्क्रिप्ट लेखक स्रोत यूआरएल के लिए एक SRI हैश जोड़कर बाहरी संसाधनों को सुरक्षित कर सकते हैं।"
+   },
+   "Script_local_files_access": {
+      "message": "स्क्रिप्ट को स्थानीय फ़ाइलों तक एक्सेस करने की अनुमति दें"
+   },
+   "Script_name_0name0": {
+      "message": "स्क्रिप्ट नाम: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "स्क्रिप्ट आदेश"
+   },
+   "Search": {
+      "message": "खोजें"
+   },
+   "Search_for": {
+      "message": "निम्न को खोजें"
+   },
+   "Security": {
+      "message": "सुरक्षा"
+   },
+   "Select_All": {
+      "message": "सभी का चयन करें"
+   },
+   "Select_Bookmarks": {
+      "message": "बुकमार्क चुनें"
+   },
+   "Select_Line": {
+      "message": "लाइन का चयन करें"
+   },
+   "Select_Next_Occurrence": {
+      "message": "अगली आवृत्ति का चयन करें"
+   },
+   "Select_Scope": {
+      "message": "स्कोप का चयन करें"
+   },
+   "Select_between_Brackets": {
+      "message": "कोष्ठक के बीच का चयन करें"
+   },
+   "Select_to_Sublime_Mark": {
+      "message": "उदात्त मार्क के लिए चयन करें"
+   },
+   "Selection": {
+      "message": "चयन"
+   },
+   "Server_And_Manual": {
+      "message": "रिमोट + मैनुअल"
+   },
+   "Set_Sublime_Mark": {
+      "message": "सबलाइम मार्क सेट करें"
+   },
+   "Settings": {
+      "message": "सेटिंग्स"
+   },
+   "Show_backups": {
+      "message": " बैकअप दिखाएँ"
+   },
+   "Show_fixed_source": {
+      "message": "तय स्रोत दिखाएँ"
+   },
+   "Show_notification": {
+      "message": "अधिसूचना दिखाएं"
+   },
+   "Sites": {
+      "message": "साइटें"
+   },
+   "Size": {
+      "message": "आकार"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "स्किप टाइम-आउट ($seconds$ सेकंड)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "स्मार्ट"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "इस पेज की कुछ स्क्रिप्ट जावास्क्रिप्ट सेटिंग द्वारा स्क्रिप्ट ब्लॉकर से अवरुद्ध की जा सकती है!"
+   },
+   "Sort": {
+      "message": "छांटे"
+   },
+   "Source": {
+      "message": "स्रोत"
+   },
+   "Source_Code": {
+      "message": "स्रोत कोड"
+   },
+   "Spaces": {
+      "message": "रिक्त स्थान"
+   },
+   "Split_into_Lines": {
+      "message": "पंक्तियों में विभाजित करें"
+   },
+   "Start": {
+      "message": "प्रारंभ"
+   },
+   "Storage": {
+      "message": "स्टोरेज"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "गुप्त मोड में स्टोर डाटा"
+   },
+   "Strict": {
+      "message": "सख्त"
+   },
+   "Sublime": {
+      "message": "विशिष्ठ टेक्स्ट"
+   },
+   "Sublime_Mark": {
+      "message": "सबलाइम मार्क"
+   },
+   "Subresource_Integrity": {
+      "message": "Subresource प्रमाणिकता"
+   },
+   "Swap_with_Sublime_Mark": {
+      "message": "सबलाइम मार्क के साथ स्वैप करें"
+   },
+   "Sync_Reset": {
+      "message": "सिंक रीसेट"
+   },
+   "Sync_Type": {
+      "message": "प्रकार"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "स्क्रिप्ट तुल्यकालन (Tampermonkey बाहरी स्क्रिप्ट सूची एक्सेस)"
+   },
+   "TabMode": {
+      "message": "टैबमोड"
+   },
+   "Tab_URL": {
+      "message": "टैब यूआरएल"
+   },
+   "Tabs": {
+      "message": "टैब्स"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey + स्क्रिप्ट संस्करण"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey को स्थानीय फ़ाइलों का उपयोग करने की अनुमति नहीं है!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "Tampermonkey अक्षम किए जाने पर असुरक्षित संदर्भ (unsafeWindow, पेज के कार्यों और वैरिएबल) को प्रदान करने में अक्षम हो सकता है।"
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "इस परिवर्तन को लागू करने के लिए Tampermonkey फिर से शुरू करना होगा।\n\nक्या आप जारी रखना चाहते हैं?"
+   },
+   "Tampermonkey_version": {
+      "message": "Tampermonkey संस्करण केवल"
+   },
+   "Templates": {
+      "message": "टेम्पलेट्स"
+   },
+   "Temporarily_allow": {
+      "message": "अस्थायी रूप से अनुमति दें"
+   },
+   "Temporary": {
+      "message": "अस्थायी"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "अस्थायी डोमेन व्हाइटलिस्ट"
+   },
+   "Text": {
+      "message": "टेक्स्ट"
+   },
+   "TextArea": {
+      "message": "TextArea"
+   },
+   "Thank_you_very_much_": {
+      "message": "बहुत बहुत धन्यवाद!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "ब्राउज़र API मोड को एक विशेष अनुमति की आवश्यकता है।"
+   },
+   "The_diff_for_this_script_is_too_large_to_render": {
+      "message": "इस स्क्रिप्ट के लिए diff प्रस्तुत करना काफी बड़ा है"
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "डाउनग्रेड स्क्रिप्ट को अपने संग्रहीत डेटा को पढ़ने में समस्याएं हो रही हों!"
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "अपडेट यूआरएल : '$oldurl$' \n    से\n    '$newurl$' बदल गया है",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "थीम"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "बिना सहेजे परिवर्तन हैं।\nक्या आप सच में संपादक को बंद करना चाहते हैं?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "'$name$' के लिए एक अद्यतन  उपलब्ध है। :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_external_resource_will_not_auto_update__Please_delete_it_in_order_to_enable_updates_again_": {
+      "message": "यह बाहरी संसाधन स्वत: अपडेट नहीं होगा! कृपया अपडेट फिर से सक्षम करने के लिए इसे हटा दें।"
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "यह इस स्क्रिप्ट को पुनः प्राप्त करने और प्रत्येक पृष्ठ पर डेटा भेजने की अनुमति देता है। यह संभावित रूप से असुरक्षित है!\n\nक्या आप वाकई जारी रखना चाहते हैं?"
+   },
+   "This_is_a_system_script": {
+      "message": "यह एक सिस्टम स्क्रिप्ट है।"
+   },
+   "This_is_a_userscript": {
+      "message": "यह एक यूजरस्क्रिप्ट है जो जावास्क्रिप्ट में लिखी गई है"
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "यह विकल्प  Tampermonkey मुखपृष्ठ और कुछ स्क्रिप्ट होस्टिंग पेज को Tampermonkey संस्करण और कुछ बुनियादी स्क्रिप्ट जानकारी निर्धारित (स्थापित, संस्करण, सक्षम) करने की अनुमति देता है ।"
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "सुरक्षा सेटिंग्स द्वारा ब्लैकलिस्ट"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "यह स्क्रिप्ट कोई भी @include जानकारी प्रदान नहीं करती।"
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "इस आइटम की https पृष्ठों में पहुंच है।"
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "इस आइटम में वेबपेज के लिए पूरा उपयोग किया है।"
+   },
+   "This_script_has_full_web_access": {
+      "message": "इस स्क्रिप्ट में पूर्ण इंटरनेट एक्सेस है।"
+   },
+   "This_script_is_blacklisted_": {
+      "message": "यह स्क्रिप्ट ब्लैकलिस्ट की गई है!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "यह स्क्रिप्ट क्रोम मोड में चलती है"
+   },
+   "This_script_stores_data": {
+      "message": "यह स्क्रिप्ट Tampermonkey में डेटा संग्रहीत करता है।"
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "यह स्क्रिप्ट ग्रीजमंकी 10 API हिस्से (unsafeWindow.gmonkey) का उपयोग करता है जो कि Tampermonkey और किसी अन्य विकल्प स्क्रिप्ट हैंडलर द्वारा समर्थित नहीं है।"
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "यह आपके ग्लोबल सेटिंग्स के ऊपर लिख देगा!"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "क्या आप वाकई सिंक से सभी डेटा को हटाना चाहते हैं?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "क्या आप वाकई सभी स्क्रिप्ट को हटाना और सभी सेटिंग्स को रीसेट करना चाहते हैं?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "क्या आप वाकई Tampermonkey को फिर से शुरू करना चाहते हैं?"
+   },
+   "Today": {
+      "message": "आज"
+   },
+   "Toggle": {
+      "message": "टॉगल"
+   },
+   "Toggle_Block_Comment": {
+      "message": "टॉगल ब्लॉक टिप्पणी"
+   },
+   "Toggle_Comment": {
+      "message": "टॉगल टिप्पणी"
+   },
+   "Toggle_Enable": {
+      "message": "टॉगल सक्षम करें"
+   },
+   "Trace": {
+      "message": "नज़र"
+   },
+   "Transpose": {
+      "message": "सरकाएं"
+   },
+   "Trigger_Update": {
+      "message": "ट्रिगर अपडेट"
+   },
+   "Trim_trailing_whitespace_from_modified_lines": {
+      "message": "अनुगामी वाइटस्पेस को संशोधित लाइनों से ट्रिम करें"
+   },
+   "Type": {
+      "message": "प्रकार"
+   },
+   "URL": {
+      "message": "यूआरएल"
+   },
+   "UUID": {
+      "message": "यूयूआईडी"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "यूआरएल से स्क्रिप्ट लोड करने में असमर्थ:\n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "इसे पार्स करने में असमर्थ! :("
+   },
+   "Undo": {
+      "message": "पूर्ववत करें"
+   },
+   "Unfold": {
+      "message": "अनफोल्ड"
+   },
+   "Unfold_All": {
+      "message": "सब अनफोल्ड करें"
+   },
+   "Unique_running_scripts": {
+      "message": "अनूठी चलती स्क्रिप्ट"
+   },
+   "Unknown_method_0name0": {
+      "message": "अज्ञात विधि $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "अद्यतन करें"
+   },
+   "Update_Notification": {
+      "message": "TM अद्यतन सूचना दिखाएँ"
+   },
+   "Update_URL_": {
+      "message": "URL अपडेट करें"
+   },
+   "Update_check_is_disabled": {
+      "message": "स्क्रिप्ट अपडेट जांच अक्षम की गयी है या संभव नहीं है"
+   },
+   "Update_interval": {
+      "message": "अंतराल का आधुनिकीकरण"
+   },
+   "Updated_to__0version0": {
+      "message": "$version$: पर अपडेट किया गया",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "अपडेट"
+   },
+   "Upper_Case": {
+      "message": "अपर केस"
+   },
+   "User_domain_blacklist": {
+      "message": "उपयोगकर्ता डोमेन ब्लैकलिस्ट"
+   },
+   "User_domain_whitelist": {
+      "message": "उपयोगकर्ता डोमेन व्हाइटलिस्ट"
+   },
+   "User_excludes": {
+      "message": "उपयोगकर्ता वर्जित"
+   },
+   "User_includes": {
+      "message": "उपयोगकर्ता समावेश"
+   },
+   "User_matches": {
+      "message": "उपयोगकर्ता जोड़ियाँ"
+   },
+   "User_modified": {
+      "message": "संशोधित किया गया"
+   },
+   "Userscripts": {
+      "message": "यूजरस्क्रिप्ट"
+   },
+   "Utilities": {
+      "message": "उपयोगिताएँ"
+   },
+   "Validate_if_given": {
+      "message": "यदि दिया हो तो मान्य करें"
+   },
+   "Validate_if_supported": {
+      "message": "यदि संभव हो तो मान्य करें"
+   },
+   "Verbose": {
+      "message": "वाचाल"
+   },
+   "Version": {
+      "message": "संस्करण"
+   },
+   "Vim": {
+      "message": "विम"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "समन्वयन समाप्त करने की प्रतीक्षा"
+   },
+   "Warning": {
+      "message": "चेतावनी"
+   },
+   "Warning_unsafe_site_warnings_might_appear_": {
+      "message": "चेतावनी: अगर किसी स्क्रिप्ट में संभावित क्षतिग्रस्त यूआरएल शामिल हैं तो असुरक्षित साइट चेतावनी दिखाई दे सकती है।"
+   },
+   "Whitelist": {
+      "message": "व्हाइट लिस्ट"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "व्हाइट लिस्ट में फ़ाइल एक्सटेंशन"
+   },
+   "Whitelisted_Pages": {
+      "message": "व्हाइट लिस्ट किए गए पेज"
+   },
+   "Windows": {
+      "message": "विंडोज"
+   },
+   "XHR_Security": {
+      "message": "XHR सुरक्षा"
+   },
+   "Yank_Sublime_Mark": {
+      "message": "सबलाइम मार्क झटकें"
+   },
+   "Yes": {
+      "message": "हाँ"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "सावधान! यूजर स्क्रिप्ट डाउनग्रेड"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "यूजर स्क्रिप्ट इनस्टॉलेशन"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "यूजर स्क्रिप्ट संशोधन"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "यूजर स्क्रिप्ट फिर से इनस्टॉल"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "यूजर स्क्रिप्ट अद्यतन"
+   },
+   "You_can_add_your_custom_CSS_rules_here_": {
+      "message": "आप यहाँ Tampermonkey UI के लिए अपने स्वयं के CSS नियम जोड़ सकते हैं। यदि इस मामले में यह कुछ तोड़ता है आप जोड़कर डिफ़ॉल्ट लेआउट प्राप्त कर सकते हैं ?layout= विकल्प पेज URL रीसेट करें।"
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "आपकी भाषा समर्थित नहीं है?\nTampermonkey अनुवाद के निर्देश प्राप्त करने के लिए यहाँ क्लिक करें?"
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "आपका व्हाइट लिस्ट निष्पादन योग्य फ़ाइलों को शामिल करने जैसी लगती है!\nअर्थात आपकी यूजरस्क्रिप्ट हार्डडिस्क में मैलवेयर या स्पायवेयर डाउनलोड कर सकती है!!"
+   },
+   "Zip": {
+      "message": "ज़िप"
+   },
+   "__Please_choose__": {
+      "message": "-- कृपया एक विकल्प चुनिए --"
+   },
+   "_not_set_": {
+      "message": "\u003Cसेट नहीं>"
+   },
+   "connect_mode": {
+      "message": "@connect की जाँच करें"
+   },
+   "fatal_error": {
+      "message": "घातक त्रुटि"
+   },
+   "overwritten_by_user": {
+      "message": "उपयोगकर्ता सेटिंग द्वारा ओवरराइट"
+   },
+   "require_and_resource": {
+      "message": "बाहरी (@require और @resource)"
+   },
+   "severity_1": {
+      "message": "1 (सबसे अधिक सुरक्षित)"
+   },
+   "severity_10": {
+      "message": "10 (सबसे कम सुरक्षित)"
+   },
+   "severity_2": {
+      "message": "2"
+   },
+   "severity_3": {
+      "message": "3"
+   },
+   "severity_4": {
+      "message": "4"
+   },
+   "severity_5": {
+      "message": "5"
+   },
+   "severity_6": {
+      "message": "6"
+   },
+   "severity_7": {
+      "message": "7"
+   },
+   "severity_8": {
+      "message": "8"
+   },
+   "severity_9": {
+      "message": "9"
+   },
+   "some_secs": {
+      "message": "कुछ"
+   },
+   "strict_mode": {
+      "message": "सख्त मोड"
+   }
+}

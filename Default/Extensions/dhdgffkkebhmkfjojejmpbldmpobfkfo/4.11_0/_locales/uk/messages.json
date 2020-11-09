@@ -1,0 +1,1646 @@
+{
+   "0count0_changes_exported": {
+      "message": "$count$ зміни експортовані",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_changes_imported": {
+      "message": "$count$ зміни імпортовані",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_errors_or_hints_were_found_": {
+      "message": "$count$ помилок або попереджень знайдено.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ доступна.\nБудь ласка, перезапустіть браузер, щоб почати оновлення!",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "1": {
+      "message": "1"
+   },
+   "10": {
+      "message": "10"
+   },
+   "11": {
+      "message": "11"
+   },
+   "15_Seconds": {
+      "message": "15 секунд"
+   },
+   "1_Hour": {
+      "message": "1 година"
+   },
+   "1_Minute": {
+      "message": "1 хвилину"
+   },
+   "2": {
+      "message": "2"
+   },
+   "3": {
+      "message": "3"
+   },
+   "30_Seconds": {
+      "message": "30 секунд"
+   },
+   "4": {
+      "message": "4"
+   },
+   "5": {
+      "message": "5"
+   },
+   "5_Minutes": {
+      "message": "5 хвилин"
+   },
+   "6": {
+      "message": "6"
+   },
+   "7": {
+      "message": "7"
+   },
+   "8": {
+      "message": "8"
+   },
+   "9": {
+      "message": "9"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "Для запуску цього сценарію може знадобитися повторна перевірка параметрів сумісності GreaseMonkey/Firefox."
+   },
+   "A_reload_is_required": {
+      "message": "Потрібно перезавантаження: \nВсі незбережені зміни будуть втрачені!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "Запит до стороннього ресурсу не є чимось незвичайним.\nВам просто потрібно перевірити, чи є у цього сценарію вагома причина для доступу до цього домену.\nНаприклад, у користувача скрипта є дуже мало причин для звʼязку з вашим банком.\n\nБудь ласка, зверніть увагу, що автори можуть уникнути цього діалогу шляхом додавання тега [url=$connect$]@connect[/url] до своїх скриптам.\n\nНезалежно від того, що ви вирішите, ви в будь-який час можете змінити своє рішення на [url=$settings$]вкладці налаштувань[/url] скрипта.",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "Користувацький скрипт хоче отримати доступ до ресурсів третьої сторони."
+   },
+   "Action": {
+      "message": "Дія"
+   },
+   "Action_Menu": {
+      "message": "Меню дій"
+   },
+   "Actions": {
+      "message": "Дії"
+   },
+   "Add": {
+      "message": "Додати"
+   },
+   "Add_Selection_Above": {
+      "message": "Додати виділення вище"
+   },
+   "Add_Selection_Below": {
+      "message": "Додати виділення нижче"
+   },
+   "Add_TM_to_CSP": {
+      "message": "Додати Tampermonkey в політику безпеки сайту (CSP), якщо потребується"
+   },
+   "Add_Tampermonkey_to_the_site_s_content_csp": {
+      "message": "Додати Tampermonkey до контенту сайту CSP"
+   },
+   "Add_as_0clude0": {
+      "message": "Додати, як $clude$",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "Створити новий скрипт..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "Додати функції сумісності для Object і Array"
+   },
+   "Advanced": {
+      "message": "Передові"
+   },
+   "All_local_files": {
+      "message": "Всі локальні файли"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "Всі зміни зберігаються тільки до закриття цього сеансу інкогніто!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "Всі налаштування скрипта будуть скинуті!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Дозвольте Tampermonkey збирати анонімну статистику через Google Analytics. Це допомагає мені ліпшити Tampermonkey і визначити за якими критеріями мушу зосередити розвиток. Просто вимкніть цього, якщо не подобається."
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "Дозволити взаємодію з повʼязаними сторінками"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "Дозволити скриптам змінювати заголовки HTTP"
+   },
+   "Allow_once": {
+      "message": "Дозволити один раз"
+   },
+   "Always": {
+      "message": "Завжди"
+   },
+   "Always_allow": {
+      "message": "Завжди дозволяти"
+   },
+   "Always_allow_all_domains": {
+      "message": "Завжди дозволяти всім доменам"
+   },
+   "Always_allow_domain": {
+      "message": "Завжди дозволяти домен"
+   },
+   "Always_ask": {
+      "message": "Завжди питати"
+   },
+   "Always_forbid": {
+      "message": "Завжди забороняє"
+   },
+   "Always_forbid_domain": {
+      "message": "Завжди забороняти домен"
+   },
+   "An_error_occured_during_import_": {
+      "message": "Під час імпортування сталася помилка."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "Виникла внутрішня помилка. Якщо проблема не усувається навіть після перезапуску браузера, натисніть ОК і повідомте про цю проблему на форумі.\n\nВи хочете відвідати форум Tampermonkey?"
+   },
+   "Anonymous_statistics": {
+      "message": "Анонімна статистика"
+   },
+   "Appearance": {
+      "message": "Зовнішній вигляд"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "Застосовувати параметри сумісності і до @require скриптів"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "Застосувати це до всіх вибраних сценаріїв"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "Коли Tampermonkey оновиться, він буде перезапущений. Під час перезапуску скрипти тимчасово не працюватимуть!\n\nВи впевнені, що не хочете отримувати повідомлення про оновлення?"
+   },
+   "Ask_if_unknown": {
+      "message": "Запитати, якщо невідомо"
+   },
+   "At_least_one_new_connect_statement_was_added_": {
+      "message": "Був доданий, як мінімум один новий оператор @connect."
+   },
+   "At_least_one_of_the_include_match_or_exclude_statements_was_changed_": {
+      "message": "Принаймні один з виразів @include, @match або @exclude було змінено."
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "Принаймні одна частина цієї сторінки вказана в налаштуванні 'заборонені сторінки'!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": "Увага: список винятків був скорочений.\nПеревірте його вручну!"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": "Увага: список включень був скорочений.\nПеревірте його вручну!"
+   },
+   "Author": {
+      "message": "Автор"
+   },
+   "Auto": {
+      "message": "Автоматично"
+   },
+   "Auto_Indent_all": {
+      "message": "Автовідступ для всіх"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "Автоматичне перезарядки сторінок"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "Перезавантажити сторінки, на яких цей скрипт був включений або вимкнений"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "Максимальний розмір скрипта для автоматичної перевірки синтаксису"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "Автоматична перевірка синтаксису при введенні тексту"
+   },
+   "Automatically_added_user_includes_for_compatibility_reasons_": {
+      "message": "Деякі користувацькі @include-я будуть застосовані автоматично для забезпечення сумісності!"
+   },
+   "Beginner": {
+      "message": "Початківців"
+   },
+   "BlackCheck": {
+      "message": "Перевірка наявності в чорному списку"
+   },
+   "Blacklist": {
+      "message": "Чорний список"
+   },
+   "Blacklist_Severity": {
+      "message": "Блокувати від рівня серйозності"
+   },
+   "Blacklisted_Pages": {
+      "message": "Чорний список сторінок"
+   },
+   "Bookmarks": {
+      "message": "Закладки"
+   },
+   "Both": {
+      "message": "Обидва"
+   },
+   "Browser_API": {
+      "message": "API браузера"
+   },
+   "Browser_API_Downloads": {
+      "message": "API завантажень браузера"
+   },
+   "Browser_Sync": {
+      "message": "Синхронізація браузера"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "КОНФЛІКТ: Цей скрипт був змінений на інший вкладці '$t$' секунд(и) тому!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "Скасування"
+   },
+   "Casual": {
+      "message": "Випадково"
+   },
+   "Center_Cursor": {
+      "message": "Центр курсору"
+   },
+   "Changelog": {
+      "message": "Змінити список"
+   },
+   "Changes": {
+      "message": "Зміна"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "Змінює кількість видимих параметрів конфігурації"
+   },
+   "Check_disabled_scripts": {
+      "message": "Оновлення вимкнутих сценаріїв"
+   },
+   "Check_for_Updates": {
+      "message": "Перевіряти наявність оновлень"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "Перевіряйте наявність оновлень сценарію"
+   },
+   "Check_interval": {
+      "message": "Інтервал перевірки"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "Перевіряти сценарії автоматично, лише до цього розміру."
+   },
+   "Classic": {
+      "message": "Класичний"
+   },
+   "Clear_All": {
+      "message": "Видалити всі"
+   },
+   "Click_here_to_allow_TM_to_access_the_following_hosts_0host_list0": {
+      "message": "Будь ласка, натисніть OK, щоб Tampermonkey міг отримати доступ до наступних хостам:\n\n$host_list$",
+      "placeholders": {
+         "host_list": {
+            "content": "$1"
+         }
+      }
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "Натисніть ОК, щоб підтвердити свою згоду Tampermonkey завантажувати файли без запиту."
+   },
+   "Click_here_to_install_it_": {
+      "message": "Натисніть тут, щоб встановити його."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "Натисніть тут, щоб перемістити цей скрипт"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "Натисніть тут, щоб побачити останні зміни"
+   },
+   "Close": {
+      "message": "Заплющити"
+   },
+   "Closing_Bracket": {
+      "message": "Завершальні дужки"
+   },
+   "Cloud": {
+      "message": "Хмара"
+   },
+   "Columns": {
+      "message": "Колонки"
+   },
+   "Comment": {
+      "message": "Коментар"
+   },
+   "Config_Mode": {
+      "message": "Режим налаштування"
+   },
+   "Convert_Array_Assignements": {
+      "message": "Конвертувати [blub, bla] = s.split(':') вирази"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "Конвертувати розділи CDATA в формат, сумісний з браузером"
+   },
+   "Copy": {
+      "message": "Копіювати"
+   },
+   "Cross_Origin_Request_Permission": {
+      "message": "Запит кореневого дозволу"
+   },
+   "Current_Version": {
+      "message": "Поточна версія"
+   },
+   "Custom_CSS": {
+      "message": "Користувальницький CSS"
+   },
+   "Custom_Linter_Config": {
+      "message": "Настроювана конфігурація Linter"
+   },
+   "Cut": {
+      "message": "Вирізати"
+   },
+   "Dashboard": {
+      "message": "Панель управління"
+   },
+   "Debug": {
+      "message": "Налагодження"
+   },
+   "Debug_scripts": {
+      "message": "Налагодження скриптів"
+   },
+   "Default": {
+      "message": "За замовчуванням"
+   },
+   "Default_Dark": {
+      "message": "За замовчуванням - Темна"
+   },
+   "Delete": {
+      "message": "Видалити"
+   },
+   "Delete_Line": {
+      "message": "Видалити рядок"
+   },
+   "Delete_Line_Left": {
+      "message": "Видалити частину рядка зліва"
+   },
+   "Delete_Line_Right": {
+      "message": "Видалити частину рядка праворуч"
+   },
+   "Delete_to_Next_Word_Boundary": {
+      "message": "Видалити до кордону наступного слова"
+   },
+   "Delete_to_Previous_Word_Boundary": {
+      "message": "Видалити до кордону попереднього слова"
+   },
+   "Delete_to_Sublime_Mark": {
+      "message": "Вилучити з піднятим знаком"
+   },
+   "Description": {
+      "message": "Опис"
+   },
+   "Destination_URL": {
+      "message": "URL призначення"
+   },
+   "Destination_domain": {
+      "message": "Домен призначення"
+   },
+   "Details": {
+      "message": "Подробиці"
+   },
+   "Developer": {
+      "message": "Розробник"
+   },
+   "Disable": {
+      "message": "Вимикати"
+   },
+   "Disabled": {
+      "message": "Вимкнуто"
+   },
+   "Disabled_scripts": {
+      "message": "Відключені скрипти"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "Опція '$option$' включена!\n\nВи дійсно хочете зберегти зміни в коді?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Document_End": {
+      "message": "В кінець скрипта"
+   },
+   "Document_Start": {
+      "message": "На початок скрипта"
+   },
+   "Dont_ask_again": {
+      "message": "Не запитувати"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "Не питай мене для невеликих змін в скрипті"
+   },
+   "Downgrade": {
+      "message": "Відкотити"
+   },
+   "Download_Mode": {
+      "message": "Режим завантаження"
+   },
+   "Downloaded_from_0url0": {
+      "message": "Завантажений з: $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "Завантажити"
+   },
+   "DuckDuckGo": {
+      "message": "DuckDuckGo"
+   },
+   "Duplicate_Lines": {
+      "message": "Дублювати виділене"
+   },
+   "Edit": {
+      "message": "Редагувати"
+   },
+   "Editor": {
+      "message": "Редактор"
+   },
+   "Editor_reset": {
+      "message": "Скидання змін"
+   },
+   "Emacs": {
+      "message": "Emacs"
+   },
+   "Enable": {
+      "message": "Увімкнути"
+   },
+   "Enable_Editor": {
+      "message": "Включити розширений редактор"
+   },
+   "Enable_Script_Sync": {
+      "message": "Увімкнути синхронізацію скриптів"
+   },
+   "Enable_autoSave": {
+      "message": "Автоматично зберігати вміст, коли редактор втрачає фокус"
+   },
+   "Enable_easySave": {
+      "message": "Не показувати діалог підтвердження при збереженні"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "Увімкніть цю опцію, щоб автоматично перевірити код при наборі."
+   },
+   "Enabled": {
+      "message": "Включені"
+   },
+   "Enforce": {
+      "message": "Перевизначити"
+   },
+   "Enter_the_new_rule": {
+      "message": "Введіть нове правило"
+   },
+   "Error": {
+      "message": "Помилки"
+   },
+   "Every_12_Hour": {
+      "message": "Кожні 12 годин"
+   },
+   "Every_6_Hours": {
+      "message": "Кожні 6 годин"
+   },
+   "Every_Day": {
+      "message": "Щодня"
+   },
+   "Every_Hour": {
+      "message": "Кожну годину"
+   },
+   "Every_Month": {
+      "message": "Щомісяця"
+   },
+   "Every_Week": {
+      "message": "Щотижня"
+   },
+   "Exclude_0domain0": {
+      "message": "Додати в виключення $domain$",
+      "placeholders": {
+         "domain": {
+            "content": "$1"
+         }
+      }
+   },
+   "Exclude_s__": {
+      "message": "Exclude(s)"
+   },
+   "Experimental": {
+      "message": "Експериментально"
+   },
+   "Export": {
+      "message": "Експорт"
+   },
+   "Externals": {
+      "message": "Зовнішніх"
+   },
+   "Factory_Reset": {
+      "message": "Скидання до заводських налаштувань"
+   },
+   "Fast": {
+      "message": "Швидкий"
+   },
+   "Favicon_Service": {
+      "message": "Favicon-сервіс"
+   },
+   "Features": {
+      "message": "Дозволи"
+   },
+   "File": {
+      "message": "Файл"
+   },
+   "Filter_by": {
+      "message": "Фільтрувати за"
+   },
+   "Find": {
+      "message": "Знайти"
+   },
+   "Find_All_Under": {
+      "message": "Знайти все до"
+   },
+   "Find_Next": {
+      "message": "Знайти більш"
+   },
+   "Find_Previous": {
+      "message": "Знайти попереднє"
+   },
+   "Find_Under": {
+      "message": "Знайти до"
+   },
+   "Find_Under_Previous": {
+      "message": "Знайти до попереднього"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "Виправляти вирази 'for (var j in x)'"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "Виправити доступ до властивості wrappedJSObject"
+   },
+   "Focus_tab": {
+      "message": "Сфокусуватися на вкладці джерела"
+   },
+   "Fold": {
+      "message": "Згорнути"
+   },
+   "Fold_All": {
+      "message": "Згорнути всі"
+   },
+   "Folding": {
+      "message": "Згортання"
+   },
+   "Font_Size": {
+      "message": "Розмір шрифту"
+   },
+   "Forbid_once": {
+      "message": "Заперечувати один раз"
+   },
+   "Full_reset": {
+      "message": "Повне скидання"
+   },
+   "GM_compat_options_": {
+      "message": "Параметри сумісності GreaseMonkey/Firefox"
+   },
+   "General": {
+      "message": "Загальні"
+   },
+   "Get_new_scripts___": {
+      "message": "Знайти нові скрипти..."
+   },
+   "Get_some_scripts___": {
+      "message": "Додати скрипти..."
+   },
+   "Global_Settings": {
+      "message": "Глобальні налаштування"
+   },
+   "Global_settings_import": {
+      "message": "Імпорт глобальних налаштувань"
+   },
+   "GoTo": {
+      "message": "Перейти"
+   },
+   "Google": {
+      "message": "Google"
+   },
+   "Group_Left": {
+      "message": "Група зліва"
+   },
+   "Group_Right": {
+      "message": "Група праворуч"
+   },
+   "Help": {
+      "message": "Допомога"
+   },
+   "Hide_disabled_scripts": {
+      "message": "Приховання вимкнутих сценаріїв"
+   },
+   "Hide_notification_after": {
+      "message": "Приховувати повідомлення через"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "Підсвічуватися пробіли в кінці рядка"
+   },
+   "Homepage": {
+      "message": "Домашня сторінка"
+   },
+   "I_contributed_already": {
+      "message": "Я вже пожертвував"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "Я не хочу вносити пожертвування"
+   },
+   "Icon_badge_color": {
+      "message": "Колір значка"
+   },
+   "Icon_badge_info": {
+      "message": "Значок на панелі інструментів"
+   },
+   "Import": {
+      "message": "Імпорт"
+   },
+   "Imported": {
+      "message": "Імпортовані"
+   },
+   "Include_TM_settings": {
+      "message": "Включити налаштування Tampermonkey"
+   },
+   "Include_s__": {
+      "message": "Include(s)"
+   },
+   "Include_script_externals": {
+      "message": "Включити зовнішні ресурси скрипта"
+   },
+   "Include_script_storage": {
+      "message": "Включити сховище скриптів"
+   },
+   "Includes_Excludes": {
+      "message": "Includes/Excludes"
+   },
+   "Incremental_Find": {
+      "message": "Інкрементний пошук"
+   },
+   "Indent": {
+      "message": "Відступ"
+   },
+   "Indent_Less": {
+      "message": "Зменшити відступ"
+   },
+   "Indent_More": {
+      "message": "Збільшити відступ"
+   },
+   "Indent_with": {
+      "message": "Відступ з"
+   },
+   "Indentation_Width": {
+      "message": "Ширина відступу"
+   },
+   "Info": {
+      "message": "Інформація"
+   },
+   "Inject_Mode": {
+      "message": "Режим вбудовування"
+   },
+   "Insert_Line_After": {
+      "message": "Вставити рядок після"
+   },
+   "Insert_Line_Before": {
+      "message": "Вставити рядок перед"
+   },
+   "Insert_constructor": {
+      "message": "Конструктор вставляємо"
+   },
+   "Install": {
+      "message": "Встановити"
+   },
+   "Install_from_URL": {
+      "message": "Установка через URL"
+   },
+   "Install_this_script": {
+      "message": "Встановити цей скрипт"
+   },
+   "Installed_Version_": {
+      "message": "Встановлена версія"
+   },
+   "Installed_userscripts": {
+      "message": "Установлені скрипти"
+   },
+   "Instant": {
+      "message": "Миттєвий"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "Неправильний скрипт. Вибачте!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "Некоректне імʼя скрипта. Вибачте!"
+   },
+   "Join_Lines": {
+      "message": "Обʼєднати рядки"
+   },
+   "Jump_to_line": {
+      "message": "Перейти до рядка"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "Інший сервис для оновлення ваших скриптів"
+   },
+   "Key_Mapping": {
+      "message": "Зіставлення клавіш"
+   },
+   "Language": {
+      "message": "Мова"
+   },
+   "Last_updated": {
+      "message": "Останнє оновлення"
+   },
+   "Layout": {
+      "message": "Дизайн"
+   },
+   "Limited_runtime_host_permissions_might_break_some_Tampermonkey_features_": {
+      "message": "Обмежені дозволи на хост під час виконання можуть порушити деякі функції Tampermonkey, такі як оновлення сценарію, GM_xmlhttpRequest та інші!"
+   },
+   "Line_Case_Insensitive": {
+      "message": "Лінії без урахування регістру"
+   },
+   "Line_Down": {
+      "message": "На лінії нижче"
+   },
+   "Line_Up": {
+      "message": "На лінії вище"
+   },
+   "Line_break": {
+      "message": "Розрив рядка"
+   },
+   "Lines": {
+      "message": "Лінії"
+   },
+   "LogLevel": {
+      "message": "Рівень ведення журналу"
+   },
+   "Login": {
+      "message": "Авторизуватись"
+   },
+   "Lower_Case": {
+      "message": "Нижній регістр"
+   },
+   "MIME_Type": {
+      "message": "MIME-тип"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "Шкідливі скрипти можуть порушувати вашу конфіденційність і діяти від вашого імені!\nВстановлюйте скрипти тільки з довірених джерел."
+   },
+   "Manual_Script_Blacklist": {
+      "message": "Ручний чорний список користувальницьких скриптів і @require"
+   },
+   "Matching_URL": {
+      "message": "Відповідний URL"
+   },
+   "Modify": {
+      "message": "Змінити"
+   },
+   "Move_Line_Down": {
+      "message": "На лінії нижче"
+   },
+   "Move_Line_Up": {
+      "message": "На лінії вище"
+   },
+   "Name": {
+      "message": "Імʼя"
+   },
+   "Native": {
+      "message": "Нативний"
+   },
+   "Never": {
+      "message": "Ніколи"
+   },
+   "New_Version": {
+      "message": "Нова версія"
+   },
+   "New_script_template_": {
+      "message": "Новий шаблон користувальницького скрипта"
+   },
+   "New_userscript": {
+      "message": "\u003CНовий скрипт>"
+   },
+   "Next_Bookmark": {
+      "message": "Наступна закладка"
+   },
+   "No": {
+      "message": "Ні"
+   },
+   "No_backups_found": {
+      "message": "Резервну копію не знайдено"
+   },
+   "No_entry_found": {
+      "message": "Запис не знайдено"
+   },
+   "No_frames": {
+      "message": "Запустити тільки у верхньому фреймі"
+   },
+   "No_script_is_installed": {
+      "message": "Скрипти не встановлені"
+   },
+   "No_script_is_running": {
+      "message": "Сценарій не запущений"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "Не знайдено синтаксичні помилки."
+   },
+   "No_update_found__sry_": {
+      "message": "Оновлень не знайдено, вибачте!"
+   },
+   "Normal": {
+      "message": "Нормальний"
+   },
+   "Note": {
+      "message": "Примітка"
+   },
+   "Novice": {
+      "message": "Новий"
+   },
+   "Off": {
+      "message": "Відключений"
+   },
+   "Ok": {
+      "message": "Ок"
+   },
+   "On": {
+      "message": "Включений"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "Виявлено одну помилку або попередження."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "Інстальовано одну або кілька настройок сумісності. Ви повинні розглянути їх."
+   },
+   "Only_Manual": {
+      "message": "Тільки ручний"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "Тільки файли з цими розширеннями можуть бути збережені на жорсткий диск.\nБудьте обережні і не дозволяйте розширення виконуваних у вашій ОС файлів!"
+   },
+   "Open_changelog": {
+      "message": "Відкрити список змін"
+   },
+   "Operation_completed_successfully": {
+      "message": "Операція успішно завершена"
+   },
+   "Original_domain_whitelist": {
+      "message": "Оригінальний білий список доменів"
+   },
+   "Original_excludes": {
+      "message": "Використовувати @excludes"
+   },
+   "Original_includes": {
+      "message": "Використовувати @includes"
+   },
+   "Original_matches": {
+      "message": "Використовувати @matches"
+   },
+   "Page_Filter_Mode": {
+      "message": "Режим фільтра сторінки"
+   },
+   "Password": {
+      "message": "Пароль"
+   },
+   "Paste": {
+      "message": "Вставити"
+   },
+   "Permanent": {
+      "message": "Постійно"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "Будь ласка, ознайомтеся з документацією $editor$ для отримання додаткової інформації.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "Будь ласка, надішліть пожертвування"
+   },
+   "Please_select_a_file": {
+      "message": "Будь ласка, виберіть файл"
+   },
+   "Please_wait___": {
+      "message": "Будь ласка, зачекайте..."
+   },
+   "Position_": {
+      "message": "Позиція"
+   },
+   "Prev_Bookmark": {
+      "message": "Попередня закладка"
+   },
+   "Process_with_Chrome": {
+      "message": "Процес за допомогою браузера"
+   },
+   "Really_delete_0name0__": {
+      "message": "Ви дійсно хочете видалити '$name$'?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "Ви дійсно бажаєте видалити всі виділені елементи?"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "Ви дійсно бажаєте скинути всі виділені елементи?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "Ви дійсно бажаєте скинути параметри сценарію?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "Ви дійсно хочете скасувати всі зміни?"
+   },
+   "Redo": {
+      "message": "Повторити"
+   },
+   "Reindent_on_typing": {
+      "message": "Повторний відступ при наборі тексту"
+   },
+   "Reinstall": {
+      "message": "Перевстановити"
+   },
+   "Remind_me_later": {
+      "message": "Нагадати мені пізніше"
+   },
+   "Remove": {
+      "message": "Видалити"
+   },
+   "Replace": {
+      "message": "Замінити"
+   },
+   "Replace_": {
+      "message": "Замінивши?"
+   },
+   "Replace_All": {
+      "message": "Замінити всі"
+   },
+   "Replace_all_with": {
+      "message": "Замінити всі"
+   },
+   "Replace_for_each_statements": {
+      "message": "Замінювати вирази 'for each'"
+   },
+   "Replace_with": {
+      "message": "Замінити на"
+   },
+   "Report_a_bug": {
+      "message": "Повідомити про помилку"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "Повідомити про порушення.\n(Може знадобитися користувальницький аккаунт)"
+   },
+   "Requires": {
+      "message": "Вимоги"
+   },
+   "Reset_Section": {
+      "message": "Скинути"
+   },
+   "Resources": {
+      "message": "Ресурси"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Перезапуск Tampermonkey"
+   },
+   "Run_at": {
+      "message": "Запускати в"
+   },
+   "Run_syntax_check": {
+      "message": "Запустити перевірку синтаксису"
+   },
+   "Running_scripts": {
+      "message": "Кількість запущених скриптів"
+   },
+   "Save": {
+      "message": "Зберегти"
+   },
+   "Save_to_disk": {
+      "message": "Зберегти на диску"
+   },
+   "Script_0name0_is_slowing_down_some_page_loads_": {
+      "message": "Скрипт '$name$' уповільнює завантаження вашої сторінки",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_Blacklist_Source": {
+      "message": "Список заборонених джерел"
+   },
+   "Script_Sync": {
+      "message": "Синхронізація скриптів"
+   },
+   "Script_URL_detection": {
+      "message": "Визначення URL скрипту"
+   },
+   "Script_Update": {
+      "message": "Оновлення скрипта"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "Автори сценаріїв можуть захистити зовнішні ресурси, додавши SРІ хеш до вихідної URL."
+   },
+   "Script_local_files_access": {
+      "message": "Дозволити сценарії доступу до локальних файлів"
+   },
+   "Script_name_0name0": {
+      "message": "Імʼя скрипта: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "Порядок скриптів"
+   },
+   "Search": {
+      "message": "Знайти"
+   },
+   "Search_for": {
+      "message": "Шукати"
+   },
+   "Security": {
+      "message": "Безпеки"
+   },
+   "Select_All": {
+      "message": "Виділити всі"
+   },
+   "Select_Bookmarks": {
+      "message": "Виділити закладки"
+   },
+   "Select_Line": {
+      "message": "Виділити рядок"
+   },
+   "Select_Next_Occurrence": {
+      "message": "Вибрати наступне входження"
+   },
+   "Select_Scope": {
+      "message": "Виділити область"
+   },
+   "Select_between_Brackets": {
+      "message": "Виділити між дужками"
+   },
+   "Select_to_Sublime_Mark": {
+      "message": "Вибрати для піднесеного знака"
+   },
+   "Selection": {
+      "message": "Виділення"
+   },
+   "Server_And_Manual": {
+      "message": "Дистанційне + Ручний"
+   },
+   "Set_Sublime_Mark": {
+      "message": "Встановити підвищений знак"
+   },
+   "Settings": {
+      "message": "Налаштування"
+   },
+   "Show_backups": {
+      "message": "Показати резервні копії"
+   },
+   "Show_fixed_source": {
+      "message": "Показати зміни в коді"
+   },
+   "Show_notification": {
+      "message": "Показати повідомлення"
+   },
+   "Sites": {
+      "message": "Сайти"
+   },
+   "Size": {
+      "message": "Розмір"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Пропустити час очікування ($seconds$ секунд)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "Розумний"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "Деякі сценарії можуть бути заблоковані налаштуваннями JavaScript для цієї сторінки або блокувальником сценаріїв!"
+   },
+   "Sort": {
+      "message": "Сортування"
+   },
+   "Source": {
+      "message": "Джерело"
+   },
+   "Source_Code": {
+      "message": "Вихідний код"
+   },
+   "Spaces": {
+      "message": "Прогалини"
+   },
+   "Split_into_Lines": {
+      "message": "Розділити на рядки"
+   },
+   "Start": {
+      "message": "Запустити"
+   },
+   "Stop": {
+      "message": "Стоп"
+   },
+   "Storage": {
+      "message": "Сховище"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "Зберігати дані в режимі анонімного перегляду"
+   },
+   "Strict": {
+      "message": "Суворий"
+   },
+   "Sublime": {
+      "message": "Sublime Text"
+   },
+   "Sublime_Mark": {
+      "message": "Піднесений знак"
+   },
+   "Subresource_Integrity": {
+      "message": "Під ресурсна цілісність"
+   },
+   "Swap_with_Sublime_Mark": {
+      "message": "Обмін з піднесеним знаком"
+   },
+   "Sync_Reset": {
+      "message": "Скидання синхронізації"
+   },
+   "Sync_Type": {
+      "message": "Тип"
+   },
+   "Sync_finished": {
+      "message": "Синхронізація завершена"
+   },
+   "Sync_is_running": {
+      "message": "Синхронізація запущена"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "Синхронізація скриптів між браузерами та операційними системами"
+   },
+   "TabMode": {
+      "message": "Режим табуляції"
+   },
+   "Tab_URL": {
+      "message": "URL вкладки"
+   },
+   "Tabs": {
+      "message": "Табуляція"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey + версія скрипта"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey не має прав доступу до локальних файлів!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "Без цього варіанту, Tampermonkey може відмовити у доступі до небезпечного вмісту (unsafeWindow, функції і змінні сторінки)."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "Tampermonkey має бути перезапущено для зміни вступили в силу.\n\nВи хочете продовжити?"
+   },
+   "Tampermonkey_version": {
+      "message": "Тільки версія Tampermonkey"
+   },
+   "Templates": {
+      "message": "Шаблони"
+   },
+   "Temporarily_allow": {
+      "message": "Тимчасово дозволити"
+   },
+   "Temporary": {
+      "message": "Тимчасово"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "Тимчасовий білий список доменів"
+   },
+   "Text": {
+      "message": "Текст"
+   },
+   "TextArea": {
+      "message": "Текстове поле"
+   },
+   "Thank_you_very_much_": {
+      "message": "Спасибі велике!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "Для доступу до API браузера потрібен спеціальний дозвіл."
+   },
+   "The_diff_for_this_script_is_too_large_to_render": {
+      "message": "Відмінності для цього сценарію занадто великі для візуалізації"
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "Після відкату у скрипту можуть виникати проблеми з читанням збережених даних!"
+   },
+   "The_origin_of_this_script_cant_be_determined_": {
+      "message": "Увагу: походження цього скрипту визначити неможливо.\nАбо він був встановлений зловмисним третьою особою для крадіжки ваших особистих даних, або для якихось базових налаштувань браузера, ваша операційна система або обладнання змінилися.\n\nБудь ласка, відкрийте, перегляньте і збережіть скрипт, щоб включити його."
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "URL-адреса оновлення змінився з:\n    '$oldurl$'\n    на:\n    '$newurl$'\n",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "Тема"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "Є незбережені зміни.\nВи дійсно бажаєте закрити редактор?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "Оновлення доступні для '$name$'. :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_external_resource_will_not_auto_update__Please_delete_it_in_order_to_enable_updates_again_": {
+      "message": "Цей зовнішній ресурс не буде автоматично оновлюватися! Будь ласка, видаліть його, щоб знову включити оновлення."
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "Це дає цим сценарієм дозвіл на отримання та відправку даних з кожної веб-сторінки. Це потенційно небезпечне!\n\nВи дійсно бажаєте продовжити?"
+   },
+   "This_is_a_possibly_foisted_script_and_a_modification_will_enable_it_": {
+      "message": "Походження цього скрипта визначити неможливо.\nАбо він був встановлений зловмисних третьою особою для крадіжки ваших особистих даних, або для якихось базових налаштувань браузера, ваша операційна система або обладнання змінилися.\nЦя модифікація дозволить це!"
+   },
+   "This_is_a_system_script": {
+      "message": "Це системний скрипт."
+   },
+   "This_is_a_userscript": {
+      "message": "Це користувальницький скрипт, написаний на Javascript"
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "Цей параметр дозволяє головну сторінку Tampermonkey і деякі скрипти для визначення версії Tampermonkey і основна інформація про скрипти (які встановлені, їх версії, і чи є вони включені)."
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "Чорний список за параметрами безпеки"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "Цей скрипт не містить @include виразів."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "Цей скрипт має доступ до сторінок HTTPS."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "Цей скрипт має повний доступ до сторінки."
+   },
+   "This_script_has_full_web_access": {
+      "message": "Цей скрипт має повний доступ в інтернет."
+   },
+   "This_script_is_blacklisted_": {
+      "message": "Цей скрипт в чорному списку!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "Цей скрипт працює в режимі Chrome"
+   },
+   "This_script_stores_data": {
+      "message": "Цей скрипт зберігає дані в Tampermonkey."
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "Цей скрипт використовує частину API Greasemonkey 10 (unsafeWindow.gmonkey)\nяка не підтримується не Tampermonkey, не будь-яким іншим альтернативним обробником скриптів."
+   },
+   "This_script_was_deleted": {
+      "message": "Цей сценарій видалено"
+   },
+   "This_script_was_executed_0count0_times": {
+      "message": "Цей скрипт був виконаний $count$ один раз",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_executed_0count0_times_but_is_not_active_anymore": {
+      "message": "Цей скрипт був виконаний $count$ раз(и), але зараз він не активний",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_not_executed_yet": {
+      "message": "Цей скрипт ще не виконаний"
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "Це перезапише ваші глобальні налаштування!"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "Ви дійсно хочете видалити всі дані з синхронізації?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "Ви дійсно хочете видалити всі скрипти і скинути всі налаштування?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "Ви дійсно хочете перезапустити Tampermonkey?"
+   },
+   "Today": {
+      "message": "Сьогодні"
+   },
+   "Toggle": {
+      "message": "Вкл/Викл"
+   },
+   "Toggle_Block_Comment": {
+      "message": "Вкл/викл багатостроковий коментар"
+   },
+   "Toggle_Comment": {
+      "message": "Вкл/викл коментар"
+   },
+   "Toggle_Comment_Indented": {
+      "message": "Вкл/викл коментар з відступом"
+   },
+   "Toggle_Enable": {
+      "message": "Перемикач"
+   },
+   "Trace": {
+      "message": "Відстеження"
+   },
+   "Transpose": {
+      "message": "Транспонувати"
+   },
+   "Trigger_Update": {
+      "message": "Оновлення тригера"
+   },
+   "Trim_trailing_whitespace_from_modified_lines": {
+      "message": "Обрізати прогалини з кінців модифікованих рядків"
+   },
+   "Try_to_install_as_script": {
+      "message": "Спробуйте встановити, як скрипт"
+   },
+   "Type": {
+      "message": "Тип"
+   },
+   "URL": {
+      "message": "URL"
+   },
+   "UUID": {
+      "message": "UUID"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "Не вдалося завантажити сценарій з URL-адреси: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_0name0": {
+      "message": "Не вдалося розібрати $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "Не вдалося проаналізувати це! :("
+   },
+   "Undo": {
+      "message": "Скасувати"
+   },
+   "Unfold": {
+      "message": "Розгорнути"
+   },
+   "Unfold_All": {
+      "message": "Розгорнути всі"
+   },
+   "Unique_running_scripts": {
+      "message": "Унікальні запущені скрипти"
+   },
+   "Unknown_method_0name0": {
+      "message": "Невідомий метод $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "Оновлення"
+   },
+   "Update_Notification": {
+      "message": "Показати сповіщення про оновлення Tampermonkey"
+   },
+   "Update_URL_": {
+      "message": "URL поновлення"
+   },
+   "Update_check_is_disabled": {
+      "message": "Перевірка сценарію вимкнута або неможлива"
+   },
+   "Update_interval": {
+      "message": "Період оновлення"
+   },
+   "Updated_to__0version0": {
+      "message": "Оновлено до: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "Оновлення"
+   },
+   "Upper_Case": {
+      "message": "Верхній регістр"
+   },
+   "User_domain_blacklist": {
+      "message": "Користувальницький чорний список доменів"
+   },
+   "User_domain_whitelist": {
+      "message": "Користувальницький білий список доменів"
+   },
+   "User_excludes": {
+      "message": "Користувача @excludes"
+   },
+   "User_includes": {
+      "message": "Користувача @includes"
+   },
+   "User_matches": {
+      "message": "Користувача @matches"
+   },
+   "User_modified": {
+      "message": "Змінив"
+   },
+   "Userscripts": {
+      "message": "Користувацьких сценаріїв"
+   },
+   "Utilities": {
+      "message": "Утиліти"
+   },
+   "Validate_if_given": {
+      "message": "Перевірити, якщо вказано"
+   },
+   "Validate_if_supported": {
+      "message": "Перевірити, якщо можливо"
+   },
+   "Verbose": {
+      "message": "Багатослівний"
+   },
+   "Version": {
+      "message": "Версія"
+   },
+   "Vim": {
+      "message": "Vim"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "Очікування синхронізації завершено"
+   },
+   "Warning": {
+      "message": "Попередження"
+   },
+   "Warning_unsafe_site_warnings_might_appear_": {
+      "message": "Увага: можуть зʼявлятися попередження про ненадійного сайті, якщо скрипт містить потенційно небезпечні URL."
+   },
+   "Whitelist": {
+      "message": "Білий список"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "Білий список розширень файлів"
+   },
+   "Whitelisted_Pages": {
+      "message": "Білий список сторінок"
+   },
+   "Windows": {
+      "message": "Windows"
+   },
+   "XHR_Security": {
+      "message": "Безпека XHR"
+   },
+   "Yank_Sublime_Mark": {
+      "message": "Маркер вибору Yank"
+   },
+   "Yes": {
+      "message": "Так"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "Увага! Відкат версії скрипта"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "Установка скрипта"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "Зміна сценарію"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "Перевстановлення скрипту"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "Оновлення скрипта"
+   },
+   "You_can_add_your_custom_CSS_rules_here_": {
+      "message": "Ви можете додати свої власні правила CSS для користувача інтерфейсу Tampermonkey тут. У разі, якщо це щось зламає, перейдіть до стандартного оформлення, додавши ?layout=reset до URL."
+   },
+   "You_can_add_your_custom_linter_config_here_": {
+      "message": "Ви можете додати власну конфігурацію Linter тут."
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "Ваша мова не підтримується?\nНатисніть тут, щоб отримати інструкції, як перевести Tampermonkey?"
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "Ваш білий список містить виконувані файли!\nЦе означає, що ваші користувальницькі скрипти можуть завантажувати шкідливі або шпигунські програми на ваш жорсткий диск!"
+   },
+   "Zip": {
+      "message": "Zip"
+   },
+   "__Please_choose__": {
+      "message": "-- Будь ласка, виберіть опцію --"
+   },
+   "_not_set_": {
+      "message": "\u003Cне встановлено>"
+   },
+   "connect_mode": {
+      "message": "Перевірка @connect"
+   },
+   "fatal_error": {
+      "message": "Критична помилка"
+   },
+   "overwritten_by_user": {
+      "message": "перезаписані настройками користувача"
+   },
+   "require_and_resource": {
+      "message": "Зовнішні (@require та @resource)"
+   },
+   "severity_1": {
+      "message": "1 (найбільш безпечний)"
+   },
+   "severity_10": {
+      "message": "10 (найменш безпечний)"
+   },
+   "severity_2": {
+      "message": "2"
+   },
+   "severity_3": {
+      "message": "3"
+   },
+   "severity_4": {
+      "message": "4"
+   },
+   "severity_5": {
+      "message": "5"
+   },
+   "severity_6": {
+      "message": "6"
+   },
+   "severity_7": {
+      "message": "7"
+   },
+   "severity_8": {
+      "message": "8"
+   },
+   "severity_9": {
+      "message": "9"
+   },
+   "some_secs": {
+      "message": "деякий"
+   },
+   "strict_mode": {
+      "message": "Строгий режим"
+   }
+}

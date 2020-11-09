@@ -1,0 +1,61 @@
+{
+   "background": {
+      "page": "background.html"
+   },
+   "browser_action": {
+      "default_icon": {
+         "16": "images/icon_grey16.png",
+         "19": "images/icon_grey19.png",
+         "24": "images/icon_grey24.png",
+         "32": "images/icon_grey32.png",
+         "38": "images/icon_grey38.png"
+      },
+      "default_popup": "action.html",
+      "default_title": "Tampermonkey"
+   },
+   "commands": {
+      "open-dashboard": {
+         "description": "Open dashboard"
+      },
+      "open-dashboard-with-running-scripts": {
+         "description": "Open dashboard with the current tab's URL used as filter"
+      },
+      "open-new-script": {
+         "description": "Open new script tab"
+      },
+      "toggle-enable": {
+         "description": "Toggle enable state"
+      }
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "rea/common.js", "content.js", "page.js" ],
+      "matches": [ "file:///*", "http://*/*", "https://*/*" ],
+      "run_at": "document_start"
+   } ],
+   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+   "default_locale": "en",
+   "description": "The world's most popular userscript manager",
+   "icons": {
+      "128": "images/icon128.png",
+      "32": "images/icon.png",
+      "48": "images/icon48.png"
+   },
+   "incognito": "split",
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjiyuc6OWY8gaVTe+b16fH2BBe0PQLMeUpEXSQvyv5a/6OiQ1D8bBLTfLvApD3zT2MZoXWu2KUILdkyg5OC/Tru8m+Js6e3RjHY9Rqbvnh8CJQgTJ+63L5w9aLsTvA2fqdDfhw8Mnl1GMcJd/RI/ZiBEm0stog0ZfyQjD1jpSEXQIDAQAB",
+   "manifest_version": 2,
+   "minimum_chrome_version": "59.0.0.0",
+   "name": "Tampermonkey",
+   "offline_enabled": true,
+   "optional_permissions": [ "downloads" ],
+   "options_page": "options.html",
+   "options_ui": {
+      "chrome_style": false,
+      "open_in_tab": true,
+      "page": "options.html"
+   },
+   "permissions": [ "notifications", "unlimitedStorage", "tabs", "idle", "webNavigation", "webRequest", "webRequestBlocking", "storage", "contextMenus", "chrome://favicon/", "clipboardWrite", "cookies", "\u003Call_urls>" ],
+   "short_name": "Tampermonkey",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "4.11"
+}

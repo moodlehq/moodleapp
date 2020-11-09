@@ -1,0 +1,1132 @@
+{
+   "0count0_errors_or_hints_were_found_": {
+      "message": "$count$개의 오류나 힌트가 발견되었습니다.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ 이 사용 가능합니다.\n브라우저를 다시 시작하여 업데이트를 시작하세요!",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "15_Seconds": {
+      "message": "15초"
+   },
+   "1_Hour": {
+      "message": "1시간"
+   },
+   "1_Minute": {
+      "message": "1분"
+   },
+   "30_Seconds": {
+      "message": "30초"
+   },
+   "5_Minutes": {
+      "message": "5분"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "이 스크립트를 실행하기 위해서 GreaseMonkey/FF 호환성 설정 재확인이 필요할 수도 있습니다."
+   },
+   "A_reload_is_required": {
+      "message": "새로고침이 필요합니다: \n모든 저장되지 않은 변경 사항은 사라집니다!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "Cross-origin 리소스 요청은 흔히 있는 일입니다.\n단지 이 스크립트가 이 도메인에 접근할 좋은 이유가 있는지를 확인하세요.\n예를 들어, 유저 스크립트가 은행에 접근할 일은 거의 없습니다.\n\nPlease note that userscript authors can avoid this dialog by adding [url=$connect$]@connect tags[/url] to their scripts.\n\nNo matter how you'll decide, you can change your opinion at any time at the script's [url=$settings$]settings tab[/url].",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "유저 스크립트가 Cross-origin 리소스에 접근하고 싶어 합니다."
+   },
+   "Action": {
+      "message": "동작"
+   },
+   "Action_Menu": {
+      "message": "동작 메뉴"
+   },
+   "Actions": {
+      "message": "동작"
+   },
+   "Add": {
+      "message": "추가"
+   },
+   "Add_TM_to_CSP": {
+      "message": "사이트에 만약 콘텐츠 보안 정책(CSP)가 있다면 거기에 Tampermonkey 추가"
+   },
+   "Add_as_0clude0": {
+      "message": "$clude$(으)로 추가",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "새 스크립트 만들기..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "Object와 Array에 호환 함수 추가"
+   },
+   "Advanced": {
+      "message": "상급자"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "모든 변경 사항은 시크릿 모드가 닫히기 전까지만 유지됩니다!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "모든 스크립트 설정이 재설정될 것입니다!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Tampermonkey가 Google Analytics로 익명 통계를 수집하는 것을 허용합니다. 이는 Tampermonkey가 발전하고 개발 방향을 정하는 데에 도움을 줍니다. 싫을 경우에는 그냥 비활성화하세요."
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "협력 페이지와 통신할 수 있도록 허용"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "스크립트에 의해 HTTP 헤더가 변경될 수 있도록 허용"
+   },
+   "Allow_once": {
+      "message": "한 번 허용"
+   },
+   "Always": {
+      "message": "항상"
+   },
+   "Always_allow": {
+      "message": "항상 허용"
+   },
+   "Always_allow_all_domains": {
+      "message": "모든 도메인 항상 허용"
+   },
+   "Always_allow_domain": {
+      "message": "도메인 항상 허용"
+   },
+   "Always_ask": {
+      "message": "항상 물어보기"
+   },
+   "Always_forbid": {
+      "message": "항상 금지"
+   },
+   "Always_forbid_domain": {
+      "message": "도메인 항상 금지"
+   },
+   "An_error_occured_during_import_": {
+      "message": "가져오는 도중 오류가 발생했습니다."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "내부 오류가 발생했습니다. 만약 Chrome을 재시작한 후에도 이 문제가 발생한다면, 확인을 누른 후 포럼에 이 상황을 제보해 주세요.\n\nTampermonkey 포럼에 방문하시겠습니까?"
+   },
+   "Anonymous_statistics": {
+      "message": "익명 통계"
+   },
+   "Appearance": {
+      "message": "모양"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "@require 스크립트에도 호환성 설정을 적용"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "이 동작을 선택된 모든 스크립트에 적용"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "브라우저에 의해 Tampermonkey가 업데이트되었을 때 Tampermonkey는 재시작됩니다. 불행하게도 이는 현재 실행 중인 스크립트에 오류를 발생시킬 수 있습니다!\n\n정말로 업데이트에 대한 알림을 받지 않으시겠습니까?"
+   },
+   "Ask_if_unknown": {
+      "message": "모를 때 물어보기"
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "이 페이지의 적어도 한 부분이 '금지된 페이지' 설정에 올라 있습니다!"
+   },
+   "Author": {
+      "message": "작성자"
+   },
+   "Auto": {
+      "message": "자동"
+   },
+   "Auto_Indent_all": {
+      "message": "전체 자동 들여쓰기"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "자동 페이지 새로고침"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "스크립트가 켜지거나 꺼졌을 경우 영향을 받는 페이지를 자동 새로고침"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "자동 문법 검사 최대 크기"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "타이핑 할 때 자동으로 문법 검사"
+   },
+   "Beginner": {
+      "message": "중급자"
+   },
+   "BlackCheck": {
+      "message": "악성 확인"
+   },
+   "Blacklist": {
+      "message": "블랙리스트"
+   },
+   "Blacklist_Severity": {
+      "message": "차단 보안 단계"
+   },
+   "Blacklisted_Pages": {
+      "message": "페이지 블랙리스트"
+   },
+   "Both": {
+      "message": "둘 다"
+   },
+   "Browser_API": {
+      "message": "브라우저 API"
+   },
+   "Browser_API_Downloads": {
+      "message": "브라우저 API 다운로드"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "충돌:\n이 스크립트는 다른 탭에서 $t$초 전에 변경되었습니다!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "취소"
+   },
+   "Casual": {
+      "message": "캐쥬얼"
+   },
+   "Changelog": {
+      "message": "새로운 사항"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "볼 수 있는 설정 갯수를 변경합니다"
+   },
+   "Check_disabled_scripts": {
+      "message": "비활성화된 스크립트 업데이트"
+   },
+   "Check_for_Updates": {
+      "message": "업데이트 확인"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "유저 스크립트 업데이트 확인"
+   },
+   "Check_interval": {
+      "message": "확인 주기"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "최대 이 크기의 스크립트만을 자동으로 검사합니다."
+   },
+   "Classic": {
+      "message": "클래식"
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "확인을 눌러 Tampermonkey가 즉시 다운로드를 시작할 수 있도록 허용하세요."
+   },
+   "Click_here_to_install_it_": {
+      "message": "이것을 설치하려면 클릭하세요."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "이 스크립트를 옮기려면 클릭하세요"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "최근 변경 사항을 보려면 클릭하세요"
+   },
+   "Close": {
+      "message": "닫기"
+   },
+   "Cloud": {
+      "message": "클라우드"
+   },
+   "Columns": {
+      "message": "열 수"
+   },
+   "Comment": {
+      "message": "주석"
+   },
+   "Config_Mode": {
+      "message": "설정 모드"
+   },
+   "Convert_Array_Assignements": {
+      "message": "[blub, bla] = s.split(':') 문장 변환"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "CDATA 부분을 Chrome과 호환 가능한 형태로 변환"
+   },
+   "Dashboard": {
+      "message": "대시보드"
+   },
+   "Debug_scripts": {
+      "message": "스크립트 디버그"
+   },
+   "Default": {
+      "message": "기본"
+   },
+   "Delete": {
+      "message": "삭제"
+   },
+   "Description": {
+      "message": "설명"
+   },
+   "Destination_URL": {
+      "message": "대상 URL"
+   },
+   "Destination_domain": {
+      "message": "대상 도메인"
+   },
+   "Details": {
+      "message": "자세히"
+   },
+   "Disable": {
+      "message": "비활성화"
+   },
+   "Disabled": {
+      "message": "비활성화됨"
+   },
+   "Disabled_scripts": {
+      "message": "비활성화된 스크립트"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "'$option$' 설정이 활성화되었습니다!\n\n고쳐진 소스를 저장하시겠습니까?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Dont_ask_again": {
+      "message": "다시 묻지 않기"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "단순 스크립트 업데이트시에는 물어보지 않기"
+   },
+   "Downgrade": {
+      "message": "다운그레이드"
+   },
+   "Download_Mode": {
+      "message": "다운로드 모드"
+   },
+   "Downloaded_from_0url0": {
+      "message": "$url$으로부터 다운로드됨",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "다운로드"
+   },
+   "Edit": {
+      "message": "수정"
+   },
+   "Editor": {
+      "message": "에디터"
+   },
+   "Editor_reset": {
+      "message": "에디터 재설정"
+   },
+   "Enable": {
+      "message": "활성화"
+   },
+   "Enable_Editor": {
+      "message": "향상된 에디터 사용"
+   },
+   "Enable_Script_Sync": {
+      "message": "TESLA 활성화"
+   },
+   "Enable_autoSave": {
+      "message": "에디터가 포커스를 잃었을 경우 자동 저장"
+   },
+   "Enable_easySave": {
+      "message": "저장할 때 확인 창 표시하지 않기"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "타이핑 할 때 자동으로 코드를 검사하려면 이 설정을 활성화하세요."
+   },
+   "Enabled": {
+      "message": "활성화됨"
+   },
+   "Enforce": {
+      "message": "강제"
+   },
+   "Enter_the_new_rule": {
+      "message": "새로운 규칙 입력"
+   },
+   "Every_12_Hour": {
+      "message": "매 12시간"
+   },
+   "Every_6_Hours": {
+      "message": "매 6시간"
+   },
+   "Every_Day": {
+      "message": "매일"
+   },
+   "Every_Hour": {
+      "message": "매 시간"
+   },
+   "Every_Month": {
+      "message": "매달"
+   },
+   "Every_Week": {
+      "message": "매주"
+   },
+   "Exclude_s__": {
+      "message": "제외"
+   },
+   "Experimental": {
+      "message": "실험적"
+   },
+   "Export": {
+      "message": "내보내기"
+   },
+   "Externals": {
+      "message": "외부"
+   },
+   "Factory_Reset": {
+      "message": "전체 초기화"
+   },
+   "Fast": {
+      "message": "빠름"
+   },
+   "Features": {
+      "message": "기능"
+   },
+   "File": {
+      "message": "파일"
+   },
+   "Filter_by": {
+      "message": "필터"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "'for (var j in x)' 문장 고치기"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "wrappedJSObject 속성 접근 고치기"
+   },
+   "Focus_tab": {
+      "message": "소스 탭 활성화"
+   },
+   "Font_Size": {
+      "message": "폰트 크기"
+   },
+   "Forbid_once": {
+      "message": "한 번 금지"
+   },
+   "Full_reset": {
+      "message": "전체 재설정"
+   },
+   "GM_compat_options_": {
+      "message": "GM/FF 호환성 설정"
+   },
+   "General": {
+      "message": "일반"
+   },
+   "Get_new_scripts___": {
+      "message": "새 스크립트 찾기..."
+   },
+   "Get_some_scripts___": {
+      "message": "스크립트 가져오기..."
+   },
+   "Global_Settings": {
+      "message": "전체 설정"
+   },
+   "Global_settings_import": {
+      "message": "전체 설정 가져오기"
+   },
+   "Help": {
+      "message": "도움말"
+   },
+   "Hide_disabled_scripts": {
+      "message": "비활성화된 스크립트 숨기기"
+   },
+   "Hide_notification_after": {
+      "message": "이 시간 이후 알림 숨기기"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "후행 공백 강조"
+   },
+   "Homepage": {
+      "message": "홈페이지"
+   },
+   "I_contributed_already": {
+      "message": "이미 기부함"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "기부하고 싶지 않음"
+   },
+   "Icon_badge_color": {
+      "message": "아이콘 뱃지 색상"
+   },
+   "Icon_badge_info": {
+      "message": "아이콘 뱃지 정보"
+   },
+   "Import": {
+      "message": "가져오기"
+   },
+   "Imported": {
+      "message": "가져와짐"
+   },
+   "Include_TM_settings": {
+      "message": "Tampermonkey 설정 포함"
+   },
+   "Include_s__": {
+      "message": "포함"
+   },
+   "Include_script_storage": {
+      "message": "스크립트 저장 공간 포함"
+   },
+   "Includes_Excludes": {
+      "message": "포함/제외"
+   },
+   "Indent": {
+      "message": "들여쓰기"
+   },
+   "Indent_with": {
+      "message": "들여쓰기 문자"
+   },
+   "Indentation_Width": {
+      "message": "들여쓰기 폭"
+   },
+   "Inject_Mode": {
+      "message": "주입 모드"
+   },
+   "Insert_constructor": {
+      "message": "생성자 삽입"
+   },
+   "Install": {
+      "message": "설치"
+   },
+   "Install_this_script": {
+      "message": "이 스크립트 설치"
+   },
+   "Installed_Version_": {
+      "message": "설치된 버전"
+   },
+   "Installed_userscripts": {
+      "message": "설치된 유저 스크립트"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "유효하지 않은 유저 스크립트입니다. 죄송합니다!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "유효하지 않은 유저 스크립트 이름입니다. 죄송합니다!"
+   },
+   "Jump_to_line": {
+      "message": "줄 찾아가기"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "스크립트 업데이터가 제공한 다른 서비스"
+   },
+   "Key_Mapping": {
+      "message": "단축키"
+   },
+   "Language": {
+      "message": "언어"
+   },
+   "Last_updated": {
+      "message": "최근 업데이트 일시"
+   },
+   "Layout": {
+      "message": "레이아웃"
+   },
+   "Line_break": {
+      "message": "줄 바꿈"
+   },
+   "LogLevel": {
+      "message": "로그 단계"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "악성 스크립트는 당신의 개인정보를 위협하고 당신 대신 활동할 수 있습니다!\n반드시 신뢰할 수 있는 출처에서만 스크립트를 설치하세요."
+   },
+   "Manual_Script_Blacklist": {
+      "message": "수동 유저 스크립트, @require 블랙리스트"
+   },
+   "Matching_URL": {
+      "message": "매치 URL"
+   },
+   "Modify": {
+      "message": "수정"
+   },
+   "Name": {
+      "message": "이름"
+   },
+   "Native": {
+      "message": "네이티브"
+   },
+   "Never": {
+      "message": "안 함"
+   },
+   "New_script_template_": {
+      "message": "새 유저 스크립트 템플릿"
+   },
+   "New_userscript": {
+      "message": "\u003C새 유저 스크립트>"
+   },
+   "No": {
+      "message": "아니오"
+   },
+   "No_backups_found": {
+      "message": "아무런 백업도 발견되지 않음"
+   },
+   "No_entry_found": {
+      "message": "아무런 엔트리가 발견되지 않음"
+   },
+   "No_frames": {
+      "message": "가장 위 프레임에 있을 때에만 실행"
+   },
+   "No_script_is_installed": {
+      "message": "아무런 스크립트도 설치되지 않음"
+   },
+   "No_script_is_running": {
+      "message": "아무런 스크립트도 동작 중이지 않음"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "문법 오류가 발견되지 않았습니다."
+   },
+   "No_update_found__sry_": {
+      "message": "업데이트가 발견되지 않았습니다. 죄송합니다!"
+   },
+   "Normal": {
+      "message": "보통"
+   },
+   "Note": {
+      "message": "메모"
+   },
+   "Novice": {
+      "message": "초보자"
+   },
+   "Off": {
+      "message": "끄기"
+   },
+   "Ok": {
+      "message": "확인"
+   },
+   "On": {
+      "message": "켜기"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "1개의 오류나 힌트가 발견되었습니다."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "하나 이상의 호환성 설정이 활성화되어 있습니다. 확인해 보세요."
+   },
+   "Only_Manual": {
+      "message": "수동만"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "이 확장자를 가진 파일들만이 다운로드될 수 있습니다.\n당신의 운영체제에서 단독 실행 가능한 파일 확장자를 허용하지 않도록 주의하세요!"
+   },
+   "Open_changelog": {
+      "message": "새로운 사항 보기"
+   },
+   "Operation_completed_successfully": {
+      "message": "작업이 성공적으로 완료됨"
+   },
+   "Original_domain_whitelist": {
+      "message": "원본 도메인 화이트리스트"
+   },
+   "Original_excludes": {
+      "message": "원본 제외"
+   },
+   "Original_includes": {
+      "message": "원본 포함"
+   },
+   "Original_matches": {
+      "message": "원본 매치"
+   },
+   "Page_Filter_Mode": {
+      "message": "페이지 필터링 모드"
+   },
+   "Permanent": {
+      "message": "영구"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "더 자세한 사항은 $editor$ 문서를 참조하세요.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "기부를 고려해 주세요"
+   },
+   "Please_select_a_file": {
+      "message": "파일을 선택해 주세요"
+   },
+   "Please_wait___": {
+      "message": "기다려주세요..."
+   },
+   "Position_": {
+      "message": "위치"
+   },
+   "Process_with_Chrome": {
+      "message": "Chrome과 함께 실행"
+   },
+   "Really_delete_0name0__": {
+      "message": "'$name$'를 정말로 삭제하시겠습니까?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "정말로 선택된 것들을 삭제하시겠습니까?"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "정말로 선택된 것들을 전체 초기화하시겠습니까?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "정말로 이 스크립트를 전체 초기화하시겠습니까?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "정말로 모든 변경 사항을 초기화하시겠습니까?"
+   },
+   "Reindent_on_typing": {
+      "message": "타이핑 할 때 다시 들여쓰기"
+   },
+   "Reinstall": {
+      "message": "재설치"
+   },
+   "Remind_me_later": {
+      "message": "나중에 다시 알림"
+   },
+   "Remove": {
+      "message": "제거"
+   },
+   "Replace": {
+      "message": "찾아 바꾸기"
+   },
+   "Replace_": {
+      "message": "바꿀까요?"
+   },
+   "Replace_all_with": {
+      "message": "모두 바꾸기"
+   },
+   "Replace_for_each_statements": {
+      "message": "'for each' 문장 교체"
+   },
+   "Replace_with": {
+      "message": "바꿀 말"
+   },
+   "Report_a_bug": {
+      "message": "버그 제보"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "스크립트 제공자에게 문제를 보고합니다.\n(사용자 계정이 필요할 수 있음)"
+   },
+   "Requires": {
+      "message": "필요"
+   },
+   "Reset_Section": {
+      "message": "초기화"
+   },
+   "Resources": {
+      "message": "리소스"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Tampermonkey 재시작"
+   },
+   "Run_at": {
+      "message": "실행 시점"
+   },
+   "Run_syntax_check": {
+      "message": "문법 검사 실행"
+   },
+   "Running_scripts": {
+      "message": "실행 중인 스크립트 인스턴스"
+   },
+   "Save": {
+      "message": "저장"
+   },
+   "Save_to_disk": {
+      "message": "저장"
+   },
+   "Script_Blacklist_Source": {
+      "message": "스크립트 블랙리스트 출처"
+   },
+   "Script_URL_detection": {
+      "message": "스크립트 URL 감지"
+   },
+   "Script_Update": {
+      "message": "스크립트 업데이트"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "스크립트 제작자는 출처 URL에 SRI 해시를 더함으로써 외부 리소스를 안전하게 할 수 있습니다."
+   },
+   "Script_name_0name0": {
+      "message": "스크립트 이름: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "스크립트 순서"
+   },
+   "Search": {
+      "message": "검색"
+   },
+   "Search_for": {
+      "message": "찾을 말"
+   },
+   "Security": {
+      "message": "보안"
+   },
+   "Server_And_Manual": {
+      "message": "자동 + 수동"
+   },
+   "Settings": {
+      "message": "설정"
+   },
+   "Show_backups": {
+      "message": "백업 보기"
+   },
+   "Show_fixed_source": {
+      "message": "고쳐진 소스 보기"
+   },
+   "Show_notification": {
+      "message": "알림 표시"
+   },
+   "Sites": {
+      "message": "사이트"
+   },
+   "Size": {
+      "message": "크기"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Skip timeout ($seconds$초)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "자동"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "어떤 스크립트가 이 페이지에 대한 자바스크립트 설정이나 스크립트 차단기에 의해 차단되었을 수 있습니다!"
+   },
+   "Sort": {
+      "message": "정렬"
+   },
+   "Source": {
+      "message": "소스"
+   },
+   "Spaces": {
+      "message": "공백"
+   },
+   "Start": {
+      "message": "시작"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "시크릿 모드에서 데이터 저장"
+   },
+   "Strict": {
+      "message": "엄격"
+   },
+   "Subresource_Integrity": {
+      "message": "하위 리소스 무결성"
+   },
+   "Sync_Reset": {
+      "message": "동기화 재설정"
+   },
+   "Sync_Type": {
+      "message": "유형"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "스크립트 동기화 (Tampermonkey External Script List Access)"
+   },
+   "TabMode": {
+      "message": "탭 모드"
+   },
+   "Tab_URL": {
+      "message": "탭 URL"
+   },
+   "Tabs": {
+      "message": "탭"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey + 스크립트 버전"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey가 로컬 파일에 접근하기 위한 권한이 없습니다!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "이것이 비활성화되어 있다면 Tampermonkey가 안전하지 않은 것(unsafeWindow, 페이지의 함수와 변수)에 접근하지 못할 수 있습니다."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "이 변경 사항을 적용하기 위해서는 Tampermonkey를 재시작해야 합니다.\n\n계속하시겠습니까?"
+   },
+   "Tampermonkey_version": {
+      "message": "Tampermonkey 버전만"
+   },
+   "Temporarily_allow": {
+      "message": "임시 허용"
+   },
+   "Temporary": {
+      "message": "임시"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "임시 도메인 화이트리스트"
+   },
+   "TextArea": {
+      "message": "텍스트"
+   },
+   "Thank_you_very_much_": {
+      "message": "정말 감사합니다!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "브라우저 API 모드는 특별한 권한을 요구합니다."
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "다운그레이드된 스크립트는 저장된 데이터를 읽는 데에 문제가 있을 수 있습니다!"
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "업데이트 URL이 \n    '$oldurl$'\n    에서\n    '$newurl$'\n    로 변경됨",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "테마"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "저장되지 않은 변경 사항이 있습니다.\n정말로 에디터를 닫으시겠습니까?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "'$name$'의 업데이트가 사용 가능합니다. :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "이는 이 스크립트에게 모든 웹페이지에서 데이터를 받고 전송할 수 있도록 합니다. 이는 잠재적으로 위험합니다!\n\n계속하시겠습니까?"
+   },
+   "This_is_a_system_script": {
+      "message": "이것은 시스템 스크립트입니다."
+   },
+   "This_is_a_userscript": {
+      "message": "이것은 Javascript로 작성된 유저 스크립트입니다."
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "이 설정은 Tampermonkey 홈페이지와 몇몇 스크립트 호스팅 페이지가 Tampermonkey 버전과 몇 가지 기본적인 스크립트 정보(설치 여부, 버전, 활성화 여부)를 확인할 수 있도록 허용합니다."
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "보안 설정에 의해 블랙리스트 처리됨"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "이 스크립트는 아무런 @include 정보를 제공하지 않습니다."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "이 스크립트는 https 페이지에 접근합니다."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "이 스크립트는 전체 인터넷에 접근할 수 있습니다."
+   },
+   "This_script_has_full_web_access": {
+      "message": "이 스크립트는 전체 인터넷에 접근할 수 있습니다."
+   },
+   "This_script_is_blacklisted_": {
+      "message": "이 스크립트는 블랙리스트 처리되었습니다!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "이 스크립트는 Chrome 모드에서 실행됩니다."
+   },
+   "This_script_stores_data": {
+      "message": "이 스크립트는 Tampermonkey에 데이터를 저장합니다."
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "이 스크립트는 Greasemonkey 10 API (unsafeWindow.gmonkey)의 일부를 사용하며\n이는 Tampermonkey와 다른 스크립트 핸들러에서 지원되지 않습니다."
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "이는 현재 전체 설정을 덮어씌울 것입니다!"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "정말로 Sync 에서 모든 데이터를 제거하시겠습니까?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "정말로 모든 스크립트를 제거하고 모든 설정을 재설정하시겠습니까?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "정말로 Tampermonkey를 재시작하시겠습니까?"
+   },
+   "Today": {
+      "message": "오늘"
+   },
+   "Toggle_Enable": {
+      "message": "활성화/비활성화 전환"
+   },
+   "Trigger_Update": {
+      "message": "업데이트"
+   },
+   "Type": {
+      "message": "유형"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "다음 URL로부터 스크립트를 불러올 수 없음: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "다음 부분을 파싱할 수 없음! :("
+   },
+   "Unique_running_scripts": {
+      "message": "실행 중인 단일 스크립트"
+   },
+   "Unknown_method_0name0": {
+      "message": "알 수 없는 도구 $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "업그레이드"
+   },
+   "Update_Notification": {
+      "message": "TM 업데이트 알림 표시"
+   },
+   "Update_URL_": {
+      "message": "업데이트 URL"
+   },
+   "Update_interval": {
+      "message": "업데이트 주기"
+   },
+   "Updated_to__0version0": {
+      "message": "$version$으로 업데이트됨",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "User_domain_blacklist": {
+      "message": "유저 도메인 블랙리스트"
+   },
+   "User_domain_whitelist": {
+      "message": "유저 도메인 화이트리스트"
+   },
+   "User_excludes": {
+      "message": "유저 제외"
+   },
+   "User_includes": {
+      "message": "유저 포함"
+   },
+   "User_matches": {
+      "message": "유저 매치"
+   },
+   "Userscripts": {
+      "message": "유저 스크립트"
+   },
+   "Utilities": {
+      "message": "도구"
+   },
+   "Validate_if_given": {
+      "message": "주어진 경우 유효화"
+   },
+   "Validate_if_supported": {
+      "message": "가능한 경우 유효화"
+   },
+   "Version": {
+      "message": "버전"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "동기화가 끝나기를 기다리는 중"
+   },
+   "Whitelist": {
+      "message": "화이트리스트"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "파일 확장자 화이트리스트"
+   },
+   "Whitelisted_Pages": {
+      "message": "페이지 화이트리스트"
+   },
+   "XHR_Security": {
+      "message": "XHR 보안"
+   },
+   "Yes": {
+      "message": "예"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "주의! 유저 스크립트 다운그레이드"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "유저 스크립트 설치"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "유저 스크립트 수정"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "유저 스크립트 재설치"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "유저 스크립트 업데이트"
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "당신의 언어가 지원되지 않습니까?\n여기를 클릭하여 Tampermonkey를 번역하는 방법을 알아보세요."
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "화이트리스트가 단독 실행 가능한 파일 확장자를 포함하고 있는 것으로 보입니다!\n이는 유저 스크립트가 악성코드를 다운로드할 수 있음을 의미합니다!!"
+   },
+   "Zip": {
+      "message": "압축(ZIP) 파일"
+   },
+   "__Please_choose__": {
+      "message": "-- 옵션을 선택해 주세요 --"
+   },
+   "_not_set_": {
+      "message": "\u003C설정되지 않음>"
+   },
+   "connect_mode": {
+      "message": "@connect 모드"
+   },
+   "fatal_error": {
+      "message": "결정적 오류"
+   },
+   "overwritten_by_user": {
+      "message": "유저 설정에 의해 덮어씌워짐"
+   },
+   "severity_1": {
+      "message": "1 (가장 엄격)"
+   },
+   "severity_10": {
+      "message": "10 (가장 덜 엄격)"
+   },
+   "some_secs": {
+      "message": "몇 초"
+   },
+   "strict_mode": {
+      "message": "엄격 모드"
+   }
+}

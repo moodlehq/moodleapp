@@ -1,0 +1,44 @@
+{
+   "author": "Avast",
+   "background": {
+      "scripts": [ "scripts/background.js" ]
+   },
+   "browser_action": {
+      "default_icon": "common/ui/icons/icon-unknown.png",
+      "default_title": "Avast Online Security"
+   },
+   "commands": {
+      "_execute_browser_action": {
+         "description": "Open AOS UI",
+         "suggested_key": {
+            "default": "Alt+Shift+L"
+         }
+      }
+   },
+   "content_scripts": [ {
+      "js": [ "scripts/contentAvast.js" ],
+      "matches": [ "*://*.avast.com/*" ]
+   }, {
+      "js": [ "scripts/contentInject.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_start"
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_appDesc__",
+   "icons": {
+      "128": "common/ui/icons/icon128.png",
+      "16": "common/ui/icons/icon16.png",
+      "256": "common/ui/icons/icon256.png",
+      "32": "common/ui/icons/icon32.png",
+      "48": "common/ui/icons/icon48.png",
+      "64": "common/ui/icons/icon64.png"
+   },
+   "incognito": "split",
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWStseB5KE8Vqukt6RkFc3NirSBRmBTKvNolNhsOo5Q/kUlJs1pajaMckUR5rJXlpzvxfvesfNlASR/QnHKdlGBxPlyi5dxN+nohCclJYf5dXVq2ndj2ykgd++rs1qD35tw3R2v5BaeTmLgP2G/Jd53BaJXDNTGIusbkGEhvZ2rQIDAQAB",
+   "manifest_version": 2,
+   "name": "__MSG_appName__",
+   "permissions": [ "https://*/*", "http://*/*", "storage", "tabs", "webNavigation", "webRequest", "webRequestBlocking" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "20.2.500",
+   "web_accessible_resources": [ "common/mocks/*", "common/ui/*", "common/ui/icons/*", "common/ui/css/*" ]
+}

@@ -1,0 +1,1084 @@
+{
+   "0count0_errors_or_hints_were_found_": {
+      "message": "Bylo nalezeno $count$ chyb nebo hintů.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "Je k dispozici $name$ $version$.\nPro aktualizaci prosím restartujte prohlížeč.",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "15_Seconds": {
+      "message": "15 sekundách"
+   },
+   "1_Hour": {
+      "message": "1 hodině"
+   },
+   "1_Minute": {
+      "message": "1 minutě"
+   },
+   "30_Seconds": {
+      "message": "30 sekundách"
+   },
+   "5_Minutes": {
+      "message": "5 minutách"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "Před spuštěním skriptu může být vyžadována kontrola kompatibility nastavení GreaseMonkey/FF."
+   },
+   "A_reload_is_required": {
+      "message": "Je vyžadováno obnovení stránky: \nVšechny neuložené změny budou ztraceny!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "Požadavek na přístup ke cross-origin zdroji není nic neobvyklého.\nMusíte pouze zkontrolovat, zda má skript pro přístup k této doméně dobrý důvod.\nNapříklad existuje jen málo důvodů, aby skript kontaktoval vaši banku.\n\nAutoři skriptů se tomuto dialogu mohou vyhnout použitím [url=$connect$]tagu @connect[/url].\n\nBez ohledu na to, jak se rozhodnete, můžete svůj názor kdykoliv změnit na [url=$settings$]záložce nastavení[/url] skriptu.",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "Skript chce přistupovat ke cross-origin zdroji."
+   },
+   "Action": {
+      "message": "Akce"
+   },
+   "Action_Menu": {
+      "message": "Nabídka akcí"
+   },
+   "Actions": {
+      "message": "Akce"
+   },
+   "Add": {
+      "message": "Přidat"
+   },
+   "Add_TM_to_CSP": {
+      "message": "Přidat Tampermonkey do Content Security Policy (CSP) stránky, pokud existuje"
+   },
+   "Add_as_0clude0": {
+      "message": "Přidat jako $clude$",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "Přidat nový skript..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "Přidat funkce kompatibility k Object a Array"
+   },
+   "Advanced": {
+      "message": "Pokročilý"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "Všechny změny jsou uchovány pouze do ukončení anonymního prohlížení!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "Všechna nastavení skriptu budou resetována!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Povolit anonymní sběr dat pomocí Google Analytics. Pomáhá to vylepšit Tampermonkey a zjistit, na co se zaměřit při jeho vývoji. Můžete zakázat, pokud se nechcete podílet."
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "Povolit skriptům úpravy HTTP hlaviček"
+   },
+   "Allow_once": {
+      "message": "Povolit jednou"
+   },
+   "Always": {
+      "message": "Vždy"
+   },
+   "Always_allow": {
+      "message": "Povolit vždy"
+   },
+   "Always_allow_all_domains": {
+      "message": "Vždy povolit všechny domény"
+   },
+   "Always_allow_domain": {
+      "message": "Vždy povolit tuto doménu"
+   },
+   "Always_ask": {
+      "message": "Vždy se dotazovat"
+   },
+   "Always_forbid": {
+      "message": "Zakázat vždy"
+   },
+   "Always_forbid_domain": {
+      "message": "Vždy zakázat tuto doménu"
+   },
+   "An_error_occured_during_import_": {
+      "message": "Při importu nastala chyba."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "Nastala interní chyba. Pokud tato chyba přetrvává i po restartu Chromu, klikněte prosím na OK a nahlaste tuto chybu na fóru.\n\nChcete navštívit Tampermonkey fórum?"
+   },
+   "Anonymous_statistics": {
+      "message": "Anonymní statistky"
+   },
+   "Appearance": {
+      "message": "Vzhled"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "Použít nastavení kompatibility i pro @require skripty"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "Provést tuto akci u všech vybraných skriptů"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "Po aktualizaci je Tampermonkey prohlížečem restartován. Bohužel to může znefunkčnit aktuálně běžící skripty!\n\nOpravdu tedy nechcete být informován/a o aktualizacích?"
+   },
+   "Ask_if_unknown": {
+      "message": "Dotázat se při neznámém"
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "Alespoň jedna část stránky je uvedena v nastavení pod 'zakázanými stránkami'!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": "Pozor: exclude seznam byl zkrácen.\nProsím překontrolujte ho ručně!"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": "Pozor: include seznam byl zkrácen.\nProsím překontrolujte ho ručně!"
+   },
+   "Author": {
+      "message": "Autor"
+   },
+   "Auto": {
+      "message": "Automaticky"
+   },
+   "Auto_Indent_all": {
+      "message": "Automaticky vše odsadit"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "Automaticky obnovit stránku při povolení skriptu"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "Obnovit ovlivněné stránky, pokud je skript povolen/zakázán"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "Maximální velikost pro automatickou kontrolu syntaxe"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "Automatická kontrola syntaxe při psaní"
+   },
+   "Beginner": {
+      "message": "Začátečník"
+   },
+   "BlackCheck": {
+      "message": "Blacklisty"
+   },
+   "Blacklist_Severity": {
+      "message": "Zakázat dle bezpečnostní úrovně"
+   },
+   "Blacklisted_Pages": {
+      "message": "Blokované stránky"
+   },
+   "Both": {
+      "message": "Oba"
+   },
+   "Browser_API": {
+      "message": "API prohlížeče"
+   },
+   "Browser_API_Downloads": {
+      "message": "API prohlížeče na stahování"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "KONFLIKT:\nTento skript byl před $t$ sekundami upraven jinou záložkou!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "Storno"
+   },
+   "Casual": {
+      "message": "Běžný"
+   },
+   "Changelog": {
+      "message": "Seznam změn"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "Změní počet viditelných konfigurací"
+   },
+   "Check_disabled_scripts": {
+      "message": "Aktualizovat zakázané skripty"
+   },
+   "Check_for_Updates": {
+      "message": "Zkontrolovat aktualizace"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "Zkontrolovat aktualizace skriptů"
+   },
+   "Check_interval": {
+      "message": "Interval kontroly"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "Kontrolovat skripty maximálně této velikosti."
+   },
+   "Classic": {
+      "message": "Klasický"
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "Klikněte sem, aby mohl Tampermonkey okamžitě stahovat soubory."
+   },
+   "Click_here_to_install_it_": {
+      "message": "Pro instalaci klikněte sem."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "Klikněte sem pro přesunutí tohoto skriptu"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "Pro zobrazení posledních změn klikněte sem"
+   },
+   "Close": {
+      "message": "Zavřít"
+   },
+   "Columns": {
+      "message": "Sloupce"
+   },
+   "Comment": {
+      "message": "Komentář"
+   },
+   "Config_Mode": {
+      "message": "Režim konfigurace"
+   },
+   "Convert_Array_Assignements": {
+      "message": "Převést výskyty [bla, bla] = s.split(':')"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "Převést sekce CDATA do formátu kompatibilního s Chromem"
+   },
+   "Dashboard": {
+      "message": "Řídící panel"
+   },
+   "Debug": {
+      "message": "Ladění"
+   },
+   "Debug_scripts": {
+      "message": "Ladění skriptů"
+   },
+   "Default": {
+      "message": "Výchozí"
+   },
+   "Delete": {
+      "message": "Smazat"
+   },
+   "Description": {
+      "message": "Popis"
+   },
+   "Destination_URL": {
+      "message": "Cílové URL"
+   },
+   "Destination_domain": {
+      "message": "Cílová doména"
+   },
+   "Details": {
+      "message": "Detaily"
+   },
+   "Disable": {
+      "message": "Zakázat"
+   },
+   "Disabled": {
+      "message": "Vypnuto"
+   },
+   "Disabled_scripts": {
+      "message": "Zakázané skripty"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "Volba '$option$' je povolena!\n\nOpravdu chcete uložit opravený zdroj?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Dont_ask_again": {
+      "message": "Znovu se neptat"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "Neptat se na jednoduché aktualizace skriptu"
+   },
+   "Downgrade": {
+      "message": "Přepnout na starší verzi"
+   },
+   "Download_Mode": {
+      "message": "Režim stahování"
+   },
+   "Downloaded_from_0url0": {
+      "message": "Staženo z: $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "Stahování"
+   },
+   "Edit": {
+      "message": "Upravit"
+   },
+   "Editor_reset": {
+      "message": "Resetovat editor"
+   },
+   "Enable": {
+      "message": "Povolit"
+   },
+   "Enable_Editor": {
+      "message": "Povolit rozšířený editor"
+   },
+   "Enable_Script_Sync": {
+      "message": "Povolit TESLA"
+   },
+   "Enable_autoSave": {
+      "message": "Uložit obsah při opuštění editoru"
+   },
+   "Enable_easySave": {
+      "message": "Nezobrazovat potvrzovací dialog při ukládání"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "Povolí automatickou kontrolu kódu při psaní."
+   },
+   "Enabled": {
+      "message": "Povoleno"
+   },
+   "Enforce": {
+      "message": "Vynutit"
+   },
+   "Enter_the_new_rule": {
+      "message": "Zadat nové pravidlo"
+   },
+   "Error": {
+      "message": "Chyba"
+   },
+   "Every_12_Hour": {
+      "message": "Každých 12 hodin"
+   },
+   "Every_6_Hours": {
+      "message": "Každých 6 hodin"
+   },
+   "Every_Day": {
+      "message": "Každý den"
+   },
+   "Every_Hour": {
+      "message": "Každou hodinu"
+   },
+   "Every_Month": {
+      "message": "Každý měsíc"
+   },
+   "Every_Week": {
+      "message": "Každý týden"
+   },
+   "Exclude_s__": {
+      "message": "Vynechat"
+   },
+   "Experimental": {
+      "message": "Experimentální"
+   },
+   "Export": {
+      "message": "Exportovat"
+   },
+   "Externals": {
+      "message": "Externí"
+   },
+   "Factory_Reset": {
+      "message": "Obnova do továrního nastavení"
+   },
+   "Features": {
+      "message": "Vlastnosti"
+   },
+   "File": {
+      "message": "Soubor"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "Opravit výskyty 'for (var j in x)'"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "Opravit přístup k vlastnosti wrappedJSObject"
+   },
+   "Focus_tab": {
+      "message": "Nastavit fokus na zdrojovou záložku"
+   },
+   "Font_Size": {
+      "message": "Velikost fontu"
+   },
+   "Forbid_once": {
+      "message": "Zakázat jednou"
+   },
+   "Full_reset": {
+      "message": "Reset do továrního nastavení"
+   },
+   "GM_compat_options_": {
+      "message": "Nastavení GM/FF kompatibility"
+   },
+   "General": {
+      "message": "Obecné"
+   },
+   "Get_new_scripts___": {
+      "message": "Získat nové skripty..."
+   },
+   "Get_some_scripts___": {
+      "message": "Získat další skripty..."
+   },
+   "Global_Settings": {
+      "message": "Globální nastavení"
+   },
+   "Global_settings_import": {
+      "message": "Import globálních nastavení"
+   },
+   "Help": {
+      "message": "Nápověda"
+   },
+   "Hide_disabled_scripts": {
+      "message": "Skrýt zakázané skripty"
+   },
+   "Hide_notification_after": {
+      "message": "Skrýt upozornění po"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "Zvýraznit prázdné znaky na konci"
+   },
+   "Homepage": {
+      "message": "Domovská stránka"
+   },
+   "I_contributed_already": {
+      "message": "Již jsem přispěl/a"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "Nechci přispět"
+   },
+   "Icon_badge_color": {
+      "message": "Barva ikony odznaku"
+   },
+   "Icon_badge_info": {
+      "message": "Informace u odznaku ikony"
+   },
+   "Import": {
+      "message": "Importovat"
+   },
+   "Imported": {
+      "message": "Importováno"
+   },
+   "Include_TM_settings": {
+      "message": "Zahrnout nastavení Tampermonkey"
+   },
+   "Include_s__": {
+      "message": "Zahrnout"
+   },
+   "Include_script_storage": {
+      "message": "Zahrnout úložiště skriptů"
+   },
+   "Indent": {
+      "message": "Odsazení"
+   },
+   "Indent_with": {
+      "message": "Odsazovat pomocí"
+   },
+   "Indentation_Width": {
+      "message": "Šířka odsazení"
+   },
+   "Info": {
+      "message": "Informace"
+   },
+   "Insert_constructor": {
+      "message": "Vložit konstruktor"
+   },
+   "Install": {
+      "message": "Instalovat"
+   },
+   "Install_this_script": {
+      "message": "Nainstalovat tento skript"
+   },
+   "Installed_Version_": {
+      "message": "Nainstalovaná verze"
+   },
+   "Installed_userscripts": {
+      "message": "Nainstalované skripty"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "Neplatný skript. Omlouváme se!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "Neplatný název skriptu. Omlouváme se!"
+   },
+   "Jump_to_line": {
+      "message": "Přejít na řádek"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "Další služba poskytovaná vaším aktualizátorem skriptů"
+   },
+   "Key_Mapping": {
+      "message": "Přiřazení kláves"
+   },
+   "Language": {
+      "message": "Jazyk"
+   },
+   "Last_updated": {
+      "message": "Poslední aktualizace"
+   },
+   "Layout": {
+      "message": "Rozvržení"
+   },
+   "LogLevel": {
+      "message": "Úroveň logování"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "Nebezpečné skripty mohou narušit vaše soukromí a provádět některé úkony za vás!\nSkripty by měly být instalovány pouze z důvěryhodných zdrojů"
+   },
+   "Manual_Script_Blacklist": {
+      "message": "Ruční blacklist skriptů a @require"
+   },
+   "Modify": {
+      "message": "Modifikovat"
+   },
+   "Name": {
+      "message": "Název"
+   },
+   "Native": {
+      "message": "Nativní"
+   },
+   "Never": {
+      "message": "Nikdy"
+   },
+   "New_script_template_": {
+      "message": "Nová šablona skriptu"
+   },
+   "New_userscript": {
+      "message": "\u003CNový skript>"
+   },
+   "No": {
+      "message": "Ne"
+   },
+   "No_entry_found": {
+      "message": "Žádný záznam nebyl nalezen"
+   },
+   "No_frames": {
+      "message": "Spustit pouze ve vrchním rámci"
+   },
+   "No_script_is_installed": {
+      "message": "Není nainstalován žádný skript"
+   },
+   "No_script_is_running": {
+      "message": "Neběží žádný skript"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "Nebyly nalezeny žádné syntaktické chyby."
+   },
+   "No_update_found__sry_": {
+      "message": "Nebyly nalezeny žádné aktualizace."
+   },
+   "Note": {
+      "message": "Poznámka"
+   },
+   "Novice": {
+      "message": "Novic"
+   },
+   "Off": {
+      "message": "Vypnuto"
+   },
+   "On": {
+      "message": "Zapnuto"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "Byla nalezena jedna chyba nebo hint."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "Je nastavena jedna či více voleb kompatibility. Zvažte jejich kontrolu."
+   },
+   "Only_Manual": {
+      "message": "Pouze ruční"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "Pouze soubory s touto příponou mohou být uloženy na pevný disk.\nPozor na povolení přípon spustitelných souborů!"
+   },
+   "Open_changelog": {
+      "message": "Otevřít seznam změn"
+   },
+   "Operation_completed_successfully": {
+      "message": "Operace byla úspěšně dokončena"
+   },
+   "Original_domain_whitelist": {
+      "message": "Originální whitelist domén"
+   },
+   "Original_excludes": {
+      "message": "Původní excludes"
+   },
+   "Original_includes": {
+      "message": "Původní includes"
+   },
+   "Original_matches": {
+      "message": "Původní shody"
+   },
+   "Page_Filter_Mode": {
+      "message": "Režim filtrování stránek"
+   },
+   "Permanent": {
+      "message": "Trvale"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "Pro více informací nahlédněte do dokumentace o editoru $editor$.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "Zvažte prosím příspěvek vývojářům!"
+   },
+   "Please_wait___": {
+      "message": "Prosím čekejte..."
+   },
+   "Position_": {
+      "message": "Pozice"
+   },
+   "Process_with_Chrome": {
+      "message": "Zpracovat Chromem"
+   },
+   "Really_delete_0name0__": {
+      "message": "Opravdu chcete smazat '$name$'?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "Opravdu chcete smazat vybrané položky?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "Opravdu chcete resetovat všechny změny?"
+   },
+   "Reindent_on_typing": {
+      "message": "Při psaní znovu odsadit"
+   },
+   "Reinstall": {
+      "message": "Přeinstalovat"
+   },
+   "Remind_me_later": {
+      "message": "Připomenout později"
+   },
+   "Remove": {
+      "message": "Smazat"
+   },
+   "Replace": {
+      "message": "Nahradit"
+   },
+   "Replace_": {
+      "message": "Nahradit?"
+   },
+   "Replace_all_with": {
+      "message": "Nahradit vše"
+   },
+   "Replace_for_each_statements": {
+      "message": "Nahradit výskyty 'for each'"
+   },
+   "Replace_with": {
+      "message": "Nahradit"
+   },
+   "Report_a_bug": {
+      "message": "Nahlásit chybu"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "Nahlásit chybu autorovi skriptu.\n(Může být vyžadován uživatelský účet)"
+   },
+   "Requires": {
+      "message": "Vyžaduje"
+   },
+   "Reset_Section": {
+      "message": "Resetovat"
+   },
+   "Resources": {
+      "message": "Zdroje"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Restartovat Tampermonkey"
+   },
+   "Run_at": {
+      "message": "Spustit při"
+   },
+   "Run_syntax_check": {
+      "message": "Kontrola syntaxe"
+   },
+   "Running_scripts": {
+      "message": "Běžící skripty"
+   },
+   "Save": {
+      "message": "Uložit"
+   },
+   "Save_to_disk": {
+      "message": "Uložit na disk"
+   },
+   "Script_Blacklist_Source": {
+      "message": "Zdroj blacklistu skriptů"
+   },
+   "Script_URL_detection": {
+      "message": "Detekce URL skriptu"
+   },
+   "Script_Update": {
+      "message": "Aktualizace skriptu"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "Autor skriptu může zabezpečit externí zdroje přidáním SRI hashe ke zdrojovému URL."
+   },
+   "Script_name_0name0": {
+      "message": "Název skriptu: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "Pořadí skriptů"
+   },
+   "Search": {
+      "message": "Hledat"
+   },
+   "Search_for": {
+      "message": "Hledat"
+   },
+   "Security": {
+      "message": "Zabezpečení"
+   },
+   "Server_And_Manual": {
+      "message": "Vzdálený + ruční"
+   },
+   "Settings": {
+      "message": "Nastavení"
+   },
+   "Show_fixed_source": {
+      "message": "Zobrazit opravený zdroj"
+   },
+   "Show_notification": {
+      "message": "Zobrazit upozornění"
+   },
+   "Sites": {
+      "message": "Stránky"
+   },
+   "Size": {
+      "message": "Velikost"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Přeskočit prodlevu ($seconds$ sekund)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "Inteligentní"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "Některé skripty mohou být blokovány kvůli nastavení JavaScriptu nebo script blockerem!"
+   },
+   "Sort": {
+      "message": "Seřadit"
+   },
+   "Source": {
+      "message": "Zdroj"
+   },
+   "Spaces": {
+      "message": "Mezer"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "Uchovat data při anonymním prohlížení"
+   },
+   "Strict": {
+      "message": "Striktní"
+   },
+   "Subresource_Integrity": {
+      "message": "Integrita podzdroje"
+   },
+   "Sync_Reset": {
+      "message": "Resetovat Sync"
+   },
+   "Sync_Type": {
+      "message": "Typ"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "Synchronizace skriptů (Tampermonkey External Script List Access)"
+   },
+   "TabMode": {
+      "message": "Režim tabulátorů"
+   },
+   "Tab_URL": {
+      "message": "URL záložky"
+   },
+   "Tabs": {
+      "message": "Tabulátorů"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey nemá oprávnění pro přístup k lokálním souborům!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "Tampermonkey možná nebude moci přistupovat k nezabezpečenému obsahu (unsafeWindow, funkce a proměnné stránky), pokud je toto zakázáno."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "Pro aplikování těchto změn je třeba Tampermonkey restartovat.\n\nChcete pokračovat?"
+   },
+   "Temporarily_allow": {
+      "message": "Povolit dočasně"
+   },
+   "Temporary": {
+      "message": "Dočasně"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "Dočasný whitelist domén"
+   },
+   "TextArea": {
+      "message": "Textové pole"
+   },
+   "Thank_you_very_much_": {
+      "message": "Děkuji mnohokrát!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "Režim API prohlížeče vyžaduje speciální oprávnění."
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "Starší verze skriptu může mít problémy se čtením uložených dat!"
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "Aktualizační URL se změnilo z:\n    '$oldurl$'\n    na:\n    '$newurl$'\n",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "Motiv"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "Máte neuložené změny.\nOpravdu chcete editor zavřít?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "Je dostupná aktualizace pro '$name$'. :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "Povoluje skriptu číst a odesílat data veškerých webových stránek, což je potencionálně nebezpečné! Opravdu chcete pokračovat?"
+   },
+   "This_is_a_system_script": {
+      "message": "Toto je systémový skript."
+   },
+   "This_is_a_userscript": {
+      "message": "Tento skript napsán v JavaScriptu"
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "Blokováno kvůli nastavení zabezpečení"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "Tento skript neposkytuje žádné @include informace."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "Tento skript má přístup k https stránkám."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "Tento skript má plný přístup k webové stránce."
+   },
+   "This_script_has_full_web_access": {
+      "message": "Tento skript má plný přístup k internetu."
+   },
+   "This_script_is_blacklisted_": {
+      "message": "Tento skript je na blacklistu!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "Tento skript běží v Chrome módu"
+   },
+   "This_script_stores_data": {
+      "message": "Tento skript uchovává data v Tampermonkey."
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "Tento skript je součástí Greasemonkey 10 API (unsafeWindow.gmonkey),\nkteré Tampermonkey ani jiný alternativní správce skriptů nepodporuje."
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "Tato akce přepíše vaše globální nastavení!"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "Opravdu chcete smazat všechna data z Sync?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "Opravdu chcete smazat všechny skripty a resetovat všechna nastavení?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "Opravdu chcete restartovat Tampermonkey?"
+   },
+   "Toggle_Enable": {
+      "message": "Přepnout povolení"
+   },
+   "Trace": {
+      "message": "Trasovat"
+   },
+   "Trigger_Update": {
+      "message": "Spustit aktualizaci"
+   },
+   "Type": {
+      "message": "Typ"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "Nelze načíst skript z URL: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "Toto nelze parsovat! :("
+   },
+   "Unique_running_scripts": {
+      "message": "Unikátní běžící skripty"
+   },
+   "Unknown_method_0name0": {
+      "message": "Neznámá metoda $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "Aktualizovat"
+   },
+   "Update_Notification": {
+      "message": "Zobrazit upozornění na aktualizaci Tampermonkey"
+   },
+   "Update_URL_": {
+      "message": "Aktualizační URL"
+   },
+   "Update_interval": {
+      "message": "Interval aktualizací"
+   },
+   "Updated_to__0version0": {
+      "message": "Aktualizováno na: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "User_domain_blacklist": {
+      "message": "Uživatelský blacklist domén"
+   },
+   "User_domain_whitelist": {
+      "message": "Uživatelský whitelist domén"
+   },
+   "User_excludes": {
+      "message": "uživatelské neshody"
+   },
+   "User_includes": {
+      "message": "uživatelské includes"
+   },
+   "User_matches": {
+      "message": "uživatelské shody"
+   },
+   "Userscripts": {
+      "message": "Skripty"
+   },
+   "Utilities": {
+      "message": "Nástroje"
+   },
+   "Validate_if_given": {
+      "message": "Validovat při zadání"
+   },
+   "Validate_if_supported": {
+      "message": "Pokud možno validovat"
+   },
+   "Verbose": {
+      "message": "Podrobně"
+   },
+   "Version": {
+      "message": "Verze"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "Čekám na dokončení synchronizace"
+   },
+   "Warning": {
+      "message": "Varování"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "Povolené přípony souborů"
+   },
+   "Whitelisted_Pages": {
+      "message": "Povolené stránky"
+   },
+   "XHR_Security": {
+      "message": "XHR zabezpečení"
+   },
+   "Yes": {
+      "message": "Ano"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "Pozor! Downgrade skriptu"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "Instalace skriptu"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "Modifikace skriptu"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "Přeinstalace skriptu"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "Aktualizace skriptu"
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "Není váš jazyk podporován?\nPro instrukce o lokalizaci Tampermonkey klikněte sem."
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "Zdá se, že váš whitelist obsahuje spustitelné soubory!\nZnamená to, že vaše skripty mohou obsahovat malware!!"
+   },
+   "__Please_choose__": {
+      "message": "-- Prosím vyberte --"
+   },
+   "_not_set_": {
+      "message": "\u003Cnení nastaveno>"
+   },
+   "connect_mode": {
+      "message": "Režim @connect"
+   },
+   "fatal_error": {
+      "message": "kritická chyba"
+   },
+   "overwritten_by_user": {
+      "message": "přepsáno uživatelským nastavením"
+   },
+   "severity_1": {
+      "message": "1 (nejbezpečnější)"
+   },
+   "severity_10": {
+      "message": "10 (nejnebezpečnějsí)"
+   },
+   "some_secs": {
+      "message": "nějaké"
+   },
+   "strict_mode": {
+      "message": "Režim strict"
+   }
+}

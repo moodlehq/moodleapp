@@ -1,0 +1,1682 @@
+{
+   "0count0_changes_exported": {
+      "message": "$count$ تغييرات تم تصديرها",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_changes_imported": {
+      "message": "$count$ تغييرات تم إستيرادها",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_errors_or_hints_were_found_": {
+      "message": "تم إيجاد $count$ خطأ أو تلميح.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": " .$name$ $version$ متوافرة\n!من فضلك أعد تشغيل المتصفح لبدءالتحديث",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "1": {
+      "message": "1"
+   },
+   "10": {
+      "message": "10"
+   },
+   "11": {
+      "message": "11"
+   },
+   "15_Seconds": {
+      "message": " ثانية 15"
+   },
+   "1_Hour": {
+      "message": "ساعة واحدة"
+   },
+   "1_Minute": {
+      "message": "دقيقة واحدة"
+   },
+   "2": {
+      "message": "2"
+   },
+   "3": {
+      "message": "3"
+   },
+   "30_Seconds": {
+      "message": "30 ثانية"
+   },
+   "4": {
+      "message": "4"
+   },
+   "5": {
+      "message": "5"
+   },
+   "5_Minutes": {
+      "message": "خمس دقائق"
+   },
+   "6": {
+      "message": "6"
+   },
+   "7": {
+      "message": "7"
+   },
+   "8": {
+      "message": "8"
+   },
+   "9": {
+      "message": "9"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "قد تحتاج لإعادة فحص خيارات تكامل/FF .GreaseMonkey ليعمل هذا النص البرمجي"
+   },
+   "A_reload_is_required": {
+      "message": "مطلوب إعادة التحميل: \nجميع التغييرات الغير محفوظة ستحذف!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": ".الاتصال بنطاق آخر ليس أمراً مستغرب\n.يتوجب عليك التأكد فقط من وجود سبب وجيه لمحاولة البرنامج النصي الاتصال بهذا النطاق\n.فمثلا هناك أسباب قليلة جدا ليحاول الكود الاتصال بموقع بنكك\n\n. كرماً انتبه إلي نقطة أن مؤلفي الأكواد قد يتخطون هذا التنبيه عبر إضافة: [url=$connect$]@connect tags[/url] إلي أكوادهم\n\n.مهما كان قرارك يمكنك تغييره في [url=$settings$]خيار الإعدادات[/url]",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "يريد النص البرمجي للمستخدم الوصول إلى مورد مشترك المصدر."
+   },
+   "Action": {
+      "message": "إجراء"
+   },
+   "Action_Menu": {
+      "message": "قائمة الإجراءات"
+   },
+   "Action_failed": {
+      "message": "فشل الإجراء"
+   },
+   "Actions": {
+      "message": "الإجراءات"
+   },
+   "Add": {
+      "message": "إضافة"
+   },
+   "Add_Selection_Above": {
+      "message": "إضافة التحديد أعلاه"
+   },
+   "Add_Selection_Below": {
+      "message": "أضف التحديد أدناه"
+   },
+   "Add_TM_to_CSP": {
+      "message": "تعديل رؤوس سياسة أمن المحتوى الحالية (CSP)"
+   },
+   "Add_Tampermonkey_to_the_site_s_content_csp": {
+      "message": "أضف Tampermonkey إلى CSP الخاص بـ HTML"
+   },
+   "Add_as_0clude0": {
+      "message": "$clude$ إضافة كـ",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "إضافة برنامج نصي جديدة"
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "أضف وظائف التوافق إلى Object و Array"
+   },
+   "Advanced": {
+      "message": "متقدم"
+   },
+   "All_local_files": {
+      "message": "جميع الملفات المحلية"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "لا يتم الاحتفاظ بجميع التعديلات حتى يتم إغلاق جلسة التصفح المتخفي هذه!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": ".سيتم إعادة ضبط جميع إعدادات البرنامج النصي"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "السماح لـ Tampermonkey بجمع إحصاءات مجهولة عبر Google Analytics. هذا يساعدني على تحسين Tampermonkey وتحديد المعايير التي يجب أن أركز عليها. فقط قم بتعطيل هذا الخيار إذا لم يعجبك."
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "السماح بالإتصال بصفحات الشركة"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "السماح بتعديل رؤوس HTTP عن طريق البرامج النصية"
+   },
+   "Allow_once": {
+      "message": "إسمح مرة واحدة"
+   },
+   "Always": {
+      "message": "دائماً"
+   },
+   "Always_allow": {
+      "message": "إسمح دائماً"
+   },
+   "Always_allow_all_domains": {
+      "message": "إسمح دائماً لجميع النطاقات"
+   },
+   "Always_allow_domain": {
+      "message": "إسمح دائماً لهذا النطاق"
+   },
+   "Always_ask": {
+      "message": "السؤال دائماً"
+   },
+   "Always_forbid": {
+      "message": "المنع دائماً"
+   },
+   "Always_forbid_domain": {
+      "message": "إمنع هذا النطاق"
+   },
+   "An_error_occured_during_import_": {
+      "message": "حصل خطأ عند التحميل."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "حدث خطأ داخلي. إذا استمرت هذه المشكلة حتى بعد إعادة تشغيل المتصفح ، يرجى الضغط على \"موافق\" والإبلاغ عن هذه المشكلة في المنتدى.\n\nهل تريد زيارة منتدى Tampermonkey?"
+   },
+   "Anonymous_statistics": {
+      "message": "إحصائيات مجهولة"
+   },
+   "Appearance": {
+      "message": "المظهر"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "تطبيق خيارات التوافق على برامج @require النصية أيضا"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "تطبيق هذا الإجراء على جميع البرامج النصية المحددة"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "عندما يتم تحديث Tampermonkey بواسطة متصفحك ، يتم إعادة تشغيله أيضًا. للأسف قد يؤدي هذا إلى كسر البرامج النصية التي تعمل حاليًا!\n\nهل أنت متأكد من أنك لا تريد أن يتم إعلامك بالتحديثات؟"
+   },
+   "Ask_if_unknown": {
+      "message": "اسأل إذا كان مجهولاً"
+   },
+   "At_least_one_new_connect_statement_was_added_": {
+      "message": "تمت إضافة عبارة @connect واحدة جديدة على الأقل."
+   },
+   "At_least_one_of_the_include_match_or_exclude_statements_was_changed_": {
+      "message": "تم تغيير عبارة @include أو @match أو @exclude واحدة على الأقل."
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "تم إدراج جزء واحد على الأقل من هذه الصفحة في إعدادات \"الصفحات المحظورة\"!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": ".تنبيه: قائمة الاستبعاد تم تقصيرها\n!من فضلك إفحصها يدوياً"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": ".تنبيه: القائمة المضمنة تم تقصيرها\n!من فضلك إفحصها يدوياً"
+   },
+   "Author": {
+      "message": "المؤلف"
+   },
+   "Auto": {
+      "message": "آلي"
+   },
+   "Auto_Indent_all": {
+      "message": "مسافة بادئة تلقائية للكل"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "إعادة تحميل الصفحات تلقائيًا"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "إعادة تحميل الصفحات المتأثرة إذا تم تشغيل برنامج نصي أو إيقاف تشغيله"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "تحقق من بناء الجملة التلقائي من الحجم الأقصى"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "فحص بناء الجملة التلقائي عند الكتابة"
+   },
+   "Automatically_added_user_includes_for_compatibility_reasons_": {
+      "message": "تمت إضافة بعض ميزات المستخدم تلقائيًا لأسباب التوافق!"
+   },
+   "Beginner": {
+      "message": "مبتدأ"
+   },
+   "BlackCheck": {
+      "message": "فحص القائمة المحظورة"
+   },
+   "Blacklist": {
+      "message": "القائمة المحظورة"
+   },
+   "Blacklist_Severity": {
+      "message": "منع من مستوى الخطورة"
+   },
+   "Blacklisted_Pages": {
+      "message": "الصفحات المدرجة في القائمة المحظورة"
+   },
+   "Bookmarks": {
+      "message": "إشارات مرجعية"
+   },
+   "Both": {
+      "message": "كلاهما"
+   },
+   "Browser_API": {
+      "message": "واجهة برمجة تطبيقات المتصفح"
+   },
+   "Browser_API_Downloads": {
+      "message": "تنزيلات واجهة برمجة تطبيقات المتصفح"
+   },
+   "Browser_Sync": {
+      "message": "تزامن المتصفح"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "تعارض:\nتم تعديل هذا البرنامج النصي بعلامة تبويب أخرى $t$ ثواني مضت!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "إلغاء"
+   },
+   "Casual": {
+      "message": "عارض"
+   },
+   "Center_Cursor": {
+      "message": "المؤشر المركزي"
+   },
+   "Changelog": {
+      "message": "سجل التغييرات"
+   },
+   "Changes": {
+      "message": "التغييرات"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "يغير عدد خيارات التكوين المرئية"
+   },
+   "Check_disabled_scripts": {
+      "message": "تحديث البرامج النصية المعطلة"
+   },
+   "Check_for_Updates": {
+      "message": "البحث عن تحديثات"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "التحقق من تحديثات البرامج النصية للمستخدم"
+   },
+   "Check_interval": {
+      "message": "تحقق من الفاصل الزمني"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "تحقق فقط من البرامج النصية حتى هذا الحجم تلقائيًا."
+   },
+   "Classic": {
+      "message": "تقليدي"
+   },
+   "Clear_All": {
+      "message": "مسح الكل"
+   },
+   "Click_here_to_allow_TM_to_access_the_following_hosts_0host_list0": {
+      "message": "الرجاء النقر فوق \"موافق\" للسماح لـ Tampermonkey بالوصول إلى المضيفات التالية:\n\n$host_list$",
+      "placeholders": {
+         "host_list": {
+            "content": "$1"
+         }
+      }
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "انقر فوق \"موافق\" للسماح لـ Tampermonkey ببدء التنزيلات الفورية."
+   },
+   "Click_here_to_install_it_": {
+      "message": "اضغط هنا للتحميل."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "اضغط هنا لنقل البرنامج النصي"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "اضغط هنا لرؤية آخر التغييرات"
+   },
+   "Close": {
+      "message": "غلق"
+   },
+   "Closing_Bracket": {
+      "message": "قوس الإغلاق"
+   },
+   "Cloud": {
+      "message": "التخزين السحابي"
+   },
+   "Columns": {
+      "message": "الأعمدة"
+   },
+   "Comment": {
+      "message": "تعليق"
+   },
+   "Config_Mode": {
+      "message": "وضع التكوين"
+   },
+   "Convert_Array_Assignements": {
+      "message": "تحويل [blub, bla] = s.split(':') عبارات"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "تحويل أقسام CDATA إلى صيغة متوافقة مع كروم"
+   },
+   "Copy": {
+      "message": "نسخ"
+   },
+   "Cross_Origin_Request_Permission": {
+      "message": "إذن طلب أصل مشترك"
+   },
+   "Current_Version": {
+      "message": "النسخة الحالية"
+   },
+   "Custom_CSS": {
+      "message": "معدل CSS"
+   },
+   "Custom_Linter_Config": {
+      "message": "تكوين Linter المخصص"
+   },
+   "Cut": {
+      "message": "قص"
+   },
+   "Dashboard": {
+      "message": "لوحة القيادة"
+   },
+   "Debug": {
+      "message": "تصحيح"
+   },
+   "Debug_scripts": {
+      "message": "تصحيح البرامج النصية"
+   },
+   "Default": {
+      "message": "الإفتراضي"
+   },
+   "Default_Dark": {
+      "message": "الوضع الإفتراضي - داكن"
+   },
+   "Default_Darker": {
+      "message": "الوضع الإفتراضي - أغمق"
+   },
+   "Default_Light": {
+      "message": "الوضع الإفتراضي - مضيء"
+   },
+   "Delete": {
+      "message": "حذف"
+   },
+   "Delete_Line": {
+      "message": "حذف سطر"
+   },
+   "Delete_Line_Left": {
+      "message": "حذف السطر الأيسر"
+   },
+   "Delete_Line_Right": {
+      "message": "حذف السطر الأيمن"
+   },
+   "Delete_to_Next_Word_Boundary": {
+      "message": "حذف إلى حدود الكلمة التالية"
+   },
+   "Delete_to_Previous_Word_Boundary": {
+      "message": "حذف إلى حدود الكلمة السابقة"
+   },
+   "Delete_to_Sublime_Mark": {
+      "message": "حذف الى علامة الـ Sublime"
+   },
+   "Description": {
+      "message": "الوصف"
+   },
+   "Destination_URL": {
+      "message": "الرابط المستهدف"
+   },
+   "Destination_domain": {
+      "message": "النطاق المستهدف"
+   },
+   "Details": {
+      "message": "تفاصيل"
+   },
+   "Developer": {
+      "message": "مطور"
+   },
+   "Disable": {
+      "message": "تعطيل"
+   },
+   "Disabled": {
+      "message": "معطّـل"
+   },
+   "Disabled_scripts": {
+      "message": "البرامج النصية المعطلة"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "خيار '$option$' مفعل!\n\nهل تريد فعلاً تخزين المصدر الثابت؟",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Document_End": {
+      "message": "نهاية المستند"
+   },
+   "Document_Start": {
+      "message": "بداية المستند"
+   },
+   "Dont_ask_again": {
+      "message": "لا تسأل مرة أخرى"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "لا تطلب مني تحديثات البرامج النصية البسيطة"
+   },
+   "Downgrade": {
+      "message": "تثبيت نسخة قديمة"
+   },
+   "Download_Mode": {
+      "message": "وضع التحميل"
+   },
+   "Downloaded_from_0url0": {
+      "message": "$url$ تم التحميل من:",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "التحميلات"
+   },
+   "Dropbox": {
+      "message": "دروب بوكس"
+   },
+   "DuckDuckGo": {
+      "message": "دوك دوك قو"
+   },
+   "Duplicate_Lines": {
+      "message": "خطوط مكررة"
+   },
+   "Edit": {
+      "message": "تحرير"
+   },
+   "Editor": {
+      "message": "المحرر"
+   },
+   "Editor_reset": {
+      "message": "إعادة تعيين المحرر "
+   },
+   "Emacs": {
+      "message": "إيماكس"
+   },
+   "Enable": {
+      "message": "تمكين"
+   },
+   "Enable_Editor": {
+      "message": "تمكين المحرر المحسن"
+   },
+   "Enable_Script_Sync": {
+      "message": "تمكين تزامن البرامج النصية"
+   },
+   "Enable_autoSave": {
+      "message": "حفظ المحتوى عندما يفقد المحرر التركيز"
+   },
+   "Enable_easySave": {
+      "message": "لا تظهر مربع حوار التأكيد عند الحفظ"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "قم بتمكين هذا الخيار للتحقق تلقائيًا من الرمز عند الكتابة."
+   },
+   "Enabled": {
+      "message": "مُمَكَّن"
+   },
+   "Enforce": {
+      "message": "فرض"
+   },
+   "Enter_the_new_rule": {
+      "message": "أدخل القاعدة الجديدة"
+   },
+   "Error": {
+      "message": "خطأ"
+   },
+   "Every_12_Hour": {
+      "message": "كل 12 ساعة"
+   },
+   "Every_6_Hours": {
+      "message": "كل 6 ساعات"
+   },
+   "Every_Day": {
+      "message": "كل يوم"
+   },
+   "Every_Hour": {
+      "message": "كل ساعة"
+   },
+   "Every_Month": {
+      "message": "كل شهر"
+   },
+   "Every_Week": {
+      "message": "كل أسبوع"
+   },
+   "Exclude_0domain0": {
+      "message": "استبعاد $domain$",
+      "placeholders": {
+         "domain": {
+            "content": "$1"
+         }
+      }
+   },
+   "Exclude_s__": {
+      "message": "(مستبعد (مستبعدات"
+   },
+   "Experimental": {
+      "message": "تجريبي"
+   },
+   "Export": {
+      "message": "تصدير"
+   },
+   "Externals": {
+      "message": "الخارجية"
+   },
+   "Factory_Reset": {
+      "message": "إعادة ضبط المصنع"
+   },
+   "Fast": {
+      "message": "سريع"
+   },
+   "Favicon_Service": {
+      "message": "خدمة فافيكون"
+   },
+   "Features": {
+      "message": "المواصفات"
+   },
+   "File": {
+      "message": "ملف"
+   },
+   "Filter_by": {
+      "message": "مصنف بواسطة"
+   },
+   "Find": {
+      "message": "بحث"
+   },
+   "Find_All_Under": {
+      "message": "بحث الكل أسفل"
+   },
+   "Find_Next": {
+      "message": "بحث عن التالي"
+   },
+   "Find_Previous": {
+      "message": "البحث عن السابق"
+   },
+   "Find_Under": {
+      "message": "بحث أسفل"
+   },
+   "Find_Under_Previous": {
+      "message": "البحث أسفل السابق"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "إصلاح عبارات 'for (var j in x)'"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "إصلاح الوصول إلى خاصية wrappedJSObject"
+   },
+   "Focus_tab": {
+      "message": "ركز على تبويب المصدر"
+   },
+   "Fold": {
+      "message": "طي"
+   },
+   "Fold_All": {
+      "message": "طي الكل"
+   },
+   "Folding": {
+      "message": "قابلة للطي"
+   },
+   "Font_Size": {
+      "message": "حجم الخط"
+   },
+   "Forbid_once": {
+      "message": "امنع فقط هذه المرة"
+   },
+   "Full_reset": {
+      "message": "إعادة ضبط المصنع"
+   },
+   "GM_compat_options_": {
+      "message": "GM/FF خيارات توافق"
+   },
+   "General": {
+      "message": "عام"
+   },
+   "Get_new_scripts___": {
+      "message": "الحصول على برامج نصية جديدة"
+   },
+   "Get_some_scripts___": {
+      "message": "...احصل على بعض البرامج النصية"
+   },
+   "Global_Settings": {
+      "message": "الإعدادات العامة"
+   },
+   "Global_settings_import": {
+      "message": "استيراد الإعدادت العامة"
+   },
+   "GoTo": {
+      "message": "الذهاب إلى"
+   },
+   "Google": {
+      "message": "قوقل"
+   },
+   "Google_Drive": {
+      "message": "قوقل درايف"
+   },
+   "Group_Left": {
+      "message": "يسار المجموعة"
+   },
+   "Group_Right": {
+      "message": "يمين المجموعة"
+   },
+   "Help": {
+      "message": "مساعدة"
+   },
+   "Hide_disabled_scripts": {
+      "message": "إخفاء البرامج النصية المعطلة"
+   },
+   "Hide_notification_after": {
+      "message": "إخفاء الإشعارات بعد"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "قم بتمييز مسافة زائدة"
+   },
+   "Homepage": {
+      "message": "الصفحة الرئيسة"
+   },
+   "I_contributed_already": {
+      "message": "لقد تبرعت بالفعل"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "لا أريد أن أتبرع"
+   },
+   "Icon_badge_color": {
+      "message": "لون شارة الأيقونة"
+   },
+   "Icon_badge_info": {
+      "message": "معلومات شارة الرمز"
+   },
+   "Icon_badge_text_color": {
+      "message": "لون نص شارة الأيقونة"
+   },
+   "Import": {
+      "message": "استيراد"
+   },
+   "Imported": {
+      "message": "مستورد"
+   },
+   "Include_TM_settings": {
+      "message": "تضمين إعدادات Tampermonkey"
+   },
+   "Include_s__": {
+      "message": "(مضمن (مضمنات"
+   },
+   "Include_script_externals": {
+      "message": "تضمين مصادر البرامج النصية الخارجية"
+   },
+   "Include_script_storage": {
+      "message": "تضمين تخزين البرنامج النصي"
+   },
+   "Includes_Excludes": {
+      "message": "المتضمنات/المستبعدات"
+   },
+   "Incremental_Find": {
+      "message": "بحث تزايدي"
+   },
+   "Indent": {
+      "message": "مسافة بادئة"
+   },
+   "Indent_Less": {
+      "message": "مسافة بادئة أقل"
+   },
+   "Indent_More": {
+      "message": "مسافة بادئة أكثر"
+   },
+   "Indent_with": {
+      "message": "مسافة بادئة بـ"
+   },
+   "Indentation_Width": {
+      "message": "عرض المسافة البادئة"
+   },
+   "Info": {
+      "message": "معلومات"
+   },
+   "Inject_Mode": {
+      "message": "وضع الحقن"
+   },
+   "Insert_Line_After": {
+      "message": "أدخل السطر بعد"
+   },
+   "Insert_Line_Before": {
+      "message": "أدخل سطر قبل"
+   },
+   "Insert_constructor": {
+      "message": "إدراج constructor"
+   },
+   "Install": {
+      "message": "تثبيت"
+   },
+   "Install_from_URL": {
+      "message": "تثبيت من رابط"
+   },
+   "Install_this_script": {
+      "message": "تثبيت هذا البرنامج النصي"
+   },
+   "Installed_Version_": {
+      "message": "النسخة المثبتة"
+   },
+   "Installed_userscripts": {
+      "message": "تثبيت البرامج النصية للمستخدم"
+   },
+   "Instant": {
+      "message": "فوري"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "ملف غير صالح! المعذرة"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "اسم الملف غير صالح! المعذرة"
+   },
+   "Join_Lines": {
+      "message": "ضم الأسطر"
+   },
+   "Jump_to_line": {
+      "message": "القفز إلى سطر"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "مجرد خدمة أخرى مقدمة من محدث البرنامج النصي المألوف"
+   },
+   "Key_Mapping": {
+      "message": "تخصيص المفاتيح"
+   },
+   "Language": {
+      "message": "اللغة"
+   },
+   "Last_updated": {
+      "message": "آخر تحديث"
+   },
+   "Layout": {
+      "message": "النسق"
+   },
+   "Limited_runtime_host_permissions_might_break_some_Tampermonkey_features_": {
+      "message": "قد تؤدي أذونات مضيف وقت التشغيل المحدودة إلى تعطيل بعض ميزات Tampermonkey مثل تحديث البرنامج النصي و GM_xmlhttpRequest وغيرها!"
+   },
+   "Line_Case_Insensitive": {
+      "message": "Line Case Insensitive"
+   },
+   "Line_Down": {
+      "message": "سطر بالأسفل"
+   },
+   "Line_Up": {
+      "message": "سطر بالأعلى"
+   },
+   "Line_break": {
+      "message": "فاصلة السطر"
+   },
+   "Lines": {
+      "message": "أسطر"
+   },
+   "LogLevel": {
+      "message": "مستوى سجل الأداء"
+   },
+   "Login": {
+      "message": "تسجيل دخول"
+   },
+   "Lower_Case": {
+      "message": "أحرف صغيرة"
+   },
+   "MIME_Type": {
+      "message": "نوع MIME"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "!البرامج النصية الخبيثة قد تخترق خصوصيتك وتتصرف نيابة عنك\n.يجب عليك تثبيث البرامج النصية من المصادر الموثوقة فقط"
+   },
+   "Manual_Script_Blacklist": {
+      "message": "البرامج النصية اليدوية وقائمة @require المحظورة"
+   },
+   "Matching_URL": {
+      "message": "مطابقة الرابط"
+   },
+   "Modify": {
+      "message": "تعديل"
+   },
+   "Move_Line_Down": {
+      "message": "تحريك الخط لأسفل"
+   },
+   "Move_Line_Up": {
+      "message": "تحريك الخط لأعلى"
+   },
+   "Name": {
+      "message": "الاسم"
+   },
+   "Native": {
+      "message": "إفتراضي"
+   },
+   "Never": {
+      "message": "أبدا"
+   },
+   "New_Version": {
+      "message": "نسخة جديدة"
+   },
+   "New_script_template_": {
+      "message": "قالب برنامج نصي جديد"
+   },
+   "New_userscript": {
+      "message": "\u003Cبرامج نصية للمستخدم جديدة>"
+   },
+   "Next_Bookmark": {
+      "message": "المرجعية التالية"
+   },
+   "No": {
+      "message": "لا"
+   },
+   "No_backups_found": {
+      "message": "لاتتوفر نسخ احتياطية"
+   },
+   "No_entry_found": {
+      "message": "لايوجد مدخلات"
+   },
+   "No_frames": {
+      "message": "تشغيل فقط في الإطار العلوي"
+   },
+   "No_script_is_installed": {
+      "message": "لايوجد برنامج نصي مثبت"
+   },
+   "No_script_is_running": {
+      "message": "لايوجد برنامج نصي يعمل حالياً"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "لم يتم العثور على أخطاء في بناء الجملة."
+   },
+   "No_update_found__sry_": {
+      "message": "!لا يوجد تحديث"
+   },
+   "Normal": {
+      "message": "عادي"
+   },
+   "Note": {
+      "message": "ملاحظة"
+   },
+   "Novice": {
+      "message": "مبتدئ"
+   },
+   "Off": {
+      "message": "إيقاف"
+   },
+   "Ok": {
+      "message": "حسنا"
+   },
+   "On": {
+      "message": "تشغيل"
+   },
+   "OneDrive": {
+      "message": "ون درايف"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "تم العثور على خطأ أو تلميح واحد."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "تم تعيين خيار أو أكثر من خيارات التوافق. قد ترغب أو يتحتم عليك مراجعتها."
+   },
+   "Only_Manual": {
+      "message": "يدوي فقط"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "يمكنك فقط حفظ الملفات التي تكون بهذه الإمتدادات على القرص الصلب.\nإحرص على عدم السماح بامتدادات الملفات القابلة للتثبيت في نظام التشغيل الخاص بك!"
+   },
+   "Open_changelog": {
+      "message": "فتح سجل التغيير"
+   },
+   "Operation_completed_successfully": {
+      "message": "إكمال العملية بنجاح"
+   },
+   "Original_domain_whitelist": {
+      "message": "القائمة المسموحة للنطاق الأصلي"
+   },
+   "Original_excludes": {
+      "message": "المستبعدات الأصلية"
+   },
+   "Original_includes": {
+      "message": "المتضمنات الأصلية"
+   },
+   "Original_matches": {
+      "message": "التطابقات الأصلية"
+   },
+   "Page_Filter_Mode": {
+      "message": "وضع تصفية الصفحة"
+   },
+   "Password": {
+      "message": "الرقم السري"
+   },
+   "Paste": {
+      "message": "لصق"
+   },
+   "Permanent": {
+      "message": "دائماً"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "يرجى مراجعة إرشادات $editor$ لمزيدٍ من التفاصيل.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "تبرع لنا من فضلك"
+   },
+   "Please_select_a_file": {
+      "message": "من فضلك إختر ملفاً"
+   },
+   "Please_wait___": {
+      "message": "...انتظر من فضلك"
+   },
+   "Position_": {
+      "message": "الموضع"
+   },
+   "Prev_Bookmark": {
+      "message": "المرجعية السابقة"
+   },
+   "Process_with_Chrome": {
+      "message": "معالجة باستخدام المتصفح"
+   },
+   "Really_delete_0name0__": {
+      "message": "؟'$name$' أترغب بالتأكيد  من حذف",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "هل تريد حقًا حذف جميع العناصر المحددة؟"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "هل تريد حقًا إعادة ضبط جميع العناصر المحددة على إعدادات المصنع؟"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "هل تريد حقًا إعادة ضبط المصنع لهذا البرنامج النصي؟"
+   },
+   "Really_reset_all_changes_": {
+      "message": "أمتاكد من إعادة ضبط كل التغييرات؟"
+   },
+   "Redo": {
+      "message": "تراجع"
+   },
+   "Reindent_on_typing": {
+      "message": "إعادة المسافة البادئة على الكتابة"
+   },
+   "Reinstall": {
+      "message": "إعادة تثبيت"
+   },
+   "Remind_me_later": {
+      "message": "ذكرني لاحقاً"
+   },
+   "Remove": {
+      "message": "إزالة"
+   },
+   "Remove__possibly_unsecure_": {
+      "message": "إزالة بالكامل (ربما تكون غير آمنة)"
+   },
+   "Replace": {
+      "message": "استبدال"
+   },
+   "Replace_": {
+      "message": "استبدال؟"
+   },
+   "Replace_All": {
+      "message": "إستبدل الكل"
+   },
+   "Replace_all_with": {
+      "message": "إستبدل كافة"
+   },
+   "Replace_for_each_statements": {
+      "message": "'for each' استبدال جمل"
+   },
+   "Replace_with": {
+      "message": "استبدال بـ"
+   },
+   "Report_a_bug": {
+      "message": "الإبلاغ عن مشكلة"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": ".إبلاغ صاحب البرنامج النصي بمشكلة\n(قد تحتاج لإنشاء حساب)"
+   },
+   "Requires": {
+      "message": "يتطلب"
+   },
+   "Reset_Section": {
+      "message": "إعادة ضبط"
+   },
+   "Resources": {
+      "message": "مصادر"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Tampermonkey إعادة تشغيل"
+   },
+   "Revoke_Access_Token": {
+      "message": "إبطال رمز الدخول"
+   },
+   "Run_at": {
+      "message": "تشغيل عند"
+   },
+   "Run_syntax_check": {
+      "message": "قم بتشغيل فحص بناء الجملة"
+   },
+   "Running_scripts": {
+      "message": "تشغيل مثيلات البرامج النصية"
+   },
+   "Save": {
+      "message": "حفظ"
+   },
+   "Save_to_disk": {
+      "message": "حفظ على القرص"
+   },
+   "Script_0name0_is_slowing_down_some_page_loads_": {
+      "message": "يبطأ البرنامج النصي '$name$' تحميل صفحتك",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_Blacklist_Source": {
+      "message": "مصدر قائمة البرامج النصية المحظورة"
+   },
+   "Script_Sync": {
+      "message": "مزامنة البرنامج النصي"
+   },
+   "Script_URL_detection": {
+      "message": "حذف رابط البرنامج النصي"
+   },
+   "Script_Update": {
+      "message": "تحديث البرنامج النصي"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "يستطيع كاتب النص البرمجي من تأمين المصادر الخارجية عن طريق إضافة هاش SRI للرابط الآمن."
+   },
+   "Script_local_files_access": {
+      "message": "السماح للبرامج النصية من الوصول الى الملفات المحلية"
+   },
+   "Script_name_0name0": {
+      "message": "$name$: اسم الملف",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "ترتيب البرنامج النصي"
+   },
+   "Search": {
+      "message": "بحث"
+   },
+   "Search_for": {
+      "message": "البحث عن"
+   },
+   "Security": {
+      "message": "الأمان"
+   },
+   "Select_All": {
+      "message": "تحديد الكل"
+   },
+   "Select_Bookmarks": {
+      "message": "حدد الإشارات المرجعية"
+   },
+   "Select_Line": {
+      "message": "حدد السطر"
+   },
+   "Select_Next_Occurrence": {
+      "message": "حدد التكرار التالي"
+   },
+   "Select_Scope": {
+      "message": "حدد النطاق"
+   },
+   "Select_between_Brackets": {
+      "message": "اختر بين قوسين"
+   },
+   "Select_to_Sublime_Mark": {
+      "message": "حدد إلى علامة الـ Sublime"
+   },
+   "Selection": {
+      "message": "المحددة"
+   },
+   "Server_And_Manual": {
+      "message": "يدوي وعن بعد"
+   },
+   "Set_Sublime_Mark": {
+      "message": "ضع علامة Sublime"
+   },
+   "Settings": {
+      "message": "الإعدادات"
+   },
+   "Show_backups": {
+      "message": "إظهار النسخ الإحتياطية"
+   },
+   "Show_fixed_source": {
+      "message": "إظهار المصدر الثابت"
+   },
+   "Show_notification": {
+      "message": "إظهار الإشعارات"
+   },
+   "Sites": {
+      "message": "المواقع"
+   },
+   "Size": {
+      "message": "الحجم"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "($seconds$ seconds) تخطي بعد: ",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "ذكي"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "قد يتم حظر بعض البرامج النصية بواسطة إعدادات JavaScript لهذه الصفحة أو بواسطة أداة حظر البرامج النصية!"
+   },
+   "Sort": {
+      "message": "تصنيف"
+   },
+   "Source": {
+      "message": "المصدر"
+   },
+   "Source_Code": {
+      "message": "مصدر الكود"
+   },
+   "Spaces": {
+      "message": "مسافات"
+   },
+   "Split_into_Lines": {
+      "message": "تقسيم إلى أسطر"
+   },
+   "Start": {
+      "message": "بدأ"
+   },
+   "Stop": {
+      "message": "إيقاف"
+   },
+   "Storage": {
+      "message": "التخزين"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "تخزين البيانات في وضع التصفح المتخفي"
+   },
+   "Strict": {
+      "message": "صارم"
+   },
+   "Sublime": {
+      "message": "نصوص الـ Sublime"
+   },
+   "Sublime_Mark": {
+      "message": "علامة الـ Sublime"
+   },
+   "Subresource_Integrity": {
+      "message": "سلامة الموارد الفرعية"
+   },
+   "Swap_with_Sublime_Mark": {
+      "message": "مبادلة مع علامة الـ Sublime"
+   },
+   "Sync_Reset": {
+      "message": "إعادة التزامن"
+   },
+   "Sync_Type": {
+      "message": "نوع"
+   },
+   "Sync_finished": {
+      "message": "إنتهت المزامنة"
+   },
+   "Sync_is_running": {
+      "message": "المزامنة قيد التشغيل"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "مزامنة البرامج النصية الخاصة بك عبر المتصفحات وأنظمة التشغيل"
+   },
+   "TabMode": {
+      "message": "وضعية التبويب"
+   },
+   "Tab_Size": {
+      "message": "حجم التبويب"
+   },
+   "Tab_URL": {
+      "message": "تبويب الرابط"
+   },
+   "Tabs": {
+      "message": "التبويبات"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey ونسخة البرنامج النصي"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey ليس لديه إذن للوصول إلى الملفات المحلية!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "قد لا يتمكن Tampermonkey من توفير الوصول إلى السياق غير الآمن (غير آمن ، وظائف الصفحة ومتغيراتها) عندما يتم تعطيل هذا."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "يجب إعادة تشغيل Tampermonkey لإجراء هذا التغيير.\n\nهل تريد الاستمرار؟"
+   },
+   "Tampermonkey_version": {
+      "message": "نسخة Tampermonkey فقط"
+   },
+   "Templates": {
+      "message": "نماذج"
+   },
+   "Temporarily_allow": {
+      "message": "اسمح فقط هذه المرة"
+   },
+   "Temporary": {
+      "message": "مؤقتاً"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "القائمة المسموحة المؤقتة للنطاق"
+   },
+   "Text": {
+      "message": "نص"
+   },
+   "TextArea": {
+      "message": "منطقة الكتابة"
+   },
+   "Thank_you_very_much_": {
+      "message": "شكراً جزيلاً لك!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "يتطلب وضع واجهة برمجة تطبيقات المتصفح الحصول على إذن خاص."
+   },
+   "The_diff_for_this_script_is_too_large_to_render": {
+      "message": "الاختلاف في هذا النص البرمجي أكبر من أن يتم عرضه"
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "النسخة القديمة قد تحوي مشاكل عند قراءة معلوماتها المخزنة"
+   },
+   "The_origin_of_this_script_cant_be_determined_": {
+      "message": "تحذير: لا يمكن تحديد أصل هذا البرنامج النصي.\nإما أنه قد تم تثبيته من قبل طرف ثالث ضار لسرقة بياناتك الخاصة أو بعض إعدادات المستعرض الأساسي، أو ان نظام التشغيل أو الجهاز قد تم تغييره!\n\nالرجاء فتح البرنامج النصي ومراجعته ومن ثمّ حفظه لتفعيله."
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": ":تغير رابط التحديث من\n    '$oldurl$'\n    إلى\n    '$newurl$'\n",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "المظهر"
+   },
+   "There_are_unsaved_changed_": {
+      "message": ".هناك تغييرات غير محفوظة\nأمتأكد من غلق المحرر؟"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "هناك تحديث متوفر لـ '$name$' . :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_external_resource_will_not_auto_update__Please_delete_it_in_order_to_enable_updates_again_": {
+      "message": "لن يتم تحديث هذا المورد الخارجي تلقائيًا! يرجى حذفه لتمكين التحديثات مرة أخرى."
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "!هذا يعطي الشفرة كامل الصلاحية لاستقبال وإرسال البيانات من كل صفحات الويب. وقد يكون هذا غير ءام\n\n؟أمتأكد من الاستمرار"
+   },
+   "This_is_a_possibly_foisted_script_and_a_modification_will_enable_it_": {
+      "message": "لا يمكن تحديد أصل هذا البرنامج النصي.\nسواء تم تثبيته من قبل جهة خارجية لسرقة بياناتك الخاصة أو بعض إعدادات المستعرض الأساسية، أو أن نظام التشغيل أو الجهاز قد تم تغييره.\nسيؤدي هذا التعديل إلى تمكينه!"
+   },
+   "This_is_a_system_script": {
+      "message": ".هذا برنامج نصي للنظام"
+   },
+   "This_is_a_userscript": {
+      "message": "Javascript هذه البرنامج النصي مكتوب بلغة"
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "يسمح هذا الخيار للصفحة الرئيسية لـ Tampermonkey وبعض صفحات استضافة البرامج النصية بتحديد إصدار Tampermonkey وبعض معلومات البرنامج النصي الأساسي (مثبت ، إصدار ، مُمكّن)."
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "تم إدراجه في القائمة المحظورة بواسطة إعدادات الأمان"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": ".هذا البرنامج النصي لا توفر أي معلومات @include مضمنة"
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "(HTTPS pages) هذه البرنامج النصي لديه صلاحية الدخول على صفحات الويب المشفرة"
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": ".هذا البرنامج النصي لديه كامل الصلاحية لدخول هذه الصفحة"
+   },
+   "This_script_has_full_web_access": {
+      "message": "هذا البرنامج النصي لديه كامل صلاحية الدخول على شبكة الأنترنت"
+   },
+   "This_script_is_blacklisted_": {
+      "message": "هذا البرنامج النصي في القائمة المحظورة"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "chrome هذا البرنامج النصي يعمل في وضع"
+   },
+   "This_script_stores_data": {
+      "message": "Tampermonkey هذه البرنامج النصي يحفظ البيانات في"
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "يستخدم هذا البرنامج النصي جزءًا من Greasemonkey 10 API (unsafeWindow.monkey)\nالذي لا يدعمه Tampermonkey ولا أي معالج نصي بديل آخر."
+   },
+   "This_script_was_deleted": {
+      "message": "هذا البرنامج النصي تم حذفه"
+   },
+   "This_script_was_executed_0count0_times": {
+      "message": "هذا البرنامج النصي تم تنفيذه $count$ مرات",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_executed_0count0_times_but_is_not_active_anymore": {
+      "message": "هذا البرنامج النصي تم تنفيذه $count$ مرات ولكنه غير فعال حالياً",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_not_executed_yet": {
+      "message": "هذا البرنامج النصي لم يتم تنفيذه بعد"
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "!سيتم استبدال إعداداتك العامة"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "Do you really want to remove all data from Sync?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "هل تريد فعلاً أن تحذف جميع البرامج النصية وإعادة تعيين جميع الإعدادات؟"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "؟Tampermonkey أتريد بالتأكيد إعادة تشغيل"
+   },
+   "Today": {
+      "message": "اليوم"
+   },
+   "Toggle": {
+      "message": "إستبدال"
+   },
+   "Toggle_Block_Comment": {
+      "message": "إستبدال مربع التعليق"
+   },
+   "Toggle_Comment": {
+      "message": "تبديل التعليق"
+   },
+   "Toggle_Comment_Indented": {
+      "message": "إستبدال المسافة البادئة للتعليق"
+   },
+   "Toggle_Enable": {
+      "message": "تفعيل الإستبدال"
+   },
+   "Trace": {
+      "message": "تتبع"
+   },
+   "Transpose": {
+      "message": "تبديل موضع"
+   },
+   "Trigger_Update": {
+      "message": "تحديث المحرك"
+   },
+   "Trim_trailing_whitespace_from_modified_lines": {
+      "message": "تقليم المسافة البيضاء الزائدة من الخطوط المعدلة"
+   },
+   "Try_to_install_as_script": {
+      "message": "حاول التثبيت كبرنامج نصي"
+   },
+   "Type": {
+      "message": "نوع"
+   },
+   "URL": {
+      "message": "رابط"
+   },
+   "UUID": {
+      "message": "UUID"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "تعذر تحميل البرنامج النصي من الرابط: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_0name0": {
+      "message": "غير قادر على تحليل $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "غير قادر على تحليل هذا! :("
+   },
+   "Undo": {
+      "message": "تراجع"
+   },
+   "Unfold": {
+      "message": "كشف"
+   },
+   "Unfold_All": {
+      "message": "كشف الكل"
+   },
+   "Unique_running_scripts": {
+      "message": "البرامج النصية الفريدةالمشتغلة"
+   },
+   "Unknown_method_0name0": {
+      "message": "طريقة غير معروفة $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "تحديث"
+   },
+   "Update_Notification": {
+      "message": "إظهار إشعار تحديث TM"
+   },
+   "Update_URL_": {
+      "message": "رابط التحديث"
+   },
+   "Update_check_is_disabled": {
+      "message": "التحقق من كون تحديث البرنامج النصي معطل أو غير ممكّن"
+   },
+   "Update_interval": {
+      "message": "الفاصل الزمني للتحديث"
+   },
+   "Updated_to__0version0": {
+      "message": "تم التحديث إلى: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "التحديثات"
+   },
+   "Upper_Case": {
+      "message": "الأحرف الكبيرة"
+   },
+   "User_domain_blacklist": {
+      "message": "القائمة المحظورة لنطاق المستخدم"
+   },
+   "User_domain_whitelist": {
+      "message": "القائمة المسموحة لنطاق المستخدم"
+   },
+   "User_excludes": {
+      "message": "مستبعدات المستخدم"
+   },
+   "User_includes": {
+      "message": "متضمنات المستخدم"
+   },
+   "User_matches": {
+      "message": "تطابقات المستخدم"
+   },
+   "User_modified": {
+      "message": "معدلة"
+   },
+   "Userscripts": {
+      "message": "البرامج النصية للمستخدم"
+   },
+   "Utilities": {
+      "message": "الأدوات"
+   },
+   "Validate_if_given": {
+      "message": "تحقق إذا كان مُعطى"
+   },
+   "Validate_if_supported": {
+      "message": "تحقق إذا كان ممكناً"
+   },
+   "Verbose": {
+      "message": "التفاصيل المطولة"
+   },
+   "Version": {
+      "message": "النسخه"
+   },
+   "Vim": {
+      "message": "تطبيق فيم"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "الانتظار حتى انتهاء المزامنة"
+   },
+   "Warning": {
+      "message": "تحذير"
+   },
+   "Warning_unsafe_site_warnings_might_appear_": {
+      "message": "تحذير: قد تظهر تحذيرات بشأن المواقع غير الآمنة إذا احتوى النص البرمجي على عناوين URL ضارة."
+   },
+   "WebDAV": {
+      "message": "بروتوكول WebDAV"
+   },
+   "Whitelist": {
+      "message": "القائمة المسموحة"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "إمتداد الملفات المسموحة"
+   },
+   "Whitelisted_Pages": {
+      "message": "الصفحات المسموحة"
+   },
+   "Windows": {
+      "message": "النوافذ"
+   },
+   "XHR_Security": {
+      "message": "حماية الـ XHR"
+   },
+   "Yandex_Disk": {
+      "message": "خدمة Yandex.Disk السحابية"
+   },
+   "Yank_Sublime_Mark": {
+      "message": "علامة لصق Sublime"
+   },
+   "Yes": {
+      "message": "Yes"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "!انتبه نسخة قديمة من الملف"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "تثبيت البرنامج النصي للمستخدم"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "تعديل البرنامج النصي للمستخدم"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "إعادة تثبيت البرنامج النصي للمستخدم"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "تحديث البرنامج النصي للمستخدم"
+   },
+   "You_can_add_your_custom_CSS_rules_here_": {
+      "message": "يمكنك إضافة قواعد CSS الخاصة بك إلى Tampermonkey UI هنا. في حالة حدوث كسر في شيء ما ، يمكنك الحصول على التخطيط الافتراضي عن طريق إلحاق ?layout=reset إلى صفحةالخيارات الخاصة بالرابط."
+   },
+   "You_can_add_your_custom_linter_config_here_": {
+      "message": "يمكنك إضافة تكوين linter المخصص هنا."
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "؟ألغتك غير مدعومة\n؟إضغظ هنا لتحصل على تعليمات ترجمة Tampermonkey"
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "يبدو أن القائمة المسموحة الخاصة بك تتضمن ملفات قابلة للتنفيذ! \n وهذا يعني أن البرامج النصية للمستخدم قد تقوم بتنزيل برامج ضارة أو برامج تجسس على القرص الثابت لديك!"
+   },
+   "Zip": {
+      "message": "ملف مضغوط"
+   },
+   "__Please_choose__": {
+      "message": "-- فضلاً إختر خيار --"
+   },
+   "_not_set_": {
+      "message": "\u003Cغير مضبوط>"
+   },
+   "connect_mode": {
+      "message": "إفحص @connect"
+   },
+   "fatal_error": {
+      "message": "خطأ فادح"
+   },
+   "overwritten_by_user": {
+      "message": "overwritten by user setting"
+   },
+   "require_and_resource": {
+      "message": "المستبعدات الخارجية (@require و @resource)"
+   },
+   "severity_1": {
+      "message": "1 (الأكثر أمانا)"
+   },
+   "severity_10": {
+      "message": "10 (الأقل أمانا)"
+   },
+   "severity_2": {
+      "message": "2"
+   },
+   "severity_3": {
+      "message": "3"
+   },
+   "severity_4": {
+      "message": "4"
+   },
+   "severity_5": {
+      "message": "5"
+   },
+   "severity_6": {
+      "message": "6"
+   },
+   "severity_7": {
+      "message": "7"
+   },
+   "severity_8": {
+      "message": "8"
+   },
+   "severity_9": {
+      "message": "9"
+   },
+   "some_secs": {
+      "message": "بعض"
+   },
+   "strict_mode": {
+      "message": "الوضع الصارم"
+   }
+}

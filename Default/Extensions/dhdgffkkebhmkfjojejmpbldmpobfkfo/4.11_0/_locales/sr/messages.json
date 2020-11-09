@@ -1,0 +1,1487 @@
+{
+   "0count0_changes_exported": {
+      "message": "$count$ promene izvezene",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_changes_imported": {
+      "message": "$count$ promene uvezene",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_errors_or_hints_were_found_": {
+      "message": "$count$ greški ili nagoveštaja je pronadjeno.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ je dostupna.\nMolimo vas re-startujte vaš prezraživač(browser) da bi počeli apdejt!",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "15_Seconds": {
+      "message": "15 Sekundi"
+   },
+   "1_Hour": {
+      "message": "1 Sat"
+   },
+   "30_Seconds": {
+      "message": "30 Sekundi"
+   },
+   "5_Minutes": {
+      "message": "5 Minute"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "Ponovna provera Greasemonkey/FF opcija za kompatiblinost je možda neophodna da bi pokrenuli ovu skriptu."
+   },
+   "A_reload_is_required": {
+      "message": "Ponovno učitavanje neophodno: \nIzmene koje nisu sačuvane biće izgubljene!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "Zahtev resursima na drugom domenu nije ništa neobično.\nPotrebno je samo proveriti da li skripta ima dobar razlog za pristup ovom domenu.\nNa primer, postoji samo par razloga za neku skriptu da kontaktira vašu banku.\n\nMolimo vas da uočite da autori userscript-i mogu da izbegnu ovaj dijalog dodajući [url=$connect$]@connect tags[/url] u njihovim skriptama.\n\nŠta god da izaberete, kasnije možete promeniti vaš izbor u opcijama skripte [url=$settings$]u prozoru(tabu) za podešavanja[/url].",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "Userscript-a želi da pristupi resursima na drugom domenu."
+   },
+   "Action": {
+      "message": "Akcija"
+   },
+   "Action_Menu": {
+      "message": "Menu Akcija"
+   },
+   "Actions": {
+      "message": "Akcije"
+   },
+   "Add": {
+      "message": "Dodaj"
+   },
+   "Add_Selection_Above": {
+      "message": "Dodaj Sekciju Iznad"
+   },
+   "Add_Selection_Below": {
+      "message": "Dodaj Sekciju Ispod"
+   },
+   "Add_TM_to_CSP": {
+      "message": "Dodaj Tampermonkey u sigurnosne polise sadržaja sajta (CSP) ako jedna već ne postoji"
+   },
+   "Add_as_0clude0": {
+      "message": "Dodaj kao $clude$",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "Kreiraj novu skriptu..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "Dodaj kompatibilnosne funkcije Objektu i Nizu"
+   },
+   "Advanced": {
+      "message": "Napredni"
+   },
+   "All_local_files": {
+      "message": "Svi lokalni fajlovi"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "Sve promene su samo sačuvane dok se ova incognito sesija ne završi!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "Sva podešavanja će biti resetovana (vraćena na fabrička podešavanja)!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Dozvoli Tampermonkey-u da prikuplja anonimnu statistiku preko Google Analytics. Pomaže nam da poboljšamo Tampermonkey i utvrdimo na šta treba obratiti pažnju. Možete omogućiti ovo ukoliko vam se nesvidja."
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "Dozvoli komunikaciju sa stranicama koje saradjuju"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "Dozvoli HTTP zaglavljima da budu izmenjeni od strane skripte"
+   },
+   "Allow_once": {
+      "message": "Dozvoli jednom"
+   },
+   "Always": {
+      "message": "Uvek"
+   },
+   "Always_allow": {
+      "message": "Uvek dozvoli"
+   },
+   "Always_allow_all_domains": {
+      "message": "Uvek dozvoli na svim domenima"
+   },
+   "Always_allow_domain": {
+      "message": "Uvek dozvoli na domenu"
+   },
+   "Always_ask": {
+      "message": "Uvek pitaj"
+   },
+   "Always_forbid": {
+      "message": "Uvek zabrani"
+   },
+   "Always_forbid_domain": {
+      "message": "Uvek zabrani na domenu"
+   },
+   "An_error_occured_during_import_": {
+      "message": "Došlo je do greške prilikom priključivanja (uvoza)."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "Došlo je do interne greške. Ako se ovaj problem opet javi nakon restarta pretraživača, molimo vas da pritisnite OK i prijavite problem na forumu.\n\n Da li želite da posetite Tampermonkey forum?"
+   },
+   "Anonymous_statistics": {
+      "message": "Anonimna statistika"
+   },
+   "Appearance": {
+      "message": "Izgled"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "Takodje primeni opcije kompatiblinosti na @require"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "Primeni ovo nad svim izabranim skriptama"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "Kada je Tampermonkey ažuriran od strane pretravača istovremeno je restartovan. Nažalost ovo može obustaviti trenutno pokrenute skripte!\n\nDa li ste sigurni da ne želite da budete obavešteni kada su dostupna ažuriranja?"
+   },
+   "Ask_if_unknown": {
+      "message": "Pitaj kada je nepoznat"
+   },
+   "At_least_one_new_connect_statement_was_added_": {
+      "message": "Najmanje jedan novi @connect iskaz je dodat."
+   },
+   "At_least_one_of_the_include_match_or_exclude_statements_was_changed_": {
+      "message": "Najmanje jedan od @include, @match ili @exclude iskaza je promenjen."
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "Jedan ili više deo/delova ove stranice je na listi 'nesigurnih stranica' u podešavanjima!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": "Upozorenje: Lista (Isključeni) je smanjena.\nMolimo vas proverite ručno!"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": "Upozorenje: Lista (Uključenih) je smanjena.\nMolimo vas proverite ručno!"
+   },
+   "Author": {
+      "message": "Autor"
+   },
+   "Auto": {
+      "message": "Automatski"
+   },
+   "Auto_Indent_all": {
+      "message": "Automatski napučiti (indent)"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "Automatski osveži stranicu"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "Osveži aplikacije u dodiru ako je aplikacija uključena ili isključena"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "Automatska provera sintakse, najveća veličina"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "Automatska provera sintakse prilikom kucanja"
+   },
+   "Automatically_added_user_includes_for_compatibility_reasons_": {
+      "message": "Neke od obuhvaćenih (uključenih) su automatski dodati zbog kompatiblinosti!"
+   },
+   "Beginner": {
+      "message": "Početnik"
+   },
+   "Blacklist": {
+      "message": "Lista Nedozvoljenih"
+   },
+   "Blacklist_Severity": {
+      "message": "Blokiraj od zloupotre od odredjenog nivoa ozbiljnosti"
+   },
+   "Blacklisted_Pages": {
+      "message": "Lista Nedozvoljenih Stranica"
+   },
+   "Bookmarks": {
+      "message": "Obeleživači"
+   },
+   "Both": {
+      "message": "Oboje"
+   },
+   "Browser_API": {
+      "message": "API Pretraživača"
+   },
+   "Browser_API_Downloads": {
+      "message": "API Preuzimanja Pretraživača"
+   },
+   "Browser_Sync": {
+      "message": "Sinhronizacija Pretraživača"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "KONFLIKT:\nOva skripta je modifikovana (izmenjena)iz drugog prozora pre $t$ sekundi",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "Otkaži"
+   },
+   "Center_Cursor": {
+      "message": "Centriraj Kursor"
+   },
+   "Changelog": {
+      "message": "Pregled promena"
+   },
+   "Changes": {
+      "message": "Promene"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "Menja broj vidljivih opcija za konfiguraciju"
+   },
+   "Check_disabled_scripts": {
+      "message": "Ažurirajte isključene aplikacije"
+   },
+   "Check_for_Updates": {
+      "message": "Proveri da li ima dostupnih ažuriranja"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "Proveri da li ima ažuriranja za userscript-u"
+   },
+   "Check_interval": {
+      "message": "Proveri interval"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "Proveri samo skripte do ove večicine ,automatski."
+   },
+   "Classic": {
+      "message": "Klasično"
+   },
+   "Clear_All": {
+      "message": "Izbriši Sve"
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "Pritisni OK ako želiš da dozvoliš Tampermonkey-u da automatski pokreće preuzimanja."
+   },
+   "Click_here_to_install_it_": {
+      "message": "Klikni ovde za instalaciju."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "Klikni da pomeriš skriptu"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "Klikni ovde da vidiš promene"
+   },
+   "Close": {
+      "message": "Zatvori"
+   },
+   "Closing_Bracket": {
+      "message": "Zatvori Zagrade"
+   },
+   "Cloud": {
+      "message": "Oblak (Cloud)"
+   },
+   "Columns": {
+      "message": "Kolone"
+   },
+   "Comment": {
+      "message": "Komentariši"
+   },
+   "Config_Mode": {
+      "message": "Mod Konfiguracije"
+   },
+   "Convert_Array_Assignements": {
+      "message": "Pretvori [blub, bla] = s.split(':') iskaze"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "Pretvori CDATA sekcije u format prikladan za pretraživač"
+   },
+   "Copy": {
+      "message": "Kopiraj"
+   },
+   "Current_Version": {
+      "message": "Trenutna Verzija"
+   },
+   "Custom_CSS": {
+      "message": "Korisnički CSS"
+   },
+   "Cut": {
+      "message": "Rez"
+   },
+   "Dashboard": {
+      "message": "Komandna tabla"
+   },
+   "Debug": {
+      "message": "Otklanjanje grešaka (Debug)"
+   },
+   "Debug_scripts": {
+      "message": "Debug (odstranjivanje grešaka) skripti"
+   },
+   "Default": {
+      "message": "Uobičajeno"
+   },
+   "Default_Dark": {
+      "message": "Uobičajeno - Crno"
+   },
+   "Delete": {
+      "message": "Izbriši"
+   },
+   "Delete_Line": {
+      "message": "Izbriši Liniju"
+   },
+   "Delete_Line_Left": {
+      "message": "Izbriši Liniju Nalevo"
+   },
+   "Delete_Line_Right": {
+      "message": "Izbriši Liniju Nadesno"
+   },
+   "Delete_to_Next_Word_Boundary": {
+      "message": "Izbrisati do Granice Sledeće Reči"
+   },
+   "Delete_to_Previous_Word_Boundary": {
+      "message": "Izbrisati do Granice Prethodne Reči"
+   },
+   "Delete_to_Sublime_Mark": {
+      "message": "Izbriši sve do Oznake Sublime-a"
+   },
+   "Description": {
+      "message": "Deskripcija/Opis"
+   },
+   "Destination_URL": {
+      "message": "Destinacioni URL"
+   },
+   "Destination_domain": {
+      "message": "Destinacioni domen"
+   },
+   "Details": {
+      "message": "Detalji"
+   },
+   "Disable": {
+      "message": "Onemogući"
+   },
+   "Disabled": {
+      "message": "Onemogućeno"
+   },
+   "Disabled_scripts": {
+      "message": "Isključene skripte"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "Opcija '$option$' je uključena!\n\nDa li si siguran da želis da sačuvas izvorni kod?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Document_End": {
+      "message": "Kraj Dokumenta"
+   },
+   "Document_Start": {
+      "message": "Početak Dokumenta"
+   },
+   "Dont_ask_again": {
+      "message": "Ne pitaj ponovo"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "Ne pitaj za obična ažuriranja"
+   },
+   "Downgrade": {
+      "message": "Unazaditi"
+   },
+   "Download_Mode": {
+      "message": "Mod Preuzimanja"
+   },
+   "Downloaded_from_0url0": {
+      "message": "Preuzeto sa: $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "Preuzimanja"
+   },
+   "Duplicate_Lines": {
+      "message": "Dupliraj Linije"
+   },
+   "Edit": {
+      "message": "Izmeni"
+   },
+   "Editor": {
+      "message": "Urednik"
+   },
+   "Editor_reset": {
+      "message": "Uredjivački reset"
+   },
+   "Enable": {
+      "message": "Omogući"
+   },
+   "Enable_Editor": {
+      "message": "Uključi napredni urednik"
+   },
+   "Enable_Script_Sync": {
+      "message": "Omogući TESLA"
+   },
+   "Enable_autoSave": {
+      "message": "Sačuvaj sadržaj kada uredjivač izadje iz fokusa"
+   },
+   "Enable_easySave": {
+      "message": "Uključi Lako automatsko čuvanje"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "Uključiti ovu opciju za automatsku proveru pilikom kucanja."
+   },
+   "Enabled": {
+      "message": "Omogućeno"
+   },
+   "Enforce": {
+      "message": "Primeniti"
+   },
+   "Enter_the_new_rule": {
+      "message": "Upiši novo pravilo"
+   },
+   "Error": {
+      "message": "Greška"
+   },
+   "Every_12_Hour": {
+      "message": "Svakih 12 sati"
+   },
+   "Every_6_Hours": {
+      "message": "Svakih 6 sati"
+   },
+   "Every_Day": {
+      "message": "Svaki Dan"
+   },
+   "Every_Hour": {
+      "message": "Svaki sat"
+   },
+   "Every_Month": {
+      "message": "Sveki mesec"
+   },
+   "Every_Week": {
+      "message": "Svaku Nedelju"
+   },
+   "Exclude_0domain0": {
+      "message": "Isključeni $domain$",
+      "placeholders": {
+         "domain": {
+            "content": "$1"
+         }
+      }
+   },
+   "Exclude_s__": {
+      "message": "Isključeni"
+   },
+   "Experimental": {
+      "message": "Eksperimentalno"
+   },
+   "Export": {
+      "message": "Izvoz"
+   },
+   "Externals": {
+      "message": "Spoljašnji"
+   },
+   "Factory_Reset": {
+      "message": "Fabrički Reset"
+   },
+   "Fast": {
+      "message": "Brzo"
+   },
+   "Favicon_Service": {
+      "message": "Favicon Servis"
+   },
+   "Features": {
+      "message": "Karakteristike"
+   },
+   "File": {
+      "message": "Fajl"
+   },
+   "Filter_by": {
+      "message": "Filtriraj Po"
+   },
+   "Find": {
+      "message": "Nadji"
+   },
+   "Find_All_Under": {
+      "message": "Nadji SVE Ispod"
+   },
+   "Find_Next": {
+      "message": "Nadji Sledeći"
+   },
+   "Find_Previous": {
+      "message": "Nadji Prethodni"
+   },
+   "Find_Under": {
+      "message": "Nadji Ispod"
+   },
+   "Find_Under_Previous": {
+      "message": "Nadji Ispod Prethodnog"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "Popravi 'for (var j in x)' iskaze"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "Popravi wrappedJSObject osobni pristup"
+   },
+   "Focus_tab": {
+      "message": "Fokusiraj izvorni prozor (tab)"
+   },
+   "Fold": {
+      "message": "Sakriti/Sklopiti/Saviti"
+   },
+   "Fold_All": {
+      "message": "Sakriti sve"
+   },
+   "Folding": {
+      "message": "Skapanje"
+   },
+   "Font_Size": {
+      "message": "Veličina Fonta"
+   },
+   "Forbid_once": {
+      "message": "Zabrani jednom"
+   },
+   "Full_reset": {
+      "message": "Vraćanje na fabrička podešavanja"
+   },
+   "GM_compat_options_": {
+      "message": "GM/FF opcije kompatiblinosti"
+   },
+   "General": {
+      "message": "Generalno"
+   },
+   "Get_new_scripts___": {
+      "message": "Pronadji novu skriptu..."
+   },
+   "Get_some_scripts___": {
+      "message": "Pronadji skripte..."
+   },
+   "Global_Settings": {
+      "message": "Globalna podešavanja"
+   },
+   "Global_settings_import": {
+      "message": "Uvoz globalnih podešavanja"
+   },
+   "GoTo": {
+      "message": "Idi DO"
+   },
+   "Group_Left": {
+      "message": "Grupiši Nalevo"
+   },
+   "Group_Right": {
+      "message": "Grupiši Nadesno"
+   },
+   "Help": {
+      "message": "Pomoć"
+   },
+   "Hide_disabled_scripts": {
+      "message": "Sakrij onemogućene skripte"
+   },
+   "Hide_notification_after": {
+      "message": "Sakrij obaveštenje posle"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "Istaknuti zaostajući whitespace (prostor prilikom pritiska SPACE)"
+   },
+   "Homepage": {
+      "message": "Početna stranica"
+   },
+   "I_contributed_already": {
+      "message": "Već sam donirao"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "Ne želim da doniram"
+   },
+   "Icon_badge_color": {
+      "message": "Ikona Značka Boja"
+   },
+   "Icon_badge_info": {
+      "message": "Ikona Značka Informacija"
+   },
+   "Import": {
+      "message": "Ubaci"
+   },
+   "Imported": {
+      "message": "Uvezeni"
+   },
+   "Include_TM_settings": {
+      "message": "Obuhvati Tampermonkey podešavanja"
+   },
+   "Include_s__": {
+      "message": "Uključeni"
+   },
+   "Include_script_storage": {
+      "message": "Obuhvati skladište skripte"
+   },
+   "Includes_Excludes": {
+      "message": "Uvezi(uključi)/Izvezi(isključi)"
+   },
+   "Incremental_Find": {
+      "message": "Inkrementalni Nalaz/Traganje"
+   },
+   "Indent": {
+      "message": "Uvuci"
+   },
+   "Indent_Less": {
+      "message": "Indentuj (uvuci) Manje"
+   },
+   "Indent_More": {
+      "message": "Indentuj (uvuci) Više"
+   },
+   "Indent_with": {
+      "message": "Indentacija (uvlačenje) sa"
+   },
+   "Indentation_Width": {
+      "message": "Širina Indentacije (uvlačenje)"
+   },
+   "Info": {
+      "message": "Informativno"
+   },
+   "Inject_Mode": {
+      "message": "Mod ubacivanja"
+   },
+   "Insert_Line_After": {
+      "message": "Ubaci Liniju Posle"
+   },
+   "Insert_Line_Before": {
+      "message": "Ubaci Liniju Pre"
+   },
+   "Insert_constructor": {
+      "message": "Ubaci konstruktor"
+   },
+   "Install": {
+      "message": "Instaliraj"
+   },
+   "Install_this_script": {
+      "message": "Instaliraj ovu skriptu"
+   },
+   "Installed_Version_": {
+      "message": "Instalirana verzija"
+   },
+   "Installed_userscripts": {
+      "message": "Instalirane userscripte"
+   },
+   "Instant": {
+      "message": "U Tren"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "Nevažeći UserScript. Izvini!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "Nevažeći UserScript ime. Izvini!"
+   },
+   "Join_Lines": {
+      "message": "Pridruži Linije"
+   },
+   "Jump_to_line": {
+      "message": "Idi na liniju"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "Još jedna usluga pružena od vašeg prijateljskog softvera za ažuriranje"
+   },
+   "Key_Mapping": {
+      "message": "Mapiranje tastera"
+   },
+   "Language": {
+      "message": "Jezik (Language)"
+   },
+   "Last_updated": {
+      "message": "Poslednje izmene"
+   },
+   "Layout": {
+      "message": "Raspored"
+   },
+   "Line_Case_Insensitive": {
+      "message": "Linija nije zavisna od velikog i malog slova"
+   },
+   "Line_Down": {
+      "message": "Linija Nadole"
+   },
+   "Line_Up": {
+      "message": "Linija Naviše"
+   },
+   "Line_break": {
+      "message": "Prekid linije"
+   },
+   "Lines": {
+      "message": "Linije"
+   },
+   "LogLevel": {
+      "message": "Nivo prijava (Logging level)"
+   },
+   "Lower_Case": {
+      "message": "Malo Slovo"
+   },
+   "MIME_Type": {
+      "message": "MIME Tip"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "Zlonamerne skripte mogu da naruše vašu privatnost i obaviti neautorizovane radnje!\nMolimo vas da instalirate/skidate skripte samo iz proverenih izvora."
+   },
+   "Manual_Script_Blacklist": {
+      "message": "Ručne Userscript i @require Listu(nedozvoljenih)"
+   },
+   "Matching_URL": {
+      "message": "URL Par"
+   },
+   "Modify": {
+      "message": "Promena"
+   },
+   "Move_Line_Down": {
+      "message": "Pomeri Liniju Nadole"
+   },
+   "Move_Line_Up": {
+      "message": "Pomeri Liniju Naviše"
+   },
+   "Name": {
+      "message": "Ime"
+   },
+   "Native": {
+      "message": "Nativno (urodjeno)"
+   },
+   "Never": {
+      "message": "Nikad"
+   },
+   "New_Version": {
+      "message": "Nova Verzija"
+   },
+   "New_script_template_": {
+      "message": "Novi obrazac skripte"
+   },
+   "New_userscript": {
+      "message": "\u003CNova userscript-a>"
+   },
+   "Next_Bookmark": {
+      "message": "Sledeći Obeleživač"
+   },
+   "No": {
+      "message": "Ne"
+   },
+   "No_backups_found": {
+      "message": "Nema rezevrnih kopija"
+   },
+   "No_entry_found": {
+      "message": "Nije pronadjen ulaz (podatak)"
+   },
+   "No_frames": {
+      "message": "Pokreni samo u gornjem delu (rama)"
+   },
+   "No_script_is_installed": {
+      "message": "Nema instaliranih skripti"
+   },
+   "No_script_is_running": {
+      "message": "Skripte nisu pokrenute."
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "Sintaksne greske nisu pronadjene."
+   },
+   "No_update_found__sry_": {
+      "message": "Nema dodatnih ažuriranja!"
+   },
+   "Normal": {
+      "message": "Normalno"
+   },
+   "Note": {
+      "message": "Beleška"
+   },
+   "Novice": {
+      "message": "Novajlija"
+   },
+   "Off": {
+      "message": "isključeno"
+   },
+   "On": {
+      "message": "Uključeno"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "Jedna greška ili nagoveštaj je pronadjen/o."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "Jedna ili više opcija kompatiblinosti su postavljene. Možda bi želeli/trebali da ih pregledate."
+   },
+   "Only_Manual": {
+      "message": "Samo ručno"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "Samo Fajlovi sa ovim ekstenzijama će biti sačuvani na hard-disk.\nPažljivo da ne bi dozvolili fajlove koji predstavljaju fajlove koje može izvršiti vaš operativni sistem!"
+   },
+   "Open_changelog": {
+      "message": "Prikaži promene"
+   },
+   "Operation_completed_successfully": {
+      "message": "Operacija uspešno izvršena!"
+   },
+   "Original_domain_whitelist": {
+      "message": "Orginalni lista dozvoljenih domena"
+   },
+   "Original_excludes": {
+      "message": "Orginalni izvezeni(isključeni)"
+   },
+   "Original_includes": {
+      "message": "Orginalni uvezeni"
+   },
+   "Original_matches": {
+      "message": "Orginalni par"
+   },
+   "Page_Filter_Mode": {
+      "message": "Filter Mod Stranica"
+   },
+   "Paste": {
+      "message": "Nalepi"
+   },
+   "Permanent": {
+      "message": "Trajno"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "Molimo vas proverite $editor$ dokumentaciju za još detalja",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "Uzmite u obzir da donirate!"
+   },
+   "Please_select_a_file": {
+      "message": "Molimo odaberite fajl"
+   },
+   "Please_wait___": {
+      "message": "Molimo vas sačekajte..."
+   },
+   "Position_": {
+      "message": "Pozicija"
+   },
+   "Prev_Bookmark": {
+      "message": "Prethodni Obeleživač"
+   },
+   "Process_with_Chrome": {
+      "message": "Proces sa pretraživačem."
+   },
+   "Really_delete_0name0__": {
+      "message": "Da li ste sigurni da želite da izbrišete '$name$'?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "Da li stvarno želite da izbrišete selektovane stavke?"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "Da li sigurno želite da vratite izabrane stavke na fabrička podešavanja?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "Da li sigurno želite da vratite na fabričko podešavanja ovu skriptu?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "Da li ste sigurni da želite restartovati sve promene?"
+   },
+   "Redo": {
+      "message": "Vrati napred"
+   },
+   "Reindent_on_typing": {
+      "message": "Uvuci prilikom kucanja"
+   },
+   "Reinstall": {
+      "message": "Ponovna Instalacija"
+   },
+   "Remind_me_later": {
+      "message": "Podseti me kasnije"
+   },
+   "Remove": {
+      "message": "Ukloni"
+   },
+   "Replace": {
+      "message": "Zameni"
+   },
+   "Replace_": {
+      "message": "Zameniti?"
+   },
+   "Replace_All": {
+      "message": "Zameni Sve"
+   },
+   "Replace_all_with": {
+      "message": "Zameniti sve"
+   },
+   "Replace_for_each_statements": {
+      "message": "Zameni 'for each' iskaze"
+   },
+   "Replace_with": {
+      "message": "Zameniti sa"
+   },
+   "Report_a_bug": {
+      "message": "Prijavi grešku (bug)"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "Prijavi zloupotrebu.\n(Možda je potreban korisnički nalog)"
+   },
+   "Requires": {
+      "message": "Zahteva"
+   },
+   "Resources": {
+      "message": "Resursi"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Restartuj Tampermonkey"
+   },
+   "Run_at": {
+      "message": "Pokreni u"
+   },
+   "Run_syntax_check": {
+      "message": "Provera sintakse"
+   },
+   "Running_scripts": {
+      "message": "Pokrenute skripte instance"
+   },
+   "Save": {
+      "message": "Sačuvaj"
+   },
+   "Save_to_disk": {
+      "message": "Sačuvaj na disk-u"
+   },
+   "Script_0name0_is_slowing_down_some_page_loads_": {
+      "message": "Skripta '$name$' vam usporava učitavanje stranice",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_Blacklist_Source": {
+      "message": "Skripta Lista(nedozvoljenih) Izvora"
+   },
+   "Script_URL_detection": {
+      "message": "Skripta URL detekcije"
+   },
+   "Script_Update": {
+      "message": "Ažuriranje skripte"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "Autori skripte mogu osigurati eksterne resourse dodajući SRI hash izvoru URL-a."
+   },
+   "Script_local_files_access": {
+      "message": "Dozvoli skriptama lokalni pristup"
+   },
+   "Script_name_0name0": {
+      "message": "Ime skripte: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "Redosled skripti"
+   },
+   "Search": {
+      "message": "Pretraži"
+   },
+   "Search_for": {
+      "message": "Traži"
+   },
+   "Security": {
+      "message": "Sigurnost"
+   },
+   "Select_All": {
+      "message": "Selektuj Sve"
+   },
+   "Select_Bookmarks": {
+      "message": "Izaberi Obeleživač"
+   },
+   "Select_Line": {
+      "message": "Izaberi Liniju"
+   },
+   "Select_Next_Occurrence": {
+      "message": "Izaberi Sledeću Pojavu"
+   },
+   "Select_Scope": {
+      "message": "Izaberi Obim"
+   },
+   "Select_between_Brackets": {
+      "message": "Izaberi Izmedju Zagrada"
+   },
+   "Select_to_Sublime_Mark": {
+      "message": "Izaberi do Oznake Sublime-a"
+   },
+   "Selection": {
+      "message": "Selekcija"
+   },
+   "Server_And_Manual": {
+      "message": "Daljinski + Ručno"
+   },
+   "Set_Sublime_Mark": {
+      "message": "Postavi Oznaku Sublime-a"
+   },
+   "Settings": {
+      "message": "Podešavanja"
+   },
+   "Show_backups": {
+      "message": "Prikaži rezervnu kopiju"
+   },
+   "Show_fixed_source": {
+      "message": "Pokazati popravljeni izvor"
+   },
+   "Show_notification": {
+      "message": "Prikaži obaveštenja"
+   },
+   "Sites": {
+      "message": "Sajtovi"
+   },
+   "Size": {
+      "message": "Veličina"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Preskči pauzu ($seconds$ sekundi)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "Pametno"
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "Neke skripte mogu biti blokirane od strane JavaScript podešavanja na ovoj stranici ili bloker skripta!"
+   },
+   "Sort": {
+      "message": "Sortiraj"
+   },
+   "Source": {
+      "message": "Izvor"
+   },
+   "Source_Code": {
+      "message": "Izvorni Kod"
+   },
+   "Spaces": {
+      "message": "Spejs"
+   },
+   "Split_into_Lines": {
+      "message": "Podeli u Linije"
+   },
+   "Start": {
+      "message": "Pokreni"
+   },
+   "Stop": {
+      "message": "Stop/Prekid"
+   },
+   "Storage": {
+      "message": "Skladište"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "Čuvaj podatke u incognito modu"
+   },
+   "Strict": {
+      "message": "Striktno"
+   },
+   "Sublime_Mark": {
+      "message": "Sublime Oznaka"
+   },
+   "Subresource_Integrity": {
+      "message": "Integritet pod-Resursa"
+   },
+   "Swap_with_Sublime_Mark": {
+      "message": "Zameni sve do Oznake Sublime-a"
+   },
+   "Sync_Reset": {
+      "message": "Sinhronizuj Reset"
+   },
+   "Sync_Type": {
+      "message": "Tip"
+   },
+   "Sync_finished": {
+      "message": "Sinhronizacija je završena"
+   },
+   "Sync_is_running": {
+      "message": "Sinhronizacija je pokrenuta"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "Sinhronizacija skripte (Tampermonkey Eksterna Pristupna Lista)"
+   },
+   "TabMode": {
+      "message": "Tad-Mod"
+   },
+   "Tab_URL": {
+      "message": "Tab(prozorčić) URL"
+   },
+   "Tabs": {
+      "message": "Tabovi"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey + skripta verzija"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey nema dozvolu da pristupi lokalnim fajlovima!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "Tampermonkey možda nije u mogućnosti da dozvoli pristup nesigurnom kontekstu (nesigurni prozori, funkcije i promenljive stranice) kada je ovo onemogućeno."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "Tampermonkey mora biti restartovan da bi promene bile primenjene.\n\nDa li želite da nastavite?"
+   },
+   "Tampermonkey_version": {
+      "message": "Tampermonkey samo verzija"
+   },
+   "Templates": {
+      "message": "Obrazac"
+   },
+   "Temporarily_allow": {
+      "message": "Privremeno dozvoli"
+   },
+   "Temporary": {
+      "message": "Privremeno"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "Trenutna lista dozvoljenih domena"
+   },
+   "Text": {
+      "message": "Tekst"
+   },
+   "TextArea": {
+      "message": "Oblast teksta"
+   },
+   "Thank_you_very_much_": {
+      "message": "Hvala vam puno!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "API Mod Pretraživača zahteva specijalne dozvole."
+   },
+   "The_diff_for_this_script_is_too_large_to_render": {
+      "message": "Razlika ove skripte je previše velika da bi bila renderovana!"
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "Unazadjena verzija skripte možda ima problema sa čitanjem sačuvanih podataka!"
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "Url za ažuriranje je izmenjen iz:\n    '$oldurl$'\n    u:\n    '$newurl$'\n",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "Tema"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "Ima nesačuvanih promena.\nDa li si siguran da želiš da zatvoriš editor(urednik)?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "Ažuriranje je dostupno za '$name$'. :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_external_resource_will_not_auto_update__Please_delete_it_in_order_to_enable_updates_again_": {
+      "message": "Spoljašnji resursi nemaju automatsko ažuriranja! Izbrišite ako želite da uključite automatska ažuriranja."
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "Ovo dozovljava skripti pristup da salje i prima podatke na svakoj stranici. Potencijalno nesigurna opcija!\n\nDa li ste sigurni da želite da nastavite?"
+   },
+   "This_is_a_system_script": {
+      "message": "Ovo je sistemska skripta."
+   },
+   "This_is_a_userscript": {
+      "message": "Ova userscript-a je pisana u Javascript-u"
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "Ova opcija omogućava Tampermonkey početnoj stranici i nekim skriptama da utvrde Tampermonkey-ovu verziju i neke osnovne informacije o skripti (instalirane, verzija, uključena)."
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "Zabranjen od strane sigurnosnih podešavanja"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "Ova skripta ne obezbedjuje nikakve @include informacije."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "Ova predmet/skripta ima pristup HTTPS stranicama."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "Ova stavka ima pun pristup web-stranici."
+   },
+   "This_script_has_full_web_access": {
+      "message": "Ova skripta ima pun internet pristup."
+   },
+   "This_script_is_blacklisted_": {
+      "message": "Ova skripta je zabranjena (dodata u listu nedozvoljenih)!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "Ova skripta radi u Chrome modu"
+   },
+   "This_script_stores_data": {
+      "message": "Ova skripta čuva podatke u Tampermonkey-u."
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "Ova skripta koristi deo Greasemonkey 10 API (unsafeWindow.gmonkey)\nkoja nije podržana od strane Tampermonkey-a ili drugih upravljača skripti."
+   },
+   "This_script_was_deleted": {
+      "message": "Ova skripta je izbrisana"
+   },
+   "This_script_was_executed_0count0_times": {
+      "message": "Ova skripta je pokrenuta $count$ put.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_not_executed_yet": {
+      "message": "Ova skripta nije nikad bila pokrenuta"
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "Ovo će izmeniti vaša globalna podešavanja."
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "Da li sigurno želite da uklonite sve podatke iz sinhronizacije?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "Da li želite da odstranite sve skripte i resetujete sva podešavanja?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "Da li sigurno želite da restartujete Tampermonkey?"
+   },
+   "Today": {
+      "message": "Danas"
+   },
+   "Toggle": {
+      "message": "Tapni"
+   },
+   "Toggle_Block_Comment": {
+      "message": "Tapni da Blokiraš Komentar"
+   },
+   "Toggle_Comment": {
+      "message": "Tapni Komentar"
+   },
+   "Toggle_Comment_Indented": {
+      "message": "Tapni da uvučeš Komentar"
+   },
+   "Toggle_Enable": {
+      "message": "Brzo Uključi"
+   },
+   "Trace": {
+      "message": "Trag"
+   },
+   "Transpose": {
+      "message": "Preneti"
+   },
+   "Trigger_Update": {
+      "message": "Aktivirati Ažuriranje"
+   },
+   "Trim_trailing_whitespace_from_modified_lines": {
+      "message": "Odstranuti zaostajući whitespace kod izmenjenih linija koda"
+   },
+   "Type": {
+      "message": "Tip"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "Nije moguće učitati skriptu sa url-a: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "Nije moguće rasčlaniti! :("
+   },
+   "Undo": {
+      "message": "Vrati nazad"
+   },
+   "Unfold": {
+      "message": "Otkriti"
+   },
+   "Unfold_All": {
+      "message": "Otkriti Sve"
+   },
+   "Unique_running_scripts": {
+      "message": "Unikatne pokrenute skripte"
+   },
+   "Unknown_method_0name0": {
+      "message": "Nepoznata metoda $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "Unapredjenje"
+   },
+   "Update_Notification": {
+      "message": "Prikaži TM obaveštenje ažuriranja"
+   },
+   "Update_URL_": {
+      "message": "URL Ažuriranja"
+   },
+   "Update_check_is_disabled": {
+      "message": "Ažuriranja skripte nisu moguća ili je skripta onemougćena"
+   },
+   "Update_interval": {
+      "message": "Interval Ažuriranja"
+   },
+   "Updated_to__0version0": {
+      "message": "Ažurirano na verziju: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "Ažuriranja"
+   },
+   "Upper_Case": {
+      "message": "Veliko Slovo"
+   },
+   "User_domain_blacklist": {
+      "message": "Korisnička lista nedozvoljenih domena"
+   },
+   "User_domain_whitelist": {
+      "message": "Korisnički lista dozvoljenih domena"
+   },
+   "User_excludes": {
+      "message": "Korisnički izvezeni(isključeni)"
+   },
+   "User_includes": {
+      "message": "Korisnički uvezeni(uključeni)"
+   },
+   "User_matches": {
+      "message": "Korisnički par"
+   },
+   "User_modified": {
+      "message": "Izmene"
+   },
+   "Userscripts": {
+      "message": "Korisničke skripte"
+   },
+   "Utilities": {
+      "message": "Korisne stavke"
+   },
+   "Validate_if_given": {
+      "message": "Potvrditi ako dato"
+   },
+   "Validate_if_supported": {
+      "message": "Potvrditi ako moguće"
+   },
+   "Verbose": {
+      "message": "Opširniji detalji"
+   },
+   "Version": {
+      "message": "Verzija"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "U toku je čekanje da završi sinhronizacija"
+   },
+   "Warning": {
+      "message": "Upozorenje"
+   },
+   "Warning_unsafe_site_warnings_might_appear_": {
+      "message": "Upozorenje: sigurnosna upozorenja se mogu pojaviti ako skripta sadrži potencijalno štetne URL-ove."
+   },
+   "Whitelist": {
+      "message": "Lista Dozvoljenjih"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "Dozvoljene Ekstenzije Fajl-a"
+   },
+   "Whitelisted_Pages": {
+      "message": "Lista Dozvoljenjih Stranica"
+   },
+   "Windows": {
+      "message": "Prozorčići"
+   },
+   "XHR_Security": {
+      "message": "XHR Sigurnost"
+   },
+   "Yank_Sublime_Mark": {
+      "message": "Yank Sublime Oznaka"
+   },
+   "Yes": {
+      "message": "Da"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "Upozorenje! Unazaditi Userscript-u"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "UserScript instalacija"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "UserScript promena"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "UserScript ponovna instalacija (reinstalacija)."
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "UserScript nadogradnja"
+   },
+   "You_can_add_your_custom_CSS_rules_here_": {
+      "message": "Možete dodati vaša CSS pravila za Tampermonkey UI (korisnički interfejs) ovde. U slučaju da nešto ne radi kako treba možete vratiti na uobičajen raspored dodajući ?layout=reset u opcije stranice URL-a."
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "Vaš jezik nije podržan?\nKliknite ovde da dobijete instrukcije kako da prevedete Tampermonkey?"
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "Vaša lista(dozvoljenjih) izhleda da ima fajlova koji se mogu izvršiti.\nOvo znači da vaše userscript-e možda skinu virus ili zlonamerni program na vaš hard-disk!!"
+   },
+   "Zip": {
+      "message": "Poštanski kod/Zip"
+   },
+   "__Please_choose__": {
+      "message": "-- Izaberite opciju --"
+   },
+   "_not_set_": {
+      "message": "\u003Cnije podešeno>"
+   },
+   "connect_mode": {
+      "message": "Proveri @connect"
+   },
+   "fatal_error": {
+      "message": "fatalna greška"
+   },
+   "overwritten_by_user": {
+      "message": "Izmenjeno od strane korisničkih podešavanja"
+   },
+   "require_and_resource": {
+      "message": "Eksterni (@require i @resource)"
+   },
+   "severity_1": {
+      "message": "1 (najsigurnije)"
+   },
+   "severity_10": {
+      "message": "10 (najmanje sigurno)"
+   },
+   "some_secs": {
+      "message": "neke"
+   },
+   "strict_mode": {
+      "message": "Strog (striktan) Mod"
+   }
+}

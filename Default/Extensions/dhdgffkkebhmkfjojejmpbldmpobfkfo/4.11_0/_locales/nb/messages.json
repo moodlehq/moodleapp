@@ -1,0 +1,1150 @@
+{
+   "0count0_errors_or_hints_were_found_": {
+      "message": "Fant $count$ feil eller hint.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ er tilgjengelig.\nVennligst start nettleseren din på nytt for å oppdatere",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "15_Seconds": {
+      "message": "15 sekunder"
+   },
+   "1_Hour": {
+      "message": "1 time"
+   },
+   "1_Minute": {
+      "message": "1 minutt"
+   },
+   "30_Seconds": {
+      "message": "30 sekunder"
+   },
+   "5_Minutes": {
+      "message": "5 minutter"
+   },
+   "A_recheck_of_the_GreaseMonkey_FF_compatibility_options_may_be_required_in_order_to_run_this_script_": {
+      "message": "En ny sjekk av GreaseMonkey/FF-kompatibilitetsinnstillingene kan være påkrevd for å kjøre dette skriptet."
+   },
+   "A_reload_is_required": {
+      "message": "En ominnlasting er påkreved: \nAlle ulagrede innstillinger vil gå tapt!"
+   },
+   "A_request_to_a_cross_origin_resource_is_nothing_unusual__You_just_have_to_check_whether_this_script_has_a_good_reason_to_access_this_domain__For_example_there_are_only_a_very_few_reasons_for_a_userscript_to_contact_your_bank__Please_note_that_userscript_authors_can_avoid_this_dialog_by_adding_@connect_tags_to_their_scripts__You_can_change_your_opinion_at_any_time_at_the_scripts_settings_tab_": {
+      "message": "En forespørsel til en flerkildet ressurs (CORS) er ikke noe uvanlig.\nDu må bare sjekke hvorvidt dette skriptet har en god grunn til å ha tilgang til dette domenet.\nFor eksempel er det veldig få grunner til at et brukerskript vil ønske å kontakte banken din.\n\nVennligst bemerk at brukerskriptskaperne kan unngå denne dialogen ved å legge til [url=$connect$]@connect-merkinger[/url] til skriptene sine.\n\nUansett hva du velger, kan du endre valget ditt til enhver tid i skriptets [url=$settings$]innstillingsfane[/url].",
+      "placeholders": {
+         "connect": {
+            "content": "$1"
+         },
+         "settings": {
+            "content": "$2"
+         }
+      }
+   },
+   "A_userscript_wants_to_access_a_cross_origin_resource_": {
+      "message": "Et brukerskript ønsker å få tilgang til en flerkildet ressurs."
+   },
+   "Action": {
+      "message": "Handling"
+   },
+   "Action_Menu": {
+      "message": "Handlingsmeny"
+   },
+   "Actions": {
+      "message": "Handlinger"
+   },
+   "Add": {
+      "message": "Legg til"
+   },
+   "Add_TM_to_CSP": {
+      "message": "Legg til Tampermonkey i sidens retningslinjeliste for innholdssikkerhet (CSP) hvis den finnes"
+   },
+   "Add_as_0clude0": {
+      "message": "Legg til som $clude$",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "Opprett et nytt skript..."
+   },
+   "Add_toSource_function_to_Object_Prototype": {
+      "message": "Legg til kompatibilitetsfunksjoner til Gjenstand og Tabell"
+   },
+   "Advanced": {
+      "message": "Avansert"
+   },
+   "All_modifications_are_only_kept_until_this_incognito_session_is_closed_": {
+      "message": "Alle endringer blir kun beholdt frem til denne inkognito-økten blir lukket!"
+   },
+   "All_script_settings_will_be_reset_": {
+      "message": "Alle skriptinnstillingene vil bli tilbakestilt!"
+   },
+   "Allow_Tampermonkey_to_collect_anonymous_statistics_via_Google_Analytics": {
+      "message": "Tillat Tampermonkey å samle inn anonyme statistikker gjennom Google Analytics. Dette gjør det mulig for meg å forbedre Tampermonkey og å avgjøre hvilke ting jeg burde fokusere utviklingen min på. Det er bare å deaktivere dette dersom du ikke liker det."
+   },
+   "Allow_communication_with_cooperate_pages": {
+      "message": "Tillat kommunikasjon med samarbeidssider"
+   },
+   "Allow_headers_to_be_modified_by_scripts": {
+      "message": "Tillat at HTTP-utvidelser blir modifisert av skript"
+   },
+   "Allow_once": {
+      "message": "Tillat én gang"
+   },
+   "Always": {
+      "message": "Alltid"
+   },
+   "Always_allow": {
+      "message": "Alltid tillat"
+   },
+   "Always_allow_all_domains": {
+      "message": "Alltid tillat alle domener"
+   },
+   "Always_allow_domain": {
+      "message": "Alltid tillat domenet"
+   },
+   "Always_ask": {
+      "message": "Spør alltid"
+   },
+   "Always_forbid": {
+      "message": "Alltid forby"
+   },
+   "Always_forbid_domain": {
+      "message": "Alltid forby domenet"
+   },
+   "An_error_occured_during_import_": {
+      "message": "En feil oppstod under importen."
+   },
+   "An_internal_error_occured_Do_you_want_to_visit_the_forum_": {
+      "message": "En intern feil oppstod. Dersom dette problemet fortsetter selv etter en omstart av nettleseren, vennligst klikk OK og meld fra om denne feilen i forumet.\n\nØnsker du å besøke Tampermonkey-forumet?"
+   },
+   "Anonymous_statistics": {
+      "message": "Anonyme statistikker"
+   },
+   "Appearance": {
+      "message": "Utseende"
+   },
+   "Apply_compatibility_options_to_required_script_too": {
+      "message": "Bruk kompatibilitetsinnstillingene i '@require'-skriptene også"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "Bruk dette for alle de valgte skriptene"
+   },
+   "Are_you_sure_that_you_don_t_want_to_be_notified_of_updates_": {
+      "message": "Når Tampermonkey blir oppdatert av nettleseren din, blir den også startet på nytt. Dessverre kan det også knekke de skriptene som kjører på det tidspunktet!\n\nSå, er du sikker på at du ikke vil bli fortalt om oppdateringer?"
+   },
+   "Ask_if_unknown": {
+      "message": "Spør hvis det er ukjent"
+   },
+   "At_least_one_part_of_this_page_is_listed_at_the_forbidden_pages_setting_": {
+      "message": "Minst én del av denne siden er listet oppi 'Forbudte sider'-innstillingene!"
+   },
+   "Attention_Can_not_display_all_excludes_": {
+      "message": "Advarsel: Ekskluderingslisten har blitt forkortet.\nVennligst sjekk den manuelt!"
+   },
+   "Attention_Can_not_display_all_includes_": {
+      "message": "Advarsel: Inkluderingslisten har blitt forkortet.\nVennligst sjekk den manuelt!"
+   },
+   "Author": {
+      "message": "Skaper"
+   },
+   "Auto": {
+      "message": "Automatisk"
+   },
+   "Auto_Indent_all": {
+      "message": "Auto-innrykk på alt"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "Auto-ominnlast sider"
+   },
+   "Auto_reload_on_script_enabled_desc": {
+      "message": "Ominnlast påvirkede sider dersom et skript ble skrudd av eller på"
+   },
+   "Auto_syntax_check_max_length": {
+      "message": "Den automatiske synstakssjekkens maksstørrelse"
+   },
+   "Auto_syntax_check_on_typing": {
+      "message": "Automatisk syntakssjekk ved skriving"
+   },
+   "Beginner": {
+      "message": "Begynner"
+   },
+   "BlackCheck": {
+      "message": "Svartelistesjekk"
+   },
+   "Blacklist": {
+      "message": "Svarteliste"
+   },
+   "Blacklist_Severity": {
+      "message": "Blokker ut fra sikkerhetsnivå"
+   },
+   "Blacklisted_Pages": {
+      "message": "Svartelistede sider"
+   },
+   "Both": {
+      "message": "Begge deler"
+   },
+   "Browser_API": {
+      "message": "Nettleser-API"
+   },
+   "Browser_API_Downloads": {
+      "message": "Nettleser-API-nedlastninger"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "KONFLIKT:\nDette skriptet ble endret i en annen fane for $t$ sekund(er) siden!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "Avbryt"
+   },
+   "Casual": {
+      "message": "Enkel"
+   },
+   "Changelog": {
+      "message": "Loggbok over endringer"
+   },
+   "Changes_the_number_of_visible_config_options": {
+      "message": "Endrer antall synlige oppsettsinnstillinger"
+   },
+   "Check_disabled_scripts": {
+      "message": "Oppdater deaktiverte skript"
+   },
+   "Check_for_Updates": {
+      "message": "Søk etter oppdateringer"
+   },
+   "Check_for_userscripts_updates": {
+      "message": "Søk etter brukerskriptoppdateringer"
+   },
+   "Check_interval": {
+      "message": "Tidsrom mellom søk"
+   },
+   "Check_only_scripts_up_to_this_size_automatically_": {
+      "message": "Sjekk kun skript opptil denne størrelsen automatisk"
+   },
+   "Classic": {
+      "message": "Klassisk"
+   },
+   "Click_here_to_allow_TM_to_start_downloads": {
+      "message": "Klikk OK for å tillate Tampermonkey å starte øyeblikkelige nedlastninger."
+   },
+   "Click_here_to_install_it_": {
+      "message": "Klikk her for å installere den."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "Klikk her for å flytte dette skriptet"
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "Klikk her for å se de nylige endringene"
+   },
+   "Close": {
+      "message": "Lukk"
+   },
+   "Cloud": {
+      "message": "Skylagring"
+   },
+   "Columns": {
+      "message": "Kolonner"
+   },
+   "Comment": {
+      "message": "Kommenter"
+   },
+   "Config_Mode": {
+      "message": "Oppsettsmodus"
+   },
+   "Convert_Array_Assignements": {
+      "message": "Konverter '[blub, bla] = s.split(':')'-formuleringer"
+   },
+   "Convert_CDATA_sections_into_a_chrome_compatible_format": {
+      "message": "Konverter CDATA-ѕеkѕјοnеr til et nettleserkompatibelt format"
+   },
+   "Custom_CSS": {
+      "message": "Bruker-CSS"
+   },
+   "Dashboard": {
+      "message": "Hovedmeny"
+   },
+   "Debug": {
+      "message": "Avlusing"
+   },
+   "Debug_scripts": {
+      "message": "Avlusingsskript"
+   },
+   "Default": {
+      "message": "Standard"
+   },
+   "Delete": {
+      "message": "Slett"
+   },
+   "Description": {
+      "message": "Beskrivelse"
+   },
+   "Destination_URL": {
+      "message": "Målbanens nettadresse"
+   },
+   "Destination_domain": {
+      "message": "Målbanens domene"
+   },
+   "Details": {
+      "message": "Detaljer"
+   },
+   "Disable": {
+      "message": "Deaktiver"
+   },
+   "Disabled": {
+      "message": "Deaktivert"
+   },
+   "Disabled_scripts": {
+      "message": "Deaktiverte skript"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "'$option$'-innstillingen er aktivert!\n\nVil du virkelig lagre den fastsatte kilden?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Dont_ask_again": {
+      "message": "Aldri spør igjen"
+   },
+   "Dont_ask_me_for_simple_script_updates": {
+      "message": "Ikke spør meg om enkle skriptoppdateringer"
+   },
+   "Downgrade": {
+      "message": "Nedgrader"
+   },
+   "Download_Mode": {
+      "message": "Nedlastningsmodus"
+   },
+   "Downloaded_from_0url0": {
+      "message": "Lastet ned fra: $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "Nedlastninger"
+   },
+   "Edit": {
+      "message": "Rediger"
+   },
+   "Editor": {
+      "message": "Redigeringer"
+   },
+   "Editor_reset": {
+      "message": "Tilbakestilling av redigereren"
+   },
+   "Enable": {
+      "message": "Aktiver"
+   },
+   "Enable_Editor": {
+      "message": "Aktiver den forbedrede redigereren"
+   },
+   "Enable_Script_Sync": {
+      "message": "Aktiver TESLA"
+   },
+   "Enable_autoSave": {
+      "message": "Lagre innholdet når redigereren mister fokus"
+   },
+   "Enable_easySave": {
+      "message": "Ikke vis bekreftelsesdialog ved lagring"
+   },
+   "Enable_this_option_to_automatically_check_the_code_on_typing_": {
+      "message": "Aktiver denne innstillingen for å automatisk sjekke koden under skriving."
+   },
+   "Enabled": {
+      "message": "Aktivert"
+   },
+   "Enforce": {
+      "message": "Fremtving"
+   },
+   "Enter_the_new_rule": {
+      "message": "Skriv inn den nye regelen"
+   },
+   "Error": {
+      "message": "Feil"
+   },
+   "Every_12_Hour": {
+      "message": "Hver 12. time"
+   },
+   "Every_6_Hours": {
+      "message": "Hver 6. time"
+   },
+   "Every_Day": {
+      "message": "Hver dag"
+   },
+   "Every_Hour": {
+      "message": "Hver time"
+   },
+   "Every_Month": {
+      "message": "Hver måned"
+   },
+   "Every_Week": {
+      "message": "Hver uke"
+   },
+   "Exclude_s__": {
+      "message": "Ekskluder(inger)"
+   },
+   "Experimental": {
+      "message": "Eksperimentell"
+   },
+   "Export": {
+      "message": "Eksporter"
+   },
+   "Externals": {
+      "message": "Eksternt"
+   },
+   "Factory_Reset": {
+      "message": "Fullstendig tilbakestilling"
+   },
+   "Fast": {
+      "message": "Hurtig"
+   },
+   "Features": {
+      "message": "Egenskaper"
+   },
+   "File": {
+      "message": "Fil"
+   },
+   "Filter_by": {
+      "message": "Sorter etter"
+   },
+   "Fix_for_var_in_statements": {
+      "message": "Rett opp 'for (var j in x)'-formuleringer"
+   },
+   "Fix_wrappedJSObject_property_access": {
+      "message": "Rett opp 'wrappedJSObject'-egenskapstilgangеnе"
+   },
+   "Focus_tab": {
+      "message": "Fokuser på kildefanen"
+   },
+   "Font_Size": {
+      "message": "Skriftstørrelse"
+   },
+   "Forbid_once": {
+      "message": "Forby én gang"
+   },
+   "Full_reset": {
+      "message": "Fullstendig tilbakestilling"
+   },
+   "GM_compat_options_": {
+      "message": "GreaseMonkey/FF-kompatibilitetsinnstillinger"
+   },
+   "General": {
+      "message": "Generelt"
+   },
+   "Get_new_scripts___": {
+      "message": "Let etter nye skript..."
+   },
+   "Get_some_scripts___": {
+      "message": "Let etter skript..."
+   },
+   "Global_Settings": {
+      "message": "Utvidelsesinnstillinger"
+   },
+   "Global_settings_import": {
+      "message": "Importer utvidelsesinnstillinger"
+   },
+   "Help": {
+      "message": "Hjelp"
+   },
+   "Hide_disabled_scripts": {
+      "message": "Skjul deaktiverte skript"
+   },
+   "Hide_notification_after": {
+      "message": "Skjul bemerkninger etter"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "Fremhev etterfølgende mellomrom"
+   },
+   "Homepage": {
+      "message": "Hjemmesiden"
+   },
+   "I_contributed_already": {
+      "message": "Jeg har allerede donert"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "Jeg vil ikke donere"
+   },
+   "Icon_badge_color": {
+      "message": "Ikonmerkefarge"
+   },
+   "Icon_badge_info": {
+      "message": "Ikonmerkeinfo"
+   },
+   "Import": {
+      "message": "Importer"
+   },
+   "Imported": {
+      "message": "Importert"
+   },
+   "Include_TM_settings": {
+      "message": "Inkluder Tampermonkey-innstillingene"
+   },
+   "Include_s__": {
+      "message": "Inkluder(inger)"
+   },
+   "Include_script_storage": {
+      "message": "Inkluder skriptlagringen"
+   },
+   "Includes_Excludes": {
+      "message": "Inkluderinger/Ekskluderinger"
+   },
+   "Indent_with": {
+      "message": "Innrykk med"
+   },
+   "Indentation_Width": {
+      "message": "Innrykksbredden"
+   },
+   "Inject_Mode": {
+      "message": "Innsettingsmodus"
+   },
+   "Insert_constructor": {
+      "message": "Sett inn en konstruktør"
+   },
+   "Install": {
+      "message": "Installer"
+   },
+   "Install_this_script": {
+      "message": "Installer dette skriptet"
+   },
+   "Installed_Version_": {
+      "message": "Installert versjon"
+   },
+   "Installed_userscripts": {
+      "message": "Installerte brukerskript"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "Ugyldig brukerskript. Beklager!"
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "Ugyldig brukerskriptnavn. Beklager!"
+   },
+   "Jump_to_line": {
+      "message": "Hopp til linje"
+   },
+   "Just_another_service_provided_by_your_friendly_script_updater_": {
+      "message": "Bare en ekstra tjeneste levert til deg av din vennlige skriptoppdaterer."
+   },
+   "Key_Mapping": {
+      "message": "Tastebindinger"
+   },
+   "Language": {
+      "message": "Språk"
+   },
+   "Last_updated": {
+      "message": "Sist oppdatert"
+   },
+   "Layout": {
+      "message": "Oppsett"
+   },
+   "Line_break": {
+      "message": "Linjebryting"
+   },
+   "LogLevel": {
+      "message": "Loggføringsgrad"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "Fiendtlige skript kan invadere privatlivet ditt og utføre ting på vegne av deg!\nDu bør kun installere skript fra kilder som du stoler på."
+   },
+   "Manual_Script_Blacklist": {
+      "message": "Manuelt brukerskript og '@require'-svarteliste"
+   },
+   "Matching_URL": {
+      "message": "Samsvarende nettadresse"
+   },
+   "Modify": {
+      "message": "Rediger"
+   },
+   "Name": {
+      "message": "Navn"
+   },
+   "Native": {
+      "message": "Innebygget"
+   },
+   "Never": {
+      "message": "Aldri"
+   },
+   "New_script_template_": {
+      "message": "Ny brukerskriptmal"
+   },
+   "New_userscript": {
+      "message": "\u003CNytt brukerskript>"
+   },
+   "No": {
+      "message": "Nei"
+   },
+   "No_backups_found": {
+      "message": "Ingen sikkerhetskopier ble funnet"
+   },
+   "No_entry_found": {
+      "message": "Ingen oppføring ble funnet"
+   },
+   "No_frames": {
+      "message": "Kjør kun i topprammen"
+   },
+   "No_script_is_installed": {
+      "message": "Ingen skript har blitt installert"
+   },
+   "No_script_is_running": {
+      "message": "Det er ingen skript som kjører"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "Fant ingen syntaksfeil."
+   },
+   "No_update_found__sry_": {
+      "message": "Ingen oppdatering ble funnet. Beklager!"
+   },
+   "Note": {
+      "message": "Bemerkning"
+   },
+   "Novice": {
+      "message": "Nybegynner"
+   },
+   "Off": {
+      "message": "Av"
+   },
+   "On": {
+      "message": "På"
+   },
+   "One_error_or_hint_was_found_": {
+      "message": "Fan én feil eller hint."
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "Én eller flere kompatibilitetsinnstillinger har blitt valgt. Kanskje du vil se gjennom dem."
+   },
+   "Only_Manual": {
+      "message": "Kun manuelt"
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "Kun filer med disse utvidelsene kan bli lagret til harddisken.\nVær forsiktig med å godkjenne filutvidelser som representer kjørbare filer i systemet ditt!"
+   },
+   "Open_changelog": {
+      "message": "Åpne loggboken over endringer"
+   },
+   "Operation_completed_successfully": {
+      "message": "Handlingen ble utført med suksess!"
+   },
+   "Original_domain_whitelist": {
+      "message": "Opprinnelig domenehviteliste"
+   },
+   "Original_excludes": {
+      "message": "Opprinnelige ekskluderinger"
+   },
+   "Original_includes": {
+      "message": "Opprinnelige inkluderinger"
+   },
+   "Original_matches": {
+      "message": "Opprinnelige samsvar"
+   },
+   "Page_Filter_Mode": {
+      "message": "Sidefiltreringsmodus"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "Vennligst sjekk $editor$-dokumentasjonen for flere detaljer.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "Tenk gjerne over om du vil donere"
+   },
+   "Please_select_a_file": {
+      "message": "Vennligst velg en fil"
+   },
+   "Please_wait___": {
+      "message": "Vennligst vent..."
+   },
+   "Position_": {
+      "message": "Plassering"
+   },
+   "Process_with_Chrome": {
+      "message": "Behandle med nettleseren"
+   },
+   "Really_delete_0name0__": {
+      "message": "Vil du virkelig slette '$name$'?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "Vil du virkelig slette de valgte gjenstandene?"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "Vil du virkelig fullstendig tilbakestille de valgte gjenstandene?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "Vil du virkelig fullstendig tilbakestille dette skriptet?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "Vil du virkelig tilbakestille alle endringer?"
+   },
+   "Reindent_on_typing": {
+      "message": "Innrykk når det skrives"
+   },
+   "Reinstall": {
+      "message": "Ominstaller"
+   },
+   "Remind_me_later": {
+      "message": "Minn meg på det senere"
+   },
+   "Remove": {
+      "message": "Fjern"
+   },
+   "Replace": {
+      "message": "Erstatt"
+   },
+   "Replace_": {
+      "message": "Erstatt?"
+   },
+   "Replace_all_with": {
+      "message": "Erstatt alle"
+   },
+   "Replace_for_each_statements": {
+      "message": "Erstatt 'fοr hvеr аv dеm'-formuleringer"
+   },
+   "Replace_with": {
+      "message": "Erstatt med"
+   },
+   "Report_a_bug": {
+      "message": "Meld fra om en bug"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "Meld fra om en feil til skript-verten\n(En brukerkonto kan kanskje være påkrevd)"
+   },
+   "Requires": {
+      "message": "Krever"
+   },
+   "Reset_Section": {
+      "message": "Tilbakestill"
+   },
+   "Resources": {
+      "message": "Ressurser"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Start Tampermonkey på nytt"
+   },
+   "Run_at": {
+      "message": "Kjør i"
+   },
+   "Run_syntax_check": {
+      "message": "Kjør syntakssjekker"
+   },
+   "Running_scripts": {
+      "message": "Kjørende skriptinstanser"
+   },
+   "Save": {
+      "message": "Lagre"
+   },
+   "Save_to_disk": {
+      "message": "Lagre til disk"
+   },
+   "Script_Blacklist_Source": {
+      "message": "Skriptets svartelistekilder"
+   },
+   "Script_URL_detection": {
+      "message": "Oppdaging av skriptnettadresse"
+   },
+   "Script_Update": {
+      "message": "Skriptoppdatering"
+   },
+   "Script_authors_can_secure_external_resources_by_adding_a_SRI_hash_to_the_URL_": {
+      "message": "Skriptskapere kan sikre eksterne ressurser ved å legge til en SRI-hash til kildenettadressen."
+   },
+   "Script_name_0name0": {
+      "message": "Skriptets navn: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "Skriptsortering"
+   },
+   "Search": {
+      "message": "Søk"
+   },
+   "Search_for": {
+      "message": "Søk etter"
+   },
+   "Security": {
+      "message": "Sikkerhet"
+   },
+   "Server_And_Manual": {
+      "message": "Fjernstyring + Manuelt"
+   },
+   "Settings": {
+      "message": "Innstillinger"
+   },
+   "Show_backups": {
+      "message": "Vis sikkerhetskopier"
+   },
+   "Show_fixed_source": {
+      "message": "Vis den fastsatte kilden"
+   },
+   "Show_notification": {
+      "message": "Vis en bemerkning"
+   },
+   "Sites": {
+      "message": "Nettsider"
+   },
+   "Size": {
+      "message": "Størrelse"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Hopp over tidsgrensen ($seconds$ seconds)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Some_scripts_might_be_blocked_by_the_javascript_settings_for_this_page_or_a_script_blocker_": {
+      "message": "Noen skript kan være blokkert av Javascript-innstillingene på denne siden eller av en skriptblokkerer!"
+   },
+   "Sort": {
+      "message": "Sorter"
+   },
+   "Source": {
+      "message": "Kilde"
+   },
+   "Spaces": {
+      "message": "Mellomrom"
+   },
+   "Storage": {
+      "message": "Lagring"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "Lagre data i inkognitomodus"
+   },
+   "Strict": {
+      "message": "Strengt"
+   },
+   "Subresource_Integrity": {
+      "message": "Underressurs-integritet"
+   },
+   "Sync_Reset": {
+      "message": "Synkroniseringstilbakestilling"
+   },
+   "Synchronize_your_scripts_across_browsers_and_operation_systems": {
+      "message": "Skriptsynkronisering (Tampermonkey-tilgang til eksterne skriptlister)"
+   },
+   "TabMode": {
+      "message": "Fanemodus"
+   },
+   "Tab_URL": {
+      "message": "Fanens nettadresse"
+   },
+   "Tabs": {
+      "message": "Faner"
+   },
+   "Tampermonkey_and_script_version": {
+      "message": "Tampermonkey + skriptversjon"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey har ikke adgang til de lokale filene!"
+   },
+   "Tampermonkey_might_not_be_able_to_provide_access_to_the_unsafe_context_when_this_is_disabled": {
+      "message": "Tampermonkey kan muligens ikke skaffe tilgang til den usikre sammenhengen ('unsafeWindow', en sides funksjoner, og variablene) dersom dette er deaktivert."
+   },
+   "Tampermonkey_needs_to_be_restarted_to_make_this_change_apply_Do_you_want_to_continue_": {
+      "message": "Tampermonkey må startes på nytt for at denne endringen skal tas i bruk.\n\nVil du starte på nytt?"
+   },
+   "Tampermonkey_version": {
+      "message": "Kun Tampermonkey-versjonen"
+   },
+   "Temporarily_allow": {
+      "message": "Tillat midlertidig"
+   },
+   "Temporary": {
+      "message": "Midlertidig"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "Midlertidig domenehviteliste"
+   },
+   "TextArea": {
+      "message": "Tekstområdet"
+   },
+   "Thank_you_very_much_": {
+      "message": "Tusen hjertelig takk!"
+   },
+   "The_Browser_API_mode_requires_a_special_permission_": {
+      "message": "Nettleser-API-modusen krever en spesiell tilgang."
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "Det nedgraderte skriptet kan ha problemer med å lese inn sine lagrede data!"
+   },
+   "The_update_url_has_changed_from_0oldurl0_to__0newurl0": {
+      "message": "Oppdateringsnettadressen har blitt endret fra:\n    '$oldurl$'\n    til:\n    '$newurl$'\n",
+      "placeholders": {
+         "newurl": {
+            "content": "$2"
+         },
+         "oldurl": {
+            "content": "$1"
+         }
+      }
+   },
+   "Theme": {
+      "message": "Tema"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "Det er ulagrede endringer.\nVil du virkelig lukke redigereren?"
+   },
+   "There_is_an_update_for_0name0_avaiable_": {
+      "message": "En oppdatering for '$name$' er tilgjengelig. :)",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_gives_this_script_the_permission_to_retrieve_and_send_data_from_and_to_every_webpage__This_is_potentially_unsafe__Are_you_sure_you_want_to_continue_": {
+      "message": "Dette gir skriptet tillatelse til å hente og sende data til og fra alle nettsider. Dette kan potensielt være utrygt.\n\nEr du sikker på at du vil fortsette?"
+   },
+   "This_is_a_system_script": {
+      "message": "Dette er et systemskript."
+   },
+   "This_is_a_userscript": {
+      "message": "Dette er et brukerskript som har blitt skrevet i Javascript."
+   },
+   "This_option_allows_the_Tampermonkey_homepage_and_some_script_hosting_pages_to_determine_the_Tampermonkey_version_and_whether_a_script_is_installed_": {
+      "message": "Denne innstillingen tillater Tampermonkey-hjemmesiden og noen skriptvertssider å bedømme Tampermonkey-versjon og litt enkel skriptinformasjon (Er den installert / skrudd på, og hvilken versjon er den?)."
+   },
+   "This_page_is_blacklisted_at_the_security_settings": {
+      "message": "Svartelistet av sikkerhetsinnstillingene"
+   },
+   "This_script_does_not_provide_any__include_information_": {
+      "message": "Dette skriptet har ikke noe '@include'-informasjon."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "Denne gjenstanden har tilgang til HTTPS-nettsider."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "Dette skriptet har tilgang til nettsideskript."
+   },
+   "This_script_has_full_web_access": {
+      "message": "Dette skriptet har full Internett-tilgang."
+   },
+   "This_script_is_blacklisted_": {
+      "message": "Dette skriptet er svartelistet!"
+   },
+   "This_script_runs_in_Chrome_mode": {
+      "message": "Dette skriptet kjører i Chrome-modus."
+   },
+   "This_script_stores_data": {
+      "message": "Dette skriptet lagrer data til Tampermonkey."
+   },
+   "This_script_uses_uW_gm_api_": {
+      "message": "Dette skriptet bruker en del av Greasemonkey 10s API (unsafeWindow.gmonkey)\nsom ikke støttes av Tampermonkey eller av noen andre skripthåndterere."
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "Dette vil overskrive dine utvidelsesinnstillinger!"
+   },
+   "This_will_remove_all_remote_data_from_sync_Ok_": {
+      "message": "Vil du virkelig fjerne alle dataene fra Sync?"
+   },
+   "This_will_remove_all_scripts_and_reset_all_settings_Ok_": {
+      "message": "Vil du virkelig fjerne alle skript og tilbakestille alle innstillinger?"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "Vil du virkelig starte Tampermonkey på nytt?"
+   },
+   "Today": {
+      "message": "I dag"
+   },
+   "Toggle_Enable": {
+      "message": "Skru av/på aktivering"
+   },
+   "Trace": {
+      "message": "Spor"
+   },
+   "Trigger_Update": {
+      "message": "Fremprovoser oppdatering"
+   },
+   "URL": {
+      "message": "Nettadresse"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "Klarte ikke å laste inn skriptet fra nettadressen: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "Klarte ikke å tolke dette! :("
+   },
+   "Unique_running_scripts": {
+      "message": "Unike kjørende skript"
+   },
+   "Unknown_method_0name0": {
+      "message": "Ukjent metode: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "Oppdater"
+   },
+   "Update_Notification": {
+      "message": "Vis TM-oppdateringsbemerkningen"
+   },
+   "Update_URL_": {
+      "message": "Nettadresse for oppdateringer"
+   },
+   "Update_check_is_disabled": {
+      "message": "Oppdateringssøket for dette skriptet har blitt deaktivert eller umuliggjort."
+   },
+   "Update_interval": {
+      "message": "Tidsrom mellom oppdateringer"
+   },
+   "Updated_to__0version0": {
+      "message": "Oppdatert til: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "Oppdateringer"
+   },
+   "User_domain_blacklist": {
+      "message": "Bruker-domenesvarteliste"
+   },
+   "User_domain_whitelist": {
+      "message": "Bruker-domenehviteliste"
+   },
+   "User_excludes": {
+      "message": "Brukerekskluderinger"
+   },
+   "User_includes": {
+      "message": "Brukerinkluderinger"
+   },
+   "User_matches": {
+      "message": "Brukersamsvar"
+   },
+   "Userscripts": {
+      "message": "Brukerskript"
+   },
+   "Utilities": {
+      "message": "Verktøy"
+   },
+   "Validate_if_given": {
+      "message": "Godkjenn hvis den blir gitt"
+   },
+   "Validate_if_supported": {
+      "message": "Godkjenn hvis den er støttet"
+   },
+   "Verbose": {
+      "message": "Detaljert"
+   },
+   "Version": {
+      "message": "Versjon"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "Venter på at synkroniseringen gjøres ferdig"
+   },
+   "Warning": {
+      "message": "Advarsel"
+   },
+   "Whitelist": {
+      "message": "Hviteliste"
+   },
+   "Whitelisted_File_Extensions": {
+      "message": "Godkjente filutvidelser"
+   },
+   "Whitelisted_Pages": {
+      "message": "Hvitelistede sider"
+   },
+   "Windows": {
+      "message": "Vinduer"
+   },
+   "XHR_Security": {
+      "message": "XHR-sikkerhet"
+   },
+   "Yes": {
+      "message": "Ja"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "Advarsel! Nedgradering av et brukerskript"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "Brukerskriptinstallering"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "Brukerskriptredigering"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "Ominstallering av brukerskript"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "Brukerskriptoppdatering"
+   },
+   "You_can_add_your_custom_CSS_rules_here_": {
+      "message": "Du kan legge til dine egne CSS-regler for Tampermonkeys grensesnitt her. I tilfelle dette ødelegger noe, kan du hente standardoppsettet ved å føye ?layout=reset til innstillingssidens nettadresse."
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "Er ikke språket ditt støttet?\nKlikk her for instruksjoner om hvordan oversette Tampermonkey."
+   },
+   "Your_whitelist_seems_to_include_executable_files_This_means_your_userscripts_may_download_malware_or_spyware_to_your_harddisk_": {
+      "message": "Din liste over godkjenninger ser til å inkludere kjørbare filer!\nDette betyr at brukerskriptene kan laste ned søppelprogrammer eller spionprogrammer på harddisken din!"
+   },
+   "Zip": {
+      "message": "ZIP"
+   },
+   "__Please_choose__": {
+      "message": "— Vennligst velg et alternativ —"
+   },
+   "_not_set_": {
+      "message": "\u003Cikke valgt>"
+   },
+   "connect_mode": {
+      "message": "'@connect'-modus"
+   },
+   "fatal_error": {
+      "message": "Fatal feil"
+   },
+   "overwritten_by_user": {
+      "message": "Overskrevet av brukerinnstillingene"
+   },
+   "severity_1": {
+      "message": "1 (mest sikkert)"
+   },
+   "severity_10": {
+      "message": "10 (minst sikkert)"
+   },
+   "some_secs": {
+      "message": "noen"
+   },
+   "strict_mode": {
+      "message": "Streng modus"
+   }
+}

@@ -81,7 +81,7 @@
     "siteurl": "http://elearning.ecurei.ac.ug",
     "sitename": "ECUREI",
     "multisitesdisplay": "",
-    "onlyallowlistedsites": false,
+    "onlyallowlistedsites": true,
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
     "privacypolicy": "https:\/\/ecurei.ac.ug\/elearning-privacy\/",

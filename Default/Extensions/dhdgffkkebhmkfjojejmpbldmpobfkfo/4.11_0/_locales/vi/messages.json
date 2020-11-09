@@ -1,0 +1,1168 @@
+{
+   "0count0_changes_exported": {
+      "message": "Đã xuất $count$ thay đổi",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_changes_imported": {
+      "message": "Đã nhập $count$ thay đổi",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0count0_errors_or_hints_were_found_": {
+      "message": "Đã tìm thấy $count$ lỗi hoặc gợi ý.",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "0name0_0version0_is_available__Please_re_start_your_browser_to_update_": {
+      "message": "$name$ $version$ đăng có sẵn.\nHãy tắt đi mở lại trình duyệt của bạn để bắt đầu cập nhật!",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         },
+         "version": {
+            "content": "$2"
+         }
+      }
+   },
+   "15_Seconds": {
+      "message": "15 giây"
+   },
+   "1_Hour": {
+      "message": "1 giờ"
+   },
+   "1_Minute": {
+      "message": "1 phút"
+   },
+   "30_Seconds": {
+      "message": "30 giây"
+   },
+   "5_Minutes": {
+      "message": "5 phút"
+   },
+   "A_reload_is_required": {
+      "message": "Việc tải lại là cần thiết: \nMọi thay đổi chưa lưu sẽ bị mất!"
+   },
+   "Action": {
+      "message": "Hành động"
+   },
+   "Action_Menu": {
+      "message": "Bảng chọn hành động"
+   },
+   "Action_failed": {
+      "message": "Hành động thất bại"
+   },
+   "Actions": {
+      "message": "Hành động"
+   },
+   "Add": {
+      "message": "Thêm"
+   },
+   "Add_as_0clude0": {
+      "message": "Thêm như $clude$",
+      "placeholders": {
+         "clude": {
+            "content": "$1"
+         }
+      }
+   },
+   "Add_new_script___": {
+      "message": "Tạo tập lệnh mới..."
+   },
+   "Advanced": {
+      "message": "Nâng cao"
+   },
+   "All_local_files": {
+      "message": "Tất cả các tệp cục bộ"
+   },
+   "Allow_once": {
+      "message": "Cho phép một lần"
+   },
+   "Always": {
+      "message": "Luôn luôn"
+   },
+   "Always_allow": {
+      "message": "Luôn cho phép"
+   },
+   "Always_allow_all_domains": {
+      "message": "Luôn cho phép mọi tên miền"
+   },
+   "Always_allow_domain": {
+      "message": "Luôn cho phép tên mièn"
+   },
+   "Always_ask": {
+      "message": "Luôn hỏi"
+   },
+   "Always_forbid": {
+      "message": "Luôn cấm"
+   },
+   "Always_forbid_domain": {
+      "message": "Luôn cấm tên miền"
+   },
+   "An_error_occured_during_import_": {
+      "message": "Một lỗi đã xảy ra trong ki nhập."
+   },
+   "Anonymous_statistics": {
+      "message": "Thống kê ẩn danh"
+   },
+   "Appearance": {
+      "message": "Ngoại hình"
+   },
+   "Apply_this_action_to_the_selected_scripts": {
+      "message": "Áp dụng vào tất cả tập lệnh được chọn"
+   },
+   "Ask_if_unknown": {
+      "message": "Hỏi nếu không biết"
+   },
+   "Author": {
+      "message": "Tác giả"
+   },
+   "Auto": {
+      "message": "Tự động"
+   },
+   "Auto_Indent_all": {
+      "message": "Tự thụt lùi tất cả"
+   },
+   "Auto_reload_on_script_enabled": {
+      "message": "Tự tải lại các trang"
+   },
+   "Beginner": {
+      "message": "Tân thủ"
+   },
+   "Blacklist": {
+      "message": "Danh sách đen"
+   },
+   "Blacklisted_Pages": {
+      "message": "Các trang trong danh sách đen"
+   },
+   "Bookmarks": {
+      "message": "Dấu trang"
+   },
+   "Both": {
+      "message": "Cả hai"
+   },
+   "Browser_API": {
+      "message": "API trình duyệt"
+   },
+   "Browser_API_Downloads": {
+      "message": "Tải xuống API trình duyệt"
+   },
+   "Browser_Sync": {
+      "message": "Đồng bộ trình duyệt"
+   },
+   "CONFLICT__This_script_was_modified_0t0_seconds_ago_": {
+      "message": "XUNG ĐỘT:\nTập lệnh này đã được sửa bởi một thẻ khác $t$ giây trước!",
+      "placeholders": {
+         "t": {
+            "content": "$1"
+         }
+      }
+   },
+   "Cancel": {
+      "message": "Huỷ"
+   },
+   "Casual": {
+      "message": "Thông thường"
+   },
+   "Center_Cursor": {
+      "message": "Căn giữa con trỏ"
+   },
+   "Changelog": {
+      "message": "Nhật kí thay đổi"
+   },
+   "Changes": {
+      "message": "Các thay đổi"
+   },
+   "Check_disabled_scripts": {
+      "message": "Cập nhất các tập lệnh đã tắt"
+   },
+   "Check_for_Updates": {
+      "message": "Kiểm tra cập nhật"
+   },
+   "Classic": {
+      "message": "Cổ điển"
+   },
+   "Clear_All": {
+      "message": "Dọn hết"
+   },
+   "Click_here_to_install_it_": {
+      "message": "Nháy vào đây để cài đặt nó."
+   },
+   "Click_here_to_move_this_script": {
+      "message": "Nháy vào đây để di chuyển tập lệnh này."
+   },
+   "Click_here_to_see_the_recent_changes": {
+      "message": "Nháy vào đây để xem các thay đổi gấn đây."
+   },
+   "Close": {
+      "message": "Đóng"
+   },
+   "Closing_Bracket": {
+      "message": "Đóng ngoặc"
+   },
+   "Cloud": {
+      "message": "Đám mây"
+   },
+   "Columns": {
+      "message": "Cột"
+   },
+   "Comment": {
+      "message": "Chú thích"
+   },
+   "Config_Mode": {
+      "message": "Chế độ cấu hình"
+   },
+   "Copy": {
+      "message": "Sao chép"
+   },
+   "Current_Version": {
+      "message": "Phiên bản hiện tại"
+   },
+   "Custom_CSS": {
+      "message": "CSS tuỳ chỉnh"
+   },
+   "Cut": {
+      "message": "Cắt"
+   },
+   "Dashboard": {
+      "message": "Bảng tổng quan"
+   },
+   "Debug": {
+      "message": "Gỡ lỗi"
+   },
+   "Debug_scripts": {
+      "message": "Gỡ lỗi các tâp lệnh"
+   },
+   "Default": {
+      "message": "Mặc định"
+   },
+   "Default_Dark": {
+      "message": "Mặc định - Tối"
+   },
+   "Default_Darker": {
+      "message": "Mặc định - Tối hơn"
+   },
+   "Default_Light": {
+      "message": "Mặc định - Sáng"
+   },
+   "Delete": {
+      "message": "Xoá"
+   },
+   "Delete_Line": {
+      "message": "Xoá dòng"
+   },
+   "Delete_Line_Left": {
+      "message": "Xoá dòng bên trái"
+   },
+   "Delete_Line_Right": {
+      "message": "Xoá dòng bên phải"
+   },
+   "Description": {
+      "message": "Mô tả"
+   },
+   "Destination_URL": {
+      "message": "URL mô tả"
+   },
+   "Destination_domain": {
+      "message": "Tên miền cần đi đến"
+   },
+   "Details": {
+      "message": "Chi tiết"
+   },
+   "Developer": {
+      "message": "Nhà phát triển"
+   },
+   "Disable": {
+      "message": "Tắt"
+   },
+   "Disabled": {
+      "message": "Đã tắt"
+   },
+   "Disabled_scripts": {
+      "message": "Các tập lệnh đã bị tắt"
+   },
+   "Do_you_really_want_to_store_fixed_code_": {
+      "message": "Tuỳ chọn '$option$' đã được bật!\n\nBạn có thực sự muốn lưu trữ mã nguồn đã được sửa không?",
+      "placeholders": {
+         "option": {
+            "content": "$1"
+         }
+      }
+   },
+   "Document_End": {
+      "message": "Cuối tài liệu"
+   },
+   "Document_Start": {
+      "message": "Đầu tài liệu"
+   },
+   "Dont_ask_again": {
+      "message": "Đừng hỏi lại"
+   },
+   "Downgrade": {
+      "message": "Hạ cấp"
+   },
+   "Download_Mode": {
+      "message": "Chế độ tải xuống"
+   },
+   "Downloaded_from_0url0": {
+      "message": "Tải từ: $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Downloads": {
+      "message": "Tải xuống"
+   },
+   "Duplicate_Lines": {
+      "message": "Nhân đôi các dòng"
+   },
+   "Edit": {
+      "message": "Chỉnh sửa"
+   },
+   "Editor": {
+      "message": "Trình chỉnh sửa"
+   },
+   "Editor_reset": {
+      "message": "Đặt lại trình chỉnh sửa"
+   },
+   "Enable": {
+      "message": "Bật lên"
+   },
+   "Enable_Editor": {
+      "message": "Bật trình chỉnh sửa tăng cường"
+   },
+   "Enable_Script_Sync": {
+      "message": "Bật đồng bộ tập lệnh"
+   },
+   "Enabled": {
+      "message": "Đã bật"
+   },
+   "Enforce": {
+      "message": "Ép buộc"
+   },
+   "Enter_the_new_rule": {
+      "message": "Vào quy tắc mới"
+   },
+   "Error": {
+      "message": "Lỗi"
+   },
+   "Every_12_Hour": {
+      "message": "Mỗi 12 tiếng"
+   },
+   "Every_6_Hours": {
+      "message": "Mỗi 6 tiếng"
+   },
+   "Every_Day": {
+      "message": "Hằng ngày"
+   },
+   "Every_Hour": {
+      "message": "Hằng giờ"
+   },
+   "Every_Month": {
+      "message": "Hằng tháng"
+   },
+   "Every_Week": {
+      "message": "hằng tuần"
+   },
+   "Exclude_0domain0": {
+      "message": "Loại trừ $domain$",
+      "placeholders": {
+         "domain": {
+            "content": "$1"
+         }
+      }
+   },
+   "Exclude_s__": {
+      "message": "Loại trừ"
+   },
+   "Experimental": {
+      "message": "Thử nghiệm"
+   },
+   "Export": {
+      "message": "Xuất"
+   },
+   "Externals": {
+      "message": "Bên ngoài"
+   },
+   "Factory_Reset": {
+      "message": "Đặt lại về ban đầu"
+   },
+   "Fast": {
+      "message": "Nhanh"
+   },
+   "Features": {
+      "message": "Các tính năng"
+   },
+   "File": {
+      "message": "Tệp"
+   },
+   "Filter_by": {
+      "message": "Lọc theo"
+   },
+   "Find": {
+      "message": "Tìm"
+   },
+   "Find_Next": {
+      "message": "Tìm tiếp"
+   },
+   "Find_Previous": {
+      "message": "Tìm trước đó"
+   },
+   "Fold": {
+      "message": "Gập"
+   },
+   "Fold_All": {
+      "message": "Gập hết"
+   },
+   "Folding": {
+      "message": "Gập"
+   },
+   "Font_Size": {
+      "message": "Cỡ phông"
+   },
+   "Forbid_once": {
+      "message": "Cấm một lần"
+   },
+   "Full_reset": {
+      "message": "Đặt lại hoàn toàn"
+   },
+   "General": {
+      "message": "Chung"
+   },
+   "Get_new_scripts___": {
+      "message": "Tìm tập lệnh mới..."
+   },
+   "Get_some_scripts___": {
+      "message": "Lấy vài tập lệnh..."
+   },
+   "Global_Settings": {
+      "message": "Thiết lập toàn cục"
+   },
+   "Global_settings_import": {
+      "message": "Nhập thiết lập toàn cục"
+   },
+   "GoTo": {
+      "message": "Đi đến"
+   },
+   "Group_Left": {
+      "message": "Nhóm bên trái"
+   },
+   "Group_Right": {
+      "message": "Nhóm bên phải"
+   },
+   "Help": {
+      "message": "Giúp"
+   },
+   "Hide_disabled_scripts": {
+      "message": "Ẩn các tập lệnh bị tắt"
+   },
+   "Highlight_trailing_whitespace": {
+      "message": "Tô sáng các dấu cách nối đuôi"
+   },
+   "Homepage": {
+      "message": "Trang nhà"
+   },
+   "I_contributed_already": {
+      "message": "Tôi đã đóng góp rồi"
+   },
+   "I_dont_want_to_contribute": {
+      "message": "Tôi không muốn đóng góp"
+   },
+   "Import": {
+      "message": "Nhập"
+   },
+   "Imported": {
+      "message": "Đã nhập"
+   },
+   "Include_TM_settings": {
+      "message": "Bao gồm các thiết đặt Tampermonkey"
+   },
+   "Include_s__": {
+      "message": "Bao gồm"
+   },
+   "Include_script_storage": {
+      "message": "Bao gồm kho chứa tập lệnh"
+   },
+   "Incremental_Find": {
+      "message": "Tìm tăng dần"
+   },
+   "Indent": {
+      "message": "Thụt lùi"
+   },
+   "Indent_Less": {
+      "message": "Thụt ra"
+   },
+   "Indent_More": {
+      "message": "Thụt vào"
+   },
+   "Info": {
+      "message": "Thông tin"
+   },
+   "Insert_Line_After": {
+      "message": "Chèn dòng sau"
+   },
+   "Insert_Line_Before": {
+      "message": "Chèn dòng trước"
+   },
+   "Install": {
+      "message": "Cài đặt"
+   },
+   "Install_from_URL": {
+      "message": "Cài từ URL"
+   },
+   "Install_this_script": {
+      "message": "Cài tập lệnh này"
+   },
+   "Installed_Version_": {
+      "message": "Phiên bản cài đặt"
+   },
+   "Installed_userscripts": {
+      "message": "Các tập lệnh người dùng đã cài"
+   },
+   "Instant": {
+      "message": "Ngay lập tức"
+   },
+   "Invalid_UserScript__Sry_": {
+      "message": "Rất tiếc! Tập lệnh người dùng không hợp lệ."
+   },
+   "Invalid_UserScript_name__Sry_": {
+      "message": "Rất tiếc! Tên tập lệnh người dùng không hợp lệ."
+   },
+   "Join_Lines": {
+      "message": "Nối các dòng"
+   },
+   "Jump_to_line": {
+      "message": "Nhảy đến dòng"
+   },
+   "Key_Mapping": {
+      "message": "Lập bản đồ phím"
+   },
+   "Language": {
+      "message": "Ngôn ngữ"
+   },
+   "Last_updated": {
+      "message": "Cập nhật lần cuối"
+   },
+   "Layout": {
+      "message": "Bố cục"
+   },
+   "Line_break": {
+      "message": "Ngắt dòng"
+   },
+   "Lines": {
+      "message": "Các dòng"
+   },
+   "Login": {
+      "message": "Đăng nhập"
+   },
+   "Lower_Case": {
+      "message": "Chữ thường"
+   },
+   "MIME_Type": {
+      "message": "Loại MIME"
+   },
+   "Malicious_scripts_can_violate_your_privacy_": {
+      "message": "Các tập lệnh độc hại có thể vi phạm quyền riêng tư của bạn và hành động thay mặt bạn!\nBạn chỉ nên cài đặt các tập lệnh từ các nguồn mà bạn tin tưởng."
+   },
+   "Matching_URL": {
+      "message": "So khớp URL"
+   },
+   "Modify": {
+      "message": "Chỉnh sửa"
+   },
+   "Move_Line_Down": {
+      "message": "Chuyển dòng xuống"
+   },
+   "Move_Line_Up": {
+      "message": "Chuyển dòng lên"
+   },
+   "Name": {
+      "message": "Tên"
+   },
+   "Native": {
+      "message": "Bản địa"
+   },
+   "Never": {
+      "message": "Không bao giờ"
+   },
+   "New_Version": {
+      "message": "Phiên bản mới"
+   },
+   "New_script_template_": {
+      "message": "Bản mẫu tập lệnh người dùng mới"
+   },
+   "New_userscript": {
+      "message": "\u003CTập lệnh người dùng mới>"
+   },
+   "Next_Bookmark": {
+      "message": "Dấu trang tiếp theo"
+   },
+   "No": {
+      "message": "Không"
+   },
+   "No_backups_found": {
+      "message": "Không tìm thấy bản sao lưu nào cả"
+   },
+   "No_entry_found": {
+      "message": "Không tìm thấy mục nào cả"
+   },
+   "No_frames": {
+      "message": "Chỉ chạy trong khung trên cùng"
+   },
+   "No_script_is_installed": {
+      "message": "Không có tập lệnh nào được cài"
+   },
+   "No_script_is_running": {
+      "message": "Không có tập lệnh nào đang chạy"
+   },
+   "No_syntax_errors_were_found_": {
+      "message": "Không tìm thấy lỗi cú pháp nào cả"
+   },
+   "No_update_found__sry_": {
+      "message": "Chưa có cập nhật nào, xin lỗi!"
+   },
+   "Normal": {
+      "message": "Bình thường"
+   },
+   "Note": {
+      "message": "Ghi chú"
+   },
+   "Off": {
+      "message": "Tắt"
+   },
+   "On": {
+      "message": "Bật"
+   },
+   "One_or_more_compatibility_options_are_set": {
+      "message": "Một hoặc nhiều tùy chọn tương thích được thiết lập. Bạn có thể muốn/nên xem lại chúng."
+   },
+   "Only_files_with_these_extensions_can_be_saved_to_the_harddisk_Be_careful_to_not_allow_file_extensions_that_represent_executables_at_your_operating_system_": {
+      "message": "Chỉ các tệp với các phần mở rộng sau mới có thể được luu vào ổ cứng.\nHãy cẩn thận khi không cho phép các phần mở rộng tệp đại diện cho các tệp thực thi ở hệ điều hành của bạn!"
+   },
+   "Open_changelog": {
+      "message": "Mở nhật kí thay đổi"
+   },
+   "Password": {
+      "message": "Mật khẩu"
+   },
+   "Paste": {
+      "message": "Dán"
+   },
+   "Permanent": {
+      "message": "Vĩnh cửu"
+   },
+   "Please_check_the_0editor0_documentation_for_more_details_": {
+      "message": "Hãy xem tài liệu $editor$ để biết thêm thông tin chi tiết.",
+      "placeholders": {
+         "editor": {
+            "content": "$1"
+         }
+      }
+   },
+   "Please_consider_a_contribution": {
+      "message": "Vui lòng gửi một khoản đóng góp"
+   },
+   "Please_select_a_file": {
+      "message": "Vui lòng chọn một tập tin"
+   },
+   "Please_wait___": {
+      "message": "Vui lòng chờ..."
+   },
+   "Position_": {
+      "message": "Vị trí"
+   },
+   "Prev_Bookmark": {
+      "message": "Dấu trang trước đó"
+   },
+   "Process_with_Chrome": {
+      "message": "Xử lí bằng trình duyệt"
+   },
+   "Really_delete_0name0__": {
+      "message": "Bạn có thực sự muốn xoá '$name$' không?",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Really_delete_the_selected_items_": {
+      "message": "Bạn có thực sự muốn xoá tất cả các vật phẩm đã chọn không?"
+   },
+   "Really_factory_reset_the_selected_items_": {
+      "message": "Bạn có thực sự muốn đặt lại về ban đầu tất các các vật phẩm được chọn này không?"
+   },
+   "Really_factory_reset_this_script_": {
+      "message": "Bạn có thực sự muốn đặt lại về ban đầu tập lệnh này không?"
+   },
+   "Really_reset_all_changes_": {
+      "message": "Đặt lại tất các các thay đổi nhé?"
+   },
+   "Redo": {
+      "message": "Làm lại"
+   },
+   "Reindent_on_typing": {
+      "message": "Thụt lùi lại khi gõ"
+   },
+   "Reinstall": {
+      "message": "Cài lại"
+   },
+   "Remind_me_later": {
+      "message": "Nhắc tôi sau"
+   },
+   "Remove": {
+      "message": "Loại bỏ"
+   },
+   "Replace": {
+      "message": "Thay thế"
+   },
+   "Replace_": {
+      "message": "Thay thế nhé?"
+   },
+   "Replace_All": {
+      "message": "Thay hết"
+   },
+   "Replace_all_with": {
+      "message": "Thay hết"
+   },
+   "Replace_for_each_statements": {
+      "message": "Thay thế các câu lệnh 'for each'"
+   },
+   "Replace_with": {
+      "message": "Thay bằng"
+   },
+   "Report_a_bug": {
+      "message": "Bão cáo một lỗi"
+   },
+   "Report_an_issue_to_the_script_hoster_": {
+      "message": "Báo cáo lạm dụng.\n(Một tài khoản người dùng có thể là càn thiết)"
+   },
+   "Requires": {
+      "message": "Yêu cầu"
+   },
+   "Reset_Section": {
+      "message": "Đặt lại"
+   },
+   "Resources": {
+      "message": "Các tài nguyên"
+   },
+   "Restart_Tampermonkey": {
+      "message": "Chạy lại Tampermonkey"
+   },
+   "Revoke_Access_Token": {
+      "message": "Thu hồi token truy cập"
+   },
+   "Run_at": {
+      "message": "Chạy tại"
+   },
+   "Run_syntax_check": {
+      "message": "Chạy kiểm tra cú pháp"
+   },
+   "Running_scripts": {
+      "message": "Các thực thể tập lệnh đang chạy"
+   },
+   "Save": {
+      "message": "Lưu"
+   },
+   "Save_to_disk": {
+      "message": "Lưu vào ổ đĩa"
+   },
+   "Script_0name0_is_slowing_down_some_page_loads_": {
+      "message": "Tập lệnh '$name$' đang làm chậm việc tải trang của bạn",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_Sync": {
+      "message": "Đồng bộ tập lệnh"
+   },
+   "Script_Update": {
+      "message": "Cập nhật tập lệnh"
+   },
+   "Script_local_files_access": {
+      "message": "Cho phép các tập lệnh truy cập các tệp cục bộ"
+   },
+   "Script_name_0name0": {
+      "message": "Tên tập lệnh: $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Script_order": {
+      "message": "Thứ tự tập lệnh"
+   },
+   "Search": {
+      "message": "Tìm kiếm"
+   },
+   "Search_for": {
+      "message": "Tìm kiếm gì"
+   },
+   "Security": {
+      "message": "Bảo mật"
+   },
+   "Select_All": {
+      "message": "Chọn hết"
+   },
+   "Select_Bookmarks": {
+      "message": "Chọn dấu trang"
+   },
+   "Select_Line": {
+      "message": "Chọn dòng"
+   },
+   "Select_Next_Occurrence": {
+      "message": "Chon trường hợp tiếp theo"
+   },
+   "Select_between_Brackets": {
+      "message": "Chọn trong dấu ngoặc"
+   },
+   "Selection": {
+      "message": "Phần đã chọn"
+   },
+   "Settings": {
+      "message": "Thiết đặt"
+   },
+   "Show_backups": {
+      "message": "Hiệu các bản sao lưu"
+   },
+   "Show_fixed_source": {
+      "message": "Hiệu các nguồn đã sửa"
+   },
+   "Show_notification": {
+      "message": "Hiện thông báo"
+   },
+   "Sites": {
+      "message": "Trang web"
+   },
+   "Size": {
+      "message": "Kích cỡ"
+   },
+   "Skip_timeout__0seconds0_seconds_": {
+      "message": "Bỏ qua thời gian chờ ($seconds$ giây)",
+      "placeholders": {
+         "seconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "Smart": {
+      "message": "Thông minh"
+   },
+   "Sort": {
+      "message": "Phân loại"
+   },
+   "Source": {
+      "message": "Nguồn"
+   },
+   "Source_Code": {
+      "message": "Mã nguồn"
+   },
+   "Spaces": {
+      "message": "Khoảng cách"
+   },
+   "Split_into_Lines": {
+      "message": "NGắt thành các dòng"
+   },
+   "Start": {
+      "message": "Bắt đầu"
+   },
+   "Stop": {
+      "message": "Dừng lại"
+   },
+   "Storage": {
+      "message": "Kho chứa"
+   },
+   "Store_data_in_incognito_mode": {
+      "message": "Lưu trữ dữ liệu trong chế độ ẩn danh"
+   },
+   "Strict": {
+      "message": "Nghiêm khắc"
+   },
+   "Sync_Reset": {
+      "message": "Đặt lại đồng bộ"
+   },
+   "Sync_Type": {
+      "message": "Loại"
+   },
+   "Sync_finished": {
+      "message": "Đã hoàn thành việc đồng bộ"
+   },
+   "Sync_is_running": {
+      "message": "Đồng bộ hoá đang chay"
+   },
+   "Tab_URL": {
+      "message": "URL thẻ"
+   },
+   "Tabs": {
+      "message": "Các thẻ"
+   },
+   "Tampermonkey_has_no_file_access_permission_": {
+      "message": "Tampermonkey không có quyền truy cập các tệp cục bộ!"
+   },
+   "Tampermonkey_version": {
+      "message": "Chỉ phiên bản Tampermonkey"
+   },
+   "Templates": {
+      "message": "Các bản mẫu"
+   },
+   "Temporarily_allow": {
+      "message": "Tạm thời cho phép"
+   },
+   "Temporary": {
+      "message": "Tạm thời"
+   },
+   "Temporary_domain_whitelist": {
+      "message": "Tạm thời cho tên miền vào danh sách trắng"
+   },
+   "Text": {
+      "message": "Văn bản"
+   },
+   "Thank_you_very_much_": {
+      "message": "Cảm ơn bạn rất nhiều!"
+   },
+   "The_downgraded_script_might_have_problems_to_read_its_stored_data_": {
+      "message": "Tập lệnh bị hạ cấp có thể gặp vấn đề khi đọc dữ liệu được lưu trữ!"
+   },
+   "Theme": {
+      "message": "Chủ đề"
+   },
+   "There_are_unsaved_changed_": {
+      "message": "Vẫn còn thay đổi chưa được lưu.\nBạn có thực sự muốn đóng trình chỉnh sửa?"
+   },
+   "This_is_a_system_script": {
+      "message": "Đây là một tập lệnh hệ thống."
+   },
+   "This_is_a_userscript": {
+      "message": "Đây là một tập lệnh người dùng được viết bàng JavaScript."
+   },
+   "This_script_has_access_to_https_pages": {
+      "message": "Tập lệnh này có quyền truy cập vào các trang https."
+   },
+   "This_script_has_access_to_webpage_scripts": {
+      "message": "Tập lệnh này có toàn quyền truy cập vào trang web."
+   },
+   "This_script_has_full_web_access": {
+      "message": "Tập lệnh này có toàn quyền truy cập web"
+   },
+   "This_script_stores_data": {
+      "message": "Tập lệnh này lưu dữ liệu vào Tampermonkey."
+   },
+   "This_script_was_deleted": {
+      "message": "Tập lệnh này đã bị xoá"
+   },
+   "This_script_was_executed_0count0_times": {
+      "message": "Tập lệnh này đã chạy $count$ lần",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "This_script_was_not_executed_yet": {
+      "message": "Tập lệnh này chưa từng được chạy"
+   },
+   "This_will_overwrite_your_global_settings_": {
+      "message": "Thao tác này sẽ ghi đè thiết đặt toàn cục của bạn!"
+   },
+   "This_will_restart_Tampermonkey_Ok_": {
+      "message": "Bạn có thực sự muốn chạy lại Tampermonkey?"
+   },
+   "Today": {
+      "message": "Hôm nay"
+   },
+   "Toggle": {
+      "message": "Bật tắt"
+   },
+   "Toggle_Block_Comment": {
+      "message": "Bật tắt chú thích khối"
+   },
+   "Toggle_Comment": {
+      "message": "Bật tắt chú thích"
+   },
+   "Toggle_Comment_Indented": {
+      "message": "Bật tắt chú thích được thụt lùi"
+   },
+   "Trace": {
+      "message": "Theo chân"
+   },
+   "Try_to_install_as_script": {
+      "message": "Cố gắng cài như một tập lệnh"
+   },
+   "Type": {
+      "message": "Loại"
+   },
+   "Unable_to_load_script_from_url_0url0": {
+      "message": "Không thẻ tải tập lệnh từ url: \n $url$",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_0name0": {
+      "message": "Không thể phân tích cú pháp $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Unable_to_parse_this_": {
+      "message": "Không thể phân tích cú pháp này! :("
+   },
+   "Undo": {
+      "message": "Hoàn tác"
+   },
+   "Unfold": {
+      "message": "Bỏ gập"
+   },
+   "Unfold_All": {
+      "message": "Bỏ gập hết"
+   },
+   "Unknown_method_0name0": {
+      "message": "Phương thức không rõ $name$",
+      "placeholders": {
+         "name": {
+            "content": "$1"
+         }
+      }
+   },
+   "Update": {
+      "message": "Cập nhật"
+   },
+   "Update_Notification": {
+      "message": "Hiện thông báo cập nhật TM"
+   },
+   "Update_URL_": {
+      "message": "URL cập nhật"
+   },
+   "Update_check_is_disabled": {
+      "message": "Kiểm tra cập nhật tập lệnh bị tắt hoặc không khả thi"
+   },
+   "Update_interval": {
+      "message": "Khoảng thời gian cập nhật"
+   },
+   "Updated_to__0version0": {
+      "message": "Đã cập nhật lên: $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "Updates": {
+      "message": "Các cập nhật"
+   },
+   "Upper_Case": {
+      "message": "Chữ hoa"
+   },
+   "User_domain_blacklist": {
+      "message": "Danh sách đen tên miền người dùng"
+   },
+   "User_domain_whitelist": {
+      "message": "Danh sách trắng tên miền người dùng"
+   },
+   "User_excludes": {
+      "message": "Các loại trừ của người dùng"
+   },
+   "User_includes": {
+      "message": "Các bao gồm của người dùng"
+   },
+   "User_matches": {
+      "message": "Các so khớp của người dùng"
+   },
+   "User_modified": {
+      "message": "Đã sửa đổi"
+   },
+   "Userscripts": {
+      "message": "Các tập lệnh người dùng"
+   },
+   "Utilities": {
+      "message": "Các tiện ích"
+   },
+   "Validate_if_given": {
+      "message": "Phê chuẩn khi cần"
+   },
+   "Validate_if_supported": {
+      "message": "Phê chuẩn khi có thể"
+   },
+   "Verbose": {
+      "message": "Dài dòng"
+   },
+   "Version": {
+      "message": "Phiên bản"
+   },
+   "Waiting_for_sync_to_finish": {
+      "message": "Đang chờ cho việc đồng bộ được hoàn tất"
+   },
+   "Warning": {
+      "message": "Cảnh báo"
+   },
+   "Warning_unsafe_site_warnings_might_appear_": {
+      "message": "Cảnh báo: các cảnh báo trang không an toàn có thể sẽ xuát hiện nếu một tập lệnh có chưa cac URL có khả năng gây hại."
+   },
+   "Whitelist": {
+      "message": "Danh sách trắng"
+   },
+   "Whitelisted_Pages": {
+      "message": "Các trang trong danh sách trắng"
+   },
+   "Yes": {
+      "message": "Có"
+   },
+   "You_are_about_to_downgrade_a_UserScript": {
+      "message": "Lưu ý! Hạ cấp tập lệnh người dùng"
+   },
+   "You_are_about_to_install_a_UserScript_": {
+      "message": "Cài đặt tập lệnh người dùng"
+   },
+   "You_are_about_to_modify_a_UserScript_": {
+      "message": "Chỉnh sửa tập lệnh người dùng"
+   },
+   "You_are_about_to_reinstall_a_UserScript_": {
+      "message": "Cài lại tập lệnh người dùng"
+   },
+   "You_are_about_to_update_a_UserScript_": {
+      "message": "Cập nhật tập lệnh người dùng"
+   },
+   "Your_language_is_not_supported__Click_here_to_get_intructions_how_to_translate_TM_": {
+      "message": "Ngôn ngữ của bạn không được hỗ trợ à?\nNhấp vào đây để nhận hướng dẫn về cách dịch Tampermonkey?"
+   },
+   "__Please_choose__": {
+      "message": "-- Hãy chọn một tuỳ chọn --"
+   },
+   "_not_set_": {
+      "message": "\u003Ckhông đặt>"
+   },
+   "connect_mode": {
+      "message": "Kiểm tra @connect"
+   },
+   "fatal_error": {
+      "message": "lỗi nghiêm trọng"
+   },
+   "severity_1": {
+      "message": "1 (an toàn nhất)"
+   },
+   "severity_10": {
+      "message": "10 (kém an toàn nhất)"
+   },
+   "some_secs": {
+      "message": "vài"
+   },
+   "strict_mode": {
+      "message": "chế độ nghiêm khắc"
+   }
+}

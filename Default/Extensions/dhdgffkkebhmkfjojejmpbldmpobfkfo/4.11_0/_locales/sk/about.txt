@@ -1,0 +1,7 @@
+Slovak translation for Tampermonkey extension (author: emitor)
+Found and error? Have sugestions? Please email me:
+emitor.emitor@gmail.com
+---------------------------------------------------------
+Slovenský preklad pre rozšírenie Tampermonkey (autor: emitor)
+Našli ste chybu? Máte návrh? Prosím napíšte mi:
+emitor.emitor@gmail.com
