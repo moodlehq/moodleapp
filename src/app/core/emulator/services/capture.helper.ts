@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreCanceledError } from '@/app/classes/errors/cancelederror';
 import { Injectable } from '@angular/core';
 import { CameraOptions } from '@ionic-native/camera/ngx';
 import { CaptureAudioOptions, CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@ionic-native/media-capture/ngx';

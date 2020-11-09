@@ -49,10 +49,14 @@
         <ion-grid class="ion-padding">
             <ion-row>
                 <ion-col>
-                    <ion-button expand="block" color="light" (click)="cancel($event)">{{ 'core.login.cancel' | translate }}</ion-button>
+                    <ion-button expand="block" color="light" (click)="cancel($event)">
+                        {{ 'core.login.cancel' | translate }}
+                    </ion-button>
                 </ion-col>
                 <ion-col>
-                    <ion-button type="submit" expand="block" [disabled]="!credForm.valid">{{ 'core.login.loginbutton' | translate }}</ion-button>
+                    <ion-button type="submit" expand="block" [disabled]="!credForm.valid">
+                        {{ 'core.login.loginbutton' | translate }}
+                    </ion-button>
                 </ion-col>
             </ion-row>
         </ion-grid>

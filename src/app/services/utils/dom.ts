@@ -1537,7 +1537,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved when modal presented.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    showTextareaPrompt(title: string, message: string, buttons: (string | any)[], placeholder?: string): Promise<any> {
+    showTextareaPrompt(title: string, message: string, buttons: (string | unknown)[], placeholder?: string): Promise<unknown> {
         // @todo
         return Promise.resolve();
     }
