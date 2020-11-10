@@ -15,6 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
+import { CoreSites } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploader';
@@ -39,7 +40,7 @@ import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/hel
 })
 export class CoreAttachmentsComponent implements OnInit {
     @Input() files: any[]; // List of attachments. New attachments will be added to this array.
-    @Input() maxSize: number; // Max size for attachments. -1 means unlimited, not defined or 0 means unknown limit.
+    @Input() maxSize: number; // Max size for attachments. -1 means unlimited, 0 means user max size, not defined means unknown.
     @Input() maxSubmissions: number; // Max number of attachments. -1 means unlimited, not defined means unknown limit.
     @Input() component: string; // Component the downloaded files will be linked to.
     @Input() componentId: string | number; // Component ID.
@@ -61,14 +62,23 @@ export class CoreAttachmentsComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.maxSize = Number(this.maxSize) || 0; // Make sure it's defined and it's a number.
+        this.maxSize = this.maxSize !== null ? Number(this.maxSize) : NaN;
 
         if (this.maxSize === 0) {
-            this.maxSizeReadable = this.translate.instant('core.unknown');
+            const currentSite = CoreSites.instance.getCurrentSite();
+            const siteInfo = currentSite && currentSite.getInfo();
+
+            if (siteInfo && siteInfo.usermaxuploadfilesize) {
+                this.maxSizeReadable = this.textUtils.bytesToSize(siteInfo.usermaxuploadfilesize, 2);
+            } else {
+                this.maxSizeReadable = this.translate.instant('core.unknown');
+            }
         } else if (this.maxSize > 0) {
             this.maxSizeReadable = this.textUtils.bytesToSize(this.maxSize, 2);
-        } else {
+        } else if (this.maxSize === -1) {
             this.maxSizeReadable = this.translate.instant('core.unlimited');
+        } else {
+            this.maxSizeReadable = this.translate.instant('core.unknown');
         }
 
         if (typeof this.maxSubmissions == 'undefined' || this.maxSubmissions < 0) {
