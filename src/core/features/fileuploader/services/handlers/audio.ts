@@ -92,4 +92,4 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
 
 }
 
-export class CoreFileUploaderAudioHandler extends makeSingleton(CoreFileUploaderAudioHandlerService) {}
+export class CoreFileUploaderAudioHandler extends makeSingleton(CoreFileUploaderAudioHandlerService) { }

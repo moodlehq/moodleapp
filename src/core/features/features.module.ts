@@ -22,6 +22,7 @@ import { CoreLoginModule } from './login/login.module';
 import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
 import { CoreSettingsModule } from './settings/settings.module';
 import { CoreSiteHomeModule } from './sitehome/sitehome.module';
+import { CoreTagModule } from './tag/tag.module';
 
 @NgModule({
     imports: [
@@ -33,6 +34,7 @@ import { CoreSiteHomeModule } from './sitehome/sitehome.module';
         CoreMainMenuModule,
         CoreSettingsModule,
         CoreSiteHomeModule,
+        CoreTagModule,
     ],
 })
 export class CoreFeaturesModule {}
