@@ -167,7 +167,8 @@
   },
   "cordova": {
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ],
     "plugins": {
       "com-darryncampbell-cordova-plugin-intent": {},
@@ -178,7 +179,7 @@
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {},
       "cordova-plugin-customurlscheme": {
-        "URL_SCHEME": "http://elearning.ecurei.ac.ug"
+        "URL_SCHEME": "https://elearning.ecurei.ac.ug"
       },
       "cordova-plugin-device": {},
       "cordova-plugin-file": {},
@@ -239,7 +240,7 @@
     },
     "protocols": [
       {
-        "name": "http://elearning.ecurei.ac.ug",
+        "name": "https://elearning.ecurei.ac.ug",
         "schemes": [
           "moodlemobile"
         ],
