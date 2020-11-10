@@ -45,6 +45,7 @@ export class AddonPrivateFilesMainMenuHandler implements CoreMainMenuHandler {
             icon: 'fa-folder',
             title: 'addon.privatefiles.files',
             page: 'addon-privatefiles',
+            subPage: 'root',
             class: 'addon-privatefiles-handler',
         };
     }

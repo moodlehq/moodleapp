@@ -55,6 +55,7 @@ export class CoreHomeMainMenuHandler implements CoreMainMenuHandler {
             icon: 'fa-home',
             title: 'core.mainmenu.home',
             page: 'home',
+            // @todo: subPage? The page can change due to core-tabs.
             class: 'core-home-handler',
         };
     }

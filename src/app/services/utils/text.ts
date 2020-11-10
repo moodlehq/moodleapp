@@ -892,6 +892,20 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Remove all ocurrences of a certain character from the start and end of a string.
+     *
+     * @param text Text to treat.
+     * @param character Character to remove.
+     * @return Treated text.
+     */
+    trimCharacter(text: string, character: string): string {
+        const escaped = this.escapeForRegex(character);
+        const regExp = new RegExp(`^${escaped}+|${escaped}+$`, 'g');
+
+        return text.replace(regExp, '');
+    }
+
+    /**
      * If a number has only 1 digit, add a leading zero to it.
      *
      * @param num Number to convert.
