@@ -35,14 +35,18 @@ export class CoreH5PHelper {
      * @return Object with display options.
      */
     static decodeDisplayOptions(displayOptions: number): CoreH5PDisplayOptions {
-        const config: any = {};
         const displayOptionsObject = CoreH5P.instance.h5pCore.getDisplayOptionsAsObject(displayOptions);
 
-        config.export = false; // Don't allow downloading in the app.
-        config.embed = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED] : false;
-        config.copyright = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false;
+        const config: CoreH5PDisplayOptions = {
+            export: false, // Don't allow downloading in the app.
+            embed: false, // Don't display the embed button in the app.
+            copyright: CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false,
+            icon: CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT]) ?
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT] : false,
+        };
+
+        config.frame = config.copyright || config.export || config.embed;
 
         return config;
     }
