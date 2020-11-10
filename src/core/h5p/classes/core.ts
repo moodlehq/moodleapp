@@ -270,22 +270,13 @@ export class CoreH5PCore {
         // Never allow downloading in the app.
         displayOptions[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] = false;
 
-        // Embed - force setting it if always on or always off. In web, this is done when storing in DB.
-        const embed = this.h5pFramework.getOption(CoreH5PCore.DISPLAY_OPTION_EMBED, CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
-        if (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW || embed == CoreH5PDisplayOptionBehaviour.NEVER_SHOW) {
-            displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] = (embed == CoreH5PDisplayOptionBehaviour.ALWAYS_SHOW);
-        }
+        // Never show the embed option in the app.
+        displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] = false;
 
         if (!this.h5pFramework.getOption(CoreH5PCore.DISPLAY_OPTION_FRAME, true)) {
             displayOptions[CoreH5PCore.DISPLAY_OPTION_FRAME] = false;
-        } else {
-            displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] = this.setDisplayOptionOverrides(
-                    CoreH5PCore.DISPLAY_OPTION_EMBED, CoreH5PPermission.EMBED_H5P, id,
-                    displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED]);
-
-            if (this.h5pFramework.getOption(CoreH5PCore.DISPLAY_OPTION_COPYRIGHT, true) == false) {
-                displayOptions[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] = false;
-            }
+        } else if (this.h5pFramework.getOption(CoreH5PCore.DISPLAY_OPTION_COPYRIGHT, true) == false) {
+            displayOptions[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] = false;
         }
 
         displayOptions[CoreH5PCore.DISPLAY_OPTION_COPY] = this.h5pFramework.hasPermission(CoreH5PPermission.COPY_H5P, id);
@@ -506,8 +497,8 @@ export class CoreH5PCore {
 
         // tslint:disable: no-bitwise
         displayOptions[CoreH5PCore.DISPLAY_OPTION_FRAME] = !(disable & CoreH5PCore.DISABLE_FRAME);
-        displayOptions[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] = !(disable & CoreH5PCore.DISABLE_DOWNLOAD);
-        displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] = !(disable & CoreH5PCore.DISABLE_EMBED);
+        displayOptions[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] = false; // Never allow downloading in the app.
+        displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] = false; // Never show the embed option in the app.
         displayOptions[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] = !(disable & CoreH5PCore.DISABLE_COPYRIGHT);
         displayOptions[CoreH5PCore.DISPLAY_OPTION_ABOUT] = !!this.h5pFramework.getOption(CoreH5PCore.DISPLAY_OPTION_ABOUT, true);
 

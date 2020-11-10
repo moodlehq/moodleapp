@@ -301,10 +301,8 @@ export class CoreH5PPlayer {
             return displayOptions;
         }
 
-        displayOptions[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] =
-                CoreUtils.instance.isTrueOrOne(params[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD]);
-        displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] =
-                CoreUtils.instance.isTrueOrOne(params[CoreH5PCore.DISPLAY_OPTION_EMBED]);
+        displayOptions[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] = false; // Never allow downloading in the app.
+        displayOptions[CoreH5PCore.DISPLAY_OPTION_EMBED] = false; // Never show the embed option in the app.
         displayOptions[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] =
                 CoreUtils.instance.isTrueOrOne(params[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]);
         displayOptions[CoreH5PCore.DISPLAY_OPTION_FRAME] = displayOptions[CoreH5PCore.DISPLAY_OPTION_DOWNLOAD] ||
