@@ -30,3 +30,4 @@ npm-debug.log*
 /www
 
 /config/config.*.json
+/src/assets/lang/*
