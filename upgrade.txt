@@ -3,7 +3,7 @@ information provided here is intended especially for developers.
 
 === 3.9.3 ===
 
-- In the core-attachments component, passing a -1 as maxSize or maxSubmissions used to mean "unknown limit". Now -1 means unlimited.
+- In the core-attachments component, passing a -1 as maxSize or maxSubmissions used to mean "unknown limit". Now -1 means unlimited. Also, passing a 0 to maxSize used to mean "unknown" too, now 0 means user max size.
 
 === 3.8.3 ===
 
