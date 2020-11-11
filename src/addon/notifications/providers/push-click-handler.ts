@@ -39,6 +39,11 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
      * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
+        if (!notification.moodlecomponent) {
+            // The notification doesn't come from Moodle. Handle it.
+            return true;
+        }
+
         if (this.utils.isTrueOrOne(notification.notif)) {
             // Notification clicked, mark as read. Don't block for this.
             const notifId = notification.savedmessageid || notification.id;
@@ -74,7 +79,7 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
         // Try to handle the appurl.
         if (notification.customdata && notification.customdata.appurl) {
             switch (notification.customdata.appurlopenin) {
-                case 'inappbrowser':
+                case 'inapp':
                     this.utils.openInApp(notification.customdata.appurl);
 
                     return;
