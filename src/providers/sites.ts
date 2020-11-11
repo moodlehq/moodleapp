@@ -1039,20 +1039,19 @@ export class CoreSitesProvider {
     /**
      * Check the app for a site and show a download dialogs if necessary.
      *
-     * @param response Data obtained during site check.
+     * @param config Config object of the site.
      */
-    async checkApplication(response: CoreSiteCheckResponse): Promise<void> {
-        await this.checkRequiredMinimumVersion(response.config);
+    async checkApplication(config: any): Promise<void> {
+        await this.checkRequiredMinimumVersion(config);
     }
 
     /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
-     * @param  config Config object of the site.
-     * @param siteId ID of the site to check. Current site id will be used otherwise.
+     * @param config Config object of the site.
      * @return Resolved with  if meets the requirements, rejected otherwise.
      */
-    checkRequiredMinimumVersion(config: any, siteId?: string): Promise<void> {
+    protected checkRequiredMinimumVersion(config: any): Promise<void> {
         if (config && config.tool_mobile_minimumversion) {
             const requiredVersion = this.convertVersionName(config.tool_mobile_minimumversion),
                 appVersion = this.convertVersionName(CoreConfigConstants.versionname);
@@ -1067,8 +1066,7 @@ export class CoreSitesProvider {
                 };
 
                 const downloadUrl = this.appProvider.getAppStoreUrl(storesConfig);
-
-                siteId = siteId || this.getCurrentSiteId();
+                const siteId = this.getCurrentSiteId();
 
                 // Do not block interface.
                 this.domUtils.showConfirm(
@@ -1159,7 +1157,7 @@ export class CoreSitesProvider {
                 return site.getPublicConfig().catch(() => {
                     return {};
                 }).then((config) => {
-                    return this.checkRequiredMinimumVersion(config).then(() => {
+                    return this.checkApplication(config).then(() => {
                         this.login(siteId);
 
                         // Update site info. We don't block the UI.
