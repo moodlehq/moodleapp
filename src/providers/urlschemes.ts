@@ -102,7 +102,7 @@ export class CoreCustomURLSchemesProvider {
 
                 data.siteUrl = result.siteUrl;
 
-                await this.sitesProvider.checkRequiredMinimumVersion(result.config);
+                await this.sitesProvider.checkApplication(result.config);
             }
 
             return this.sitesProvider.newSite(data.siteUrl, data.token, data.privateToken, !!data.isSSOToken,

@@ -526,7 +526,7 @@ export class CoreLoginSitePage {
             // Check if site uses SSO.
             const response = await this.sitesProvider.checkSite(siteUrl);
 
-            await this.sitesProvider.checkRequiredMinimumVersion(response.config);
+            await this.sitesProvider.checkApplication(response.config);
 
             if (!this.loginHelper.isSSOLoginNeeded(response.code)) {
                 // No SSO, go to credentials page.
