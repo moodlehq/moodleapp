@@ -26,7 +26,7 @@ import { CoreMainMenuDelegate } from './services/mainmenu.delegate';
 import { CoreMainMenuRoutingModule } from './mainmenu-routing.module';
 import { CoreMainMenuPage } from './pages/menu/menu.page';
 import { CoreMainMenuMorePage } from './pages/more/more.page';
-import { CoreHomeMainMenuHandler } from './handlers/mainmenu';
+import { CoreHomeMainMenuHandler } from './services/handlers/mainmenu';
 
 
 @NgModule({
@@ -42,11 +42,17 @@ import { CoreHomeMainMenuHandler } from './handlers/mainmenu';
         CoreMainMenuPage,
         CoreMainMenuMorePage,
     ],
+    providers: [
+        CoreHomeMainMenuHandler,
+    ],
 })
 export class CoreMainMenuModule {
 
-    constructor(mainMenuDelegate: CoreMainMenuDelegate) {
-        mainMenuDelegate.registerHandler(new CoreHomeMainMenuHandler());
+    constructor(
+        mainMenuDelegate: CoreMainMenuDelegate,
+        homeMainMenuHandler: CoreHomeMainMenuHandler,
+    ) {
+        mainMenuDelegate.registerHandler(homeMainMenuHandler);
     }
 
 }

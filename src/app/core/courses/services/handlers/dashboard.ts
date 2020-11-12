@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../services/mainmenu.delegate';
+import { Injectable } from '@angular/core';
+import { CoreHomeHandler, CoreHomeHandlerData } from '@core/mainmenu/services/home.delegate';
 
 /**
  * Handler to add Home into main menu.
  */
-export class CoreHomeMainMenuHandler implements CoreMainMenuHandler {
+Injectable();
+export class CoreCoursesDashboardHandler implements CoreHomeHandler {
 
-    name = 'CoreHome';
+    name = 'CoreCoursesDashboard';
     priority = 1100;
 
     /**
@@ -48,12 +50,12 @@ export class CoreHomeMainMenuHandler implements CoreMainMenuHandler {
      *
      * @return Data needed to render the handler.
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    getDisplayData(): CoreHomeHandlerData {
         return {
-            icon: 'fa-home',
-            title: 'core.mainmenu.home',
-            page: 'home',
-            class: 'core-home-handler',
+            title: 'core.courses.mymoodle',
+            page: 'home/dashboard',
+            class: 'core-courses-dashboard-handler',
+            icon: 'fa-tachometer-alt',
         };
     }
 

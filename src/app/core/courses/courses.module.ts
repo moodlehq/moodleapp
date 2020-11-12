@@ -15,7 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CoreHomeDelegate } from '../mainmenu/services/home.delegate';
-import { CoreCoursesDashboardHandler } from './handlers/dashboard';
+import { CoreCoursesDashboardHandler } from './services/handlers/dashboard';
 import { CoreCoursesDashboardPage } from './pages/dashboard/dashboard.page';
 
 
@@ -28,12 +28,17 @@ const routes: Routes = [
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    declarations: [],
+    providers: [
+        CoreCoursesDashboardHandler,
+    ],
 })
 export class CoreCoursesModule {
 
-    constructor(homeDelegate: CoreHomeDelegate) {
-        homeDelegate.registerHandler(new CoreCoursesDashboardHandler());
+    constructor(
+        homeDelegate: CoreHomeDelegate,
+        coursesDashboardHandler: CoreCoursesDashboardHandler,
+    ) {
+        homeDelegate.registerHandler(coursesDashboardHandler);
     }
 
 }
