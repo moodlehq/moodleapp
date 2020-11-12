@@ -26,6 +26,7 @@ import { CoreConfig } from '@services/config';
 import { CoreDomUtils } from '@services/utils/dom';
 // import { CoreCourseProvider } from '@core/course/providers/course';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -281,12 +282,12 @@ export class CoreSettingsHelperProvider {
 
         if (site.isLoggedOut()) {
             // Cannot sync logged out sites.
-            throw Translate.instance.instant('core.settings.cannotsyncloggedout');
+            throw new CoreError(Translate.instance.instant('core.settings.cannotsyncloggedout'));
         } else if (hasSyncHandlers && !CoreApp.instance.isOnline()) {
             // We need connection to execute sync.
-            throw Translate.instance.instant('core.settings.cannotsyncoffline');
+            throw new CoreError(Translate.instance.instant('core.settings.cannotsyncoffline'));
         } else if (hasSyncHandlers && syncOnlyOnWifi && CoreApp.instance.isNetworkAccessLimited()) {
-            throw Translate.instance.instant('core.settings.cannotsyncwithoutwifi');
+            throw new CoreError(Translate.instance.instant('core.settings.cannotsyncwithoutwifi'));
         }
 
         const syncPromise = Promise.all([
@@ -329,7 +330,7 @@ export class CoreSettingsHelperProvider {
         // Local mobile was added. Throw invalid session to force reconnect and create a new token.
         CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, site.getId());
 
-        throw Translate.instance.instant('core.lostconnection');
+        throw new CoreError(Translate.instance.instant('core.lostconnection'));
     }
 
     /**

@@ -231,7 +231,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         if (!site.canDownloadFiles() && CoreUrlUtils.instance.isPluginFileUrl(url)) {
             this.element.parentElement?.removeChild(this.element); // Remove element since it'll be broken.
 
-            throw 'Site doesn\'t allow downloading files.';
+            throw new CoreError('Site doesn\'t allow downloading files.');
         }
 
         // Download images, tracks and posters if size is unknown.
