@@ -70,7 +70,8 @@
                 <h2>{{ 'core.mainmenu.help' | translate }}</h2>
             </ion-label>
         </ion-item>
-        <ion-item button (click)="openSitePreferences()" title="{{ 'core.settings.preferences' | translate }}" detail>
+        <ion-item button router-direction="forward" routerLink="preferences"
+            title="{{ 'core.settings.preferences' | translate }}" detail>
             <ion-icon name="fa-wrench" slot="start"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.settings.preferences' | translate }}</h2>
