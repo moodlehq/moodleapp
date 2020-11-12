@@ -31,8 +31,8 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
  * Object with space usage and cache entries that can be erased.
  */
 export interface CoreSiteSpaceUsage {
-    cacheEntries?: number; // Number of cached entries that can be cleared.
-    spaceUsage?: number; // Space used in this site (total files + estimate of cache).
+    cacheEntries: number; // Number of cached entries that can be cleared.
+    spaceUsage: number; // Space used in this site (total files + estimate of cache).
 }
 
 /**

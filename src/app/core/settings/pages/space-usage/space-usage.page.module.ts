@@ -13,31 +13,37 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
+
+import { CoreSettingsSpaceUsagePage } from './space-usage.page';
 
 const routes: Routes = [
     {
-        path: 'about',
-        loadChildren: () => import('./pages/about/about.page.module').then( m => m.CoreSettingsAboutPageModule),
-    },
-    {
-        path: 'general',
-        loadChildren: () => import('./pages/general/general.page.module').then( m => m.CoreSettingsGeneralPageModule),
-    },
-    {
-        path: 'spaceusage',
-        loadChildren: () =>
-            import('@core/settings/pages/space-usage/space-usage.page.module')
-                .then(m => m.CoreSettingsSpaceUsagePageModule),
-    },
-    {
         path: '',
-        loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
+        component: CoreSettingsSpaceUsagePage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        CorePipesModule,
+    ],
+    declarations: [
+        CoreSettingsSpaceUsagePage,
+    ],
     exports: [RouterModule],
 })
-export class CoreSettingsRoutingModule {}
+export class CoreSettingsSpaceUsagePageModule {}

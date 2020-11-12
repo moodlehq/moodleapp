@@ -131,6 +131,9 @@
         }
     }
 
+    --selected-item-color: var(--custom-selected-item-color, var(--core-color));
+    --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
+
     --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
 
     --core-login-background: var(--custom-login-background, var(--white));

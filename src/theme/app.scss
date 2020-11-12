@@ -105,6 +105,13 @@ ion-list.list-md {
     font-size: 14px;
 }
 
+// Item styles
+.item.core-selected-item {
+    // TODO: Add safe are to border and RTL
+    border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
+    --ion-safe-area-left: calc(-1 * var(--selected-item-border-width));
+}
+
 // Avatar
 // -------------------------
 // Large centered avatar
