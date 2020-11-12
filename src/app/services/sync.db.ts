@@ -18,7 +18,7 @@ import { CoreSiteSchema, registerSiteSchema } from '@services/sites';
  * Database variables for CoreSync service.
  */
 export const SYNC_TABLE_NAME = 'sync';
-export const SITE_SCHEMA: CoreSiteSchema = {
+const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreSyncProvider',
     version: 1,
     tables: [

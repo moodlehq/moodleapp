@@ -982,6 +982,15 @@ export type CoreWSExternalWarning = {
 };
 
 /**
+ * Special response structure of many webservices that contains success status and warnings.
+ */
+export type CoreStatusWithWarningsWSResponse = {
+    status: boolean; // Status: true if success.
+    offline?: boolean; // True if information has been stored in offline for future use.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
  * Structure of files returned by WS.
  */
 export type CoreWSExternalFile = {
