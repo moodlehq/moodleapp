@@ -22,7 +22,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/helper';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/login.helper';
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@core/constants';

@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteInfo } from '@classes/site';
-import { CoreLoginHelper } from '@core/login/services/helper';
+import { CoreLoginHelper } from '@core/login/services/login.helper';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu.delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';

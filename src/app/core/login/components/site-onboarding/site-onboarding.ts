@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelperProvider } from '@core/login/services/helper';
+import { CoreLoginHelperProvider } from '@core/login/services/login.helper';
 import { ModalController } from '@singletons/core.singletons';
 
 /**

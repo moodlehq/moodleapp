@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/helper';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/services/login.helper';
 import { CoreConstants } from '@core/constants';
 import { Translate } from '@singletons/core.singletons';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';

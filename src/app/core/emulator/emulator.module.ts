@@ -16,8 +16,7 @@ import { NgModule } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
 import { CoreInitDelegate } from '@services/init';
-import { CoreEmulatorHelperProvider } from './services/helper';
-import { CoreEmulatorCaptureHelperProvider } from './services/capture.helper';
+import { CoreEmulatorHelperProvider } from './services/emulator.helper';
 import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
@@ -74,8 +73,6 @@ import { ZipMock } from './services/zip';
         CoreEmulatorComponentsModule,
     ],
     providers: [
-        CoreEmulatorHelperProvider,
-        CoreEmulatorCaptureHelperProvider,
         {
             provide: Camera,
             deps: [Platform],

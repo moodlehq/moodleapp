@@ -17,7 +17,7 @@ import { NavController } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelper } from '@core/login/services/helper';
+import { CoreLoginHelper } from '@core/login/services/login.helper';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks.delegate';
 import { CoreSite } from '@classes/site';
 import { CoreMainMenu } from '@core/mainmenu/services/mainmenu';

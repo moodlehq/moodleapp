@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper } from '@core/login/services/helper';
+import { CoreLoginHelper } from '@core/login/services/login.helper';
 import { Translate } from '@singletons/core.singletons';
 
 /**

@@ -18,7 +18,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreLogger } from '@singletons/logger';
-import { CoreLoginHelper } from '../../services/helper';
+import { CoreLoginHelper } from '@core/login/services/login.helper';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
