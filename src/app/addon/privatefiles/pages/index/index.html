@@ -22,14 +22,16 @@
         </div>
 
         <!-- Display info about space used and space left. -->
-        <p class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">
+        <ion-card class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">
+            <ion-item><ion-label>
             {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
-        </p>
+            </ion-label></ion-item>
+        </ion-card>
 
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                <ion-item button *ngIf="file.isdir" class="item-media" (click)="openFolder(file)">
+                <ion-item button *ngIf="file.isdir" class="item-file" (click)="openFolder(file)">
                     <ion-thumbnail slot="start">
                         <img [src]="file.imgPath" alt="" role="presentation">
                     </ion-thumbnail>

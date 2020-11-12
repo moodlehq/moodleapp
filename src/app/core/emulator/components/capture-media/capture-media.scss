@@ -1,6 +1,5 @@
 :host {
     .core-av-wrapper {
-        // @todo: For some reason it takes a while to apply these styles, first it's displayed too big and then it's resized.
         width: 100%;
         height: 100%;
 
@@ -62,7 +61,6 @@
             }
         }
     }
-
 
     ion-footer {
         background-color: var(--gray);

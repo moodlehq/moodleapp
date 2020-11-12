@@ -42,7 +42,7 @@ export class AddonPrivateFilesMainMenuHandler implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'fa-folder',
+            icon: 'fas-folder',
             title: 'addon.privatefiles.files',
             page: 'addon-privatefiles',
             subPage: 'root',

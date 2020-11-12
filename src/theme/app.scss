@@ -112,6 +112,75 @@ ion-list.list-md {
     --ion-safe-area-left: calc(-1 * var(--selected-item-border-width));
 }
 
+.item.item-file {
+    ion-thumbnail {
+        --size: 32px;
+        width: var(--size);
+        height: var(--size);
+    }
+}
+
+.item.core-primary-item,
+.item.core-info-item,
+.item.core-secondary-item,
+.item.core-tertiary-item,
+.item.core-success-item,
+.item.core-warning-item,
+.item.core-danger-item {
+    --inner-border-width: 0 0 3px 0;
+}
+.item.core-primary-item {
+    --border-color: var(--ion-color-primary);
+}
+.item.core-info-item,
+.item.core-secondary-item {
+    --border-color: var(--ion-color-secondary);
+}
+.item.core-tertiary-item {
+    --border-color: var(--ion-color-tertiary);
+}
+.item.core-success-item {
+    --border-color: var(--ion-color-success);
+}
+.item.core-warning-item {
+    --border-color: var(--ion-color-warning);
+}
+.item.core-danger-item {
+    --border-color: var(--ion-color-danger);
+}
+
+// Card styles
+
+// Message cards.
+ion-card.core-primary-card,
+ion-card.core-info-card,
+ion-card.core-secondary-card,
+ion-card.core-tertiary-card,
+ion-card.core-success-card,
+ion-card.core-warning-card,
+ion-card.core-danger-card {
+    border-bottom: 3px solid transparent;
+}
+ion-card.core-primary-card {
+    border-bottom-color: var(--ion-color-primary);
+}
+ion-card.core-info-card,
+ion-card.core-secondary-card {
+    border-bottom-color: var(--ion-color-secondary);
+}
+ion-card.core-tertiary-card {
+    border-bottom-color: var(--ion-color-tertiary);
+}
+ion-card.core-success-card {
+    border-bottom-color: var(--ion-color-success);
+}
+ion-card.core-warning-card {
+    border-bottom-color: var(--ion-color-warning);
+}
+ion-card.core-danger-card {
+    border-bottom-color: var(--ion-color-danger);
+}
+
 // Avatar
 // -------------------------
 // Large centered avatar
