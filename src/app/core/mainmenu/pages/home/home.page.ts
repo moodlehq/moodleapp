@@ -55,6 +55,8 @@ export class CoreHomePage implements OnInit {
     initHandlers(handlers: CoreHomeHandlerToDisplay[]): void {
         // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
         const newTabs: CoreHomeHandlerToDisplay[] = handlers.map((handler) => {
+            handler.page = '/home/' + handler.page;
+
             // Check if the handler is already in the tabs list. If so, use it.
             const tab = this.tabs.find((tab) => tab.title == handler.title);
 
@@ -63,9 +65,10 @@ export class CoreHomePage implements OnInit {
         // Sort them by priority so new handlers are in the right position.
             .sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-        if (typeof this.selectedTab == 'undefined') {
+        if (typeof this.selectedTab == 'undefined' && newTabs.length > 0) {
             let maxPriority = 0;
             let maxIndex = 0;
+
             newTabs.forEach((tab, index) => {
                 if ((tab.selectPriority || 0) > maxPriority) {
                     maxPriority = tab.selectPriority || 0;

@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
+import { CoreHomeRoutingModule } from '../mainmenu/pages/home/home-routing.module';
 import { CoreHomeDelegate } from '../mainmenu/services/home.delegate';
 import { CoreCoursesDashboardHandler } from './services/handlers/dashboard';
 import { CoreCoursesDashboardPage } from './pages/dashboard/dashboard.page';
@@ -22,12 +23,14 @@ import { CoreCoursesDashboardPage } from './pages/dashboard/dashboard.page';
 const routes: Routes = [
     {
         path: 'dashboard',
-        component: CoreCoursesDashboardPage,
+        loadChildren: () =>
+            import('@core/courses/pages/dashboard/dashboard.page.module').then(m => m.CoreCoursesDashboardPageModule),
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [CoreHomeRoutingModule.forChild(routes)],
+    exports: [CoreHomeRoutingModule],
     providers: [
         CoreCoursesDashboardHandler,
     ],
