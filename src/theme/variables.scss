@@ -131,6 +131,10 @@
         }
     }
 
+    ion-spinner {
+        --color: var(--core-color);
+    }
+
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 

@@ -31,6 +31,12 @@ const routes: Routes = [
                 .then(m => m.CoreSettingsSpaceUsagePageModule),
     },
     {
+        path: 'sync',
+        loadChildren: () =>
+            import('@core/settings/pages/synchronization/synchronization.page.module')
+                .then(m => m.CoreSettingsSynchronizationPageModule),
+    },
+    {
         path: '',
         loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
     },

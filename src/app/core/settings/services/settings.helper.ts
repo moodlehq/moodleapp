@@ -257,7 +257,7 @@ export class CoreSettingsHelperProvider {
      * @param siteId ID of the site.
      * @return Sync promise or null if site is not being syncrhonized.
      */
-    async getSiteSyncPromise(siteId: string): Promise<void> {
+    getSiteSyncPromise(siteId: string): Promise<void> | void {
         if (this.syncPromises[siteId]) {
             return this.syncPromises[siteId];
         }
