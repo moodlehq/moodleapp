@@ -13,12 +13,16 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-
-import { CoreSettingsRoutingModule } from './settings-routing.module';
+import { CoreSearchComponentsModule } from './components/components.module';
 
 @NgModule({
+    declarations: [
+    ],
     imports: [
-        CoreSettingsRoutingModule,
+        CoreSearchComponentsModule,
+    ],
+    providers: [
+        CoreSearchComponentsModule,
     ],
 })
-export class CoreSettingsModule {}
+export class CoreSearchModule {}

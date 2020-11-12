@@ -54,6 +54,7 @@ import { CoreUtilsProvider } from '@services/utils/utils';
 import { initCoreFilepoolDB } from '@services/filepool.db';
 import { initCoreSitesDB } from '@services/sites.db';
 import { initCoreSyncDB } from '@services/sync.db';
+import { initCoreSearchHistoryDB } from '@core/search/services/search.history.db';
 
 // Import core modules.
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
@@ -170,6 +171,7 @@ export class AppModule {
         initCoreFilepoolDB();
         initCoreSitesDB();
         initCoreSyncDB();
+        initCoreSearchHistoryDB();
     }
 
 }

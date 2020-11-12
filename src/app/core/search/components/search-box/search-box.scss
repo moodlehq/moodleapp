@@ -1,0 +1,27 @@
+:host {
+    height: 80px;
+    display: block;
+    position: relative;
+
+    ion-card {
+        position: absolute;
+        left: 0;
+        right: 0;
+        z-index: 4;
+    }
+
+    ion-button.button:last-child {
+        margin-left: unset;
+        margin-inline-start: 10px;
+    }
+
+    .core-search-history {
+        max-height: calc(-120px + 80vh);
+        overflow-y: auto;
+
+        .item:hover {
+            --background: var(--gray-lighter);
+            cursor: pointer;
+        }
+    }
+}
