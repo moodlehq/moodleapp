@@ -14,27 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { Subject, BehaviorSubject } from 'rxjs';
 
-import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CoreEvents } from '@singletons/events';
+import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/delegate';
+import { CoreSortedDelegate } from '@classes/delegate-sorted';
 
 /**
- * Interface that all main menu handlers must implement.
+ * Interface that all home handlers must implement.
  */
-export interface CoreHomeHandler extends CoreDelegateHandler {
-    /**
-     * The highest priority is displayed first.
-     */
-    priority?: number;
-
-    /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data.
-     */
-    getDisplayData(): CoreHomeHandlerData;
-}
+export type CoreHomeHandler = CoreDelegateDisplayHandler<CoreHomeHandlerToDisplay>;
 
 /**
  * Data needed to render a main menu handler. It's returned by the handler.
@@ -84,17 +71,7 @@ export interface CoreHomeHandlerData {
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreHomeHandlerToDisplay extends CoreHomeHandlerData {
-    /**
-     * Name of the handler.
-     */
-    name?: string;
-
-    /**
-     * Priority of the handler.
-     */
-    priority?: number;
-
+export interface CoreHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreHomeHandlerData {
     /**
      * Priority to select handler.
      */
@@ -108,65 +85,12 @@ export interface CoreHomeHandlerToDisplay extends CoreHomeHandlerData {
 @Injectable({
     providedIn: 'root',
 })
-export class CoreHomeDelegate extends CoreDelegate {
+export class CoreHomeDelegate extends CoreSortedDelegate<CoreHomeHandlerToDisplay, CoreHomeHandler> {
 
-    protected loaded = false;
-    protected siteHandlers: Subject<CoreHomeHandlerToDisplay[]> = new BehaviorSubject<CoreHomeHandlerToDisplay[]>([]);
     protected featurePrefix = 'CoreHomeDelegate_';
 
     constructor() {
-        super('CoreHomeDelegate', true);
-
-        CoreEvents.on(CoreEvents.LOGOUT, this.clearSiteHandlers.bind(this));
-    }
-
-    /**
-     * Check if handlers are loaded.
-     *
-     * @return True if handlers are loaded, false otherwise.
-     */
-    areHandlersLoaded(): boolean {
-        return this.loaded;
-    }
-
-    /**
-     * Clear current site handlers. Reserved for core use.
-     */
-    protected clearSiteHandlers(): void {
-        this.loaded = false;
-        this.siteHandlers.next([]);
-    }
-
-    /**
-     * Get the handlers for the current site.
-     *
-     * @return An observable that will receive the handlers.
-     */
-    getHandlers(): Subject<CoreHomeHandlerToDisplay[]> {
-        return this.siteHandlers;
-    }
-
-    /**
-     * Update handlers Data.
-     */
-    updateData(): void {
-        const displayData: CoreHomeHandlerToDisplay[] = [];
-
-        for (const name in this.enabledHandlers) {
-            const handler = <CoreHomeHandler> this.enabledHandlers[name];
-            const data = <CoreHomeHandlerToDisplay> handler.getDisplayData();
-
-            data.name = name;
-            data.priority = handler.priority;
-
-            displayData.push(data);
-        }
-
-        // Sort them by priority.
-        displayData.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-
-        this.loaded = true;
-        this.siteHandlers.next(displayData);
+        super('CoreHomeDelegate');
     }
 
 }

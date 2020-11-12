@@ -1,20 +1,8 @@
-/**
- * Application config.
- *
- * You can create your own environment files such as "config.prod.json" and "config.dev.json"
- * to override some values. The values will be merged, so you don't need to duplicate everything
- * in this file.
- */
-
 {
     "app_id": "com.moodle.moodlemobile",
     "appname": "Moodle Mobile",
-    "desktopappname": "Moodle Desktop",
     "versioncode": 3930,
-
-    // @todo This could be read from package.json.
     "versionname": "3.9.3-dev",
-
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -113,9 +101,6 @@
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
         "android": "com.moodle.moodlemobile",
-        "ios": "id633359593",
-        "windows": "moodle-desktop\/9p9bwvhdc8c8",
-        "mac": "id1255924440",
-        "linux": "https:\/\/download.moodle.org\/desktop\/download.php?platform=linux&arch=64"
+        "ios": "id633359593"
     }
 }

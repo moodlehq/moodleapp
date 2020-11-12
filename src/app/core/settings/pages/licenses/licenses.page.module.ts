@@ -20,7 +20,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
 
 import { CoreSettingsLicensesPage } from './licenses.page';
 
@@ -32,9 +31,6 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    declarations: [
-        CoreSettingsLicensesPage,
-    ],
     imports: [
         RouterModule.forChild(routes),
         CommonModule,
@@ -42,7 +38,10 @@ const routes: Routes = [
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule,
     ],
+    declarations: [
+        CoreSettingsLicensesPage,
+    ],
+    exports: [RouterModule],
 })
 export class CoreSettingsLicensesPageModule {}

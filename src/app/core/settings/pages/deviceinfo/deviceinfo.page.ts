@@ -54,9 +54,11 @@ interface CoreSettingsDeviceInfo {
     localNotifAvailable: string;
 }
 
-
+/**
+ * Page that displays the device information.
+ */
 @Component({
-    selector: 'settings-deviceinfo',
+    selector: 'page-core-app-settings-deviceinfo',
     templateUrl: 'deviceinfo.html',
     styleUrls: ['deviceinfo.scss'],
 })

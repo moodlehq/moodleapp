@@ -25,7 +25,7 @@ import { makeSingleton } from '@singletons/core.singletons';
  * Delegate to register pluginfile information handlers.
  */
 @Injectable()
-export class CorePluginFileDelegate extends CoreDelegate {
+export class CorePluginFileDelegate extends CoreDelegate<CorePluginFileHandler> {
 
     protected handlerNameProperty = 'component';
 
@@ -98,7 +98,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      */
     getComponentRevisionRegExp(args: string[]): RegExp | void {
         // Get handler based on component (args[1]).
-        const handler = <CorePluginFileHandler> this.getHandler(args[1], true);
+        const handler = this.getHandler(args[1], true);
 
         if (handler && handler.getComponentRevisionRegExp) {
             return handler.getComponentRevisionRegExp(args);
@@ -116,7 +116,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
         let files = <string[]>[];
 
         for (const component in this.enabledHandlers) {
-            const handler = <CorePluginFileHandler> this.enabledHandlers[component];
+            const handler = this.enabledHandlers[component];
 
             if (handler && handler.getDownloadableFilesFromHTML) {
                 files = files.concat(handler.getDownloadableFilesFromHTML(container));
@@ -217,7 +217,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      */
     protected getHandlerForFile(file: CoreWSExternalFile): CorePluginFileHandler | undefined {
         for (const component in this.enabledHandlers) {
-            const handler = <CorePluginFileHandler> this.enabledHandlers[component];
+            const handler = this.enabledHandlers[component];
 
             if (handler && handler.shouldHandleFile && handler.shouldHandleFile(file)) {
                 return handler;
@@ -252,7 +252,7 @@ export class CorePluginFileDelegate extends CoreDelegate {
      */
     removeRevisionFromUrl(url: string, args: string[]): string {
         // Get handler based on component (args[1]).
-        const handler = <CorePluginFileHandler> this.getHandler(args[1], true);
+        const handler = this.getHandler(args[1], true);
 
         if (handler && handler.getComponentRevisionRegExp && handler.getComponentRevisionReplace) {
             const revisionRegex = handler.getComponentRevisionRegExp(args);

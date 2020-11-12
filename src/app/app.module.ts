@@ -37,7 +37,7 @@ import { CoreGroupsProvider } from '@services/groups';
 import { CoreInitDelegate, CoreInit } from '@services/init';
 import { CoreLangProvider } from '@services/lang';
 import { CoreLocalNotificationsProvider } from '@services/local-notifications';
-import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
+import { CorePluginFileDelegate } from '@services/plugin-file.delegate';
 import { CoreSitesProvider, CoreSites } from '@services/sites';
 import { CoreSyncProvider } from '@services/sync';
 import { CoreUpdateManagerProvider, CoreUpdateManager } from '@services/update-manager';
@@ -54,6 +54,7 @@ import { CoreUtilsProvider } from '@services/utils/utils';
 import { initCoreFilepoolDB } from '@services/filepool.db';
 import { initCoreSitesDB } from '@services/sites.db';
 import { initCoreSyncDB } from '@services/sync.db';
+import { initCoreSearchHistoryDB } from '@core/search/services/search.history.db';
 
 // Import core modules.
 import { CoreEmulatorModule } from '@core/emulator/emulator.module';
@@ -170,6 +171,7 @@ export class AppModule {
         initCoreFilepoolDB();
         initCoreSitesDB();
         initCoreSyncDB();
+        initCoreSearchHistoryDB();
     }
 
 }

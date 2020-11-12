@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreEvents, CoreEventObserver, CoreEventLoadPageMainMenuData } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/delegate';
+import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu.delegate';
 import { CoreDomUtils } from '@/app/services/utils/dom';
 import { Translate } from '@/app/singletons/core.singletons';
 
@@ -97,7 +97,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             }
         });
 
-        this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+        this.subscription = this.menuDelegate.getHandlersObservable().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
             this.allHandlers = handlers.filter((handler) => !handler.onlyInMore);
 

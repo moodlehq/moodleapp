@@ -25,7 +25,7 @@ import { CoreSettingsHelper, CoreColorScheme } from '../../services/settings.hel
  * Page that displays the general settings.
  */
 @Component({
-    selector: 'page-core-settings-general',
+    selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
     styleUrls: ['general.scss'],
 })

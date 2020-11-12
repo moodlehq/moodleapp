@@ -20,7 +20,7 @@ import { CoreLogger } from '@singletons/logger';
 /**
  * Superclass to help creating delegates
  */
-export class CoreDelegate {
+export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
     /**
      * Logger instance.
@@ -30,17 +30,17 @@ export class CoreDelegate {
     /**
      * List of registered handlers.
      */
-    protected handlers: { [s: string]: CoreDelegateHandler } = {};
+    protected handlers: { [s: string]: HandlerType } = {};
 
     /**
      * List of registered handlers enabled for the current site.
      */
-    protected enabledHandlers: { [s: string]: CoreDelegateHandler } = {};
+    protected enabledHandlers: { [s: string]: HandlerType } = {};
 
     /**
      * Default handler
      */
-    protected defaultHandler?: CoreDelegateHandler;
+    protected defaultHandler?: HandlerType;
 
     /**
      * Time when last updateHandler functions started.
@@ -136,7 +136,7 @@ export class CoreDelegate {
      * @param params Parameters to pass to the function.
      * @return Function returned value or default value.
      */
-    private execute<T = unknown>(handler: CoreDelegateHandler, fnName: string, params?: unknown[]): T | undefined {
+    private execute<T = unknown>(handler: HandlerType, fnName: string, params?: unknown[]): T | undefined {
         if (handler && handler[fnName]) {
             return handler[fnName].apply(handler, params);
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
@@ -151,7 +151,7 @@ export class CoreDelegate {
      * @param enabled Only enabled, or any.
      * @return Handler.
      */
-    protected getHandler(handlerName: string, enabled: boolean = false): CoreDelegateHandler {
+    protected getHandler(handlerName: string, enabled: boolean = false): HandlerType {
         return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
     }
 
@@ -218,7 +218,7 @@ export class CoreDelegate {
      * @param handler The handler delegate object to register.
      * @return True when registered, false if already registered.
      */
-    registerHandler(handler: CoreDelegateHandler): boolean {
+    registerHandler(handler: HandlerType): boolean {
         const key = handler[this.handlerNameProperty] || handler.name;
 
         if (typeof this.handlers[key] !== 'undefined') {
@@ -240,7 +240,7 @@ export class CoreDelegate {
      * @param time Time this update process started.
      * @return Resolved when done.
      */
-    protected updateHandler(handler: CoreDelegateHandler): Promise<void> {
+    protected updateHandler(handler: HandlerType): Promise<void> {
         const siteId = CoreSites.instance.getCurrentSiteId();
         const currentSite = CoreSites.instance.getCurrentSite();
         let promise: Promise<boolean>;
@@ -287,7 +287,7 @@ export class CoreDelegate {
      * @param site Site to check.
      * @return Whether is enabled or disabled in site.
      */
-    protected isFeatureDisabled(handler: CoreDelegateHandler, site: CoreSite): boolean {
+    protected isFeatureDisabled(handler: HandlerType, site: CoreSite): boolean {
         return typeof this.featurePrefix != 'undefined' && site.isFeatureDisabled(this.featurePrefix + handler.name);
     }
 
@@ -334,6 +334,9 @@ export class CoreDelegate {
 
 }
 
+/**
+ * Base interface for any delegate.
+ */
 export interface CoreDelegateHandler {
     /**
      * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
@@ -347,4 +350,36 @@ export interface CoreDelegateHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean>;
+}
+
+/**
+ * Data returned by the delegate for each handler to be displayed.
+ */
+export interface CoreDelegateToDisplay {
+    /**
+     * Name of the handler.
+     */
+    name?: string;
+
+    /**
+     * Priority of the handler.
+     */
+    priority?: number;
+}
+
+/**
+ * Base interface for a core delegate needed to be displayed.
+ */
+export interface CoreDelegateDisplayHandler<HandlerData extends CoreDelegateToDisplay> extends CoreDelegateHandler {
+    /**
+     * The highest priority is displayed first.
+     */
+    priority?: number;
+
+    /**
+     * Returns the data needed to render the handler.
+     *
+     * @return Data.
+     */
+    getDisplayData(): HandlerData;
 }

@@ -20,6 +20,5 @@ import { CoreSettingsRoutingModule } from './settings-routing.module';
     imports: [
         CoreSettingsRoutingModule,
     ],
-    declarations: [],
 })
 export class CoreSettingsModule {}

@@ -19,7 +19,7 @@ import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreInit } from '@services/init';
-import { CorePluginFile } from '@services/plugin-file-delegate';
+import { CorePluginFile } from '@services/plugin-file.delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';

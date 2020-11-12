@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreConstants } from '@core/constants';
-import { Http } from '@/app/singletons/core.singletons';
+import { Http } from '@singletons/core.singletons';
 
 /**
  * Defines license info
@@ -35,7 +35,7 @@ interface CoreSettingsLicense {
  * Page that displays the open source licenses information.
  */
 @Component({
-    selector: 'page-core-settings-licenses',
+    selector: 'page-core-app-settings-licenses',
     templateUrl: 'licenses.html',
 })
 export class CoreSettingsLicensesPage implements OnInit {

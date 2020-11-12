@@ -18,19 +18,27 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
     {
         path: 'about',
-        loadChildren: () => import('./pages/about/about.page.module').then( m => m.CoreSettingsAboutPageModule),
+        loadChildren: () => import('./pages/about/about.page.module').then(m => m.CoreSettingsAboutPageModule),
     },
     {
         path: 'general',
-        loadChildren: () => import('./pages/general/general.page.module').then( m => m.CoreSettingsGeneralPageModule),
+        loadChildren: () => import('./pages/general/general.page.module').then(m => m.CoreSettingsGeneralPageModule),
     },
     {
-        path: 'licenses',
-        loadChildren: () => import('./pages/licenses/licenses.page.module').then( m => m.CoreSettingsLicensesPageModule),
+        path: 'spaceusage',
+        loadChildren: () =>
+            import('@core/settings/pages/space-usage/space-usage.page.module')
+                .then(m => m.CoreSettingsSpaceUsagePageModule),
+    },
+    {
+        path: 'sync',
+        loadChildren: () =>
+            import('@core/settings/pages/synchronization/synchronization.page.module')
+                .then(m => m.CoreSettingsSynchronizationPageModule),
     },
     {
         path: '',
-        loadChildren: () => import('./pages/app/app.page.module').then( m => m.CoreSettingsAppPageModule),
+        loadChildren: () => import('./pages/app/app.page.module').then(m => m.CoreSettingsAppPageModule),
     },
 ];
 

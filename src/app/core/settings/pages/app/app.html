@@ -19,7 +19,7 @@
         <ion-label>{{ 'core.settings.spaceusage' | translate }}</ion-label>
     </ion-item>
     <ion-item button (click)="openSettings('sync')" [class.core-split-item-selected]="'sync' == selectedPage" detail>
-        <ion-icon name="fa-sync" slot="start"></ion-icon>
+        <ion-icon name="fa-sync-alt" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.synchronization' | translate }}</ion-label>
     </ion-item>
     <ion-item button *ngIf="isIOS" (click)="openSettings('sharedfiles', {manage: true})"

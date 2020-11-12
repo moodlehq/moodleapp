@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreEvents } from '@singletons/events';
-import { CoreSites, CoreSiteSchema } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons/core.singletons';
 import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/sync.db';
 
@@ -23,38 +23,6 @@ import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/sync.db';
 */
 @Injectable()
 export class CoreSyncProvider {
-
-    // Variables for the database.
-    protected siteSchema: CoreSiteSchema = {
-        name: 'CoreSyncProvider',
-        version: 1,
-        tables: [
-            {
-                name: SYNC_TABLE_NAME,
-                columns: [
-                    {
-                        name: 'component',
-                        type: 'TEXT',
-                        notNull: true,
-                    },
-                    {
-                        name: 'id',
-                        type: 'TEXT',
-                        notNull: true,
-                    },
-                    {
-                        name: 'time',
-                        type: 'INTEGER',
-                    },
-                    {
-                        name: 'warnings',
-                        type: 'TEXT',
-                    },
-                ],
-                primaryKeys: ['component', 'id'],
-            },
-        ],
-    };
 
     // Store blocked sync objects.
     protected blockedItems: { [siteId: string]: { [blockId: string]: { [operation: string]: boolean } } } = {};
@@ -129,8 +97,10 @@ export class CoreSyncProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Record if found or reject.
      */
-    getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
-        return CoreSites.instance.getSiteDb(siteId).then((db) => db.getRecord(SYNC_TABLE_NAME, { component: component, id: id }));
+    async getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
+        const db = await CoreSites.instance.getSiteDb(siteId);
+
+        return await db.getRecord(SYNC_TABLE_NAME, { component: component, id: id });
     }
 
     /**

@@ -16,6 +16,7 @@ import { Params } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
+import { CoreSiteInfoResponse } from '@classes/site';
 
 /**
  * Observer instance to stop listening to an event.
@@ -193,12 +194,23 @@ export class CoreEvents {
 }
 
 /**
+ * Some events contains siteId added by the trigger function. This type is intended to be combined with others.
+ */
+export type CoreEventSiteData = {
+    siteId?: string;
+};
+
+/**
+ * Data passed to SITE_UPDATED event.
+ */
+export type CoreEventSiteUpdatedData = CoreEventSiteData & CoreSiteInfoResponse;
+
+/**
  * Data passed to SESSION_EXPIRED event.
  */
-export type CoreEventSessionExpiredData = {
+export type CoreEventSessionExpiredData = CoreEventSiteData & {
     pageName?: string;
     params?: Params;
-    siteId?: string;
 };
 
 /**

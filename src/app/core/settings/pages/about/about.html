@@ -21,7 +21,7 @@
         <ion-icon name="fa-user-shield" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.privacypolicy' | translate }}</ion-label>
     </ion-item>
-    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="deviceinfo" detail>
+    <ion-item button class="ion-text-wrap" (click)="openPage('deviceinfo')" detail>
         <ion-icon name="fa-mobile" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.deviceinfo' | translate }}</ion-label>
     </ion-item>

@@ -32,17 +32,19 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    declarations: [
-        CoreSettingsGeneralPage,
-    ],
     imports: [
         RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
+        FormsModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        FormsModule,
     ],
+    declarations: [
+        CoreSettingsGeneralPage,
+    ],
+    exports: [RouterModule],
+
 })
 export class CoreSettingsGeneralPageModule {}

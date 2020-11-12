@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteInfo } from '@classes/site';
 import { CoreLoginHelper } from '@core/login/services/helper';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/delegate';
+import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu.delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
@@ -69,7 +69,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Load the handlers.
-        this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+        this.subscription = this.menuDelegate.getHandlersObservable().subscribe((handlers) => {
             this.allHandlers = handlers;
 
             this.initHandlers();
@@ -146,20 +146,6 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     openItem(item: CoreMainMenuCustomItem): void {
-        // @todo
-    }
-
-    /**
-     * Open app settings page.
-     */
-    openAppSettings(): void {
-        // @todo
-    }
-
-    /**
-     * Open site settings page.
-     */
-    openSitePreferences(): void {
         // @todo
     }
 

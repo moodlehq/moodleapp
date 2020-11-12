@@ -126,10 +126,17 @@
             --background: var(--custom-tab-background, var(--white));
             --color: var(--custom-tab-background, var(--gray-dark));
             --border-color: var(--custom-tab-border-color, var(--gray));
-            --color-active: var(--custom-tab-color-active, var(--core-color));
-            --border-color-active: var(--custom-tab-border-color-active, var(--color-active));
+            --color-active: var(--custom-tab-color-active, var(--color));
+            --border-color-active: var(--custom-tab-border-color-active, var(--core-color));
         }
     }
+
+    ion-spinner {
+        --color: var(--core-color);
+    }
+
+    --selected-item-color: var(--custom-selected-item-color, var(--core-color));
+    --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 
     --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
 

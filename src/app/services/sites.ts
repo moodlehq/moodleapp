@@ -1038,7 +1038,7 @@ export class CoreSitesProvider {
                     id: site.id,
                     siteUrl: site.siteUrl,
                     fullName: siteInfo?.fullname,
-                    siteName: CoreConstants.CONFIG.sitename ?? siteInfo?.sitename,
+                    siteName: CoreConstants.CONFIG.sitename == '' ? siteInfo?.sitename: CoreConstants.CONFIG.sitename,
                     avatar: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                 };
@@ -1055,32 +1055,32 @@ export class CoreSitesProvider {
      * @param ids IDs of the sites to get. If not defined, return all sites.
      * @return Promise resolved when the sites are retrieved.
      */
-    getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
-        return this.getSites(ids).then((sites) => {
-            // Sort sites by url and ful lname.
-            sites.sort((a, b) => {
-                // First compare by site url without the protocol.
-                const urlA = a.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-                const urlB = b.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-                const compare = urlA.localeCompare(urlB);
+    async getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
+        const sites = await this.getSites(ids);
 
-                if (compare !== 0) {
-                    return compare;
-                }
+        // Sort sites by url and ful lname.
+        sites.sort((a, b) => {
+            // First compare by site url without the protocol.
+            const urlA = a.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
+            const urlB = b.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
+            const compare = urlA.localeCompare(urlB);
 
-                // If site url is the same, use fullname instead.
-                const fullNameA = a.fullName?.toLowerCase().trim();
-                const fullNameB = b.fullName?.toLowerCase().trim();
+            if (compare !== 0) {
+                return compare;
+            }
 
-                if (!fullNameA || !fullNameB) {
-                    return 0;
-                }
+            // If site url is the same, use fullname instead.
+            const fullNameA = a.fullName?.toLowerCase().trim();
+            const fullNameB = b.fullName?.toLowerCase().trim();
 
-                return fullNameA.localeCompare(fullNameB);
-            });
+            if (!fullNameA || !fullNameB) {
+                return 0;
+            }
 
-            return sites;
+            return fullNameA.localeCompare(fullNameB);
         });
+
+        return sites;
     }
 
     /**

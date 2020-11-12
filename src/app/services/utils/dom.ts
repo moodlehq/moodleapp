@@ -1725,14 +1725,14 @@ export class CoreDomUtilsProvider {
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    triggerFormSubmittedEvent(formRef: ElementRef | undefined, online?: boolean, siteId?: string): void {
+    triggerFormSubmittedEvent(formRef: ElementRef | HTMLFormElement | undefined, online?: boolean, siteId?: string): void {
         if (!formRef) {
             return;
         }
 
         CoreEvents.trigger(CoreEvents.FORM_ACTION, {
             action: 'submit',
-            form: formRef.nativeElement,
+            form: formRef.nativeElement || formRef,
             online: !!online,
         }, siteId);
     }

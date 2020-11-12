@@ -44,7 +44,7 @@ export class CoreHomePage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-        this.subscription = this.homeDelegate.getHandlers().subscribe((handlers) => {
+        this.subscription = this.homeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
     }
