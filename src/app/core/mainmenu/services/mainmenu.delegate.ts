@@ -33,6 +33,13 @@ export interface CoreMainMenuHandlerData {
     page: string;
 
     /**
+     * Sub page loaded when the handler page is loaded.
+     * If your module performs a redirect when it's opened you need to specify the sub page in here.
+     * E.g. if page is 'foo' but it redirects to 'foo/bar' when opened, this value must be 'bar'.
+     */
+    subPage?: string;
+
+    /**
      * Title to display for the handler.
      */
     title: string;

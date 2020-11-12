@@ -25,7 +25,9 @@ import { FileTransferErrorMock } from './file-transfer';
 /**
  * Helper service for the emulator feature. It also acts as an init handler.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class CoreEmulatorHelperProvider implements CoreInitHandler {
 
     name = 'CoreEmulator';

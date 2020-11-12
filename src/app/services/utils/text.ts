@@ -54,14 +54,14 @@ export class CoreTextUtilsProvider {
         { old: /_mmaNotifications/g, new: '_AddonNotifications' },
         { old: /_mmaMessages/g, new: '_AddonMessages' },
         { old: /_mmaCalendar/g, new: '_AddonCalendar' },
-        { old: /_mmaFiles/g, new: '_AddonFiles' },
+        { old: /_mmaFiles/g, new: '_AddonPrivateFiles' },
         { old: /_mmaParticipants/g, new: '_CoreUserParticipants' },
         { old: /_mmaCourseCompletion/g, new: '_AddonCourseCompletion' },
         { old: /_mmaNotes/g, new: '_AddonNotes' },
         { old: /_mmaBadges/g, new: '_AddonBadges' },
-        { old: /files_privatefiles/g, new: 'AddonFilesPrivateFiles' },
-        { old: /files_sitefiles/g, new: 'AddonFilesSiteFiles' },
-        { old: /files_upload/g, new: 'AddonFilesUpload' },
+        { old: /files_privatefiles/g, new: 'AddonPrivateFilesPrivateFiles' },
+        { old: /files_sitefiles/g, new: 'AddonPrivateFilesSiteFiles' },
+        { old: /files_upload/g, new: 'AddonPrivateFilesUpload' },
         { old: /_mmaModAssign/g, new: '_AddonModAssign' },
         { old: /_mmaModBook/g, new: '_AddonModBook' },
         { old: /_mmaModChat/g, new: '_AddonModChat' },
@@ -889,6 +889,20 @@ export class CoreTextUtilsProvider {
 
             return text;
         });
+    }
+
+    /**
+     * Remove all ocurrences of a certain character from the start and end of a string.
+     *
+     * @param text Text to treat.
+     * @param character Character to remove.
+     * @return Treated text.
+     */
+    trimCharacter(text: string, character: string): string {
+        const escaped = this.escapeForRegex(character);
+        const regExp = new RegExp(`^${escaped}+|${escaped}+$`, 'g');
+
+        return text.replace(regExp, '');
     }
 
     /**

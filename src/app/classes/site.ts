@@ -19,7 +19,14 @@ import { CoreApp } from '@services/app';
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
-import { CoreWS, CoreWSPreSets, CoreWSFileUploadOptions, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
+import {
+    CoreWS,
+    CoreWSPreSets,
+    CoreWSFileUploadOptions,
+    CoreWSAjaxPreSets,
+    CoreWSExternalWarning,
+    CoreWSUploadFileResult,
+} from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -1070,16 +1077,16 @@ export class CoreSite {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when uploaded.
      */
-    uploadFile<T = unknown>(
+    uploadFile(
         filePath: string,
         options: CoreWSFileUploadOptions,
         onProgress?: (event: ProgressEvent) => void,
-    ): Promise<T> {
+    ): Promise<CoreWSUploadFileResult> {
         if (!options.fileArea) {
             options.fileArea = 'draft';
         }
 
-        return CoreWS.instance.uploadFile<T>(filePath, options, {
+        return CoreWS.instance.uploadFile(filePath, options, {
             siteUrl: this.siteUrl,
             wsToken: this.token || '',
         }, onProgress);

@@ -1239,6 +1239,16 @@ export class CoreFileProvider {
         return !path || !path.match(/^[a-z0-9]+:\/\//i) || path.indexOf(this.basePath) != -1;
     }
 
+    /**
+     * Get the file's name.
+     *
+     * @param file The file.
+     * @return The file name.
+     */
+    getFileName(file: CoreWSExternalFile | FileEntry): string | undefined {
+        return CoreUtils.instance.isFileEntry(file) ? file.name : file.filename;
+    }
+
 }
 
 export class CoreFile extends makeSingleton(CoreFileProvider) {}

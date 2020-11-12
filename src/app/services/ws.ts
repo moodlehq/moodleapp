@@ -737,12 +737,12 @@ export class CoreWSProvider {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when uploaded.
      */
-    async uploadFile<T = unknown>(
+    async uploadFile(
         filePath: string,
         options: CoreWSFileUploadOptions,
         preSets: CoreWSPreSets,
         onProgress?: (event: ProgressEvent) => void,
-    ): Promise<T> {
+    ): Promise<CoreWSUploadFileResult> {
         this.logger.debug(`Trying to upload file: ${filePath}`);
 
         if (!filePath || !options || !preSets) {
@@ -1192,4 +1192,17 @@ type RetryCall = {
 export type CoreWSDownloadedFileEntry = FileEntry & {
     extension: string; // File extension.
     path: string; // File path.
+};
+
+export type CoreWSUploadFileResult = {
+    component: string; // Component the file was uploaded to.
+    context: string; // Context the file was uploaded to.
+    userid: number; // User that uploaded the file.
+    filearea: string; // File area the file was uploaded to.
+    filename: string; // File name.
+    filepath: string; // File path.
+    itemid: number; // Item ID the file was uploaded to.
+    license: string; // File license.
+    author: string; // Author name.
+    source: string; // File source.
 };

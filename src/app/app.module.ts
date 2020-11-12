@@ -61,6 +61,10 @@ import { CoreEmulatorModule } from '@core/emulator/emulator.module';
 import { CoreLoginModule } from '@core/login/login.module';
 import { CoreCoursesModule } from '@core/courses/courses.module';
 import { CoreSettingsInitModule } from '@core/settings/settings-init.module';
+import { CoreFileUploaderInitModule } from '@core/fileuploader/fileuploader-init.module';
+
+// Import addons init modules.
+import { AddonPrivateFilesInitModule } from '@addon/privatefiles/privatefiles-init.module';
 
 import { setSingletonsInjector } from '@singletons/core.singletons';
 
@@ -91,6 +95,8 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         CoreLoginModule,
         CoreCoursesModule,
         CoreSettingsInitModule,
+        CoreFileUploaderInitModule,
+        AddonPrivateFilesInitModule,
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

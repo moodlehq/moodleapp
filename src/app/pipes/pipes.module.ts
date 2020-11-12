@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreCreateLinksPipe } from './create-links.pipe';
 import { CoreFormatDatePipe } from './format-date.pipe';
 import { CoreNoTagsPipe } from './no-tags.pipe';
+import { CoreSecondsToHMSPipe } from './seconds-to-hms.pipe';
 import { CoreTimeAgoPipe } from './time-ago.pipe';
 import { CoreBytesToSizePipe } from './bytes-to-size.pipe';
 
@@ -26,6 +27,7 @@ import { CoreBytesToSizePipe } from './bytes-to-size.pipe';
         CoreTimeAgoPipe,
         CoreFormatDatePipe,
         CoreBytesToSizePipe,
+        CoreSecondsToHMSPipe,
     ],
     imports: [],
     exports: [
@@ -34,6 +36,7 @@ import { CoreBytesToSizePipe } from './bytes-to-size.pipe';
         CoreTimeAgoPipe,
         CoreFormatDatePipe,
         CoreBytesToSizePipe,
+        CoreSecondsToHMSPipe,
     ],
 })
 export class CorePipesModule {}

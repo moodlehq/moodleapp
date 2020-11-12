@@ -22,7 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreCountry, CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
-import { AuthEmailSignupProfileFieldsCategory, AuthEmailSignupSettings, CoreLoginHelper } from '@core/login/services/helper';
+import { AuthEmailSignupProfileFieldsCategory, AuthEmailSignupSettings, CoreLoginHelper } from '@core/login/services/login.helper';
 import { CoreConstants } from '@core/constants';
 import { Translate } from '@singletons/core.singletons';
 import { CoreSitePublicConfigResponse } from '@classes/site';

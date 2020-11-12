@@ -22,8 +22,11 @@ import {
     ModalController as ModalControllerService,
     ToastController as ToastControllerService,
     GestureController as GestureControllerService,
+    ActionSheetController as ActionSheetControllerService,
 } from '@ionic/angular';
 
+import { Camera as CameraService } from '@ionic-native/camera/ngx';
+import { Chooser as ChooserService } from '@ionic-native/chooser/ngx';
 import { Clipboard as ClipboardService } from '@ionic-native/clipboard/ngx';
 import { Diagnostic as DiagnosticService } from '@ionic-native/diagnostic/ngx';
 import { Device as DeviceService } from '@ionic-native/device/ngx';
@@ -36,6 +39,8 @@ import { InAppBrowser as InAppBrowserService } from '@ionic-native/in-app-browse
 import { WebView as WebViewService } from '@ionic-native/ionic-webview/ngx';
 import { Keyboard as KeyboardService } from '@ionic-native/keyboard/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@ionic-native/local-notifications/ngx';
+import { Media as MediaService } from '@ionic-native/media/ngx';
+import { MediaCapture as MediaCaptureService } from '@ionic-native/media-capture/ngx';
 import { Network as NetworkService } from '@ionic-native/network/ngx';
 import { Push as PushService } from '@ionic-native/push/ngx';
 import { QRScanner as QRScannerService } from '@ionic-native/qr-scanner/ngx';
@@ -71,6 +76,8 @@ export function makeSingleton<Service>(injectionToken: CoreInjectionToken<Servic
 }
 
 // Convert ionic-native services to singleton.
+export class Camera extends makeSingleton(CameraService) {}
+export class Chooser extends makeSingleton(ChooserService) {}
 export class Clipboard extends makeSingleton(ClipboardService) {}
 export class Device extends makeSingleton(DeviceService) {}
 export class Diagnostic extends makeSingleton(DiagnosticService) {}
@@ -81,6 +88,8 @@ export class Geolocation extends makeSingleton(GeolocationService) {}
 export class InAppBrowser extends makeSingleton(InAppBrowserService) {}
 export class Keyboard extends makeSingleton(KeyboardService) {}
 export class LocalNotifications extends makeSingleton(LocalNotificationsService) {}
+export class Media extends makeSingleton(MediaService) {}
+export class MediaCapture extends makeSingleton(MediaCaptureService) {}
 export class NativeHttp extends makeSingleton(HTTP) {}
 export class Network extends makeSingleton(NetworkService) {}
 export class Push extends makeSingleton(PushService) {}
@@ -96,6 +105,7 @@ export class Zip extends makeSingleton(ZipService) {}
 export class NgZone extends makeSingleton(NgZoneService) {}
 export class Http extends makeSingleton(HttpClient) {}
 export class Platform extends makeSingleton(PlatformService) {}
+export class ActionSheetController extends makeSingleton(ActionSheetControllerService) {}
 export class AlertController extends makeSingleton(AlertControllerService) {}
 export class LoadingController extends makeSingleton(LoadingControllerService) {}
 export class ModalController extends makeSingleton(ModalControllerService) {}

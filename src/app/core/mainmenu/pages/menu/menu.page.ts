@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
+import { CoreTextUtils } from '@services/utils/text';
 import { CoreEvents, CoreEventObserver, CoreEventLoadPageMainMenuData } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu.delegate';
@@ -242,8 +243,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             return;
         }
 
+        const trimmedUrl = CoreTextUtils.instance.trimCharacter(this.router.url, '/');
+
         // Current tab was clicked. Check if user is already at root level.
-        if (this.router.url == '/mainmenu/' + page) {
+        if (trimmedUrl  == CoreTextUtils.instance.trimCharacter(page, '/')) {
             // Already at root level, nothing to do.
             return;
         }
@@ -255,8 +258,17 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         try {
             const tab = this.tabs.find((tab) => tab.page == page);
 
+            // Use tab's subPage to check if user is already at root level.
+            if (tab?.subPage && trimmedUrl ==
+                CoreTextUtils.instance.trimCharacter(CoreTextUtils.instance.concatenatePaths(tab.page, tab.subPage), '/')) {
+                // Already at root level, nothing to do.
+                return;
+            }
+
             if (tab?.title) {
-                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabroot', { name: tab.title }));
+                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabroot', {
+                    name: Translate.instance.instant(tab.title),
+                }));
             } else {
                 await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabrootdefault'));
             }

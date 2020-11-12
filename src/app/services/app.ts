@@ -23,7 +23,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreConstants } from '@core/constants';
 
-import { makeSingleton, Keyboard, Network, StatusBar, Platform } from '@singletons/core.singletons';
+import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/app.db';
 
@@ -238,6 +238,17 @@ export class CoreAppProvider {
         }
 
         return storesConfig.default;
+    }
+
+    /**
+     * Get platform major version number.
+     */
+    getPlatformMajorVersion(): number {
+        if (!this.isMobile()) {
+            return 0;
+        }
+
+        return Number(Device.instance.version?.split('.')[0]);
     }
 
     /**

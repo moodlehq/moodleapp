@@ -2,9 +2,11 @@
     <ion-tab-bar slot="bottom" [hidden]="hidden">
         <ion-spinner *ngIf="!loaded"></ion-spinner>
 
-        <ion-tab-button tab="redirect" [disabled]="true" [hidden]="true"></ion-tab-button> <!-- [root]="redirectPage" [rootParams]="redirectParams" -->
+        <ion-tab-button tab="redirect" [disabled]="true" [hidden]="true"></ion-tab-button>
+        <!-- @todo: [root]="redirectPage" [rootParams]="redirectParams" -->
 
-        <ion-tab-button (ionTabButtonClick)="tabClicked($event, tab.page)" [hidden]="!loaded && tab.hide" *ngFor="let tab of tabs" [tab]="tab.page" [disabled]="tab.hide" layout="label-hide"  class="{{tab.class}}">
+        <ion-tab-button (ionTabButtonClick)="tabClicked($event, tab.page)" [hidden]="!loaded && tab.hide" *ngFor="let tab of tabs"
+            [tab]="tab.page" [disabled]="tab.hide" layout="label-hide"  class="{{tab.class}}">
             <ion-icon [name]="tab.icon"></ion-icon>
             <ion-label>{{ tab.title | translate }}</ion-label>
             <ion-badge *ngIf="tab.badge">{{ tab.badge }}</ion-badge>

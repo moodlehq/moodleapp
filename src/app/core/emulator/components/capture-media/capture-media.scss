@@ -1,0 +1,69 @@
+:host {
+    .core-av-wrapper {
+        width: 100%;
+        height: 100%;
+
+        .core-webcam-image-canvas {
+            display: none;
+        }
+
+        .core-audio-record-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+
+            .core-audio-canvas {
+                width: 100%;
+                height: 100%;
+            }
+
+            .core-audio-captured {
+                width: 100%;
+            }
+
+            .button {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+                height: 120px;
+                width: 120px;
+
+                .icon {
+                    font-size: 120px;
+                    width: auto;
+                }
+            }
+
+            audio {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+            }
+        }
+
+        video, img {
+            width: 100%;
+            height: 100%;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            object-fit: contain;
+
+            &.core-webcam-stream {
+                -webkit-transform: scaleX(-1);
+                transform: scaleX(-1);
+            }
+        }
+    }
+
+    ion-footer {
+        background-color: var(--gray);
+        border-top: 1px solid var(--gray-dark);
+    }
+}

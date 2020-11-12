@@ -20,7 +20,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreLoginHelper } from '@core/login/services/helper';
+import { CoreLoginHelper } from '@core/login/services/login.helper';
 import { CoreSite } from '@classes/site';
 
 /**

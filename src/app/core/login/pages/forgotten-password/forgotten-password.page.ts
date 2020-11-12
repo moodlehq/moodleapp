@@ -18,7 +18,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper } from '@core/login/services/helper';
+import { CoreLoginHelper } from '@core/login/services/login.helper';
 import { Translate, Platform } from '@singletons/core.singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 

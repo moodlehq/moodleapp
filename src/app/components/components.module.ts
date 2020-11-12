@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { CoreChronoComponent } from './chrono/chrono';
 import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
 import { CoreFileComponent } from './file/file';
 import { CoreIconComponent } from './icon/icon';
@@ -35,6 +36,7 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
 
 @NgModule({
     declarations: [
+        CoreChronoComponent,
         CoreDownloadRefreshComponent,
         CoreFileComponent,
         CoreIconComponent,
@@ -56,6 +58,7 @@ import { CorePipesModule } from '@app/pipes/pipes.module';
         CorePipesModule,
     ],
     exports: [
+        CoreChronoComponent,
         CoreDownloadRefreshComponent,
         CoreFileComponent,
         CoreIconComponent,

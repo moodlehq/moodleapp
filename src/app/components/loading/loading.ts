@@ -95,11 +95,10 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
                 setTimeout(() => {
                     // Content is loaded so, center the spinner on the content itself.
                     this.element.classList.add('core-loading-loaded');
-                    setTimeout(() => {
-                        // Change CSS to force calculate height.
-                        this.content?.nativeElement.classList.add('core-loading-content');
-                        this.content?.nativeElement.classList.remove('core-loading-content-loading');
-                    }, 500);
+                    // Change CSS to force calculate height.
+                    // Removed 500ms timeout to avoid reallocating html.
+                    this.content?.nativeElement.classList.add('core-loading-content');
+                    this.content?.nativeElement.classList.remove('core-loading-content-loading');
                 });
             } else {
                 this.element.classList.remove('core-loading-loaded');

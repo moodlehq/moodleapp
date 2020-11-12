@@ -16,9 +16,12 @@ import { NgModule } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
 import { CoreInitDelegate } from '@services/init';
-import { CoreEmulatorHelperProvider } from './services/helper';
+import { CoreEmulatorHelperProvider } from './services/emulator.helper';
+import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
+import { Camera } from '@ionic-native/camera/ngx';
+import { Chooser } from '@ionic-native/chooser/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
@@ -31,6 +34,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { Media } from '@ionic-native/media/ngx';
+import { MediaCapture } from '@ionic-native/media-capture/ngx';
 import { Network } from '@ionic-native/network/ngx';
 import { Push } from '@ionic-native/push/ngx';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
@@ -41,12 +46,14 @@ import { WebIntent } from '@ionic-native/web-intent/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 
 // Mock services.
+import { CameraMock } from './services/camera';
 import { ClipboardMock } from './services/clipboard';
 import { FileMock } from './services/file';
 import { FileOpenerMock } from './services/file-opener';
 import { FileTransferMock } from './services/file-transfer';
 import { GeolocationMock } from './services/geolocation';
 import { InAppBrowserMock } from './services/inappbrowser';
+import { MediaCaptureMock } from './services/media-capture';
 import { NetworkMock } from './services/network';
 import { ZipMock } from './services/zip';
 
@@ -63,9 +70,15 @@ import { ZipMock } from './services/zip';
     declarations: [
     ],
     imports: [
+        CoreEmulatorComponentsModule,
     ],
     providers: [
-        CoreEmulatorHelperProvider,
+        {
+            provide: Camera,
+            deps: [Platform],
+            useFactory: (platform: Platform): Camera => platform.is('cordova') ? new Camera() : new CameraMock(),
+        },
+        Chooser,
         {
             provide: Clipboard,
             deps: [Platform], // Use platform instead of AppProvider to prevent errors with singleton injection.
@@ -101,6 +114,16 @@ import { ZipMock } from './services/zip';
         },
         Keyboard,
         LocalNotifications,
+        {
+            provide: Media,
+            deps: [],
+            useFactory: (): Media => new Media(),
+        },
+        {
+            provide: MediaCapture,
+            deps: [Platform],
+            useFactory: (platform: Platform): MediaCapture => platform.is('cordova') ? new MediaCapture() : new MediaCaptureMock(),
+        },
         {
             provide: Network,
             deps: [Platform],
