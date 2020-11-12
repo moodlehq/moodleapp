@@ -17,8 +17,9 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSearchHistory, CoreSearchHistoryItem } from '../../services/search-history';
+import { CoreSearchHistory } from '../../services/search-history';
 import { Translate } from '@singletons/core.singletons';
+import { CoreSearchHistoryDBRecord } from '../../services/search.history.db';
 
 /**
  * Component to display a "search box".
@@ -59,7 +60,7 @@ export class CoreSearchBoxComponent implements OnInit {
 
     searched = ''; // Last search emitted.
     searchText = '';
-    history: CoreSearchHistoryItem[] = [];
+    history: CoreSearchHistoryDBRecord[] = [];
     historyShown = false;
 
     constructor() {
