@@ -1,0 +1,33 @@
+:host {
+    position: relative;
+    cursor: pointer;
+
+    .contact-status {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        &.online {
+            border: 1px solid white;
+            background-color: var(--core-online-color);
+        }
+    }
+
+    .core-avatar-extra-icon {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        background: none;
+        position: absolute;
+        right: -4px;
+        bottom: -4px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+:host-context(.toolbar) .contact-status {
+    width: 10px;
+    height: 10px;
+}

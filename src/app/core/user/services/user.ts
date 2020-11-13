@@ -810,7 +810,8 @@ export class CoreUser extends makeSingleton(CoreUserProvider) {}
  */
 export type CoreUserProfileRefreshedData = {
     courseId: number; // Course the user profile belongs to.
-    user: CoreUserProfile; // User affected.
+    userId: number; // User ID.
+    user?: CoreUserProfile; // User affected.
 };
 
 /**
