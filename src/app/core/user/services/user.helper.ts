@@ -33,11 +33,11 @@ export class CoreUserHelperProvider {
      * @param country Country.
      * @return Formatted address.
      */
-    formatAddress(address: string, city: string, country: string): string {
+    formatAddress(address?: string, city?: string, country?: string): string {
         const separator = Translate.instance.instant('core.listsep');
         let values = [address, city, country];
 
-        values = values.filter((value) => value?.length > 0);
+        values = values.filter((value) => value && value.length > 0);
 
         return values.join(separator + ' ');
     }

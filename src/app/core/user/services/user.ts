@@ -21,7 +21,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreUserOffline } from './user.offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { CoreEvents, CoreEventUserDeletedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './user.db';
@@ -44,6 +45,25 @@ export class CoreUserProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUserProvider');
+
+        CoreEvents.on<CoreEventUserDeletedData>(CoreEvents.USER_DELETED, (data) => {
+            // Search for userid in params.
+            let userId = 0;
+
+            if (data.params.userid) {
+                userId = data.params.userid;
+            } else if (data.params.userids) {
+                userId = data.params.userids[0];
+            } else if (data.params.field === 'id' && data.params.values && data.params.values.length) {
+                userId = data.params.values[0];
+            } else if (data.params.userlist && data.params.userlist.length) {
+                userId = data.params.userlist[0].userid;
+            }
+
+            if (userId > 0) {
+                this.deleteStoredUser(userId, data.siteId);
+            }
+        });
     }
 
     /**
@@ -70,6 +90,32 @@ export class CoreUserProvider {
         site = site || CoreSites.instance.getCurrentSite();
 
         return !!site?.wsAvailable('core_enrol_search_users');
+    }
+
+    /**
+     * Check if WS to update profile picture is available in site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's available.
+     * @since 3.2
+     */
+    async canUpdatePicture(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.instance.getSite(siteId);
+
+        return this.canUpdatePictureInSite(site);
+    }
+
+    /**
+     * Check if WS to search participants is available in site.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Whether it's available.
+     * @since 3.2
+     */
+    canUpdatePictureInSite(site?: CoreSite): boolean {
+        site = site || CoreSites.instance.getCurrentSite();
+
+        return !!site?.wsAvailable('core_user_update_picture');
     }
 
     /**
@@ -199,7 +245,7 @@ export class CoreUserProvider {
         courseId?: number,
         forceLocal: boolean = false,
         siteId?: string,
-    ): Promise<CoreUserBasicData | CoreUserCourseProfile | CoreUserData> {
+    ): Promise<CoreUserProfile> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         if (forceLocal) {
@@ -291,7 +337,7 @@ export class CoreUserProvider {
             throw new CoreError('Cannot retrieve user info.');
         }
 
-        const user = users[0];
+        const user: CoreUserData | CoreUserCourseProfile = users[0];
         if (user.country) {
             user.country = CoreUtils.instance.getCountryName(user.country);
         }
@@ -760,6 +806,22 @@ export class CoreUserProvider {
 export class CoreUser extends makeSingleton(CoreUserProvider) {}
 
 /**
+ * Data passed to PROFILE_REFRESHED event.
+ */
+export type CoreUserProfileRefreshedData = {
+    courseId: number; // Course the user profile belongs to.
+    user: CoreUserProfile; // User affected.
+};
+
+/**
+ * Data passed to PROFILE_PICTURE_UPDATED event.
+ */
+export type CoreUserProfilePictureUpdatedData = {
+    userId: number; // User ID.
+    picture: string | undefined; // New picture URL.
+};
+
+/**
  * Basic data of a user.
  */
 export type CoreUserBasicData = {
@@ -920,6 +982,11 @@ export type CoreUserCourseProfile = CoreUserData & {
     roles?: CoreUserRole[]; // User roles.
     enrolledcourses?: CoreUserEnrolledCourse[]; // Courses where the user is enrolled.
 };
+
+/**
+ * User data returned by getProfile.
+ */
+export type CoreUserProfile = (CoreUserBasicData & Partial<CoreUserData>) | CoreUserCourseProfile;
 
 /**
  * Params of core_user_update_picture WS.

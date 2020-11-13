@@ -17,7 +17,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
 import { CoreDB } from '@services/db';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents, CoreEventUserDeletedData } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import {
     CoreWS,
@@ -588,7 +588,7 @@ export class CoreSite {
                     error.message = Translate.instance.instant('core.lostconnection');
                 } else if (error.errorcode === 'userdeleted') {
                     // User deleted, trigger event.
-                    CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
+                    CoreEvents.trigger<CoreEventUserDeletedData>(CoreEvents.USER_DELETED, { params: data }, this.id);
                     error.message = Translate.instance.instant('core.userdeleted');
 
                     throw new CoreWSError(error);

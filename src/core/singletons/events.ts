@@ -85,11 +85,11 @@ export class CoreEvents {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    static on(eventName: string, callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
+    static on<T = unknown>(eventName: string, callBack: (value: T) => void, siteId?: string): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
-            callBack(this.uniqueEvents[eventName].data);
+            callBack(<T> this.uniqueEvents[eventName].data);
 
             // Return a fake observer to prevent errors.
             return {
@@ -103,10 +103,10 @@ export class CoreEvents {
 
         if (typeof this.observables[eventName] == 'undefined') {
             // No observable for this event, create a new one.
-            this.observables[eventName] = new Subject<unknown>();
+            this.observables[eventName] = new Subject<T>();
         }
 
-        const subscription = this.observables[eventName].subscribe((value: {siteId?: string; [key: string]: unknown}) => {
+        const subscription = this.observables[eventName].subscribe((value: T & {siteId?: string}) => {
             if (!siteId || value.siteId == siteId) {
                 callBack(value);
             }
@@ -132,8 +132,8 @@ export class CoreEvents {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    static onMultiple(eventNames: string[], callBack: (value: unknown) => void, siteId?: string): CoreEventObserver {
-        const observers = eventNames.map((name) => this.on(name, callBack, siteId));
+    static onMultiple<T = unknown>(eventNames: string[], callBack: (value: T) => void, siteId?: string): CoreEventObserver {
+        const observers = eventNames.map((name) => this.on<T>(name, callBack, siteId));
 
         // Create and return a CoreEventObserver.
         return {
@@ -152,11 +152,11 @@ export class CoreEvents {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    static trigger(eventName: string, data?: unknown, siteId?: string): void {
+    static trigger<T = unknown>(eventName: string, data?: T, siteId?: string): void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
             if (siteId) {
-                data = Object.assign(data || {}, { siteId });
+                Object.assign(data || {}, { siteId });
             }
             this.observables[eventName].next(data);
         }
@@ -169,14 +169,14 @@ export class CoreEvents {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    static triggerUnique(eventName: string, data: unknown, siteId?: string): void {
+    static triggerUnique<T = unknown>(eventName: string, data: T, siteId?: string): void {
         if (this.uniqueEvents[eventName]) {
             this.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
         } else {
             this.logger.debug(`Unique event '${eventName}' triggered.`);
 
             if (siteId) {
-                data = Object.assign(data || {}, { siteId });
+                Object.assign(data || {}, { siteId });
             }
 
             // Store the data so it can be passed to observers that register from now on.
@@ -240,4 +240,12 @@ export type CoreEventLoadPageMainMenuData = {
 export type CoreEventCourseStatusChanged = {
     courseId: number; // Course Id.
     status: string;
+};
+
+/**
+ * Data passed to USER_DELETED event.
+ */
+export type CoreEventUserDeletedData = CoreEventSiteData & {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params: any; // Params sent to the WS that failed.
 };
