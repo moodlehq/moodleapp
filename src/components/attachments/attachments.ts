@@ -69,7 +69,8 @@ export class CoreAttachmentsComponent implements OnInit {
             const siteInfo = currentSite && currentSite.getInfo();
 
             if (siteInfo && siteInfo.usermaxuploadfilesize) {
-                this.maxSizeReadable = this.textUtils.bytesToSize(siteInfo.usermaxuploadfilesize, 2);
+                this.maxSize = siteInfo.usermaxuploadfilesize;
+                this.maxSizeReadable = this.textUtils.bytesToSize(this.maxSize, 2);
             } else {
                 this.maxSizeReadable = this.translate.instant('core.unknown');
             }

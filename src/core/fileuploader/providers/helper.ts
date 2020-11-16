@@ -27,6 +27,7 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreFileUploaderProvider, CoreFileUploaderOptions } from './fileuploader';
 import { CoreFileUploaderDelegate } from './delegate';
+import { CoreSites } from '@providers/sites';
 
 /**
  * Helper service to upload files.
@@ -697,6 +698,15 @@ export class CoreFileUploaderHelperProvider {
      * @return Promise resolved when done.
      */
     async uploadFileObject(file: any, maxSize?: number, upload?: boolean, allowOffline?: boolean, name?: string): Promise<any> {
+        if (maxSize === 0) {
+            const currentSite = CoreSites.instance.getCurrentSite();
+            const siteInfo = currentSite && currentSite.getInfo();
+
+            if (siteInfo && siteInfo.usermaxuploadfilesize) {
+                maxSize = siteInfo.usermaxuploadfilesize;
+            }
+        }
+
         if (maxSize != -1 && file.size > maxSize) {
             return this.errorMaxBytes(maxSize, file.name);
         }

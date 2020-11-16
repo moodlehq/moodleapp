@@ -130,7 +130,7 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
         }
 
         if (!uploadFilesSupported && this.questionHelper.hasDraftFileUrls(element.innerHTML)) {
-            return 'core.question.errorinlinefilesnotsupportedinsite';
+            return 'core.question.errorembeddedfilesnotsupportedinsite';
         }
     }
 
