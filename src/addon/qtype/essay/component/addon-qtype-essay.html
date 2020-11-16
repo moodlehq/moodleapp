@@ -18,7 +18,7 @@
     <!-- Draft files not supported. -->
     <ng-container *ngIf="question.textarea && question.hasDraftFiles && !uploadFilesSupported">
         <ion-item text-wrap class="core-danger-item">
-            <p class="core-question-warning">{{ 'core.question.errorinlinefilesnotsupportedinsite' | translate }}</p>
+            <p class="core-question-warning">{{ 'core.question.errorembeddedfilesnotsupportedinsite' | translate }}</p>
         </ion-item>
         <ion-item text-wrap>
             <p><core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"></core-format-text></p>

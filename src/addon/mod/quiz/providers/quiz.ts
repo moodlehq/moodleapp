@@ -1577,8 +1577,7 @@ export class AddonModQuizProvider {
             const question = result.questions[i];
 
             if (!question.settings) {
-                // Site doesn't return settings, stop.
-                break;
+                continue;
             }
 
             question.settings = this.textUtils.parseJSON(question.settings, null);
