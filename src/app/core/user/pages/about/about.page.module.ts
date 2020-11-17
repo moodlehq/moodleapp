@@ -13,26 +13,35 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+
+import { CoreUserAboutPage } from './about.page';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'profile',
-        pathMatch: 'full',
-    },
-    {
-        path: 'profile',
-        loadChildren: () => import('./pages/profile/profile.page.module').then( m => m.CoreUserProfilePageModule),
-    },
-    {
-        path: 'about',
-        loadChildren: () => import('./pages/about/about.page.module').then( m => m.CoreUserAboutPageModule),
+        component: CoreUserAboutPage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
+    ],
+    declarations: [
+        CoreUserAboutPage,
+    ],
     exports: [RouterModule],
 })
-export class CoreUserRoutingModule {}
+export class CoreUserAboutPageModule {}

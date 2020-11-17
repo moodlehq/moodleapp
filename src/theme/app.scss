@@ -261,3 +261,9 @@ ion-select.core-button-select,
     z-index: 100;
     cursor: pointer;
 }
+
+.core-anchor, core-format-text a {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+}
