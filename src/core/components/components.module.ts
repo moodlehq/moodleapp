@@ -31,6 +31,7 @@ import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
+import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
@@ -51,6 +52,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreEmptyBoxComponent,
         CoreTabsComponent,
         CoreInfiniteLoadingComponent,
+        CoreProgressBarComponent,
     ],
     imports: [
         CommonModule,
@@ -74,6 +76,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreEmptyBoxComponent,
         CoreTabsComponent,
         CoreInfiniteLoadingComponent,
+        CoreProgressBarComponent,
     ],
 })
 export class CoreComponentsModule {}

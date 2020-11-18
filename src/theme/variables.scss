@@ -135,13 +135,20 @@
         --color: var(--core-color);
     }
 
+    core-progress-bar {
+        --height: var(--custom-progress-bar-height, 8px);
+        --color: var(--custom-progress-color, var(--core-color));
+        --text-color: var(--custom-progress-text-color, var(--gray-darker));
+        --background: var(--custom-progress-background, var(--gray-lighter));
+    }
+
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 
     --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
 
     --core-login-background: var(--custom-login-background, var(--white));
-    --core-login-text-color: var(--custom-login-text-color,  var(--black));
+    --core-login-text-color: var(--custom-login-text-color, var(--black));
 }
 
 /*
@@ -194,6 +201,10 @@
             --color: var(--custom-tab-background, var(--white));
             --border-color: var(--custom-tab-border-color, var(--gray-light));
         }
+    }
+
+    core-progress-bar {
+        --text-color: var(--custom-progress-text-color, var(--gray-lighter));
     }
 
     --core-login-background: var(--custom-login-background, #3a3a3a);
