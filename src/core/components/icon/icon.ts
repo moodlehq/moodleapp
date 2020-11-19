@@ -21,7 +21,7 @@ import { Component, Input, OnChanges, ElementRef, SimpleChange } from '@angular/
  *
  * Check available icons at https://fontawesome.com/icons?d=gallery&m=free
  *
- * @deprecated since 3.9.3. Please use <ion-icon name="fa-icon"> instead.
+ * @deprecated since 3.9.3. Please use <ion-icon name="fas-icon"> instead.
  */
 @Component({
     selector: 'core-icon',

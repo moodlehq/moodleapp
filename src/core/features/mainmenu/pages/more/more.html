@@ -51,34 +51,34 @@
             </ion-item>
         </ng-container>
         <ion-item button *ngIf="showScanQR" (click)="scanQR()" detail>
-            <ion-icon name="fa-qrcode" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-qrcode" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.scanqr' | translate }}</h2>
             </ion-label>
         </ion-item>
         <ion-item button *ngIf="showWeb && siteInfo" [href]="siteInfo.siteurl" core-link autoLogin="yes"
             title="{{ 'core.mainmenu.website' | translate }}" detail>
-            <ion-icon name="globe" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-globe" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.mainmenu.website' | translate }}</h2>
             </ion-label>
         </ion-item>
         <ion-item button *ngIf="showHelp" [href]="docsUrl" core-link autoLogin="no"
             title="{{ 'core.mainmenu.help' | translate }}" detail>
-            <ion-icon name="help-buoy" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="far-life-ring" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.mainmenu.help' | translate }}</h2>
             </ion-label>
         </ion-item>
         <ion-item button router-direction="forward" routerLink="preferences"
             title="{{ 'core.settings.preferences' | translate }}" detail>
-            <ion-icon name="fa-wrench" slot="start"></ion-icon>
+            <ion-icon name="fas-wrench" slot="start"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.settings.preferences' | translate }}</h2>
             </ion-label>
         </ion-item>
         <ion-item button (click)="logout()" title="{{ logoutLabel | translate }}" detail>
-            <ion-icon name="log-out" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-sign-out-alt" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ logoutLabel | translate }}</h2>
             </ion-label>
@@ -86,7 +86,7 @@
         <ion-item-divider></ion-item-divider>
         <ion-item button router-direction="forward" routerLink="settings"
             title="{{ 'core.settings.appsettings' | translate }}" detail>
-            <ion-icon name="fa-cogs" slot="start"></ion-icon>
+            <ion-icon name="fas-cogs" slot="start"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.settings.appsettings' | translate }}</h2>
             </ion-label>

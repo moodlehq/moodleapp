@@ -19,7 +19,7 @@
         <ion-list class="core-search-history" [hidden]="!historyShown">
             <ion-item button class="ion-text-wrap" *ngFor="let item of history"
                 (click)="historyClicked($event, item.searchedtext)" tabindex="1" detail>
-                <ion-icon name="fa-history" slot="start">
+                <ion-icon name="fas-history" slot="start">
                 </ion-icon>
                 {{item.searchedtext}}
             </ion-item>

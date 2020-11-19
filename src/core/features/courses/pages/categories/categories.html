@@ -61,7 +61,7 @@
             </ion-item-divider>
             <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
         </div>
-        <core-empty-box *ngIf="!categories.length && !courses.length" icon="ionic" [message]="'core.courses.nocoursesyet' | translate">
+        <core-empty-box *ngIf="!categories.length && !courses.length" icon="fas-graduation-cap" [message]="'core.courses.nocoursesyet' | translate">
         </core-empty-box>
     </core-loading>
 </ion-content>
