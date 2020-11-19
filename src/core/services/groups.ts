@@ -21,6 +21,8 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseBase } from '@/types/global';
 
+const ROOT_CACHE_KEY = 'mmGroups:';
+
 /*
  * Service to handle groups.
 */
@@ -31,7 +33,6 @@ export class CoreGroupsProvider {
     static readonly NOGROUPS = 0;
     static readonly SEPARATEGROUPS = 1;
     static readonly VISIBLEGROUPS = 2;
-    protected readonly ROOT_CACHE_KEY = 'mmGroups:';
 
     /**
      * Check if group mode of an activity is enabled.
@@ -102,7 +103,7 @@ export class CoreGroupsProvider {
      * @return Cache key.
      */
     protected getActivityAllowedGroupsCacheKey(cmId: number, userId: number): string {
-        return this.ROOT_CACHE_KEY + 'allowedgroups:' + cmId + ':' + userId;
+        return ROOT_CACHE_KEY + 'allowedgroups:' + cmId + ':' + userId;
     }
 
     /**
@@ -225,7 +226,7 @@ export class CoreGroupsProvider {
      * @return Cache key.
      */
     protected getActivityGroupModeCacheKey(cmId: number): string {
-        return this.ROOT_CACHE_KEY + 'groupmode:' + cmId;
+        return ROOT_CACHE_KEY + 'groupmode:' + cmId;
     }
 
     /**
@@ -299,7 +300,7 @@ export class CoreGroupsProvider {
      * @return Prefix Cache key.
      */
     protected getUserGroupsInCoursePrefixCacheKey(): string {
-        return this.ROOT_CACHE_KEY + 'courseGroups:';
+        return ROOT_CACHE_KEY + 'courseGroups:';
     }
 
     /**
