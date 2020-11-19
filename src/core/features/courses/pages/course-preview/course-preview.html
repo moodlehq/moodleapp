@@ -11,11 +11,12 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
-
-        <ion-list *ngIf="course">
+        <div class="core-course-thumb-parallax">
             <div *ngIf="courseImageUrl" (click)="openCourse()" class="core-course-thumb">
                 <img [src]="courseImageUrl" core-external-content alt=""/>
             </div>
+        </div>
+        <div class="core-course-thumb-parallax-content">
             <ion-item class="ion-text-wrap" (click)="openCourse()" [title]="course.fullname" [attr.details]="!avoidOpenCourse && canAccessCourse">
                 <ion-icon name="fas-graduation-cap" fixed-width slot="start"></ion-icon>
                 <ion-label>
@@ -37,7 +38,11 @@
             </ion-item>
 
             <ng-container class="ion-text-wrap" *ngIf="course.contacts && course.contacts.length">
-                <ion-item-divider>{{ 'core.teachers' | translate }}</ion-item-divider>
+                <ion-item-divider>
+                    <ion-label>
+                        <h2>{{ 'core.teachers' | translate }}</h2>
+                    </ion-label>
+                </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link
                     [userId]="contact.id"
                     [courseId]="isEnrolled ? course.id : null"
@@ -115,6 +120,6 @@
                 <ion-icon name="fas-external-link-alt" slot="start"></ion-icon>
                 <ion-label><h2>{{ 'core.openinbrowser' | translate }}</h2></ion-label>
             </ion-item>
-        </ion-list>
+        </div>
     </core-loading>
 </ion-content>

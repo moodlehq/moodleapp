@@ -14,8 +14,8 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { CoreCourseHelper } from '@features/course/services/course.helper';
-import { CoreCourses, CoreCourseSearchedData } from '@features/courses/services/courses';
+import { CoreCourses, CoreCourseSearchedData } from '../../services/courses';
+import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '../../services/courses.helper';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -27,10 +27,14 @@ import { CoreCourses, CoreCourseSearchedData } from '@features/courses/services/
 @Component({
     selector: 'core-courses-course-list-item',
     templateUrl: 'core-courses-course-list-item.html',
+    styleUrls: ['course-list-item.scss'],
 })
 export class CoreCoursesCourseListItemComponent implements OnInit {
 
-    @Input() course!: CoreCourseSearchedData; // The course to render.
+    @Input() course!: CoreCourseSearchedData & CoreCourseWithImageAndColor & {
+        completionusertracked?: boolean; // If the user is completion tracked.
+        progress?: number; // Progress percentage.
+    }; // The course to render.
 
     icons: CoreCoursesEnrolmentIcons[] = [];
     isEnrolled = false;
@@ -44,9 +48,13 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
+        CoreCoursesHelper.instance.loadCourseColorAndImage(this.course);
+
         // Check if the user is enrolled in the course.
         try {
-            await CoreCourses.instance.getUserCourse(this.course.id);
+            const course = await CoreCourses.instance.getUserCourse(this.course.id);
+            this.course.progress = course.progress;
+            this.course.completionusertracked = course.completionusertracked;
 
             this.isEnrolled = true;
         } catch {
@@ -87,11 +95,13 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
      * @param course The course to open.
      */
     openCourse(): void {
-        if (this.isEnrolled) {
+        /* if (this.isEnrolled) {
             CoreCourseHelper.instance.openCourse(this.course);
         } else {
             this.navCtrl.navigateForward('/courses/preview', { queryParams: { course: this.course } });
-        }
+        } */
+        // @todo while opencourse function is not completed, open preview page.
+        this.navCtrl.navigateForward('/courses/preview', { queryParams: { course: this.course } });
     }
 
 }
