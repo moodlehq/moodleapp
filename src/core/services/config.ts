@@ -23,7 +23,7 @@ import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/config.d
  * Factory to provide access to dynamic and permanent config and settings.
  * It should not be abused into a temporary storage.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreConfigProvider {
 
     protected appDB: SQLiteDB;

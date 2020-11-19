@@ -21,7 +21,7 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 /*
  * "Utils" service with helper functions for date and time.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreTimeUtilsProvider {
 
     protected static readonly FORMAT_REPLACEMENTS = { // To convert PHP strf format to Moment format.

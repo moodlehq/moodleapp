@@ -37,7 +37,7 @@ export type CoreTextErrorObject = {
 /*
  * "Utils" service with helper functions for text.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreTextUtilsProvider {
 
     // List of regular expressions to convert the old nomenclature to new nomenclature for disabled features.

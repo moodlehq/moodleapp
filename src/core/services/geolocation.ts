@@ -19,7 +19,7 @@ import { CoreApp } from '@services/app';
 import { CoreError } from '@classes/errors/error';
 import { Geolocation, Diagnostic, makeSingleton } from '@singletons/core.singletons';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreGeolocationProvider {
 
     /**

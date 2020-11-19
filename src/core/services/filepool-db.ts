@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreAppSchema } from '@services/app';
-import { CoreSiteSchema, registerSiteSchema } from '@services/sites';
+import { CoreSiteSchema } from '@services/sites';
 
 /**
  * Database variables for CoreFilepool service.
@@ -360,8 +360,4 @@ export type CoreFilepoolLinksRecord = {
     fileId: string; // File Id.
     component: string; // Component name.
     componentId: number | string; // Component Id.
-};
-
-export const initCoreFilepoolDB = (): void => {
-    registerSiteSchema(SITE_SCHEMA);
 };

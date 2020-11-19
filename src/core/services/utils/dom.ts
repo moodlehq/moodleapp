@@ -38,7 +38,7 @@ import { CoreLogger } from '@singletons/logger';
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreDomUtilsProvider {
 
     protected readonly INSTANCE_ID_ATTR_NAME = 'core-instance-id';

@@ -46,7 +46,7 @@ import {
     CoreFilepoolPackageEntry,
     CoreFilepoolQueueEntry,
     CoreFilepoolQueueDBEntry,
-} from '@services/filepool.db';
+} from '@services/filepool-db';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -57,7 +57,7 @@ import {
  * The two main goals of this is to keep the content available offline, and improve the user experience by caching
  * the content locally.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreFilepoolProvider {
 
     // Constants.

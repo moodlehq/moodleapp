@@ -16,12 +16,12 @@ import { Injectable } from '@angular/core';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons/core.singletons';
-import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/sync.db';
+import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/sync-db';
 
 /*
  * Service that provides some features regarding synchronization.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreSyncProvider {
 
     // Store blocked sync objects.

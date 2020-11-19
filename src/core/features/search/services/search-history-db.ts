@@ -12,50 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSiteSchema, registerSiteSchema } from '@services/sites';
+import { CoreSiteSchema } from '@services/sites';
 
 /**
- * Database variables for CoreSync service.
+ * Database variables for CoreSearchHistory service.
  */
-export const SYNC_TABLE_NAME = 'sync';
-const SITE_SCHEMA: CoreSiteSchema = {
-    name: 'CoreSyncProvider',
+export const SEARCH_HISTORY_TABLE_NAME = 'seach_history';
+export const SITE_SCHEMA: CoreSiteSchema = {
+    name: 'CoreSearchHistoryProvider',
     version: 1,
     tables: [
         {
-            name: SYNC_TABLE_NAME,
+            name: SEARCH_HISTORY_TABLE_NAME,
             columns: [
                 {
-                    name: 'component',
+                    name: 'searcharea',
                     type: 'TEXT',
                     notNull: true,
                 },
                 {
-                    name: 'id',
-                    type: 'TEXT',
-                    notNull: true,
-                },
-                {
-                    name: 'time',
+                    name: 'lastused',
                     type: 'INTEGER',
+                    notNull: true,
                 },
                 {
-                    name: 'warnings',
+                    name: 'times',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'searchedtext',
                     type: 'TEXT',
+                    notNull: true,
                 },
             ],
-            primaryKeys: ['component', 'id'],
+            primaryKeys: ['searcharea', 'searchedtext'],
         },
     ],
 };
 
-export type CoreSyncRecord = {
-    component: string;
-    id: string;
-    time: number;
-    warnings: string;
-};
-
-export const initCoreSyncDB = (): void => {
-    registerSiteSchema(SITE_SCHEMA);
+/**
+ * Search history item definition.
+ */
+export type CoreSearchHistoryDBRecord = {
+    searcharea: string; // Search area where the search has been performed.
+    lastused: number; // Timestamp of the last search.
+    searchedtext: string; // Text of the performed search.
+    times: number; // Times search has been performed (if previously in history).
 };

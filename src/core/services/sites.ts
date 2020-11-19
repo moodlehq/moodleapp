@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
 import { timeout } from 'rxjs/operators';
 
@@ -47,25 +47,17 @@ import {
     SiteDBEntry,
     CurrentSiteDBEntry,
     SchemaVersionsDBEntry,
-} from '@services/sites.db';
+} from '@services/sites-db';
+import { CoreArray } from '../singletons/array';
 
-
-// Schemas for site tables. Other providers can add schemas in here using the registerSiteSchema function.
-const siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
-export const registerSiteSchema = (schema: CoreSiteSchema): void => {
-    siteSchemas[schema.name] = schema;
-};
+export const CORE_SITE_SCHEMAS = new InjectionToken('CORE_SITE_SCHEMAS');
 
 /*
  * Service to manage and interact with sites.
  * It allows creating tables in the databases of all sites. Each service or component should be responsible of creating
- * their own database tables. Example:
- *
- * import { registerSiteSchema } from '@services/sites';
- *
- * registerSiteSchema(tableSchema);
+ * their own database tables calling the registerCoreSiteSchema method.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreSitesProvider {
 
     // Constants to validate a site version.
@@ -84,11 +76,19 @@ export class CoreSitesProvider {
     protected appDB: SQLiteDB;
     protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected siteSchemasMigration: { [siteId: string]: Promise<void> } = {};
+    protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
     protected pluginsSiteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
 
-    constructor() {
+    constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
+        this.siteSchemas = CoreArray.flatten(siteSchemas).reduce(
+            (siteSchemas, schema) => {
+                siteSchemas[schema.name] = schema;
 
+                return siteSchemas;
+            },
+            this.siteSchemas,
+        );
         this.appDB = CoreApp.instance.getDB();
         this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
             // Ignore errors.
@@ -1446,7 +1446,7 @@ export class CoreSitesProvider {
     /**
      * Register a site schema in current site.
      * This function is meant for site plugins to create DB tables in current site. Tables created from within the app
-     * whould use the registerSiteSchema function exported in this same file.
+     * should use the registerCoreSiteSchema method instead.
      *
      * @param schema The schema to register.
      * @return Promise resolved when done.
@@ -1489,7 +1489,7 @@ export class CoreSitesProvider {
 
         // First create tables not registerd with name/version.
         const promise = site.getDb().createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA)
-            .then(() => this.applySiteSchemas(site, siteSchemas));
+            .then(() => this.applySiteSchemas(site, this.siteSchemas));
 
         this.siteSchemasMigration[site.id] = promise;
 
@@ -1602,7 +1602,7 @@ export class CoreSitesProvider {
      */
     getSiteTableSchemasToClear(site: CoreSite): string[] {
         let reset: string[] = [];
-        const schemas = Object.values(siteSchemas).concat(Object.values(this.pluginsSiteSchemas));
+        const schemas = Object.values(this.siteSchemas).concat(Object.values(this.pluginsSiteSchemas));
 
         schemas.forEach((schema) => {
             if (schema.canBeCleared && (!schema.siteId || site.getId() == schema.siteId)) {

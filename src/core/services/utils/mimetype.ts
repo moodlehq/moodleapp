@@ -44,7 +44,7 @@ const EXTENSION_REGEX = /^[a-z0-9]+$/;
 /*
  * "Utils" service with helper functions for mimetypes and extensions.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreMimetypeUtilsProvider {
 
     protected logger: CoreLogger;

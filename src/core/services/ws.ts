@@ -40,7 +40,7 @@ import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 /**
  * This service allows performing WS calls and download/upload files.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreWSProvider {
 
     protected logger: CoreLogger;

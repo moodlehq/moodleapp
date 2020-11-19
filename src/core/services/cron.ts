@@ -28,7 +28,7 @@ import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/cron.db';
 /*
  * Service to handle cron processes. The registered processes will be executed every certain time.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreCronDelegate {
 
     // Constants.

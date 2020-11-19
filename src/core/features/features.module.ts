@@ -14,20 +14,19 @@
 
 import { NgModule } from '@angular/core';
 
-import { CORE_SITE_SCHEMAS } from '@services/sites';
-
-import { CoreSearchComponentsModule } from './components/components.module';
-import { SITE_SCHEMA } from './services/search-history-db';
+import { CoreCoursesModule } from './courses/courses.module';
+import { CoreEmulatorModule } from './emulator/emulator.module';
+import { CoreFileUploaderInitModule } from './fileuploader/fileuploader-init.module';
+import { CoreLoginModule } from './login/login.module';
+import { CoreSettingsInitModule } from './settings/settings-init.module';
 
 @NgModule({
-    declarations: [
-    ],
     imports: [
-        CoreSearchComponentsModule,
-    ],
-    providers: [
-        CoreSearchComponentsModule,
-        { provide: CORE_SITE_SCHEMAS, useValue: [SITE_SCHEMA], multi: true },
+        CoreEmulatorModule,
+        CoreLoginModule,
+        CoreCoursesModule,
+        CoreSettingsInitModule,
+        CoreFileUploaderInitModule,
     ],
 })
-export class CoreSearchModule {}
+export class CoreFeaturesModule {}

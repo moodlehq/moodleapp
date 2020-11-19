@@ -42,7 +42,7 @@ type CoreFrameElement = (HTMLIFrameElement | HTMLFrameElement | HTMLObjectElemen
 /*
  * "Utils" service with helper functions for iframes, embed and similar.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreIframeUtilsProvider {
 
     static readonly FRAME_TAGS = ['iframe', 'frame', 'object', 'embed'];

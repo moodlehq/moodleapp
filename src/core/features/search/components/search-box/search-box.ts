@@ -19,7 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSearchHistory } from '../../services/search-history';
 import { Translate } from '@singletons/core.singletons';
-import { CoreSearchHistoryDBRecord } from '../../services/search.history.db';
+import { CoreSearchHistoryDBRecord } from '../../services/search-history-db';
 
 /**
  * Component to display a "search box".

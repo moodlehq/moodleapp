@@ -25,7 +25,7 @@ import * as moment from 'moment';
 /*
  * Service to handle language features, like changing the current language.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreLangProvider {
 
     protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.

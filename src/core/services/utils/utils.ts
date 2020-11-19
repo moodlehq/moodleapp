@@ -36,7 +36,7 @@ type TreeNode<T> = T & { children: TreeNode<T>[] };
 /*
  * "Utils" service with helper functions.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreUtilsProvider {
 
     protected readonly DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];

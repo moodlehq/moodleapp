@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreAppSchema } from '@services/app';
-import { CoreSiteSchema, registerSiteSchema } from '@services/sites';
+import { CoreSiteSchema } from '@services/sites';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
 
@@ -226,8 +226,4 @@ export type CurrentSiteDBEntry = {
 export type SchemaVersionsDBEntry = {
     name: string;
     version: number;
-};
-
-export const initCoreSitesDB = (): void => {
-    registerSiteSchema(SITE_SCHEMA);
 };

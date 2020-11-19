@@ -48,7 +48,7 @@ export type CoreInitHandler = {
 /*
  * Provider for initialisation mechanisms.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreInitDelegate {
 
     static readonly DEFAULT_PRIORITY = 100; // Default priority for init processes.

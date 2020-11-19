@@ -26,7 +26,7 @@ import { makeSingleton } from '@singletons/core.singletons';
  * Every component can provide a File area identifier to indentify every file list on the session.
  * This value can be the activity id or a mix of name and numbers.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreFileSessionProvider {
 
     protected files: {[siteId: string]: {[component: string]: {[id: string]: (CoreWSExternalFile | FileEntry)[]}}} = {};

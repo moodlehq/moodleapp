@@ -30,7 +30,7 @@ import { makeSingleton, Translate } from '@singletons/core.singletons';
 /**
  * Provider to provide some helper functions regarding files and packages.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreFileHelperProvider {
 
     /**

@@ -40,7 +40,7 @@ import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, Schem
  * }
  * ```
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreAppProvider {
 
     protected db: SQLiteDB;

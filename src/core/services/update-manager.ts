@@ -27,7 +27,7 @@ const VERSION_APPLIED = 'version_applied';
  *
  * This service handles processes that need to be run when updating the app, like migrate Ionic 1 database data to Ionic 3.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreUpdateManagerProvider implements CoreInitHandler {
 
     // Data for init delegate.

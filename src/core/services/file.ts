@@ -66,7 +66,7 @@ export const enum CoreFileFormat {
 /**
  * Factory to interact with the file system.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreFileProvider {
 
     // Formats to read a file.

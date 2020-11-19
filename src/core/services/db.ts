@@ -21,7 +21,7 @@ import { makeSingleton, SQLite, Platform } from '@singletons/core.singletons';
 /**
  * This service allows interacting with the local database to store and retrieve data.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreDbProvider {
 
     protected dbInstances: {[name: string]: SQLiteDB} = {};

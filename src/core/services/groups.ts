@@ -24,7 +24,7 @@ import { CoreCourseBase } from '@/types/global';
 /*
  * Service to handle groups.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreGroupsProvider {
 
     // Group mode constants.

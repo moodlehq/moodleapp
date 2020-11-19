@@ -39,7 +39,7 @@ import {
 /**
  * Service to handle local notifications.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreLocalNotificationsProvider {
 
     protected logger: CoreLogger;
