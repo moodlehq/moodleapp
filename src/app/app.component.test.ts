@@ -15,12 +15,12 @@
 import { Observable } from 'rxjs';
 import { NavController } from '@ionic/angular';
 
-import { AppComponent } from '@app/app.component';
+import { AppComponent } from '@/app/app.component';
 import { CoreEvents } from '@singletons/events';
 import { CoreLangProvider } from '@services/lang';
 import { Network, Platform, NgZone } from '@singletons/core.singletons';
 
-import { mock, mockSingleton, renderComponent, RenderConfig } from '@/tests/utils';
+import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
 
 describe('AppComponent', () => {
 

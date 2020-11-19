@@ -54,17 +54,17 @@ import { CoreUtilsProvider } from '@services/utils/utils';
 import { initCoreFilepoolDB } from '@services/filepool.db';
 import { initCoreSitesDB } from '@services/sites.db';
 import { initCoreSyncDB } from '@services/sync.db';
-import { initCoreSearchHistoryDB } from '@core/search/services/search.history.db';
+import { initCoreSearchHistoryDB } from '@features/search/services/search.history.db';
 
 // Import core modules.
-import { CoreEmulatorModule } from '@core/emulator/emulator.module';
-import { CoreLoginModule } from '@core/login/login.module';
-import { CoreCoursesModule } from '@core/courses/courses.module';
-import { CoreSettingsInitModule } from '@core/settings/settings-init.module';
-import { CoreFileUploaderInitModule } from '@core/fileuploader/fileuploader-init.module';
+import { CoreEmulatorModule } from '@features/emulator/emulator.module';
+import { CoreLoginModule } from '@features/login/login.module';
+import { CoreCoursesModule } from '@features/courses/courses.module';
+import { CoreSettingsInitModule } from '@features/settings/settings-init.module';
+import { CoreFileUploaderInitModule } from '@features/fileuploader/fileuploader-init.module';
 
 // Import addons init modules.
-import { AddonPrivateFilesInitModule } from '@addon/privatefiles/privatefiles-init.module';
+import { AddonPrivateFilesInitModule } from '@/addons/privatefiles/privatefiles-init.module';
 
 import { setSingletonsInjector } from '@singletons/core.singletons';
 

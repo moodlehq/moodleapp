@@ -19,13 +19,12 @@ const gulp = require('gulp');
 
 const paths = {
     lang: [
-        './src/app/lang/',
-        './src/app/core/**/lang/',
-        './src/app/addon/**/lang/',
-        './src/app/**/**/lang/',
+        './src/addons/**/lang/',
         './src/assets/countries/',
-        './src/assets/mimetypes/'
-    ]
+        './src/assets/mimetypes/',
+        './src/core/features/**/lang/',
+        './src/core/lang/',
+    ],
 };
 
 const args = Utils.getCommandLineArguments();

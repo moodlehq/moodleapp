@@ -136,47 +136,35 @@ class BuildLangTask {
     treatMergedData(data) {
         const merged = {};
         const mergedOrdered = {};
+        const getPrefix = (path) => {
+            const folders = path.split(/[\/\\]/);
 
-        for (let filepath in data) {
-
-            const pathSplit = filepath.split(/[\/\\]/);
-            let prefix;
-
-            pathSplit.pop();
-
-            switch (pathSplit[0]) {
-                case 'lang':
-                    prefix = 'core';
-                    break;
+            switch (folders[0]) {
                 case 'core':
-                    if (pathSplit[1] == 'lang') {
-                        // Not used right now.
-                        prefix = 'core';
-                    } else {
-                        prefix = 'core.' + pathSplit[1];
+                    switch (folders[1]) {
+                        case 'lang':
+                            return 'core.';
+                        case 'features':
+                            return `core.${folders[2]}.`;
                     }
-                    break;
-                case 'addon':
-                    // Remove final item 'lang'.
-                    pathSplit.pop();
-                    // Remove first item 'addon'.
-                    pathSplit.shift();
 
-                    // For subplugins. We'll use plugin_subfolder_subfolder2_...
-                    // E.g. 'mod_assign_feedback_comments'.
-                    prefix = 'addon.' + pathSplit.join('_');
                     break;
+                case 'addons':
+                    return `addon.${folders.slice(1, -2).join('_')}.`;
                 case 'assets':
-                    prefix = 'assets.' + pathSplit[1];
-                    break;
+                    return `assets.${folders[1]}.`;
             }
 
-            if (prefix) {
-                this.addProperties(merged, data[filepath], prefix + '.');
-            }
+            return null;
         }
 
+        for (let filepath in data) {
+            const prefix = getPrefix(filepath);
 
+            if (prefix) {
+                this.addProperties(merged, data[filepath], prefix);
+            }
+        }
 
         // Force ordering by string key.
         Object.keys(merged).sort().forEach((key) => {

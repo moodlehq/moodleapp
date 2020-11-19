@@ -20,15 +20,15 @@ import { AuthGuard } from '@guards/auth.guard';
 const routes: Routes = [
     {
         path: 'login',
-        loadChildren: () => import('./core/login/login.module').then( m => m.CoreLoginModule),
+        loadChildren: () => import('@features/login/login.module').then( m => m.CoreLoginModule),
     },
     {
         path: 'settings',
-        loadChildren: () => import('./core/settings/settings.module').then( m => m.CoreSettingsModule),
+        loadChildren: () => import('@features/settings/settings.module').then( m => m.CoreSettingsModule),
     },
     {
         path: '',
-        loadChildren: () => import('./core/mainmenu/mainmenu.module').then( m => m.CoreMainMenuModule),
+        loadChildren: () => import('@features/mainmenu/mainmenu.module').then( m => m.CoreMainMenuModule),
         canActivate: [AuthGuard],
         canLoad: [AuthGuard],
     },

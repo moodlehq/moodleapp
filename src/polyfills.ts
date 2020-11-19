@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * BROWSER POLYFILLS
- */
-import './zone-flags';
+// Prevents Angular change detection from running with certain Web Component callbacks.
+// eslint-disable-next-line no-underscore-dangle
+window.__Zone_disable_customElements = true;
 
-/**
- * Zone JS is required by default for Angular itself.
- */
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+// Zone JS is required by default for Angular itself.
+import 'zone.js/dist/zone';
