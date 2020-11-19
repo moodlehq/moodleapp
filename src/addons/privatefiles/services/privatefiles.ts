@@ -474,7 +474,7 @@ export type AddonPrivateFilesGetFilesWSResult = {
 /**
  * Params of core_user_get_private_files_info WS.
  */
-export type AddonPrivateFilesGetUserInfoWSParams = {
+type AddonPrivateFilesGetUserInfoWSParams = {
     userid?: number; // Id of the user, default to current user.
 };
 
@@ -492,6 +492,6 @@ export type AddonPrivateFilesGetUserInfoWSResult = {
 /**
  * Params of core_user_add_user_private_files WS.
  */
-export type AddonPrivateFilesAddUserPrivateFilesWSParams = {
+type AddonPrivateFilesAddUserPrivateFilesWSParams = {
     draftid: number; // Draft area id.
 };
