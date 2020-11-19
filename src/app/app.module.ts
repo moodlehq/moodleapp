@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
@@ -38,6 +39,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     entryComponents: [],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         IonicModule.forRoot(),
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         TranslateModule.forRoot({

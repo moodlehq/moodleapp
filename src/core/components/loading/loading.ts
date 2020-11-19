@@ -17,6 +17,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRe
 import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons/core.singletons';
+import { coreShowHideAnimation } from '@classes/animations';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -42,7 +43,7 @@ import { Translate } from '@singletons/core.singletons';
     selector: 'core-loading',
     templateUrl: 'core-loading.html',
     styleUrls: ['loading.scss'],
-    // @todo animations: [coreShowHideAnimation],
+    animations: [coreShowHideAnimation],
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 

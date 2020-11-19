@@ -1,13 +1,13 @@
 <ng-container *ngIf="enabled && !loading">
     <!-- Download button. -->
     <ion-button *ngIf="status == statusNotDownloaded" fill="clear" (click)="download($event, false)" color="dark"
-        class="core-animate-show-hide" [attr.aria-label]="(statusTranslatable || 'core.download') | translate">
+        [@coreShowHideAnimation] [attr.aria-label]="(statusTranslatable || 'core.download') | translate">
         <ion-icon slot="icon-only" name="cloud-download"></ion-icon>
     </ion-button>
 
     <!-- Refresh button. -->
     <ion-button *ngIf="status == statusOutdated || (status == statusDownloaded && !canTrustDownload)" fill="clear"
-        (click)="download($event, true)" color="dark" class="core-animate-show-hide"
+        (click)="download($event, true)" color="dark" [@coreShowHideAnimation]
         attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
         <ion-icon slot="icon-only" name="fas-redo-alt"></ion-icon>
     </ion-button>
@@ -17,9 +17,9 @@
         color="success" name="cloud-done" [attr.aria-label]="(statusTranslatable || 'core.downloaded') | translate"
         role="status"></ion-icon>
 
-    <ion-spinner *ngIf="status === statusDownloading" class="core-animate-show-hide"
+    <ion-spinner *ngIf="status === statusDownloading" [@coreShowHideAnimation]
         [attr.aria-label]="(statusTranslatable || 'core.downloading') | translate"></ion-spinner>
 </ng-container>
 
 <!-- Spinner. -->
-<ion-spinner *ngIf="loading" class="core-animate-show-hide" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+<ion-spinner *ngIf="loading" [@coreShowHideAnimation] [attr.aria-label]="'core.loading' | translate"></ion-spinner>
