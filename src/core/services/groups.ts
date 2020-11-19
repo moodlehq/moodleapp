@@ -66,12 +66,12 @@ export class CoreGroupsProvider {
         userId?: number,
         siteId?: string,
         ignoreCache?: boolean,
-    ): Promise<CoreGroupGetActivityAllowedGroupsResponse> {
+    ): Promise<CoreGroupGetActivityAllowedGroupsWSResponse> {
         const site = await CoreSites.instance.getSite(siteId);
 
         userId = userId || site.getUserId();
 
-        const params = {
+        const params: CoreGroupGetActivityAllowedGroupsWSParams = {
             cmid: cmId,
             userid: userId,
         };
@@ -85,7 +85,7 @@ export class CoreGroupsProvider {
             preSets.emergencyCache = false;
         }
 
-        const response: CoreGroupGetActivityAllowedGroupsResponse =
+        const response: CoreGroupGetActivityAllowedGroupsWSResponse =
             await site.read('core_group_get_activity_allowed_groups', params, preSets);
 
         if (!response || !response.groups) {
@@ -116,7 +116,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the groups are retrieved. If not allowed, empty array will be returned.
      */
     async getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean):
-    Promise<CoreGroupGetActivityAllowedGroupsResponse> {
+    Promise<CoreGroupGetActivityAllowedGroupsWSResponse> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         // Get real groupmode, in case it's forced by the course.
@@ -158,7 +158,7 @@ export class CoreGroupsProvider {
         groupInfo.separateGroups = groupMode === CoreGroupsProvider.SEPARATEGROUPS;
         groupInfo.visibleGroups = groupMode === CoreGroupsProvider.VISIBLEGROUPS;
 
-        let result: CoreGroupGetActivityAllowedGroupsResponse;
+        let result: CoreGroupGetActivityAllowedGroupsWSResponse;
         if (groupInfo.separateGroups || groupInfo.visibleGroups) {
             result = await this.getActivityAllowedGroups(cmId, userId, siteId, ignoreCache);
         } else {
@@ -196,7 +196,7 @@ export class CoreGroupsProvider {
      */
     async getActivityGroupMode(cmId: number, siteId?: string, ignoreCache?: boolean): Promise<number> {
         const site = await CoreSites.instance.getSite(siteId);
-        const params = {
+        const params: CoreGroupGetActivityGroupmodeWSParams = {
             cmid: cmId,
         };
         const preSets: CoreSiteWSPreSets = {
@@ -209,7 +209,7 @@ export class CoreGroupsProvider {
             preSets.emergencyCache = false;
         }
 
-        const response: CoreGroupGetActivityGroupModeResponse =
+        const response: CoreGroupGetActivityGroupModeWSResponse =
             await site.read('core_group_get_activity_groupmode', params, preSets);
 
         if (!response || typeof response.groupmode == 'undefined') {
@@ -275,7 +275,7 @@ export class CoreGroupsProvider {
     async getUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<CoreGroup[]> {
         const site = await CoreSites.instance.getSite(siteId);
         userId = userId || site.getUserId();
-        const data = {
+        const data: CoreGroupGetCourseUserGroupsWSParams = {
             userid: userId,
             courseid: courseId,
         };
@@ -284,7 +284,7 @@ export class CoreGroupsProvider {
             updateFrequency: CoreSite.FREQUENCY_RARELY,
         };
 
-        const response: CoreGroupGetCourseUserGroupsResponse =
+        const response: CoreGroupGetCourseUserGroupsWSResponse =
             await site.read('core_group_get_course_user_groups', data, preSets);
 
         if (!response || !response.groups) {
@@ -475,24 +475,48 @@ export type CoreGroupInfo = {
 /**
  * WS core_group_get_activity_allowed_groups response type.
  */
-export type CoreGroupGetActivityAllowedGroupsResponse = {
+export type CoreGroupGetActivityAllowedGroupsWSResponse = {
     groups: CoreGroup[]; // List of groups.
     canaccessallgroups?: boolean; // Whether the user will be able to access all the activity groups.
     warnings?: CoreWSExternalWarning[];
 };
 
 /**
+ * Params of core_group_get_activity_groupmode WS.
+ */
+type CoreGroupGetActivityGroupmodeWSParams = {
+    cmid: number; // Course module id.
+};
+
+/**
  * Result of WS core_group_get_activity_groupmode.
  */
-export type CoreGroupGetActivityGroupModeResponse = {
+export type CoreGroupGetActivityGroupModeWSResponse = {
     groupmode: number; // Group mode: 0 for no groups, 1 for separate groups, 2 for visible groups.
     warnings?: CoreWSExternalWarning[];
 };
 
 /**
+ * Params of core_group_get_activity_allowed_groups WS.
+ */
+type CoreGroupGetActivityAllowedGroupsWSParams = {
+    cmid: number; // Course module id.
+    userid?: number; // Id of user, empty for current user.
+};
+
+/**
+ * Params of core_group_get_course_user_groups WS.
+ */
+type CoreGroupGetCourseUserGroupsWSParams = {
+    courseid?: number; // Id of course (empty or 0 for all the courses where the user is enrolled).
+    userid?: number; // Id of user (empty or 0 for current user).
+    groupingid?: number; // Returns only groups in the specified grouping.
+};
+
+/**
  * Result of WS core_group_get_course_user_groups.
  */
-export type CoreGroupGetCourseUserGroupsResponse = {
+export type CoreGroupGetCourseUserGroupsWSResponse = {
     groups: {
         id: number; // Group record id.
         name: string; // Multilang compatible name, course unique.
