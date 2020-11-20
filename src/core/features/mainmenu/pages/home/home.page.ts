@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSites } from '@services/sites';
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+
+import { CoreSites } from '@services/sites';
 import { CoreHomeDelegate, CoreHomeHandlerToDisplay } from '../../services/home.delegate';
+import { CoreCourses } from '@features/courses/services/courses';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Page that displays the Home.
@@ -31,11 +35,16 @@ export class CoreHomePage implements OnInit {
     tabs: CoreHomeHandlerToDisplay[] = [];
     loaded = false;
     selectedTab?: number;
+    searchEnabled = false;
+    downloadCourseEnabled = false;
+    downloadCoursesEnabled = false;
 
     protected subscription?: Subscription;
+    protected updateSiteObserver?: CoreEventObserver;
 
     constructor(
         protected homeDelegate: CoreHomeDelegate,
+        protected navCtrl: NavController,
     ) {
         this.loadSiteName();
     }
@@ -44,9 +53,22 @@ export class CoreHomePage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
+        this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+
         this.subscription = this.homeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+
+            this.loadSiteName();
+        }, CoreSites.instance.getCurrentSiteId());
     }
 
     /**
@@ -89,6 +111,20 @@ export class CoreHomePage implements OnInit {
      */
     protected loadSiteName(): void {
         this.siteName = CoreSites.instance.getCurrentSite()!.getSiteName();
+    }
+
+    /**
+     * Open page to manage courses storage.
+     */
+    manageCoursesStorage(): void {
+        // @todo this.navCtrl.navigateForward(['/courses/storage']);
+    }
+
+    /**
+     * Go to search courses.
+     */
+    openSearch(): void {
+        this.navCtrl.navigateForward(['/courses/search']);
     }
 
 }

@@ -10,6 +10,10 @@ ion-toolbar .in-toolbar.button-clear {
     --color: var(--ion-color-primary-contrast);
 }
 
+ion-toolbar .core-navbar-button-hidden {
+    display: none !important;
+}
+
 // Ionic icon.
 ion-icon {
     &.icon-slash::after,
