@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home.delegate';
 
 /**
- * Handler to add Home into main menu.
+ * Handler to add dashboard into home page.
  */
 Injectable();
 export class CoreDashboardHomeHandler implements CoreHomeHandler {
@@ -41,7 +41,7 @@ export class CoreDashboardHomeHandler implements CoreHomeHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        // @todo
+        // @todo return this.blockDelegate.hasSupportedBlock(this.blocks);
         return true;
     }
 

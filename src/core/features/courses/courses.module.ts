@@ -17,12 +17,19 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreHomeRoutingModule } from '../mainmenu/pages/home/home-routing.module';
 import { CoreHomeDelegate } from '../mainmenu/services/home.delegate';
 import { CoreDashboardHomeHandler } from './services/handlers/dashboard.home';
+import { CoreCoursesMyCoursesHomeHandler } from './services/handlers/my-courses.home';
 
 const homeRoutes: Routes = [
     {
         path: 'dashboard',
         loadChildren: () =>
             import('@features/courses/pages/dashboard/dashboard.page.module').then(m => m.CoreCoursesDashboardPageModule),
+    },
+    {
+        path: 'courses/my',
+        loadChildren: () =>
+            import('@features/courses/pages/my-courses/my-courses.page.module')
+                .then(m => m.CoreCoursesMyCoursesPageModule),
     },
 ];
 
@@ -43,7 +50,8 @@ const routes: Routes = [
             {
                 path: 'categories/:id',
                 loadChildren: () =>
-                    import('@features/courses/pages/categories/categories.page.module').then(m => m.CoreCoursesCategoriesPageModule),
+                    import('@features/courses/pages/categories/categories.page.module')
+                        .then(m => m.CoreCoursesCategoriesPageModule),
             },
             {
                 path: 'all',
@@ -84,6 +92,7 @@ const routes: Routes = [
     ],
     providers: [
         CoreDashboardHomeHandler,
+        CoreCoursesMyCoursesHomeHandler,
     ],
 })
 export class CoreCoursesModule {
@@ -91,8 +100,10 @@ export class CoreCoursesModule {
     constructor(
         homeDelegate: CoreHomeDelegate,
         coursesDashboardHandler: CoreDashboardHomeHandler,
+        coursesMyCoursesHandler: CoreCoursesMyCoursesHomeHandler,
     ) {
         homeDelegate.registerHandler(coursesDashboardHandler);
+        homeDelegate.registerHandler(coursesMyCoursesHandler);
     }
 
 }

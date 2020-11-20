@@ -13,18 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSites } from '@services/sites';
 import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home.delegate';
-import { CoreSiteHome } from '../sitehome';
 
 /**
- * Handler to add site home into home page.
+ * Handler to add my courses into home page.
  */
 Injectable();
-export class CoreSiteHomeHomeHandler implements CoreHomeHandler {
+export class CoreCoursesMyCoursesHomeHandler implements CoreHomeHandler {
 
-    name = 'CoreSiteHomeDashboard';
-    priority = 1200;
+    name = 'CoreCoursesMyCourses';
+    priority = 900;
 
     /**
      * Check if the handler is enabled on a site level.
@@ -41,8 +39,10 @@ export class CoreSiteHomeHomeHandler implements CoreHomeHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Whether or not the handler is enabled on a site level.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        return CoreSiteHome.instance.isAvailable(siteId);
+        // @todo return !this.blockDelegate.hasSupportedBlock(this.blocks) && !CoreSiteHome.instance.isAvailable(siteId);
+        return true;
     }
 
     /**
@@ -51,15 +51,12 @@ export class CoreSiteHomeHomeHandler implements CoreHomeHandler {
      * @return Data needed to render the handler.
      */
     getDisplayData(): CoreHomeHandlerToDisplay {
-        const site = CoreSites.instance.getCurrentSite();
-        const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === 0;
-
         return {
-            title: 'core.sitehome.sitehome',
-            page: 'sitehome',
-            class: 'core-sitehome-dashboard-handler',
-            icon: 'fas-home',
-            selectPriority: displaySiteHome ? 1100 : 900,
+            title: 'core.courses.mycourses',
+            page: 'courses/my',
+            class: 'core-courses-my-courses-handler',
+            icon: 'fas-graduation-cap',
+            selectPriority: 900,
         };
     }
 
