@@ -24,7 +24,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 // import { CoreFilterProvider } from '@features/filter/providers/filter';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreCourseProvider } from '@features/course/providers/course';
+import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons/core.singletons';
 import { CoreError } from '@classes/errors/error';
 
@@ -58,7 +58,6 @@ export class CoreSettingsHelperProvider {
 
     constructor() {
         // protected filterProvider: CoreFilterProvider,
-        // protected courseProvider: CoreCourseProvider,
 
         if (!CoreConstants.CONFIG.forceColorScheme) {
             // Update color scheme when a user enters or leaves a site, or when the site info is updated.
@@ -116,7 +115,7 @@ export class CoreSettingsHelperProvider {
         promises.push(site.deleteFolder().then(() => {
             filepoolService.clearAllPackagesStatus(siteId);
             filepoolService.clearFilepool(siteId);
-            // this.courseProvider.clearAllCoursesStatus(siteId);
+            CoreCourse.instance.clearAllCoursesStatus(siteId);
 
             siteInfo.spaceUsage = 0;
 

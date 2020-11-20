@@ -14,21 +14,24 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreCourseModule } from './course/course.module';
-import { CoreCoursesModule } from './courses/courses.module';
-import { CoreEmulatorModule } from './emulator/emulator.module';
-import { CoreFileUploaderInitModule } from './fileuploader/fileuploader-init.module';
-import { CoreLoginModule } from './login/login.module';
-import { CoreSettingsInitModule } from './settings/settings-init.module';
+import { CORE_SITE_SCHEMAS } from '@/core/services/sites';
+
+import {
+    SITE_SCHEMA as COURSE_SITE_SCHEMA,
+    OFFLINE_SITE_SCHEMA as COURSE_OFFLINE_SITE_SCHEMA,
+} from './services/course-db';
 
 @NgModule({
-    imports: [
-        CoreEmulatorModule,
-        CoreLoginModule,
-        CoreCourseModule,
-        CoreCoursesModule,
-        CoreSettingsInitModule,
-        CoreFileUploaderInitModule,
+    providers: [
+        {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [
+                COURSE_SITE_SCHEMA,
+                COURSE_OFFLINE_SITE_SCHEMA,
+            ],
+            multi: true,
+        },
     ],
 })
-export class CoreFeaturesModule {}
+export class CoreCourseModule {
+}

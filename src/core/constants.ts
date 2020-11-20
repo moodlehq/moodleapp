@@ -71,6 +71,12 @@ export class CoreConstants {
     static readonly OUTDATED = 'outdated';
     static readonly NOT_DOWNLOADABLE = 'notdownloadable';
 
+    static readonly DOWNLOADED_ICON = 'cloud-done';
+    static readonly DOWNLOADING_ICON = 'spinner';
+    static readonly NOT_DOWNLOADED_ICON = 'cloud-download';
+    static readonly OUTDATED_ICON = 'fas-redo-alt';
+    static readonly NOT_DOWNLOADABLE_ICON = '';
+
     // Constants from Moodle's resourcelib.
     static readonly RESOURCELIB_DISPLAY_AUTO = 0; // Try the best way.
     static readonly RESOURCELIB_DISPLAY_EMBED = 1; // Display using object tag.
