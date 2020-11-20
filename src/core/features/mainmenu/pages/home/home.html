@@ -9,14 +9,6 @@
             <img src="assets/img/login_logo.png" class="core-header-logo" [alt]="siteName">
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
-                <ion-icon name="fas-search" slot="icon-only"></ion-icon>
-            </ion-button>
-            <core-context-menu>
-                <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="500"
-                [content]="'addon.storagemanager.managestorage' | translate"
-                (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
-            </core-context-menu>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>

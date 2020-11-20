@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonRefresher } from '@ionic/angular';
+import { IonRefresher, NavController } from '@ionic/angular';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
 import { CoreCourse, CoreCourseSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
-// import { CoreCourseHelperProvider } from '@features/course/services/helper';
+import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreCourseHelper } from '@features/course/services/course.helper';
 
 /**
  * Page that displays site home index.
@@ -30,9 +32,8 @@ import { CoreSiteHome } from '@features/sitehome/services/sitehome';
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
 })
-export class CoreSiteHomeIndexPage implements OnInit {
+export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
-    // @todo @Input() downloadEnabled: boolean;
     // @todo  @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent: CoreBlockCourseBlocksComponent;
 
     dataLoaded = false;
@@ -44,13 +45,19 @@ export class CoreSiteHomeIndexPage implements OnInit {
     items: string[] = [];
     siteHomeId?: number;
     currentSite?: CoreSite;
+    searchEnabled = false;
+    downloadEnabled = false;
+    downloadCourseEnabled = false;
+    downloadCoursesEnabled = false;
+    downloadEnabledIcon = 'far-square';
+
+    protected updateSiteObserver?: CoreEventObserver;
 
     constructor(
         protected route: ActivatedRoute,
+        protected navCtrl: NavController,
         // @todo private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-    ) {
-
-    }
+    ) {}
 
     /**
      * Page being initialized.
@@ -58,13 +65,26 @@ export class CoreSiteHomeIndexPage implements OnInit {
     ngOnInit(): void {
         const navParams = this.route.snapshot.queryParams;
 
+        this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+
+            this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
+        }, CoreSites.instance.getCurrentSiteId());
+
         this.currentSite = CoreSites.instance.getCurrentSite()!;
         this.siteHomeId = this.currentSite.getSiteHomeId();
 
         const module = navParams['module'];
         if (module) {
             // @todo const modParams = navParams.get('modParams');
-            // courseHelper.openModule(module, this.siteHomeId, undefined, modParams);
+            // CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
         }
 
         this.loadContent().finally(() => {
@@ -92,8 +112,8 @@ export class CoreSiteHomeIndexPage implements OnInit {
             this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
             if (this.section) {
                 this.section.hasContent = false;
-                /* @todo this.section.hasContent = this.courseHelper.sectionHasContent(this.section);
-                this.hasContent = this.courseHelper.addHandlerDataForModules(
+                this.section.hasContent = CoreCourseHelper.instance.sectionHasContent(this.section);
+                /* @todo this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
@@ -150,6 +170,45 @@ export class CoreSiteHomeIndexPage implements OnInit {
                 refresher?.detail.complete();
             });
         });
+    }
+
+    /**
+     * Toggle download enabled.
+     */
+    toggleDownload(): void {
+        this.switchDownload(!this.downloadEnabled);
+    }
+
+    /**
+     * Convenience function to switch download enabled.
+     *
+     * @param enable If enable or disable.
+     */
+    protected switchDownload(enable: boolean): void {
+        this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
+        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
+        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
+    }
+
+    /**
+     * Open page to manage courses storage.
+     */
+    manageCoursesStorage(): void {
+        // @todo this.navCtrl.navigateForward(['/courses/storage']);
+    }
+
+    /**
+     * Go to search courses.
+     */
+    openSearch(): void {
+        this.navCtrl.navigateForward(['/courses/search']);
+    }
+
+    /**
+     * Component being destroyed.
+     */
+    ngOnDestroy(): void {
+        this.updateSiteObserver?.off();
     }
 
 }

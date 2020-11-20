@@ -1,3 +1,16 @@
+<core-navbar-buttons slot="end">
+    <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+        <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+    </ion-button>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000"
+        [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()"
+        [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+        <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="500"
+        [content]="'addon.storagemanager.managestorage' | translate"
+        (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
 <ion-content>
     <!-- @todo -->
     <core-empty-box icon="fa-home" [message]="'core.courses.nocourses' | translate">

@@ -33,6 +33,9 @@ import { CoreConstants } from '@/core/constants';
 import { CoreUtils } from '@services/utils/utils';
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { Params } from '@angular/router';
+import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
+import { CoreDomUtils } from '@/core/services/utils/dom';
+import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -105,6 +108,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected isInTransition = false; // Weather Slides is in transition.
     protected slidesSwiper: any;
     protected slidesSwiperLoaded = false;
+    protected stackEventsSubscription?: Subscription;
 
     constructor(
         protected element: ElementRef,
@@ -150,6 +154,21 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         if (this.isDestroyed) {
             return;
         }
+
+        this.stackEventsSubscription = this.ionTabs!.outlet.stackEvents.subscribe(async (stackEvent: StackEvent) => {
+            if (this.isCurrentView) {
+                const content = stackEvent.enteringView.element.querySelector('ion-content');
+
+                this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
+                if (content) {
+                    const scroll = await content.getScrollElement();
+                    content.scrollEvents = true;
+                    content.addEventListener('ionScroll', (e: CustomEvent): void => {
+                        this.showHideTabs(e, scroll);
+                    });
+                }
+            }
+        });
 
         this.tabBarElement = this.element.nativeElement.querySelector('ion-tab-bar');
         this.tabsElement = this.element.nativeElement.querySelector('ion-tabs');
@@ -576,17 +595,27 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             this.selectedIndex = index;
 
             this.ionChange.emit(selectedTab);
-
-            const content = this.ionTabs!.outlet.nativeEl.querySelector('ion-content');
-
-            if (content) {
-                const scroll = await content.getScrollElement();
-                content.scrollEvents = true;
-                content.addEventListener('ionScroll', (e: CustomEvent): void => {
-                    this.showHideTabs(e, scroll);
-                });
-            }
         }
+    }
+
+    /**
+     * Get all child core-navbar-buttons and show or hide depending on the page state.
+     * We need to use querySelectorAll because ContentChildren doesn't work with ng-template.
+     * https://github.com/angular/angular/issues/14842
+     *
+     * @param activatedPageName Activated page name.
+     */
+    protected showHideNavBarButtons(activatedPageName: string): void {
+        const elements = this.ionTabs!.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
+        const domUtils = CoreDomUtils.instance;
+        elements.forEach((element) => {
+            const instance: CoreNavBarButtonsComponent = domUtils.getInstanceByElement(element);
+
+            if (instance) {
+                const pagetagName = element.closest('.ion-page')?.tagName;
+                instance.forceHide(activatedPageName != pagetagName);
+            }
+        });
     }
 
     /**
@@ -607,6 +636,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         if (this.resizeFunction) {
             window.removeEventListener('resize', this.resizeFunction);
         }
+        this.stackEventsSubscription?.unsubscribe();
     }
 
 }

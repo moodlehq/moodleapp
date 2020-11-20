@@ -10,16 +10,16 @@
                 <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
                     <ion-icon name="fas-search" slot="icon-only"></ion-icon>
                 </ion-button>
-                <ng-container *ngIf="downloadAllCoursesEnabled && courses && courses.length >= 2">
-                    <ion-button *ngIf="!downloadAllCoursesLoading" (click)="prefetchCourses()"
-                    [attr.aria-label]="'core.courses.downloadcourses' | translate">
-                        <ion-icon [name]="downloadAllCoursesIcon" slot="icon-only"></ion-icon>
-                    </ion-button>
-                    <ion-spinner *ngIf="downloadAllCoursesBadge == '' && downloadAllCoursesLoading"
-                    [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-                    <ion-badge *ngIf="downloadAllCoursesBadge != '' && downloadAllCoursesLoading"
-                    [attr.aria-label]="'core.downloading' | translate">{{downloadAllCoursesBadge}}</ion-badge>
-                </ng-container>
+                <ion-button [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || downloadAllCoursesLoading"
+                (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                    <ion-icon [name]="downloadAllCoursesIcon" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-spinner [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 ||
+                    downloadAllCoursesBadge != '' || !downloadAllCoursesLoading"
+                [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                <ion-badge [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || !downloadAllCoursesLoading ||
+                    downloadAllCoursesBadge == '' || !downloadAllCoursesLoading"
+                [attr.aria-label]="'core.downloading' | translate">{{downloadAllCoursesBadge}}</ion-badge>
             </core-navbar-buttons>
         </ion-buttons>
     </ion-toolbar>

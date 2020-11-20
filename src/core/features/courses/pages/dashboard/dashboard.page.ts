@@ -12,25 +12,93 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
+
+import { CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreSites } from '@services/sites';
 
 /**
- * Page that displays the Home.
+ * Page that displays the dashboard page.
  */
 @Component({
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
     styleUrls: ['dashboard.scss'],
 })
-export class CoreCoursesDashboardPage implements OnInit {
+export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
+
+    searchEnabled = false;
+    downloadEnabled = false;
+    downloadCourseEnabled = false;
+    downloadCoursesEnabled = false;
+    downloadEnabledIcon = 'far-square';
+
+    protected updateSiteObserver?: CoreEventObserver;
 
     siteName = 'Hello world';
+
+    constructor(
+        protected navCtrl: NavController,
+    ) { }
 
     /**
      * Initialize the component.
      */
     ngOnInit(): void {
-        // @todo
+        this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+
+            this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
+        }, CoreSites.instance.getCurrentSiteId());
     }
+
+    /**
+     * Toggle download enabled.
+     */
+    toggleDownload(): void {
+        this.switchDownload(!this.downloadEnabled);
+    }
+
+    /**
+     * Convenience function to switch download enabled.
+     *
+     * @param enable If enable or disable.
+     */
+    protected switchDownload(enable: boolean): void {
+        this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
+        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
+        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
+    }
+
+    /**
+     * Open page to manage courses storage.
+     */
+    manageCoursesStorage(): void {
+        // @todo this.navCtrl.navigateForward(['/courses/storage']);
+    }
+
+    /**
+     * Go to search courses.
+     */
+    openSearch(): void {
+        this.navCtrl.navigateForward(['/courses/search']);
+    }
+
+    /**
+     * Component being destroyed.
+     */
+    ngOnDestroy(): void {
+        this.updateSiteObserver?.off();
+    }
+
 
 }
