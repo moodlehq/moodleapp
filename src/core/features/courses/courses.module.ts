@@ -32,7 +32,7 @@ const routes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: 'all',
+                redirectTo: 'my',
                 pathMatch: 'full',
             },
             {
@@ -56,6 +56,12 @@ const routes: Routes = [
                 loadChildren: () =>
                     import('@features/courses/pages/search/search.page.module')
                         .then(m => m.CoreCoursesSearchPageModule),
+            },
+            {
+                path: 'my',
+                loadChildren: () =>
+                    import('@features/courses/pages/my-courses/my-courses.page.module')
+                        .then(m => m.CoreCoursesMyCoursesPageModule),
             },
         ],
     },

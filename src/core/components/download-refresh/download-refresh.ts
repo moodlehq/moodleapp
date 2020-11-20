@@ -19,7 +19,7 @@ import { CoreConstants } from '@/core/constants';
  * Component to show a download button with refresh option, the spinner and the status of it.
  *
  * Usage:
- * <core-download-refresh [status]="status" enabled="true" canCheckUpdates="true" action="download()"></core-download-refresh>
+ * <core-download-refresh [status]="status" enabled="true" canTrustDownload="true" action="download()"></core-download-refresh>
  */
 @Component({
     selector: 'core-download-refresh',
@@ -29,6 +29,7 @@ import { CoreConstants } from '@/core/constants';
 export class CoreDownloadRefreshComponent {
 
     @Input() status?: string; // Download status.
+    @Input() statusTranslatable?: string; // Download status translatable string.
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.
     @Input() canTrustDownload = false; // If false, refresh will be shown if downloaded.

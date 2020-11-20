@@ -14,38 +14,38 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
 
-import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
-import { CoreCoursesCourseProgressComponent } from './course-progress/course-progress';
-import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/course-options-menu';
+import { CoreCoursesMyCoursesPage } from './my-courses.page';
+import { CoreCoursesComponentsModule } from '../../components/components.module';
+
+const routes: Routes = [
+    {
+        path: '',
+        component: CoreCoursesMyCoursesPage,
+    },
+];
 
 @NgModule({
-    declarations: [
-        CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseOptionsMenuComponent,
-    ],
     imports: [
+        RouterModule.forChild(routes),
         CommonModule,
+        FormsModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule,
+        CoreCoursesComponentsModule,
     ],
-    exports: [
-        CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseOptionsMenuComponent,
+    declarations: [
+        CoreCoursesMyCoursesPage,
     ],
-    entryComponents: [
-        CoreCoursesCourseOptionsMenuComponent,
-    ],
+    exports: [RouterModule],
 })
-export class CoreCoursesComponentsModule {}
+export class CoreCoursesMyCoursesPageModule { }
