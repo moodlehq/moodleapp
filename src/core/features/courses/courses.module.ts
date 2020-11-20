@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { CoreHomeRoutingModule } from '../mainmenu/pages/home/home-routing.module';
 import { CoreHomeDelegate } from '../mainmenu/services/home.delegate';
 import { CoreDashboardHomeHandler } from './services/handlers/dashboard.home';
 
-const routes: Routes = [
+const homeRoutes: Routes = [
     {
         path: 'dashboard',
         loadChildren: () =>
@@ -26,9 +26,50 @@ const routes: Routes = [
     },
 ];
 
+const routes: Routes = [
+    {
+        path: 'courses',
+        children: [
+            {
+                path: '',
+                redirectTo: 'all',
+                pathMatch: 'full',
+            },
+            {
+                path: 'categories',
+                redirectTo: 'categories/root', // Fake "id".
+                pathMatch: 'full',
+            },
+            {
+                path: 'categories/:id',
+                loadChildren: () =>
+                    import('@features/courses/pages/categories/categories.page.module').then(m => m.CoreCoursesCategoriesPageModule),
+            },
+            {
+                path: 'all',
+                loadChildren: () =>
+                    import('@features/courses/pages/available-courses/available-courses.page.module')
+                        .then(m => m.CoreCoursesAvailableCoursesPageModule),
+            },
+            {
+                path: 'search',
+                loadChildren: () =>
+                    import('@features/courses/pages/search/search.page.module')
+                        .then(m => m.CoreCoursesSearchPageModule),
+            },
+        ],
+    },
+];
+
 @NgModule({
-    imports: [CoreHomeRoutingModule.forChild(routes)],
-    exports: [CoreHomeRoutingModule],
+    imports: [
+        CoreHomeRoutingModule.forChild(homeRoutes),
+        RouterModule.forChild(routes),
+    ],
+    exports: [
+        CoreHomeRoutingModule,
+        RouterModule,
+    ],
     providers: [
         CoreDashboardHomeHandler,
     ],
