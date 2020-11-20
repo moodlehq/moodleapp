@@ -63,6 +63,12 @@ const routes: Routes = [
                     import('@features/courses/pages/my-courses/my-courses.page.module')
                         .then(m => m.CoreCoursesMyCoursesPageModule),
             },
+            {
+                path: 'preview',
+                loadChildren: () =>
+                    import('@features/courses/pages/course-preview/course-preview.page.module')
+                        .then(m => m.CoreCoursesCoursePreviewPageModule),
+            },
         ],
     },
 ];

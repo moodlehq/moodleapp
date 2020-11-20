@@ -14,43 +14,38 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule } from '@angular/forms';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 
-import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
-import { CoreCoursesCourseProgressComponent } from './course-progress/course-progress';
-import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/course-options-menu';
-import { CoreCoursesSelfEnrolPasswordComponent } from './self-enrol-password/self-enrol-password';
+import { CoreCoursesCoursePreviewPage } from './course-preview.page';
+import { CoreCoursesComponentsModule } from '../../components/components.module';
+
+const routes: Routes = [
+    {
+        path: '',
+        component: CoreCoursesCoursePreviewPage,
+    },
+];
 
 @NgModule({
-    declarations: [
-        CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseOptionsMenuComponent,
-        CoreCoursesSelfEnrolPasswordComponent,
-    ],
     imports: [
+        RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
-        FormsModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
+        CoreCoursesComponentsModule,
     ],
-    exports: [
-        CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseOptionsMenuComponent,
-        CoreCoursesSelfEnrolPasswordComponent,
+    declarations: [
+        CoreCoursesCoursePreviewPage,
     ],
-    entryComponents: [
-        CoreCoursesCourseOptionsMenuComponent,
-    ],
+    exports: [RouterModule],
 })
-export class CoreCoursesComponentsModule {}
+export class CoreCoursesCoursePreviewPageModule { }

@@ -1,0 +1,21 @@
+:host {
+    .core-course-thumb {
+        height: 150px;
+        width: 100%;
+        overflow: hidden;
+        cursor: pointer;
+        pointer-events: auto;
+        position: relative;
+
+        img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 100%;
+        }
+    }
+    .core-customfieldvalue core-format-text {
+        display: inline;
+    }
+}
