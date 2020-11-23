@@ -31,6 +31,7 @@
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="HideKeyboardFormAccessoryBar" value="false" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="LoadUrlTimeoutValue" value="60000" />
     <preference name="load-url-timeout" value="60000" />

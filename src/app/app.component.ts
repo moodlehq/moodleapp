@@ -17,9 +17,16 @@ import { NavController } from '@ionic/angular';
 
 import { CoreLangProvider } from '@services/lang';
 import { CoreLoginHelperProvider } from '@features/login/services/login.helper';
-import { CoreEvents, CoreEventSessionExpiredData } from '@singletons/events';
+import {
+    CoreEvents,
+    CoreEventSessionExpiredData,
+    CoreEventSiteAddedData,
+    CoreEventSiteData,
+    CoreEventSiteUpdatedData,
+} from '@singletons/events';
 import { Network, NgZone, Platform } from '@singletons/core.singletons';
 import { CoreApp } from '@services/app';
+import { CoreSites } from '@services/sites';
 
 @Component({
     selector: 'app-root',
@@ -37,6 +44,14 @@ export class AppComponent implements OnInit {
 
     /**
      * Component being initialized.
+     *
+     * @todo Review all old code to see if something is missing:
+     * - IAB events listening.
+     * - Platform pause/resume subscriptions.
+     * - handleOpenURL and openWindowSafely.
+     * - Screen orientation events (probably it can be removed).
+     * - Back button registering to close modal first.
+     * - Note: HideKeyboardFormAccessoryBar has been moved to config.xml.
      */
     ngOnInit(): void {
         CoreEvents.on(CoreEvents.LOGOUT, () => {
@@ -55,9 +70,59 @@ export class AppComponent implements OnInit {
             this.loginHelper.sessionExpired(data);
         });
 
+        // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
+        CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data: CoreEventSiteData) => {
+            this.loginHelper.passwordChangeForced(data.siteId!);
+        });
+        CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data: CoreEventSiteData) => {
+            this.loginHelper.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
+        });
+
+        // Listen for sitepolicynotagreed event to accept the site policy.
+        CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data: CoreEventSiteData) => {
+            this.loginHelper.sitePolicyNotAgreed(data.siteId);
+        });
+
+        CoreEvents.on(CoreEvents.LOGIN, async (data: CoreEventSiteData) => {
+            if (data.siteId) {
+                const site = await CoreSites.instance.getSite(data.siteId);
+                const info = site.getInfo();
+                if (info) {
+                    // Add version classes to body.
+                    this.removeVersionClass();
+                    this.addVersionClass(CoreSites.instance.getReleaseNumber(info.release || ''));
+                }
+            }
+
+            this.loadCustomStrings();
+        });
+
+        CoreEvents.on(CoreEvents.SITE_UPDATED, (data: CoreEventSiteUpdatedData) => {
+            if (data.siteId == CoreSites.instance.getCurrentSiteId()) {
+                this.loadCustomStrings();
+
+                // Add version classes to body.
+                this.removeVersionClass();
+                this.addVersionClass(CoreSites.instance.getReleaseNumber(data.release || ''));
+            }
+        });
+
+        CoreEvents.on(CoreEvents.SITE_ADDED, (data: CoreEventSiteAddedData) => {
+            if (data.siteId == CoreSites.instance.getCurrentSiteId()) {
+                this.loadCustomStrings();
+
+                // Add version classes to body.
+                this.removeVersionClass();
+                this.addVersionClass(CoreSites.instance.getReleaseNumber(data.release || ''));
+            }
+        });
+
         this.onPlatformReady();
     }
 
+    /**
+     * Async init function on platform ready.
+     */
     protected async onPlatformReady(): Promise<void> {
         await Platform.instance.ready();
 
@@ -81,6 +146,16 @@ export class AppComponent implements OnInit {
                 }
             });
         });
+    }
+
+    /**
+     * Load custom lang strings. This cannot be done inside the lang provider because it causes circular dependencies.
+     */
+    protected loadCustomStrings(): void {
+        const currentSite = CoreSites.instance.getCurrentSite();
+        if (currentSite) {
+            this.langProvider.loadCustomStringsFromSite(currentSite);
+        }
     }
 
     /**
