@@ -991,6 +991,13 @@ export type CoreStatusWithWarningsWSResponse = {
 };
 
 /**
+ * Special response structure of many webservices that contains only warnings.
+ */
+export type CoreWarningsWSResponse = {
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
  * Structure of files returned by WS.
  */
 export type CoreWSExternalFile = {

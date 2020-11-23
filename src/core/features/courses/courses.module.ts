@@ -13,24 +13,86 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { CoreHomeRoutingModule } from '../mainmenu/pages/home/home-routing.module';
 import { CoreHomeDelegate } from '../mainmenu/services/home.delegate';
 import { CoreDashboardHomeHandler } from './services/handlers/dashboard.home';
+import { CoreCoursesMyCoursesHomeHandler } from './services/handlers/my-courses.home';
 
-const routes: Routes = [
+const homeRoutes: Routes = [
     {
         path: 'dashboard',
         loadChildren: () =>
             import('@features/courses/pages/dashboard/dashboard.page.module').then(m => m.CoreCoursesDashboardPageModule),
     },
+    {
+        path: 'courses/my',
+        loadChildren: () =>
+            import('@features/courses/pages/my-courses/my-courses.page.module')
+                .then(m => m.CoreCoursesMyCoursesPageModule),
+    },
+];
+
+const routes: Routes = [
+    {
+        path: 'courses',
+        children: [
+            {
+                path: '',
+                redirectTo: 'my',
+                pathMatch: 'full',
+            },
+            {
+                path: 'categories',
+                redirectTo: 'categories/root', // Fake "id".
+                pathMatch: 'full',
+            },
+            {
+                path: 'categories/:id',
+                loadChildren: () =>
+                    import('@features/courses/pages/categories/categories.page.module')
+                        .then(m => m.CoreCoursesCategoriesPageModule),
+            },
+            {
+                path: 'all',
+                loadChildren: () =>
+                    import('@features/courses/pages/available-courses/available-courses.page.module')
+                        .then(m => m.CoreCoursesAvailableCoursesPageModule),
+            },
+            {
+                path: 'search',
+                loadChildren: () =>
+                    import('@features/courses/pages/search/search.page.module')
+                        .then(m => m.CoreCoursesSearchPageModule),
+            },
+            {
+                path: 'my',
+                loadChildren: () =>
+                    import('@features/courses/pages/my-courses/my-courses.page.module')
+                        .then(m => m.CoreCoursesMyCoursesPageModule),
+            },
+            {
+                path: 'preview',
+                loadChildren: () =>
+                    import('@features/courses/pages/course-preview/course-preview.page.module')
+                        .then(m => m.CoreCoursesCoursePreviewPageModule),
+            },
+        ],
+    },
 ];
 
 @NgModule({
-    imports: [CoreHomeRoutingModule.forChild(routes)],
-    exports: [CoreHomeRoutingModule],
+    imports: [
+        CoreHomeRoutingModule.forChild(homeRoutes),
+        RouterModule.forChild(routes),
+    ],
+    exports: [
+        CoreHomeRoutingModule,
+        RouterModule,
+    ],
     providers: [
         CoreDashboardHomeHandler,
+        CoreCoursesMyCoursesHomeHandler,
     ],
 })
 export class CoreCoursesModule {
@@ -38,8 +100,10 @@ export class CoreCoursesModule {
     constructor(
         homeDelegate: CoreHomeDelegate,
         coursesDashboardHandler: CoreDashboardHomeHandler,
+        coursesMyCoursesHandler: CoreCoursesMyCoursesHomeHandler,
     ) {
         homeDelegate.registerHandler(coursesDashboardHandler);
+        homeDelegate.registerHandler(coursesMyCoursesHandler);
     }
 
 }

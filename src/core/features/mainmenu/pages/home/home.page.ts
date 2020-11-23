@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSites } from '@services/sites';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
+
+import { CoreSites } from '@services/sites';
 import { CoreHomeDelegate, CoreHomeHandlerToDisplay } from '../../services/home.delegate';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 
 /**
  * Page that displays the Home.
@@ -27,12 +30,16 @@ import { CoreHomeDelegate, CoreHomeHandlerToDisplay } from '../../services/home.
 })
 export class CoreHomePage implements OnInit {
 
+    @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
+
+
     siteName!: string;
     tabs: CoreHomeHandlerToDisplay[] = [];
     loaded = false;
     selectedTab?: number;
 
     protected subscription?: Subscription;
+    protected updateSiteObserver?: CoreEventObserver;
 
     constructor(
         protected homeDelegate: CoreHomeDelegate,
@@ -47,6 +54,11 @@ export class CoreHomePage implements OnInit {
         this.subscription = this.homeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
+
+        // Refresh the enabled flags if site is updated.
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.loadSiteName();
+        }, CoreSites.instance.getCurrentSiteId());
     }
 
     /**
@@ -89,6 +101,20 @@ export class CoreHomePage implements OnInit {
      */
     protected loadSiteName(): void {
         this.siteName = CoreSites.instance.getCurrentSite()!.getSiteName();
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.tabsComponent?.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.tabsComponent?.ionViewDidLeave();
     }
 
 }

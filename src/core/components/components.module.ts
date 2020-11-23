@@ -30,9 +30,15 @@ import { CoreRecaptchaModalComponent } from './recaptcha/recaptchamodal';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreTabsComponent } from './tabs/tabs';
+import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
+import { CoreProgressBarComponent } from './progress-bar/progress-bar';
+import { CoreContextMenuComponent } from './context-menu/context-menu';
+import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
+import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 
 @NgModule({
     declarations: [
@@ -49,6 +55,12 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreShowPasswordComponent,
         CoreEmptyBoxComponent,
         CoreTabsComponent,
+        CoreInfiniteLoadingComponent,
+        CoreProgressBarComponent,
+        CoreContextMenuComponent,
+        CoreContextMenuItemComponent,
+        CoreContextMenuPopoverComponent,
+        CoreNavBarButtonsComponent,
     ],
     imports: [
         CommonModule,
@@ -71,6 +83,12 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreShowPasswordComponent,
         CoreEmptyBoxComponent,
         CoreTabsComponent,
+        CoreInfiniteLoadingComponent,
+        CoreProgressBarComponent,
+        CoreContextMenuComponent,
+        CoreContextMenuItemComponent,
+        CoreContextMenuPopoverComponent,
+        CoreNavBarButtonsComponent,
     ],
 })
 export class CoreComponentsModule {}

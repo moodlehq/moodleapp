@@ -9,7 +9,7 @@
         <ion-buttons slot="end">
             <ion-button router-direction="forward" routerLink="/settings"
                 [attr.aria-label]="'core.settings.appsettings' | translate">
-                <ion-icon slot="icon-only" name="fa-cog"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-cog"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -50,7 +50,7 @@
                 <ion-item button *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)"
                     [attr.aria-label]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
                     <ion-thumbnail slot="start">
-                        <ion-icon name="fa-pencil-alt"></ion-icon>
+                        <ion-icon name="fas-pencil-alt"></ion-icon>
                     </ion-thumbnail>
                     <ion-label>
                         <h2 text-wrap>{{ 'core.login.yourenteredsite' | translate }}</h2>
@@ -98,7 +98,7 @@
     <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
         <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
         <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()">
-            <ion-icon slot="start" name="fa-qrcode" aria-hidden="true"></ion-icon>
+            <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
         </ion-button>
     </ng-container>

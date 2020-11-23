@@ -23,7 +23,7 @@ import { CoreConstants } from '@/core/constants';
  *
  * Example usage:
  *
- * <ion-icon name="fa-icon">
+ * <ion-icon name="fas-icon">
  */
 @Directive({
     selector: 'ion-icon[name]',

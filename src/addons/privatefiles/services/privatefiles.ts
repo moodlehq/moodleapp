@@ -20,6 +20,8 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSite } from '@classes/site';
 import { makeSingleton } from '@singletons/core.singletons';
 
+const ROOT_CACHE_KEY = 'mmaFiles:';
+
 /**
  * Service to handle my files and site files.
  */
@@ -31,8 +33,6 @@ export class AddonPrivateFilesProvider {
     // Keep old names for backwards compatibility.
     static readonly PRIVATE_FILES_COMPONENT = 'mmaFilesMy';
     static readonly SITE_FILES_COMPONENT = 'mmaFilesSite';
-
-    protected readonly ROOT_CACHE_KEY = 'mmaFiles:';
 
     /**
      * Check if core_user_get_private_files_info WS call is available.
@@ -125,7 +125,7 @@ export class AddonPrivateFilesProvider {
     protected getFilesListCacheKey(params: AddonPrivateFilesGetFilesWSParams): string {
         const root = !params.component ? 'site' : 'my';
 
-        return this.ROOT_CACHE_KEY + 'list:' + root + ':' + params.contextid + ':' + params.filepath;
+        return ROOT_CACHE_KEY + 'list:' + root + ':' + params.contextid + ':' + params.filepath;
     }
 
     /**
@@ -194,7 +194,7 @@ export class AddonPrivateFilesProvider {
      * @return Cache key.
      */
     protected getPrivateFilesInfoCommonCacheKey(): string {
-        return this.ROOT_CACHE_KEY + 'privateInfo';
+        return ROOT_CACHE_KEY + 'privateInfo';
     }
 
     /**
@@ -474,7 +474,7 @@ export type AddonPrivateFilesGetFilesWSResult = {
 /**
  * Params of core_user_get_private_files_info WS.
  */
-export type AddonPrivateFilesGetUserInfoWSParams = {
+type AddonPrivateFilesGetUserInfoWSParams = {
     userid?: number; // Id of the user, default to current user.
 };
 
@@ -492,6 +492,6 @@ export type AddonPrivateFilesGetUserInfoWSResult = {
 /**
  * Params of core_user_add_user_private_files WS.
  */
-export type AddonPrivateFilesAddUserPrivateFilesWSParams = {
+type AddonPrivateFilesAddUserPrivateFilesWSParams = {
     draftid: number; // Draft area id.
 };

@@ -103,6 +103,10 @@
     ion-toolbar {
         --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
         --background: var(--custom-toolbar-background, var(--ion-color-primary));
+
+        ion-spinner {
+            --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
+        }
     }
 
     ion-action-sheet {
@@ -135,13 +139,32 @@
         --color: var(--core-color);
     }
 
+    core-progress-bar {
+        --height: var(--custom-progress-bar-height, 8px);
+        --color: var(--custom-progress-color, var(--core-color));
+        --text-color: var(--custom-progress-text-color, var(--gray-darker));
+        --background: var(--custom-progress-background, var(--gray-lighter));
+    }
+
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 
     --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
 
     --core-login-background: var(--custom-login-background, var(--white));
-    --core-login-text-color: var(--custom-login-text-color,  var(--black));
+    --core-login-text-color: var(--custom-login-text-color, var(--black));
+
+    --core-course-color-0: var(--custom-course-color-0, #81ecec);
+    --core-course-color-1: var(--custom-course-color-1, #74b9ff);
+    --core-course-color-2: var(--custom-course-color-2, #a29bfe);
+    --core-course-color-3: var(--custom-course-color-3, #dfe6e9);
+    --core-course-color-4: var(--custom-course-color-4, #00b894);
+    --core-course-color-5: var(--custom-course-color-5, #0984e3);
+    --core-course-color-6: var(--custom-course-color-6, #b2bec3);
+    --core-course-color-7: var(--custom-course-color-7, #fdcb6e);
+    --core-course-color-8: var(--custom-course-color-9, #fd79a8);
+    --core-course-color-9: var(--custom-course-color-90, #6c5ce7);
+    --core-star-color: var(--custom-star-color, var(--core-color));
 }
 
 /*
@@ -194,6 +217,10 @@
             --color: var(--custom-tab-background, var(--white));
             --border-color: var(--custom-tab-border-color, var(--gray-light));
         }
+    }
+
+    core-progress-bar {
+        --text-color: var(--custom-progress-text-color, var(--gray-lighter));
     }
 
     --core-login-background: var(--custom-login-background, #3a3a3a);

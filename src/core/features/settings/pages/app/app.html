@@ -10,25 +10,25 @@
 </ion-header>
 <ion-content>
     <ion-item button (click)="openSettings('general')" [class.core-split-item-selected]="'general' == selectedPage" detail>
-        <ion-icon name="fa-wrench" slot="start"></ion-icon>
+        <ion-icon name="fas-wrench" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.general' | translate }}</ion-label>
     </ion-item>
     <ion-item button (click)="openSettings('spaceusage')" [class.core-split-item-selected]="'spaceusage' == selectedPage"
         detail>
-        <ion-icon name="fa-tasks" slot="start"></ion-icon>
+        <ion-icon name="fas-tasks" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.spaceusage' | translate }}</ion-label>
     </ion-item>
     <ion-item button (click)="openSettings('sync')" [class.core-split-item-selected]="'sync' == selectedPage" detail>
-        <ion-icon name="fa-sync-alt" slot="start"></ion-icon>
+        <ion-icon name="fas-sync-alt" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.synchronization' | translate }}</ion-label>
     </ion-item>
     <ion-item button *ngIf="isIOS" (click)="openSettings('sharedfiles', {manage: true})"
         [class.core-split-item-selected]="'sharedfiles' == selectedPage" detail>
-        <ion-icon name="fa-folder" slot="start"></ion-icon>
+        <ion-icon name="fas-folder" slot="start"></ion-icon>
         <ion-label>{{ 'core.sharedfiles.sharedfiles' | translate }}</ion-label>
     </ion-item>
     <ion-item button (click)="openSettings('about')" [class.core-split-item-selected]="'about' == selectedPage" detail>
-        <ion-icon name="fa-id-card" slot="start"></ion-icon>
+        <ion-icon name="fas-id-card" slot="start"></ion-icon>
         <ion-label>{{ 'core.settings.about' | translate }}</ion-label>
     </ion-item>
 </ion-content>

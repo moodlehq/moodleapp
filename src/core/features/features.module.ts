@@ -14,19 +14,23 @@
 
 import { NgModule } from '@angular/core';
 
+import { CoreCourseModule } from './course/course.module';
 import { CoreCoursesModule } from './courses/courses.module';
 import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreFileUploaderInitModule } from './fileuploader/fileuploader-init.module';
 import { CoreLoginModule } from './login/login.module';
 import { CoreSettingsInitModule } from './settings/settings-init.module';
+import { CoreSiteHomeInitModule } from './sitehome/sitehome-init.module';
 
 @NgModule({
     imports: [
         CoreEmulatorModule,
         CoreLoginModule,
+        CoreCourseModule,
         CoreCoursesModule,
         CoreSettingsInitModule,
         CoreFileUploaderInitModule,
+        CoreSiteHomeInitModule,
     ],
 })
 export class CoreFeaturesModule {}

@@ -194,8 +194,8 @@ export class CoreFormatTextDirective implements OnChanges {
 
             anchor.classList.add('core-image-viewer-icon');
             anchor.setAttribute('aria-label', label);
-            // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
-            anchor.innerHTML = '<ion-icon name="search" class="icon icon-md ion-md-search"></ion-icon>';
+            // @todo Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
+            anchor.innerHTML = '<ion-icon name="fas-search" class="icon icon-md ion-md-search"></ion-icon>';
 
             anchor.addEventListener('click', (e: Event) => {
                 e.preventDefault();

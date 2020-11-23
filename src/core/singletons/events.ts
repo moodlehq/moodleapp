@@ -228,3 +228,11 @@ export type CoreEventLoadPageMainMenuData = {
     redirectPage: string;
     redirectParams?: Params;
 };
+
+/**
+ * Data passed to COURSE_STATUS_CHANGED event.
+ */
+export type CoreEventCourseStatusChanged = {
+    courseId: number; // Course Id.
+    status: string;
+};
