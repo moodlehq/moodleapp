@@ -14,7 +14,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { CoreColorScheme } from '@core/settings/services/settings.helper';
+import { CoreColorScheme } from '@features/settings/services/settings.helper';
 import { CoreSitesDemoSiteData } from '@services/sites';
 
 declare global {

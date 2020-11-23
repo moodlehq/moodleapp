@@ -11,16 +11,14 @@
     ],
     "paths": {
       "@/*": ["*"],
-      "@addon/*": ["app/addon/*"],
-      "@app/*": ["app/*"],
-      "@classes/*": ["app/classes/*"],
-      "@components/*": ["app/components/*"],
-      "@core/*": ["app/core/*"],
-      "@directives/*": ["app/directives/*"],
-      "@guards/*": ["app/guards/*"],
-      "@pipes/*": ["app/pipes/*"],
-      "@services/*": ["app/services/*"],
-      "@singletons/*": ["app/singletons/*"]
+      "@classes/*": ["core/classes/*"],
+      "@components/*": ["core/components/*"],
+      "@directives/*": ["core/directives/*"],
+      "@features/*": ["core/features/*"],
+      "@guards/*": ["core/guards/*"],
+      "@pipes/*": ["core/pipes/*"],
+      "@services/*": ["core/services/*"],
+      "@singletons/*": ["core/singletons/*"]
     }
   },
   "files": [
@@ -33,6 +31,6 @@
   ],
   "exclude": [
     "src/**/*.test.ts",
-    "src/tests/**"
+    "src/testing/**"
   ]
 }

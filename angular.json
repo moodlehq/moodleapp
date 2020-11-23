@@ -93,7 +93,8 @@
           "options": {
             "lintFilePatterns": [
             "src/**/*.ts",
-            "src/app/**/*.html"
+            "src/core/**/*.html",
+            "src/addons/**/*.html"
             ]
           }
         },

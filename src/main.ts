@@ -16,7 +16,7 @@ import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
-import { CoreConstants } from './app/core/constants';
+import { CoreConstants } from './core/constants';
 
 if (CoreConstants.BUILD.isProduction) {
     enableProdMode();

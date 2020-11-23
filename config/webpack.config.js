@@ -18,15 +18,14 @@ const { resolve } = require('path');
 
 module.exports = config => {
     config.resolve.alias['@'] = resolve('src');
-    config.resolve.alias['@addon'] = resolve('src/app/addon');
-    config.resolve.alias['@app'] = resolve('src/app');
-    config.resolve.alias['@classes'] = resolve('src/app/classes');
-    config.resolve.alias['@components'] = resolve('src/app/components');
-    config.resolve.alias['@core'] = resolve('src/app/core');
-    config.resolve.alias['@directives'] = resolve('src/app/directives');
-    config.resolve.alias['@pipes'] = resolve('src/app/pipes');
-    config.resolve.alias['@services'] = resolve('src/app/services');
-    config.resolve.alias['@singletons'] = resolve('src/app/singletons');
+    config.resolve.alias['@classes'] = resolve('src/core/classes');
+    config.resolve.alias['@components'] = resolve('src/core/components');
+    config.resolve.alias['@directives'] = resolve('src/core/directives');
+    config.resolve.alias['@features'] = resolve('src/core/features');
+    config.resolve.alias['@guards'] = resolve('src/core/guards');
+    config.resolve.alias['@pipes'] = resolve('src/core/pipes');
+    config.resolve.alias['@services'] = resolve('src/core/services');
+    config.resolve.alias['@singletons'] = resolve('src/core/singletons');
 
     config.plugins.push(
         new webpack.DefinePlugin({

@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Observable } from 'rxjs';
 import { NavController } from '@ionic/angular';
 
-import { AppComponent } from '@app/app.component';
+import { AppComponent } from '@/app/app.component';
 import { CoreEvents } from '@singletons/events';
 import { CoreLangProvider } from '@services/lang';
+import { Network, Platform, NgZone } from '@singletons/core.singletons';
 
-import { mock, renderComponent, RenderConfig } from '@/tests/utils';
+import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
 
 describe('AppComponent', () => {
 
@@ -27,6 +29,10 @@ describe('AppComponent', () => {
     let config: Partial<RenderConfig>;
 
     beforeEach(() => {
+        mockSingleton(Network, { onChange: () => new Observable() });
+        mockSingleton(Platform, { ready: () => Promise.resolve() });
+        mockSingleton(NgZone, { run: jest.fn() });
+
         langProvider = mock<CoreLangProvider>(['clearCustomStrings']);
         navController = mock<NavController>(['navigateRoot']);
         config = {
