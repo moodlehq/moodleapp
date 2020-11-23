@@ -364,7 +364,19 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
                     question.html, this.questionHelper.getResponseFileAreaFiles(question, 'answer'));
         }
 
-        // Add some HTML to the text if needed.
-        answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
+        let isPlainText = false;
+        if (question.isPlainText !== undefined) {
+            isPlainText = question.isPlainText;
+        } else if (question.settings) {
+            isPlainText = question.settings.responseformat == 'monospaced' || question.settings.responseformat == 'plain';
+        } else {
+            const questionEl = this.domUtils.convertToElement(question.html);
+            isPlainText = !!questionEl.querySelector('.qtype_essay_monospaced') || !!questionEl.querySelector('.qtype_essay_plain');
+        }
+
+        if (!isPlainText) {
+            // Add some HTML to the text if needed.
+            answers[textarea.name] = this.textUtils.formatHtmlLines(answers[textarea.name]);
+        }
     }
 }
