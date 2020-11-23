@@ -56,6 +56,7 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
                 this.args = {
                     contextlevel: this.contextLevel,
                     instanceid: this.instanceId,
+                    blockid: this.block.instanceid,
                 };
                 this.initResult = handler.initResult;
             }
