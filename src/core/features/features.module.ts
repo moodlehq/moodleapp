@@ -20,6 +20,7 @@ import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreFileUploaderInitModule } from './fileuploader/fileuploader-init.module';
 import { CoreLoginModule } from './login/login.module';
 import { CoreSettingsInitModule } from './settings/settings-init.module';
+import { CoreSiteHomeInitModule } from './sitehome/sitehome-init.module';
 
 @NgModule({
     imports: [
@@ -29,6 +30,7 @@ import { CoreSettingsInitModule } from './settings/settings-init.module';
         CoreCoursesModule,
         CoreSettingsInitModule,
         CoreFileUploaderInitModule,
+        CoreSiteHomeInitModule,
     ],
 })
 export class CoreFeaturesModule {}
