@@ -27,9 +27,11 @@
 
     <!-- Attachments. -->
     <ng-container *ngIf="question.allowsAttachments">
-        <core-attachments *ngIf="uploadFilesSupported" [files]="attachments" [component]="component" [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles" [allowOffline]="offlineEnabled" [acceptedTypes]="question.attachmentsAcceptedTypes"></core-attachments>
+        <core-attachments *ngIf="uploadFilesSupported && question.attachmentsDraftIdInput" [files]="attachments" [component]="component" [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles" [allowOffline]="offlineEnabled" [acceptedTypes]="question.attachmentsAcceptedTypes"></core-attachments>
 
-        <input item-content *ngIf="uploadFilesSupported" type="hidden" [name]="question.attachmentsDraftIdInput.name" [value]="question.attachmentsDraftIdInput.value" >
+        <core-files *ngIf="uploadFilesSupported && !question.attachmentsDraftIdInput" [files]="attachments" [component]="component" [componentId]="componentId"></core-files>
+
+        <input item-content *ngIf="question.attachmentsDraftIdInput" type="hidden" [name]="question.attachmentsDraftIdInput.name" [value]="question.attachmentsDraftIdInput.value" >
 
         <!-- Attachments not supported in this site. -->
         <ion-item text-wrap *ngIf="!uploadFilesSupported" class="core-danger-item">
