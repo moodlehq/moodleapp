@@ -26,6 +26,7 @@ import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons/core.singletons';
 import { CoreLogger } from '@singletons/logger';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/app.db';
+import { CoreColors } from '../singletons/colors';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -611,43 +612,35 @@ export class CoreAppProvider {
 
     /**
      * Set StatusBar color depending on platform.
+     *
+     * @param color RGB color to use as status bar background. If not set the css variable will be read.
      */
-    setStatusBarColor(): void {
-        if (typeof CoreConstants.CONFIG.statusbarbgios == 'string' && this.isIOS()) {
-            // IOS Status bar properties.
-            StatusBar.instance.overlaysWebView(false);
-            StatusBar.instance.backgroundColorByHexString(CoreConstants.CONFIG.statusbarbgios);
-            CoreConstants.CONFIG.statusbarlighttextios ? StatusBar.instance.styleLightContent() : StatusBar.instance.styleDefault();
-        } else if (typeof CoreConstants.CONFIG.statusbarbgandroid == 'string' && this.isAndroid()) {
-            // Android Status bar properties.
-            StatusBar.instance.backgroundColorByHexString(CoreConstants.CONFIG.statusbarbgandroid);
-            CoreConstants.CONFIG.statusbarlighttextandroid ?
-                StatusBar.instance.styleLightContent() : StatusBar.instance.styleDefault();
-        } else if (typeof CoreConstants.CONFIG.statusbarbg == 'string') {
-            // Generic Status bar properties.
-            this.isIOS() && StatusBar.instance.overlaysWebView(false);
-            StatusBar.instance.backgroundColorByHexString(CoreConstants.CONFIG.statusbarbg);
-            CoreConstants.CONFIG.statusbarlighttext ? StatusBar.instance.styleLightContent() : StatusBar.instance.styleDefault();
-        } else {
-            // Default Status bar properties.
-            this.isAndroid() ? StatusBar.instance.styleLightContent() : StatusBar.instance.styleDefault();
+    setStatusBarColor(color?: string): void {
+        if (!color) {
+            // Get the default color to reset it.
+            color = getComputedStyle(document.documentElement).getPropertyValue('--ion-statusbar-background').trim();
         }
+
+        // Make darker on Android.
+        if (this.isAndroid()) {
+            color = CoreColors.darker(color);
+        }
+
+        const useLightText = CoreColors.isWhiteContrastingBetter(color);
+        const statusBar = StatusBar.instance;
+        statusBar.backgroundColorByHexString(color);
+        useLightText ? statusBar.styleLightContent() : statusBar.styleDefault();
+
+        this.isIOS() && statusBar.overlaysWebView(false);
     }
 
     /**
      * Reset StatusBar color if any was set.
+     *
+     * @deprecated Use setStatusBarColor passing the color of the new statusbar color loaded on remote theme or no color to reset.
      */
     resetStatusBarColor(): void {
-        if (typeof CoreConstants.CONFIG.statusbarbgremotetheme == 'string' &&
-                ((typeof CoreConstants.CONFIG.statusbarbgios == 'string' && this.isIOS()) ||
-                (typeof CoreConstants.CONFIG.statusbarbgandroid == 'string' && this.isAndroid()) ||
-                typeof CoreConstants.CONFIG.statusbarbg == 'string')) {
-            // If the status bar has been overriden and there's a fallback color for remote themes, use it now.
-            this.isIOS() && StatusBar.instance.overlaysWebView(false);
-            StatusBar.instance.backgroundColorByHexString(CoreConstants.CONFIG.statusbarbgremotetheme);
-            CoreConstants.CONFIG.statusbarlighttextremotetheme ?
-                StatusBar.instance.styleLightContent() : StatusBar.instance.styleDefault();
-        }
+        this.setStatusBarColor();
     }
 
     /**

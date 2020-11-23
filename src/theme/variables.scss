@@ -100,9 +100,10 @@
         --color: var(--custom-bottom-tabs-color, var(--white));
     }
 
+    --ion-statusbar-background: var(--custom-toolbar-background, var(--ion-color-primary));
     ion-toolbar {
         --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
-        --background: var(--custom-toolbar-background, var(--ion-color-primary));
+        --background: var(--ion-statusbar-background);
 
         ion-spinner {
             --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));

@@ -206,6 +206,11 @@ export type CoreEventSiteData = {
 export type CoreEventSiteUpdatedData = CoreEventSiteData & CoreSiteInfoResponse;
 
 /**
+ * Data passed to SITE_ADDED event.
+ */
+export type CoreEventSiteAddedData = CoreEventSiteData & CoreSiteInfoResponse;
+
+/**
  * Data passed to SESSION_EXPIRED event.
  */
 export type CoreEventSessionExpiredData = CoreEventSiteData & {

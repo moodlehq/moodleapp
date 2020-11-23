@@ -21,6 +21,7 @@ import { CoreConfig } from '@services/config';
 import { makeSingleton, Translate, Platform } from '@singletons/core.singletons';
 
 import * as moment from 'moment';
+import { CoreSite } from '../classes/site';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -309,6 +310,19 @@ export class CoreLangProvider {
                 observer.unsubscribe();
             });
         });
+    }
+
+    /**
+     * Loads custom strings obtained from site.
+     *
+     * @param currentSite Current site object.
+     */
+    loadCustomStringsFromSite(currentSite: CoreSite): void {
+        const customStrings = currentSite.getStoredConfig('tool_mobile_customlangstrings');
+
+        if (typeof customStrings != 'undefined') {
+            this.loadCustomStrings(customStrings);
+        }
     }
 
     /**
