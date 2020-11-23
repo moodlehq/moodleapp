@@ -1,5 +1,5 @@
 <core-loading [hideUntil]="loaded">
-    <a ion-item *ngIf="summary" text-wrap [attr.detail-none]="canViewAssessment && !canSelfAssess? null : true" (click)="gotoAssessment()">
+    <ion-item *ngIf="summary" text-wrap [attr.detail-none]="canViewAssessment && !canSelfAssess? null : true" (click)="gotoAssessment($event)">
         <ion-avatar core-user-avatar [user]="profile" item-start [courseId]="courseId" [userId]="profile && profile.id"></ion-avatar>
 
         <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
@@ -16,10 +16,10 @@
             {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
         </p>
         <ion-badge *ngIf="!assessment.grade" color="danger">{{ 'addon.mod_workshop.notassessed' | translate }}</ion-badge>
-        <button ion-button block *ngIf="canSelfAssess && !showGrade(assessment.grade)" (click)="gotoOwnAssessment()">{{ 'addon.mod_workshop.assess' | translate }}</button>
-        <button ion-button block *ngIf="canSelfAssess && showGrade(assessment.grade)" (click)="gotoOwnAssessment()">{{ 'addon.mod_workshop.reassess' | translate }}</button>
+        <button ion-button block *ngIf="canSelfAssess && !showGrade(assessment.grade)" (click)="gotoOwnAssessment($event)">{{ 'addon.mod_workshop.assess' | translate }}</button>
+        <button ion-button block *ngIf="canSelfAssess && showGrade(assessment.grade)" (click)="gotoOwnAssessment($event)">{{ 'addon.mod_workshop.reassess' | translate }}</button>
         <ion-note item-end *ngIf="offline">
             <ion-icon name="time"></ion-icon>{{ 'core.notsent' | translate }}
         </ion-note>
-    </a>
+    </ion-item>
 </core-loading>
