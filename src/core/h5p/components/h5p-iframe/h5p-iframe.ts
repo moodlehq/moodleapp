@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, ElementRef, OnChanges, SimpleChange, EventEmitter } from '@angular/core';
+import { Component, Input, Output, ElementRef, OnChanges, SimpleChange, EventEmitter, OnDestroy } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import { CoreFile } from '@providers/file';
 import { CoreFilepool } from '@providers/filepool';
 import { CoreLogger } from '@providers/logger';
@@ -26,6 +27,7 @@ import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import { CoreH5PCore, CoreH5PDisplayOptions } from '../../classes/core';
 import { CoreH5PHelper } from '../../classes/helper';
+import { Subscription } from 'rxjs';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -34,7 +36,7 @@ import { CoreH5PHelper } from '../../classes/helper';
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
 })
-export class CoreH5PIframeComponent implements OnChanges {
+export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     @Input() fileUrl?: string; // The URL of the H5P file. If not supplied, onlinePlayerUrl is required.
     @Input() displayOptions?: CoreH5PDisplayOptions; // Display options.
     @Input() onlinePlayerUrl?: string; // The URL of the online player to display the H5P package.
@@ -49,14 +51,30 @@ export class CoreH5PIframeComponent implements OnChanges {
     protected siteId: string;
     protected siteCanDownload: boolean;
     protected logger;
+    protected currentPageInstance: any;
+    protected subscription: Subscription;
+    protected iframeLoadedOnce = false;
 
-    constructor(public elementRef: ElementRef,
-            protected pluginFileDelegate: CorePluginFileDelegate) {
+    constructor(
+        public elementRef: ElementRef,
+        protected pluginFileDelegate: CorePluginFileDelegate,
+        protected navCtrl: NavController,
+    ) {
 
         this.logger = CoreLogger.instance.getInstance('CoreH5PIframeComponent');
         this.site = CoreSites.instance.getCurrentSite();
         this.siteId = this.site.getId();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.instance.isOfflineDisabledInSite();
+
+        // Send resize events when the page holding this component is re-entered.
+        this.currentPageInstance = this.navCtrl.getActive().instance;
+        this.subscription = this.navCtrl.viewDidEnter.subscribe((viewCtrl) => {
+            if (!this.iframeLoadedOnce || viewCtrl.instance !== this.currentPageInstance) {
+                return;
+            }
+
+            window.dispatchEvent(new Event('resize'));
+        });
     }
 
     /**
@@ -169,8 +187,16 @@ export class CoreH5PIframeComponent implements OnChanges {
      */
     iframeLoaded(): void {
         this.onIframeLoaded.emit();
+        this.iframeLoadedOnce = true;
 
         // Send a resize event to the window so H5P package recalculates the size.
         window.dispatchEvent(new Event('resize'));
+    }
+
+    /**
+     * Component being destroyed.
+     */
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 }
