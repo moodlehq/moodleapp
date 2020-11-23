@@ -146,6 +146,9 @@ export class AppComponent implements OnInit {
                 }
             });
         });
+
+        // Set StatusBar properties.
+        CoreApp.instance.setStatusBarColor();
     }
 
     /**

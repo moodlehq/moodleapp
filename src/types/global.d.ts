@@ -50,14 +50,6 @@ declare global {
                 forcedefaultlanguage: boolean;
                 privacypolicy: string;
                 notificoncolor: string;
-                statusbarbg: boolean;
-                statusbarlighttext: boolean;
-                statusbarbgios: string;
-                statusbarlighttextios: boolean;
-                statusbarbgandroid: string;
-                statusbarlighttextandroid: boolean;
-                statusbarbgremotetheme: string;
-                statusbarlighttextremotetheme: boolean;
                 enableanalytics: boolean;
                 enableonboarding: boolean;
                 forceColorScheme: CoreColorScheme;
