@@ -21,7 +21,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreObject } from '@singletons/object';
-import { CoreUserProvider, CoreUserBasicData, CoreUserProfilePictureUpdatedData } from '@core/user/services/user';
+import { CoreUserProvider, CoreUserBasicData, CoreUserProfilePictureUpdatedData } from '@features/user/services/user';
 
 /**
  * Component to display a "user avatar".

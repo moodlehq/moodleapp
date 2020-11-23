@@ -13,12 +13,25 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
-import { CoreUserRoutingModule } from './user-routing.module';
+const routes: Routes = [
+    {
+        path: '',
+        redirectTo: 'profile',
+        pathMatch: 'full',
+    },
+    {
+        path: 'profile',
+        loadChildren: () => import('./pages/profile/profile.module').then( m => m.CoreUserProfilePageModule),
+    },
+    {
+        path: 'about',
+        loadChildren: () => import('./pages/about/about.module').then( m => m.CoreUserAboutPageModule),
+    },
+];
 
 @NgModule({
-    imports: [
-        CoreUserRoutingModule,
-    ],
+    imports: [RouterModule.forChild(routes)],
 })
-export class CoreUserModule {}
+export class CoreUserLazyModule {}

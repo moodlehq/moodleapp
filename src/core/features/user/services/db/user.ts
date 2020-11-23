@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSiteSchema, registerSiteSchema } from '@services/sites';
-import { CoreUserBasicData } from './user';
+import { CoreSiteSchema } from '@services/sites';
+import { CoreUserBasicData } from '../user';
 
 /**
  * Database variables for CoreUser service.
@@ -87,9 +87,4 @@ export type CoreUserPreferenceDBRecord = {
     name: string;
     value: string;
     onlinevalue: string;
-};
-
-export const initCoreUserDB = (): void => {
-    registerSiteSchema(SITE_SCHEMA);
-    registerSiteSchema(OFFLINE_SITE_SCHEMA);
 };

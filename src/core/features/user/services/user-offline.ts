@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { makeSingleton } from '@singletons/core.singletons';
-import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './user.db';
+import { makeSingleton } from '@singletons';
+import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './db/user';
 
 /**
  * Service to handle offline user preferences.

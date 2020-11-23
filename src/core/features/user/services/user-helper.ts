@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreUserRole } from './user';
 
 /**

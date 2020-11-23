@@ -21,7 +21,7 @@ import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreUser,
@@ -29,12 +29,12 @@ import {
     CoreUserProfilePictureUpdatedData,
     CoreUserProfileRefreshedData,
     CoreUserProvider,
-} from '@core/user/services/user';
-import { CoreUserHelper } from '@core/user/services/user.helper';
-import { CoreUserDelegate, CoreUserProfileHandlerData } from '@core/user/services/user.delegate';
-import { CoreFileUploaderHelper } from '@core/fileuploader/services/fileuploader.helper';
+} from '@features/user/services/user';
+import { CoreUserHelper } from '@features/user/services/user-helper';
+import { CoreUserDelegate, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
-import { CoreUtils } from '@/app/services/utils/utils';
+import { CoreUtils } from '@services/utils/utils';
 
 @Component({
     selector: 'page-core-user-profile',

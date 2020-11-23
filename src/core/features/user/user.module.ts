@@ -15,23 +15,30 @@
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { CoreMainMenuRoutingModule } from '@core/mainmenu/mainmenu-routing.module';
+import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/db/user';
 
 const routes: Routes = [
     {
         path: 'user',
-        loadChildren: () => import('@core/user/user.module').then(m => m.CoreUserModule),
+        loadChildren: () => import('@features/user/user-lazy.module').then(m => m.CoreUserLazyModule),
     },
 ];
 
 @NgModule({
     imports: [
-        CoreMainMenuRoutingModule.forChild(routes),
-    ],
-    exports: [
-        CoreMainMenuRoutingModule,
+        CoreMainMenuMoreRoutingModule.forChild({ siblings: routes }),
     ],
     providers: [
+        {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [
+                SITE_SCHEMA,
+                OFFLINE_SITE_SCHEMA,
+            ],
+            multi: true,
+        },
     ],
 })
-export class CoreUserInitModule {}
+export class CoreUserModule {}

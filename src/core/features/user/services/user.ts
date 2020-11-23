@@ -18,14 +18,14 @@ import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreUserOffline } from './user.offline';
+import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventUserDeletedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
-import { USERS_TABLE_NAME, CoreUserDBRecord } from './user.db';
+import { USERS_TABLE_NAME, CoreUserDBRecord } from './db/user';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 

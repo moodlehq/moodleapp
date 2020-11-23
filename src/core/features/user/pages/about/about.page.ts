@@ -22,8 +22,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, CoreUserProfileRefreshedData, CoreUserProvider } from '@core/user/services/user';
-import { CoreUserHelper } from '@core/user/services/user.helper';
+import { CoreUser, CoreUserProfile, CoreUserProfileRefreshedData, CoreUserProvider } from '@features/user/services/user';
+import { CoreUserHelper } from '@features/user/services/user-helper';
 
 /**
  * Page that displays info about a user.
