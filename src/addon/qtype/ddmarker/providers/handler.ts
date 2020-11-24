@@ -124,7 +124,7 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
     getAdditionalDownloadableFiles(question: any, usageId: number): string[] {
         this.questionHelper.extractQuestionScripts(question, usageId);
 
-        if (question.amdArgs && typeof question.amdArgs[1] !== 'undefined') {
+        if (question.amdArgs && typeof question.amdArgs[1] == 'string') {
             // Moodle 3.6+.
             return [question.amdArgs[1]];
         }
