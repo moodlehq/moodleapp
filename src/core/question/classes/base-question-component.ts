@@ -32,6 +32,7 @@ export class CoreQuestionBaseComponent {
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // The course the question belongs to (if any).
+    @Input() review?: boolean; // Whether the user is in review mode.
     @Output() buttonClicked: EventEmitter<any>; // Should emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Should emit an event if the question should be aborted.
 
@@ -207,99 +208,118 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component of type essay.
      *
+     * @param review Whether we're in review mode.
      * @return Element containing the question HTML, void if the data is not valid.
      */
-    initEssayComponent(): void | HTMLElement {
+    initEssayComponent(review?: boolean): void | HTMLElement {
         const questionEl = this.initComponent();
 
-        if (questionEl) {
-            const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
-            const answerDraftIdInput = <HTMLInputElement> questionEl.querySelector('input[name*="_answer:itemid"]');
+        if (!questionEl) {
+            return;
+        }
+
+        const answerDraftIdInput = <HTMLInputElement> questionEl.querySelector('input[name*="_answer:itemid"]');
+
+        if (this.question.settings) {
+            this.question.allowsAttachments = this.question.settings.attachments != '0';
+            this.question.allowsAnswerFiles = this.question.settings.responseformat == 'editorfilepicker';
+            this.question.isMonospaced = this.question.settings.responseformat == 'monospaced';
+            this.question.isPlainText = this.question.isMonospaced || this.question.settings.responseformat == 'plain';
+            this.question.hasInlineText = this.question.settings.responseformat != 'noinline';
+        } else {
+            this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
+            this.question.allowsAnswerFiles = !!answerDraftIdInput;
+            this.question.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
+            this.question.isPlainText = this.question.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
+        }
+
+        if (review) {
+            // Search the answer and the attachments.
+            this.question.answer = this.domUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
 
             if (this.question.settings) {
-                this.question.allowsAttachments = this.question.settings.attachments != '0';
-                this.question.allowsAnswerFiles = this.question.settings.responseformat == 'editorfilepicker';
-                this.question.isMonospaced = this.question.settings.responseformat == 'monospaced';
-                this.question.isPlainText = this.question.isMonospaced || this.question.settings.responseformat == 'plain';
+                this.question.attachments = Array.from(this.questionHelper.getResponseFileAreaFiles(this.question, 'attachments'));
             } else {
-                this.question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
-                this.question.allowsAnswerFiles = !!answerDraftIdInput;
-                this.question.isMonospaced = !!questionEl.querySelector('.qtype_essay_monospaced');
-                this.question.isPlainText = this.question.isMonospaced || !!questionEl.querySelector('.qtype_essay_plain');
-            }
-
-            this.question.hasDraftFiles = this.question.allowsAnswerFiles &&
-                    this.questionHelper.hasDraftFileUrls(questionEl.innerHTML);
-
-            if (!textarea && !this.question.allowsAttachments) {
-                // Textarea and filemanager not found, we might be in review. Search the answer and the attachments.
-                this.question.answer = this.domUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
                 this.question.attachments = this.questionHelper.getQuestionAttachmentsFromHtml(
                         this.domUtils.getContentsOfElement(questionEl, '.attachments'));
-
-                return questionEl;
             }
 
-            if (textarea) {
-                const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=answerformat]');
-                let content = this.textUtils.decodeHTML(textarea.innerHTML || '');
+            return;
+        }
 
-                if (this.question.hasDraftFiles && this.question.responsefileareas) {
-                    content = this.textUtils.replaceDraftfileUrls(CoreSites.instance.getCurrentSite().getURL(), content,
-                            this.questionHelper.getResponseFileAreaFiles(this.question, 'answer')).text;
-                }
+        const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
 
-                this.question.textarea = {
-                    id: textarea.id,
-                    name: textarea.name,
-                    text: content,
-                };
+        this.question.hasDraftFiles = this.question.allowsAnswerFiles &&
+                this.questionHelper.hasDraftFileUrls(questionEl.innerHTML);
 
-                if (input) {
-                    this.question.formatInput = {
-                        name: input.name,
-                        value: input.value
-                    };
-                }
-            }
-
-            if (answerDraftIdInput) {
-                this.question.answerDraftIdInput = {
-                    name: answerDraftIdInput.name,
-                    value: Number(answerDraftIdInput.value),
-                };
-            }
-
-            if (this.question.allowsAttachments) {
-                const attachmentsInput = <HTMLInputElement> questionEl.querySelector('.attachments input[name*=_attachments]');
-                const objectElement = <HTMLObjectElement> questionEl.querySelector('.attachments object');
-                const fileManagerUrl = objectElement && objectElement.data;
-
-                if (attachmentsInput) {
-                    this.question.attachmentsDraftIdInput = {
-                        name: attachmentsInput.name,
-                        value: Number(attachmentsInput.value),
-                    };
-                }
-
-                if (this.question.settings) {
-                    this.question.attachmentsMaxFiles = Number(this.question.settings.attachments);
-                    this.question.attachmentsAcceptedTypes = this.question.settings.filetypeslist &&
-                        this.question.settings.filetypeslist.join(',');
-                }
-
-                if (fileManagerUrl) {
-                    const params = CoreUrlUtils.instance.extractUrlParams(fileManagerUrl);
-                    const maxBytes = Number(params.maxbytes);
-                    const areaMaxBytes = Number(params.areamaxbytes);
-
-                    this.question.attachmentsMaxBytes = maxBytes === -1 || areaMaxBytes === -1 ?
-                            Math.max(maxBytes, areaMaxBytes) : Math.min(maxBytes, areaMaxBytes);
-                }
-            }
+        if (!textarea && (this.question.hasInlineText || !this.question.allowsAttachments)) {
+            // Textarea not found, we might be in review. Search the answer and the attachments.
+            this.question.answer = this.domUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
+            this.question.attachments = this.questionHelper.getQuestionAttachmentsFromHtml(
+                    this.domUtils.getContentsOfElement(questionEl, '.attachments'));
 
             return questionEl;
         }
+
+        if (textarea) {
+            const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=answerformat]');
+            let content = this.textUtils.decodeHTML(textarea.innerHTML || '');
+
+            if (this.question.hasDraftFiles && this.question.responsefileareas) {
+                content = this.textUtils.replaceDraftfileUrls(CoreSites.instance.getCurrentSite().getURL(), content,
+                        this.questionHelper.getResponseFileAreaFiles(this.question, 'answer')).text;
+            }
+
+            this.question.textarea = {
+                id: textarea.id,
+                name: textarea.name,
+                text: content,
+            };
+
+            if (input) {
+                this.question.formatInput = {
+                    name: input.name,
+                    value: input.value
+                };
+            }
+        }
+
+        if (answerDraftIdInput) {
+            this.question.answerDraftIdInput = {
+                name: answerDraftIdInput.name,
+                value: Number(answerDraftIdInput.value),
+            };
+        }
+
+        if (this.question.allowsAttachments) {
+            const attachmentsInput = <HTMLInputElement> questionEl.querySelector('.attachments input[name*=_attachments]');
+            const objectElement = <HTMLObjectElement> questionEl.querySelector('.attachments object');
+            const fileManagerUrl = objectElement && objectElement.data;
+
+            if (attachmentsInput) {
+                this.question.attachmentsDraftIdInput = {
+                    name: attachmentsInput.name,
+                    value: Number(attachmentsInput.value),
+                };
+            }
+
+            if (this.question.settings) {
+                this.question.attachmentsMaxFiles = Number(this.question.settings.attachments);
+                this.question.attachmentsAcceptedTypes = this.question.settings.filetypeslist &&
+                    this.question.settings.filetypeslist.join(',');
+            }
+
+            if (fileManagerUrl) {
+                const params = CoreUrlUtils.instance.extractUrlParams(fileManagerUrl);
+                const maxBytes = Number(params.maxbytes);
+                const areaMaxBytes = Number(params.areamaxbytes);
+
+                this.question.attachmentsMaxBytes = maxBytes === -1 || areaMaxBytes === -1 ?
+                        Math.max(maxBytes, areaMaxBytes) : Math.min(maxBytes, areaMaxBytes);
+            }
+        }
+
+        return questionEl;
     }
 
     /**
