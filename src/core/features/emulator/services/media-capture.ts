@@ -21,7 +21,7 @@ import {
     MediaFile,
 } from '@ionic-native/media-capture/ngx';
 
-import { CoreEmulatorCaptureHelper } from './capture.helper';
+import { CoreEmulatorCaptureHelper } from './capture-helper';
 
 /**
  * Emulates the Cordova MediaCapture plugin in browser.

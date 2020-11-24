@@ -27,7 +27,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
-import { makeSingleton, Translate, MediaCapture, ModalController, Camera } from '@singletons/core.singletons';
+import { makeSingleton, Translate, MediaCapture, ModalController, Camera } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components/capture-media/capture-media';
 import { CoreError } from '@classes/errors/error';

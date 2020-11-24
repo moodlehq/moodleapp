@@ -25,7 +25,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Provider to provide some helper functions regarding files and packages.

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu.delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
 
 /**
  * Handler to add Home into main menu.

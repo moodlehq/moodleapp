@@ -25,7 +25,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton, File, Zip, Platform, WebView } from '@singletons/core.singletons';
+import { makeSingleton, File, Zip, Platform, WebView } from '@singletons';
 
 /**
  * Progress event used when writing a file data into a file.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreContentLinksAction } from '../services/contentlinks.delegate';
+import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';

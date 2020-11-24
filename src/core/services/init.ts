@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreUtils, PromiseDefer, OrderedPromiseData } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all init handlers must implement.

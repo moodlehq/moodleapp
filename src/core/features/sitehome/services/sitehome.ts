@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 import { CoreCourse, CoreCourseSection } from '../../course/services/course';
 import { CoreCourses } from '../../courses/services/courses';
 
@@ -193,4 +193,3 @@ export class CoreSiteHomeProvider {
 }
 
 export class CoreSiteHome extends makeSingleton(CoreSiteHomeProvider) {}
-

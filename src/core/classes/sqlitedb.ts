@@ -14,7 +14,7 @@
 
 import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
-import { SQLite, Platform } from '@singletons/core.singletons';
+import { SQLite, Platform } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 
 /**

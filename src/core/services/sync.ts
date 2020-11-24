@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { makeSingleton } from '@singletons/core.singletons';
-import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/sync-db';
+import { makeSingleton } from '@singletons';
+import { SYNC_TABLE_NAME, CoreSyncRecord } from '@services/db/sync';
 
 /*
  * Service that provides some features regarding synchronization.

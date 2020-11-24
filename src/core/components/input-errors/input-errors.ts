@@ -14,7 +14,7 @@
 
 import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 
 /**
  * Component to show errors if an input isn't valid.

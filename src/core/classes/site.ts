@@ -37,7 +37,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
 
 /**

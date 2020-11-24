@@ -17,7 +17,7 @@ import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { CoreArray } from '@singletons/array';
 
-import { CoreHomePage } from './home.page';
+import { CoreHomePage } from './home';
 
 function buildHomeRoutes(injector: Injector): Routes {
     const routes = CoreArray.flatten(injector.get<Routes[]>(HOME_ROUTES, []));

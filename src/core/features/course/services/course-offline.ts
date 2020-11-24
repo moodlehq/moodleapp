@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 import { CoreSites } from '@services/sites';
-import { CoreCourseManualCompletionDBRecord, MANUAL_COMPLETION_TABLE } from './course-db';
+import { CoreCourseManualCompletionDBRecord, MANUAL_COMPLETION_TABLE } from './db/course';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 
 /**

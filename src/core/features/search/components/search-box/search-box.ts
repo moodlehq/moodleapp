@@ -17,8 +17,8 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSearchHistory } from '../../services/search-history';
-import { Translate } from '@singletons/core.singletons';
+import { CoreSearchHistory } from '../../services/search-history.service';
+import { Translate } from '@singletons';
 import { CoreSearchHistoryDBRecord } from '../../services/search-history-db';
 
 /**

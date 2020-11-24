@@ -15,7 +15,6 @@
       "node"
     ],
     "paths": {
-      "@/*": ["*"],
       "@classes/*": ["core/classes/*"],
       "@components/*": ["core/components/*"],
       "@directives/*": ["core/directives/*"],
@@ -23,7 +22,9 @@
       "@guards/*": ["core/guards/*"],
       "@pipes/*": ["core/pipes/*"],
       "@services/*": ["core/services/*"],
-      "@singletons/*": ["core/singletons/*"]
+      "@singletons": ["core/singletons/index"],
+      "@singletons/*": ["core/singletons/*"],
+      "@/*": ["*"]
     }
   },
   "files": [

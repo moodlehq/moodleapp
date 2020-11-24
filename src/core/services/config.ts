@@ -16,8 +16,8 @@ import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { SQLiteDB } from '@classes/sqlitedb';
-import { makeSingleton } from '@singletons/core.singletons';
-import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/config.db';
+import { makeSingleton } from '@singletons';
+import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/db/config';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.

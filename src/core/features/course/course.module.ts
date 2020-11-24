@@ -14,12 +14,12 @@
 
 import { NgModule } from '@angular/core';
 
-import { CORE_SITE_SCHEMAS } from '@/core/services/sites';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
 
 import {
     SITE_SCHEMA as COURSE_SITE_SCHEMA,
     OFFLINE_SITE_SCHEMA as COURSE_OFFLINE_SITE_SCHEMA,
-} from './services/course-db';
+} from './services/db/course';
 
 @NgModule({
     providers: [

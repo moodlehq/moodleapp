@@ -16,10 +16,10 @@ import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader.delegate';
-import { CoreFileUploaderHelper } from '../fileuploader.helper';
+import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
+import { CoreFileUploaderHelper } from '../fileuploader-helper';
 import { CoreFileUploader } from '../fileuploader';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 
 /**
  * Handler to upload any type of file.

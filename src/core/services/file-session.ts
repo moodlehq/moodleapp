@@ -17,7 +17,7 @@ import { FileEntry } from '@ionic-native/file';
 
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalFile } from '@services/ws';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 
 /**
  * Helper to store some temporary data for file submission.

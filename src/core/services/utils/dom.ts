@@ -32,7 +32,7 @@ import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
 import { CoreSilentError } from '@classes/errors/silenterror';
 
-import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons/core.singletons';
+import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 
 /*

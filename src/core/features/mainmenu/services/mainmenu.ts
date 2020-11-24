@@ -19,8 +19,8 @@ import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu.delegate';
-import { makeSingleton } from '@singletons/core.singletons';
+import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-delegate';
+import { makeSingleton } from '@singletons';
 
 /**
  * Service that provides some features regarding Main Menu.

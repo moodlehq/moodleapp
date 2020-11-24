@@ -36,7 +36,7 @@ import {
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteError } from '@classes/errors/siteerror';
-import { makeSingleton, Translate, Http } from '@singletons/core.singletons';
+import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -47,7 +47,7 @@ import {
     SiteDBEntry,
     CurrentSiteDBEntry,
     SchemaVersionsDBEntry,
-} from '@services/sites-db';
+} from '@services/db/sites';
 import { CoreArray } from '../singletons/array';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken('CORE_SITE_SCHEMAS');

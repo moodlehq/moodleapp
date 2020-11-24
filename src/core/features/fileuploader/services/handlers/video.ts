@@ -16,8 +16,8 @@ import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader.delegate';
-import { CoreFileUploaderHelper } from '../fileuploader.helper';
+import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
+import { CoreFileUploaderHelper } from '../fileuploader-helper';
 /**
  * Handler to record a video to upload it.
  */

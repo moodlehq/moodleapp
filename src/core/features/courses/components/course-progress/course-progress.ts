@@ -20,10 +20,10 @@ import { CoreDomUtils } from '@services/utils/dom';
 // import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course.helper';
-import { Translate } from '@singletons/core.singletons';
+import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import { Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses.helper';
+import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 
 /**

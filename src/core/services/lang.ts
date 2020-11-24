@@ -18,7 +18,7 @@ import { CoreConstants } from '@/core/constants';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { makeSingleton, Translate, Platform } from '@singletons/core.singletons';
+import { makeSingleton, Translate, Platform } from '@singletons';
 
 import * as moment from 'moment';
 import { CoreSite } from '../classes/site';

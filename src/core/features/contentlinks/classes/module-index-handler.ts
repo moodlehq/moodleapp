@@ -14,7 +14,7 @@
 
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { Params } from '@angular/router';
-import { CoreContentLinksAction } from '../services/contentlinks.delegate';
+import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 
 /**
  * Handler to handle URLs pointing to the index of a module.

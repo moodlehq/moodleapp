@@ -26,7 +26,7 @@ import { CoreSite } from '@classes/site';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push } from '@singletons/core.singletons';
+import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -34,7 +34,7 @@ import {
     COMPONENTS_TABLE_NAME,
     SITES_TABLE_NAME,
     CodeRequestsQueueItem,
-} from '@services/local-notifications.db';
+} from '@services/db/local-notifications';
 
 /**
  * Service to handle local notifications.

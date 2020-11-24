@@ -15,8 +15,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavParams, PopoverController } from '@ionic/angular';
 import { CoreCourses } from '../../services/courses';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses.helper';
-import { CorePrefetchStatusInfo } from '@features/course/services/course.helper';
+import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
+import { CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 
 /**
  * This component is meant to display a popover with the course options.

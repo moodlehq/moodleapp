@@ -18,7 +18,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { CoreError } from '@classes/errors/error';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
 

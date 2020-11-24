@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 
-import { CoreEmulatorCaptureHelper } from './capture.helper';
+import { CoreEmulatorCaptureHelper } from './capture-helper';
 
 /**
  * Emulates the Cordova Camera plugin in browser.

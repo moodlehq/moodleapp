@@ -23,10 +23,10 @@ import { CoreInit, CoreInitDelegate } from './services/init';
 import { CoreInterceptor } from './classes/interceptor';
 import { CoreSites, CORE_SITE_SCHEMAS } from './services/sites';
 import { CoreUpdateManager } from './services/update-manager';
-import { setSingletonsInjector } from './singletons/core.singletons';
-import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './services/filepool-db';
-import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './services/sites-db';
-import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/sync-db';
+import { setSingletonsInjector } from './singletons';
+import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './services/db/filepool';
+import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './services/db/sites';
+import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
 
 @NgModule({
     imports: [

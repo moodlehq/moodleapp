@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseBase } from '@/types/global';
 

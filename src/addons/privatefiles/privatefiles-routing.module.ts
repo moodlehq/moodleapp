@@ -23,7 +23,7 @@ const routes: Routes = [
     },
     {
         path: ':hash',
-        loadChildren: () => import('./pages/index/index.page.module').then( m => m.AddonPrivateFilesIndexPageModule),
+        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonPrivateFilesIndexPageModule),
     },
 ];
 

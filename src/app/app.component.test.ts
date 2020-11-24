@@ -18,7 +18,7 @@ import { NavController } from '@ionic/angular';
 import { AppComponent } from '@/app/app.component';
 import { CoreEvents } from '@singletons/events';
 import { CoreLangProvider } from '@services/lang';
-import { Network, Platform, NgZone } from '@singletons/core.singletons';
+import { Network, Platform, NgZone } from '@singletons';
 
 import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
 

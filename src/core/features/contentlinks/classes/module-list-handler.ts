@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreContentLinksHelper } from '../services/contentlinks.helper';
+import { CoreContentLinksHelper } from '../services/contentlinks-helper';
 import { CoreContentLinksHandlerBase } from './base-handler';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 import { Params } from '@angular/router';
-import { CoreContentLinksAction } from '../services/contentlinks.delegate';
+import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 
 /**
  * Handler to handle URLs pointing to a list of a certain type of modules.

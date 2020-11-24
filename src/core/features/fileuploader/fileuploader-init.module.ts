@@ -14,7 +14,7 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreFileUploaderDelegate } from './services/fileuploader.delegate';
+import { CoreFileUploaderDelegate } from './services/fileuploader-delegate';
 import { CoreFileUploaderAlbumHandler } from './services/handlers/album';
 import { CoreFileUploaderAudioHandler } from './services/handlers/audio';
 import { CoreFileUploaderCameraHandler } from './services/handlers/camera';

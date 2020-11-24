@@ -16,7 +16,7 @@
 
 import { Directive, ElementRef, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Gesture } from '@ionic/angular';
-import { GestureController } from '@singletons/core.singletons';
+import { GestureController } from '@singletons';
 /**
  * Directive to add long press actions to html elements.
  */

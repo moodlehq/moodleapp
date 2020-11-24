@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Params } from '@angular/router';
-import { CoreContentLinksHandler, CoreContentLinksAction } from '../services/contentlinks.delegate';
+import { CoreContentLinksHandler, CoreContentLinksAction } from '../services/contentlinks-delegate';
 
 /**
  * Base handler to be registered in CoreContentLinksHandler. It is useful to minimize the amount of

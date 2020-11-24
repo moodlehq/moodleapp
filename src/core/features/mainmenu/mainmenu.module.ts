@@ -21,11 +21,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
-import { CoreMainMenuDelegate } from './services/mainmenu.delegate';
+import { CoreMainMenuDelegate } from './services/mainmenu-delegate';
 
 import { CoreMainMenuRoutingModule } from './mainmenu-routing.module';
-import { CoreMainMenuPage } from './pages/menu/menu.page';
-import { CoreMainMenuMorePage } from './pages/more/more.page';
+import { CoreMainMenuPage } from './pages/menu/menu';
+import { CoreMainMenuMorePage } from './pages/more/more';
 import { CoreHomeMainMenuHandler } from './services/handlers/mainmenu';
 
 

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import moment, { LongDateFormatKey } from 'moment';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /*
  * "Utils" service with helper functions for date and time.
