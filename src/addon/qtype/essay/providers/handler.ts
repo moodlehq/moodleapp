@@ -165,8 +165,8 @@ export class AddonQtypeEssayHandler implements CoreQuestionHandler {
             return attachments && attachments.length >= Number(question.settings.attachmentsrequired) ? 1 : 0;
         }
 
-        return (hasTextAnswer || question.settings.responserequired == '0') &&
-                (attachments && attachments.length > Number(question.settings.attachmentsrequired)) ? 1 : 0;
+        return ((hasTextAnswer || question.settings.responserequired == '0') &&
+                (attachments && attachments.length >= Number(question.settings.attachmentsrequired))) ? 1 : 0;
     }
 
     /**
