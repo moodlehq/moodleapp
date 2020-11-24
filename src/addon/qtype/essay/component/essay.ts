@@ -44,11 +44,11 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
      */
     ngOnInit(): void {
         this.uploadFilesSupported = typeof this.question.responsefileareas != 'undefined';
-        this.initEssayComponent();
+        this.initEssayComponent(this.review);
 
         this.formControl = this.fb.control(this.question.textarea && this.question.textarea.text);
 
-        if (this.question.allowsAttachments && this.uploadFilesSupported) {
+        if (this.question.allowsAttachments && this.uploadFilesSupported && !this.review) {
             this.loadAttachments();
         }
     }
