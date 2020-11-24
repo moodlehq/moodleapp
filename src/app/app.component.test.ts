@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 import { NavController } from '@ionic/angular';
 
 import { AppComponent } from '@/app/app.component';
+import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreLangProvider } from '@services/lang';
 import { Network, Platform, NgZone } from '@singletons';
@@ -29,6 +30,7 @@ describe('AppComponent', () => {
     let config: Partial<RenderConfig>;
 
     beforeEach(() => {
+        mockSingleton(CoreApp, { setStatusBarColor: jest.fn() });
         mockSingleton(Network, { onChange: () => new Observable() });
         mockSingleton(Platform, { ready: () => Promise.resolve() });
         mockSingleton(NgZone, { run: jest.fn() });
