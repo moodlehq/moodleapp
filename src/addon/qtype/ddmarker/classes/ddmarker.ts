@@ -751,7 +751,7 @@ export class AddonQtypeDdMarkerQuestion {
             this.question.loaded = true;
         };
 
-        if (bgImg.complete && bgImg.naturalWidth) {
+        if (!bgImg.src || (bgImg.complete && bgImg.naturalWidth)) {
             imgLoaded();
 
             return;
