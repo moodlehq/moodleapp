@@ -583,7 +583,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      */
     protected processAttempt(userFinish?: boolean, timeUp?: boolean, retrying?: boolean): Promise<any> {
         // Get the answers to send.
-        return this.prepareAnswers().then((answers) => {
+        let promise = Promise.resolve({});
+
+        if (!this.showSummary) {
+            promise = this.prepareAnswers();
+        }
+
+        return promise.then((answers) => {
             // Send the answers.
             return this.quizProvider.processAttempt(this.quiz, this.attempt, answers, this.preflightData, userFinish, timeUp,
                     this.offline).catch((error) => {
