@@ -22,7 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
-import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseProvider, CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModDataProvider, AddonModDataEntry } from './data';
 import { AddonModDataSyncProvider } from './sync';
@@ -100,13 +100,14 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param options Other options.
      * @return Promise resolved with the info fetched.
      */
-    protected getDatabaseInfoHelper(module: any, courseId: number, omitFail: boolean, options: CoreSitesCommonWSOptions = {})
+    protected getDatabaseInfoHelper(module: any, courseId: number, omitFail: boolean, options: CoreCourseCommonModWSOptions = {})
             : Promise<any> {
         let database,
             groups = [],
             entries = [],
             files = [];
 
+        options.cmId = options.cmId || module.id;
         options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.dataProvider.getDatabase(courseId, module.id, options).then((data) => {
