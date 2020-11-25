@@ -108,7 +108,7 @@ export class CoreQuestionBaseComponent {
                 this.question.select = selectModel;
 
                 // Check which one should be displayed first: the select or the input.
-                if (this.question.settings) {
+                if (this.question.settings && this.question.settings.unitsleft !== null) {
                     this.question.selectFirst = this.question.settings.unitsleft == '1';
                 } else {
                     const input = questionEl.querySelector('input[type="text"][name*=answer]');
@@ -166,7 +166,7 @@ export class CoreQuestionBaseComponent {
             }
 
             // Check which one should be displayed first: the options or the input.
-            if (this.question.settings) {
+            if (this.question.settings && this.question.settings.unitsleft !== null) {
                 this.question.optionsFirst = this.question.settings.unitsleft == '1';
             } else {
                 const input = questionEl.querySelector('input[type="text"][name*=answer]');
