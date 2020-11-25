@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreQuestionDefaultHandler } from './default-question-handler';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Interface that all question type handlers must implement.
@@ -119,9 +120,9 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of URLs.
+     * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles?(question: any, usageId: number): string[];
+    getAdditionalDownloadableFiles?(question: any, usageId: number): (string | CoreWSExternalFile)[];
 
     /**
      * Clear temporary data after the data has been saved.
@@ -324,9 +325,9 @@ export class CoreQuestionDelegate extends CoreDelegate {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of URLs.
+     * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: any, usageId: number): string[] {
+    getAdditionalDownloadableFiles(question: any, usageId: number): (string | CoreWSExternalFile)[] {
         const type = this.getTypeName(question);
 
         return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question, usageId]) || [];

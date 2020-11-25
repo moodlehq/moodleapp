@@ -590,29 +590,39 @@ export class CoreQuestionHelperProvider {
      */
     prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string, usageId?: number)
             : Promise<any> {
-        const urls = this.filepoolProvider.extractDownloadableFilesFromHtml(question.html);
 
         if (!component) {
             component = CoreQuestionProvider.COMPONENT;
             componentId = question.number;
         }
 
-        urls.push(...this.questionDelegate.getAdditionalDownloadableFiles(question, usageId));
+        const files = this.questionDelegate.getAdditionalDownloadableFiles(question, usageId) || [];
+
+        files.push(...this.filepoolProvider.extractDownloadableFilesFromHtml(question.html));
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const promises = [];
+            const treated = {};
 
-            urls.forEach((url) => {
-                if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(url)) {
+            files.forEach((file) => {
+                const fileUrl = typeof file == 'string' ? file : file.fileurl;
+                const timemodified = (typeof file != 'string' && file.timemodified) || 0;
+
+                if (treated[fileUrl]) {
+                    return;
+                }
+                treated[fileUrl] = true;
+
+                if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(fileUrl)) {
                     return;
                 }
 
-                if (url.indexOf('theme/image.php') > -1 && url.indexOf('flagged') > -1) {
+                if (fileUrl.indexOf('theme/image.php') > -1 && fileUrl.indexOf('flagged') > -1) {
                     // Ignore flag images.
                     return;
                 }
 
-                promises.push(this.filepoolProvider.addToQueueByUrl(siteId, url, component, componentId));
+                promises.push(this.filepoolProvider.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified));
             });
 
             return Promise.all(promises);

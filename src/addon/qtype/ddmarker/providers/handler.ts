@@ -18,6 +18,7 @@ import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { AddonQtypeDdMarkerComponent } from '../component/ddmarker';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Handler to support drag-and-drop markers question type.
@@ -119,9 +120,9 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of URLs.
+     * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: any, usageId: number): string[] {
+    getAdditionalDownloadableFiles(question: any, usageId: number): (string | CoreWSExternalFile)[] {
         this.questionHelper.extractQuestionScripts(question, usageId);
 
         if (question.amdArgs && typeof question.amdArgs[1] == 'string') {
