@@ -191,7 +191,7 @@ export class AddonQtypeCalculatedHandler implements CoreQuestionHandler {
         let unitsLeft = false;
         let match = null;
 
-        if (!question.settings) {
+        if (!question.settings || question.settings.unitsleft === null) {
             // We don't know if units should be before or after so we check both.
             match = answer.match(new RegExp('^' + regexString));
             if (!match) {
