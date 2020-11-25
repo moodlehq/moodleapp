@@ -260,6 +260,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             sort: Number(this.search.sortBy),
             order: this.search.sortDirection,
             page: this.search.page,
+            cmId: this.module.id,
         }).then((entries) => {
             const numEntries = entries.entries.length;
             const numOfflineEntries = entries.offlineEntries.length;

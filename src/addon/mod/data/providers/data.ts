@@ -608,8 +608,11 @@ export class AddonModDataProvider {
      */
     getDatabaseAccessInformation(dataId: number, options: AddonModDataAccessInfoOptions = {}): Promise<any> {
         return this.sitesProvider.getSite(options.siteId).then((site) => {
+            options.groupId = options.groupId || 0;
+
             const params = {
                 databaseid: dataId,
+                groupid: options.groupId,
             };
             const preSets = {
                 cacheKey: this.getDatabaseAccessInformationDataCacheKey(dataId, options.groupId),
@@ -617,10 +620,6 @@ export class AddonModDataProvider {
                 componentId: options.cmId,
                 ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (typeof options.groupId !== 'undefined') {
-                params['groupid'] = options.groupId;
-            }
 
             return site.read('mod_data_get_data_access_information', params, preSets);
         });
@@ -636,7 +635,7 @@ export class AddonModDataProvider {
     getEntries(dataId: number, options: AddonModDataGetEntriesOptions = {}): Promise<AddonModDataEntries> {
         options.groupId = options.groupId || 0;
         options.sort = options.sort || 0;
-        options.order || options.order || 'DESC';
+        options.order = options.order || 'DESC';
         options.page = options.page || 0;
         options.perPage = options.perPage || AddonModDataProvider.PER_PAGE;
 
