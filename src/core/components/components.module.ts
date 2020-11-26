@@ -26,7 +26,7 @@ import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreLoadingComponent } from './loading/loading';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
-import { CoreRecaptchaModalComponent } from './recaptcha/recaptchamodal';
+import { CoreRecaptchaModalComponent } from './recaptcha/recaptcha-modal';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreTabsComponent } from './tabs/tabs';

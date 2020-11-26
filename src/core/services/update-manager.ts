@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreConfig } from '@services/config';
 import { CoreInitHandler, CoreInitDelegate } from '@services/init';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 
 const VERSION_APPLIED = 'version_applied';

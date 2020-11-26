@@ -21,9 +21,9 @@ import { CoreConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 
-import { makeSingleton, Network } from '@singletons/core.singletons';
+import { makeSingleton, Network } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/cron.db';
+import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/db/cron';
 
 /*
  * Service to handle cron processes. The registered processes will be executed every certain time.

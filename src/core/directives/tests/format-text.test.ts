@@ -25,7 +25,7 @@ import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreUrlUtils, CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
-import { Platform } from '@singletons/core.singletons';
+import { Platform } from '@singletons';
 
 import { mock, mockSingleton, RenderConfig, renderWrapperComponent } from '@/testing/utils';
 

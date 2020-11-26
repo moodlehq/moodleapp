@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home.delegate';
+import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 
 /**
  * Handler to add my courses into home page.

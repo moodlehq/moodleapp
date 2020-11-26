@@ -17,7 +17,7 @@ import { Coordinates } from '@ionic-native/geolocation';
 
 import { CoreApp } from '@services/app';
 import { CoreError } from '@classes/errors/error';
-import { Geolocation, Diagnostic, makeSingleton } from '@singletons/core.singletons';
+import { Geolocation, Diagnostic, makeSingleton } from '@singletons';
 
 @Injectable({ providedIn: 'root' })
 export class CoreGeolocationProvider {

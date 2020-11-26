@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreCreateLinksPipe } from './create-links.pipe';
-import { CoreFormatDatePipe } from './format-date.pipe';
-import { CoreNoTagsPipe } from './no-tags.pipe';
-import { CoreSecondsToHMSPipe } from './seconds-to-hms.pipe';
-import { CoreTimeAgoPipe } from './time-ago.pipe';
-import { CoreBytesToSizePipe } from './bytes-to-size.pipe';
+import { CoreCreateLinksPipe } from './create-links';
+import { CoreFormatDatePipe } from './format-date';
+import { CoreNoTagsPipe } from './no-tags';
+import { CoreSecondsToHMSPipe } from './seconds-to-hms';
+import { CoreTimeAgoPipe } from './time-ago';
+import { CoreBytesToSizePipe } from './bytes-to-size';
 
 @NgModule({
     declarations: [

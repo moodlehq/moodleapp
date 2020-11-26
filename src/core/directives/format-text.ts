@@ -22,7 +22,7 @@ import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreLinkDirective } from './link';
 

@@ -16,7 +16,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
 import { CoreLangProvider } from '@services/lang';
-import { CoreLoginHelperProvider } from '@features/login/services/login.helper';
+import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import {
     CoreEvents,
     CoreEventSessionExpiredData,
@@ -24,7 +24,7 @@ import {
     CoreEventSiteData,
     CoreEventSiteUpdatedData,
 } from '@singletons/events';
-import { Network, NgZone, Platform } from '@singletons/core.singletons';
+import { Network, NgZone, Platform } from '@singletons';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 

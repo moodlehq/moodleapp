@@ -16,8 +16,8 @@ import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRe
 
 import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons/core.singletons';
 import { coreShowHideAnimation } from '@classes/animations';
+import { Translate } from '@singletons';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.

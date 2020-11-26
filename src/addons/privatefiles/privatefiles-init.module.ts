@@ -15,7 +15,7 @@
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu.delegate';
+import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { AddonPrivateFilesMainMenuHandler } from './services/handlers/mainmenu';
 

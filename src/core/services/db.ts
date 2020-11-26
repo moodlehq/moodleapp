@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { SQLiteDB } from '@classes/sqlitedb';
 import { SQLiteDBMock } from '@features/emulator/classes/sqlitedb';
-import { makeSingleton, SQLite, Platform } from '@singletons/core.singletons';
+import { makeSingleton, SQLite, Platform } from '@singletons';
 
 /**
  * This service allows interacting with the local database to store and retrieve data.

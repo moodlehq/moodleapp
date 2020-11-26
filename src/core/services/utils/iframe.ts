@@ -26,7 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 
-import { makeSingleton, Network, Platform, NgZone } from '@singletons/core.singletons';
+import { makeSingleton, Network, Platform, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';

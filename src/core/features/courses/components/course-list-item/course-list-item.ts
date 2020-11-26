@@ -15,7 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { CoreCourses, CoreCourseSearchedData } from '../../services/courses';
-import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '../../services/courses.helper';
+import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '../../services/courses-helper';
 
 /**
  * This directive is meant to display an item for a list of courses.

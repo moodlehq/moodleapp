@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSite } from '@classes/site';
-import { makeSingleton } from '@singletons/core.singletons';
+import { makeSingleton } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaFiles:';
 

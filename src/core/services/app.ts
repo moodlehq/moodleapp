@@ -21,12 +21,11 @@ import { CoreEvents } from '@singletons/events';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
-import { CoreConstants } from '@/core/constants';
 
-import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons/core.singletons';
+import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/app.db';
-import { CoreColors } from '../singletons/colors';
+import { CoreColors } from '@singletons/colors';
+import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/db/app';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.

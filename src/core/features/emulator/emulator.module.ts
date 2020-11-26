@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
 import { CoreInitDelegate } from '@services/init';
-import { CoreEmulatorHelperProvider } from './services/emulator.helper';
+import { CoreEmulatorHelperProvider } from './services/emulator-helper';
 import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.

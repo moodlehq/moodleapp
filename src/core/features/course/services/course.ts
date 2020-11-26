@@ -23,10 +23,10 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile } from '@services/ws';
 
-import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './course-db';
+import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './db/course';
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {

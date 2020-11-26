@@ -17,8 +17,8 @@ import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { CoreArray } from '@singletons/array';
 
-import { CoreMainMenuPage } from './pages/menu/menu.page';
-import { CoreMainMenuMorePage } from './pages/more/more.page';
+import { CoreMainMenuPage } from './pages/menu/menu';
+import { CoreMainMenuMorePage } from './pages/more/more';
 
 function buildMainMenuRoutes(injector: Injector): Routes {
     const routes = CoreArray.flatten(injector.get<Routes[]>(MAIN_MENU_ROUTES, []));
@@ -30,7 +30,7 @@ function buildMainMenuRoutes(injector: Injector): Routes {
             children: [
                 {
                     path: 'home', // @todo: Add this route dynamically.
-                    loadChildren: () => import('./pages/home/home.page.module').then(m => m.CoreHomePageModule),
+                    loadChildren: () => import('./pages/home/home.module').then(m => m.CoreHomePageModule),
                 },
                 {
                     path: 'more',

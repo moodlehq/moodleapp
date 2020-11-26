@@ -16,8 +16,8 @@ import { Component } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelperProvider } from '@features/login/services/login.helper';
-import { ModalController } from '@singletons/core.singletons';
+import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { ModalController } from '@singletons';
 
 /**
  * Component that displays onboarding help regarding the CoreLoginSitePage.

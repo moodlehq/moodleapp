@@ -19,7 +19,7 @@ import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreInit } from '@services/init';
-import { CorePluginFile } from '@services/plugin-file.delegate';
+import { CorePluginFile } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -31,7 +31,7 @@ import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Network, NgZone, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Network, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -46,7 +46,7 @@ import {
     CoreFilepoolPackageEntry,
     CoreFilepoolQueueEntry,
     CoreFilepoolQueueDBEntry,
-} from '@services/filepool-db';
+} from '@services/db/filepool';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.

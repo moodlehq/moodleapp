@@ -16,7 +16,7 @@ import { Component, Input, OnInit, AfterViewInit, ElementRef } from '@angular/co
 
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 
 /**
  * Directive to add a red asterisk for required input fields.

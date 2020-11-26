@@ -17,8 +17,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { ModalController } from '@singletons/core.singletons';
-import { CoreRecaptchaModalComponent } from './recaptchamodal';
+import { ModalController } from '@singletons';
+import { CoreRecaptchaModalComponent } from './recaptcha-modal';
 
 /**
  * Component that allows answering a recaptcha.

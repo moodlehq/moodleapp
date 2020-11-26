@@ -18,7 +18,7 @@ import { auditTime } from 'rxjs/operators';
 import { PopoverController } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons/core.singletons';
+import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 

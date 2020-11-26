@@ -24,7 +24,7 @@ const routes: Routes = [
     },
     {
         path: 'preferences',
-        loadChildren: () => import('@features/settings/pages/site/site.page.module').then(m => m.CoreSitePreferencesPageModule),
+        loadChildren: () => import('@features/settings/pages/site/site.module').then(m => m.CoreSitePreferencesPageModule),
     },
 ];
 

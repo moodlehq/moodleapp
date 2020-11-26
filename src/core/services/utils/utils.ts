@@ -28,7 +28,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import {
     makeSingleton, Clipboard, InAppBrowser, Platform, FileOpener, WebIntent, QRScanner, Translate,
-} from '@singletons/core.singletons';
+} from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };

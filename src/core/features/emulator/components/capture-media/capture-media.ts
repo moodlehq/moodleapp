@@ -23,7 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { Platform, ModalController, Media, Translate } from '@singletons/core.singletons';
+import { Platform, ModalController, Media, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';

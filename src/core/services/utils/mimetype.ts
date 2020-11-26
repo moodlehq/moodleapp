@@ -17,7 +17,7 @@ import { FileEntry } from '@ionic-native/file';
 
 import { CoreFile } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
-import { makeSingleton, Translate } from '@singletons/core.singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalFile } from '@services/ws';
 import { CoreUtils } from '@services/utils/utils';

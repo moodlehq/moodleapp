@@ -15,8 +15,8 @@
 import { Component } from '@angular/core';
 
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, Translate } from '@singletons/core.singletons';
-import { CoreLoginHelperProvider } from '@features/login/services/login.helper';
+import { ModalController, Translate } from '@singletons';
+import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 
 /**
  * Component that displays help to connect to a site.

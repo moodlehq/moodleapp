@@ -14,7 +14,7 @@
 
 import { Directive, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { Http } from '@singletons/core.singletons';
+import { Http } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 
 /**

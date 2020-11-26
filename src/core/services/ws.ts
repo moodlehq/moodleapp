@@ -30,7 +30,7 @@ import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, FileTransfer, Http, Platform, NativeHttp } from '@singletons/core.singletons';
+import { makeSingleton, Translate, FileTransfer, Http, Platform, NativeHttp } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSError } from '@classes/errors/wserror';

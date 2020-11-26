@@ -34,7 +34,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
-import { CoreDomUtils } from '@/core/services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
 
 /**

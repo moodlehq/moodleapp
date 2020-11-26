@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu.delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { AddonPrivateFiles } from '@/addons/privatefiles/services/privatefiles';
 
 /**

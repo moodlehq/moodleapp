@@ -15,17 +15,17 @@
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index.link';
-import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks.delegate';
-import { CoreSiteHomeHomeHandler } from './services/handlers/sitehome.home';
-import { CoreHomeDelegate } from '@features/mainmenu/services/home.delegate';
+import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreSiteHomeHomeHandler } from './services/handlers/sitehome-home';
+import { CoreHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
 
 const routes: Routes = [
     {
         path: 'sitehome',
         loadChildren: () =>
-            import('@features/sitehome/pages/index/index.page.module').then(m => m.CoreSiteHomeIndexPageModule),
+            import('@features/sitehome/pages/index/index.module').then(m => m.CoreSiteHomeIndexPageModule),
     },
 ];
 
