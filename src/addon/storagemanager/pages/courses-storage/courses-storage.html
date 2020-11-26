@@ -24,7 +24,10 @@
         <ion-card>
             <ion-list>
                 <ion-item *ngFor="let course of downloadedCourses" class="course">
-                    <h2 text-wrap>{{ course.displayname }}</h2>
+                    <h2 text-wrap>
+                        <span *ngIf="course.displayname">{{ course.displayname }}</span>
+                        <span *ngIf="!course.displayname">{{ course.fullname }}</span>
+                    </h2>
                     <h3 *ngIf="course.isDownloading">{{ 'core.downloading' | translate }}</h3>
                     <p>
                         <ion-icon name="cube" item-start></ion-icon>
