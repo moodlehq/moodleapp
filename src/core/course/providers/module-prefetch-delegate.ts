@@ -1384,13 +1384,22 @@ export class CoreCourseModulePrefetchDelegate extends CoreDelegate {
         }
 
         return promise.then(() => {
-            if (handler) {
-                // Update status of the module.
-                const packageId = this.filepoolProvider.getPackageId(handler.component, module.id);
-                this.statusCache.setValue(packageId, 'downloadedSize', 0);
+            if (!handler) {
+                return;
+            }
+
+            // Update downloaded size.
+            const packageId = this.filepoolProvider.getPackageId(handler.component, module.id);
+            this.statusCache.setValue(packageId, 'downloadedSize', 0);
+
+            // If module is downloadable, set not dowloaded status.
+            return this.isModuleDownloadable(module, courseId).then((downloadable) => {
+                if (!downloadable) {
+                    return;
+                }
 
                 return this.filepoolProvider.storePackageStatus(siteId, CoreConstants.NOT_DOWNLOADED, handler.component, module.id);
-            }
+            });
         });
     }
 

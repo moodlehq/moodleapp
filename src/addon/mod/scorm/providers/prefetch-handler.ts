@@ -424,17 +424,15 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
 
             // Remove the unzipped folder.
             promises.push(this.fileProvider.removeDir(path).catch((error) => {
-                if (error && error.code == 1) {
+                if (error && (error.code == 1 || !this.appProvider.isMobile())) {
                     // Not found, ignore error.
                 } else {
                     return Promise.reject(error);
                 }
             }));
 
-            // Maybe the ZIP wasn't deleted for some reason. Try to delete it too.
-            promises.push(this.filepoolProvider.removeFileByUrl(siteId, this.scormProvider.getPackageUrl(scorm)).catch(() => {
-                // Ignore errors.
-            }));
+            // Delete other files.
+            promises.push(this.filepoolProvider.removeFilesByComponent(siteId, this.component, module.id));
 
             return Promise.all(promises);
         });

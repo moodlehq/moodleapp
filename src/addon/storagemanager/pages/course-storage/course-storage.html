@@ -7,7 +7,10 @@
     <core-loading [hideUntil]="loaded">
         <ion-card class="wholecourse">
             <ion-card-header>
-                <h1 text-wrap>{{ course.displayname }}</h1>
+                <h1 text-wrap>
+                    <span *ngIf="course.displayname">{{ course.displayname }}</span>
+                    <span *ngIf="!course.displayname">{{ course.fullname }}</span>
+                </h1>
                 <p text-wrap>{{ 'addon.storagemanager.info' | translate }}</p>
                 <ion-item no-padding padding-top class="size" text-wrap>
                     <ion-icon name="cube" item-start></ion-icon>
