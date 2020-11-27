@@ -539,7 +539,15 @@ export class AddonModForumProvider {
 
                     unread: !post.postread,
                     isprivatereply: !!post.isprivatereply,
-                    tags: post.tags
+                    tags: (post.tags || []).map((tag) => {
+                        return {
+                            id: tag.taginstanceid,
+                            tagid: tag.id,
+                            isstandard: tag.isstandard,
+                            displayname: tag.rawname,
+                            flag: !!tag.flag,
+                        };
+                    }),
                 };
 
                 if (post.groupname) {
