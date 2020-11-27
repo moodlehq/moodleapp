@@ -21,6 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreUserComponentsModule } from '@features/user/components/components.module';
 
 import { CoreLoginEmailSignupPage } from './email-signup';
 
@@ -41,6 +42,7 @@ const routes: Routes = [
         ReactiveFormsModule,
         CoreComponentsModule,
         CoreDirectivesModule,
+        CoreUserComponentsModule,
     ],
     declarations: [
         CoreLoginEmailSignupPage,

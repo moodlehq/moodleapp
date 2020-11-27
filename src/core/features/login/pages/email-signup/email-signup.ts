@@ -25,6 +25,7 @@ import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 
 import {
     AuthEmailSignupProfileFieldsCategory,
@@ -82,6 +83,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         protected navCtrl: NavController,
         protected fb: FormBuilder,
         protected route: ActivatedRoute,
+        protected userProfileFieldDelegate: CoreUserProfileFieldDelegate,
     ) {
         // Create the ageVerificationForm.
         this.ageVerificationForm = this.fb.group({
@@ -156,7 +158,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                 if (typeof this.ageDigitalConsentVerification == 'undefined') {
 
                     const result = await CoreUtils.instance.ignoreErrors(
-                        CoreWS.instance.callAjax<IsAgeVerificationEnabledResponse>(
+                        CoreWS.instance.callAjax<IsAgeVerificationEnabledWSResponse>(
                             'core_auth_is_age_digital_consent_verification_enabled',
                             {},
                             { siteUrl: this.siteUrl },
@@ -189,7 +191,11 @@ export class CoreLoginEmailSignupPage implements OnInit {
             { siteUrl: this.siteUrl },
         );
 
-        // @todo userProfileFieldDelegate
+        if (this.userProfileFieldDelegate.hasRequiredUnsupportedField(this.settings.profilefields)) {
+            this.allRequiredSupported = false;
+
+            throw new Error(Translate.instance.instant('core.login.signuprequiredfieldnotsupported'));
+        }
 
         this.categories = CoreLoginHelper.instance.formatProfileFieldsForSignup(this.settings.profilefields);
 
@@ -274,7 +280,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
         const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
 
-        const params: Record<string, unknown> = {
+        const params: SignupUserWSParams = {
             username: this.signupForm.value.username.trim().toLowerCase(),
             password: this.signupForm.value.password,
             firstname: CoreTextUtils.instance.cleanTags(this.signupForm.value.firstname),
@@ -295,8 +301,15 @@ export class CoreLoginEmailSignupPage implements OnInit {
         }
 
         try {
-            // @todo Get the data for the custom profile fields.
-            const result = await CoreWS.instance.callAjax<SignupUserResult>(
+            // Get the data for the custom profile fields.
+            params.customprofilefields = await this.userProfileFieldDelegate.getDataForFields(
+                this.settings?.profilefields,
+                true,
+                'email',
+                this.signupForm.value,
+            );
+
+            const result = await CoreWS.instance.callAjax<SignupUserWSResult>(
                 'auth_email_signup_user',
                 params,
                 { siteUrl: this.siteUrl },
@@ -376,7 +389,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         params.age = parseInt(params.age, 10); // Use just the integer part.
 
         try {
-            const result = await CoreWS.instance.callAjax<IsMinorResult>('core_auth_is_minor', params, { siteUrl: this.siteUrl });
+            const result = await CoreWS.instance.callAjax<IsMinorWSResult>('core_auth_is_minor', params, { siteUrl: this.siteUrl });
 
             CoreDomUtils.instance.triggerFormSubmittedEvent(this.ageFormElement, true);
 
@@ -404,14 +417,35 @@ export class CoreLoginEmailSignupPage implements OnInit {
 /**
  * Result of WS core_auth_is_age_digital_consent_verification_enabled.
  */
-export type IsAgeVerificationEnabledResponse = {
+type IsAgeVerificationEnabledWSResponse = {
     status: boolean; // True if digital consent verification is enabled, false otherwise.
+};
+
+/**
+ * Params for WS auth_email_signup_user.
+ */
+type SignupUserWSParams = {
+    username: string; // Username.
+    password: string; // Plain text password.
+    firstname: string; // The first name(s) of the user.
+    lastname: string; // The family name of the user.
+    email: string; // A valid and unique email address.
+    city?: string; // Home city of the user.
+    country?: string; // Home country code.
+    recaptchachallengehash?: string; // Recaptcha challenge hash.
+    recaptcharesponse?: string; // Recaptcha response.
+    customprofilefields?: { // User custom fields (also known as user profile fields).
+        type: string; // The type of the custom field.
+        name: string; // The name of the custom field.
+        value: unknown; // Custom field value, can be an encoded json if required.
+    }[];
+    redirect?: string; // Redirect the user to this site url after confirmation.
 };
 
 /**
  * Result of WS auth_email_signup_user.
  */
-export type SignupUserResult = {
+type SignupUserWSResult = {
     success: boolean; // True if the user was created false otherwise.
     warnings?: CoreWSExternalWarning[];
 };
@@ -419,6 +453,6 @@ export type SignupUserResult = {
 /**
  * Result of WS core_auth_is_minor.
  */
-export type IsMinorResult = {
+type IsMinorWSResult = {
     status: boolean; // True if the user is considered to be a digital minor, false if not.
 };

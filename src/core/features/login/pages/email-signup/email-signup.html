@@ -172,8 +172,8 @@
                 <ion-item-divider class="ion-text-wrap">
                     <ion-label>{{ category.name }}</ion-label>
                 </ion-item-divider>
-                <!-- @todo <core-user-profile-field *ngFor="let field of category.fields" [field]="field" edit="true" signup="true"
-                    registerAuth="email" [form]="signupForm"></core-user-profile-field> -->
+                <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
+                    registerAuth="email" [form]="signupForm"></core-user-profile-field>
             </ng-container>
 
             <!-- ReCAPTCHA -->

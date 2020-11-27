@@ -41,7 +41,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="user.address">
                     <ion-label>
                         <h2>{{ 'core.user.address' | translate}}</h2>
-                        <p><a class="core-anchor" [href]="user.encodedAddress" core-link auto-login="no">
+                        <p><a class="core-anchor" [href]="encodedAddress" core-link auto-login="no">
                             {{ user.address }}
                         </a></p>
                     </ion-label>

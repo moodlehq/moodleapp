@@ -18,6 +18,7 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/db/user';
+import { CoreUserComponentsModule } from './components/components.module';
 
 const routes: Routes = [
     {
@@ -29,6 +30,7 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuMoreRoutingModule.forChild({ siblings: routes }),
+        CoreUserComponentsModule,
     ],
     providers: [
         {

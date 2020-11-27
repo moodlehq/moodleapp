@@ -36,6 +36,7 @@ import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
+import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
@@ -63,6 +64,7 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreContextMenuPopoverComponent,
         CoreNavBarButtonsComponent,
         CoreUserAvatarComponent,
+        CoreDynamicComponent,
     ],
     imports: [
         CommonModule,
@@ -92,6 +94,7 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreContextMenuPopoverComponent,
         CoreNavBarButtonsComponent,
         CoreUserAvatarComponent,
+        CoreDynamicComponent,
     ],
 })
 export class CoreComponentsModule {}

@@ -14,36 +14,30 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreUserComponentsModule } from '@features/user/components/components.module';
-
-import { CoreUserAboutPage } from './about.page';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreUserAboutPage,
-    },
-];
+import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 
 @NgModule({
+    declarations: [
+        CoreUserProfileFieldComponent,
+    ],
     imports: [
-        RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CoreUserComponentsModule,
+        CorePipesModule,
     ],
-    declarations: [
-        CoreUserAboutPage,
+    providers: [
     ],
-    exports: [RouterModule],
+    exports: [
+        CoreUserProfileFieldComponent,
+    ],
 })
-export class CoreUserAboutPageModule {}
+export class CoreUserComponentsModule {}
