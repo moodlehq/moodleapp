@@ -2,7 +2,7 @@
 <widget android-versionCode="39200" id="com.eduvita.eduvita" ios-CFBundleVersion="3.9.2.0" version="3.9.2" versionCode="39200" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Eduvita</name>
     <description>Eduvita official app</description>
-    <author email="sonulodha@iteindia.in" href="https://www.iteindia.in/">Eduvita Mobile team</author>
+    <author email="sonulodha@iteindia.in" href="https://onlineclass.rgpv.ac.in/">Eduvita Mobile team</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
