@@ -189,10 +189,14 @@ export class AddonModWorkshopHelperProvider {
         options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         return this.workshopProvider.getReviewerAssessments(workshopId, options).then((assessments) => {
-            const promises = assessments.map((assessment) => {
-                return this.getSubmissionById(workshopId, assessment.submissionid, options).then((submission) => {
+            const promises = [];
+            assessments.forEach((assessment) => {
+                promises.push(this.getSubmissionById(workshopId, assessment.submissionid, options).then((submission) => {
                     assessment.submission = submission;
-                });
+                }));
+                promises.push(this.workshopProvider.getAssessmentForm(workshopId, assessment.id, options).then((assessmentForm) => {
+                    assessment.form = assessmentForm;
+                }));
             });
 
             return Promise.all(promises).then(() => {
