@@ -142,6 +142,11 @@ export class AddonModWorkshopPrefetchHandler extends CoreCourseActivityPrefetchH
                                         files = files.concat(assessment.feedbackattachmentfiles)
                                                 .concat(assessment.feedbackcontentfiles);
                                     });
+                                    if (workshop.phase >= AddonModWorkshopProvider.PHASE_ASSESSMENT && canAssess) {
+                                        return Promise.all(assessments.map((assessment) => {
+                                            return this.workshopHelper.getReviewerAssessmentById(workshop.id, assessment.id);
+                                        }));
+                                    }
                                 }));
                             });
 

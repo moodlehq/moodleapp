@@ -113,7 +113,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
             };
 
             if (!this.submission) {
-                const modal = this.domUtils.showModalLoading('core.sending', true);
+                const modal = this.domUtils.showModalLoading();
 
                 this.workshopHelper.getSubmissionById(this.workshop.id, this.assessment.submissionid,
                         {cmId: this.workshop.coursemodule}).then((submissionData) => {
