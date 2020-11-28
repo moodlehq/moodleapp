@@ -13,10 +13,11 @@ EXPOSE 53703
 
 WORKDIR /app
 
-COPY . /app
-
 # Install npm libraries.
-RUN npm install && rm -rf /root/.npm
+COPY package*.json ./
+RUN npm ci
+# Delete caches.
+RUN rm -rf /root/.npmCOPY . /app
 
 # Run gulp before starting.
 RUN npx gulp
