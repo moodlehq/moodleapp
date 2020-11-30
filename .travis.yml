@@ -71,7 +71,7 @@ jobs:
     name: "Build iOS"
     if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch != desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
     os: osx
-    osx_image: xcode12u
+    osx_image: xcode12.2
     env:
     - BUILD_PLATFORM='ios'
     script: scripts/aot.sh
@@ -88,7 +88,7 @@ jobs:
     name: "Build MacOS"
     if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
     os: osx
-    osx_image: xcode12u
+    osx_image: xcode12.2
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
