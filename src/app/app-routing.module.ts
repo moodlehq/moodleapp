@@ -12,35 +12,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
+import { PreloadAllModules, RouterModule, ROUTES, Routes } from '@angular/router';
 
-import { AuthGuard } from '@guards/auth';
+import { CoreArray } from '@singletons/array';
 
-const routes: Routes = [
-    {
-        path: 'login',
-        loadChildren: () => import('@features/login/login.module').then( m => m.CoreLoginModule),
-    },
-    {
-        path: 'settings',
-        loadChildren: () => import('@features/settings/settings.module').then( m => m.CoreSettingsModule),
-    },
-    {
-        path: '',
-        loadChildren: () => import('@features/mainmenu/mainmenu.module').then( m => m.CoreMainMenuModule),
-        canActivate: [AuthGuard],
-        canLoad: [AuthGuard],
-    },
-];
+function buildAppRoutes(injector: Injector): Routes {
+    return CoreArray.flatten(injector.get<Routes[]>(APP_ROUTES, []));
+}
+
+export type ModuleRoutes = { children: Routes; siblings: Routes };
+
+export function resolveModuleRoutes(injector: Injector, token: InjectionToken<Partial<ModuleRoutes>[]>): ModuleRoutes {
+    const routes = injector.get(token, []);
+
+    return {
+        children: CoreArray.flatten(routes.map(r => r.children || [])),
+        siblings: CoreArray.flatten(routes.map(r => r.siblings || [])),
+    };
+}
+
+export const APP_ROUTES = new InjectionToken('APP_ROUTES');
 
 @NgModule({
     imports: [
-        RouterModule.forRoot(routes, {
+        RouterModule.forRoot([], {
             preloadingStrategy: PreloadAllModules,
             relativeLinkResolution: 'corrected',
         }),
     ],
+    providers: [
+        { provide: ROUTES, multi: true, useFactory: buildAppRoutes, deps: [Injector] },
+    ],
     exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+
+    static forChild(routes: Routes): ModuleWithProviders<AppRoutingModule> {
+        return {
+            ngModule: AppRoutingModule,
+            providers: [
+                { provide: APP_ROUTES, multi: true, useValue: routes },
+            ],
+        };
+    }
+
+}

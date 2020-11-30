@@ -13,44 +13,36 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Routes } from '@angular/router';
+import { AuthGuard } from '@guards/auth';
 
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
-
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { AppRoutingModule } from '@/app/app-routing.module';
 
 import { CoreMainMenuDelegate } from './services/mainmenu-delegate';
+import { CoreMainMenuHomeHandler } from './services/handlers/mainmenu';
 
-import { CoreMainMenuRoutingModule } from './mainmenu-routing.module';
-import { CoreMainMenuPage } from './pages/menu/menu';
-import { CoreMainMenuMorePage } from './pages/more/more';
-import { CoreHomeMainMenuHandler } from './services/handlers/mainmenu';
-
+const appRoutes: Routes = [
+    {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'main',
+    },
+    {
+        path: 'main',
+        loadChildren: () => import('./mainmenu-lazy.module').then(m => m.CoreMainMenuLazyModule),
+        canActivate: [AuthGuard],
+        canLoad: [AuthGuard],
+    },
+];
 
 @NgModule({
-    imports: [
-        CommonModule,
-        IonicModule,
-        CoreMainMenuRoutingModule,
-        TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-    ],
-    declarations: [
-        CoreMainMenuPage,
-        CoreMainMenuMorePage,
-    ],
-    providers: [
-        CoreHomeMainMenuHandler,
-    ],
+    imports: [AppRoutingModule.forChild(appRoutes)],
 })
 export class CoreMainMenuModule {
 
     constructor(
         mainMenuDelegate: CoreMainMenuDelegate,
-        homeMainMenuHandler: CoreHomeMainMenuHandler,
+        homeMainMenuHandler: CoreMainMenuHomeHandler,
     ) {
         mainMenuDelegate.registerHandler(homeMainMenuHandler);
     }

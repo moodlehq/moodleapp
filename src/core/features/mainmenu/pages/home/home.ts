@@ -18,39 +18,36 @@ import { Subscription } from 'rxjs';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTabsComponent } from '@components/tabs/tabs';
-import { CoreHomeDelegate, CoreHomeHandlerToDisplay } from '../../services/home-delegate';
+import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 
 /**
  * Page that displays the Home.
  */
 @Component({
-    selector: 'page-core-home',
+    selector: 'page-core-mainmenu-home',
     templateUrl: 'home.html',
     styleUrls: ['home.scss'],
 })
-export class CoreHomePage implements OnInit {
+export class CoreMainMenuHomePage implements OnInit {
 
     @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
 
-
     siteName!: string;
-    tabs: CoreHomeHandlerToDisplay[] = [];
+    tabs: CoreMainMenuHomeHandlerToDisplay[] = [];
     loaded = false;
     selectedTab?: number;
 
     protected subscription?: Subscription;
     protected updateSiteObserver?: CoreEventObserver;
 
-    constructor(
-        protected homeDelegate: CoreHomeDelegate,
-    ) {
-        this.loadSiteName();
-    }
+    constructor(protected homeDelegate: CoreMainMenuHomeDelegate) {}
 
     /**
      * Initialize the component.
      */
     ngOnInit(): void {
+        this.loadSiteName();
+
         this.subscription = this.homeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
@@ -64,10 +61,10 @@ export class CoreHomePage implements OnInit {
     /**
      * Init handlers on change (size or handlers).
      */
-    initHandlers(handlers: CoreHomeHandlerToDisplay[]): void {
+    initHandlers(handlers: CoreMainMenuHomeHandlerToDisplay[]): void {
         // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
-        const newTabs: CoreHomeHandlerToDisplay[] = handlers.map((handler) => {
-            handler.page = '/home/' + handler.page;
+        const newTabs: CoreMainMenuHomeHandlerToDisplay[] = handlers.map((handler) => {
+            handler.page = '/main/home/' + handler.page;
 
             // Check if the handler is already in the tabs list. If so, use it.
             const tab = this.tabs.find((tab) => tab.title == handler.title);

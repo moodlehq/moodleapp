@@ -14,11 +14,11 @@
 
 import { NgModule } from '@angular/core';
 
-import { AddonPrivateFilesInitModule } from './privatefiles/privatefiles-init.module';
+import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 
 @NgModule({
     imports: [
-        AddonPrivateFilesInitModule,
+        AddonPrivateFilesModule,
     ],
 })
 export class AddonsModule {}

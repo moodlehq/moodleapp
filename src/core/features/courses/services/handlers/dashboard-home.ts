@@ -13,13 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 
 /**
  * Handler to add dashboard into home page.
  */
 Injectable();
-export class CoreDashboardHomeHandler implements CoreHomeHandler {
+export class CoreDashboardHomeHandler implements CoreMainMenuHomeHandler {
+
+    static readonly PAGE_NAME = 'dashboard';
 
     name = 'CoreCoursesDashboard';
     priority = 1100;
@@ -50,10 +52,10 @@ export class CoreDashboardHomeHandler implements CoreHomeHandler {
      *
      * @return Data needed to render the handler.
      */
-    getDisplayData(): CoreHomeHandlerToDisplay {
+    getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         return {
             title: 'core.courses.mymoodle',
-            page: 'dashboard',
+            page: CoreDashboardHomeHandler.PAGE_NAME,
             class: 'core-courses-dashboard-handler',
             icon: 'fas-tachometer-alt',
             selectPriority: 1000,

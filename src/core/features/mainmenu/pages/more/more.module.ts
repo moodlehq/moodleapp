@@ -22,16 +22,16 @@ import { resolveModuleRoutes } from '@/app/app-routing.module';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 
-import { CoreMainMenuHomePage } from './home';
-import { MAIN_MENU_HOME_ROUTES } from './home-routing.module';
+import { CoreMainMenuMorePage } from './more';
+import { MAIN_MENU_MORE_ROUTES } from './more-routing.module';
 
 function buildRoutes(injector: Injector): Routes {
-    const routes = resolveModuleRoutes(injector, MAIN_MENU_HOME_ROUTES);
+    const routes = resolveModuleRoutes(injector, MAIN_MENU_MORE_ROUTES);
 
     return [
         {
             path: '',
-            component: CoreMainMenuHomePage,
+            component: CoreMainMenuMorePage,
             children: routes.children,
         },
         ...routes.siblings,
@@ -50,10 +50,10 @@ function buildRoutes(injector: Injector): Routes {
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
     ],
     declarations: [
-        CoreMainMenuHomePage,
+        CoreMainMenuMorePage,
     ],
     exports: [
         RouterModule,
     ],
 })
-export class CoreMainMenuHomePageModule {}
+export class CoreMainMenuMorePageModule {}

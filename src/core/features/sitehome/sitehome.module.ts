@@ -18,36 +18,34 @@ import { Routes } from '@angular/router';
 import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSiteHomeHomeHandler } from './services/handlers/sitehome-home';
-import { CoreHomeDelegate } from '@features/mainmenu/services/home-delegate';
-import { CoreHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
+import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
+import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
 
-const routes: Routes = [
+const mainMenuHomeRoutes: Routes = [
     {
-        path: 'sitehome',
-        loadChildren: () =>
-            import('@features/sitehome/pages/index/index.module').then(m => m.CoreSiteHomeIndexPageModule),
+        path: CoreSiteHomeHomeHandler.PAGE_NAME,
+        loadChildren: () => import('./pages/index/index.module').then(m => m.CoreSiteHomeIndexPageModule),
     },
 ];
 
 @NgModule({
-    imports: [CoreHomeRoutingModule.forChild(routes)],
-    exports: [CoreHomeRoutingModule],
+    imports: [CoreMainMenuHomeRoutingModule.forChild({ children: mainMenuHomeRoutes })],
+    exports: [CoreMainMenuHomeRoutingModule],
     providers: [
         CoreSiteHomeIndexLinkHandler,
         CoreSiteHomeHomeHandler,
     ],
 })
-export class CoreSiteHomeInitModule {
+export class CoreSiteHomeModule {
 
     constructor(
         contentLinksDelegate: CoreContentLinksDelegate,
-        homeDelegate: CoreHomeDelegate,
+        homeDelegate: CoreMainMenuHomeDelegate,
         siteHomeIndexLinkHandler: CoreSiteHomeIndexLinkHandler,
         siteHomeDashboardHandler: CoreSiteHomeHomeHandler,
     ) {
         contentLinksDelegate.registerHandler(siteHomeIndexLinkHandler);
         homeDelegate.registerHandler(siteHomeDashboardHandler);
-
     }
 
 }

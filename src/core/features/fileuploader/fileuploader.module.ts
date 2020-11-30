@@ -33,7 +33,7 @@ import { CoreFileUploaderVideoHandler } from './services/handlers/video';
         CoreFileUploaderVideoHandler,
     ],
 })
-export class CoreFileUploaderInitModule {
+export class CoreFileUploaderModule {
 
     constructor(
         delegate: CoreFileUploaderDelegate,

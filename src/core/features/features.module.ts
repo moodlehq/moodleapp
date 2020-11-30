@@ -17,20 +17,22 @@ import { NgModule } from '@angular/core';
 import { CoreCourseModule } from './course/course.module';
 import { CoreCoursesModule } from './courses/courses.module';
 import { CoreEmulatorModule } from './emulator/emulator.module';
-import { CoreFileUploaderInitModule } from './fileuploader/fileuploader-init.module';
+import { CoreFileUploaderModule } from './fileuploader/fileuploader.module';
 import { CoreLoginModule } from './login/login.module';
-import { CoreSettingsInitModule } from './settings/settings-init.module';
-import { CoreSiteHomeInitModule } from './sitehome/sitehome-init.module';
+import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
+import { CoreSettingsModule } from './settings/settings.module';
+import { CoreSiteHomeModule } from './sitehome/sitehome.module';
 
 @NgModule({
     imports: [
-        CoreEmulatorModule,
-        CoreLoginModule,
         CoreCourseModule,
         CoreCoursesModule,
-        CoreSettingsInitModule,
-        CoreFileUploaderInitModule,
-        CoreSiteHomeInitModule,
+        CoreEmulatorModule,
+        CoreFileUploaderModule,
+        CoreLoginModule,
+        CoreMainMenuModule,
+        CoreSettingsModule,
+        CoreSiteHomeModule,
     ],
 })
 export class CoreFeaturesModule {}

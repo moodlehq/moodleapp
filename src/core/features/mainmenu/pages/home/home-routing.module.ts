@@ -12,43 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 
-import { CoreArray } from '@singletons/array';
+import { ModuleRoutes } from '@/app/app-routing.module';
 
-import { CoreHomePage } from './home';
+export const MAIN_MENU_HOME_ROUTES = new InjectionToken('MAIN_MENU_HOME_ROUTES');
 
-function buildHomeRoutes(injector: Injector): Routes {
-    const routes = CoreArray.flatten(injector.get<Routes[]>(HOME_ROUTES, []));
+@NgModule()
+export class CoreMainMenuHomeRoutingModule {
 
-    return [
-        {
-            path: '',
-            component: CoreHomePage,
-            children: [
-                ...routes,
-                // @todo handle 404.
-            ],
-        },
-    ];
-}
-
-export const HOME_ROUTES = new InjectionToken('HOME_ROUTES');
-
-@NgModule({
-    providers: [
-        { provide: ROUTES, multi: true, useFactory: buildHomeRoutes, deps: [Injector] },
-    ],
-    exports: [RouterModule],
-})
-export class CoreHomeRoutingModule {
-
-    static forChild(routes: Routes): ModuleWithProviders<CoreHomeRoutingModule> {
+    static forChild(routes: Partial<ModuleRoutes>): ModuleWithProviders<CoreMainMenuHomeRoutingModule> {
         return {
-            ngModule: CoreHomeRoutingModule,
+            ngModule: CoreMainMenuHomeRoutingModule,
             providers: [
-                { provide: HOME_ROUTES, multi: true, useValue: routes },
+                { provide: MAIN_MENU_HOME_ROUTES, multi: true, useValue: routes },
             ],
         };
     }

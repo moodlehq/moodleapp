@@ -13,13 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 
 /**
  * Handler to add my courses into home page.
  */
 Injectable();
-export class CoreCoursesMyCoursesHomeHandler implements CoreHomeHandler {
+export class CoreCoursesMyCoursesHomeHandler implements CoreMainMenuHomeHandler {
+
+    static readonly PAGE_NAME = 'courses';
 
     name = 'CoreCoursesMyCourses';
     priority = 900;
@@ -50,10 +52,10 @@ export class CoreCoursesMyCoursesHomeHandler implements CoreHomeHandler {
      *
      * @return Data needed to render the handler.
      */
-    getDisplayData(): CoreHomeHandlerToDisplay {
+    getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         return {
             title: 'core.courses.mycourses',
-            page: 'courses/my',
+            page: CoreCoursesMyCoursesHomeHandler.PAGE_NAME,
             class: 'core-courses-my-courses-handler',
             icon: 'fas-graduation-cap',
             selectPriority: 900,

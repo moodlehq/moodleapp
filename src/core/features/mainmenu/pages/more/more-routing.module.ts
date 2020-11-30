@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 
-const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'root', // Fake "hash".
-        pathMatch: 'full',
-    },
-    {
-        path: ':hash',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonPrivateFilesIndexPageModule),
-    },
-];
+import { ModuleRoutes } from '@/app/app-routing.module';
 
-@NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
-})
-export class AddonPrivateFilesRoutingModule {}
+export const MAIN_MENU_MORE_ROUTES = new InjectionToken('MAIN_MENU_MORE_ROUTES');
+
+@NgModule()
+export class CoreMainMenuMoreRoutingModule {
+
+    static forChild(routes: Partial<ModuleRoutes>): ModuleWithProviders<CoreMainMenuMoreRoutingModule> {
+        return {
+            ngModule: CoreMainMenuMoreRoutingModule,
+            providers: [
+                { provide: MAIN_MENU_MORE_ROUTES, multi: true, useValue: routes },
+            ],
+        };
+    }
+
+}

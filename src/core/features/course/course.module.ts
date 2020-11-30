@@ -16,19 +16,13 @@ import { NgModule } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
-import {
-    SITE_SCHEMA as COURSE_SITE_SCHEMA,
-    OFFLINE_SITE_SCHEMA as COURSE_OFFLINE_SITE_SCHEMA,
-} from './services/db/course';
+import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/db/course';
 
 @NgModule({
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [
-                COURSE_SITE_SCHEMA,
-                COURSE_OFFLINE_SITE_SCHEMA,
-            ],
+            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
             multi: true,
         },
     ],

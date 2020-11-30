@@ -14,14 +14,16 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreHomeHandler, CoreHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { CoreSiteHome } from '../sitehome';
 
 /**
  * Handler to add site home into home page.
  */
 Injectable();
-export class CoreSiteHomeHomeHandler implements CoreHomeHandler {
+export class CoreSiteHomeHomeHandler implements CoreMainMenuHomeHandler {
+
+    static readonly PAGE_NAME = 'site';
 
     name = 'CoreSiteHomeDashboard';
     priority = 1200;
@@ -50,13 +52,13 @@ export class CoreSiteHomeHomeHandler implements CoreHomeHandler {
      *
      * @return Data needed to render the handler.
      */
-    getDisplayData(): CoreHomeHandlerToDisplay {
+    getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         const site = CoreSites.instance.getCurrentSite();
         const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === 0;
 
         return {
             title: 'core.sitehome.sitehome',
-            page: 'sitehome',
+            page: CoreSiteHomeHomeHandler.PAGE_NAME,
             class: 'core-sitehome-dashboard-handler',
             icon: 'fas-home',
             selectPriority: displaySiteHome ? 1100 : 900,

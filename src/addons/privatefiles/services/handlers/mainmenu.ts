@@ -23,6 +23,8 @@ import { AddonPrivateFiles } from '@/addons/privatefiles/services/privatefiles';
 @Injectable()
 export class AddonPrivateFilesMainMenuHandler implements CoreMainMenuHandler {
 
+    static readonly PAGE_NAME = 'private';
+
     name = 'AddonPrivateFiles';
     priority = 400;
 
@@ -44,7 +46,7 @@ export class AddonPrivateFilesMainMenuHandler implements CoreMainMenuHandler {
         return {
             icon: 'fas-folder',
             title: 'addon.privatefiles.files',
-            page: 'addon-privatefiles',
+            page: AddonPrivateFilesMainMenuHandler.PAGE_NAME,
             subPage: 'root',
             class: 'addon-privatefiles-handler',
         };

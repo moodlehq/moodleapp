@@ -18,10 +18,12 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delega
 /**
  * Handler to add Home into main menu.
  */
-Injectable();
-export class CoreHomeMainMenuHandler implements CoreMainMenuHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreMainMenuHomeHandler implements CoreMainMenuHandler {
 
-    name = 'CoreHome';
+    static readonly PAGE_NAME = 'home';
+
+    name = 'CoreMainMenuHome';
     priority = 1100;
 
     /**
@@ -54,7 +56,7 @@ export class CoreHomeMainMenuHandler implements CoreMainMenuHandler {
         return {
             icon: 'fa-home',
             title: 'core.mainmenu.home',
-            page: 'home',
+            page: CoreMainMenuHomeHandler.PAGE_NAME,
             // @todo: subPage? The page can change due to core-tabs.
             class: 'core-home-handler',
         };

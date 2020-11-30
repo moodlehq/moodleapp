@@ -21,12 +21,12 @@ import { CoreSortedDelegate } from '@classes/delegate-sorted';
 /**
  * Interface that all home handlers must implement.
  */
-export type CoreHomeHandler = CoreDelegateDisplayHandler<CoreHomeHandlerToDisplay>;
+export type CoreMainMenuHomeHandler = CoreDelegateDisplayHandler<CoreMainMenuHomeHandlerToDisplay>;
 
 /**
  * Data needed to render a main menu handler. It's returned by the handler.
  */
-export interface CoreHomeHandlerData {
+export interface CoreMainMenuHomeHandlerData {
     /**
      * Name of the page to load for the handler.
      */
@@ -71,7 +71,7 @@ export interface CoreHomeHandlerData {
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreHomeHandlerData {
+export interface CoreMainMenuHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreMainMenuHomeHandlerData {
     /**
      * Priority to select handler.
      */
@@ -85,12 +85,12 @@ export interface CoreHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreHom
 @Injectable({
     providedIn: 'root',
 })
-export class CoreHomeDelegate extends CoreSortedDelegate<CoreHomeHandlerToDisplay, CoreHomeHandler> {
+export class CoreMainMenuHomeDelegate extends CoreSortedDelegate<CoreMainMenuHomeHandlerToDisplay, CoreMainMenuHomeHandler> {
 
-    protected featurePrefix = 'CoreHomeDelegate_';
+    protected featurePrefix = 'CoreMainMenuHomeDelegate_';
 
     constructor() {
-        super('CoreHomeDelegate');
+        super('CoreMainMenuHomeDelegate');
     }
 
 }

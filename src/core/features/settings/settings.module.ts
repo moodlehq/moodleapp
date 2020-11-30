@@ -12,13 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { Routes } from '@angular/router';
 
-import { CoreSettingsRoutingModule } from './settings-routing.module';
+import { AppRoutingModule } from '@/app/app-routing.module';
+import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
+
+import { CoreSettingsHelperProvider } from './services/settings-helper';
+
+const appRoutes: Routes = [
+    {
+        path: 'settings',
+        loadChildren: () => import('./settings-lazy.module').then(m => m.CoreSettingsLazyModule),
+    },
+];
+
+const mainMenuMoreRoutes: Routes = [
+    {
+        path: 'settings',
+        loadChildren: () => import('./settings-lazy.module').then(m => m.CoreSettingsLazyModule),
+    },
+    {
+        path: 'preferences',
+        loadChildren: () => import('./pages/site/site.module').then(m => m.CoreSitePreferencesPageModule),
+    },
+];
 
 @NgModule({
     imports: [
-        CoreSettingsRoutingModule,
+        AppRoutingModule.forChild(appRoutes),
+        CoreMainMenuMoreRoutingModule.forChild({ siblings: mainMenuMoreRoutes }),
+    ],
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [CoreSettingsHelperProvider],
+            useFactory: (helper: CoreSettingsHelperProvider) => () => helper.initDomSettings(),
+        },
     ],
 })
 export class CoreSettingsModule {}

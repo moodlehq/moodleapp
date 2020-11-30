@@ -12,54 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 
-import { CoreArray } from '@singletons/array';
-
-import { CoreMainMenuPage } from './pages/menu/menu';
-import { CoreMainMenuMorePage } from './pages/more/more';
-
-function buildMainMenuRoutes(injector: Injector): Routes {
-    const routes = CoreArray.flatten(injector.get<Routes[]>(MAIN_MENU_ROUTES, []));
-
-    return [
-        {
-            path: '',
-            component: CoreMainMenuPage,
-            children: [
-                {
-                    path: 'home', // @todo: Add this route dynamically.
-                    loadChildren: () => import('./pages/home/home.module').then(m => m.CoreHomePageModule),
-                },
-                {
-                    path: 'more',
-                    children: [
-                        {
-                            path: '',
-                            component: CoreMainMenuMorePage,
-                        },
-                        ...routes,
-                    ],
-                },
-                ...routes,
-                // @todo handle 404.
-            ],
-        },
-    ];
-}
+import { ModuleRoutes } from '@/app/app-routing.module';
 
 export const MAIN_MENU_ROUTES = new InjectionToken('MAIN_MENU_ROUTES');
 
-@NgModule({
-    providers: [
-        { provide: ROUTES, multi: true, useFactory: buildMainMenuRoutes, deps: [Injector] },
-    ],
-    exports: [RouterModule],
-})
+@NgModule()
 export class CoreMainMenuRoutingModule {
 
-    static forChild(routes: Routes): ModuleWithProviders<CoreMainMenuRoutingModule> {
+    static forChild(routes: Partial<ModuleRoutes>): ModuleWithProviders<CoreMainMenuRoutingModule> {
         return {
             ngModule: CoreMainMenuRoutingModule,
             providers: [
