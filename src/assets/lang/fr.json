@@ -680,7 +680,7 @@
     "addon.mod_h5pactivity.myattempts": "Mes tentatives",
     "addon.mod_h5pactivity.no_compatible_track": "Cette interaction ({{$a}}) ne fournit pas d'information de suivi ou l'information de suivi fournie n'est pas compatible avec la version de l'activité.",
     "addon.mod_h5pactivity.outcome": "Objectif",
-    "addon.mod_h5pactivity.previewmode": "Le contenu est affiché en mode prévisualisation. Aucun suivi des tentatives ne sera pas enregistré.",
+    "addon.mod_h5pactivity.previewmode": "Le contenu est affiché en mode prévisualisation. Aucun suivi des tentatives ne sera enregistré.",
     "addon.mod_h5pactivity.result_fill-in": "Texte à trous",
     "addon.mod_h5pactivity.result_other": "Type d'interaction inconnu",
     "addon.mod_h5pactivity.review_my_attempts": "Consulter mes tentatives",
