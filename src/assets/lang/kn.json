@@ -399,8 +399,6 @@
     "core.phone": "ದೂರವಾಣಿ",
     "core.pictureof": "{{$a}}ನ ಚಿತ್ರ",
     "core.pulltorefresh": "ಪುನರ್‌ತುಂಬಲು ಎಳೆಯಿರಿ",
-    "core.question.errorattachmentsnotsupported": "ಈ ಅನ್ವಯವು ಉತ್ತರಗಳಿಗೆ ಕಡತಗಳನ್ನು ಸೇರಿಸುವ ಲಕ್ಷಣಗಳನ್ನು ಒಳಗೊಂಡಿಲ್ಲ.",
-    "core.question.errorinlinefilesnotsupported": "ಈ ಅನ್ವಯವು ಕಡತಗಳನ್ನು ಅದೇಸಾಲಿನಲ್ಲಿ ಬದಲಿಸುವ ಲಕ್ಷಣಗಳನ್ನು ಒಳಗೊಂಡಿಲ್ಲ.",
     "core.question.errorquestionnotsupported": "ಈ ಪ್ರಶ್ನೆಯ ರೀತಿಯನ್ನು ಅನ್ವಯಕವು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ:  {{$a}}",
     "core.question.howtodraganddrop": "ಆಯ್ಕೆ ಮಾಡಲು ಹಾಗು ಸೇರಿಸಲು ತಟ್ಟಿರಿ.",
     "core.question.questionmessage": "ಪ್ರಶ್ನೆ {{$a}}: {{$b}}",
