@@ -62,6 +62,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
     @Input() jsData: any; // JS variables to pass to the new page so they can be used in the template or JS.
                           // If true is supplied instead of an object, all initial variables from current page will be copied.
     @Input() newContentPreSets: any; // The preSets for the WS call of the new content.
+    @Input() ptrEnabled: boolean | string; // Whether PTR should be enabled in the new page. Defaults to true.
 
     constructor(element: ElementRef, translate: TranslateService, domUtils: CoreDomUtilsProvider,
             sitePluginsProvider: CoreSitePluginsProvider, @Optional() parentContent: CoreSitePluginsPluginContentComponent,
@@ -102,7 +103,8 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
                 args: args,
                 initResult: this.parentContent && this.parentContent.initResult,
                 jsData: jsData,
-                preSets: this.newContentPreSets
+                preSets: this.newContentPreSets,
+                ptrEnabled: this.ptrEnabled,
             });
         }
     }

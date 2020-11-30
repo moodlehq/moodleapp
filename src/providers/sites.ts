@@ -210,11 +210,23 @@ export interface CoreRegisteredSiteSchema extends CoreSiteSchema {
     siteId?: string;
 }
 
+/**
+ * Possible reading strategies (for cache).
+ */
 export const enum CoreSitesReadingStrategy {
     OnlyCache,
     PreferCache,
+    OnlyNetwork,
     PreferNetwork,
 }
+
+/**
+ * Common options used when calling a WS through CoreSite.
+ */
+export type CoreSitesCommonWSOptions = {
+    readingStrategy?: CoreSitesReadingStrategy; // Reading strategy.
+    siteId?: string; // Site ID. If not defined, current site.
+};
 
 /*
  * Service to manage and interact with sites.
@@ -360,7 +372,7 @@ export class CoreSitesProvider {
     // Site schema for this provider.
     protected siteSchema: CoreSiteSchema = {
         name: 'CoreSitesProvider',
-        version: 1,
+        version: 2,
         canBeCleared: [ CoreSite.WS_CACHE_TABLE ],
         tables: [
             {
@@ -382,6 +394,14 @@ export class CoreSitesProvider {
                     {
                         name: 'expirationTime',
                         type: 'INTEGER'
+                    },
+                    {
+                        name: 'component',
+                        type: 'TEXT'
+                    },
+                    {
+                        name: 'componentId',
+                        type: 'INTEGER'
                     }
                 ]
             },
@@ -399,7 +419,31 @@ export class CoreSitesProvider {
                     }
                 ]
             }
-        ]
+        ],
+        async migrate (db: SQLiteDB, oldVersion: number, siteId: string): Promise<any> {
+            if (oldVersion && oldVersion < 2) {
+                const newTable = CoreSite.WS_CACHE_TABLE;
+                const oldTable = 'wscache';
+
+                try {
+                    await db.tableExists(oldTable);
+                } catch (error) {
+                    // Old table does not exist, ignore.
+                    return;
+                }
+                // Cannot use insertRecordsFrom because there are extra fields, so manually code INSERT INTO.
+                await db.execute(
+                    'INSERT INTO ' + newTable + ' ' +
+                    'SELECT id, data, key, expirationTime, NULL as component, NULL as componentId ' +
+                    'FROM ' + oldTable);
+
+                try {
+                    await db.dropTable(oldTable);
+                } catch (error) {
+                    // Error deleting old table, ignore.
+                }
+            }
+        }
     };
 
     constructor(logger: CoreLoggerProvider,
@@ -609,7 +653,8 @@ export class CoreSitesProvider {
      * @return A promise to be resolved if the site exists.
      */
     siteExists(siteUrl: string): Promise<void> {
-        return this.http.post(siteUrl + '/login/token.php', {}).timeout(this.wsProvider.getRequestTimeout()).toPromise()
+        return this.http.post(siteUrl + '/login/token.php', { appsitecheck: 1 }).
+                timeout(this.wsProvider.getRequestTimeout()).toPromise()
                 .catch(() => {
             // Default error messages are kinda bad, return our own message.
             return Promise.reject({error: this.translate.instant('core.cannotconnecttrouble')});
@@ -937,7 +982,7 @@ export class CoreSitesProvider {
      * @return Release number or empty.
      */
     getReleaseNumber(rawRelease: string): string {
-        const matches = rawRelease.match(/^\d(\.\d(\.\d+)?)?/);
+        const matches = rawRelease.match(/^\d+(\.\d+(\.\d+)?)?/);
         if (matches) {
             return matches[0];
         }
@@ -992,13 +1037,21 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Check the app for a site and show a download dialogs if necessary.
+     *
+     * @param config Config object of the site.
+     */
+    async checkApplication(config: any): Promise<void> {
+        await this.checkRequiredMinimumVersion(config);
+    }
+
+    /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
-     * @param  config Config object of the site.
-     * @param siteId ID of the site to check. Current site id will be used otherwise.
+     * @param config Config object of the site.
      * @return Resolved with  if meets the requirements, rejected otherwise.
      */
-    checkRequiredMinimumVersion(config: any, siteId?: string): Promise<void> {
+    protected checkRequiredMinimumVersion(config: any): Promise<void> {
         if (config && config.tool_mobile_minimumversion) {
             const requiredVersion = this.convertVersionName(config.tool_mobile_minimumversion),
                 appVersion = this.convertVersionName(CoreConfigConstants.versionname);
@@ -1013,8 +1066,7 @@ export class CoreSitesProvider {
                 };
 
                 const downloadUrl = this.appProvider.getAppStoreUrl(storesConfig);
-
-                siteId = siteId || this.getCurrentSiteId();
+                const siteId = this.getCurrentSiteId();
 
                 // Do not block interface.
                 this.domUtils.showConfirm(
@@ -1105,7 +1157,7 @@ export class CoreSitesProvider {
                 return site.getPublicConfig().catch(() => {
                     return {};
                 }).then((config) => {
-                    return this.checkRequiredMinimumVersion(config).then(() => {
+                    return this.checkApplication(config).then(() => {
                         this.login(siteId);
 
                         // Update site info. We don't block the UI.
@@ -1250,6 +1302,24 @@ export class CoreSitesProvider {
 
             return this.makeSiteFromSiteListEntry(data);
         }
+    }
+
+    /**
+     * Finds a site with a certain URL. It will return the first site found.
+     *
+     * @param siteUrl The site URL.
+     * @return Promise resolved with the site.
+     */
+    async getSiteByUrl(siteUrl: string): Promise<CoreSite> {
+        await this.dbReady;
+
+        const data = await this.appDB.getRecord(CoreSitesProvider.SITES_TABLE, { siteUrl });
+
+        if (typeof this.sites[data.id] != 'undefined') {
+            return this.sites[data.id];
+        }
+
+        return this.makeSiteFromSiteListEntry(data);
     }
 
     /**
@@ -1496,10 +1566,15 @@ export class CoreSitesProvider {
         await this.dbReady;
 
         const site = await this.getSite(siteId);
-        const newValues = {
-            token: '', // Erase the token for security.
+        const newValues: any = {
             loggedOut: loggedOut ? 1 : 0
         };
+
+        if (loggedOut) {
+            // Erase the token for security.
+            newValues.token = '';
+            site.token = '';
+        }
 
         site.setLoggedOut(loggedOut);
 
@@ -1967,6 +2042,14 @@ export class CoreSitesProvider {
                     forceOffline: true,
                 };
             case CoreSitesReadingStrategy.PreferNetwork:
+                return {
+                    getFromCache: false,
+                };
+            case CoreSitesReadingStrategy.OnlyNetwork:
+                return {
+                    getFromCache: false,
+                    emergencyCache: false,
+                };
             default:
                 return {};
         }

@@ -22,7 +22,7 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreEmulatorHelperProvider } from '@core/emulator/providers/helper';
 import { CoreEventsProvider } from '@providers/events';
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning } from '@providers/ws';
 
 /**
@@ -398,7 +398,7 @@ export class AddonMessagesProvider {
      * @param userId The other person with whom the current user is having the discussion.
      * @return Cache key.
      */
-    protected getCacheKeyForDiscussion(userId: number): string {
+    getCacheKeyForDiscussion(userId: number): string {
         return this.ROOT_CACHE_KEY + 'discussion:' + userId;
     }
 
@@ -889,93 +889,92 @@ export class AddonMessagesProvider {
      * Get a conversation by the conversation ID.
      *
      * @param conversationId Conversation ID to fetch.
-     * @param excludePending True to exclude messages pending to be sent.
-     * @param limitFrom Offset for messages list.
-     * @param limitTo Limit of messages.
-     * @param newestFirst Whether to order messages by newest first.
-     * @param timeFrom The timestamp from which the messages were created.
-     * @param siteId Site ID. If not defined, use current site.
-     * @param userId User ID. If not defined, current user in the site.
+     * @param options Options.
      * @return Promise resolved with the response.
      * @since 3.6
      */
-    getConversationMessages(conversationId: number, excludePending: boolean, limitFrom: number = 0, limitTo?: number,
-            newestFirst: boolean = true, timeFrom: number = 0, siteId?: string, userId?: number)
+    async getConversationMessages(conversationId: number, options?: AddonMessagesGetConversationMessagesOptions)
             : Promise<AddonMessagesGetConversationMessagesResult> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+        options = options || {};
 
-            if (typeof limitTo == 'undefined' || limitTo === null) {
-                limitTo = this.LIMIT_MESSAGES;
+        const site = await this.sitesProvider.getSite(options.siteId);
+
+        options.userId = options.userId || site.getUserId();
+        options.limitFrom = options.limitFrom || 0;
+        options.limitTo = options.limitTo === undefined || options.limitTo === null ? this.LIMIT_MESSAGES : options.limitTo;
+        options.timeFrom = options.timeFrom || 0;
+        options.newestFirst = options.newestFirst === undefined || options.newestFirst === null ? true : options.newestFirst;
+
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getCacheKeyForConversationMessages(options.userId, conversationId),
+        };
+        const params = {
+            currentuserid: options.userId,
+            convid: conversationId,
+            limitfrom: options.limitFrom,
+            limitnum: options.limitTo < 1 ? options.limitTo : options.limitTo + 1, // If there's a limit, get 1 more than requested.
+            newest: options.newestFirst ? 1 : 0,
+            timefrom: options.timeFrom,
+        };
+
+        if (options.limitFrom > 0) {
+            // Do not use cache when retrieving older messages.
+            // This is to prevent storing too much data and to prevent inconsistencies between "pages" loaded.
+            preSets.getFromCache = false;
+            preSets.saveToCache = false;
+            preSets.emergencyCache = false;
+        } else if (options.forceCache) {
+            preSets.omitExpires = true;
+        } else if (options.ignoreCache) {
+            preSets.getFromCache = false;
+            preSets.emergencyCache = false;
+        }
+
+        const result: AddonMessagesGetConversationMessagesResult =
+                await site.read('core_message_get_conversation_messages', params, preSets);
+
+        if (options.limitTo < 1) {
+            result.canLoadMore = false;
+            result.messages = result.messages;
+        } else {
+            result.canLoadMore = result.messages.length > options.limitTo;
+            result.messages = result.messages.slice(0, options.limitTo);
+        }
+
+        let lastReceived;
+
+        result.messages.forEach((message) => {
+            // Convert time to milliseconds.
+            message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
+
+            if (!lastReceived && message.useridfrom != options.userId) {
+                lastReceived = message;
             }
-
-            const preSets = {
-                    cacheKey: this.getCacheKeyForConversationMessages(userId, conversationId)
-                },
-                params: any = {
-                    currentuserid: userId,
-                    convid: conversationId,
-                    limitfrom: limitFrom,
-                    limitnum: limitTo < 1 ? limitTo : limitTo + 1, // If there is a limit, get 1 more than requested.
-                    newest: newestFirst ? 1 : 0,
-                    timefrom: timeFrom
-                };
-
-            if (limitFrom > 0) {
-                // Do not use cache when retrieving older messages.
-                // This is to prevent storing too much data and to prevent inconsistencies between "pages" loaded.
-                preSets['getFromCache'] = false;
-                preSets['saveToCache'] = false;
-                preSets['emergencyCache'] = false;
-            }
-
-            return site.read('core_message_get_conversation_messages', params, preSets)
-                    .then((result: AddonMessagesGetConversationMessagesResult) => {
-
-                if (limitTo < 1) {
-                    result.canLoadMore = false;
-                    result.messages = result.messages;
-                } else {
-                    result.canLoadMore = result.messages.length > limitTo;
-                    result.messages = result.messages.slice(0, limitTo);
-                }
-
-                let lastReceived;
-
-                result.messages.forEach((message) => {
-                    // Convert time to milliseconds.
-                    message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
-
-                    if (!lastReceived && message.useridfrom != userId) {
-                        lastReceived = message;
-                    }
-                });
-
-                if (this.appProvider.isDesktop() && limitFrom === 0 && lastReceived) {
-                    // Store the last received message (we cannot know if it's unread or not). Don't block the user for this.
-                    this.storeLastReceivedMessageIfNeeded(conversationId, lastReceived, site.getId());
-                }
-
-                if (excludePending) {
-                    // No need to get offline messages, return the ones we have.
-                    return result;
-                }
-
-                // Get offline messages.
-                return this.messagesOffline.getConversationMessages(conversationId).then((offlineMessages) => {
-                    // Mark offline messages as pending.
-                    offlineMessages.forEach((message) => {
-                        message.pending = true;
-                        message.useridfrom = userId;
-                    });
-
-                    result.messages = result.messages.concat(offlineMessages);
-
-                    return result;
-                });
-            });
         });
+
+        if (this.appProvider.isDesktop() && options.limitFrom === 0 && lastReceived) {
+            // Store the last received message (we cannot know if it's unread or not). Don't block the user for this.
+            this.storeLastReceivedMessageIfNeeded(conversationId, lastReceived, site.getId());
+        }
+
+        if (options.excludePending) {
+            // No need to get offline messages, return the ones we have.
+            return result;
+        }
+
+        // Get offline messages.
+        const offlineMessages = await this.messagesOffline.getConversationMessages(conversationId);
+
+        // Mark offline messages as pending.
+        offlineMessages.forEach((message) => {
+            message.pending = true;
+            message.useridfrom = options.userId;
+        });
+
+        result.messages = result.messages.concat(offlineMessages);
+
+        return result;
     }
 
     /**
@@ -1412,7 +1411,7 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the data.
      */
-    protected getRecentMessages(params: any, preSets: any, limitFromUnread: number = 0, limitFromRead: number = 0,
+    getRecentMessages(params: any, preSets: any, limitFromUnread: number = 0, limitFromRead: number = 0,
             toDisplay: boolean = true, siteId?: string): Promise<AddonMessagesGetMessagesMessage[]> {
         limitFromUnread = limitFromUnread || 0;
         limitFromRead = limitFromRead || 0;
@@ -1962,7 +1961,8 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {
-        return this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
+        return this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_conversation_messages_as_read') ||
+                this.sitesProvider.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
     }
 
     /**
@@ -2786,6 +2786,21 @@ export class AddonMessagesProvider {
         });
     }
 }
+
+/**
+ * Options to pass to getConversationMessages.
+ */
+export type AddonMessagesGetConversationMessagesOptions = {
+    excludePending?: boolean; // True to exclude messages pending to be sent.
+    limitFrom?: number; // Offset for messages list. Defaults to 0.
+    limitTo?: number; // Limit of messages.
+    newestFirst?: boolean; // Whether to order messages by newest first.
+    timeFrom?: number; // The timestamp from which the messages were created (in seconds). Defaults to 0.
+    siteId?: string; // Site ID. If not defined, use current site.
+    userId?: number; // User ID. If not defined, current user in the site.
+    forceCache?: boolean; // True if it should return cached data. Has priority over ignoreCache.
+    ignoreCache?: boolean; // True if it should ignore cached data (it will always fail in offline or server down).
+};
 
 /**
  * Conversation.

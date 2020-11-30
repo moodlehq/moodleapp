@@ -25,6 +25,8 @@ import { MockLocationStrategy } from '@angular/common/testing';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { Geolocation } from '@ionic-native/geolocation';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 import { MoodleMobileApp } from './app.component';
@@ -59,6 +61,7 @@ import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
 import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
+import { CoreGeolocationProvider } from '@providers/geolocation';
 
 // Handlers.
 import { CoreSiteInfoCronHandler } from '@providers/handlers/site-info-cron-handler';
@@ -194,7 +197,8 @@ export const CORE_PROVIDERS: any[] = [
     CorePluginFileDelegate,
     CoreSyncProvider,
     CoreFileHelperProvider,
-    CoreCustomURLSchemesProvider
+    CoreCustomURLSchemesProvider,
+    CoreGeolocationProvider,
 ];
 
 export const WP_PROVIDER: any = null;
@@ -342,12 +346,15 @@ export const WP_PROVIDER: any = null;
         CoreSyncProvider,
         CoreFileHelperProvider,
         CoreCustomURLSchemesProvider,
+        CoreGeolocationProvider,
         CoreSiteInfoCronHandler,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CoreInterceptor,
             multi: true,
         },
+        Diagnostic,
+        Geolocation,
         ScreenOrientation,
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},

@@ -142,13 +142,13 @@ export class AddonModDataEntryPage implements OnDestroy {
             this.title = data.name || this.title;
             this.data = data;
 
-            return this.dataProvider.getFields(this.data.id).then((fieldsData) => {
+            return this.dataProvider.getFields(this.data.id, {cmId: this.module.id}).then((fieldsData) => {
                 this.fields = this.utils.arrayToObject(fieldsData, 'id');
                 this.fieldsArray = fieldsData;
             });
         }).then(() => {
             return this.setEntryFromOffset().then(() => {
-                return this.dataProvider.getDatabaseAccessInformation(this.data.id);
+                return this.dataProvider.getDatabaseAccessInformation(this.data.id, {cmId: this.module.id});
             });
         }).then((accessData) => {
             this.access = accessData;
@@ -290,8 +290,13 @@ export class AddonModDataEntryPage implements OnDestroy {
         const perPage = AddonModDataProvider.PER_PAGE;
         const page = !emptyOffset && this.offset >= 0 ? Math.floor(this.offset / perPage) : 0;
 
-        return this.dataHelper.fetchEntries(this.data, this.fieldsArray, this.selectedGroup, undefined, undefined, '0', 'DESC',
-                page, perPage).then((entries) => {
+        return this.dataHelper.fetchEntries(this.data, this.fieldsArray, {
+            groupId: this.selectedGroup,
+            sort: 0,
+            order: 'DESC',
+            page,
+            perPage,
+        }).then((entries) => {
 
             const pageEntries = entries.offlineEntries.concat(entries.entries);
             let pageIndex; // Index of the entry when concatenating offline and online page entries.
@@ -321,8 +326,11 @@ export class AddonModDataEntryPage implements OnDestroy {
                 this.nextOffset = null;
             } else {
                 // Last entry of the page, check if there are more pages.
-                promise = this.dataProvider.getEntries(this.data.id, this.selectedGroup, '0', 'DESC', page + 1, perPage)
-                        .then((entries) => {
+                promise = this.dataProvider.getEntries(this.data.id, {
+                    groupId: this.selectedGroup,
+                    page: page + 1,
+                    perPage: perPage,
+                }).then((entries) => {
                     this.nextOffset = entries && entries.entries && entries.entries.length > 0 ? this.offset + 1 : null;
                 });
             }
@@ -330,7 +338,7 @@ export class AddonModDataEntryPage implements OnDestroy {
             return Promise.resolve(promise).then(() => {
                 if (this.entryId > 0) {
                     // Online entry, we need to fetch the the rating info.
-                    return this.dataProvider.getEntry(this.data.id, this.entryId).then((entry) => {
+                    return this.dataProvider.getEntry(this.data.id, this.entryId, {cmId: this.module.id}).then((entry) => {
                         this.ratingInfo = entry.ratinginfo;
                     });
                 }

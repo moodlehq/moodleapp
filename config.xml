@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39200" id="com.moodle.moodlemobile" ios-CFBundleVersion="3.9.2.0" version="3.9.2" versionCode="39200" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="39300" id="com.moodle.moodlemobile" ios-CFBundleVersion="3.9.3.0" version="3.9.3" versionCode="39300" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Moodle</name>
     <description>Moodle official app</description>
     <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
@@ -56,7 +56,7 @@
         <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/mipmap-xhdpi/smallicon.png" />
         <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity[@android:name='MainActivity']">
-            <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" android:debuggable="true" />
+            <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|screenLayout|smallestScreenSize" />
         </edit-config>
         <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:largeHeap="true" android:usesCleartextTraffic="true" />
@@ -111,11 +111,6 @@
             <feature name="FileOpener2">
                 <param name="android-package" value="io.github.pwlin.cordova.plugins.fileopener2.FileOpener2" />
             </feature>
-        </config-file>
-        <config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <provider android:authorities="${applicationId}.opener.provider" android:exported="false" android:grantUriPermissions="true" android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
-                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
-            </provider>
         </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="FileTransfer">
@@ -219,6 +214,14 @@
                 </intent-filter>
             </service>
         </config-file>
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="Media">
+                <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+        </config-file>
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
@@ -241,7 +244,7 @@
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>3.9.2</string>
+            <string>3.9.3</string>
         </edit-config>
         <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
             <string>YES</string>

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreAppProvider } from '@providers/app';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -188,7 +188,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             courseId = offlineActions[0].courseid;
 
             // Send the answers.
-            return this.dataProvider.getDatabaseById(courseId, dataId, siteId).then((database) => {
+            return this.dataProvider.getDatabaseById(courseId, dataId, {siteId}).then((database) => {
                 data = database;
 
                 const offlineEntries = {};
@@ -208,7 +208,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             }).then(() => {
                 if (result.updated) {
                     // Data has been sent to server. Now invalidate the WS calls.
-                    return this.dataProvider.invalidateContent(data.cmid, courseId, siteId).catch(() => {
+                    return this.dataProvider.invalidateContent(data.coursemodule, courseId, siteId).catch(() => {
                         // Ignore errors.
                     });
                 }
@@ -233,18 +233,23 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
      * @return Promise resolved if success, rejected otherwise.
      */
     protected syncEntry(data: any, entryActions: AddonModDataOfflineAction[], result: any, siteId?: string): Promise<any> {
-        let discardError,
-            timePromise,
-            entryId = entryActions[0].entryid,
-            offlineId,
-            deleted = false;
+        let discardError;
+        let timePromise;
+        let entryId = entryActions[0].entryid;
+        let offlineId;
+        let deleted = false;
 
         const editAction = entryActions.find((action) => action.action == 'add' || action.action == 'edit');
         const approveAction = entryActions.find((action) => action.action == 'approve' || action.action == 'disapprove');
         const deleteAction = entryActions.find((action) => action.action == 'delete');
+        const options = {
+            cmId: data.coursemodule,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
 
         if (entryId > 0) {
-            timePromise = this.dataProvider.getEntry(data.id, entryId, true, siteId).then((entry) => {
+            timePromise = this.dataProvider.getEntry(data.id, entryId, options).then((entry) => {
                 return entry.entry.timemodified;
             }).catch((error) => {
                 if (error && this.utils.isWebServiceError(error)) {
@@ -402,7 +407,7 @@ export class AddonModDataSyncProvider extends CoreSyncBaseProvider {
             const promises = [];
 
             results.forEach((result) => {
-                promises.push(this.dataProvider.getDatabase(result.itemSet.courseId, result.itemSet.instanceId, siteId)
+                promises.push(this.dataProvider.getDatabase(result.itemSet.courseId, result.itemSet.instanceId, {siteId})
                         .then((data) => {
                     const promises = [];
 

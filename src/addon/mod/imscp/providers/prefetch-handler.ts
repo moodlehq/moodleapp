@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -67,7 +67,10 @@ export class AddonModImscpPrefetchHandler extends CoreCourseResourcePrefetchHand
             const promises = [];
 
             promises.push(super.downloadOrPrefetch(module, courseId, prefetch, dirPath));
-            promises.push(this.imscpProvider.getImscp(courseId, module.id, siteId));
+            promises.push(this.imscpProvider.getImscp(courseId, module.id, {
+                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                siteId,
+            }));
 
             return Promise.all(promises);
         });

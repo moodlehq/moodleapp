@@ -303,7 +303,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.pageIsOffline = false;
 
-        return this.wikiProvider.getPageContents(pageId);
+        return this.wikiProvider.getPageContents(pageId, {cmId: this.module.id});
     }
 
     /**
@@ -314,7 +314,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected fetchSubwikiPages(subwiki: any): Promise<any> {
         let subwikiPages;
 
-        return this.wikiProvider.getSubwikiPages(subwiki.wikiid, subwiki.groupid, subwiki.userid).then((pages) => {
+        return this.wikiProvider.getSubwikiPages(subwiki.wikiid, {
+            groupId: subwiki.groupid,
+            userId: subwiki.userid,
+            cmId: this.module.id,
+        }).then((pages) => {
             subwikiPages = pages;
 
             // If no page specified, search first page.
@@ -356,7 +360,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param wikiId Wiki ID.
      */
     protected fetchSubwikis(wikiId: number): Promise<any> {
-        return this.wikiProvider.getSubwikis(wikiId).then((subwikis) => {
+        return this.wikiProvider.getSubwikis(wikiId, {cmId: this.module.id}).then((subwikis) => {
             this.loadedSubwikis = subwikis;
 
             return this.wikiOffline.subwikisHaveOfflineData(subwikis).then((hasOffline) => {

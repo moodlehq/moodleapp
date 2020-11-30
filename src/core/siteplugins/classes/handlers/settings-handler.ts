@@ -25,7 +25,7 @@ export class CoreSitePluginsSettingsHandler extends CoreSitePluginsBaseHandler i
             protected initResult: any) {
         super(name);
 
-        this.priority = handlerSchema.priority;
+        this.priority = handlerSchema.priority || 0;
     }
 
     /**
@@ -43,7 +43,8 @@ export class CoreSitePluginsSettingsHandler extends CoreSitePluginsBaseHandler i
                 title: this.title,
                 component: this.plugin.component,
                 method: this.handlerSchema.method,
-                initResult: this.initResult
+                initResult: this.initResult,
+                ptrEnabled: this.handlerSchema.ptrenabled,
             }
         };
     }

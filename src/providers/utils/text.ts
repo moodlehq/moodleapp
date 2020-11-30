@@ -14,10 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ModalController, Platform } from 'ionic-angular';
+import { ModalController, ModalOptions } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreLangProvider } from '../lang';
 import { makeSingleton } from '@singletons/core.singletons';
+import { CoreApp } from '../app';
+import { CoreWSExternalFile } from '../ws';
 
 /**
  * Different type of errors the app can treat.
@@ -84,8 +86,12 @@ export class CoreTextUtilsProvider {
 
     protected template = document.createElement('template'); // A template element to convert HTML to element.
 
-    constructor(private translate: TranslateService, private langProvider: CoreLangProvider, private modalCtrl: ModalController,
-            private sanitizer: DomSanitizer, private platform: Platform) { }
+    constructor(
+            private translate: TranslateService,
+            private langProvider: CoreLangProvider,
+            private modalCtrl: ModalController,
+            private sanitizer: DomSanitizer
+            ) { }
 
     /**
      * Add ending slash from a path or URL.
@@ -139,7 +145,7 @@ export class CoreTextUtilsProvider {
      * @return URL to view the address.
      */
     buildAddressURL(address: string): SafeUrl {
-        return this.sanitizer.bypassSecurityTrustUrl((this.platform.is('android') ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+        return this.sanitizer.bypassSecurityTrustUrl((CoreApp.instance.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
                 encodeURIComponent(address));
     }
 
@@ -413,17 +419,23 @@ export class CoreTextUtilsProvider {
      * Escape an HTML text. This implementation is based on PHP's htmlspecialchars.
      *
      * @param text Text to escape.
+     * @param doubleEncode If false, it will not convert existing html entities. Defaults to true.
      * @return Escaped text.
      */
-    escapeHTML(text: string | number): string {
+    escapeHTML(text: string | number, doubleEncode: boolean = true): string {
         if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
             return '' + text;
         }
 
+        if (doubleEncode) {
+            text = text.replace(/&/g, '&amp;');
+        } else {
+            text = text.replace(/&(?!amp;)(?!lt;)(?!gt;)(?!quot;)(?!#039;)/g, '&amp;');
+        }
+
         return text
-            .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
@@ -689,6 +701,60 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Replace draftfile URLs with the equivalent pluginfile URL.
+     *
+     * @param siteUrl URL of the site.
+     * @param text Text to treat, including draftfile URLs.
+     * @param files List of files of the area, using pluginfile URLs.
+     * @return Treated text and map with the replacements.
+     */
+    replaceDraftfileUrls(siteUrl: string, text: string, files: CoreWSExternalFile[])
+            : {text: string, replaceMap?: {[url: string]: string}} {
+
+        if (!text || !files || !files.length) {
+            return {text};
+        }
+
+        const draftfileUrl = this.concatenatePaths(siteUrl, 'draftfile.php');
+        const matches = text.match(new RegExp(this.escapeForRegex(draftfileUrl) + '[^\'" ]+', 'ig'));
+
+        if (!matches || !matches.length) {
+            return {text};
+        }
+
+        // Index the pluginfile URLs by file name.
+        const pluginfileMap: {[name: string]: string} = {};
+        files.forEach((file) => {
+            pluginfileMap[file.filename] = file.fileurl;
+        });
+
+        // Replace each draftfile with the corresponding pluginfile URL.
+        const replaceMap: {[url: string]: string} = {};
+        matches.forEach((url) => {
+            if (replaceMap[url]) {
+                // URL already treated, same file embedded more than once.
+                return;
+            }
+
+            // Get the filename from the URL.
+            let filename = url.substr(url.lastIndexOf('/') + 1);
+            if (filename.indexOf('?') != -1) {
+                filename = filename.substr(0, filename.indexOf('?'));
+            }
+
+            if (pluginfileMap[filename]) {
+                replaceMap[url] = pluginfileMap[filename];
+                text = text.replace(new RegExp(this.escapeForRegex(url), 'g'), pluginfileMap[filename]);
+            }
+        });
+
+        return {
+            text,
+            replaceMap,
+        };
+    }
+
+    /**
      * Replace @@PLUGINFILE@@ wildcards with the real URL in a text.
      *
      * @param Text to treat.
@@ -704,6 +770,36 @@ export class CoreTextUtilsProvider {
         }
 
         return text;
+    }
+
+    /**
+     * Restore original draftfile URLs.
+     *
+     * @param text Text to treat, including pluginfile URLs.
+     * @param replaceMap Map of the replacements that were done.
+     * @return Treated text.
+     */
+    restoreDraftfileUrls(siteUrl: string, treatedText: string, originalText: string, files: CoreWSExternalFile[]): string {
+        if (!treatedText || !files || !files.length) {
+            return treatedText;
+        }
+
+        const draftfileUrl = this.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrlRegexPrefix = this.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
+
+        files.forEach((file) => {
+            // Search the draftfile URL in the original text.
+            const matches = originalText.match(new RegExp(
+                    draftfileUrlRegexPrefix + this.escapeForRegex(file.filename) + '[^\'" ]*', 'i'));
+
+            if (!matches || !matches[0]) {
+                return; // Original URL not found, skip.
+            }
+
+            treatedText = treatedText.replace(new RegExp(this.escapeForRegex(file.fileurl), 'g'), matches[0]);
+        });
+
+        return treatedText;
     }
 
     /**
@@ -1152,7 +1248,7 @@ export class CoreTextUtilsProvider {
 
             Object.assign(params, options);
 
-            const modal = this.modalCtrl.create('CoreViewerTextPage', params);
+            const modal = this.modalCtrl.create('CoreViewerTextPage', params, options.modalOptions);
             modal.present();
         }
     }
@@ -1170,6 +1266,7 @@ export type CoreTextUtilsViewTextOptions = {
     instanceId?: number; // The instance ID related to the context.
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     displayCopyButton?: boolean; // Whether to display a button to copy the text.
+    modalOptions?: ModalOptions; // Modal options.
 };
 
 export class CoreTextUtils extends makeSingleton(CoreTextUtilsProvider) {}

@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef } from '@angular/core';
+import {
+    Injectable, Injector, Component, NgModule, Compiler, ComponentFactory, ComponentRef, NgModuleRef, NO_ERRORS_SCHEMA
+} from '@angular/core';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import {
     Platform, ActionSheetController, AlertController, LoadingController, ModalController, PopoverController, ToastController,
@@ -57,7 +59,9 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreArray } from '@singletons/array';
 import { CoreUrl } from '@singletons/url';
+import { CoreWindow } from '@singletons/window';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
 import { CoreContentLinksHandlerBase } from '@core/contentlinks/classes/base-handler';
@@ -65,6 +69,7 @@ import { CoreContentLinksModuleGradeHandler } from '@core/contentlinks/classes/m
 import { CoreContentLinksModuleIndexHandler } from '@core/contentlinks/classes/module-index-handler';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { CoreCourseResourcePrefetchHandlerBase } from '@core/course/classes/resource-prefetch-handler';
+import { CoreGeolocationError, CoreGeolocationErrorReason } from '@providers/geolocation';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreComponentsModule } from '@components/components.module';
@@ -177,7 +182,7 @@ export class CoreCompileProvider {
         const imports = this.IMPORTS.concat(extraImports);
 
         // Now create the module containing the component.
-        const module = NgModule({imports: imports, declarations: [component]})(class {});
+        const module = NgModule({imports: imports, declarations: [component], schemas: [NO_ERRORS_SCHEMA]})(class {});
 
         try {
             // Compile the module and the component.
@@ -191,6 +196,9 @@ export class CoreCompileProvider {
                 }
             });
         } catch (ex) {
+            this.logger.error('Error compiling template', template);
+            this.logger.error(ex);
+
             return Promise.reject({message: 'Template has some errors and cannot be displayed.', debuginfo: ex});
         }
     }
@@ -270,7 +278,9 @@ export class CoreCompileProvider {
         instance['moment'] = moment;
         instance['Md5'] = Md5;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
+        instance['CoreArray'] = CoreArray;
         instance['CoreUrl'] = CoreUrl;
+        instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache;
         instance['CoreDelegate'] = CoreDelegate;
         instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;
@@ -290,6 +300,8 @@ export class CoreCompileProvider {
         instance['CoreSitePluginsQuizAccessRuleComponent'] = CoreSitePluginsQuizAccessRuleComponent;
         instance['CoreSitePluginsAssignFeedbackComponent'] = CoreSitePluginsAssignFeedbackComponent;
         instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
+        instance['CoreGeolocationError'] = CoreGeolocationError;
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
     }
 
     /**

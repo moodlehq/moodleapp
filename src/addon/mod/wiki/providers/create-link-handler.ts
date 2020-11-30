@@ -48,13 +48,15 @@ export class AddonModWikiCreateLinkHandler extends CoreContentLinksHandlerBase {
     protected currentStateIsSameWiki(activeView: ViewController, subwikiId: number, siteId: string): Promise<boolean> {
 
         if (activeView && activeView.component.name == 'AddonModWikiIndexPage') {
+            const moduleId = activeView.data.module && activeView.data.module.id;
+
             if (activeView.data.subwikiId == subwikiId) {
                 // Same subwiki, so it's same wiki.
                 return Promise.resolve(true);
 
             } else if (activeView.data.pageId) {
                 // Get the page contents to check the subwiki.
-                return this.wikiProvider.getPageContents(activeView.data.pageId, false, false, siteId).then((page) => {
+                return this.wikiProvider.getPageContents(activeView.data.pageId, {cmId: moduleId, siteId}).then((page) => {
                     return page.subwikiid == subwikiId;
                 }).catch(() => {
                     // Not found, return false.
@@ -63,15 +65,14 @@ export class AddonModWikiCreateLinkHandler extends CoreContentLinksHandlerBase {
 
             } else if (activeView.data.wikiId) {
                 // Check if the subwiki belongs to this wiki.
-                return this.wikiProvider.wikiHasSubwiki(activeView.data.wikiId, subwikiId, false, false, siteId);
+                return this.wikiProvider.wikiHasSubwiki(activeView.data.wikiId, subwikiId, {cmId: moduleId, siteId});
 
             } else if (activeView.data.courseId && activeView.data.module) {
-                const moduleId = activeView.data.module && activeView.data.module.id;
                 if (moduleId) {
                     // Get the wiki.
-                    return this.wikiProvider.getWiki(activeView.data.courseId, moduleId, false, siteId).then((wiki) => {
+                    return this.wikiProvider.getWiki(activeView.data.courseId, moduleId, {siteId}).then((wiki) => {
                         // Check if the subwiki belongs to this wiki.
-                        return this.wikiProvider.wikiHasSubwiki(wiki.id, subwikiId, false, false, siteId);
+                        return this.wikiProvider.wikiHasSubwiki(wiki.id, subwikiId, {cmId: moduleId, siteId});
                     }).catch(() => {
                         // Not found, return false.
                         return false;

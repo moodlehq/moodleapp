@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavParams, Platform } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreApp } from '@providers/app';
 
 /**
  * Page that displays the list of app settings pages.
@@ -30,9 +31,8 @@ export class CoreAppSettingsPage {
     isIOS: boolean;
     selectedPage: string;
 
-    constructor(platorm: Platform,
-            navParams: NavParams) {
-        this.isIOS = platorm.is('ios');
+    constructor(navParams: NavParams) {
+        this.isIOS = CoreApp.instance.isIOS();
 
         this.selectedPage = navParams.get('page') || false;
     }

@@ -35,7 +35,17 @@ import { TranslateService } from '@ngx-translate/core';
  */
 type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
     noProtocolUrl?: string; // Url wihtout protocol.
-    country?: string; // Based on countrycode.
+    location?: string; // City + country.
+    title?: string; // Name + alias.
+};
+
+type SiteFinderSettings = {
+    displayalias: boolean,
+    displaycity: boolean,
+    displaycountry: boolean,
+    displayimage: boolean,
+    displaysitename: boolean,
+    displayurl: boolean
 };
 
 /**
@@ -51,8 +61,8 @@ export class CoreLoginSitePage {
     @ViewChild('siteFormEl') formElement: ElementRef;
 
     siteForm: FormGroup;
-    fixedSites: CoreLoginSiteInfo[];
-    filteredSites: CoreLoginSiteInfo[];
+    fixedSites: CoreLoginSiteInfoExtended[];
+    filteredSites: CoreLoginSiteInfoExtended[];
     siteSelector = 'sitefinder';
     showKeyboard = false;
     filter = '';
@@ -62,6 +72,7 @@ export class CoreLoginSitePage {
     searchFnc: Function;
     showScanQR: boolean;
     enteredSiteUrl: CoreLoginSiteInfoExtended;
+    siteFinderSettings: SiteFinderSettings;
 
     constructor(navParams: NavParams,
             protected navCtrl: NavController,
@@ -84,13 +95,37 @@ export class CoreLoginSitePage {
         let url = '';
         this.siteSelector = CoreConfigConstants.multisitesdisplay;
 
+        const siteFinderSettings: Partial<SiteFinderSettings> = CoreConfigConstants['sitefindersettings'] || {};
+        this.siteFinderSettings = {
+            displaysitename: true,
+            displayimage: true,
+            displayalias: true,
+            displaycity: true,
+            displaycountry: true,
+            displayurl: true,
+            ...siteFinderSettings
+        };
+
         // Load fixed sites if they're set.
         if (this.loginHelper.hasSeveralFixedSites()) {
-            this.fixedSites = <any[]> this.loginHelper.getFixedSites();
-            // Autoselect if not defined.
-            if (['list', 'listnourl', 'select', 'buttons'].indexOf(this.siteSelector) < 0) {
-                this.siteSelector = this.fixedSites.length > 8 ? 'list' : (this.fixedSites.length > 3 ? 'select' : 'buttons');
+            // Deprecate listnourl on 3.9.3, remove this block on the following release.
+            if (this.siteSelector == 'listnourl') {
+                this.siteSelector = 'list';
+                this.siteFinderSettings.displayurl = false;
             }
+
+            this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> this.loginHelper.getFixedSites());
+
+            // Do not show images if none are set.
+            if (!this.fixedSites.some((site) => !!site.imageurl)) {
+                this.siteFinderSettings.displayimage = false;
+            }
+
+            // Autoselect if not defined.
+            if (this.siteSelector != 'list' && this.siteSelector != 'buttons') {
+                this.siteSelector = this.fixedSites.length > 3 ? 'list' : 'buttons';
+            }
+
             this.filteredSites = this.fixedSites;
             url = this.fixedSites[0].url;
         } else if (CoreConfigConstants.enableonboarding && !this.appProvider.isIOS() && !this.appProvider.isMac()) {
@@ -116,11 +151,8 @@ export class CoreLoginSitePage {
                 // Update the sites list.
                 this.sites = await this.sitesProvider.findSites(search);
 
-                // UI tweaks.
-                this.sites.forEach((site) => {
-                    site.noProtocolUrl = CoreUrl.removeProtocol(site.url);
-                    site.country = this.utils.getCountryName(site.countrycode);
-                });
+                // Add UI tweaks.
+                this.sites = this.extendCoreLoginSiteInfo(this.sites);
 
                 this.hasSites = !!this.sites.length;
             } else {
@@ -130,6 +162,34 @@ export class CoreLoginSitePage {
 
             this.loadingSites = false;
         }, 1000);
+    }
+
+    /**
+     * Extend info of Login Site Info to get UI tweaks.
+     *
+     * @param  sites Sites list.
+     * @return Sites list with extended info.
+     */
+    protected extendCoreLoginSiteInfo(sites: CoreLoginSiteInfoExtended[]): CoreLoginSiteInfoExtended[] {
+        return sites.map((site) => {
+            site.noProtocolUrl = this.siteFinderSettings.displayurl && site.url ? CoreUrl.removeProtocol(site.url) : '';
+
+            const name = this.siteFinderSettings.displaysitename ? site.name : '';
+            const alias = this.siteFinderSettings.displayalias && site.alias ? site.alias : '';
+
+            // Set title with parenthesis if both name and alias are present.
+            site.title = name && alias ? name + ' (' + alias + ')' : name + alias;
+
+            const country = this.siteFinderSettings.displaycountry && site.countrycode ?
+                this.utils.getCountryName(site.countrycode) : '';
+            const city = this.siteFinderSettings.displaycity && site.city ?
+                site.city : '';
+
+            // Separate location with hiphen if both country and city are present.
+            site.location = city && country ? city + ' - ' + country : city + country;
+
+            return site;
+        });
     }
 
     /**
@@ -224,7 +284,8 @@ export class CoreLoginSitePage {
             this.filteredSites = this.fixedSites;
         } else {
             this.filteredSites = this.fixedSites.filter((site) => {
-                return site.name.toLowerCase().indexOf(newValue) > -1 || site.url.toLowerCase().indexOf(newValue) > -1;
+                return site.title.toLowerCase().indexOf(newValue) > -1 || site.noProtocolUrl.toLowerCase().indexOf(newValue) > -1 ||
+                    site.location.toLowerCase().indexOf(newValue) > -1;
             });
         }
     }
@@ -335,7 +396,7 @@ export class CoreLoginSitePage {
      * @return Promise resolved after logging in.
      */
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
-        return this.sitesProvider.checkRequiredMinimumVersion(response.config).then(() => {
+        return this.sitesProvider.checkApplication(response.config).then(() => {
 
             this.domUtils.triggerFormSubmittedEvent(this.formElement, true);
 
@@ -429,10 +490,19 @@ export class CoreLoginSitePage {
                     }
                 }
             } else {
-                // Not a custom URL scheme, put the text in the field.
-                this.siteForm.controls.siteUrl.setValue(text);
+                // Not a custom URL scheme, check if it's a URL scheme to another app.
+                const scheme = this.urlUtils.getUrlProtocol(text);
 
-                this.connect(new Event('click'), text);
+                if (scheme && scheme != 'http' && scheme != 'https') {
+                    this.domUtils.showErrorModal(this.translate.instant('core.errorurlschemeinvalidscheme', {$a: text}));
+                } else if (this.loginHelper.isSiteUrlAllowed(text)) {
+                    // Put the text in the field (if present).
+                    this.siteForm.controls.siteUrl.setValue(text);
+
+                    this.connect(new Event('click'), text);
+                } else {
+                    this.domUtils.showErrorModal('core.errorurlschemeinvalidsite', true);
+                }
             }
         }
     }
@@ -456,7 +526,7 @@ export class CoreLoginSitePage {
             // Check if site uses SSO.
             const response = await this.sitesProvider.checkSite(siteUrl);
 
-            await this.sitesProvider.checkRequiredMinimumVersion(response.config);
+            await this.sitesProvider.checkApplication(response.config);
 
             if (!this.loginHelper.isSSOLoginNeeded(response.code)) {
                 // No SSO, go to credentials page.

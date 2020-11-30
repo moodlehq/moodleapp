@@ -32,8 +32,7 @@ export class CoreUserLinkDirective implements OnInit {
             @Optional() private navCtrl: NavController,
             @Optional() private svComponent: CoreSplitViewComponent) {
 
-        // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
-        this.element = element.nativeElement || element;
+        this.element = element.nativeElement;
     }
 
     /**

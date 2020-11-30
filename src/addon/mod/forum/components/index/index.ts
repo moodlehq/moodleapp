@@ -133,7 +133,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     }
 
                     if (typeof data.deleted != 'undefined' && data.deleted) {
-                        if (data.post.parent == 0 && this.splitviewCtrl && this.splitviewCtrl.isOn()) {
+                        if (data.post.parentid == 0 && this.splitviewCtrl && this.splitviewCtrl.isOn()) {
                             // Discussion deleted, clear details page.
                             this.splitviewCtrl.emptyDetails();
                         }
@@ -250,7 +250,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             promises.push(this.groupsProvider.getActivityGroupMode(this.forum.cmid).then((mode) => {
                 this.usesGroups = (mode === CoreGroupsProvider.SEPARATEGROUPS || mode === CoreGroupsProvider.VISIBLEGROUPS);
             }));
-            promises.push(this.forumProvider.getAccessInformation(this.forum.id).then((accessInfo) => {
+            promises.push(this.forumProvider.getAccessInformation(this.forum.id, {cmId: this.module.id}).then((accessInfo) => {
                 // Disallow adding discussions if cut-off date is reached and the user has not the capability to override it.
                 // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
                 const cutoffDateReached = this.forumHelper.isCutoffDateReached(this.forum) && !accessInfo.cancanoverridecutoff;
@@ -259,7 +259,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
             if (this.forumProvider.isSetPinStateAvailableForSite()) {
                 // Use the canAddDiscussion WS to check if the user can pin discussions.
-                promises.push(this.forumProvider.canAddDiscussionToAll(this.forum.id).then((response) => {
+                promises.push(this.forumProvider.canAddDiscussionToAll(this.forum.id, {cmId: this.module.id}).then((response) => {
                     this.canPin = !!response.canpindiscussions;
                 }).catch(() => {
                     this.canPin = false;
@@ -354,7 +354,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.page = 0;
         }
 
-        return this.forumProvider.getDiscussions(this.forum.id, this.selectedSortOrder.value, this.page).then((response) => {
+        return this.forumProvider.getDiscussions(this.forum.id, {
+            cmId: this.forum.cmid,
+            sortOrder: this.selectedSortOrder.value,
+            page: this.page,
+        }).then((response) => {
             let promise;
             if (this.usesGroups) {
                 promise = this.forumProvider.formatDiscussionsGroups(this.forum.cmid, response.discussions);

@@ -16,7 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -143,7 +143,9 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
      * @return Promise resolved with true if downloadable, resolved with false otherwise.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
-        return this.feedbackProvider.getFeedback(courseId, module.id, undefined, true).then((feedback) => {
+        return this.feedbackProvider.getFeedback(courseId, module.id, {
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+        }).then((feedback) => {
             const now = this.timeUtils.timestamp();
 
             // Check time first if available.
@@ -154,7 +156,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                 return false;
             }
 
-            return this.feedbackProvider.getFeedbackAccessInformation(feedback.id).then((accessData) => {
+            return this.feedbackProvider.getFeedbackAccessInformation(feedback.id, {cmId: module.id}).then((accessData) => {
                 return accessData.isopen;
             });
         });
@@ -192,15 +194,24 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
      * @return Promise resolved when done.
      */
     protected prefetchFeedback(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+        const commonOptions = {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+        const modOptions = {
+            cmId: module.id,
+            ...commonOptions, // Include all common options.
+        };
+
         // Prefetch the feedback data.
-        return this.feedbackProvider.getFeedback(courseId, module.id, siteId, false, true).then((feedback) => {
+        return this.feedbackProvider.getFeedback(courseId, module.id, commonOptions).then((feedback) => {
             let files = (feedback.pageaftersubmitfiles || []).concat(this.getIntroFilesFromInstance(module, feedback));
 
-            return this.feedbackProvider.getFeedbackAccessInformation(feedback.id, false, true, siteId).then((accessData) => {
+            return this.feedbackProvider.getFeedbackAccessInformation(feedback.id, modOptions).then((accessData) => {
                 const p2 = [];
                 if (accessData.canedititems || accessData.canviewreports) {
                     // Get all groups analysis.
-                    p2.push(this.feedbackProvider.getAnalysis(feedback.id, undefined, true, siteId));
+                    p2.push(this.feedbackProvider.getAnalysis(feedback.id, modOptions));
                     p2.push(this.groupsProvider.getActivityGroupInfo(feedback.coursemodule, true, undefined, siteId, true)
                             .then((groupInfo) => {
                         const p3 = [];
@@ -209,11 +220,16 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                             groupInfo.groups = [{id: 0}];
                         }
                         groupInfo.groups.forEach((group) => {
-                            p3.push(this.feedbackProvider.getAnalysis(feedback.id, group.id, true, siteId));
-                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, group.id, true, siteId));
+                            const groupOptions = {
+                                groupId: group.id,
+                                ...modOptions, // Include all mod options.
+                            };
+
+                            p3.push(this.feedbackProvider.getAnalysis(feedback.id, groupOptions));
+                            p3.push(this.feedbackProvider.getAllResponsesAnalysis(feedback.id, groupOptions));
 
                             if (!accessData.isanonymous) {
-                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, group.id, true, siteId));
+                                p3.push(this.feedbackProvider.getAllNonRespondents(feedback.id, groupOptions));
                             }
                         });
 
@@ -221,7 +237,7 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                     }));
                 }
 
-                p2.push(this.feedbackProvider.getItems(feedback.id, true, siteId).then((response) => {
+                p2.push(this.feedbackProvider.getItems(feedback.id, commonOptions).then((response) => {
                     response.items.forEach((item) => {
                         files = files.concat(item.itemfiles);
                     });
@@ -234,8 +250,8 @@ export class AddonModFeedbackPrefetchHandler extends CoreCourseActivityPrefetchH
                     p2.push(this.feedbackProvider.processPageOnline(feedback.id, 0, {}, undefined, siteId).finally(() => {
                         const p4 = [];
 
-                        p4.push(this.feedbackProvider.getCurrentValues(feedback.id, false, true, siteId));
-                        p4.push(this.feedbackProvider.getResumePage(feedback.id, false, true, siteId));
+                        p4.push(this.feedbackProvider.getCurrentValues(feedback.id, modOptions));
+                        p4.push(this.feedbackProvider.getResumePage(feedback.id, modOptions));
 
                         return Promise.all(p4);
                     }));

@@ -70,7 +70,7 @@ export class AddonStorageManagerCourseStoragePage {
                     // But these aren't necessarily consistent, for example mod_frog vs mmaModFrog.
                     // There is nothing enforcing correct values.
                     // Most modules which have large files are downloadable, so I think this is sufficient.
-                    const promise = this.prefetchDelegate.getModuleDownloadedSize(module, this.course.id).
+                    const promise = this.prefetchDelegate.getModuleStoredSize(module, this.course.id).
                         then((size) => {
                             // There are some cases where the return from this is not a valid number.
                             if (!isNaN(size)) {
@@ -100,7 +100,7 @@ export class AddonStorageManagerCourseStoragePage {
      */
     async deleteForCourse(): Promise<void> {
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -130,7 +130,7 @@ export class AddonStorageManagerCourseStoragePage {
      */
     async deleteForSection(section: any): Promise<void> {
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -160,7 +160,7 @@ export class AddonStorageManagerCourseStoragePage {
         }
 
         try {
-            await this.domUtils.showDeleteConfirm('core.course.confirmdeletemodulefiles');
+            await this.domUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
             if (!error.coreCanceled) {
                 throw error;
@@ -184,8 +184,8 @@ export class AddonStorageManagerCourseStoragePage {
         const promises = [];
         modules.forEach((module) => {
             // Remove the files.
-            const promise = this.prefetchDelegate.removeModuleFiles(module, this.course.id).then(() => {
-                // When the files are removed, update the size.
+            const promise = this.courseHelperProvider.removeModuleStoredData(module, this.course.id).then(() => {
+                // When the files and cache are removed, update the size.
                 module.parentSection.totalSize -= module.totalSize;
                 this.totalSize -= module.totalSize;
                 module.totalSize = 0;

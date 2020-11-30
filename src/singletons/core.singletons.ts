@@ -16,6 +16,8 @@ import { AlertController, App } from 'ionic-angular';
 import { Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
+import { Geolocation as GeolocationService } from '@ionic-native/geolocation';
+import { Diagnostic as DiagnosticService } from '@ionic-native/diagnostic';
 
 import { CoreSingletonsFactory, CoreInjectionToken, CoreSingletonClass } from '@classes/singletons-factory';
 
@@ -45,5 +47,9 @@ export class Translate extends makeSingleton(TranslateService) {}
 export class Alerts extends makeSingleton(AlertController) {}
 
 export class Ionic extends makeSingleton(App) {}
+
+export class Diagnostic extends makeSingleton(DiagnosticService) {}
+
+export class Geolocation extends makeSingleton(GeolocationService) {}
 
 export class Http extends makeSingleton(HttpClient) {}

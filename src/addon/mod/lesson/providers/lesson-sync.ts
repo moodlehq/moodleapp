@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
@@ -292,10 +292,14 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             courseId = attempts[0].courseid;
 
             // Get the info, access info and the lesson password if needed.
-            return this.lessonProvider.getLessonById(courseId, lessonId, false, false, siteId).then((lessonData) => {
+            return this.lessonProvider.getLessonById(courseId, lessonId, {siteId}).then((lessonData) => {
                 lesson = lessonData;
 
-                return this.prefetchHandler.getLessonPassword(lessonId, false, true, askPassword, siteId);
+                return this.prefetchHandler.getLessonPassword(lessonId, {
+                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                    askPassword,
+                    siteId,
+                });
             }).then((data) => {
                 const attemptsLength = attempts.length,
                     promises = [];
@@ -368,10 +372,14 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
                     // Data already retrieved when syncing attempts.
                     promise = Promise.resolve();
                 } else {
-                    promise = this.lessonProvider.getLessonById(courseId, lessonId, false, false, siteId).then((lessonData) => {
+                    promise = this.lessonProvider.getLessonById(courseId, lessonId, {siteId}).then((lessonData) => {
                         lesson = lessonData;
 
-                        return this.prefetchHandler.getLessonPassword(lessonId, false, true, askPassword, siteId);
+                        return this.prefetchHandler.getLessonPassword(lessonId, {
+                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                            askPassword,
+                            siteId,
+                        });
                     }).then((data) => {
                         accessInfo = data.accessInfo;
                         password = data.password;
@@ -394,7 +402,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
                     }
 
                     // All good, finish the retake.
-                    return this.lessonProvider.finishRetakeOnline(lessonId, password, false, false, siteId).then((response) => {
+                    return this.lessonProvider.finishRetakeOnline(lessonId, {password, siteId}).then((response) => {
                         result.updated = true;
 
                         if (!ignoreBlock) {
@@ -403,7 +411,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
                                 const params = this.urlUtils.extractUrlParams(response.data.reviewlesson.value);
                                 if (params && params.pageid) {
                                     // The retake can be reviewed, mark it as finished. Don't block the user for this.
-                                    this.setRetakeFinishedInSync(lessonId, retake.retake, params.pageid, siteId);
+                                    this.setRetakeFinishedInSync(lessonId, retake.retake, Number(params.pageid), siteId);
                                 }
                             }
                         }
@@ -466,7 +474,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     protected sendAttempt(lesson: any, password: string, attempt: any, result: AddonModLessonSyncResult, siteId?: string)
             : Promise<any> {
 
-        return this.lessonProvider.processPageOnline(lesson.id, attempt.pageid, attempt.data, password, false, siteId).then(() => {
+        return this.lessonProvider.processPageOnline(lesson.id, attempt.pageid, attempt.data, {
+            password,
+            siteId,
+        }).then(() => {
             result.updated = true;
 
             return this.lessonOfflineProvider.deleteAttempt(lesson.id, attempt.retake, attempt.pageid, attempt.timemodified,

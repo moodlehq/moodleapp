@@ -390,7 +390,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return this.platform.is('android');
+        return this.isMobile() && this.platform.is('android');
     }
 
     /**
@@ -410,7 +410,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return this.platform.is('ios');
+        return this.isMobile() && !this.platform.is('android');
     }
 
     /**
@@ -568,7 +568,7 @@ export class CoreAppProvider {
      */
     openKeyboard(): void {
         // Open keyboard is not supported in desktop and in iOS.
-        if (this.isMobile() && !this.platform.is('ios')) {
+        if (this.isAndroid()) {
             this.keyboard.show();
         }
     }
@@ -652,6 +652,35 @@ export class CoreAppProvider {
      */
     waitForSSOAuthentication(): Promise<any> {
         return this.ssoAuthenticationPromise || Promise.resolve();
+    }
+
+    /**
+     * Wait until the application is resumed.
+     *
+     * @param timeout Maximum time to wait, use null to wait forever.
+     */
+    async waitForResume(timeout: number | null = null): Promise<void> {
+        let resolve: Function;
+        let resumeSubscription: any;
+        let timeoutId: NodeJS.Timer | false;
+
+        const promise = new Promise((r): any => resolve = r);
+        const stopWaiting = (): any => {
+            if (!resolve) {
+                return;
+            }
+
+            resolve();
+            resumeSubscription.unsubscribe();
+            timeoutId && clearTimeout(timeoutId);
+
+            resolve = null;
+        };
+
+        resumeSubscription = this.platform.resume.subscribe(stopWaiting);
+        timeoutId = timeout ? setTimeout(stopWaiting, timeout) : false;
+
+        await promise;
     }
 
     /**
@@ -797,23 +826,23 @@ export class CoreAppProvider {
      * Set StatusBar color depending on platform.
      */
     setStatusBarColor(): void {
-        if (typeof CoreConfigConstants.statusbarbgios == 'string' && this.platform.is('ios')) {
+        if (typeof CoreConfigConstants.statusbarbgios == 'string' && this.isIOS()) {
             // IOS Status bar properties.
             this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgios);
             CoreConfigConstants.statusbarlighttextios ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
-        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) {
+        } else if (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.isAndroid()) {
             // Android Status bar properties.
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgandroid);
             CoreConfigConstants.statusbarlighttextandroid ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         } else if (typeof CoreConfigConstants.statusbarbg == 'string') {
             // Generic Status bar properties.
-            this.platform.is('ios') && this.statusBar.overlaysWebView(false);
+            this.isIOS() && this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbg);
             CoreConfigConstants.statusbarlighttext ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         } else {
             // Default Status bar properties.
-            this.platform.is('android') ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
+            this.isAndroid() ? this.statusBar.styleLightContent() : this.statusBar.styleDefault();
         }
     }
 
@@ -822,11 +851,11 @@ export class CoreAppProvider {
      */
     resetStatusBarColor(): void {
         if (typeof CoreConfigConstants.statusbarbgremotetheme == 'string' &&
-                ((typeof CoreConfigConstants.statusbarbgios == 'string' && this.platform.is('ios')) ||
-                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.platform.is('android')) ||
+                ((typeof CoreConfigConstants.statusbarbgios == 'string' && this.isIOS()) ||
+                (typeof CoreConfigConstants.statusbarbgandroid == 'string' && this.isAndroid()) ||
                 typeof CoreConfigConstants.statusbarbg == 'string')) {
             // If the status bar has been overriden and there's a fallback color for remote themes, use it now.
-            this.platform.is('ios') && this.statusBar.overlaysWebView(false);
+            this.isIOS() && this.statusBar.overlaysWebView(false);
             this.statusBar.backgroundColorByHexString(CoreConfigConstants.statusbarbgremotetheme);
             CoreConfigConstants.statusbarlighttextremotetheme ?
                 this.statusBar.styleLightContent() : this.statusBar.styleDefault();

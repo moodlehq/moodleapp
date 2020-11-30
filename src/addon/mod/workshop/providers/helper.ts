@@ -19,7 +19,7 @@ import { CoreFileUploaderProvider } from '@core/fileuploader/providers/fileuploa
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { AddonModWorkshopProvider } from './workshop';
+import { AddonModWorkshopProvider, AddonModWorkshopUserOptions } from './workshop';
 import { AddonModWorkshopOfflineProvider } from './offline';
 import { AddonWorkshopAssessmentStrategyDelegate } from './assessment-strategy-delegate';
 
@@ -109,12 +109,13 @@ export class AddonModWorkshopHelperProvider {
      * Return a particular user submission from the submission list.
      *
      * @param workshopId Workshop ID.
-     * @param userId User ID. If not defined current user Id.
+     * @param options Other options.
      * @return Resolved with the submission, resolved with false if not found.
      */
-    getUserSubmission(workshopId: number, userId: number = 0): Promise<any> {
-        return this.workshopProvider.getSubmissions(workshopId).then((submissions) => {
-            userId = userId || this.sitesProvider.getCurrentSiteUserId();
+    getUserSubmission(workshopId: number, options: AddonModWorkshopUserOptions = {}): Promise<any> {
+        const userId = options.userId || this.sitesProvider.getCurrentSiteUserId();
+
+        return this.workshopProvider.getSubmissions(workshopId, options).then((submissions) => {
 
             for (const x in submissions) {
                 if (submissions[x].authorid == userId) {
@@ -131,13 +132,12 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshopId Workshop ID.
      * @param submissionId Submission ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Resolved with the submission, resolved with false if not found.
      */
-    getSubmissionById(workshopId: number, submissionId: number, siteId?: string): Promise<any> {
-        return this.workshopProvider.getSubmission(workshopId, submissionId, siteId).catch(() => {
-            return this.workshopProvider.getSubmissions(workshopId, undefined, undefined, undefined, undefined, siteId)
-                    .then((submissions) => {
+    getSubmissionById(workshopId: number, submissionId: number, options: {cmId?: number, siteId?: string} = {}): Promise<any> {
+        return this.workshopProvider.getSubmission(workshopId, submissionId, options).catch(() => {
+            return this.workshopProvider.getSubmissions(workshopId, options).then((submissions) => {
                 for (const x in submissions) {
                     if (submissions[x].id == submissionId) {
                         return submissions[x];
@@ -154,14 +154,12 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
-     * @param userId User ID. If not defined, current user.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Resolved with the assessment.
      */
-    getReviewerAssessmentById(workshopId: number, assessmentId: number, userId: number = 0, siteId?: string): Promise<any> {
-        return this.workshopProvider.getAssessment(workshopId, assessmentId, siteId).catch((error) => {
-            return this.workshopProvider.getReviewerAssessments(workshopId, userId, undefined, undefined, siteId)
-                    .then((assessments) => {
+    getReviewerAssessmentById(workshopId: number, assessmentId: number, options: AddonModWorkshopUserOptions = {}): Promise<any> {
+        return this.workshopProvider.getAssessment(workshopId, assessmentId, options).catch((error) => {
+            return this.workshopProvider.getReviewerAssessments(workshopId, options).then((assessments) => {
                 for (const x in assessments) {
                     if (assessments[x].id == assessmentId) {
                         return assessments[x];
@@ -172,8 +170,7 @@ export class AddonModWorkshopHelperProvider {
                 return Promise.reject(error);
             });
         }).then((assessment) => {
-            return this.workshopProvider.getAssessmentForm(workshopId, assessmentId, undefined, undefined, undefined, siteId)
-                    .then((assessmentForm) => {
+            return this.workshopProvider.getAssessmentForm(workshopId, assessmentId, options).then((assessmentForm) => {
                 assessment.form = assessmentForm;
 
                 return assessment;
@@ -185,22 +182,21 @@ export class AddonModWorkshopHelperProvider {
      * Retrieves the assessment of the given user and all the related data.
      *
      * @param workshopId Workshop ID.
-     * @param userId User ID. If not defined, current user.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getReviewerAssessments(workshopId: number, userId: number = 0, offline: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any[]> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    getReviewerAssessments(workshopId: number, options: AddonModWorkshopUserOptions = {}): Promise<any[]> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.workshopProvider.getReviewerAssessments(workshopId, userId, offline, ignoreCache, siteId)
-                .then((assessments) => {
-            const promises = assessments.map((assessment) => {
-                return this.getSubmissionById(workshopId, assessment.submissionid, siteId).then((submission) => {
+        return this.workshopProvider.getReviewerAssessments(workshopId, options).then((assessments) => {
+            const promises = [];
+            assessments.forEach((assessment) => {
+                promises.push(this.getSubmissionById(workshopId, assessment.submissionid, options).then((submission) => {
                     assessment.submission = submission;
-                });
+                }));
+                promises.push(this.workshopProvider.getAssessmentForm(workshopId, assessment.id, options).then((assessmentForm) => {
+                    assessment.form = assessmentForm;
+                }));
             });
 
             return Promise.all(promises).then(() => {

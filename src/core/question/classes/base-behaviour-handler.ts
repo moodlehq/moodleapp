@@ -34,10 +34,11 @@ export class CoreQuestionBehaviourBaseHandler implements CoreQuestionBehaviourHa
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return New state (or promise resolved with state).
      */
-    determineNewState(component: string, attemptId: number, question: any, siteId?: string)
+    determineNewState(component: string, attemptId: number, question: any, componentId: string | number, siteId?: string)
             : CoreQuestionState | Promise<CoreQuestionState> {
         // Return the current state.
         return this.questionProvider.getState(question.state);

@@ -143,7 +143,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     protected fetchQuestions(): Promise<any> {
-        return this.surveyProvider.getQuestions(this.survey.id).then((questions) => {
+        return this.surveyProvider.getQuestions(this.survey.id, {cmId: this.module.id}).then((questions) => {
             this.questions = this.surveyHelper.formatQuestions(questions);
 
             // Init answers object.

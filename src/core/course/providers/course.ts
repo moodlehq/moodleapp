@@ -18,7 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
+import { CoreSitesProvider, CoreSiteSchema, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
@@ -28,7 +28,7 @@ import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreSitePluginsProvider } from '@core/siteplugins/providers/siteplugins';
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
-import { CoreCoursesProvider } from '@core/courses/providers/courses';
+import { CoreCoursesProvider, CoreCourses } from '@core/courses/providers/courses';
 import { makeSingleton } from '@singletons/core.singletons';
 
 /**
@@ -978,49 +978,70 @@ export class CoreCourseProvider {
      * @param params Other params to pass to the course page.
      * @return Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+    async openCourse(navCtrl: NavController, course: any, params?: any): Promise<void> {
         const loading = this.domUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
-        return this.sitePluginsProvider.waitFetchPlugins().then(() => {
-            if (this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
-                // This course uses a custom format plugin, wait for the format plugin to finish loading.
+        await this.sitePluginsProvider.waitFetchPlugins();
 
-                return this.sitePluginsProvider.sitePluginLoaded('format_' + course.format).then(() => {
-                    // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
-                    if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                        return this.courseFormatDelegate.openCourse(navCtrl, course, params);
+        if (typeof course.format == 'undefined') {
+            // This block can be replaced by a call to CourseHelper.getCourse(), but it is circular dependant.
+            const coursesProvider = CoreCourses.instance;
+            try {
+                course = await coursesProvider.getUserCourse(course.id, true);
+            } catch (error) {
+                // Not enrolled or an error happened. Try to use another WebService.
+                const available = coursesProvider.isGetCoursesByFieldAvailableInSite();
+                try {
+                    if (available) {
+                        course = await CoreCourses.instance.getCourseByField('id', course.id);
                     } else {
-                        // Wait for plugins to be loaded.
-                        const deferred = this.utils.promiseDefer(),
-                            observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
-                                observer && observer.off();
-
-                                this.courseFormatDelegate.openCourse(navCtrl, course, params).then((response) => {
-                                    deferred.resolve(response);
-                                }).catch((error) => {
-                                    deferred.reject(error);
-                                });
-                            });
-
-                        return deferred.promise;
+                        course = await CoreCourses.instance.getCourse(course.id);
                     }
-                }).catch(() => {
-                    // The site plugin failed to load. The user needs to restart the app to try loading it again.
-                    const message = this.translate.instant('core.courses.errorloadplugins');
-                    const reload = this.translate.instant('core.courses.reload');
-                    const ignore = this.translate.instant('core.courses.ignore');
-                    this.domUtils.showConfirm(message, '', reload, ignore).then(() => {
-                        window.location.reload();
-                    });
-                });
-            } else {
-                // No custom format plugin. We don't need to wait for anything.
+                } catch (error) {
+                    // Ignore errors.
+                }
+            }
+        }
+
+        if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+            // No custom format plugin. We don't need to wait for anything.
+            await this.courseFormatDelegate.openCourse(navCtrl, course, params);
+            loading.dismiss();
+
+            return;
+        }
+
+        // This course uses a custom format plugin, wait for the format plugin to finish loading.
+        try {
+            await this.sitePluginsProvider.sitePluginLoaded('format_' + course.format);
+            // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
+            if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
                 return this.courseFormatDelegate.openCourse(navCtrl, course, params);
             }
-        }).finally(() => {
-            loading.dismiss();
-        });
+
+            // Wait for plugins to be loaded.
+            const deferred = this.utils.promiseDefer(),
+                observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
+                    observer && observer.off();
+
+                    this.courseFormatDelegate.openCourse(navCtrl, course, params).then((response) => {
+                        deferred.resolve(response);
+                    }).catch((error) => {
+                        deferred.reject(error);
+                    });
+                });
+
+            return deferred.promise;
+        } catch (error) {
+            // The site plugin failed to load. The user needs to restart the app to try loading it again.
+            const message = this.translate.instant('core.courses.errorloadplugins');
+            const reload = this.translate.instant('core.courses.reload');
+            const ignore = this.translate.instant('core.courses.ignore');
+            this.domUtils.showConfirm(message, '', reload, ignore).then(() => {
+                window.location.reload();
+            });
+        }
     }
 
     /**
@@ -1161,6 +1182,13 @@ export class CoreCourseProvider {
         }, siteId);
     }
 }
+
+/**
+ * Common options used by modules when calling a WS through CoreSite.
+ */
+export type CoreCourseCommonModWSOptions = CoreSitesCommonWSOptions & {
+    cmId?: number; // Module ID.
+};
 
 /**
  * Data returned by course_summary_exporter.

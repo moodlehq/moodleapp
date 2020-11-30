@@ -72,7 +72,7 @@ export class AddonModChatSessionsPage {
             this.groupInfo = groupInfo;
             this.groupId = this.groupsProvider.validateGroupId(this.groupId, groupInfo);
 
-            return this.chatProvider.getSessions(this.chatId, this.groupId, this.showAll);
+            return this.chatProvider.getSessions(this.chatId, this.groupId, this.showAll, {cmId: this.cmId});
         }).then((sessions: AddonModChatSessionFormatted[]) => {
             // Fetch user profiles.
             const promises = [];

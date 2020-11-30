@@ -58,7 +58,7 @@
                         </ion-note>
                     </ion-item-divider>
                     <!-- Body of the question. -->
-                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="offline" contextLevel="module" [contextInstanceId]="quiz.coursemodule" [courseId]="courseId" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="quiz.coursemodule" [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="offline" contextLevel="module" [contextInstanceId]="quiz.coursemodule" [courseId]="courseId" [review]="false" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)"></core-question>
                 </ion-card>
             </div>
         </form>

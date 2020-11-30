@@ -44,7 +44,7 @@ export class CoreLoginCronHandler implements CoreCronHandler {
             return site.getPublicConfig().catch(() => {
                 return {};
             }).then((config) => {
-                this.sitesProvider.checkRequiredMinimumVersion(config).catch(() => {
+                this.sitesProvider.checkApplication(config).catch(() => {
                     // Ignore errors.
 
                 });

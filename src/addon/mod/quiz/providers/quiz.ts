@@ -16,18 +16,19 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { CoreGradesHelperProvider } from '@core/grades/providers/helper';
 import { CoreQuestionDelegate } from '@core/question/providers/delegate';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOfflineProvider } from './quiz-offline';
 import { CorePushNotificationsProvider } from '@core/pushnotifications/providers/pushnotifications';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Service that provides some features for quiz.
@@ -90,22 +91,16 @@ export class AddonModQuizProvider {
      * @param quiz Quiz.
      * @param attempt Attempt.
      * @param preflightData Preflight required data (like password).
-     * @param pages List of pages to get. If not defined, all pages.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the questions.
      */
-    getAllQuestionsData(quiz: any, attempt: any, preflightData: any, pages?: number[], offline?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+    getAllQuestionsData(quiz: any, attempt: any, preflightData: any, options: AddonModQuizAllQuestionsDataOptions = {})
+            : Promise<any> {
 
-        const promises = [],
-            questions = {},
-            isSequential = this.isNavigationSequential(quiz);
-
-        if (!pages) {
-            pages = this.getPagesFromLayout(attempt.layout);
-        }
+        const promises = [];
+        const questions = {};
+        const isSequential = this.isNavigationSequential(quiz);
+        const pages = options.pages || this.getPagesFromLayout(attempt.layout);
 
         pages.forEach((page) => {
             if (isSequential && page < attempt.currentpage) {
@@ -114,7 +109,7 @@ export class AddonModQuizProvider {
             }
 
             // Get the questions in the page.
-            promises.push(this.getAttemptData(attempt.id, page, preflightData, offline, ignoreCache, siteId).then((data) => {
+            promises.push(this.getAttemptData(attempt.id, page, preflightData, options).then((data) => {
                 // Add the questions to the result object.
                 data.questions.forEach((question) => {
                     questions[question.slot] = question;
@@ -153,29 +148,22 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param attemptId Attempt ID. 0 for user's last attempt.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the access information.
      */
-    getAttemptAccessInformation(quizId: number, attemptId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+    getAttemptAccessInformation(quizId: number, attemptId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    quizid: quizId,
-                    attemptid: attemptId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptAccessInformationCacheKey(quizId, attemptId)
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+                attemptid: attemptId,
+            };
+            const preSets = {
+                cacheKey: this.getAttemptAccessInformationCacheKey(quizId, attemptId),
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_attempt_access_information', params, preSets);
         });
@@ -208,32 +196,27 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID.
      * @param page Page number.
      * @param preflightData Preflight required data (like password).
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the attempt data.
      */
-    getAttemptData(attemptId: number, page: number, preflightData: any, offline?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+    getAttemptData(attemptId: number, page: number, preflightData: any, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    attemptid: attemptId,
-                    page: page,
-                    preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptDataCacheKey(attemptId, page)
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                attemptid: attemptId,
+                page: page,
+                preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true),
+            };
+            const preSets = {
+                cacheKey: this.getAttemptDataCacheKey(attemptId, page),
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_attempt_data', params, preSets);
+        }).then((result) => {
+            return this.parseQuestions(result);
         });
     }
 
@@ -389,32 +372,28 @@ export class AddonModQuizProvider {
      * Get an attempt's review.
      *
      * @param attemptId Attempt ID.
-     * @param page Page number. If not defined, return all the questions in all the pages.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the attempt review.
      */
-    getAttemptReview(attemptId: number, page?: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        if (typeof page == 'undefined') {
-            page = -1;
-        }
+    getAttemptReview(attemptId: number, options: AddonModQuizGetAttemptReviewOptions = {}): Promise<any> {
+        const page = typeof options.page == 'undefined' ? -1 : options.page;
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    attemptid: attemptId,
-                    page: page
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
-                    cacheErrors: ['noreview']
-                };
+                attemptid: attemptId,
+                page: page,
+            };
+            const preSets = {
+                cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
+                cacheErrors: ['noreview'],
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
-
-            return site.read('mod_quiz_get_attempt_review', params, preSets);
+            return site.read('mod_quiz_get_attempt_review', params, preSets).then((result) => {
+                return this.parseQuestions(result);
+            });
         });
     }
 
@@ -433,34 +412,28 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param preflightData Preflight required data (like password).
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param loadLocal Whether it should load local state for each question. Only applicable if offline=true.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of questions for the attempt summary.
      */
-    getAttemptSummary(attemptId: number, preflightData: any, offline?: boolean, ignoreCache?: boolean, loadLocal?: boolean,
-            siteId?: string): Promise<any[]> {
+    getAttemptSummary(attemptId: number, preflightData: any, options: AddonModQuizGetAttemptSummaryOptions = {}): Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    attemptid: attemptId,
-                    preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true)
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAttemptSummaryCacheKey(attemptId)
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                attemptid: attemptId,
+                preflightdata: this.utils.objectToArrayOfObjects(preflightData, 'name', 'value', true),
+            };
+            const preSets = {
+                cacheKey: this.getAttemptSummaryCacheKey(attemptId),
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_attempt_summary', params, preSets).then((response) => {
                 if (response && response.questions) {
-                    if (offline && loadLocal) {
+                    response = this.parseQuestions(response);
+
+                    if (options.loadLocal) {
                         return this.quizOfflineProvider.loadQuestionsLocalStates(attemptId, response.questions, site.getId());
                     }
 
@@ -497,27 +470,23 @@ export class AddonModQuizProvider {
      * Get a quiz combined review options.
      *
      * @param quizId Quiz ID.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined use site's current user.
+     * @param options Other options.
      * @return Promise resolved with the combined review options.
      */
-    getCombinedReviewOptions(quizId: number, ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+    getCombinedReviewOptions(quizId: number, options: AddonModQuizUserOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const userId = options.userId || site.getUserId();
 
             const params = {
-                    quizid: quizId,
-                    userid: userId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getCombinedReviewOptionsCacheKey(quizId, userId)
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+                userid: userId,
+            };
+            const preSets = {
+                cacheKey: this.getCombinedReviewOptionsCacheKey(quizId, userId),
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_combined_review_options', params, preSets).then((response) => {
                 if (response && response.someoptions && response.alloptions) {
@@ -559,25 +528,22 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param grade Grade.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the feedback.
      */
-    getFeedbackForGrade(quizId: number, grade: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getFeedbackForGrade(quizId: number, grade: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    quizid: quizId,
-                    grade: grade
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+                grade: grade,
+            };
+            const preSets = {
+                cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_quiz_feedback_for_grade', params, preSets);
         });
@@ -683,29 +649,21 @@ export class AddonModQuizProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param forceCache Whether it should always return cached data.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the Quiz is retrieved.
      */
-    protected getQuizByField(courseId: number, key: string, value: any, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<any> {
+    protected getQuizByField(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizDataCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getQuizDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModQuizProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_quizzes_by_courses', params, preSets).then((response) => {
                 if (response && response.quizzes) {
@@ -728,13 +686,11 @@ export class AddonModQuizProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the quiz is retrieved.
      */
-    getQuiz(courseId: number, cmId: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.getQuizByField(courseId, 'coursemodule', cmId, forceCache, ignoreCache, siteId);
+    getQuiz(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getQuizByField(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -742,13 +698,11 @@ export class AddonModQuizProvider {
      *
      * @param courseId Course ID.
      * @param id Quiz ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the quiz is retrieved.
      */
-    getQuizById(courseId: number, id: number, forceCache?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.getQuizByField(courseId, 'id', id, forceCache, ignoreCache, siteId);
+    getQuizById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getQuizByField(courseId, 'id', id, options);
     }
 
     /**
@@ -765,26 +719,20 @@ export class AddonModQuizProvider {
      * Get access information for an attempt.
      *
      * @param quizId Quiz ID.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the access information.
      */
-    getQuizAccessInformation(quizId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getQuizAccessInformation(quizId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    quizid: quizId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizAccessInformationCacheKey(quizId)
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+            };
+            const preSets = {
+                cacheKey: this.getQuizAccessInformationCacheKey(quizId),
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_quiz_access_information', params, preSets);
         });
@@ -829,24 +777,21 @@ export class AddonModQuizProvider {
      * Get the potential question types that would be required for a given quiz.
      *
      * @param quizId Quiz ID.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the access information.
      */
-    getQuizRequiredQtypes(quizId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getQuizRequiredQtypes(quizId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    quizid: quizId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+            };
+            const preSets = {
+                cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_quiz_required_qtypes', params, preSets).then((response) => {
                 if (response && response.questiontypes) {
@@ -981,37 +926,29 @@ export class AddonModQuizProvider {
      * Get quiz attempts for a certain user.
      *
      * @param quizId Quiz ID.
-     * @param status Status of the attempts to get. By default, 'all'.
-     * @param includePreviews Whether to include previews. Defaults to true.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined use site's current user.
+     * @param options Other options.
      * @return Promise resolved with the attempts.
      */
-    getUserAttempts(quizId: number, status: string = 'all', includePreviews: boolean = true, offline?: boolean,
-            ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any[]> {
+    getUserAttempts(quizId: number, options: AddonModQuizGetUserAttemptsOptions = {}): Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+        const status = options.status || 'all';
+        const includePreviews = typeof options.includePreviews == 'undefined' ? true : options.includePreviews;
 
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const userId = options.userId || site.getUserId();
             const params = {
-                    quizid: quizId,
-                    userid: userId,
-                    status: status,
-                    includepreviews: includePreviews ? 1 : 0
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+                userid: userId,
+                status: status,
+                includepreviews: includePreviews ? 1 : 0,
+            };
+            const preSets = {
+                cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_user_attempts', params, preSets).then((response) => {
                 if (response && response.attempts) {
@@ -1048,27 +985,23 @@ export class AddonModQuizProvider {
      * Get best grade in a quiz for a certain user.
      *
      * @param quizId Quiz ID.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
-     * @param userId User ID. If not defined use site's current user.
+     * @param options Other options.
      * @return Promise resolved with the best grade data.
      */
-    getUserBestGrade(quizId: number, ignoreCache?: boolean, siteId?: string, userId?: number): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+    getUserBestGrade(quizId: number, options: AddonModQuizUserOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const userId = options.userId || site.getUserId();
 
             const params = {
-                    quizid: quizId,
-                    userid: userId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getUserBestGradeCacheKey(quizId, userId)
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                quizid: quizId,
+                userid: userId,
+            };
+            const preSets = {
+                cacheKey: this.getUserBestGradeCacheKey(quizId, userId),
+                component: AddonModQuizProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_quiz_get_user_best_grade', params, preSets);
         });
@@ -1246,8 +1179,11 @@ export class AddonModQuizProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get required data to call the invalidate functions.
-       return this.getQuiz(courseId, moduleId, true, false, siteId).then((quiz) => {
-            return this.getUserAttempts(quiz.id, 'all', true, false, false, siteId).then((attempts) => {
+       return this.getQuiz(courseId, moduleId, {
+           readingStrategy: CoreSitesReadingStrategy.PreferCache,
+           siteId,
+       }).then((quiz) => {
+            return this.getUserAttempts(quiz.id, {cmId: quiz.coursemodule, siteId}).then((attempts) => {
                 // Now invalidate it.
                 const lastAttemptId = attempts.length ? attempts[attempts.length - 1].id : undefined;
 
@@ -1631,6 +1567,26 @@ export class AddonModQuizProvider {
     }
 
     /**
+     * Parse questions of a WS response.
+     *
+     * @param result Result to parse.
+     * @return Parsed result.
+     */
+    parseQuestions(result: any): any {
+        for (let i = 0; i < result.questions.length; i++) {
+            const question = result.questions[i];
+
+            if (!question.settings) {
+                continue;
+            }
+
+            question.settings = this.textUtils.parseJSON(question.settings, null);
+        }
+
+        return result;
+    }
+
+    /**
      * Process an attempt, saving its data.
      *
      * @param quiz Quiz.
@@ -1703,7 +1659,12 @@ export class AddonModQuizProvider {
             : Promise<any> {
 
         // Get attempt summary to have the list of questions.
-        return this.getAttemptSummary(attempt.id, preflightData, true, false, true, siteId).then((questionArray) => {
+        return this.getAttemptSummary(attempt.id, preflightData, {
+            cmId: quiz.coursemodule,
+            loadLocal: true,
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            siteId,
+        }).then((questionArray) => {
             // Convert the question array to an object.
             const questions = this.utils.arrayToObject(questionArray, 'slot');
 
@@ -1860,3 +1821,40 @@ export class AddonModQuizProvider {
         });
     }
 }
+
+/**
+ * Common options with user ID.
+ */
+export type AddonModQuizUserOptions = CoreCourseCommonModWSOptions & {
+    userId?: number; // User ID. If not defined use site's current user.
+};
+
+/**
+ * Options to pass to getAllQuestionsData.
+ */
+export type AddonModQuizAllQuestionsDataOptions = CoreCourseCommonModWSOptions & {
+    pages?: number[]; // List of pages to get. If not defined, all pages.
+};
+
+/**
+ * Options to pass to getAttemptReview.
+ */
+export type AddonModQuizGetAttemptReviewOptions = CoreCourseCommonModWSOptions & {
+    page?: number; // List of pages to get. If not defined, all pages.
+};
+
+/**
+ * Options to pass to getAttemptSummary.
+ */
+export type AddonModQuizGetAttemptSummaryOptions = CoreCourseCommonModWSOptions & {
+    loadLocal?: boolean; // Whether it should load local state for each question.
+};
+
+/**
+ * Options to pass to getUserAttempts.
+ */
+export type AddonModQuizGetUserAttemptsOptions = CoreCourseCommonModWSOptions & {
+    status?: string; // Status of the attempts to get. By default, 'all'.
+    includePreviews?: boolean; // Whether to include previews. Defaults to true.
+    userId?: number; // User ID. If not defined use site's current user.
+};

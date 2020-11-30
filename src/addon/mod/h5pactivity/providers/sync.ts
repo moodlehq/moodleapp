@@ -165,7 +165,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         // Get the activity instance.
         const courseId = entries[0].courseid;
 
-        const h5pActivity = await AddonModH5PActivity.instance.getH5PActivityByContextId(courseId, contextId, false, siteId);
+        const h5pActivity = await AddonModH5PActivity.instance.getH5PActivityByContextId(courseId, contextId, {siteId});
 
         // Sync offline logs.
         try {

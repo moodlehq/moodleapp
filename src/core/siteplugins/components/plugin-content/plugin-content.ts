@@ -92,7 +92,10 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
         this.forceCompile = false;
 
-        return this.sitePluginsProvider.getContent(this.component, this.method, this.args, this.preSets).then((result) => {
+        const preSets = Object.assign({}, this.preSets);
+        preSets.component = preSets.component || this.component;
+
+        return this.sitePluginsProvider.getContent(this.component, this.method, this.args, preSets).then((result) => {
             this.content = result.templates.length ? result.templates[0].html : ''; // Load first template.
             this.javascript = result.javascript;
             this.otherData = result.otherdata;
@@ -129,8 +132,10 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @param jsData JS variables to pass to the new view so they can be used in the template or JS.
      *               If true is supplied instead of an object, all initial variables from current page will be copied.
      * @param preSets The preSets for the WS call of the new content.
+     * @param ptrEnabled Whether PTR should be enabled in the new page. Defaults to true.
      */
-    openContent(title: string, args: any, component?: string, method?: string, jsData?: any, preSets?: any): void {
+    openContent(title: string, args: any, component?: string, method?: string, jsData?: any, preSets?: any,
+            ptrEnabled?: boolean): void {
         if (jsData === true) {
             jsData = this.data;
         }
@@ -142,7 +147,8 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             args: args,
             initResult: this.initResult,
             jsData: jsData,
-            preSets: preSets
+            preSets: preSets,
+            ptrEnabled: ptrEnabled,
         });
     }
 

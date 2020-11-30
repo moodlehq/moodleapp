@@ -35,14 +35,18 @@ export class CoreH5PHelper {
      * @return Object with display options.
      */
     static decodeDisplayOptions(displayOptions: number): CoreH5PDisplayOptions {
-        const config: any = {};
         const displayOptionsObject = CoreH5P.instance.h5pCore.getDisplayOptionsAsObject(displayOptions);
 
-        config.export = false; // Don't allow downloading in the app.
-        config.embed = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_EMBED] : false;
-        config.copyright = CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false;
+        const config: CoreH5PDisplayOptions = {
+            export: false, // Don't allow downloading in the app.
+            embed: false, // Don't display the embed button in the app.
+            copyright: CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false,
+            icon: CoreUtils.instance.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT]) ?
+                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT] : false,
+        };
+
+        config.frame = config.copyright || config.export || config.embed;
 
         return config;
     }
@@ -146,11 +150,28 @@ export class CoreH5PHelper {
     static async saveH5P(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any): Promise<void> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
-        const folderName = CoreMimetypeUtils.instance.removeExtension(file.name);
-        const destFolder = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
-
         // Notify that the unzip is starting.
         onProgress && onProgress({message: 'core.unzipping'});
+
+        const queueId = siteId + ':saveH5P:' + fileUrl;
+
+        await CoreH5P.instance.queueRunner.run(queueId, () => CoreH5PHelper.performSave(fileUrl, file, siteId, onProgress));
+    }
+
+    /**
+     * Extract and store an H5P file.
+     *
+     * @param fileUrl The file URL used to download the file.
+     * @param file The file entry of the downloaded file.
+     * @param siteId Site ID. If not defined, current site.
+     * @param onProgress Function to call on progress.
+     * @return Promise resolved when done.
+     */
+    protected static async performSave(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: (event: any) => any)
+            : Promise<void> {
+
+        const folderName = CoreMimetypeUtils.instance.removeExtension(file.name);
+        const destFolder = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
 
         // Unzip the file.
         await CoreFile.instance.unzipFile(file.toURL(), destFolder, onProgress);

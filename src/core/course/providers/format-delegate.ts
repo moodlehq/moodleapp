@@ -48,6 +48,14 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     canViewAllSections?(course: any): boolean;
 
     /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks?(course: any): boolean;
+
+    /**
      * Whether the option to enable section/module download should be displayed. Defaults to true.
      *
      * @param course The course to check.
@@ -94,7 +102,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param params Params to pass to the course page.
      * @return Promise resolved when done.
      */
-    openCourse?(navCtrl: NavController, course: any, params?: any): Promise<any>;
+    openCourse?(navCtrl: NavController, course: any, params?: any): Promise<void>;
 
     /**
      * Return the Component to use to display the course format instead of using the default one.
@@ -189,6 +197,16 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
      */
     canViewAllSections(course: any): boolean {
         return this.executeFunctionOnEnabled(course.format, 'canViewAllSections', [course]);
+    }
+
+    /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks?(course: any): boolean {
+        return this.executeFunctionOnEnabled(course.format, 'displayBlocks', [course]);
     }
 
     /**
@@ -333,14 +351,14 @@ export class CoreCourseFormatDelegate extends CoreDelegate {
     }
 
     /**
-     * Open a course.
+     * Open a course. Should not be called directly. Call CoreCourseHelper.openCourse instead.
      *
      * @param navCtrl The NavController instance to use.
      * @param course The course to open. It should contain a "format" attribute.
      * @param params Params to pass to the course page.
      * @return Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<void> {
         return this.executeFunctionOnEnabled(course.format, 'openCourse', [navCtrl, course, params]);
     }
 

@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -67,10 +66,15 @@ export class CoreSitePluginsProvider {
     hasSitePluginsLoaded = false;
     sitePluginsFinishedLoading = false;
 
-    constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
-            private langProvider: CoreLangProvider, private appProvider: CoreAppProvider, private platform: Platform,
-            private filepoolProvider: CoreFilepoolProvider, private coursesProvider: CoreCoursesProvider,
-            private textUtils: CoreTextUtilsProvider, private eventsProvider: CoreEventsProvider) {
+    constructor(logger: CoreLoggerProvider,
+            private sitesProvider: CoreSitesProvider,
+            private utils: CoreUtilsProvider,
+            private langProvider: CoreLangProvider,
+            private filepoolProvider: CoreFilepoolProvider,
+            private coursesProvider: CoreCoursesProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private eventsProvider: CoreEventsProvider
+            ) {
         this.logger = logger.getInstance('CoreUserProvider');
 
         const observer = this.eventsProvider.on(CoreEventsProvider.SITE_PLUGINS_LOADED, () => {
@@ -107,20 +111,20 @@ export class CoreSitePluginsProvider {
             argsToSend.appversionname = CoreConfigConstants.versionname;
             argsToSend.applang = lang;
             argsToSend.appcustomurlscheme = CoreConfigConstants.customurlscheme;
-            argsToSend.appisdesktop = this.appProvider.isDesktop();
-            argsToSend.appismobile = this.appProvider.isMobile();
-            argsToSend.appiswide = this.appProvider.isWide();
+            argsToSend.appisdesktop = CoreApp.instance.isDesktop();
+            argsToSend.appismobile = CoreApp.instance.isMobile();
+            argsToSend.appiswide = CoreApp.instance.isWide();
 
             if (argsToSend.appisdevice) {
-                if (this.platform.is('ios')) {
+                if (CoreApp.instance.isIOS()) {
                     argsToSend.appplatform = 'ios';
                 } else {
                     argsToSend.appplatform = 'android';
                 }
             } else if (argsToSend.appisdesktop) {
-                if (this.appProvider.isMac()) {
+                if (CoreApp.instance.isMac()) {
                     argsToSend.appplatform = 'mac';
-                } else if (this.appProvider.isLinux()) {
+                } else if (CoreApp.instance.isLinux()) {
                     argsToSend.appplatform = 'linux';
                 } else {
                     argsToSend.appplatform = 'windows';
@@ -514,7 +518,14 @@ export class CoreSitePluginsProvider {
                 promises.push(this.callWS(method, params, {cacheKey: cacheKey}));
             } else {
                 // It's a method to get content.
-                promises.push(this.getContent(component, method, args).then((result) => {
+                const preSets = {
+                    component: component,
+                    componentId: undefined
+                };
+                if (module) {
+                    preSets.componentId = module.id;
+                }
+                promises.push(this.getContent(component, method, args, preSets).then((result) => {
                     const subPromises = [];
 
                     // Prefetch the files in the content.

@@ -63,6 +63,39 @@ export class AddonCompetencyProvider {
     }
 
     /**
+     * Returns whether current user can see another user competencies in a course.
+     *
+     * @param courseId Course ID.
+     * @param userId User ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether the user can view the competencies.
+     */
+    canViewUserCompetenciesInCourse(courseId: number, userId?: number, siteId?: string): Promise<boolean> {
+        if (!this.sitesProvider.isLoggedIn()) {
+            return Promise.resolve(false);
+        }
+
+        return this.getCourseCompetenciesPage(courseId, siteId).then((response) => {
+            if (!response.competencies.length) {
+                // No competencies.
+                return false;
+            }
+
+            if (!userId || userId == this.sitesProvider.getCurrentSiteUserId()) {
+                // Current user.
+                return true;
+            }
+
+            // Check if current user can view any competency of the user.
+            return this.getCompetencyInCourse(courseId, response.competencies[0].competency.id, userId, siteId).then(() => {
+                return true;
+            });
+        }).catch(() => {
+            return false;
+        });
+    }
+
+    /**
      * Get cache key for user learning plans data WS calls.
      *
      * @param userId User ID.
@@ -333,7 +366,7 @@ export class AddonCompetencyProvider {
     }
 
     /**
-     * Get all competencies in a course.
+     * Get all competencies in a course for a certain user.
      *
      * @param courseId ID of the course.
      * @param userId ID of the user.
@@ -342,6 +375,39 @@ export class AddonCompetencyProvider {
      * @return Promise to be resolved when the course competencies are retrieved.
      */
     getCourseCompetencies(courseId: number, userId?: number, siteId?: string, ignoreCache?: boolean)
+            : Promise<AddonCompetencyDataForCourseCompetenciesPageResult> {
+
+        return this.getCourseCompetenciesPage(courseId, siteId, ignoreCache).then((response) => {
+
+            if (!userId || userId == this.sitesProvider.getCurrentSiteUserId()) {
+                return response;
+            }
+
+            let promises: Promise<AddonCompetencyUserCompetencySummaryInCourse>[];
+
+            promises = response.competencies.map((competency) =>
+                this.getCompetencyInCourse(courseId, competency.competency.id, userId, siteId)
+            );
+
+            return Promise.all(promises).then((responses: AddonCompetencyUserCompetencySummaryInCourse[]) => {
+                responses.forEach((resp, index) => {
+                    response.competencies[index].usercompetencycourse = resp.usercompetencysummary.usercompetencycourse;
+                });
+
+                return response;
+            });
+        });
+    }
+
+    /**
+     * Get all competencies in a course.
+     *
+     * @param courseId ID of the course.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the course competencies are retrieved.
+     */
+    getCourseCompetenciesPage(courseId: number, siteId?: string, ignoreCache?: boolean)
             : Promise<AddonCompetencyDataForCourseCompetenciesPageResult> {
 
         return this.sitesProvider.getSite(siteId).then((site) => {
@@ -369,26 +435,6 @@ export class AddonCompetencyProvider {
                 }
 
                 return Promise.reject(null);
-            });
-
-        }).then((response) => {
-
-            if (!userId || userId == this.sitesProvider.getCurrentSiteUserId()) {
-                return response;
-            }
-
-            let promises: Promise<AddonCompetencyUserCompetencySummaryInCourse>[];
-
-            promises = response.competencies.map((competency) =>
-                this.getCompetencyInCourse(courseId, competency.competency.id, userId, siteId)
-            );
-
-            return Promise.all(promises).then((responses: AddonCompetencyUserCompetencySummaryInCourse[]) => {
-                responses.forEach((resp, index) => {
-                    response.competencies[index].usercompetencycourse = resp.usercompetencysummary.usercompetencycourse;
-                });
-
-                return response;
             });
         });
     }

@@ -13,9 +13,12 @@
 // limitations under the License.
 
 import { Injectable, EventEmitter } from '@angular/core';
+import { FileEntry } from '@ionic-native/file';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreFile } from '@providers/file';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreWSExternalFile } from '@providers/ws';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -57,6 +60,41 @@ export class CoreQuestionHelperProvider {
             value: button.value,
             disabled: button.disabled
         });
+    }
+
+    /**
+     * Clear questions temporary data after the data has been saved.
+     *
+     * @param questions The list of questions.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @return Promise resolved when done.
+     */
+    async clearTmpData(questions: any[], component: string, componentId: string | number): Promise<void> {
+        questions = questions || [];
+
+        await Promise.all(questions.map(async (question) => {
+            await this.questionDelegate.clearTmpData(question, component, componentId);
+        }));
+    }
+
+    /**
+     * Delete files stored for a question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async deleteStoredQuestionFiles(question: any, component: string, componentId: string | number, siteId?: string)
+            : Promise<void> {
+
+        const questionComponentId = this.questionProvider.getQuestionComponentId(question, componentId);
+        const folderPath = this.questionProvider.getQuestionFolder(question.type, component, questionComponentId, siteId);
+
+        // Ignore errors, maybe the folder doesn't exist.
+        await this.utils.ignoreErrors(CoreFile.instance.removeDir(folderPath));
     }
 
     /**
@@ -422,6 +460,41 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Return the files of a certain response file area.
+     *
+     * @param question Question.
+     * @param areaName Name of the area, e.g. 'attachments'.
+     * @return List of files.
+     */
+    getResponseFileAreaFiles(question: any, areaName: string): CoreWSExternalFile[] {
+        if (!question.responsefileareas) {
+            return [];
+        }
+
+        const area = question.responsefileareas.find((area) => {
+            return area.area == areaName;
+        });
+
+        return area && area.files || [];
+    }
+
+    /**
+     * Get files stored for a question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the files.
+     */
+    getStoredQuestionFiles(question: any, component: string, componentId: string | number, siteId?: string): Promise<FileEntry[]> {
+        const questionComponentId = this.questionProvider.getQuestionComponentId(question, componentId);
+        const folderPath = this.questionProvider.getQuestionFolder(question.type, component, questionComponentId, siteId);
+
+        return CoreFile.instance.getDirectoryContents(folderPath);
+    }
+
+    /**
      * Get the validation error message from a question HTML if it's there.
      *
      * @param html Question's HTML.
@@ -517,29 +590,39 @@ export class CoreQuestionHelperProvider {
      */
     prefetchQuestionFiles(question: any, component?: string, componentId?: string | number, siteId?: string, usageId?: number)
             : Promise<any> {
-        const urls = this.filepoolProvider.extractDownloadableFilesFromHtml(question.html);
 
         if (!component) {
             component = CoreQuestionProvider.COMPONENT;
-            componentId = question.id;
+            componentId = question.number;
         }
 
-        urls.push(...this.questionDelegate.getAdditionalDownloadableFiles(question, usageId));
+        const files = this.questionDelegate.getAdditionalDownloadableFiles(question, usageId) || [];
+
+        files.push(...this.filepoolProvider.extractDownloadableFilesFromHtml(question.html));
 
         return this.sitesProvider.getSite(siteId).then((site) => {
             const promises = [];
+            const treated = {};
 
-            urls.forEach((url) => {
-                if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(url)) {
+            files.forEach((file) => {
+                const fileUrl = typeof file == 'string' ? file : file.fileurl;
+                const timemodified = (typeof file != 'string' && file.timemodified) || 0;
+
+                if (treated[fileUrl]) {
+                    return;
+                }
+                treated[fileUrl] = true;
+
+                if (!site.canDownloadFiles() && this.urlUtils.isPluginFileUrl(fileUrl)) {
                     return;
                 }
 
-                if (url.indexOf('theme/image.php') > -1 && url.indexOf('flagged') > -1) {
+                if (fileUrl.indexOf('theme/image.php') > -1 && fileUrl.indexOf('flagged') > -1) {
                     // Ignore flag images.
                     return;
                 }
 
-                promises.push(this.filepoolProvider.addToQueueByUrl(siteId, url, component, componentId));
+                promises.push(this.filepoolProvider.addToQueueByUrl(siteId, fileUrl, component, componentId, timemodified));
             });
 
             return Promise.all(promises);
@@ -552,15 +635,19 @@ export class CoreQuestionHelperProvider {
      * @param questions The list of questions.
      * @param answers The input data.
      * @param offline True if data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with answers to send to server.
      */
-    prepareAnswers(questions: any[], answers: any, offline?: boolean, siteId?: string): Promise<any> {
+    prepareAnswers(questions: any[], answers: any, offline: boolean, component: string, componentId: string | number,
+            siteId?: string): Promise<any> {
         const promises = [];
 
         questions = questions || [];
         questions.forEach((question) => {
-            promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, siteId));
+            promises.push(this.questionDelegate.prepareAnswersForQuestion(question, answers, offline, component, componentId,
+                    siteId));
         });
 
         return this.utils.allPromises(promises).then(() => {

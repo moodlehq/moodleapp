@@ -1,5 +1,6 @@
 <ion-item text-wrap>
-    {{ 'core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissionsReadable} } }}
+    <span *ngIf="maxSubmissionsReadable">{{ 'core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissionsReadable} } }}</span>
+    <span *ngIf="!maxSubmissionsReadable">{{ 'core.maxfilesize' | translate:{$a: maxSizeReadable} }}</span>
     <span [core-mark-required]="required" class="core-mark-required"></span>
 </ion-item>
 <ion-item text-wrap *ngIf="fileTypes && fileTypes.mimetypes && fileTypes.mimetypes.length">

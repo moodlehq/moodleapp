@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreEventsProvider } from '@providers/events';
+import { CoreEventsProvider, CoreEventObserver } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreGroupsProvider, CoreGroupInfo } from '@providers/groups';
@@ -23,6 +23,7 @@ import {
     AddonModAssignProvider, AddonModAssignAssign, AddonModAssignGrade, AddonModAssignSubmission
 } from '../../providers/assign';
 import { AddonModAssignOfflineProvider } from '../../providers/assign-offline';
+import { AddonModAssignSyncProvider, AddonModAssignSync } from '../../providers/assign-sync';
 import { AddonModAssignHelperProvider, AddonModAssignSubmissionFormatted } from '../../providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
@@ -54,10 +55,11 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     protected moduleId: number; // Module ID the submission belongs to.
     protected courseId: number; // Course ID the assignment belongs to.
     protected selectedStatus: string; // The status to see.
-    protected gradedObserver; // Observer to refresh data when a grade changes.
+    protected gradedObserver: CoreEventObserver; // Observer to refresh data when a grade changes.
+    protected syncObserver: CoreEventObserver; // OObserver to refresh data when the async is synchronized.
     protected submissionsData: {canviewsubmissions: boolean, submissions?: AddonModAssignSubmission[]};
 
-    constructor(navParams: NavParams, protected sitesProvider: CoreSitesProvider, eventsProvider: CoreEventsProvider,
+    constructor(navParams: NavParams, protected sitesProvider: CoreSitesProvider, protected eventsProvider: CoreEventsProvider,
             protected domUtils: CoreDomUtilsProvider, protected translate: TranslateService,
             protected assignProvider: AddonModAssignProvider, protected assignOfflineProvider: AddonModAssignOfflineProvider,
             protected assignHelper: AddonModAssignHelperProvider, protected groupsProvider: CoreGroupsProvider) {
@@ -79,22 +81,37 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
 
         // Update data if some grade changes.
         this.gradedObserver = eventsProvider.on(AddonModAssignProvider.GRADED_EVENT, (data) => {
-            if (this.assign && data.assignmentId == this.assign.id && data.userId == sitesProvider.getCurrentSiteUserId()) {
+            if (this.loaded && this.assign && data.assignmentId == this.assign.id &&
+                    data.userId == sitesProvider.getCurrentSiteUserId()) {
                 // Grade changed, refresh the data.
                 this.loaded = false;
 
-                this.refreshAllData().finally(() => {
+                this.refreshAllData(true).finally(() => {
                     this.loaded = true;
                 });
             }
         }, sitesProvider.getCurrentSiteId());
+
+        // Refresh data if this assign is synchronized.
+        const events = [AddonModAssignSyncProvider.AUTO_SYNCED, AddonModAssignSyncProvider.MANUAL_SYNCED];
+        this.syncObserver = eventsProvider.onMultiple(events, (data) => {
+            if (!this.loaded || data.context == 'submission-list') {
+                return;
+            }
+
+            this.loaded = false;
+
+            this.refreshAllData(false).finally(() => {
+                this.loaded = true;
+            });
+        }, this.sitesProvider.getCurrentSiteId());
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.fetchAssignment().finally(() => {
+        this.fetchAssignment(true).finally(() => {
             if (!this.selectedSubmissionId && this.splitviewCtrl.isOn() && this.submissions.length > 0) {
                 // Take first and load it.
                 this.loadSubmission(this.submissions[0]);
@@ -107,34 +124,49 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Fetch assignment data.
      *
+     * @param sync Whether to try to synchronize data.
      * @return Promise resolved when done.
      */
-    protected fetchAssignment(): Promise<any> {
+    protected async fetchAssignment(sync?: boolean): Promise<void> {
+        try {
+            // Get assignment data.
+            this.assign = await this.assignProvider.getAssignment(this.courseId, this.moduleId);
 
-        // Get assignment data.
-        return this.assignProvider.getAssignment(this.courseId, this.moduleId).then((assign) => {
-            this.title = assign.name || this.title;
-            this.assign = assign;
+            this.title = this.assign.name || this.title;
 
-            // Get assignment submissions.
-            return this.assignProvider.getSubmissions(assign.id);
-        }).then((data) => {
-            if (!data.canviewsubmissions) {
-                // User shouldn't be able to reach here.
-                return Promise.reject(null);
+            if (sync) {
+                try {
+                    // Try to synchronize data.
+                    const result = await AddonModAssignSync.instance.syncAssign(this.assign.id);
+
+                    if (result && result.updated) {
+                        this.eventsProvider.trigger(AddonModAssignSyncProvider.MANUAL_SYNCED, {
+                            assignId: this.assign.id,
+                            warnings: result.warnings,
+                            gradesBlocked: result.gradesBlocked,
+                            context: 'submission-list',
+                        }, this.sitesProvider.getCurrentSiteId());
+                    }
+                } catch (error) {
+                    // Ignore errors, probably user is offline or sync is blocked.
+                }
             }
 
-            this.submissionsData = data;
+            // Get assignment submissions.
+            this.submissionsData = await this.assignProvider.getSubmissions(this.assign.id, {cmId: this.assign.cmid});
+
+            if (!this.submissionsData.canviewsubmissions) {
+                // User shouldn't be able to reach here.
+                throw new Error('Cannot view submissions.');
+            }
 
             // Check if groupmode is enabled to avoid showing wrong numbers.
-            return this.groupsProvider.getActivityGroupInfo(this.assign.cmid, false).then((groupInfo) => {
-                this.groupInfo = groupInfo;
+            this.groupInfo = await this.groupsProvider.getActivityGroupInfo(this.assign.cmid, false);
 
-                return this.setGroup(this.groupsProvider.validateGroupId(this.groupId, groupInfo));
-            });
-        }).catch((error) => {
+            await this.setGroup(this.groupsProvider.validateGroupId(this.groupId, this.groupInfo));
+        } catch (error) {
             this.domUtils.showErrorModalDefault(error, 'Error getting assigment data.');
-        });
+        }
     }
 
     /**
@@ -160,7 +192,8 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
         const promises = [
             this.assignHelper.getSubmissionsUserData(this.assign, this.submissionsData.submissions, this.groupId),
             // Get assignment grades only if workflow is not enabled to check grading date.
-            !this.assign.markingworkflow ? this.assignProvider.getAssignmentGrades(this.assign.id) : Promise.resolve(null),
+            !this.assign.markingworkflow ? this.assignProvider.getAssignmentGrades(this.assign.id, {cmId: this.assign.cmid}) :
+                                           Promise.resolve(null),
         ];
 
         return Promise.all(promises).then(([submissions, grades]: [AddonModAssignSubmissionFormatted[], AddonModAssignGrade[]]) => {
@@ -265,9 +298,10 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Refresh all the data.
      *
+     * @param sync Whether to try to synchronize data.
      * @return Promise resolved when done.
      */
-    protected refreshAllData(): Promise<any> {
+    protected refreshAllData(sync?: boolean): Promise<any> {
         const promises = [];
 
         promises.push(this.assignProvider.invalidateAssignmentData(this.courseId));
@@ -279,7 +313,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
         }
 
         return Promise.all(promises).finally(() => {
-            return this.fetchAssignment();
+            return this.fetchAssignment(sync);
         });
     }
 
@@ -289,7 +323,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      */
     refreshList(refresher: any): void {
-        this.refreshAllData().finally(() => {
+        this.refreshAllData(true).finally(() => {
             refresher.complete();
         });
     }
@@ -299,6 +333,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.gradedObserver && this.gradedObserver.off();
+        this.syncObserver && this.syncObserver.off();
     }
 }
 

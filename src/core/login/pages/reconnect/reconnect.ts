@@ -103,7 +103,7 @@ export class CoreLoginReconnectPage {
             this.showSiteAvatar = this.site.avatar && !this.loginHelper.getFixedSites();
 
             return site.getPublicConfig().then((config) => {
-                return this.sitesProvider.checkRequiredMinimumVersion(config).then(() => {
+                return this.sitesProvider.checkApplication(config).then(() => {
                     // Check logoURL if user avatar is not set.
                     if (this.site.avatar.startsWith(site.infos.siteurl + '/theme/image.php')) {
                         this.showSiteAvatar = false;

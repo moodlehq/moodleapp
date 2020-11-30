@@ -15,8 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { File, FileEntry, DirectoryEntry, Entry, Metadata } from '@ionic-native/file';
-
-import { CoreAppProvider } from './app';
+import { CoreApp, CoreAppProvider } from './app';
 import { CoreLoggerProvider } from './logger';
 import { CoreMimetypeUtilsProvider } from './utils/mimetype';
 import { CoreTextUtilsProvider } from './utils/text';
@@ -73,16 +72,16 @@ export class CoreFileProvider {
     protected isHTMLAPI = false;
 
     constructor(logger: CoreLoggerProvider,
+            appProvider: CoreAppProvider,
             protected platform: Platform,
             protected file: File,
-            protected appProvider: CoreAppProvider,
             protected textUtils: CoreTextUtilsProvider,
             protected zip: Zip,
             protected mimeUtils: CoreMimetypeUtilsProvider) {
 
         this.logger = logger.getInstance('CoreFileProvider');
 
-        if (platform.is('android') && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
+        if (appProvider.isAndroid() && !Object.getOwnPropertyDescriptor(FileReader.prototype, 'onloadend')) {
             // Cordova File plugin creates some getters and setter for FileReader, but Ionic's polyfills override them in Android.
             // Create the getters and setters again. This code comes from FileReader.js in cordova-plugin-file.
             this.defineGetterSetter(FileReader.prototype, 'readyState', function(): any {
@@ -178,9 +177,9 @@ export class CoreFileProvider {
 
         return this.platform.ready().then(() => {
 
-            if (this.platform.is('android')) {
+            if (CoreApp.instance.isAndroid()) {
                 this.basePath = this.file.externalApplicationStorageDirectory || this.basePath;
-            } else if (this.platform.is('ios')) {
+            } else if (CoreApp.instance.isIOS()) {
                 this.basePath = this.file.documentsDirectory || this.basePath;
             } else if (!this.isAvailable() || this.basePath === '') {
                 this.logger.error('Error getting device OS.');
@@ -475,7 +474,7 @@ export class CoreFileProvider {
      */
     calculateFreeSpace(): Promise<number> {
         return this.file.getFreeDiskSpace().then((size) => {
-            if (this.platform.is('ios')) {
+            if (CoreApp.instance.isIOS()) {
                 // In iOS the size is in bytes.
                 return Number(size);
             }
@@ -622,7 +621,7 @@ export class CoreFileProvider {
 
             // Create file (and parent folders) to prevent errors.
             return this.createFile(path).then((fileEntry) => {
-                if (this.isHTMLAPI && !this.appProvider.isDesktop() &&
+                if (this.isHTMLAPI && !CoreApp.instance.isDesktop() &&
                     (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
                     // We need to write Blobs.
                     const type = this.mimeUtils.getMimeType(this.mimeUtils.getFileExtension(path));
@@ -745,7 +744,7 @@ export class CoreFileProvider {
      */
     getBasePathToDownload(): Promise<string> {
         return this.init().then(() => {
-            if (this.platform.is('ios')) {
+            if (CoreApp.instance.isIOS()) {
                 // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
                 return this.file.resolveDirectoryUrl(this.basePath).then((dirEntry) => {
                     return dirEntry.toInternalURL();
@@ -1115,10 +1114,8 @@ export class CoreFileProvider {
         // Get existing files in the folder.
         return this.getDirectoryContents(dirPath).then((entries) => {
             const files = {};
-            let num = 1,
-                fileNameWithoutExtension = this.mimeUtils.removeExtension(fileName),
-                extension = this.mimeUtils.getFileExtension(fileName) || defaultExt,
-                newName;
+            let fileNameWithoutExtension = this.mimeUtils.removeExtension(fileName);
+            let extension = this.mimeUtils.getFileExtension(fileName) || defaultExt;
 
             // Clean the file name.
             fileNameWithoutExtension = this.textUtils.removeSpecialCharactersForFiles(
@@ -1136,24 +1133,38 @@ export class CoreFileProvider {
                 extension = '';
             }
 
-            newName = fileNameWithoutExtension + extension;
-            if (typeof files[newName.toLowerCase()] == 'undefined') {
-                // No file with the same name.
-                return newName;
-            } else {
-                // Repeated name. Add a number until we find a free name.
-                do {
-                    newName = fileNameWithoutExtension + '(' + num + ')' + extension;
-                    num++;
-                } while (typeof files[newName.toLowerCase()] != 'undefined');
-
-                // Ask the user what he wants to do.
-                return newName;
-            }
+            return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
         }).catch(() => {
             // Folder doesn't exist, name is unique. Clean it and return it.
             return this.textUtils.removeSpecialCharactersForFiles(this.textUtils.decodeURIComponent(fileName));
         });
+    }
+
+    /**
+     * Given a file name and a set of already used names, calculate a unique name.
+     *
+     * @param usedNames Object with names already used as keys.
+     * @param name Name to check.
+     * @return Unique name.
+     */
+    calculateUniqueName(usedNames: {[name: string]: any}, name: string): string {
+        if (typeof usedNames[name.toLowerCase()] == 'undefined') {
+            // No file with the same name.
+            return name;
+        } else {
+            // Repeated name. Add a number until we find a free name.
+            const nameWithoutExtension = this.mimeUtils.removeExtension(name);
+            let extension = this.mimeUtils.getFileExtension(name);
+            let num = 1;
+            extension = extension ? '.' + extension : '';
+
+            do {
+                name = nameWithoutExtension + '(' + num + ')' + extension;
+                num++;
+            } while (typeof usedNames[name.toLowerCase()] != 'undefined');
+
+            return name;
+        }
     }
 
     /**
@@ -1252,7 +1263,7 @@ export class CoreFileProvider {
      * @return Converted src.
      */
     convertFileSrc(src: string): string {
-        return this.appProvider.isIOS() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
+        return CoreApp.instance.isIOS() ? (<any> window).Ionic.WebView.convertFileSrc(src) : src;
     }
 
     /**
@@ -1262,7 +1273,7 @@ export class CoreFileProvider {
      * @return Unconverted src.
      */
     unconvertFileSrc(src: string): string {
-        if (!this.appProvider.isIOS()) {
+        if (!CoreApp.instance.isIOS()) {
             return src;
         }
 

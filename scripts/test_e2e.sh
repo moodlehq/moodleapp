@@ -17,16 +17,7 @@ export MOODLE_DOCKER_APP_PATH=$basedir
 print_title "Preparing dependencies"
 git clone --branch master --depth 1 git://github.com/moodle/moodle $HOME/moodle
 git clone --branch master --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $HOME/moodle/local/moodlemobileapp
-# git clone --branch master --depth 1 git://github.com/moodlehq/moodle-docker $HOME/moodle-docker
-
-# TODO replace with commented line above once https://github.com/moodlehq/moodle-docker/pull/126 is merged
-mkdir $HOME/moodle-docker
-cd $HOME/moodle-docker
-git init
-git remote add origin git://github.com/moodlehq/moodle-docker
-git fetch --depth 1 origin c604d5f9792c72fb9d83f6fec1f4b1defd778e9a
-git checkout FETCH_HEAD
-cd -
+git clone --branch master --depth 1 git://github.com/moodlehq/moodle-docker $HOME/moodle-docker
 
 cp $HOME/moodle-docker/config.docker-template.php $HOME/moodle/config.php
 
@@ -50,7 +41,7 @@ print_title "Running e2e tests"
 # Run tests
 for tags in "$@"
 do
-    $dockercompose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags=\"$tags\""
+    $dockercompose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags=\"$tags\" --auto-rerun"
     notify_on_error_exit "Some e2e tests are failing, please review"
 done
 

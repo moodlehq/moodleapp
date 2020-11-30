@@ -108,7 +108,9 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
         try {
-            this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(this.courseId, this.module.id, false, this.siteId);
+            this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivity(this.courseId, this.module.id, {
+                siteId: this.siteId,
+            });
 
             this.dataRetrieved.emit(this.h5pActivity);
             this.description = this.h5pActivity.intro;
@@ -161,7 +163,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * @return Promise resolved when done.
      */
     protected async fetchAccessInfo(): Promise<void> {
-        this.accessInfo = await AddonModH5PActivity.instance.getAccessInformation(this.h5pActivity.id, false, this.siteId);
+        this.accessInfo = await AddonModH5PActivity.instance.getAccessInformation(this.h5pActivity.id, {
+            cmId: this.module.id,
+            siteId: this.siteId,
+        });
     }
 
     /**

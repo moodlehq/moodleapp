@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -63,7 +63,9 @@ export class AddonModLabelPrefetchHandler extends CoreCourseResourcePrefetchHand
         let promise;
 
         if (this.labelProvider.isGetLabelAvailableForSite()) {
-            promise = this.labelProvider.getLabel(courseId, module.id, false, ignoreCache);
+            promise = this.labelProvider.getLabel(courseId, module.id, {
+                readingStrategy: ignoreCache ? CoreSitesReadingStrategy.OnlyNetwork : undefined
+            });
         } else {
             promise = Promise.resolve();
         }

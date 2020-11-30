@@ -8,7 +8,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [enabled]="resourceComponent.loaded && resourceComponent.mode == 'external'" (ionRefresh)="resourceComponent.doRefresh($event)">
+    <ion-refresher [enabled]="resourceComponent.loaded && resourceComponent.mode != 'iframe'" (ionRefresh)="resourceComponent.doRefresh($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

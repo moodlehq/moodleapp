@@ -21,6 +21,18 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 
 /**
+ * Blocked sync error.
+ */
+export class CoreSyncBlockedError extends Error {
+    constructor(message: string) {
+        super(message);
+
+        // Set the prototype explicitly, otherwise instanceof won't work as expected.
+        Object.setPrototypeOf(this, CoreSyncBlockedError.prototype);
+    }
+}
+
+/**
  * Base class to create sync providers. It provides some common functions.
  */
 export class CoreSyncBaseProvider {
@@ -53,6 +65,26 @@ export class CoreSyncBaseProvider {
     }
 
     /**
+     * Add an offline data deleted warning to a list of warnings.
+     *
+     * @param warnings List of warnings.
+     * @param component Component.
+     * @param name Instance name.
+     * @param error Specific error message.
+     */
+    protected addOfflineDataDeletedWarning(warnings: string[], component: string, name: string, error: string): void {
+        const warning = this.translate.instant('core.warningofflinedatadeleted', {
+            component: component,
+            name: name,
+            error: error,
+        });
+
+        if (warnings.indexOf(warning) == -1) {
+            warnings.push(warning);
+        }
+    }
+
+    /**
      * Add an ongoing sync to the syncPromises list. On finish the promise will be removed.
      *
      * @param id Unique sync identifier per component.
@@ -60,7 +92,7 @@ export class CoreSyncBaseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return The sync promise.
      */
-    addOngoingSync(id: string | number, promise: Promise<any>, siteId?: string): Promise<any> {
+    addOngoingSync<T>(id: string | number, promise: Promise<T>, siteId?: string): Promise<T> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncId(id);

@@ -24,9 +24,18 @@
             <canvas *ngIf="isImage" class="core-webcam-image-canvas" #imgCanvas></canvas>
             <img *ngIf="isImage" [hidden]="!hasCaptured" class="core-webcam-image" alt="{{ 'core.capturedimage' | translate }}" #previewImage>
 
-            <!-- Canvas to show audio waves when recording audio and audio player to listen to the result. -->
+            <!-- Recording audio. -->
             <div *ngIf="isAudio" class="core-audio-record-container">
-                <canvas [hidden]="hasCaptured" class="core-audio-canvas" #streamAudio></canvas>
+                <!-- Canvas to show audio waves when recording audio in desktop. -->
+                <canvas [hidden]="hasCaptured || isCordovaAudioCapture" class="core-audio-canvas" #streamAudio></canvas>
+
+                <!-- Button to start/stop in mobile devices. -->
+                <button ion-button icon-only clear *ngIf="!hasCaptured && isCordovaAudioCapture" (click)="actionClicked()" [attr.aria-label]="title">
+                    <ion-icon *ngIf="!isCapturing" name="microphone"></ion-icon>
+                    <ion-icon *ngIf="isCapturing" name="square"></ion-icon>
+                </button>
+
+                <!-- Audio player to listen to the result. -->
                 <audio [hidden]="!hasCaptured" class="core-audio-captured" controls #previewAudio></audio>
             </div>
         </div>
@@ -37,7 +46,7 @@
     <ion-row *ngIf="readyToCapture">
         <ion-col></ion-col>
         <ion-col text-center>
-            <button ion-button icon-only clear *ngIf="!hasCaptured" (click)="actionClicked()" [attr.aria-label]="title">
+            <button ion-button icon-only clear *ngIf="!hasCaptured && !isCordovaAudioCapture" (click)="actionClicked()" [attr.aria-label]="title">
                 <ion-icon *ngIf="!isCapturing && isAudio" name="microphone"></ion-icon>
                 <ion-icon *ngIf="!isCapturing && isVideo" name="videocam"></ion-icon>
                 <ion-icon *ngIf="isImage" name="camera"></ion-icon>

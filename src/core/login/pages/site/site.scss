@@ -12,7 +12,8 @@ ion-app.app-root page-core-login-site {
     }
 
     .item.item-block {
-        &.core-login-need-help.item {
+        &.core-login-need-help .item {
+            color: $core-login-page-text-color;
             text-decoration: underline;
         }
         &.core-login-site-qrcode {
@@ -97,6 +98,19 @@ ion-app.app-root page-core-login-site {
         text-align: center;
     }
 
+    .core-login-site-list-loading,
+    .core-login-site-nolist-loading {
+        .spinner circle, .spinner line {
+            stroke: $core-login-loading-color;
+        }
+
+        @include darkmode() {
+            .spinner circle, .spinner line {
+                stroke: $core-dark-login-loading-color;
+            }
+        }
+    }
+
     .item.core-login-site-list-title {
         ion-label, ion-label h2.item-heading {
             margin-top: 0;
@@ -122,6 +136,10 @@ ion-app.app-root page-core-login-site {
         background-color: $gray-lighter;
         ion-thumbnail {
             box-shadow: 0 0 4px #ddd;
+        }
+        color: $core-login-page-text-color;
+        @include darkmode() {
+            color: $core-dark-login-page-text-color;
         }
     }
 

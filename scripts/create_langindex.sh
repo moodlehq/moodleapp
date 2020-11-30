@@ -258,7 +258,10 @@ function parse_file {
             value=`$exec`
             guess_file $key "$value"
         else
-            if [ ! -z "$findbetter" ]; then
+            if [ "$found" == 'donottranslate' ]; then
+                # Do nothing since is not translatable.
+                continue
+            elif [ ! -z "$findbetter" ]; then
                 exec="jq -r .\"$key\" $1"
                 value=`$exec`
                 find_better_file "$key" "$value" "$found"

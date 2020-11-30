@@ -43,7 +43,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
             protected utils: CoreUtilsProvider) {
         super(name);
 
-        this.priority = handlerSchema.priority;
+        this.priority = handlerSchema.priority || 0;
 
         // Only support TYPE_COMMUNICATION and TYPE_NEW_PAGE.
         this.type = handlerSchema.type != CoreUserDelegate.TYPE_COMMUNICATION ?
@@ -94,7 +94,8 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                         courseid: courseId,
                         userid: user.id
                     },
-                    initResult: this.initResult
+                    initResult: this.initResult,
+                    ptrEnabled: this.handlerSchema.ptrenabled,
                 });
             }
         };

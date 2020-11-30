@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -20,10 +20,12 @@ import { CoreUtils } from '@providers/utils/utils';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
+import { CoreUrlUtils } from '@providers/utils/url';
 import { CoreLoginHelperProvider } from '../../providers/helper';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreConfigConstants } from '../../../../configconstants';
 import { CoreCustomURLSchemes } from '@providers/urlschemes';
+import { Subscription } from 'rxjs';
 
 /**
  * Page to enter the user credentials.
@@ -33,7 +35,7 @@ import { CoreCustomURLSchemes } from '@providers/urlschemes';
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
 })
-export class CoreLoginCredentialsPage {
+export class CoreLoginCredentialsPage implements OnDestroy {
 
     @ViewChild('credentialsForm') formElement: ElementRef;
 
@@ -56,6 +58,7 @@ export class CoreLoginCredentialsPage {
     protected viewLeft = false;
     protected siteId: string;
     protected urlToOpen: string;
+    protected valueChangeSubscription: Subscription;
 
     constructor(private navCtrl: NavController,
             navParams: NavParams,
@@ -69,7 +72,7 @@ export class CoreLoginCredentialsPage {
 
         this.siteUrl = navParams.get('siteUrl');
         this.siteName = navParams.get('siteName') || null;
-        this.logoUrl = navParams.get('logoUrl') || null;
+        this.logoUrl = !CoreConfigConstants.forceLoginLogo && navParams.get('logoUrl') || null;
         this.siteConfig = navParams.get('siteConfig');
         this.urlToOpen = navParams.get('urlToOpen');
 
@@ -87,6 +90,28 @@ export class CoreLoginCredentialsPage {
             }
         } else {
             this.showScanQR = false;
+        }
+
+        if (appProvider.isIOS()) {
+            // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
+            // Debounce it to prevent triggering this function too often when the user is typing.
+            this.valueChangeSubscription = this.credForm.valueChanges.debounceTime(1000).subscribe((changes) => {
+                if (!this.formElement || !this.formElement.nativeElement) {
+                    return;
+                }
+
+                const usernameInput = this.formElement.nativeElement.querySelector('input[name="username"]');
+                const passwordInput = this.formElement.nativeElement.querySelector('input[name="password"]');
+                const usernameValue = usernameInput && usernameInput.value;
+                const passwordValue = passwordInput && passwordInput.value;
+
+                if (typeof usernameValue != 'undefined' && usernameValue != changes.username) {
+                    this.credForm.get('username').setValue(usernameValue);
+                }
+                if (typeof passwordValue != 'undefined' && passwordValue != changes.password) {
+                    this.credForm.get('password').setValue(passwordValue);
+                }
+            });
         }
     }
 
@@ -324,6 +349,22 @@ export class CoreLoginCredentialsPage {
             } catch (error) {
                 CoreCustomURLSchemes.instance.treatHandleCustomURLError(error);
             }
+        } else if (text) {
+            // Not a custom URL scheme, check if it's a URL scheme to another app.
+            const scheme = CoreUrlUtils.instance.getUrlProtocol(text);
+
+            if (scheme && scheme != 'http' && scheme != 'https') {
+                this.domUtils.showErrorModal(this.translate.instant('core.errorurlschemeinvalidscheme', {$a: text}));
+            } else {
+                this.domUtils.showErrorModal('core.login.errorqrnoscheme', true);
+            }
         }
+    }
+
+    /**
+     * Component destroyed.
+     */
+    ngOnDestroy(): void {
+        this.valueChangeSubscription && this.valueChangeSubscription.unsubscribe();
     }
 }

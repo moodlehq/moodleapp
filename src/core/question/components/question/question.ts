@@ -39,6 +39,7 @@ export class CoreQuestionComponent implements OnInit {
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the question belongs to (if any). It can be used to improve performance with filters.
+    @Input() review?: boolean; // Whether the user is in review mode.
     @Output() buttonClicked: EventEmitter<any>; // Will emit an event when a behaviour button is clicked.
     @Output() onAbort: EventEmitter<void>; // Will emit an event if the question should be aborted.
 
@@ -88,8 +89,9 @@ export class CoreQuestionComponent implements OnInit {
                     contextLevel: this.contextLevel,
                     contextInstanceId: this.contextInstanceId,
                     courseId: this.courseId,
+                    review: this.review,
                     buttonClicked: this.buttonClicked,
-                    onAbort: this.onAbort
+                    onAbort: this.onAbort,
                 };
 
                 // Treat the question.

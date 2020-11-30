@@ -15,11 +15,12 @@
 import { Injectable } from '@angular/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWorkshopOfflineProvider } from './offline';
 import { CoreSite } from '@classes/site';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Service that provides some features for workshops.
@@ -202,24 +203,20 @@ export class AddonModWorkshopProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param options Other options.
      * @return Promise resolved when the workshop is retrieved.
      */
-    protected getWorkshopByKey(courseId: number, key: string, value: any, siteId?: string, forceCache: boolean = false):
-            Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getWorkshopByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                courseids: [courseId]
+                courseids: [courseId],
             };
-            const preSets: any = {
+            const preSets = {
                 cacheKey: this.getWorkshopDataCacheKey(courseId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModWorkshopProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            }
 
             return site.read('mod_workshop_get_workshops_by_courses', params, preSets).then((response) => {
                 if (response && response.workshops) {
@@ -252,12 +249,11 @@ export class AddonModWorkshopProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param options Other options.
      * @return Promise resolved when the workshop is retrieved.
      */
-    getWorkshop(courseId: number, cmId: number, siteId?: string, forceCache: boolean = false): Promise<any> {
-        return this.getWorkshopByKey(courseId, 'coursemodule', cmId, siteId, forceCache);
+    getWorkshop(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getWorkshopByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -265,12 +261,11 @@ export class AddonModWorkshopProvider {
      *
      * @param courseId Course ID.
      * @param id Workshop ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
+     * @param options Other options.
      * @return Promise resolved when the workshop is retrieved.
      */
-    getWorkshopById(courseId: number, id: number, siteId?: string, forceCache: boolean = false): Promise<any> {
-        return this.getWorkshopByKey(courseId, 'id', id, siteId, forceCache);
+    getWorkshopById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getWorkshopByKey(courseId, 'id', id, options);
     }
 
     /**
@@ -303,27 +298,20 @@ export class AddonModWorkshopProvider {
      * Get access information for a given workshop.
      *
      * @param workshopId Workshop ID.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop is retrieved.
      */
-    getWorkshopAccessInformation(workshopId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string):
-            Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getWorkshopAccessInformation(workshopId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                workshopid: workshopId
+                workshopid: workshopId,
             };
-            const preSets: any = {
-                cacheKey: this.getWorkshopAccessInformationDataCacheKey(workshopId)
+            const preSets = {
+                cacheKey: this.getWorkshopAccessInformationDataCacheKey(workshopId),
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
 
             return site.read('mod_workshop_get_workshop_access_information', params, preSets);
         });
@@ -346,27 +334,21 @@ export class AddonModWorkshopProvider {
      * Return the planner information for the given user.
      *
      * @param workshopId Workshop ID.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getUserPlanPhases(workshopId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getUserPlanPhases(workshopId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 workshopid: workshopId
             };
-            const preSets: any = {
+            const preSets = {
                 cacheKey: this.getUserPlanDataCacheKey(workshopId),
-                updateFrequency: CoreSite.FREQUENCY_OFTEN
+                updateFrequency: CoreSite.FREQUENCY_OFTEN,
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
 
             return site.read('mod_workshop_get_user_plan', params, preSets).then((response) => {
                 if (response && response.userplan && response.userplan.phases) {
@@ -395,32 +377,26 @@ export class AddonModWorkshopProvider {
      * Retrieves all the workshop submissions visible by the current user or the one done by the given user.
      *
      * @param workshopId Workshop ID.
-     * @param userId User ID, 0 means the current user.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop submissions are retrieved.
      */
-    getSubmissions(workshopId: number, userId: number = 0, groupId: number = 0, offline: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getSubmissions(workshopId: number, options: AddonModWorkshopGetSubmissionsOptions = {}): Promise<any[]> {
+        const userId = options.userId || 0;
+        const groupId = options.groupId || 0;
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 workshopid: workshopId,
                 userid: userId,
-                groupid: groupId
+                groupid: groupId,
             };
-            const preSets: any = {
+            const preSets = {
                 cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId),
-                updateFrequency: CoreSite.FREQUENCY_OFTEN
+                updateFrequency: CoreSite.FREQUENCY_OFTEN,
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
 
             return site.read('mod_workshop_get_submissions', params, preSets).then((response) => {
                 if (response && response.submissions) {
@@ -452,16 +428,19 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param submissionId Submission ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop submission data is retrieved.
      */
-    getSubmission(workshopId: number, submissionId: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getSubmission(workshopId: number, submissionId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                submissionid: submissionId
+                submissionid: submissionId,
             };
             const preSets = {
-                cacheKey: this.getSubmissionDataCacheKey(workshopId, submissionId)
+                cacheKey: this.getSubmissionDataCacheKey(workshopId, submissionId),
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
             return site.read('mod_workshop_get_submission', params, preSets).then((response) => {
@@ -492,16 +471,19 @@ export class AddonModWorkshopProvider {
      * Returns the grades information for the given workshop and user.
      *
      * @param workshopId Workshop ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop grades data is retrieved.
      */
-    getGrades(workshopId: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getGrades(workshopId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 workshopid: workshopId
             };
             const preSets = {
-                cacheKey: this.getGradesDataCacheKey(workshopId)
+                cacheKey: this.getGradesDataCacheKey(workshopId),
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
             return site.read('mod_workshop_get_grades', params, preSets);
@@ -525,34 +507,25 @@ export class AddonModWorkshopProvider {
      * Retrieves the assessment grades report.
      *
      * @param workshopId Workshop ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param page Page of records to return. Default 0.
-     * @param perPage Records per page to return. Default AddonModWorkshopProvider.PER_PAGE.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getGradesReport(workshopId: number, groupId: number = 0, page: number = 0, perPage: number = 0, offline: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getGradesReport(workshopId: number, options: AddonModWorkshopGetGradesReportOptions = {}): Promise<any> {
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 workshopid: workshopId,
-                groupid: groupId,
-                page: page,
-                perpage: perPage || AddonModWorkshopProvider.PER_PAGE
+                groupid: options.groupId,
+                page: options.page || 0,
+                perpage: options.perPage || AddonModWorkshopProvider.PER_PAGE
             };
-            const preSets: any = {
-                cacheKey: this.getGradesReportDataCacheKey(workshopId, groupId),
-                updateFrequency: CoreSite.FREQUENCY_OFTEN
+            const preSets = {
+                cacheKey: this.getGradesReportDataCacheKey(workshopId, options.groupId),
+                updateFrequency: CoreSite.FREQUENCY_OFTEN,
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
 
             return site.read('mod_workshop_get_grades_report', params, preSets).then((response) => {
                 if (response && response.report) {
@@ -568,44 +541,37 @@ export class AddonModWorkshopProvider {
      * Performs the whole fetch of the grade reports in the workshop.
      *
      * @param workshopId Workshop ID.
-     * @param groupId Group ID.
-     * @param perPage Records per page to fetch. It has to match with the prefetch.
-     *                Default on AddonModWorkshopProvider.PER_PAGE.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when done.
      */
-    fetchAllGradeReports(workshopId: number, groupId: number = 0, perPage: number = 0, forceCache: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-        perPage = perPage || AddonModWorkshopProvider.PER_PAGE;
-
-        return this.fetchGradeReportsRecursive(workshopId, groupId, perPage, forceCache, ignoreCache, [], 0, siteId);
+    fetchAllGradeReports(workshopId: number, options: AddonModWorkshopFetchAllGradesReportOptions = {}): Promise<any> {
+        return this.fetchGradeReportsRecursive(workshopId, [], {
+            ...options, // Include all options.
+            page: 0,
+            perPage: options.perPage || AddonModWorkshopProvider.PER_PAGE,
+            siteId: options.siteId || this.sitesProvider.getCurrentSiteId(),
+        });
     }
 
     /**
      * Recursive call on fetch all grade reports.
      *
      * @param workshopId Workshop ID.
-     * @param groupId Group ID.
-     * @param perPage Records per page to fetch. It has to match with the prefetch.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param grades Grades already fetched (just to concatenate them).
-     * @param page Page of records to return.
-     * @param siteId Site ID.
+     * @param options Other options.
      * @return Promise resolved when done.
      */
-    protected fetchGradeReportsRecursive(workshopId: number, groupId: number, perPage: number, forceCache: boolean,
-            ignoreCache: boolean, grades: any[], page: number, siteId: string): Promise<any[]> {
-        return this.getGradesReport(workshopId, groupId, page, perPage, forceCache, ignoreCache, siteId).then((report) => {
+    protected fetchGradeReportsRecursive(workshopId: number, grades: any[], options: AddonModWorkshopGetGradesReportOptions = {})
+            : Promise<any[]> {
+
+        return this.getGradesReport(workshopId, options).then((report) => {
             Array.prototype.push.apply(grades, report.grades);
 
-            const canLoadMore = ((page + 1) * perPage) < report.totalcount;
+            const canLoadMore = ((options.page + 1) * options.perPage) < report.totalcount;
             if (canLoadMore) {
-                return this.fetchGradeReportsRecursive(
-                        workshopId, groupId, perPage, forceCache, ignoreCache, grades, page + 1, siteId);
+                options.page++;
+
+                return this.fetchGradeReportsRecursive(workshopId, grades, options);
             }
 
             return grades;
@@ -631,27 +597,20 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param submissionId Submission ID.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getSubmissionAssessments(workshopId: number, submissionId: number, offline: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getSubmissionAssessments(workshopId: number, submissionId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                submissionid: submissionId
+                submissionid: submissionId,
             };
-            const preSets: any = {
-                cacheKey: this.getSubmissionAssessmentsDataCacheKey(workshopId, submissionId)
+            const preSets = {
+                cacheKey: this.getSubmissionAssessmentsDataCacheKey(workshopId, submissionId),
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
 
             return site.read('mod_workshop_get_submission_assessments', params, preSets).then((response) => {
                 if (response && response.assessments) {
@@ -898,31 +857,23 @@ export class AddonModWorkshopProvider {
      * Retrieves all the assessments reviewed by the given user.
      *
      * @param workshopId Workshop ID.
-     * @param userId User ID. If not defined, current user.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getReviewerAssessments(workshopId: number, userId?: number, offline: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getReviewerAssessments(workshopId: number, options: AddonModWorkshopUserOptions = {}): Promise<any[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
-                workshopid: workshopId
+                workshopid: workshopId,
             };
-            const preSets: any = {
-                cacheKey: this.getReviewerAssessmentsDataCacheKey(workshopId, userId)
+            const preSets = {
+                cacheKey: this.getReviewerAssessmentsDataCacheKey(workshopId, options.userId),
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
-            if (userId) {
-                params.userid = userId;
-            }
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
+            if (options.userId) {
+                params.userid = options.userId;
             }
 
             return site.read('mod_workshop_get_reviewer_assessments', params, preSets).then((response) => {
@@ -954,16 +905,19 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getAssessment(workshopId: number, assessmentId: number, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getAssessment(workshopId: number, assessmentId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                assessmentid: assessmentId
+                assessmentid: assessmentId,
             };
             const preSets = {
-                cacheKey: this.getAssessmentDataCacheKey(workshopId, assessmentId)
+                cacheKey: this.getAssessmentDataCacheKey(workshopId, assessmentId),
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
             return site.read('mod_workshop_get_assessment', params, preSets).then((response) => {
@@ -995,30 +949,25 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
-     * @param mode Mode assessment (default) or preview.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the workshop data is retrieved.
      */
-    getAssessmentForm(workshopId: number, assessmentId: number, mode: string = 'assessment', offline: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getAssessmentForm(workshopId: number, assessmentId: number, options: AddonModWorkshopGetAssessmentFormOptions = {})
+            : Promise<any> {
+        const mode = options.mode || 'assessment';
+
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 assessmentid: assessmentId,
-                mode: mode || 'assessment'
+                mode: mode,
             };
-            const preSets: any = {
+            const preSets = {
                 cacheKey: this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModWorkshopProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = 0;
-                preSets.emergencyCache = 0;
-            }
 
             return site.read('mod_workshop_get_assessment_form_definition', params, preSets).then((response) => {
                 if (response) {
@@ -1327,7 +1276,10 @@ export class AddonModWorkshopProvider {
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.getWorkshop(courseId, moduleId, siteId, true).then((workshop) => {
+        return this.getWorkshop(courseId, moduleId, {
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            siteId,
+        }).then((workshop) => {
             return this.invalidateContentById(workshop.id, courseId, siteId);
         });
     }
@@ -1399,3 +1351,43 @@ export class AddonModWorkshopProvider {
                 name, 'workshop', params, siteId);
     }
 }
+
+/**
+ * Common options with a user ID.
+ */
+export type AddonModWorkshopUserOptions = CoreCourseCommonModWSOptions & {
+    userId?: number; // User ID. If not defined, current user.
+};
+
+/**
+ * Common options with a group ID.
+ */
+export type AddonModWorkshopGroupOptions = CoreCourseCommonModWSOptions & {
+    groupId?: number; // Group id, 0 or not defined means that the function will determine the user group.
+};
+
+/**
+ * Options to pass to getSubmissions.
+ */
+export type AddonModWorkshopGetSubmissionsOptions = AddonModWorkshopUserOptions & AddonModWorkshopGroupOptions;
+
+/**
+ * Options to pass to fetchAllGradeReports.
+ */
+export type AddonModWorkshopFetchAllGradesReportOptions = AddonModWorkshopGroupOptions & {
+    perPage?: number; // Records per page to return. Default AddonModWorkshopProvider.PER_PAGE.
+};
+
+/**
+ * Options to pass to getGradesReport.
+ */
+export type AddonModWorkshopGetGradesReportOptions = AddonModWorkshopFetchAllGradesReportOptions & {
+    page?: number; // Page of records to return. Default 0.
+};
+
+/**
+ * Options to pass to getAssessmentForm.
+ */
+export type AddonModWorkshopGetAssessmentFormOptions = CoreCourseCommonModWSOptions & {
+    mode?: string; // Mode assessment (default) or preview. Defaults to 'assessment'.
+};

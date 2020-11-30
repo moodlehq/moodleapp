@@ -23,7 +23,7 @@
                 [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component" [componentId]="componentId" [allowOffline]="true"></core-attachments>
             <ion-item *ngIf="edit && access && access.canallocate">
                 <ion-label stacked [core-mark-required]="true">{{ 'addon.mod_workshop.assessmentweight' | translate }}</ion-label>
-                <ion-select [(ngModel)]="weight" interface="action-sheet">
+                <ion-select [(ngModel)]="weight" interface="action-sheet" name="weight">
                     <ion-option *ngFor="let w of weights" [value]="w">{{w}}</ion-option>
                 </ion-select>
             </ion-item>

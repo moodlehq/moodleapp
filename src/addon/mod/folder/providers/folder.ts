@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
@@ -41,11 +41,11 @@ export class AddonModFolderProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the book is retrieved.
      */
-    getFolder(courseId: number, cmId: number, siteId?: string): Promise<AddonModFolderFolder> {
-        return this.getFolderByKey(courseId, 'coursemodule', cmId, siteId);
+    getFolder(courseId: number, cmId: number, options?: CoreSitesCommonWSOptions): Promise<AddonModFolderFolder> {
+        return this.getFolderByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -54,18 +54,21 @@ export class AddonModFolderProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the book is retrieved.
      */
-    protected getFolderByKey(courseId: number, key: string, value: any, siteId?: string): Promise<AddonModFolderFolder> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    protected getFolderByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModFolderFolder> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: this.getFolderCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getFolderCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModFolderProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_folder_get_folders_by_courses', params, preSets)
                     .then((response: AddonModFolderGetFoldersByCoursesResult): any => {

@@ -87,7 +87,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected setFields(): void {
         const profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
-            this.user.userpictureurl || this.user.profileimageurlsmall));
+            this.user.userpictureurl || this.user.profileimageurlsmall || (this.user.urls && this.user.urls.profileimage)));
 
         if (typeof profileUrl == 'string') {
             this.avatarUrl = profileUrl;

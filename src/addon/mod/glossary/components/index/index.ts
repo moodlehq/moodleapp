@@ -181,10 +181,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             return Promise.resolve({entries: [], count: 0});
         }
 
-        const limitFrom = append ? this.entries.length : 0;
-        const limitNum = AddonModGlossaryProvider.LIMIT_ENTRIES;
-
-        return this.glossaryProvider.fetchEntries(this.fetchFunction, this.fetchArguments, limitFrom, limitNum).then((result) => {
+        return this.glossaryProvider.fetchEntries(this.fetchFunction, this.fetchArguments, {
+            from: append ? this.entries.length : 0,
+            cmId: this.module.id,
+        }).then((result) => {
             if (append) {
                 Array.prototype.push.apply(this.entries, result.entries);
             } else {

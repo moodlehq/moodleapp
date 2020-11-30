@@ -24,7 +24,7 @@ import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 
 /**
- * Emulates the Cordova Globalization plugin in desktop apps and in browser.
+ * Emulates the Local Notifications plugin in desktop apps and in browser.
  */
 @Injectable()
 export class LocalNotificationsMock extends LocalNotifications {

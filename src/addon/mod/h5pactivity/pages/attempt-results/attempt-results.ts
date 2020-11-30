@@ -77,30 +77,13 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
-        await Promise.all([
-            this.fetchActivity(),
-            this.fetchAttempt(),
-        ]);
+        this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivityById(this.courseId, this.h5pActivityId);
+
+        this.attempt = await AddonModH5PActivity.instance.getAttemptResults(this.h5pActivityId, this.attemptId, {
+            cmId: this.h5pActivity.coursemodule,
+        });
 
         await this.fetchUserProfile();
-    }
-
-    /**
-     * Get activity data.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async fetchActivity(): Promise<void> {
-        this.h5pActivity = await AddonModH5PActivity.instance.getH5PActivityById(this.courseId, this.h5pActivityId);
-    }
-
-    /**
-     * Get attempts.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async fetchAttempt(): Promise<void> {
-        this.attempt = await AddonModH5PActivity.instance.getAttemptResults(this.h5pActivityId, this.attemptId);
     }
 
     /**

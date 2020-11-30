@@ -112,6 +112,11 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
+        if (this.syncObserver) {
+            // Already setup.
+            return;
+        }
+
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = this.eventsProvider.on(AddonModForumSyncProvider.AUTO_SYNCED, (data) => {
             if (data.forumId == this.forumId && data.userId == this.sitesProvider.getCurrentSiteUserId()) {
@@ -171,7 +176,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                 this.newDiscussion.postToAllGroups = false;
 
                 // Use the canAddDiscussion WS to check if the user can add attachments and pin discussions.
-                promises.push(this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+                promises.push(this.forumProvider.canAddDiscussionToAll(this.forumId, {cmId: this.cmId}).then((response) => {
                     this.canPin = !!response.canpindiscussions;
                     this.canCreateAttachments = !!response.cancreateattachment;
                 }).catch(() => {
@@ -185,7 +190,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
             }));
 
             // Get access information.
-            promises.push(this.forumProvider.getAccessInformation(this.forumId).then((accessInfo) => {
+            promises.push(this.forumProvider.getAccessInformation(this.forumId, {cmId: this.cmId}).then((accessInfo) => {
                 this.accessInfo = accessInfo;
             }));
 
@@ -260,7 +265,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      */
     protected validateVisibleGroups(forumGroups: any[]): Promise<any[]> {
         // We first check if the user can post to all the groups.
-        return this.forumProvider.canAddDiscussionToAll(this.forumId).catch(() => {
+        return this.forumProvider.canAddDiscussionToAll(this.forumId, {cmId: this.cmId}).catch(() => {
             // The call failed, let's assume he can't.
             return {
                 status: false,
@@ -280,7 +285,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
                 const filtered = [];
 
                 forumGroups.forEach((group) => {
-                    promises.push(this.forumProvider.canAddDiscussion(this.forumId, group.id).catch(() => {
+                    promises.push(this.forumProvider.canAddDiscussion(this.forumId, group.id, {cmId: this.cmId}).catch(() => {
                         /* The call failed, let's return true so the group is shown. If the user can't post to
                            it an error will be shown when he tries to add the discussion. */
                         return {
@@ -337,7 +342,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
 
         if (check) {
             // We need to check if the user can add a discussion to all participants.
-            promise = this.forumProvider.canAddDiscussionToAll(this.forumId).then((response) => {
+            promise = this.forumProvider.canAddDiscussionToAll(this.forumId, {cmId: this.cmId}).then((response) => {
                 this.canPin = !!response.canpindiscussions;
                 this.canCreateAttachments = !!response.cancreateattachment;
 
@@ -549,6 +554,7 @@ export class AddonModForumNewDiscussionPage implements OnDestroy {
      */
     ionViewWillLeave(): void {
         this.syncObserver && this.syncObserver.off();
+        delete this.syncObserver;
     }
 
     /**

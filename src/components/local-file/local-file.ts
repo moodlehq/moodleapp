@@ -15,6 +15,7 @@
 import { Component, Input, Output, OnInit, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreFileProvider } from '@providers/file';
+import { CoreFileHelper } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
@@ -103,7 +104,7 @@ export class CoreLocalFileComponent implements OnInit {
      *
      * @param e Click event.
      */
-    fileClicked(e: Event): void {
+    async fileClicked(e: Event): Promise<void> {
         if (this.editMode) {
             return;
         }
@@ -114,6 +115,14 @@ export class CoreLocalFileComponent implements OnInit {
         if (this.utils.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
             this.onClick.emit();
         } else {
+            if (!CoreFileHelper.instance.isOpenableInApp(this.file)) {
+                try {
+                    await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
             this.utils.openFile(this.file.toURL());
         }
     }

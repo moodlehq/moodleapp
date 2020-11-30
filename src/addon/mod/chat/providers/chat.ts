@@ -14,13 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreUserProvider } from '@core/user/providers/user';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
 import { AddonModChatMessageForView, AddonModChatSessionMessageForView } from './helper';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Service that provides some features for chats.
@@ -40,17 +41,19 @@ export class AddonModChatProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the chat is retrieved.
      */
-    getChat(courseId: number, cmId: number, siteId?: string): Promise<AddonModChatChat> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getChat(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChatChat> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 courseids: [courseId]
             };
-            const preSets: CoreSiteWSPreSets = {
+            const preSets = {
                 cacheKey: this.getChatsCacheKey(courseId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModChatProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
 
             return site.read('mod_chat_get_chats_by_courses', params, preSets)
@@ -179,17 +182,25 @@ export class AddonModChatProvider {
      * Get the actives users of a current chat.
      *
      * @param sessionId Chat sessiond ID.
+     * @param options Other options.
      * @return Promise resolved when the WS is executed.
      */
-    getChatUsers(sessionId: string): Promise<AddonModChatGetChatUsersResult> {
-        const params = {
-            chatsid: sessionId
-        };
-        const preSets = {
-            getFromCache: false
-        };
+    getChatUsers(sessionId: string, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChatGetChatUsersResult> {
+        // By default, always try to get the latest data.
+        options.readingStrategy = options.readingStrategy || CoreSitesReadingStrategy.PreferNetwork;
 
-        return this.sitesProvider.getCurrentSite().read('mod_chat_get_chat_users', params, preSets);
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const params = {
+                chatsid: sessionId,
+            };
+            const preSets = {
+                component: AddonModChatProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
+
+            return site.read('mod_chat_get_chat_users', params, preSets);
+        });
     }
 
     /**
@@ -210,28 +221,26 @@ export class AddonModChatProvider {
      * @param chatId Chat ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param showAll Whether to include incomplete sessions or not.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of sessions.
      * @since 3.5
      */
-    getSessions(chatId: number, groupId: number = 0, showAll: boolean = false, ignoreCache: boolean = false, siteId?: string):
+    getSessions(chatId: number, groupId: number = 0, showAll: boolean = false, options: CoreCourseCommonModWSOptions = {}):
             Promise<AddonModChatSession[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 chatid: chatId,
                 groupid: groupId,
-                showall: showAll ? 1 : 0
+                showall: showAll ? 1 : 0,
             };
-            const preSets: CoreSiteWSPreSets = {
+            const preSets = {
                 cacheKey: this.getSessionsCacheKey(chatId, groupId, showAll),
-                updateFrequency: CoreSite.FREQUENCY_SOMETIMES
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModChatProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
 
             return site.read('mod_chat_get_sessions', params, preSets).then((response: AddonModChatGetSessionsResult): any => {
                 if (!response || !response.sessions) {
@@ -250,29 +259,27 @@ export class AddonModChatProvider {
      * @param sessionStart Session start time.
      * @param sessionEnd Session end time.
      * @param groupId Group ID, 0 means that the function will determine the user group.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of messages.
      * @since 3.5
      */
-    getSessionMessages(chatId: number, sessionStart: number, sessionEnd: number, groupId: number = 0, ignoreCache: boolean = false,
-            siteId?: string): Promise<AddonModChatSessionMessage[]> {
+    getSessionMessages(chatId: number, sessionStart: number, sessionEnd: number, groupId: number = 0,
+            options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChatSessionMessage[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
                 chatid: chatId,
                 sessionstart: sessionStart,
                 sessionend: sessionEnd,
-                groupid: groupId
+                groupid: groupId,
             };
-            const preSets: CoreSiteWSPreSets = {
+            const preSets = {
                 cacheKey: this.getSessionMessagesCacheKey(chatId, sessionStart, groupId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModChatProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
 
             return site.read('mod_chat_get_session_messages', params, preSets)
                     .then((response: AddonModChatGetSessionMessagesResult): any => {

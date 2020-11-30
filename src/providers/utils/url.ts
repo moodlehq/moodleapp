@@ -114,10 +114,10 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Object with the params.
      */
-    extractUrlParams(url: string): any {
+    extractUrlParams(url: string): {[name: string]: string} {
         const regex = /[?&]+([^=&]+)=?([^&]*)?/gi,
             subParamsPlaceholder = '@@@SUBPARAMS@@@',
-            params: any = {},
+            params: {[name: string]: string} = {},
             urlAndHash = url.split('#'),
             questionMarkSplit = urlAndHash[0].split('?');
         let subParams;
@@ -182,33 +182,19 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
-        if (!this.isPluginFileUrl(url) || url.indexOf(this.textUtils.addEndingSlash(siteUrl)) !== 0) {
-            return url;
-        }
-
         if (canUseTokenPluginFile) {
             // Use tokenpluginfile.php.
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
-
-            return url;
-        }
-
-        // No access key, use pluginfile.php. Check if the URL already has params.
-        if (url.match(/\?[^=]+=/)) {
-            url += '&';
         } else {
-            url += '?';
-        }
-        // Always send offline=1 (for external repositories). It shouldn't cause problems for local files or old Moodles.
-        url += 'token=' + token + '&offline=1';
+            // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
+            if (url.indexOf(this.textUtils.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
+                url = url.replace('/pluginfile', '/webservice/pluginfile');
+            }
 
-        // Some webservices returns directly the correct download url, others not.
-        if (url.indexOf(this.textUtils.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
-            url = url.replace('/pluginfile', '/webservice/pluginfile');
+            url = this.addParamsToUrl(url, {token: token});
         }
 
-        return url;
+        return this.addParamsToUrl(url, {offline: 1}); // Always send offline=1 (it's for external repositories).
     }
 
     /**

@@ -14,6 +14,7 @@
 
 import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { NavController, Content } from 'ionic-angular';
+import { CoreFileHelper } from '@providers/file-helper';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUrlUtilsProvider } from '@providers/utils/url';
@@ -21,7 +22,8 @@ import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
-import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
+import { CoreConfigConstants } from '../configconstants';
+import { CoreCustomURLSchemesProvider } from '@providers/urlschemes';
 
 /**
  * Directive to open a link in external browser.
@@ -37,7 +39,7 @@ export class CoreLinkDirective implements OnInit {
                                   //   "no" -> Never auto-login.
                                   //   "check" -> Auto-login only if it points to the current site. Default value.
 
-    protected element: HTMLElement;
+    protected element: Element;
 
     constructor(element: ElementRef,
             protected domUtils: CoreDomUtilsProvider,
@@ -50,15 +52,15 @@ export class CoreLinkDirective implements OnInit {
             @Optional() protected svComponent: CoreSplitViewComponent,
             protected textUtils: CoreTextUtilsProvider,
             protected urlSchemesProvider: CoreCustomURLSchemesProvider) {
-        // This directive can be added dynamically. In that case, the first param is the anchor HTMLElement.
-        this.element = element.nativeElement || element;
+
+        this.element = element.nativeElement;
     }
 
     /**
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        this.inApp = this.utils.isTrueOrOne(this.inApp);
+        this.inApp = typeof this.inApp == 'undefined' ? this.inApp : this.utils.isTrueOrOne(this.inApp);
 
         let navCtrl = this.navCtrl;
 
@@ -70,20 +72,22 @@ export class CoreLinkDirective implements OnInit {
         this.element.addEventListener('click', (event) => {
             // If the event prevented default action, do nothing.
             if (!event.defaultPrevented) {
-                let href = this.element.getAttribute('href');
-                if (href) {
+                let href = this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
+                if (href && this.urlUtils.getUrlScheme(href) != 'javascript') {
                     event.preventDefault();
                     event.stopPropagation();
+
+                    const openIn = this.element.getAttribute('data-open-in');
 
                     if (this.utils.isTrueOrOne(this.capture)) {
                         href = this.textUtils.decodeURI(href);
                         this.contentLinksHelper.handleLink(href, undefined, navCtrl, true, true).then((treated) => {
                             if (!treated) {
-                                this.navigate(href);
+                                this.navigate(href, openIn);
                             }
                         });
                     } else {
-                        this.navigate(href);
+                        this.navigate(href, openIn);
                     }
                 }
             }
@@ -94,14 +98,28 @@ export class CoreLinkDirective implements OnInit {
      * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param href HREF to be opened.
+     * @param openIn Open In App value coming from data-open-in attribute.
+     * @return Promise resolved when done.
      */
-    protected navigate(href: string): void {
+    protected async navigate(href: string, openIn: string): Promise<void> {
 
         if (this.urlUtils.isLocalFileUrl(href)) {
             // We have a local file.
-            this.utils.openFile(href).catch((error) => {
+            const filename = href.substr(href.lastIndexOf('/') + 1);
+
+            if (!CoreFileHelper.instance.isOpenableInApp({ filename })) {
+                try {
+                    await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
+            try {
+                await this.utils.openFile(href);
+            } catch (error) {
                 this.domUtils.showErrorModal(error);
-            });
+            }
         } else if (href.charAt(0) == '#') {
             href = href.substr(1);
             // In site links
@@ -113,9 +131,11 @@ export class CoreLinkDirective implements OnInit {
                 this.domUtils.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');
             }
         } else if (this.urlSchemesProvider.isCustomURL(href)) {
-            this.urlSchemesProvider.handleCustomURL(href).catch((error: CoreCustomURLSchemesHandleError) => {
+            try {
+                await this.urlSchemesProvider.handleCustomURL(href);
+            } catch (error) {
                 this.urlSchemesProvider.treatHandleCustomURLError(error);
-            });
+            }
         } else {
 
             // It's an external link, we will open with browser. Check if we need to auto-login.
@@ -139,9 +159,9 @@ export class CoreLinkDirective implements OnInit {
 
                 if (this.autoLogin == 'yes') {
                     if (this.inApp) {
-                        this.sitesProvider.getCurrentSite().openInAppWithAutoLogin(href);
+                        await this.sitesProvider.getCurrentSite().openInAppWithAutoLogin(href);
                     } else {
-                        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(href);
+                        await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLogin(href);
                     }
                 } else if (this.autoLogin == 'no') {
                     if (this.inApp) {
@@ -150,10 +170,22 @@ export class CoreLinkDirective implements OnInit {
                         this.utils.openInBrowser(href);
                     }
                 } else {
-                    if (this.inApp) {
-                        this.sitesProvider.getCurrentSite().openInAppWithAutoLoginIfSameSite(href);
+                    // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
+                    let openInApp;
+                    if (typeof this.inApp == 'undefined') {
+                        if (CoreConfigConstants['forceOpenLinksIn'] == 'browser') {
+                            openInApp = false;
+                        } else if (CoreConfigConstants['forceOpenLinksIn'] == 'app' || openIn == 'app') {
+                            openInApp = true;
+                        }
                     } else {
-                        this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
+                        openInApp = this.inApp;
+                    }
+
+                    if (openInApp) {
+                        await this.sitesProvider.getCurrentSite().openInAppWithAutoLoginIfSameSite(href);
+                    } else {
+                        await this.sitesProvider.getCurrentSite().openInBrowserWithAutoLoginIfSameSite(href);
                     }
                 }
             }

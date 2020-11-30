@@ -405,7 +405,7 @@ export class CoreCourseOptionsDelegate extends CoreDelegate {
                 promises.push(Promise.resolve(getFunction.call(handler, injector, course)).then((data) => {
                     handlersToDisplay.push({
                         data: data,
-                        priority: handler.priority,
+                        priority: handler.priority || 0,
                         prefetch: handler.prefetch && handler.prefetch.bind(handler),
                         name: handler.name
                     });

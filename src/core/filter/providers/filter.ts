@@ -65,10 +65,10 @@ export class CoreFilterProvider {
     }
 
     /**
-     * Returns whether or not WS get available in context is avalaible.
+     * Returns whether or not WS get available in context is available.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if ws is avalaible, false otherwise.
+     * @return Promise resolved with true if ws is available, false otherwise.
      * @since 3.4
      */
     canGetAvailableInContext(siteId?: string): Promise<boolean> {
@@ -78,16 +78,63 @@ export class CoreFilterProvider {
     }
 
     /**
-     * Returns whether or not WS get available in context is avalaible in a certain site.
+     * Returns whether or not WS get available in context is available in a certain site.
      *
      * @param site Site. If not defined, current site.
-     * @return Promise resolved with true if ws is avalaible, false otherwise.
+     * @return Promise resolved with true if ws is available, false otherwise.
      * @since 3.4
      */
     canGetAvailableInContextInSite(site?: CoreSite): boolean {
         site = site || this.sitesProvider.getCurrentSite();
 
         return site.wsAvailable('core_filters_get_available_in_context');
+    }
+
+    /**
+     * Returns whether or not we can get the available filters: the WS is available and the feature isn't disabled.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whethe can get filters.
+     */
+    async canGetFilters(siteId?: string): Promise<boolean> {
+        const wsAvailable = await this.canGetAvailableInContext(siteId);
+        const disabled = await this.checkFiltersDisabled(siteId);
+
+        return wsAvailable && !disabled;
+    }
+
+    /**
+     * Returns whether or not we can get the available filters: the WS is available and the feature isn't disabled.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Promise resolved with boolean: whethe can get filters.
+     */
+    canGetFiltersInSite(site?: CoreSite): boolean {
+        return this.canGetAvailableInContextInSite(site) && this.checkFiltersDisabledInSite(site);
+    }
+
+    /**
+     * Returns whether or not checking the available filters is disabled in the site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's disabled.
+     */
+    async checkFiltersDisabled(siteId?: string): Promise<boolean> {
+        const site = await this.sitesProvider.getSite(siteId);
+
+        return this.checkFiltersDisabledInSite(site);
+    }
+
+    /**
+     * Returns whether or not checking the available filters is disabled in the site.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Whether it's disabled.
+     */
+    checkFiltersDisabledInSite(site?: CoreSite): boolean {
+        site = site || this.sitesProvider.getCurrentSite();
+
+        return site.isFeatureDisabled('CoreFilterDelegate');
     }
 
     /**
@@ -225,7 +272,11 @@ export class CoreFilterProvider {
                 },
                 preSets = {
                     cacheKey: this.getAvailableInContextsCacheKey(contextsToSend),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
+                    updateFrequency: CoreSite.FREQUENCY_RARELY,
+                    splitRequest: {
+                        param: 'contexts',
+                        maxLength: 300,
+                    },
                 };
 
             return site.read('core_filters_get_available_in_context', data, preSets)

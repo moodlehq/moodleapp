@@ -14,13 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreAppProvider } from '@providers/app';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModFeedbackOfflineProvider } from './offline';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Service that provides some features for feedbacks.
@@ -35,7 +36,7 @@ export class AddonModFeedbackProvider {
     static MULTICHOICE_HIDENOSELECT = 'h';
     static MULTICHOICERATED_VALUE_SEP = '####';
 
-    protected ROOT_CACHE_KEY = this.ROOT_CACHE_KEY + '';
+    protected ROOT_CACHE_KEY = '';
     protected logger;
 
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private utils: CoreUtilsProvider,
@@ -130,13 +131,11 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param items Item to fill the value.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID.
+     * @param options Other options.
      * @return Resolved with values when done.
      */
-    protected fillValues(feedbackId: number, items: any[], offline: boolean, ignoreCache: boolean, siteId: string): Promise<any> {
-        return this.getCurrentValues(feedbackId, offline, ignoreCache, siteId).then((valuesArray) => {
+    protected fillValues(feedbackId: number, items: any[], options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.getCurrentValues(feedbackId, options).then((valuesArray) => {
             const values = {};
 
             valuesArray.forEach((value) => {
@@ -152,7 +151,7 @@ export class AddonModFeedbackProvider {
             // Ignore errors.
         }).then(() => {
             // Merge with offline data.
-            return this.feedbackOffline.getFeedbackResponses(feedbackId, siteId).then((offlineValuesArray) => {
+            return this.feedbackOffline.getFeedbackResponses(feedbackId, options.siteId).then((offlineValuesArray) => {
                 const offlineValues = {};
 
                 // Merge all values into one array.
@@ -203,24 +202,22 @@ export class AddonModFeedbackProvider {
      * Returns all the feedback non respondents users.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @param previous Only for recurrent use. Object with the previous fetched info.
      * @return Promise resolved when the info is retrieved.
      */
-    getAllNonRespondents(feedbackId: number, groupId: number, ignoreCache?: boolean, siteId?: string, previous?: any)
-            : Promise<any> {
+    getAllNonRespondents(feedbackId: number, options: AddonModFeedbackGroupOptions = {}, previous?: any): Promise<any> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-        if (typeof previous == 'undefined') {
-            previous = {
-                page: 0,
-                users: []
-            };
-        }
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
+        previous = previous || {
+            page: 0,
+            users: []
+        };
 
-        return this.getNonRespondents(feedbackId, groupId, previous.page, ignoreCache, siteId).then((response) => {
+        return this.getNonRespondents(feedbackId, {
+            page: previous.page,
+            ...options, // Include all options.
+        }).then((response) => {
             if (previous.users.length < response.total) {
                 previous.users = previous.users.concat(response.users);
             }
@@ -229,7 +226,7 @@ export class AddonModFeedbackProvider {
                 // Can load more.
                 previous.page++;
 
-                return this.getAllNonRespondents(feedbackId, groupId, ignoreCache, siteId, previous);
+                return this.getAllNonRespondents(feedbackId, options, previous);
             }
             previous.total = response.total;
 
@@ -241,25 +238,23 @@ export class AddonModFeedbackProvider {
      * Returns all the feedback user responses.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @param previous Only for recurrent use. Object with the previous fetched info.
      * @return Promise resolved when the info is retrieved.
      */
-    getAllResponsesAnalysis(feedbackId: number, groupId: number, ignoreCache?: boolean, siteId?: string, previous?: any)
-            : Promise<any> {
+    getAllResponsesAnalysis(feedbackId: number, options: AddonModFeedbackGroupOptions = {}, previous?: any): Promise<any> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-        if (typeof previous == 'undefined') {
-            previous = {
-                page: 0,
-                attempts: [],
-                anonattempts: []
-            };
-        }
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
+        previous = previous || {
+            page: 0,
+            attempts: [],
+            anonattempts: []
+        };
 
-        return this.getResponsesAnalysis(feedbackId, groupId, previous.page, ignoreCache, siteId).then((responses) => {
+        return this.getResponsesAnalysis(feedbackId, {
+            page: previous.page,
+            ...options, // Include all options.
+        }).then((responses) => {
             if (previous.anonattempts.length < responses.totalanonattempts) {
                 previous.anonattempts = previous.anonattempts.concat(responses.anonattempts);
             }
@@ -272,7 +267,7 @@ export class AddonModFeedbackProvider {
                 // Can load more.
                 previous.page++;
 
-                return this.getAllResponsesAnalysis(feedbackId, groupId, ignoreCache, siteId, previous);
+                return this.getAllResponsesAnalysis(feedbackId, options, previous);
             }
 
             previous.totalattempts = responses.totalattempts;
@@ -286,27 +281,23 @@ export class AddonModFeedbackProvider {
      * Get analysis information for a given feedback.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the feedback is retrieved.
      */
-    getAnalysis(feedbackId: number, groupId?: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getAnalysis(feedbackId: number, options: AddonModFeedbackGroupOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getAnalysisDataCacheKey(feedbackId, groupId)
-                };
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getAnalysisDataCacheKey(feedbackId, options.groupId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
-            if (groupId) {
-                params['groupid'] = groupId;
-            }
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
+            if (options.groupId) {
+                params['groupid'] = options.groupId;
             }
 
             return site.read('mod_feedback_get_analysis', params, preSets);
@@ -339,22 +330,23 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param attemptId Attempt id to find.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @param previous Only for recurrent use. Object with the previous fetched info.
      * @return Promise resolved when the info is retrieved.
      */
-    getAttempt(feedbackId: number, attemptId: number, ignoreCache?: boolean, siteId?: string, previous?: any): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
-        if (typeof previous == 'undefined') {
-            previous = {
-                page: 0,
-                attemptsLoaded: 0,
-                anonAttemptsLoaded: 0
-            };
-        }
+    getAttempt(feedbackId: number, attemptId: number, options: CoreCourseCommonModWSOptions = {}, previous?: any): Promise<any> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
+        previous = previous || {
+            page: 0,
+            attemptsLoaded: 0,
+            anonAttemptsLoaded: 0
+        };
 
-        return this.getResponsesAnalysis(feedbackId, 0, previous.page, ignoreCache, siteId).then((responses) => {
+        return this.getResponsesAnalysis(feedbackId, {
+            page: previous.page,
+            groupId: 0,
+            ...options, // Include all options.
+        }).then((responses) => {
             let attempt;
 
             attempt = responses.attempts.find((attempt) => {
@@ -385,7 +377,7 @@ export class AddonModFeedbackProvider {
                 // Can load more. Check there.
                 previous.page++;
 
-                return this.getAttempt(feedbackId, attemptId, ignoreCache, siteId, previous);
+                return this.getAttempt(feedbackId, attemptId, options, previous);
             }
 
             // Not found and all loaded. Reject.
@@ -407,23 +399,20 @@ export class AddonModFeedbackProvider {
      * Returns the temporary completion timemodified for the current user.
      *
      * @param feedbackId Feedback ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getCurrentCompletedTimeModified(feedbackId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getCurrentCompletedTimeModified(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getCurrentCompletedTimeModifiedDataCacheKey(feedbackId)
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getCurrentCompletedTimeModifiedDataCacheKey(feedbackId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_current_completed_tmp', params, preSets).then((response) => {
                 if (response && typeof response.feedback != 'undefined' && typeof response.feedback.timemodified != 'undefined') {
@@ -452,26 +441,20 @@ export class AddonModFeedbackProvider {
      * Returns the temporary responses or responses of the last submission for the current user.
      *
      * @param feedbackId Feedback ID.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getCurrentValues(feedbackId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getCurrentValues(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets = {
-                    cacheKey: this.getCurrentValuesDataCacheKey(feedbackId)
-                };
-
-            if (offline) {
-                preSets['omitExpires'] = true;
-            } else if (ignoreCache) {
-                preSets['getFromCache'] = false;
-                preSets['emergencyCache'] = false;
-            }
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getCurrentValuesDataCacheKey(feedbackId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_unfinished_responses', params, preSets).then((response) => {
                 if (!response || typeof response.responses == 'undefined') {
@@ -508,27 +491,20 @@ export class AddonModFeedbackProvider {
      * Get  access information for a given feedback.
      *
      * @param feedbackId Feedback ID.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the feedback is retrieved.
      */
-    getFeedbackAccessInformation(feedbackId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string):
-            Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getFeedbackAccessInformation(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets = {
-                    cacheKey: this.getFeedbackAccessInformationDataCacheKey(feedbackId)
-                };
-
-            if (offline) {
-                preSets['omitExpires'] = true;
-            } else if (ignoreCache) {
-                preSets['getFromCache'] = false;
-                preSets['emergencyCache'] = false;
-            }
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getFeedbackAccessInformationDataCacheKey(feedbackId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_feedback_access_information', params, preSets);
         });
@@ -570,29 +546,22 @@ export class AddonModFeedbackProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param options Other options.
      * @return Promise resolved when the feedback is retrieved.
      */
-    protected getFeedbackDataByKey(courseId: number, key: string, value: any, siteId?: string, forceCache?: boolean,
-            ignoreCache?: boolean): Promise<any> {
+    protected getFeedbackDataByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
+            : Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getFeedbackCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (forceCache) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getFeedbackCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModFeedbackProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_feedbacks_by_courses', params, preSets).then((response) => {
                 if (response && response.feedbacks) {
@@ -614,13 +583,11 @@ export class AddonModFeedbackProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param options Other options.
      * @return Promise resolved when the feedback is retrieved.
      */
-    getFeedback(courseId: number, cmId: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean): Promise<any> {
-        return this.getFeedbackDataByKey(courseId, 'coursemodule', cmId, siteId, forceCache, ignoreCache);
+    getFeedback(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getFeedbackDataByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -628,37 +595,32 @@ export class AddonModFeedbackProvider {
      *
      * @param courseId Course ID.
      * @param id Feedback ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param options Other options.
      * @return Promise resolved when the feedback is retrieved.
      */
-    getFeedbackById(courseId: number, id: number, siteId?: string, forceCache?: boolean, ignoreCache?: boolean): Promise<any> {
-        return this.getFeedbackDataByKey(courseId, 'id', id, siteId, forceCache, ignoreCache);
+    getFeedbackById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getFeedbackDataByKey(courseId, 'id', id, options);
     }
 
     /**
      * Returns the items (questions) in the given feedback.
      *
      * @param feedbackId Feedback ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getItems(feedbackId: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getItems(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getItemsDataCacheKey(feedbackId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getItemsDataCacheKey(feedbackId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_items', params, preSets);
         });
@@ -678,29 +640,25 @@ export class AddonModFeedbackProvider {
      * Retrieves a list of students who didn't submit the feedback.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param page The page of records to return.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getNonRespondents(feedbackId: number, groupId: number = 0, page: number = 0, ignoreCache?: boolean, siteId?: string)
-            : Promise<any> {
+    getNonRespondents(feedbackId: number, options: AddonModFeedbackGroupPaginatedOptions = {}): Promise<any> {
+        options.groupId = options.groupId || 0;
+        options.page = options.page || 0;
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId,
-                    groupid: groupId,
-                    page: page
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getNonRespondentsDataCacheKey(feedbackId, groupId)
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                feedbackid: feedbackId,
+                groupid: options.groupId,
+                page: options.page,
+            };
+            const preSets = {
+                cacheKey: this.getNonRespondentsDataCacheKey(feedbackId, options.groupId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_non_respondents', params, preSets);
         });
@@ -751,25 +709,22 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param page The page to get.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getPageItemsWithValues(feedbackId: number, page: number, offline: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    getPageItemsWithValues(feedbackId: number, page: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.getPageItems(feedbackId, page, siteId).then((response) => {
-            return this.fillValues(feedbackId, response.items, offline, ignoreCache, siteId).then((items) => {
+        return this.getPageItems(feedbackId, page, options.siteId).then((response) => {
+            return this.fillValues(feedbackId, response.items, options).then((items) => {
                 response.items = items;
 
                 return response;
             });
         }).catch(() => {
             // If getPageItems fail we should calculate it using getItems.
-            return this.getItems(feedbackId, false, siteId).then((response) => {
-                return this.fillValues(feedbackId, response.items, offline, ignoreCache, siteId).then((items) => {
+            return this.getItems(feedbackId, options).then((response) => {
+                return this.fillValues(feedbackId, response.items, options).then((items) => {
                     // Separate items by pages.
                     let currentPage = 0;
                     const previousPageItems = [];
@@ -819,11 +774,17 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param page Page where we want to jump.
      * @param changePage If page change is forward (1) or backward (-1).
-     * @param siteId Site ID.
+     * @param options Other options.
      * @return Page number where to jump. Or false if completed or first page.
      */
-    protected getPageJumpTo(feedbackId: number, page: number, changePage: number, siteId: string): Promise<number | false> {
-        return this.getPageItemsWithValues(feedbackId, page, true, false, siteId).then((resp) => {
+    protected getPageJumpTo(feedbackId: number, page: number, changePage: number, options: {cmId?: number, siteId?: string})
+            : Promise<number | false> {
+
+        return this.getPageItemsWithValues(feedbackId, page, {
+            cmId: options.cmId,
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            siteId: options.siteId,
+        }).then((resp) => {
             // The page we are going has items.
             if (resp.items.length > 0) {
                 return page;
@@ -831,7 +792,7 @@ export class AddonModFeedbackProvider {
 
             // Check we can jump futher.
             if ((changePage == 1 && resp.hasnextpage) || (changePage == -1 && resp.hasprevpage)) {
-                return this.getPageJumpTo(feedbackId, page + changePage, changePage, siteId);
+                return this.getPageJumpTo(feedbackId, page + changePage, changePage, options);
             }
 
             // Completed or first page.
@@ -843,27 +804,25 @@ export class AddonModFeedbackProvider {
      * Returns the feedback user responses.
      *
      * @param feedbackId Feedback ID.
-     * @param groupId Group id, 0 means that the function will determine the user group.
-     * @param page The page of records to return.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getResponsesAnalysis(feedbackId: number, groupId: number, page: number, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            const params = {
-                    feedbackid: feedbackId,
-                    groupid: groupId || 0,
-                    page: page || 0
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getResponsesAnalysisDataCacheKey(feedbackId, groupId)
-                };
+    getResponsesAnalysis(feedbackId: number, options: AddonModFeedbackGroupPaginatedOptions = {}): Promise<any> {
+        options.groupId = options.groupId || 0;
+        options.page = options.page || 0;
 
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const params = {
+                feedbackid: feedbackId,
+                groupid: options.groupId,
+                page: options.page,
+            };
+            const preSets = {
+                cacheKey: this.getResponsesAnalysisDataCacheKey(feedbackId, options.groupId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_get_responses_analysis', params, preSets);
         });
@@ -894,26 +853,20 @@ export class AddonModFeedbackProvider {
      * Gets the resume page information.
      *
      * @param feedbackId Feedback ID.
-     * @param offline True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    getResumePage(feedbackId: number, offline: boolean = false, ignoreCache: boolean = false, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getResumePage(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets = {
-                    cacheKey: this.getResumePageDataCacheKey(feedbackId)
-                };
-
-            if (offline) {
-                preSets['omitExpires'] = true;
-            } else if (ignoreCache) {
-                preSets['getFromCache'] = false;
-                preSets['emergencyCache'] = false;
-            }
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getResumePageDataCacheKey(feedbackId),
+                component: AddonModFeedbackProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_feedback_launch_feedback', params, preSets).then((response) => {
                 if (response && typeof response.gopage != 'undefined') {
@@ -964,7 +917,7 @@ export class AddonModFeedbackProvider {
 
     /**
      * Invalidate the prefetched content.
-     * To invalidate files, use AddonFeedbackProvider#invalidateFiles.
+     * To invalidate files, use AddonModFeedbackProvider#invalidateFiles.
      *
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
@@ -976,7 +929,7 @@ export class AddonModFeedbackProvider {
 
         const promises = [];
 
-        promises.push(this.getFeedback(courseId, moduleId, siteId).then((feedback) => {
+        promises.push(this.getFeedback(courseId, moduleId, {siteId}).then((feedback) => {
             const ps = [];
 
             // Do not invalidate module data before getting module info, we need it!
@@ -1086,23 +1039,20 @@ export class AddonModFeedbackProvider {
      * Returns if feedback has been completed
      *
      * @param feedbackId Feedback ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    isCompleted(feedbackId: number, ignoreCache?: boolean, siteId?: string): Promise<boolean> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    isCompleted(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<boolean> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    feedbackid: feedbackId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getCompletedDataCacheKey(feedbackId)
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                feedbackid: feedbackId,
+            };
+            const preSets = {
+                cacheKey: this.getCompletedDataCacheKey(feedbackId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModFeedbackProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return this.utils.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
         });
@@ -1147,19 +1097,15 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param page The page being processed.
      * @param responses The data to be processed the key is the field name (usually type[index]_id).
-     * @param goPrevious Whether we want to jump to previous page.
-     * @param formHasErrors Whether the form we sent has required but empty fields (only used in offline).
-     * @param courseId Course ID the feedback belongs to.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the info is retrieved.
      */
-    processPage(feedbackId: number, page: number, responses: any, goPrevious: boolean, formHasErrors: boolean, courseId: number,
-            siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    processPage(feedbackId: number, page: number, responses: any, options: AddonModFeedbackProcessPageOptions = {}): Promise<any> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a message to be synchronized later.
         const storeOffline = (): Promise<any> => {
-            return this.feedbackOffline.saveResponses(feedbackId, page, responses, courseId, siteId).then(() => {
+            return this.feedbackOffline.saveResponses(feedbackId, page, responses, options.courseId, options.siteId).then(() => {
                 // Simulate process_page response.
                 const response = {
                         jumpto: page,
@@ -1168,11 +1114,11 @@ export class AddonModFeedbackProvider {
                     };
                 let changePage = 0;
 
-                if (goPrevious) {
+                if (options.goPrevious) {
                     if (page > 0) {
                         changePage = -1;
                     }
-                } else if (!formHasErrors) {
+                } else if (!options.formHasErrors) {
                     // We can only go next if it has no errors.
                     changePage = 1;
                 }
@@ -1181,7 +1127,11 @@ export class AddonModFeedbackProvider {
                     return response;
                 }
 
-                return this.getPageItemsWithValues(feedbackId, page, true, false, siteId).then((resp) => {
+                return this.getPageItemsWithValues(feedbackId, page, {
+                    cmId: options.cmId,
+                    readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                    siteId: options.siteId,
+                }).then((resp) => {
                     // Check completion.
                     if (changePage == 1 && !resp.hasnextpage) {
                         response.completed = true;
@@ -1189,7 +1139,7 @@ export class AddonModFeedbackProvider {
                         return response;
                     }
 
-                    return this.getPageJumpTo(feedbackId, page + changePage, changePage, siteId).then((loadPage) => {
+                    return this.getPageJumpTo(feedbackId, page + changePage, changePage, options).then((loadPage) => {
                         if (loadPage === false) {
                             // Completed or first page.
                             if (changePage == -1) {
@@ -1215,8 +1165,8 @@ export class AddonModFeedbackProvider {
         }
 
         // If there's already a response to be sent to the server, discard it first.
-        return this.feedbackOffline.deleteFeedbackPageResponses(feedbackId, page, siteId).then(() => {
-            return this.processPageOnline(feedbackId, page, responses, goPrevious, siteId).catch((error) => {
+        return this.feedbackOffline.deleteFeedbackPageResponses(feedbackId, page, options.siteId).then(() => {
+            return this.processPageOnline(feedbackId, page, responses, options.goPrevious, options.siteId).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
                     return Promise.reject(error);
@@ -1252,7 +1202,7 @@ export class AddonModFeedbackProvider {
             }).then((response) => {
                 // Invalidate and update current values because they will change.
                 return this.invalidateCurrentValuesData(feedbackId, site.getId()).then(() => {
-                    return this.getCurrentValues(feedbackId, false, false, site.getId());
+                    return this.getCurrentValues(feedbackId, {siteId: site.getId()});
                 }).catch(() => {
                     // Ignore errors.
                 }).then(() => {
@@ -1262,3 +1212,28 @@ export class AddonModFeedbackProvider {
         });
     }
 }
+
+/**
+ * Common options with a group ID.
+ */
+export type AddonModFeedbackGroupOptions = CoreCourseCommonModWSOptions & {
+    groupId?: number; // Group id, 0 means that the function will determine the user group. Defaults to 0.
+};
+
+/**
+ * Common options with a group ID and page.
+ */
+export type AddonModFeedbackGroupPaginatedOptions = AddonModFeedbackGroupOptions & {
+    page?: number; // The page of records to return. The page of records to return.
+};
+
+/**
+ * Common options with a group ID and page.
+ */
+export type AddonModFeedbackProcessPageOptions = {
+    goPrevious?: boolean; // Whether we want to jump to previous page.
+    formHasErrors?: boolean; // Whether the form we sent has required but empty fields (only used in offline).
+    cmId?: number; // Module ID.
+    courseId?: number; // Course ID the feedback belongs to.
+    siteId?: string; // Site ID. If not defined, current site.;
+};

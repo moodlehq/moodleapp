@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreQuestionDefaultHandler } from './default-question-handler';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Interface that all question type handlers must implement.
@@ -62,9 +63,11 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse?(question: any, answers: any): number;
+    isCompleteResponse?(question: any, answers: any, component: string, componentId: string | number): number;
 
     /**
      * Check if a student has provided enough of an answer for the question to be graded automatically,
@@ -72,9 +75,11 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse?(question: any, answers: any): number;
+    isGradableResponse?(question: any, answers: any, component: string, componentId: string | number): number;
 
     /**
      * Check if two responses are the same.
@@ -84,7 +89,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param newAnswers Object with the new question answers.
      * @return Whether they're the same.
      */
-    isSameResponse?(question: any, prevAnswers: any, newAnswers: any): boolean;
+    isSameResponse?(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean;
 
     /**
      * Prepare and add to answers the data to send to server based in the input. Return promise if async.
@@ -92,10 +97,13 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Return a promise resolved when done if async, void if sync.
      */
-    prepareAnswers?(question: any, answers: any, offline: boolean, siteId?: string): void | Promise<any>;
+    prepareAnswers?(question: any, answers: any, offline: boolean, component: string, componentId: string | number,
+            siteId?: string): void | Promise<any>;
 
     /**
      * Validate if an offline sequencecheck is valid compared with the online one.
@@ -112,9 +120,43 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of URLs.
+     * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles?(question: any, usageId: number): string[];
+    getAdditionalDownloadableFiles?(question: any, usageId: number): (string | CoreWSExternalFile)[];
+
+    /**
+     * Clear temporary data after the data has been saved.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @return If async, promise resolved when done.
+     */
+    clearTmpData?(question: any, component: string, componentId: string | number): void | Promise<void>;
+
+    /**
+     * Delete any stored data for the question.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    deleteOfflineData?(question: any, component: string, componentId: string | number, siteId?: string): void | Promise<void>;
+
+    /**
+     * Prepare data to send when performing a synchronization.
+     *
+     * @param question Question.
+     * @param answers Answers of the question, without the prefix.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    prepareSyncData?(question: any, answers: {[name: string]: any}, component: string, componentId: string | number,
+            siteId?: string): void | Promise<void>;
 }
 
 /**
@@ -196,12 +238,14 @@ export class CoreQuestionDelegate extends CoreDelegate {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'isCompleteResponse', [question, answers]);
+        return this.executeFunctionOnEnabled(type, 'isCompleteResponse', [question, answers, component, componentId]);
     }
 
     /**
@@ -210,12 +254,14 @@ export class CoreQuestionDelegate extends CoreDelegate {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'isGradableResponse', [question, answers]);
+        return this.executeFunctionOnEnabled(type, 'isGradableResponse', [question, answers, component, componentId]);
     }
 
     /**
@@ -226,10 +272,10 @@ export class CoreQuestionDelegate extends CoreDelegate {
      * @param newAnswers Object with the new question answers.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         const type = this.getTypeName(question);
 
-        return this.executeFunctionOnEnabled(type, 'isSameResponse', [question, prevAnswers, newAnswers]);
+        return this.executeFunctionOnEnabled(type, 'isSameResponse', [question, prevAnswers, newAnswers, component, componentId]);
     }
 
     /**
@@ -248,13 +294,17 @@ export class CoreQuestionDelegate extends CoreDelegate {
      * @param question Question.
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param offline Whether the data should be saved in offline.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when data has been prepared.
      */
-    prepareAnswersForQuestion(question: any, answers: any, offline: boolean, siteId?: string): Promise<any> {
+    prepareAnswersForQuestion(question: any, answers: any, offline: boolean, component: string, componentId: string | number,
+            siteId?: string): Promise<any> {
         const type = this.getTypeName(question);
 
-        return Promise.resolve(this.executeFunctionOnEnabled(type, 'prepareAnswers', [question, answers, offline, siteId]));
+        return Promise.resolve(this.executeFunctionOnEnabled(type, 'prepareAnswers',
+                [question, answers, offline, component, componentId, siteId]));
     }
 
     /**
@@ -275,11 +325,57 @@ export class CoreQuestionDelegate extends CoreDelegate {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of URLs.
+     * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: any, usageId: number): string[] {
+    getAdditionalDownloadableFiles(question: any, usageId: number): (string | CoreWSExternalFile)[] {
         const type = this.getTypeName(question);
 
         return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question, usageId]) || [];
+    }
+
+    /**
+     * Clear temporary data after the data has been saved.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @return If async, promise resolved when done.
+     */
+    clearTmpData(question: any, component: string, componentId: string | number): void | Promise<void> {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'clearTmpData', [question, component, componentId]);
+    }
+
+    /**
+     * Clear temporary data after the data has been saved.
+     *
+     * @param question Question.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    deleteOfflineData(question: any, component: string, componentId: string | number, siteId?: string): void | Promise<void> {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'deleteOfflineData', [question, component, componentId, siteId]);
+    }
+
+    /**
+     * Prepare data to send when performing a synchronization.
+     *
+     * @param question Question.
+     * @param answers Answers of the question, without the prefix.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return If async, promise resolved when done.
+     */
+    prepareSyncData?(question: any, answers: {[name: string]: any}, component: string, componentId: string | number,
+            siteId?: string): void | Promise<void> {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'prepareSyncData', [question, answers, component, componentId, siteId]);
     }
 }

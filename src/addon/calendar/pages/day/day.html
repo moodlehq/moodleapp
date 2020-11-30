@@ -64,12 +64,12 @@
                 </a>
             </ng-container>
         </ion-list>
-
-        <!-- Create a calendar event. -->
-        <ion-fab core-fab bottom end *ngIf="canCreate">
-            <button ion-fab (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
-                <ion-icon name="add"></ion-icon>
-            </button>
-        </ion-fab>
     </core-loading>
+
+    <!-- Create a calendar event. -->
+    <ion-fab core-fab bottom end *ngIf="canCreate && loaded">
+        <button ion-fab (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
 </ion-content>

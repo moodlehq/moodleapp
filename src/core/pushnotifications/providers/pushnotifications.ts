@@ -18,7 +18,8 @@ import { Badge } from '@ionic-native/badge';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { Device } from '@ionic-native/device';
 import { TranslateService } from '@ngx-translate/core';
-import { CoreAppProvider, CoreAppSchema } from '@providers/app';
+import { CoreApp, CoreAppProvider, CoreAppSchema } from '@providers/app';
+import { CoreEvents, CoreEventsProvider } from '@providers/events';
 import { CoreInitDelegate } from '@providers/init';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreSitesProvider, CoreSiteSchema } from '@providers/sites';
@@ -33,8 +34,6 @@ import { CoreConfigConstants } from '../../../configconstants';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSite } from '@classes/site';
-import { CoreFilterProvider } from '@core/filter/providers/filter';
-import { CoreFilterDelegate } from '@core/filter/providers/delegate';
 
 /**
  * Data needed to register a device in a Moodle site.
@@ -178,13 +177,24 @@ export class CorePushNotificationsProvider {
         ],
     };
 
-    constructor(logger: CoreLoggerProvider, protected appProvider: CoreAppProvider, private initDelegate: CoreInitDelegate,
-            protected pushNotificationsDelegate: CorePushNotificationsDelegate, protected sitesProvider: CoreSitesProvider,
-            private badge: Badge, private localNotificationsProvider: CoreLocalNotificationsProvider,
-            private utils: CoreUtilsProvider, private textUtils: CoreTextUtilsProvider, private push: Push,
-            private configProvider: CoreConfigProvider, private device: Device, private zone: NgZone,
-            private translate: TranslateService, private platform: Platform, private sitesFactory: CoreSitesFactoryProvider,
-            private filterProvider: CoreFilterProvider, private filterDelegate: CoreFilterDelegate) {
+    constructor(
+            logger: CoreLoggerProvider,
+            private initDelegate: CoreInitDelegate,
+            protected pushNotificationsDelegate: CorePushNotificationsDelegate,
+            protected sitesProvider: CoreSitesProvider,
+            private badge: Badge,
+            private localNotificationsProvider: CoreLocalNotificationsProvider,
+            private utils: CoreUtilsProvider,
+            private textUtils: CoreTextUtilsProvider,
+            private push: Push,
+            private configProvider: CoreConfigProvider,
+            private device: Device,
+            private zone: NgZone,
+            private translate: TranslateService,
+            platform: Platform,
+            appProvider: CoreAppProvider,
+            private sitesFactory: CoreSitesFactoryProvider,
+            ) {
         this.logger = logger.getInstance('CorePushNotificationsProvider');
         this.appDB = appProvider.getDB();
         this.dbReady = appProvider.createTablesFromSchema(this.appTablesSchema).catch(() => {
@@ -209,7 +219,7 @@ export class CorePushNotificationsProvider {
      * @return Whether the device can be registered in Moodle.
      */
     canRegisterOnMoodle(): boolean {
-        return this.pushID && this.appProvider.isMobile();
+        return this.pushID && CoreApp.instance.isMobile();
     }
 
     /**
@@ -234,7 +244,7 @@ export class CorePushNotificationsProvider {
      * @return Promise resolved when done.
      */
     protected createDefaultChannel(): Promise<any> {
-        if (!this.platform.is('android')) {
+        if (!CoreApp.instance.isAndroid()) {
             return Promise.resolve();
         }
 
@@ -443,8 +453,19 @@ export class CorePushNotificationsProvider {
      */
     onMessageReceived(notification: any): void {
         const data = notification ? notification.additionalData : {};
+        let promise;
 
-        this.sitesProvider.getSite(data.site).then((site) => {
+        if (data.site) {
+            promise = this.sitesProvider.getSite(data.site);
+        } else if (data.siteurl) {
+            promise = this.sitesProvider.getSiteByUrl(data.siteurl);
+        } else {
+            // Notification not related to any site.
+            promise = Promise.resolve();
+        }
+
+        promise.then((site: CoreSite | undefined) => {
+            data.site = site && site.getId();
 
             if (typeof data.customdata == 'string') {
                 data.customdata = this.textUtils.parseJSON(data.customdata, {});
@@ -454,74 +475,40 @@ export class CorePushNotificationsProvider {
                 // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
                 if (this.localNotificationsProvider.isAvailable()) {
                     const localNotif: ILocalNotification = {
-                            id: data.notId || 1,
-                            data: data,
-                            title: '',
-                            text: '',
-                            channel: 'PushPluginChannel'
-                        },
-                        options = {
-                            clean: true,
-                            singleLine: true,
-                            contextLevel: 'system',
-                            instanceId: 0,
-                            filter: true
-                        },
-                        isAndroid = this.platform.is('android'),
-                        extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
+                        id: data.notId || 1,
+                        data: data,
+                        title: notification.title,
+                        text: notification.message,
+                        channel: 'PushPluginChannel'
+                    };
+                    const isAndroid = CoreApp.instance.isAndroid();
+                    const extraFeatures = this.utils.isTrueOrOne(data.extrafeatures);
 
-                    // Get the filters to apply to text and message. Don't use FIlterHelper to prevent circular dependencies.
-                    this.filterProvider.canGetAvailableInContext(site.getId()).then((canGet) => {
-                        if (!canGet) {
-                            // We cannot check which filters are available, apply them all.
-                            return this.filterDelegate.getEnabledFilters(options.contextLevel, options.instanceId);
-                        }
-
-                        return this.filterProvider.getAvailableInContext(options.contextLevel, options.instanceId, site.getId());
-                    }).catch(() => {
-                        return [];
-                    }).then((filters) => {
-                        const promises = [];
-
-                        // Apply formatText to title and message.
-                        promises.push(this.filterProvider.formatText(notification.title, options, filters, site.getId())
-                                .then((title) => {
-                            localNotif.title = title;
-                        }).catch(() => {
-                            localNotif.title = notification.title;
-                        }));
-
-                        promises.push(this.filterProvider.formatText(notification.message, options, filters, site.getId())
-                                .catch(() => {
-                            // Error formatting, use the original message.
-                            return notification.message;
-                        }).then((formattedMessage) => {
-                            if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
-                                // It's a message, use messaging style. Ionic Native doesn't specify this option.
-                                (<any> localNotif).text = [
-                                    {
-                                        message: formattedMessage,
-                                        person: data.conversationtype == 2 ? data.userfromfullname : ''
-                                    }
-                                ];
-                            } else {
-                                localNotif.text = formattedMessage;
+                    if (extraFeatures && isAndroid && this.utils.isFalseOrZero(data.notif)) {
+                        // It's a message, use messaging style. Ionic Native doesn't specify this option.
+                        (<any> localNotif).text = [
+                            {
+                                message: notification.message,
+                                person: data.conversationtype == 2 ? data.userfromfullname : ''
                             }
-                        }));
+                        ];
+                    }
 
-                        if (extraFeatures && isAndroid) {
-                            // Use a different icon if needed.
-                            localNotif.icon = notification.image;
-                            // This feature isn't supported by the official plugin, we use a fork.
-                            (<any> localNotif).iconType = data['image-type'];
+                    if (extraFeatures && isAndroid) {
+                        // Use a different icon if needed.
+                        localNotif.icon = notification.image;
+                        // This feature isn't supported by the official plugin, we use a fork.
+                        (<any> localNotif).iconType = data['image-type'];
+
+                        localNotif.summary = data.summaryText;
+
+                        if (data.picture) {
+                            localNotif.attachments = [data.picture];
                         }
+                    }
 
-                        Promise.all(promises).then(() => {
-                            this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site,
-                                    true);
-                        });
-
-                    });
+                    this.localNotificationsProvider.schedule(localNotif, CorePushNotificationsProvider.COMPONENT, data.site || '',
+                        true);
                 }
 
                 // Trigger a notification received event.
@@ -544,7 +531,7 @@ export class CorePushNotificationsProvider {
      * @return Promise resolved when device is unregistered.
      */
     async unregisterDeviceOnMoodle(site: CoreSite): Promise<any> {
-        if (!site || !this.appProvider.isMobile()) {
+        if (!site || !CoreApp.instance.isMobile()) {
             return Promise.reject(null);
         }
 
@@ -632,7 +619,7 @@ export class CorePushNotificationsProvider {
                     return previous + parseInt(counter, 10);
                 }, 0);
 
-                if (!this.appProvider.isDesktop() && !this.appProvider.isMobile()) {
+                if (!CoreApp.instance.isDesktop() && !CoreApp.instance.isMobile()) {
                     // Browser doesn't have an app badge, stop.
                     return total;
                 }
@@ -769,6 +756,8 @@ export class CorePushNotificationsProvider {
             if (result.register) {
                 // Now register the device.
                 await site.write('core_user_add_user_device', this.utils.clone(data));
+
+                CoreEvents.instance.trigger(CoreEventsProvider.DEVICE_REGISTERED_IN_MOODLE, {}, site.getId());
 
                 // Insert the device in the local DB.
                 try {

@@ -57,7 +57,7 @@ export class AddonModLessonGradeLinkHandler extends CoreContentLinksModuleGradeH
             courseId = module.course || courseId || params.courseid || params.cid;
 
             // Check if the user can see the user reports in the lesson.
-            return this.lessonProvider.getAccessInformation(module.instance);
+            return this.lessonProvider.getAccessInformation(module.instance, {cmId: module.id, siteId});
         }).then((info) => {
             if (info.canviewreports) {
                 // User can view reports, go to view the report.

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Platform, IonicApp } from 'ionic-angular';
+import { Config, Platform, IonicApp } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp, CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLangProvider } from '@providers/lang';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -27,6 +27,8 @@ import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { CoreLoginSitesPage } from '@core/login/pages/sites/sites';
+import { CoreWindow } from '@singletons/window';
+import { Device } from '@ionic-native/device';
 
 @Component({
     templateUrl: 'app.html'
@@ -39,12 +41,61 @@ export class MoodleMobileApp implements OnInit {
     protected lastUrls = {};
     protected lastInAppUrl: string;
 
-    constructor(private platform: Platform, logger: CoreLoggerProvider, keyboard: Keyboard, private app: IonicApp,
-            private eventsProvider: CoreEventsProvider, private loginHelper: CoreLoginHelperProvider, private zone: NgZone,
-            private appProvider: CoreAppProvider, private langProvider: CoreLangProvider, private sitesProvider: CoreSitesProvider,
-            private screenOrientation: ScreenOrientation, private urlSchemesProvider: CoreCustomURLSchemesProvider,
-            private utils: CoreUtilsProvider, private urlUtils: CoreUrlUtilsProvider, private network: Network) {
+    constructor(
+            private platform: Platform,
+            logger: CoreLoggerProvider,
+            keyboard: Keyboard,
+            config: Config,
+            device: Device,
+            private app: IonicApp,
+            private eventsProvider: CoreEventsProvider,
+            private loginHelper: CoreLoginHelperProvider,
+            private zone: NgZone,
+            private appProvider: CoreAppProvider,
+            private langProvider: CoreLangProvider,
+            private sitesProvider: CoreSitesProvider,
+            private screenOrientation: ScreenOrientation,
+            private urlSchemesProvider: CoreCustomURLSchemesProvider,
+            private utils: CoreUtilsProvider,
+            private urlUtils: CoreUrlUtilsProvider,
+            private network: Network
+            ) {
         this.logger = logger.getInstance('AppComponent');
+
+        if (this.appProvider.isIOS() && !platform.is('ios')) {
+            // Solve problem with wrong detected iPadOS.
+            const platforms = platform.platforms();
+            const index = platforms.indexOf('core');
+            if (index > -1) {
+                platforms.splice(index, 1);
+            }
+            platforms.push('mobile');
+            platforms.push('ios');
+            platforms.push('ipad');
+            platforms.push('tablet');
+
+            app.setElementClass('app-root-ios', true);
+            platform.ready().then(() => {
+                if (device.version) {
+                    const [major, minor]: string[] = device.version.split('.', 2);
+                    app.setElementClass('platform-ios' + major, true);
+                    app.setElementClass('platform-ios' + major + '_' + minor, true);
+                }
+            });
+
+            app._elementRef.nativeElement.classList.remove('app-root-md');
+
+            const iosConfig = config.getModeConfig('ios');
+
+            config.set('mode', 'ios');
+
+            Object.keys(iosConfig).forEach((key) => {
+                // Already overriden: pageTransition, do not change.
+                if (key != 'pageTransition') {
+                    config.set('ios', key, iosConfig[key]);
+                }
+            });
+        }
 
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
@@ -145,7 +196,7 @@ export class MoodleMobileApp implements OnInit {
                 });
                 this.utils.closeInAppBrowser(false);
 
-            } else if (this.platform.is('android')) {
+            } else if (CoreApp.instance.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
                 const urlScheme = this.urlUtils.getUrlProtocol(url);
                 if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
@@ -207,6 +258,11 @@ export class MoodleMobileApp implements OnInit {
             });
         };
 
+        // "Expose" CoreWindow.open.
+        (<any> window).openWindowSafely = (url: string, name?: string, windowFeatures?: string): void => {
+            CoreWindow.open(url, name);
+        };
+
         // Load custom lang strings. This cannot be done inside the lang provider because it causes circular dependencies.
         const loadCustomStrings = (): void => {
             const currentSite = this.sitesProvider.getCurrentSite(),
@@ -254,7 +310,7 @@ export class MoodleMobileApp implements OnInit {
 
         // Pause Youtube videos in Android when app is put in background or screen is locked.
         this.platform.pause.subscribe(() => {
-            if (!this.platform.is('android')) {
+            if (!CoreApp.instance.isAndroid()) {
                 return;
             }
 
@@ -279,7 +335,7 @@ export class MoodleMobileApp implements OnInit {
         // Detect orientation changes.
         this.screenOrientation.onChange().subscribe(
             () => {
-                if (this.platform.is('ios')) {
+                if (CoreApp.instance.isIOS()) {
                     // Force ios to recalculate safe areas when rotating.
                     // This can be erased when https://issues.apache.org/jira/browse/CB-13448 issue is solved or
                     // After switching to WkWebview.

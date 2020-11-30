@@ -127,7 +127,8 @@ export class AddonModChatChatPage {
     showChatUsers(): void {
         // Create the toc modal.
         const modal =  this.modalCtrl.create('AddonModChatUsersPage', {
-            sessionId: this.sessionId
+            sessionId: this.sessionId,
+            cmId: this.cmId,
         }, { cssClass: 'core-modal-lateral',
             showBackdrop: true,
             enableBackdropDismiss: true,
@@ -168,7 +169,7 @@ export class AddonModChatChatPage {
             return Promise.resolve(user.fullname);
         }
 
-        return this.chatProvider.getChatUsers(this.sessionId).then((data) => {
+        return this.chatProvider.getChatUsers(this.sessionId, {cmId: this.cmId}).then((data) => {
             this.users = data.users;
             const user = this.users.find((user) => user.id == id);
 

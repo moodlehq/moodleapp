@@ -19,6 +19,7 @@ import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { AddonModScormProvider, AddonModScormAttemptCountResult } from './scorm';
 import { AddonModScormOfflineProvider } from './scorm-offline';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Helper service that provides some features for SCORM.
@@ -78,7 +79,7 @@ export class AddonModScormHelperProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get data from the online attempt.
-        return this.scormProvider.getScormUserData(scorm.id, attempt, undefined, false, false, siteId).then((onlineData) => {
+        return this.scormProvider.getScormUserData(scorm.id, attempt, {cmId: scorm.coursemodule, siteId}).then((onlineData) => {
             // The SCORM API might have written some data to the offline attempt already.
             // We don't want to override it with cached online data.
             return this.scormOfflineProvider.getScormUserData(scorm.id, attempt, undefined, siteId).catch(() => {
@@ -131,7 +132,7 @@ export class AddonModScormHelperProvider {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         // Try to get data from online attempts.
-        return this.searchOnlineAttemptUserData(scorm.id, lastOnline, siteId).then((userData) => {
+        return this.searchOnlineAttemptUserData(scorm.id, lastOnline, {cmId: scorm.coursemodule, siteId}).then((userData) => {
             // We're creating a new attempt, remove all the user data that is not needed for a new attempt.
             for (const scoId in userData) {
                 const sco = userData[scoId],
@@ -177,7 +178,11 @@ export class AddonModScormHelperProvider {
             // Check if last online incomplete.
             const hasOffline = attempts.offline.indexOf(lastOnline) > -1;
 
-            return this.scormProvider.isAttemptIncomplete(scorm.id, lastOnline, hasOffline, false, siteId).then((incomplete) => {
+            return this.scormProvider.isAttemptIncomplete(scorm.id, lastOnline, {
+                offline: hasOffline,
+                cmId: scorm.coursemodule,
+                siteId,
+            }).then((incomplete) => {
                 if (incomplete) {
                     return {
                         number: lastOnline,
@@ -197,24 +202,19 @@ export class AddonModScormHelperProvider {
      *
      * @param scormId Scorm ID.
      * @param attempt Attempt number.
-     * @param toc SCORM's TOC. If not provided, it will be calculated.
-     * @param organization Organization to use.
-     * @param mode Mode.
-     * @param offline Whether the attempt is offline.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the first SCO.
      */
-    getFirstSco(scormId: number, attempt: number, toc?: any[], organization?: string, mode?: string, offline?: boolean,
-            siteId?: string): Promise<any> {
+    getFirstSco(scormId: number, attempt: number, options: AddonModScormGetFirstScoOptions = {}): Promise<any> {
 
-        mode = mode || AddonModScormProvider.MODENORMAL;
+        const mode = options.mode || AddonModScormProvider.MODENORMAL;
 
         let promise;
-        if (toc && toc.length) {
-            promise = Promise.resolve(toc);
+        if (options.toc && options.toc.length) {
+            promise = Promise.resolve(options.toc);
         } else {
             // SCORM doesn't have a TOC. Get all the scos.
-            promise = this.scormProvider.getScosWithData(scormId, attempt, organization, offline, false, siteId);
+            promise = this.scormProvider.getScosWithData(scormId, attempt, options);
         }
 
         return promise.then((scos) => {
@@ -319,16 +319,16 @@ export class AddonModScormHelperProvider {
      *
      * @param scormId SCORM ID.
      * @param attempt Online attempt to get the data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with user data.
      */
-    searchOnlineAttemptUserData(scormId: number, attempt: number, siteId?: string): Promise<any> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    searchOnlineAttemptUserData(scormId: number, attempt: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.scormProvider.getScormUserData(scormId, attempt, undefined, false, false, siteId).catch(() => {
+        return this.scormProvider.getScormUserData(scormId, attempt, options).catch(() => {
             if (attempt > 0) {
                 // We couldn't retrieve the data. Try again with the previous online attempt.
-                return this.searchOnlineAttemptUserData(scormId, attempt - 1, siteId);
+                return this.searchOnlineAttemptUserData(scormId, attempt - 1, options);
             } else {
                 // No more attempts to try. Reject
                 return Promise.reject(null);
@@ -336,3 +336,13 @@ export class AddonModScormHelperProvider {
         });
     }
 }
+
+/**
+ * Options to pass to getFirstSco.
+ */
+export type AddonModScormGetFirstScoOptions = CoreCourseCommonModWSOptions & {
+    toc?: any[]; // SCORM's TOC. If not provided, it will be calculated.
+    organization?: string; // Organization to use.
+    mode?: string; // Mode.
+    offline?: boolean; // Whether the attempt is offline.
+};

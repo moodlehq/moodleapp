@@ -191,7 +191,7 @@ export class CoreContentLinksDelegate {
 
                             // Add them to the list.
                             linkActions.push({
-                                priority: handler.priority,
+                                priority: handler.priority || 0,
                                 actions: actions
                             });
                         }

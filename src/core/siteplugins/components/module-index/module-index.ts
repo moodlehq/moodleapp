@@ -21,6 +21,7 @@ import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '@core/c
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
+import { CoreSiteWSPreSets } from '@classes/site';
 
 /**
  * Component that displays the index of a module site plugin.
@@ -40,6 +41,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     method: string;
     args: any;
     initResult: any;
+    preSets: CoreSiteWSPreSets;
 
     // Data for context menu.
     externalUrl: string;
@@ -53,6 +55,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     displayRefresh = true;
     displayPrefetch = true;
     displaySize = true;
+    ptrEnabled = true;
 
     jsData: any; // Data to pass to the component.
 
@@ -76,6 +79,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
             if (handler) {
                 this.component = handler.plugin.component;
+                this.preSets = {componentId: this.module.id};
                 this.method = handler.handlerSchema.method;
                 this.args = {
                     courseid: this.courseId,
@@ -92,6 +96,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                 this.displayRefresh = !this.utils.isFalseOrZero(handler.handlerSchema.displayrefresh);
                 this.displayPrefetch = !this.utils.isFalseOrZero(handler.handlerSchema.displayprefetch);
                 this.displaySize = !this.utils.isFalseOrZero(handler.handlerSchema.displaysize);
+                this.ptrEnabled = !this.utils.isFalseOrZero(handler.handlerSchema.ptrenabled);
             }
 
             // Get the data for the context menu.

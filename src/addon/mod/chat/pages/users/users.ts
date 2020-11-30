@@ -36,6 +36,7 @@ export class AddonModChatUsersPage {
     isOnline: boolean;
 
     protected sessionId: string;
+    protected cmId: number;
     protected onlineObserver: any;
 
     constructor(navParams: NavParams, network: Network,  zone: NgZone, private appProvider: CoreAppProvider,
@@ -56,7 +57,7 @@ export class AddonModChatUsersPage {
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.chatProvider.getChatUsers(this.sessionId).then((data) => {
+        this.chatProvider.getChatUsers(this.sessionId, {cmId: this.cmId}).then((data) => {
             this.users = data.users;
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhilegettingchatusers', true);

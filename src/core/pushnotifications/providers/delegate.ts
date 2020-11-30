@@ -124,7 +124,10 @@ export class CorePushNotificationsDelegate {
      * @return Promise resolved with boolean: whether the handler feature is disabled.
      */
     protected isFeatureDisabled(handler: CorePushNotificationsClickHandler, siteId: string): Promise<boolean> {
-        if (handler.featureName) {
+        if (!siteId) {
+            // Notification doesn't belong to a site. Assume all handlers are enabled.
+            return Promise.resolve(false);
+        } else if (handler.featureName) {
             // Check if the feature is disabled.
             return this.sitesProvider.isFeatureDisabled(handler.featureName, siteId);
         } else {
@@ -177,6 +180,7 @@ export class CorePushNotificationsDelegate {
 
         this.logger.log(`Registered addon '${handler.name}'`);
         this.clickHandlers[handler.name] = handler;
+        handler.priority = handler.priority || 0;
 
         return true;
     }

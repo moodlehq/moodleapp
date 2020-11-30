@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreEventsProvider } from '@providers/events';
+import { CoreTextUtils } from '@providers/utils/text';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CorePushNotificationsClickHandler } from '@core/pushnotifications/providers/delegate';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
@@ -38,6 +39,11 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
      * @return Whether the notification click is handled by this handler
      */
     handles(notification: any): boolean | Promise<boolean> {
+        if (!notification.moodlecomponent) {
+            // The notification doesn't come from Moodle. Handle it.
+            return true;
+        }
+
         if (this.utils.isTrueOrOne(notification.notif)) {
             // Notification clicked, mark as read. Don't block for this.
             const notifId = notification.savedmessageid || notification.id;
@@ -60,38 +66,46 @@ export class AddonNotificationsPushClickHandler implements CorePushNotifications
      * @param notification The notification to check.
      * @return Promise resolved when done.
      */
-    handleClick(notification: any): Promise<any> {
-        let promise;
+    async handleClick(notification: any): Promise<void> {
 
-        // Try to handle the appurl first.
-        if (notification.customdata && notification.customdata.appurl) {
-            promise = this.linkHelper.handleLink(notification.customdata.appurl, undefined, undefined, true);
-        } else {
-            promise = Promise.resolve(false);
+        if (notification.customdata.extendedtext) {
+            // Display the text in a modal.
+            return CoreTextUtils.instance.viewText(notification.title, notification.customdata.extendedtext, {
+                displayCopyButton: true,
+                modalOptions: { cssClass: 'core-modal-fullscreen' },
+            });
         }
 
-        return promise.then((treated) => {
+        // Try to handle the appurl.
+        if (notification.customdata && notification.customdata.appurl) {
+            switch (notification.customdata.appurlopenin) {
+                case 'inapp':
+                    this.utils.openInApp(notification.customdata.appurl);
 
-            if (!treated) {
-                // No link or cannot be handled by the app. Try to handle the contexturl now.
-                if (notification.contexturl) {
-                    return this.linkHelper.handleLink(notification.contexturl);
-                } else {
-                    return false;
-                }
+                    return;
+
+                case 'browser':
+                    return this.utils.openInBrowser(notification.customdata.appurl);
+
+                default:
+                    if (this.linkHelper.handleLink(notification.customdata.appurl, undefined, undefined, true)) {
+                        // Link treated, stop.
+                        return;
+                    }
             }
+        }
 
-            return true;
-        }).then((treated) => {
-
-            if (!treated) {
-                // No link or cannot be handled by the app. Open the notifications page.
-                return this.notificationsProvider.invalidateNotificationsList(notification.site).catch(() => {
-                    // Ignore errors.
-                }).then(() => {
-                    return this.linkHelper.goInSite(undefined, 'AddonNotificationsListPage', undefined, notification.site);
-                });
+        // No appurl or cannot be handled by the app. Try to handle the contexturl now.
+        if (notification.contexturl) {
+            if (this.linkHelper.handleLink(notification.contexturl)) {
+                // Link treated, stop.
+                return;
             }
-        });
+        }
+
+        // No contexturl or cannot be handled by the app. Open the notifications page.
+        await this.utils.ignoreErrors(this.notificationsProvider.invalidateNotificationsList(notification.site));
+
+        await this.linkHelper.goInSite(undefined, 'AddonNotificationsListPage', undefined, notification.site);
     }
 }

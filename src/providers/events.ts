@@ -68,6 +68,7 @@ export class CoreEventsProvider {
     static SITE_STORAGE_DELETED = 'site_storage_deleted';
     static FORM_ACTION = 'form_action';
     static ACTIVITY_DATA_SENT = 'activity_data_sent';
+    static DEVICE_REGISTERED_IN_MOODLE = 'device_registered_in_moodle';
 
     protected logger;
     protected observables: { [s: string]: Subject<any> } = {};
@@ -120,6 +121,33 @@ export class CoreEventsProvider {
             off: (): void => {
                 this.logger.debug(`Stop listening to event '${eventName}'`);
                 subscription.unsubscribe();
+            }
+        };
+    }
+
+    /**
+     * Listen for several events. To stop listening to the events:
+     * let observer = eventsProvider.onMultiple(['something', 'another'], myCallBack);
+     * ...
+     * observer.off();
+     *
+     * @param eventNames Names of the events to listen to.
+     * @param callBack Function to call when any of the events is triggered.
+     * @param siteId Site where to trigger the event. Undefined won't check the site.
+     * @return Observer to stop listening.
+     */
+    onMultiple(eventNames: string[], callBack: (value: any) => void, siteId?: string): CoreEventObserver {
+
+        const observers = eventNames.map((name) => {
+            return this.on(name, callBack, siteId);
+        });
+
+        // Create and return a CoreEventObserver.
+        return {
+            off: (): void => {
+                observers.forEach((observer) => {
+                    observer.off();
+                });
             }
         };
     }

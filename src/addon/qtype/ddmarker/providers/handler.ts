@@ -18,6 +18,7 @@ import { CoreQuestionProvider } from '@core/question/providers/question';
 import { CoreQuestionHandler } from '@core/question/providers/delegate';
 import { CoreQuestionHelperProvider } from '@core/question/providers/helper';
 import { AddonQtypeDdMarkerComponent } from '../component/ddmarker';
+import { CoreWSExternalFile } from '@providers/ws';
 
 /**
  * Handler to support drag-and-drop markers question type.
@@ -62,9 +63,11 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponse(question: any, answers: any): number {
+    isCompleteResponse(question: any, answers: any, component: string, componentId: string | number): number {
         // If 1 dragitem is set we assume the answer is complete (like Moodle does).
         for (const name in answers) {
             if (answers[name]) {
@@ -90,10 +93,12 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param answers Object with the question answers (without prefix).
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponse(question: any, answers: any): number {
-        return this.isCompleteResponse(question, answers);
+    isGradableResponse(question: any, answers: any, component: string, componentId: string | number): number {
+        return this.isCompleteResponse(question, answers, component, componentId);
     }
 
     /**
@@ -102,9 +107,11 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
      * @return Whether they're the same.
      */
-    isSameResponse(question: any, prevAnswers: any, newAnswers: any): boolean {
+    isSameResponse(question: any, prevAnswers: any, newAnswers: any, component: string, componentId: string | number): boolean {
         return this.questionProvider.compareAllAnswers(prevAnswers, newAnswers);
     }
 
@@ -113,12 +120,12 @@ export class AddonQtypeDdMarkerHandler implements CoreQuestionHandler {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of URLs.
+     * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: any, usageId: number): string[] {
+    getAdditionalDownloadableFiles(question: any, usageId: number): (string | CoreWSExternalFile)[] {
         this.questionHelper.extractQuestionScripts(question, usageId);
 
-        if (question.amdArgs && typeof question.amdArgs[1] !== 'undefined') {
+        if (question.amdArgs && typeof question.amdArgs[1] == 'string') {
             // Moodle 3.6+.
             return [question.amdArgs[1]];
         }

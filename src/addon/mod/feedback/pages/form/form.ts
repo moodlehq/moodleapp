@@ -27,7 +27,7 @@ import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 
 /**
  * Page that displays feedback form.
@@ -141,6 +141,10 @@ export class AddonModFeedbackFormPage implements OnDestroy {
      */
     protected fetchData(): Promise<any> {
         this.offline = !this.appProvider.isOnline();
+        const options = {
+            cmId: this.module.id,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        };
 
         return this.feedbackProvider.getFeedback(this.courseId, this.module.id).then((feedbackData) => {
             this.feedback = feedbackData;
@@ -151,8 +155,7 @@ export class AddonModFeedbackFormPage implements OnDestroy {
         }).then((accessData) => {
             if (!this.preview && accessData.cansubmit && !accessData.isempty) {
                 return typeof this.currentPage == 'undefined' ?
-                    this.feedbackProvider.getResumePage(this.feedback.id, this.offline, true) :
-                    Promise.resolve(this.currentPage);
+                    this.feedbackProvider.getResumePage(this.feedback.id, options) : Promise.resolve(this.currentPage);
             } else {
                 this.preview = true;
 
@@ -162,8 +165,9 @@ export class AddonModFeedbackFormPage implements OnDestroy {
             if (!this.offline && !this.utils.isWebServiceError(error)) {
                 // If it fails, go offline.
                 this.offline = true;
+                options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
 
-                return this.feedbackProvider.getResumePage(this.feedback.id, true);
+                return this.feedbackProvider.getResumePage(this.feedback.id, options);
             }
 
             return Promise.reject(error);
@@ -186,12 +190,18 @@ export class AddonModFeedbackFormPage implements OnDestroy {
      * @return Promise resolved when done.
      */
     protected fetchAccessData(): Promise<any> {
-        return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id, this.offline, true).catch((error) => {
+        const options = {
+            cmId: this.module.id,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        };
+
+        return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id, options).catch((error) => {
             if (!this.offline && !this.utils.isWebServiceError(error)) {
                 // If it fails, go offline.
                 this.offline = true;
+                options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
 
-                return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id, true);
+                return this.feedbackProvider.getFeedbackAccessInformation(this.feedback.id, options);
             }
 
             return Promise.reject(error);
@@ -203,20 +213,25 @@ export class AddonModFeedbackFormPage implements OnDestroy {
     }
 
     protected fetchFeedbackPageData(page: number = 0): Promise<void> {
+        const options = {
+            cmId: this.module.id,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+        };
         let promise;
         this.items = [];
 
         if (this.preview) {
-            promise = this.feedbackProvider.getItems(this.feedback.id);
+            promise = this.feedbackProvider.getItems(this.feedback.id, {cmId: this.module.id});
         } else {
             this.currentPage = page;
 
-            promise = this.feedbackProvider.getPageItemsWithValues(this.feedback.id, page, this.offline, true).catch((error) => {
+            promise = this.feedbackProvider.getPageItemsWithValues(this.feedback.id, page, options).catch((error) => {
                 if (!this.offline && !this.utils.isWebServiceError(error)) {
                     // If it fails, go offline.
                     this.offline = true;
+                    options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
 
-                    return this.feedbackProvider.getPageItemsWithValues(this.feedback.id, page, true);
+                    return this.feedbackProvider.getPageItemsWithValues(this.feedback.id, page, options);
                 }
 
                 return Promise.reject(error);
@@ -262,8 +277,12 @@ export class AddonModFeedbackFormPage implements OnDestroy {
         return this.feedbackSync.syncFeedback(this.feedback.id).catch(() => {
             // Ignore errors.
         }).then(() => {
-            return this.feedbackProvider.processPage(this.feedback.id, this.currentPage, responses, goPrevious, formHasErrors,
-                    this.courseId).then((response) => {
+            return this.feedbackProvider.processPage(this.feedback.id, this.currentPage, responses, {
+                goPrevious,
+                formHasErrors,
+                courseId: this.courseId,
+                cmId: this.module.id,
+            }).then((response) => {
                 const jumpTo = parseInt(response.jumpto, 10);
 
                 if (response.completed) {

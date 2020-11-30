@@ -16,7 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -125,7 +125,10 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return Promise resolved when done.
      */
     protected prefetchSurvey(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        return this.surveyProvider.getSurvey(courseId, module.id, true, siteId).then((survey) => {
+        return this.surveyProvider.getSurvey(courseId, module.id, {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        }).then((survey) => {
             const promises = [],
                 files = this.getIntroFilesFromInstance(module, survey);
 
@@ -134,7 +137,11 @@ export class AddonModSurveyPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             // If survey isn't answered, prefetch the questions.
             if (!survey.surveydone) {
-                promises.push(this.surveyProvider.getQuestions(survey.id, true, siteId));
+                promises.push(this.surveyProvider.getQuestions(survey.id, {
+                    cmId: module.id,
+                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                    siteId,
+                }));
             }
 
             return Promise.all(promises);

@@ -99,8 +99,11 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
     /**
      * Navigate to the assessment.
      */
-    gotoAssessment(): void {
+    gotoAssessment(event: Event): void {
         if (!this.canSelfAssess && this.canViewAssessment) {
+            event.preventDefault();
+            event.stopPropagation();
+
             const params = {
                 assessment: this.assessment,
                 submission: this.submission,
@@ -110,10 +113,10 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
             };
 
             if (!this.submission) {
-                const modal = this.domUtils.showModalLoading('core.sending', true);
+                const modal = this.domUtils.showModalLoading();
 
-                this.workshopHelper.getSubmissionById(this.workshop.id, this.assessment.submissionid)
-                        .then((submissionData) => {
+                this.workshopHelper.getSubmissionById(this.workshop.id, this.assessment.submissionid,
+                        {cmId: this.workshop.coursemodule}).then((submissionData) => {
 
                     params.submission = submissionData;
                     this.navCtrl.push('AddonModWorkshopAssessmentPage', params);
@@ -131,8 +134,11 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
     /**
      * Navigate to my own assessment.
      */
-    gotoOwnAssessment(): void {
+    gotoOwnAssessment(event: Event): void {
         if (this.canSelfAssess) {
+            event.preventDefault();
+            event.stopPropagation();
+
             const params = {
                 module: this.module,
                 workshop: this.workshop,

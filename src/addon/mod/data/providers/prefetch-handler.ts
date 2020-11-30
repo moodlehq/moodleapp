@@ -16,13 +16,13 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreCommentsProvider } from '@core/comments/providers/comments';
-import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseProvider, CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModDataProvider, AddonModDataEntry } from './data';
 import { AddonModDataSyncProvider } from './sync';
@@ -65,16 +65,17 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      *
      * @param dataId Database Id.
      * @param groups Array of groups in the activity.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID.
+     * @param options Other options.
      * @return All unique entries.
      */
-    protected getAllUniqueEntries(dataId: number, groups: any[], forceCache: boolean = false, ignoreCache: boolean = false,
-            siteId?: string): Promise<AddonModDataEntry[]> {
+    protected getAllUniqueEntries(dataId: number, groups: any[], options: CoreSitesCommonWSOptions = {})
+            : Promise<AddonModDataEntry[]> {
+
         const promises = groups.map((group) => {
-            return this.dataProvider.fetchAllEntries(dataId, group.id, undefined, undefined, undefined, forceCache, ignoreCache,
-                siteId);
+            return this.dataProvider.fetchAllEntries(dataId, {
+                groupId: group.id,
+                ...options, // Include all options.
+            });
         });
 
         return Promise.all(promises).then((responses) => {
@@ -96,31 +97,30 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @param module Module to get the files.
      * @param courseId Course ID the module belongs to.
      * @param omitFail True to always return even if fails. Default false.
-     * @param forceCache True to always get the value from cache, false otherwise. Default false.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID.
+     * @param options Other options.
      * @return Promise resolved with the info fetched.
      */
-    protected getDatabaseInfoHelper(module: any, courseId: number, omitFail: boolean = false, forceCache: boolean = false,
-            ignoreCache: boolean = false, siteId?: string): Promise<any> {
+    protected getDatabaseInfoHelper(module: any, courseId: number, omitFail: boolean, options: CoreCourseCommonModWSOptions = {})
+            : Promise<any> {
         let database,
             groups = [],
             entries = [],
             files = [];
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.cmId = options.cmId || module.id;
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.dataProvider.getDatabase(courseId, module.id, siteId, forceCache).then((data) => {
+        return this.dataProvider.getDatabase(courseId, module.id, options).then((data) => {
             files = this.getIntroFilesFromInstance(module, data);
             database = data;
 
-            return this.groupsProvider.getActivityGroupInfo(module.id, false, undefined, siteId).then((groupInfo) => {
+            return this.groupsProvider.getActivityGroupInfo(module.id, false, undefined, options.siteId).then((groupInfo) => {
                 if (!groupInfo.groups || groupInfo.groups.length == 0) {
                     groupInfo.groups = [{id: 0}];
                 }
                 groups = groupInfo.groups;
 
-                return this.getAllUniqueEntries(database.id, groups, forceCache, ignoreCache, siteId);
+                return this.getAllUniqueEntries(database.id, groups, options);
             });
         }).then((uniqueEntries) => {
             entries = uniqueEntries;
@@ -229,8 +229,10 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @return Promise resolved with true if downloadable, resolved with false otherwise.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
-        return this.dataProvider.getDatabase(courseId, module.id, undefined, true).then((database) => {
-            return this.dataProvider.getDatabaseAccessInformation(database.id).then((accessData) => {
+        return this.dataProvider.getDatabase(courseId, module.id, {
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+        }).then((database) => {
+            return this.dataProvider.getDatabaseAccessInformation(database.id, {cmId: module.id}).then((accessData) => {
                 // Check if database is restricted by time.
                 if (!accessData.timeavailable) {
                     const time = this.timeUtils.timestamp();
@@ -281,23 +283,31 @@ export class AddonModDataPrefetchHandler extends CoreCourseActivityPrefetchHandl
      * @return Promise resolved when done.
      */
     protected prefetchDatabase(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
+        const options = {
+            cmId: module.id,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
 
-        return this.getDatabaseInfoHelper(module, courseId, false, false, true, siteId).then((info) => {
+        return this.getDatabaseInfoHelper(module, courseId, false, options).then((info) => {
             // Prefetch the database data.
             const database = info.database,
                 commentsEnabled = !this.commentsProvider.areCommentsDisabledInSite(),
                 promises = [];
 
-            promises.push(this.dataProvider.getFields(database.id, false, true, siteId));
+            promises.push(this.dataProvider.getFields(database.id, options));
 
             promises.push(this.filepoolProvider.addFilesToQueue(siteId, info.files, this.component, module.id));
 
             info.groups.forEach((group) => {
-               promises.push(this.dataProvider.getDatabaseAccessInformation(database.id, group.id, false, true, siteId));
+                promises.push(this.dataProvider.getDatabaseAccessInformation(database.id, {
+                    groupId: group.id,
+                    ...options, // Include all options.
+                }));
             });
 
             info.entries.forEach((entry) => {
-                promises.push(this.dataProvider.getEntry(database.id, entry.id, true, siteId));
+                promises.push(this.dataProvider.getEntry(database.id, entry.id, options));
 
                 if (commentsEnabled && database.comments) {
                     promises.push(this.commentsProvider.getComments('module', database.coursemodule, 'mod_data', entry.id,

@@ -407,7 +407,7 @@ export class CoreGradesHelperProvider {
                     if (matches && matches.length) {
                         const hrefParams = this.urlUtils.extractUrlParams(matches[1]);
 
-                        return hrefParams && hrefParams.id == moduleId;
+                        return hrefParams && Number(hrefParams.id) == moduleId;
                     }
                 }
 

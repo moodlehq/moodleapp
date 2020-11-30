@@ -204,8 +204,21 @@ export class AddonNotificationsListPage {
      * @param notification The notification object.
      */
     protected formatText(notification: AddonNotificationsAnyNotification): void {
-        const text = notification.mobiletext.replace(/-{4,}/ig, '');
-        notification.mobiletext = this.textUtils.replaceNewLines(text, '<br>');
+        notification.displayfullhtml = this.shouldDisplayFullHtml(notification);
+
+        notification.mobiletext = notification.displayfullhtml ?
+                        notification.fullmessagehtml :
+                        this.textUtils.replaceNewLines(notification.mobiletext.replace(/-{4,}/ig, ''), '<br>');
+    }
+
+    /**
+     * Check whether we should display full HTML of the notification.
+     *
+     * @param notification Notification.
+     * @return Whether to display full HTML.
+     */
+    protected shouldDisplayFullHtml(notification: AddonNotificationsAnyNotification): boolean {
+        return notification.component == 'mod_forum' && notification.eventtype == 'digests';
     }
 
     /**

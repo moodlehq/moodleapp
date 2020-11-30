@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { CoreAppProvider } from '@providers/app';
+import { CoreApp } from '@providers/app';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTimeUtilsProvider } from '@providers/utils/time';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData } from './delegate';
@@ -30,7 +30,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
     name = 'CoreFileUploaderFile';
     priority = 1200;
 
-    constructor(protected appProvider: CoreAppProvider,
+    constructor(
             protected platform: Platform,
             protected timeUtils: CoreTimeUtilsProvider,
             protected uploaderHelper: CoreFileUploaderHelperProvider,
@@ -44,8 +44,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
      * @return True or promise resolved with true if enabled.
      */
     isEnabled(): boolean | Promise<boolean> {
-        return this.platform.is('android') || !this.appProvider.isMobile() ||
-            (this.platform.is('ios') && this.platform.version().major >= 9);
+        return true;
     }
 
     /**
@@ -70,7 +69,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
             icon: 'folder',
         };
 
-        if (this.appProvider.isMobile()) {
+        if (CoreApp.instance.isMobile()) {
             handler.action = (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
                 return this.uploaderHelper.chooseAndUploadFile(maxSize, upload, allowOffline, mimetypes).then((result) => {
                     return {
@@ -89,7 +88,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                     const input = document.createElement('input');
                     input.setAttribute('type', 'file');
                     input.classList.add('core-fileuploader-file-handler-input');
-                    if (mimetypes && mimetypes.length && (!this.platform.is('android') || mimetypes.length == 1)) {
+                    if (mimetypes && mimetypes.length && (!CoreApp.instance.isAndroid() || mimetypes.length == 1)) {
                         // Don't use accept attribute in Android with several mimetypes, it's not supported.
                         input.setAttribute('accept', mimetypes.join(', '));
                     }
@@ -119,7 +118,7 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
                         });
                     });
 
-                    if (this.platform.is('ios')) {
+                    if (CoreApp.instance.isIOS()) {
                         // In iOS, the click on the input stopped working for some reason. We need to put it 1 level higher.
                         element.parentElement.appendChild(input);
 

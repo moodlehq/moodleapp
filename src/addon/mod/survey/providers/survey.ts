@@ -14,14 +14,15 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModSurveyOfflineProvider } from './offline';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@providers/ws';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 /**
  * Service that provides some features for surveys.
@@ -43,24 +44,21 @@ export class AddonModSurveyProvider {
      * Get a survey's questions.
      *
      * @param surveyId Survey ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the questions are retrieved.
      */
-    getQuestions(surveyId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModSurveyQuestion[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getQuestions(surveyId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModSurveyQuestion[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    surveyid: surveyId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getQuestionsCacheKey(surveyId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                surveyid: surveyId,
+            };
+            const preSets = {
+                cacheKey: this.getQuestionsCacheKey(surveyId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModSurveyProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_survey_get_questions', params, preSets)
                     .then((response: AddonModSurveyGetQuestionsResult): any => {
@@ -100,26 +98,22 @@ export class AddonModSurveyProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the survey is retrieved.
      */
-    protected getSurveyDataByKey(courseId: number, key: string, value: any, ignoreCache?: boolean, siteId?: string)
+    protected getSurveyDataByKey(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {})
             : Promise<AddonModSurveySurvey> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSurveyCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getSurveyCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModSurveyProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_survey_get_surveys_by_courses', params, preSets)
                     .then((response: AddonModSurveyGetSurveysByCoursesResult): any => {
@@ -143,12 +137,11 @@ export class AddonModSurveyProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the survey is retrieved.
      */
-    getSurvey(courseId: number, cmId: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModSurveySurvey> {
-        return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, ignoreCache, siteId);
+    getSurvey(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
+        return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -156,12 +149,11 @@ export class AddonModSurveyProvider {
      *
      * @param courseId Course ID.
      * @param id Survey ID.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the survey is retrieved.
      */
-    getSurveyById(courseId: number, id: number, ignoreCache?: boolean, siteId?: string): Promise<AddonModSurveySurvey> {
-        return this.getSurveyDataByKey(courseId, 'id', id, ignoreCache, siteId);
+    getSurveyById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
+        return this.getSurveyDataByKey(courseId, 'id', id, options);
     }
 
     /**

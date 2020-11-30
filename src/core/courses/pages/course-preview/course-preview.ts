@@ -24,7 +24,6 @@ import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
-import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
@@ -38,7 +37,6 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     course: any;
     isEnrolled: boolean;
     canAccessCourse = true;
-    component = 'CoreCoursesCoursePreview';
     selfEnrolInstances: any[] = [];
     paypalEnabled: boolean;
     dataLoaded: boolean;
@@ -65,13 +63,23 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
     protected currentInstanceId: number;
     protected courseStatusObserver;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, private sitesProvider: CoreSitesProvider,
-            private domUtils: CoreDomUtilsProvider, private textUtils: CoreTextUtilsProvider, appProvider: CoreAppProvider,
-            private coursesProvider: CoreCoursesProvider, private platform: Platform, private modalCtrl: ModalController,
-            private translate: TranslateService, private eventsProvider: CoreEventsProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, private courseHelper: CoreCourseHelperProvider,
-            private courseProvider: CoreCourseProvider, private courseFormatDelegate: CoreCourseFormatDelegate,
-            private zone: NgZone) {
+    constructor(
+            protected navCtrl: NavController,
+            navParams: NavParams,
+            protected sitesProvider: CoreSitesProvider,
+            protected domUtils: CoreDomUtilsProvider,
+            protected textUtils: CoreTextUtilsProvider,
+            appProvider: CoreAppProvider,
+            protected coursesProvider: CoreCoursesProvider,
+            protected platform: Platform,
+            protected modalCtrl: ModalController,
+            protected translate: TranslateService,
+            protected eventsProvider: CoreEventsProvider,
+            protected courseOptionsDelegate: CoreCourseOptionsDelegate,
+            protected courseHelper: CoreCourseHelperProvider,
+            protected courseProvider: CoreCourseProvider,
+            protected zone: NgZone
+            ) {
 
         this.course = navParams.get('course');
         this.avoidOpenCourse = navParams.get('avoidOpenCourse');
@@ -260,7 +268,7 @@ export class CoreCoursesCoursePreviewPage implements OnDestroy {
             return;
         }
 
-        this.courseFormatDelegate.openCourse(this.navCtrl, this.course);
+        this.courseHelper.openCourse(this.navCtrl, this.course);
     }
 
     /**

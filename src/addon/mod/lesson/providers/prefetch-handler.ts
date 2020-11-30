@@ -17,10 +17,10 @@ import { ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCourseProvider } from '@core/course/providers/course';
+import { CoreCourseProvider, CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 import { CoreGroupsProvider } from '@providers/groups';
 import { CoreCourseActivityPrefetchHandlerBase } from '@core/course/classes/activity-prefetch-handler';
 import { AddonModLessonProvider } from './lesson';
@@ -98,11 +98,15 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             password,
             result;
 
-        return this.lessonProvider.getLesson(courseId, module.id, false, false, siteId).then((lessonData) => {
+        return this.lessonProvider.getLesson(courseId, module.id, {siteId}).then((lessonData) => {
             lesson = lessonData;
 
             // Get the lesson password if it's needed.
-            return this.getLessonPassword(lesson.id, false, true, single, siteId);
+            return this.getLessonPassword(lesson.id, {
+                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                askPassword: single,
+                siteId,
+            });
         }).then((data) => {
             password = data.password;
             lesson = data.lesson || lesson;
@@ -116,7 +120,11 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
             result = res;
 
             // Get the pages to calculate the size.
-            return this.lessonProvider.getPages(lesson.id, password, false, false, siteId);
+            return this.lessonProvider.getPages(lesson.id, {
+                cmId: module.id,
+                password,
+                siteId,
+            });
         }).then((pages) => {
             pages.forEach((page) => {
                 result.size += page.filessizetotal;
@@ -130,19 +138,16 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
      * Get the lesson password if needed. If not stored, it can ask the user to enter it.
      *
      * @param lessonId Lesson ID.
-     * @param forceCache Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param askPassword True if we should ask for password if needed, false otherwise.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when done.
      */
-    getLessonPassword(lessonId: number, forceCache?: boolean, ignoreCache?: boolean, askPassword?: boolean, siteId?: string)
+    getLessonPassword(lessonId: number, options: AddonModLessonGetPasswordOptions = {})
             : Promise<{password?: string, lesson?: any, accessInfo: any}> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         // Get access information to check if password is needed.
-        return this.lessonProvider.getAccessInformation(lessonId, forceCache, ignoreCache, siteId).then((info): any => {
+        return this.lessonProvider.getAccessInformation(lessonId, options).then((info): any => {
             if (info.preventaccessreasons && info.preventaccessreasons.length) {
                 const passwordNeeded = info.preventaccessreasons.length == 1 && this.lessonProvider.isPasswordProtected(info);
                 if (passwordNeeded) {
@@ -152,15 +157,15 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                         // No password found.
                     }).then((password) => {
                         if (password) {
-                            return this.validatePassword(lessonId, info, password, forceCache, ignoreCache, siteId);
+                            return this.validatePassword(lessonId, info, password, options);
                         } else {
                             return Promise.reject(null);
                         }
                     }).catch(() => {
                         // No password or error validating it. Ask for it if allowed.
-                        if (askPassword) {
+                        if (options.askPassword) {
                             return this.askUserPassword(info).then((password) => {
-                                return this.validatePassword(lessonId, info, password, forceCache, ignoreCache, siteId);
+                                return this.validatePassword(lessonId, info, password, options);
                             });
                         }
 
@@ -207,7 +212,10 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
         const siteId = this.sitesProvider.getCurrentSiteId();
 
         // Invalidate data to determine if module is downloadable.
-        return this.lessonProvider.getLesson(courseId, module.id, true, false, siteId).then((lesson) => {
+        return this.lessonProvider.getLesson(courseId, module.id, {
+            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            siteId,
+        }).then((lesson) => {
             const promises = [];
 
             promises.push(this.lessonProvider.invalidateLessonData(courseId, siteId));
@@ -227,9 +235,9 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
         const siteId = this.sitesProvider.getCurrentSiteId();
 
-        return this.lessonProvider.getLesson(courseId, module.id, false, false, siteId).then((lesson) => {
+        return this.lessonProvider.getLesson(courseId, module.id, {siteId}).then((lesson) => {
             // Check if there is any prevent access reason.
-            return this.lessonProvider.getAccessInformation(lesson.id, false, false, siteId).then((info) => {
+            return this.lessonProvider.getAccessInformation(lesson.id, {cmId: module.id, siteId}).then((info) => {
                 if (!info.canviewreports && !this.lessonProvider.isLessonOffline(lesson)) {
                     return false;
                 }
@@ -273,15 +281,28 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @return Promise resolved when done.
      */
     protected prefetchLesson(module: any, courseId: number, single: boolean, siteId: string): Promise<any> {
-        let lesson,
-            password,
-            accessInfo;
+        let lesson;
+        let password;
+        let accessInfo;
 
-        return this.lessonProvider.getLesson(courseId, module.id, false, true, siteId).then((lessonData) => {
+        const commonOptions = {
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
+        const modOptions = {
+            cmId: module.id,
+            ...commonOptions, // Include all common options.
+        };
+
+        return this.lessonProvider.getLesson(courseId, module.id, commonOptions).then((lessonData) => {
             lesson = lessonData;
 
             // Get the lesson password if it's needed.
-            return this.getLessonPassword(lesson.id, false, true, single, siteId);
+            return this.getLessonPassword(lesson.id, {
+                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                askPassword: single,
+                siteId,
+            });
         }).then((data) => {
             password = data.password;
             lesson = data.lesson || lesson;
@@ -297,7 +318,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                         // Ignore errors.
                     }));
 
-                    promises.push(this.lessonProvider.getAccessInformation(lesson.id, false, true, siteId).then((info) => {
+                    promises.push(this.lessonProvider.getAccessInformation(lesson.id, modOptions).then((info) => {
                         accessInfo = info;
                     }));
 
@@ -316,7 +337,12 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
 
             // Get the list of pages.
             if (this.lessonProvider.isLessonOffline(lesson)) {
-                promises.push(this.lessonProvider.getPages(lesson.id, password, false, true, siteId).then((pages) => {
+                const passwordOptions = {
+                    password,
+                    ...modOptions, // Include all mod options.
+                };
+
+                promises.push(this.lessonProvider.getPages(lesson.id, passwordOptions).then((pages) => {
                     const subPromises = [];
                     let hasRandomBranch = false;
 
@@ -333,8 +359,11 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                         }
 
                         // Get the page data. We don't pass accessInfo because we don't need to calculate the offline data.
-                        subPromises.push(this.lessonProvider.getPageData(lesson, data.page.id, password, false, true, false,
-                                true, undefined, undefined, siteId).then((pageData) => {
+                        subPromises.push(this.lessonProvider.getPageData(lesson, data.page.id, {
+                            includeContents: true,
+                            includeOfflineData: false,
+                            ...passwordOptions, // Include all options.
+                        }).then((pageData) => {
 
                             // Download the page files.
                             let pageFiles = pageData.contentfiles || [];
@@ -353,7 +382,7 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                     });
 
                     // Prefetch the list of possible jumps for offline navigation. Do it here because we know hasRandomBranch.
-                    subPromises.push(this.lessonProvider.getPagesPossibleJumps(lesson.id, false, true, siteId).catch((error) => {
+                    subPromises.push(this.lessonProvider.getPagesPossibleJumps(lesson.id, modOptions).catch((error) => {
                         if (hasRandomBranch) {
                             // The WebSevice probably failed because RANDOMBRANCH aren't supported if the user hasn't seen any page.
                             return Promise.reject(this.translate.instant('addon.mod_lesson.errorprefetchrandombranch'));
@@ -366,16 +395,15 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                 }));
 
                 // Prefetch user timers to be able to calculate timemodified in offline.
-                promises.push(this.lessonProvider.getTimers(lesson.id, false, true, siteId).catch(() => {
+                promises.push(this.lessonProvider.getTimers(lesson.id, modOptions).catch(() => {
                     // Ignore errors.
                 }));
 
                 // Prefetch viewed pages in last retake to calculate progress.
-                promises.push(this.lessonProvider.getContentPagesViewedOnline(lesson.id, retake, false, true, siteId));
+                promises.push(this.lessonProvider.getContentPagesViewedOnline(lesson.id, retake, modOptions));
 
                 // Prefetch question attempts in last retake for offline calculations.
-                promises.push(this.lessonProvider.getQuestionsAttemptsOnline(lesson.id, retake, false, undefined, false, true,
-                        siteId));
+                promises.push(this.lessonProvider.getQuestionsAttemptsOnline(lesson.id, retake, modOptions));
             }
 
             if (accessInfo.canviewreports) {
@@ -384,11 +412,14 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                     const subPromises = [];
 
                     info.groups.forEach((group) => {
-                        subPromises.push(this.lessonProvider.getRetakesOverview(lesson.id, group.id, false, true, siteId));
+                        subPromises.push(this.lessonProvider.getRetakesOverview(lesson.id, {
+                            groupId: group.id,
+                            ...modOptions, // Include all options.
+                        }));
                     });
 
-                    // Always get group 0, even if there are no groups.
-                    subPromises.push(this.lessonProvider.getRetakesOverview(lesson.id, 0, false, true, siteId).then((data) => {
+                    // Always get all participants, even if there are no groups.
+                    subPromises.push(this.lessonProvider.getRetakesOverview(lesson.id, modOptions).then((data) => {
                         if (!data || !data.students) {
                             return;
                         }
@@ -406,8 +437,10 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
                                 return;
                             }
 
-                            retakePromises.push(this.lessonProvider.getUserRetake(lesson.id, lastRetake.try, student.id, false,
-                                    true, siteId).then((attempt) => {
+                            retakePromises.push(this.lessonProvider.getUserRetake(lesson.id, lastRetake.try, {
+                                userId: student.id,
+                                ...modOptions, // Include all options.
+                            }).then((attempt) => {
                                 if (!attempt || !attempt.answerpages) {
                                     return;
                                 }
@@ -445,19 +478,20 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
      * @param lessonId Lesson ID.
      * @param info Lesson access info.
      * @param pwd Password to check.
-     * @param forceCache Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when done.
      */
-    protected validatePassword(lessonId: number, info: any, pwd: string, forceCache?: boolean, ignoreCache?: boolean,
-            siteId?: string): Promise<{password: string, lesson: any, accessInfo: any}> {
+    protected validatePassword(lessonId: number, info: any, pwd: string, options: CoreCourseCommonModWSOptions = {})
+            : Promise<{password: string, lesson: any, accessInfo: any}> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.lessonProvider.getLessonWithPassword(lessonId, pwd, true, forceCache, ignoreCache, siteId).then((lesson) => {
+        return this.lessonProvider.getLessonWithPassword(lessonId, {
+            password: pwd,
+            ...options, // Include all options.
+        }).then((lesson) => {
             // Password is ok, store it and return the data.
-            return this.lessonProvider.storePassword(lesson.id, pwd, siteId).then(() => {
+            return this.lessonProvider.storePassword(lesson.id, pwd, options.siteId).then(() => {
                 return {
                     password: pwd,
                     lesson: lesson,
@@ -483,3 +517,10 @@ export class AddonModLessonPrefetchHandler extends CoreCourseActivityPrefetchHan
         return this.syncProvider.syncLesson(module.instance, false, false, siteId);
     }
 }
+
+/**
+ * Options to pass to get lesson password.
+ */
+export type AddonModLessonGetPasswordOptions = CoreCourseCommonModWSOptions & {
+    askPassword?: boolean; // True if we should ask for password if needed, false otherwise.
+};

@@ -66,6 +66,16 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     }
 
     /**
+     * Whether the option blocks should be displayed. Defaults to true.
+     *
+     * @param course The course to check.
+     * @return Whether it can display blocks.
+     */
+    displayBlocks(course: any): boolean {
+        return true;
+    }
+
+    /**
      * Whether the option to enable section/module download should be displayed. Defaults to true.
      *
      * @param course The course to check.
@@ -162,7 +172,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @param params Params to pass to the course page.
      * @return Promise resolved when done.
      */
-    openCourse(navCtrl: NavController, course: any, params?: any): Promise<any> {
+    openCourse(navCtrl: NavController, course: any, params?: any): Promise<void> {
         params = params || {};
         Object.assign(params, { course: course });
 

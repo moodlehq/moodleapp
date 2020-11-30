@@ -71,15 +71,10 @@ export class AddonCompetencyUserHandler implements CoreUserProfileHandler {
                 return this.participantsNavEnabledCache[cacheKey];
             }
 
-            return this.competencyProvider.getCourseCompetencies(courseId, user.id).then((response) => {
-                const enabled = response.competencies.length > 0;
+            return this.competencyProvider.canViewUserCompetenciesInCourse(courseId, user.id).then((enabled) => {
                 this.participantsNavEnabledCache[cacheKey] = enabled;
 
                 return enabled;
-            }).catch((message) => {
-                this.participantsNavEnabledCache[cacheKey] = false;
-
-                return false;
             });
         } else {
             // Link on a user site profile.

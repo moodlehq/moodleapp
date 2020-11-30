@@ -16,7 +16,7 @@ import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreCourseProvider } from '@core/course/providers/course';
@@ -111,7 +111,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
 
         let scorm;
 
-        return this.scormProvider.getScorm(courseId, module.id, module.url, false, siteId).then((scormData) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url, siteId}).then((scormData) => {
             scorm = scormData;
 
             const promises = [],
@@ -131,9 +131,6 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                     module.id).catch(() => {
                 // Ignore errors.
             }));
-
-            // Prefetch access information.
-            promises.push(this.scormProvider.getAccessInformation(scorm.id));
 
             return Promise.all(promises);
         }).then(() => {
@@ -246,9 +243,14 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
         const promises = [];
+        const modOptions = {
+            cmId: scorm.coursemodule,
+            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            siteId,
+        };
 
         // Prefetch number of attempts (including not completed).
-        promises.push(this.scormProvider.getAttemptCountOnline(scorm.id, undefined, true, siteId).catch(() => {
+        promises.push(this.scormProvider.getAttemptCountOnline(scorm.id, modOptions).catch(() => {
             // If it fails, assume we have no attempts.
             return 0;
         }).then((numAttempts) => {
@@ -257,7 +259,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                 const dataPromises = [];
 
                 for (let i = 1; i <= numAttempts; i++) {
-                    dataPromises.push(this.scormProvider.getScormUserDataOnline(scorm.id, i, true, siteId).catch((err) => {
+                    dataPromises.push(this.scormProvider.getScormUserDataOnline(scorm.id, i, modOptions).catch((err) => {
                         // Ignore failures of all the attempts that aren't the last one.
                         if (i == numAttempts) {
                             return Promise.reject(err);
@@ -268,12 +270,15 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
                 return Promise.all(dataPromises);
             } else {
                 // No attempts. We'll still try to get user data to be able to identify SCOs not visible and so.
-                return this.scormProvider.getScormUserDataOnline(scorm.id, 0, true, siteId);
+                return this.scormProvider.getScormUserDataOnline(scorm.id, 0, modOptions);
             }
         }));
 
         // Prefetch SCOs.
-        promises.push(this.scormProvider.getScos(scorm.id, undefined, true, siteId));
+        promises.push(this.scormProvider.getScos(scorm.id, modOptions));
+
+        // Prefetch access information.
+        promises.push(this.scormProvider.getAccessInformation(scorm.id, modOptions));
 
         return Promise.all(promises);
     }
@@ -288,7 +293,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
      *         to calculate the total size.
      */
     getDownloadSize(module: any, courseId: any, single?: boolean): Promise<{ size: number, total: boolean }> {
-        return this.scormProvider.getScorm(courseId, module.id, module.url).then((scorm) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url}).then((scorm) => {
             if (this.scormProvider.isScormUnsupported(scorm)) {
                 return {size: -1, total: false};
             } else if (!scorm.packagesize) {
@@ -310,7 +315,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
      * @return Size, or promise resolved with the size.
      */
     getDownloadedSize(module: any, courseId: number): number | Promise<number> {
-        return this.scormProvider.getScorm(courseId, module.id, module.url).then((scorm) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url}).then((scorm) => {
             // Get the folder where SCORM should be unzipped.
             return this.scormProvider.getScormFolder(scorm.moduleurl);
         }).then((path) => {
@@ -327,7 +332,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
      * @return Promise resolved with the list of files.
      */
     getFiles(module: any, courseId: number, single?: boolean): Promise<any[]> {
-        return this.scormProvider.getScorm(courseId, module.id, module.url).then((scorm) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url}).then((scorm) => {
             return this.scormProvider.getScormFileList(scorm);
         }).catch(() => {
             // SCORM not found, return empty list.
@@ -366,7 +371,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
      * @return Whether the module can be downloaded. The promise should never be rejected.
      */
     isDownloadable(module: any, courseId: number): boolean | Promise<boolean> {
-        return this.scormProvider.getScorm(courseId, module.id, module.url).then((scorm) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url}).then((scorm) => {
             if (scorm.warningMessage) {
                 // SCORM closed or not opened yet.
                 return false;
@@ -409,7 +414,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
         const siteId = this.sitesProvider.getCurrentSiteId();
         let scorm;
 
-        return this.scormProvider.getScorm(courseId, module.id, module.url, false, siteId).then((scormData) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url, siteId}).then((scormData) => {
             scorm = scormData;
 
             // Get the folder where SCORM should be unzipped.
@@ -419,17 +424,15 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
 
             // Remove the unzipped folder.
             promises.push(this.fileProvider.removeDir(path).catch((error) => {
-                if (error && error.code == 1) {
+                if (error && (error.code == 1 || !this.appProvider.isMobile())) {
                     // Not found, ignore error.
                 } else {
                     return Promise.reject(error);
                 }
             }));
 
-            // Maybe the ZIP wasn't deleted for some reason. Try to delete it too.
-            promises.push(this.filepoolProvider.removeFileByUrl(siteId, this.scormProvider.getPackageUrl(scorm)).catch(() => {
-                // Ignore errors.
-            }));
+            // Delete other files.
+            promises.push(this.filepoolProvider.removeFilesByComponent(siteId, this.component, module.id));
 
             return Promise.all(promises);
         });
@@ -448,7 +451,7 @@ export class AddonModScormPrefetchHandler extends CoreCourseActivityPrefetchHand
             this.syncProvider = this.injector.get(AddonModScormSyncProvider);
         }
 
-        return this.scormProvider.getScorm(courseId, module.id, module.url, false, siteId).then((scorm) => {
+        return this.scormProvider.getScorm(courseId, module.id, {moduleUrl: module.url, siteId}).then((scorm) => {
             return this.syncProvider.syncScorm(scorm, siteId);
         });
     }

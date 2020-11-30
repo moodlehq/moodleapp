@@ -31,7 +31,7 @@
         </ion-item>
         <ion-item margin-bottom>
             <core-show-password item-content [name]="'password'">
-                <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"></ion-input>
+                <ion-input class="core-ioninput-password" name="password" type="password" placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false" autocomplete="current-password"></ion-input>
             </core-show-password>
         </ion-item>
         <ion-grid padding>
@@ -47,7 +47,7 @@
     </form>
 
     <!-- Forgotten password button. -->
-    <ion-list no-lines *ngIf="showForgottenPassword && !isOAuth" class="core-login-forgotten-password">
+    <ion-list no-lines *ngIf="showForgottenPassword && !isOAuth" class="core-login-forgotten-password core-login-link">
         <a ion-item text-center text-wrap (click)="forgottenPassword()" detail-none>
             {{ 'core.login.forgotten' | translate }}
         </a>

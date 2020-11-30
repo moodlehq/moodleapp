@@ -16,13 +16,14 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
+import { CoreSitesProvider, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreAppProvider } from '@providers/app';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { CoreCourseLogHelperProvider } from '@core/course/providers/log-helper';
 import { AddonModWikiOfflineProvider } from './wiki-offline';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/site';
+import { CoreCourseCommonModWSOptions } from '@core/course/providers/course';
 
 export interface AddonModWikiSubwikiListData {
     /**
@@ -118,27 +119,21 @@ export class AddonModWikiProvider {
      * Get a wiki page contents.
      *
      * @param pageId Page ID.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the page data.
      */
-    getPageContents(pageId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getPageContents(pageId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    pageid: pageId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getPageContentsCacheKey(pageId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                pageid: pageId,
+            };
+            const preSets = {
+                cacheKey: this.getPageContentsCacheKey(pageId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModWikiProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_wiki_get_page_contents', params, preSets).then((response) => {
                 return response.page || Promise.reject(null);
@@ -191,36 +186,27 @@ export class AddonModWikiProvider {
      * Gets the list of files from a specific subwiki.
      *
      * @param wikiId Wiki ID.
-     * @param groupId Group to get files from.
-     * @param userId User to get files from.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with subwiki files.
      */
-    getSubwikiFiles(wikiId: number, groupId?: number, userId?: number, offline?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<any[]> {
+    getSubwikiFiles(wikiId: number, options: AddonModWikiGetSubwikiFilesOptions = {}): Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            groupId = groupId || -1;
-            userId = userId || 0;
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const groupId = options.groupId || -1;
+            const userId = options.userId || 0;
 
             const params = {
-                    wikiid: wikiId,
-                    groupid: groupId,
-                    userid: userId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                wikiid: wikiId,
+                groupid: groupId,
+                userid: userId,
+            };
+            const preSets = {
+                cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModWikiProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_wiki_get_subwiki_files', params, preSets).then((response) => {
                 return response.files || Promise.reject(null);
@@ -264,48 +250,34 @@ export class AddonModWikiProvider {
      * Get the list of Pages of a SubWiki.
      *
      * @param wikiId Wiki ID.
-     * @param groupId Group to get pages from.
-     * @param userId User to get pages from.
-     * @param sortBy The attribute to sort the returned list.
-     * @param sortDirection Direction to sort the returned list (ASC | DESC).
-     * @param includeContent Whether the pages have to include its content. Default: false.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with wiki subwiki pages.
      */
-    getSubwikiPages(wikiId: number, groupId?: number, userId?: number, sortBy: string = 'title', sortDirection: string = 'ASC',
-            includeContent?: boolean, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
+    getSubwikiPages(wikiId: number, options: AddonModWikiGetSubwikiPagesOptions = {}): Promise<any[]> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
-            groupId = groupId || -1;
-            userId = userId || 0;
-            sortBy = sortBy || 'title';
-            sortDirection = sortDirection || 'ASC';
-            includeContent = includeContent || false;
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
+            const groupId = options.groupId || -1;
+            const userId = options.userId || 0;
+            const sortBy = options.sortBy || 'title';
+            const sortDirection = options.sortDirection || 'ASC';
 
             const params = {
-                    wikiid: wikiId,
-                    groupid: groupId,
-                    userid: userId,
-                    options: {
-                        sortby: sortBy,
-                        sortdirection: sortDirection,
-                        includecontent: includeContent ? 1 : 0
-                    }
-
+                wikiid: wikiId,
+                groupid: groupId,
+                userid: userId,
+                options: {
+                    sortby: sortBy,
+                    sortdirection: sortDirection,
+                    includecontent: options.includeContent ? 1 : 0,
                 },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
-                    updateFrequency: CoreSite.FREQUENCY_SOMETIMES
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+            };
+            const preSets = {
+                cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
+                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                component: AddonModWikiProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_wiki_get_subwiki_pages', params, preSets).then((response) => {
                 return response.pages || Promise.reject(null);
@@ -339,27 +311,21 @@ export class AddonModWikiProvider {
      * Get all the subwikis of a wiki.
      *
      * @param wikiId Wiki ID.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with subwikis.
      */
-    getSubwikis(wikiId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
-        return this.sitesProvider.getSite(siteId).then((site) => {
+    getSubwikis(wikiId: number, options: CoreCourseCommonModWSOptions = {}): Promise<any[]> {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    wikiid: wikiId
-                },
-                preSets: CoreSiteWSPreSets = {
-                    cacheKey: this.getSubwikisCacheKey(wikiId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
-
-            if (offline) {
-                preSets.omitExpires = true;
-            } else if (ignoreCache) {
-                preSets.getFromCache = false;
-                preSets.emergencyCache = false;
-            }
+                wikiid: wikiId,
+            };
+            const preSets = {
+                cacheKey: this.getSubwikisCacheKey(wikiId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModWikiProvider.COMPONENT,
+                componentId: options.cmId,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_wiki_get_subwikis', params, preSets).then((response) => {
                 return response.subwikis || Promise.reject(null);
@@ -382,12 +348,11 @@ export class AddonModWikiProvider {
      *
      * @param courseId Course ID.
      * @param cmId Course module ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the wiki is retrieved.
      */
-    getWiki(courseId: number, cmId: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getWikiByField(courseId, 'coursemodule', cmId, forceCache, siteId);
+    getWiki(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getWikiByField(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -396,20 +361,21 @@ export class AddonModWikiProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the wiki is retrieved.
      */
-    protected getWikiByField(courseId: number, key: string, value: any, forceCache?: boolean, siteId?: string): Promise<any> {
+    protected getWikiByField(courseId: number, key: string, value: any, options: CoreSitesCommonWSOptions = {}): Promise<any> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params = {
-                    courseids: [courseId]
-                },
-                preSets = {
-                    cacheKey: this.getWikiDataCacheKey(courseId),
-                    updateFrequency: CoreSite.FREQUENCY_RARELY
-                };
+                courseids: [courseId],
+            };
+            const preSets = {
+                cacheKey: this.getWikiDataCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                component: AddonModWikiProvider.COMPONENT,
+                ...this.sitesProvider.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            };
 
             return site.read('mod_wiki_get_wikis_by_courses', params, preSets).then((response) => {
                 if (response.wikis) {
@@ -432,12 +398,11 @@ export class AddonModWikiProvider {
      *
      * @param courseId Course ID.
      * @param id Wiki ID.
-     * @param forceCache Whether it should always return cached data.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved when the wiki is retrieved.
      */
-    getWikiById(courseId: number, id: number, forceCache?: boolean, siteId?: string): Promise<any> {
-        return this.getWikiByField(courseId, 'id', id, forceCache, siteId);
+    getWikiById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<any> {
+        return this.getWikiByField(courseId, 'id', id, options);
     }
 
     /**
@@ -454,22 +419,29 @@ export class AddonModWikiProvider {
      * Gets a list of files to download for a wiki, using a format similar to module.contents from get_course_contents.
      *
      * @param wiki Wiki.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the list of files.
      */
-    getWikiFileList(wiki: any, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    getWikiFileList(wiki: any, options: CoreSitesCommonWSOptions = {}): Promise<any[]> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         let files = [];
+        const modOptions = {
+            cmId: wiki.coursemodule,
+            ...options, // Include all options.
+        };
 
-        return this.getSubwikis(wiki.id, offline, ignoreCache, siteId).then((subwikis) => {
+        return this.getSubwikis(wiki.id, modOptions).then((subwikis) => {
             const promises = [];
 
             subwikis.forEach((subwiki) => {
-                promises.push(this.getSubwikiFiles(subwiki.wikiid, subwiki.groupid, subwiki.userid, offline, ignoreCache, siteId)
-                        .then((swFiles) => {
+                const subwikiOptions = {
+                    groupId: subwiki.groupid,
+                    userId: subwiki.userid,
+                    ...modOptions, // Include all options.
+                };
+
+                promises.push(this.getSubwikiFiles(subwiki.wikiid, subwikiOptions).then((swFiles) => {
                     files = files.concat(swFiles);
                 }));
             });
@@ -484,22 +456,27 @@ export class AddonModWikiProvider {
      * Gets a list of all pages for a Wiki.
      *
      * @param wiki Wiki.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Page list.
      */
-    getWikiPageList(wiki: any, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<any[]> {
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+    getWikiPageList(wiki: any, options: CoreSitesCommonWSOptions = {}): Promise<any[]> {
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         let pages = [];
+        const modOptions = {
+            cmId: wiki.coursemodule,
+            ...options, // Include all options.
+        };
 
-        return this.getSubwikis(wiki.id, offline, ignoreCache, siteId).then((subwikis) => {
+        return this.getSubwikis(wiki.id, modOptions).then((subwikis) => {
             const promises = [];
 
             subwikis.forEach((subwiki) => {
-                promises.push(this.getSubwikiPages(subwiki.wikiid, subwiki.groupid, subwiki.userid, undefined, undefined,
-                        undefined, offline, ignoreCache, siteId).then((subwikiPages) => {
+                promises.push(this.getSubwikiPages(subwiki.wikiid, {
+                    groupId: subwiki.groupid,
+                    userId: subwiki.userid,
+                    ...modOptions, // Include all options.
+                }).then((subwikiPages) => {
                     pages = pages.concat(subwikiPages);
                 }));
             });
@@ -522,7 +499,7 @@ export class AddonModWikiProvider {
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<any> {
         siteId = siteId || this.sitesProvider.getCurrentSiteId();
 
-        return this.getWiki(courseId, moduleId, false, siteId).then((wiki) => {
+        return this.getWiki(courseId, moduleId, {siteId}).then((wiki) => {
             const promises = [];
 
             promises.push(this.invalidateWikiData(courseId, siteId));
@@ -618,16 +595,13 @@ export class AddonModWikiProvider {
      * @param wikiId Wiki ID.
      * @param subwikiId Subwiki ID.
      * @param title Page title.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with true if used, resolved with false if not used or cannot determine.
      */
-    isTitleUsed(wikiId: number, subwikiId: number, title: string, offline?: boolean, ignoreCache?: boolean, siteId?: string)
-            : Promise<boolean> {
+    isTitleUsed(wikiId: number, subwikiId: number, title: string, options: CoreCourseCommonModWSOptions = {}): Promise<boolean> {
 
         // First get the subwiki.
-        return this.getSubwikis(wikiId, offline, ignoreCache, siteId).then((subwikis) => {
+        return this.getSubwikis(wikiId, options).then((subwikis) => {
             // Search the subwiki.
             const subwiki = subwikis.find((subwiki) => {
                 return subwiki.id == subwikiId;
@@ -636,8 +610,11 @@ export class AddonModWikiProvider {
             return subwiki || Promise.reject(null);
         }).then((subwiki) => {
             // Now get all the pages of the subwiki.
-            return this.getSubwikiPages(wikiId, subwiki.groupid, subwiki.userid, undefined, undefined, false, offline,
-                    ignoreCache, siteId);
+            return this.getSubwikiPages(wikiId, {
+                groupId: subwiki.groupid,
+                userId: subwiki.userid,
+                ...options, // Include all options.
+            });
         }).then((pages) => {
             // Check if there's any page with the same title.
             const page = pages.find((page) => {
@@ -690,25 +667,24 @@ export class AddonModWikiProvider {
      *
      * @param title Title to create the page.
      * @param content Content to save on the page.
-     * @param subwikiId Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
-     * @param wikiId Wiki ID. Optional, will be used to create a new subwiki if subwikiId not supplied.
-     * @param userId User ID. Optional, will be used to create a new subwiki if subwikiId not supplied.
-     * @param groupId Group ID. Optional, will be used to create a new subwiki if subwikiId not supplied.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with page ID if page was created in server, -1 if stored in device.
      */
-    newPage(title: string, content: string, subwikiId?: number, wikiId?: number, userId?: number, groupId?: number,
-            siteId?: string): Promise<number> {
+    newPage(title: string, content: string, options: AddonModWikiNewPageOptions = {}): Promise<number> {
 
-        siteId = siteId || this.sitesProvider.getCurrentSiteId();
+        options.siteId = options.siteId || this.sitesProvider.getCurrentSiteId();
 
         // Convenience function to store a new page to be synchronized later.
         const storeOffline = (): Promise<number> => {
             let promise;
 
-            if (wikiId) {
+            if (options.wikiId) {
                 // We have wiki ID, check if there's already an online page with this title and subwiki.
-                promise = this.isTitleUsed(wikiId, subwikiId, title, true, false, siteId).catch(() => {
+                promise = this.isTitleUsed(options.wikiId, options.subwikiId, title, {
+                    cmId: options.cmId,
+                    readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                    siteId: options.siteId,
+                }).catch(() => {
                     // Error, assume not used.
                     return false;
                 }).then((used) => {
@@ -721,7 +697,8 @@ export class AddonModWikiProvider {
             }
 
             return promise.then(() => {
-                return this.wikiOffline.saveNewPage(title, content, subwikiId, wikiId, userId, groupId, siteId).then(() => {
+                return this.wikiOffline.saveNewPage(title, content, options.subwikiId, options.wikiId, options.userId,
+                        options.groupId, options.siteId).then(() => {
                     return -1;
                 });
             });
@@ -733,9 +710,10 @@ export class AddonModWikiProvider {
         }
 
         // Discard stored content for this page. If it exists it means the user is editing it.
-        return this.wikiOffline.deleteNewPage(title, subwikiId, wikiId, userId, groupId, siteId).then(() => {
+        return this.wikiOffline.deleteNewPage(title, options.subwikiId, options.wikiId, options.userId, options.groupId,
+                options.siteId).then(() => {
             // Try to create it in online.
-            return this.newPageOnline(title, content, subwikiId, wikiId, userId, groupId, siteId).catch((error) => {
+            return this.newPageOnline(title, content, options).catch((error) => {
                 if (this.utils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that the page cannot be added.
                     return Promise.reject(error);
@@ -752,32 +730,27 @@ export class AddonModWikiProvider {
      *
      * @param title Title to create the page.
      * @param content Content to save on the page.
-     * @param subwikiId Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
-     * @param wikiId Wiki ID. Optional, will be used create subwiki if not informed.
-     * @param userId User ID. Optional, will be used create subwiki if not informed.
-     * @param groupId Group ID. Optional, will be used create subwiki if not informed.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with the page ID if created, rejected otherwise.
      */
-    newPageOnline(title: string, content: string, subwikiId?: number, wikiId?: number, userId?: number, groupId?: number,
-            siteId?: string): Promise<number> {
+    newPageOnline(title: string, content: string, options: AddonModWikiNewPageOnlineOptions = {}): Promise<number> {
 
-        return this.sitesProvider.getSite(siteId).then((site) => {
+        return this.sitesProvider.getSite(options.siteId).then((site) => {
             const params: any = {
-                    title: title,
-                    content: content,
-                    contentformat: 'html'
-                };
+                title: title,
+                content: content,
+                contentformat: 'html',
+            };
 
-            subwikiId = this.wikiOffline.convertToPositiveNumber(subwikiId);
-            wikiId = this.wikiOffline.convertToPositiveNumber(wikiId);
+            const subwikiId = this.wikiOffline.convertToPositiveNumber(options.subwikiId);
+            const wikiId = this.wikiOffline.convertToPositiveNumber(options.wikiId);
 
             if (subwikiId && subwikiId > 0) {
                 params.subwikiid = subwikiId;
             } else if (wikiId) {
                 params.wikiid = wikiId;
-                params.userid = this.wikiOffline.convertToPositiveNumber(userId);
-                params.groupid = this.wikiOffline.convertToPositiveNumber(groupId);
+                params.userid = this.wikiOffline.convertToPositiveNumber(options.userId);
+                params.groupid = this.wikiOffline.convertToPositiveNumber(options.groupId);
             }
 
             return site.write('mod_wiki_new_page', params).then((response) => {
@@ -830,14 +803,12 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param subwikiId Subwiki ID to search.
-     * @param offline Whether it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache Whether it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Other options.
      * @return Promise resolved with true if it has subwiki, resolved with false otherwise.
      */
-    wikiHasSubwiki(wikiId: number, subwikiId: number, offline?: boolean, ignoreCache?: boolean, siteId?: string): Promise<boolean> {
+    wikiHasSubwiki(wikiId: number, subwikiId: number, options: CoreCourseCommonModWSOptions = {}): Promise<boolean> {
         // Get the subwikis to check if any of them matches the one passed as param.
-        return this.getSubwikis(wikiId, offline, ignoreCache, siteId).then((subwikis) => {
+        return this.getSubwikis(wikiId, options).then((subwikis) => {
             const subwiki = subwikis.find((subwiki) => {
                 return subwiki.id == subwikiId;
             });
@@ -849,3 +820,40 @@ export class AddonModWikiProvider {
         });
     }
 }
+
+/**
+ * Options to pass to getSubwikiFiles.
+ */
+export type AddonModWikiGetSubwikiFilesOptions = CoreCourseCommonModWSOptions & {
+    userId?: number; // User to get files from.
+    groupId?: number; // Group to get files from.
+};
+
+/**
+ * Options to pass to getSubwikiPages.
+ */
+export type AddonModWikiGetSubwikiPagesOptions = CoreCourseCommonModWSOptions & {
+    userId?: number; // User to get pages from.
+    groupId?: number; // Group to get pages from.
+    sortBy?: string; // The attribute to sort the returned list. Defaults to 'title'.
+    sortDirection?: string; // Direction to sort the returned list (ASC | DESC). Defaults to 'ASC'.
+    includeContent?: boolean; // Whether the pages have to include their content.
+};
+
+/**
+ * Options to pass to newPageOnline.
+ */
+export type AddonModWikiNewPageOnlineOptions = {
+    subwikiId?: number; // Subwiki ID. If not defined, wikiId, userId and groupId should be defined.
+    wikiId?: number; // Wiki ID. Optional, will be used to create a new subwiki if subwikiId not supplied.
+    userId?: number; // User ID. Optional, will be used to create a new subwiki if subwikiId not supplied.
+    groupId?: number; // Group ID. Optional, will be used to create a new subwiki if subwikiId not supplied.
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to pass to newPage.
+ */
+export type AddonModWikiNewPageOptions = AddonModWikiNewPageOnlineOptions & {
+    cmId?: number; // Module ID.
+};
