@@ -17,7 +17,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 # Delete caches.
-RUN rm -rf /root/.npmCOPY . /app
+RUN rm -rf /root/.npm
+
+COPY . /app
 
 # Run gulp before starting.
 RUN npx gulp
