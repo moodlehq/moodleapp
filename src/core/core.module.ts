@@ -13,17 +13,17 @@
 // limitations under the License.
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { Injector, NgModule } from '@angular/core';
+import { ApplicationInitStatus, Injector, NgModule } from '@angular/core';
 
 import { Platform } from '@ionic/angular';
 
+import { CoreApplicationInitStatus } from './classes/application-init-status';
 import { CoreFeaturesModule } from './features/features.module';
 import { CoreFile } from './services/file';
 import { CoreInit, CoreInitDelegate } from './services/init';
 import { CoreInterceptor } from './classes/interceptor';
 import { CoreSites, CORE_SITE_SCHEMAS } from './services/sites';
 import { CoreUpdateManager } from './services/update-manager';
-import { setSingletonsInjector } from './singletons';
 import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './services/db/filepool';
 import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './services/db/sites';
 import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
@@ -34,6 +34,7 @@ import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: CoreInterceptor, multi: true },
+        { provide: ApplicationInitStatus, useClass: CoreApplicationInitStatus, deps: [Injector] },
         {
             provide: CORE_SITE_SCHEMAS,
             useValue: [
@@ -47,10 +48,7 @@ import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
 })
 export class CoreModule {
 
-    constructor(platform: Platform, injector: Injector) {
-        // Set the injector.
-        setSingletonsInjector(injector);
-
+    constructor(platform: Platform) {
         // Register a handler for platform ready.
         CoreInit.instance.registerProcess({
             name: 'CorePlatformReady',
