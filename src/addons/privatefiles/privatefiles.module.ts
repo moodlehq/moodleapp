@@ -13,13 +13,33 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { Routes } from '@angular/router';
 
-import { AddonPrivateFilesRoutingModule } from './privatefiles-routing.module';
+import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
+import { AddonPrivateFilesMainMenuHandler } from './services/handlers/mainmenu';
+
+const routes: Routes = [
+    {
+        path: AddonPrivateFilesMainMenuHandler.PAGE_NAME,
+        loadChildren: () => import('@/addons/privatefiles/privatefiles-lazy.module').then(m => m.AddonPrivateFilesLazyModule),
+    },
+];
 
 @NgModule({
-    imports: [
-        AddonPrivateFilesRoutingModule,
+    imports: [CoreMainMenuRoutingModule.forChild({ children: routes })],
+    exports: [CoreMainMenuRoutingModule],
+    providers: [
+        AddonPrivateFilesMainMenuHandler,
     ],
-    declarations: [],
 })
-export class AddonPrivateFilesModule {}
+export class AddonPrivateFilesModule {
+
+    constructor(
+        mainMenuDelegate: CoreMainMenuDelegate,
+        mainMenuHandler: AddonPrivateFilesMainMenuHandler,
+    ) {
+        mainMenuDelegate.registerHandler(mainMenuHandler);
+    }
+
+}

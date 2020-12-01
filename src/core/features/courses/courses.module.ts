@@ -13,82 +13,43 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { CoreHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
-import { CoreHomeDelegate } from '@features/mainmenu/services/home-delegate';
+import { Routes } from '@angular/router';
+
+import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
+import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
+
 import { CoreDashboardHomeHandler } from './services/handlers/dashboard-home';
 import { CoreCoursesMyCoursesHomeHandler } from './services/handlers/my-courses.home';
 
-const homeRoutes: Routes = [
+const mainMenuHomeChildrenRoutes: Routes = [
     {
-        path: 'dashboard',
-        loadChildren: () =>
-            import('@features/courses/pages/dashboard/dashboard.module').then(m => m.CoreCoursesDashboardPageModule),
+        path: '',
+        pathMatch: 'full',
+        redirectTo: CoreDashboardHomeHandler.PAGE_NAME,
     },
     {
-        path: 'courses/my',
-        loadChildren: () =>
-            import('@features/courses/pages/my-courses/my-courses.module')
-                .then(m => m.CoreCoursesMyCoursesPageModule),
+        path: CoreDashboardHomeHandler.PAGE_NAME,
+        loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.CoreCoursesDashboardPageModule),
+    },
+    {
+        path: CoreCoursesMyCoursesHomeHandler.PAGE_NAME,
+        loadChildren: () => import('./pages/my-courses/my-courses.module').then(m => m.CoreCoursesMyCoursesPageModule),
     },
 ];
 
-const routes: Routes = [
+const mainMenuHomeSiblingRoutes: Routes = [
     {
         path: 'courses',
-        children: [
-            {
-                path: '',
-                redirectTo: 'my',
-                pathMatch: 'full',
-            },
-            {
-                path: 'categories',
-                redirectTo: 'categories/root', // Fake "id".
-                pathMatch: 'full',
-            },
-            {
-                path: 'categories/:id',
-                loadChildren: () =>
-                    import('@features/courses/pages/categories/categories.module')
-                        .then(m => m.CoreCoursesCategoriesPageModule),
-            },
-            {
-                path: 'all',
-                loadChildren: () =>
-                    import('@features/courses/pages/available-courses/available-courses.module')
-                        .then(m => m.CoreCoursesAvailableCoursesPageModule),
-            },
-            {
-                path: 'search',
-                loadChildren: () =>
-                    import('@features/courses/pages/search/search.module')
-                        .then(m => m.CoreCoursesSearchPageModule),
-            },
-            {
-                path: 'my',
-                loadChildren: () =>
-                    import('@features/courses/pages/my-courses/my-courses.module')
-                        .then(m => m.CoreCoursesMyCoursesPageModule),
-            },
-            {
-                path: 'preview',
-                loadChildren: () =>
-                    import('@features/courses/pages/course-preview/course-preview.module')
-                        .then(m => m.CoreCoursesCoursePreviewPageModule),
-            },
-        ],
+        loadChildren: () => import('./courses-lazy.module').then(m => m.CoreCoursesLazyModule),
     },
 ];
 
 @NgModule({
     imports: [
-        CoreHomeRoutingModule.forChild(homeRoutes),
-        RouterModule.forChild(routes),
-    ],
-    exports: [
-        CoreHomeRoutingModule,
-        RouterModule,
+        CoreMainMenuHomeRoutingModule.forChild({
+            children: mainMenuHomeChildrenRoutes,
+            siblings: mainMenuHomeSiblingRoutes,
+        }),
     ],
     providers: [
         CoreDashboardHomeHandler,
@@ -98,7 +59,7 @@ const routes: Routes = [
 export class CoreCoursesModule {
 
     constructor(
-        homeDelegate: CoreHomeDelegate,
+        homeDelegate: CoreMainMenuHomeDelegate,
         coursesDashboardHandler: CoreDashboardHomeHandler,
         coursesMyCoursesHandler: CoreCoursesMyCoursesHomeHandler,
     ) {

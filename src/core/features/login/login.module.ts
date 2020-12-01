@@ -13,32 +13,18 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { Routes } from '@angular/router';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreLoginRoutingModule } from './login-routing.module';
-import { CoreLoginSiteHelpComponent } from './components/site-help/site-help';
-import { CoreLoginSiteOnboardingComponent } from './components/site-onboarding/site-onboarding';
+import { AppRoutingModule } from '@/app/app-routing.module';
+
+const appRoutes: Routes = [
+    {
+        path: 'login',
+        loadChildren: () => import('./login-lazy.module').then(m => m.CoreLoginLazyModule),
+    },
+];
 
 @NgModule({
-    imports: [
-        CoreLoginRoutingModule,
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-    ],
-    declarations: [
-        CoreLoginSiteHelpComponent,
-        CoreLoginSiteOnboardingComponent,
-    ],
-    exports: [
-        CoreLoginSiteHelpComponent,
-        CoreLoginSiteOnboardingComponent,
-    ],
+    imports: [AppRoutingModule.forChild(appRoutes)],
 })
 export class CoreLoginModule {}

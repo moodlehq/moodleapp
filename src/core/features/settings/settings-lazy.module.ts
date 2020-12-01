@@ -26,14 +26,12 @@ const routes: Routes = [
     },
     {
         path: 'spaceusage',
-        loadChildren: () =>
-            import('@features/settings/pages/space-usage/space-usage.module')
-                .then(m => m.CoreSettingsSpaceUsagePageModule),
+        loadChildren: () => import('./pages/space-usage/space-usage.module').then(m => m.CoreSettingsSpaceUsagePageModule),
     },
     {
         path: 'sync',
         loadChildren: () =>
-            import('@features/settings/pages/synchronization/synchronization.module')
+            import('./pages/synchronization/synchronization.module')
                 .then(m => m.CoreSettingsSynchronizationPageModule),
     },
     {
@@ -44,6 +42,5 @@ const routes: Routes = [
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
 })
-export class CoreSettingsRoutingModule {}
+export class CoreSettingsLazyModule {}

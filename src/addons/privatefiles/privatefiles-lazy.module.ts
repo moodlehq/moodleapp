@@ -13,36 +13,22 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
-
-import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
     {
-        path: 'settings',
-        loadChildren: () => import('@features/settings/settings.module').then(m => m.CoreSettingsModule),
+        path: '',
+        redirectTo: 'root', // Fake "hash".
+        pathMatch: 'full',
     },
     {
-        path: 'preferences',
-        loadChildren: () => import('@features/settings/pages/site/site.module').then(m => m.CoreSitePreferencesPageModule),
+        path: ':hash',
+        loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
     },
 ];
 
 @NgModule({
-    imports: [
-        CoreMainMenuRoutingModule.forChild(routes),
-    ],
-    exports: [
-        CoreMainMenuRoutingModule,
-    ],
-    providers: [
-    ],
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
 })
-export class CoreSettingsInitModule {
-
-    constructor() {
-        // @todo
-        // settingsHelper.initDomSettings();
-    }
-
-}
+export class AddonPrivateFilesLazyModule {}

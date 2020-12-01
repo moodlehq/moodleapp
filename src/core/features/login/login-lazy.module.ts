@@ -14,6 +14,14 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreLoginSiteHelpComponent } from './components/site-help/site-help';
+import { CoreLoginSiteOnboardingComponent } from './components/site-onboarding/site-onboarding';
 
 const routes: Routes = [
     {
@@ -62,7 +70,17 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
+    imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        RouterModule.forChild(routes),
+    ],
+    declarations: [
+        CoreLoginSiteHelpComponent,
+        CoreLoginSiteOnboardingComponent,
+    ],
 })
-export class CoreLoginRoutingModule {}
+export class CoreLoginLazyModule {}

@@ -90,7 +90,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        this.navCtrl.navigateForward(['/courses/search']);
+        this.navCtrl.navigateForward(['/main/home/courses/search']);
     }
 
     /**
