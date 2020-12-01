@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from '@ionic/angular';
 import { Subject, BehaviorSubject } from 'rxjs';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
@@ -93,11 +92,10 @@ export interface CoreUserProfileHandlerData {
      * Action to do when clicked.
      *
      * @param event Click event.
-     * @param Nav controller to use to navigate.
      * @param user User object.
      * @param courseId Course ID being viewed. If not defined, site context.
      */
-    action(event: Event, navCtrl: NavController, user: CoreUserProfile, courseId?: number): void;
+    action(event: Event, user: CoreUserProfile, courseId?: number): void;
 }
 
 /**

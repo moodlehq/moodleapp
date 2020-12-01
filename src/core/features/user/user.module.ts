@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/db/user';
 import { CoreUserComponentsModule } from './components/components.module';
+import { CoreUserDelegate } from './services/user-delegate';
+import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreUserProfileLinkHandler } from './services/handlers/profile-link';
 
 const routes: Routes = [
     {
@@ -41,13 +45,22 @@ const routes: Routes = [
             ],
             multi: true,
         },
-        // { @todo: Uncomment when the init process has been fixed.
-        //     provide: APP_INITIALIZER,
-        //     multi: true,
-        //     deps: [CoreCronDelegate, CoreUserSyncCronHandler],
-        //     useFactory: (cronDelegate: CoreCronDelegate, syncHandler: CoreUserSyncCronHandler) =>
-        //         () => cronDelegate.register(syncHandler),
-        // },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [CoreUserDelegate, CoreUserProfileMailHandler, CoreContentLinksDelegate, CoreUserProfileLinkHandler],
+            useFactory: (
+                userDelegate: CoreUserDelegate,
+                mailHandler: CoreUserProfileMailHandler,
+                linksDelegate: CoreContentLinksDelegate,
+                profileLinkHandler: CoreUserProfileLinkHandler,
+
+            ) => () => {
+                // @todo: Register sync handler when init process has been fixed.
+                userDelegate.registerHandler(mailHandler);
+                linksDelegate.registerHandler(profileLinkHandler);
+            },
+        },
     ],
 })
 export class CoreUserModule {}
