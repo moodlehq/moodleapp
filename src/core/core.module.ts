@@ -18,10 +18,7 @@ import { ApplicationInitStatus, Injector, NgModule } from '@angular/core';
 import { CoreApplicationInitStatus } from './classes/application-init-status';
 import { CoreFeaturesModule } from './features/features.module';
 import { CoreInterceptor } from './classes/interceptor';
-import { CORE_SITE_SCHEMAS } from './services/sites';
-import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './services/db/filepool';
-import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './services/db/sites';
-import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
+import { getDatabaseProviders } from './services/database';
 import { getInitializerProviders } from './initializers';
 
 @NgModule({
@@ -31,15 +28,7 @@ import { getInitializerProviders } from './initializers';
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: CoreInterceptor, multi: true },
         { provide: ApplicationInitStatus, useClass: CoreApplicationInitStatus, deps: [Injector] },
-        {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [
-                FILEPOOL_SITE_SCHEMA,
-                SITES_SITE_SCHEMA,
-                SYNC_SITE_SCHEMA,
-            ],
-            multi: true,
-        },
+        ...getDatabaseProviders(),
         ...getInitializerProviders(),
     ],
 })

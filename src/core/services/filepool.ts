@@ -45,7 +45,7 @@ import {
     CoreFilepoolPackageEntry,
     CoreFilepoolQueueEntry,
     CoreFilepoolQueueDBEntry,
-} from '@services/db/filepool';
+} from '@services/database/filepool';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -74,8 +74,6 @@ export class CoreFilepoolProvider {
         'isexternalfile = 1 OR ((revision IS NULL OR revision = 0) AND (timemodified IS NULL OR timemodified = 0))';
 
     protected logger: CoreLogger;
-    protected appDB: SQLiteDB;
-    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected queueState = CoreFilepoolProvider.QUEUE_PAUSED;
     protected urlAttributes: RegExp[] = [
         new RegExp('(\\?|&)token=([A-Za-z0-9]*)'),
@@ -91,15 +89,28 @@ export class CoreFilepoolProvider {
     protected packagesPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
     protected filePromises: { [s: string]: { [s: string]: Promise<string> } } = {};
 
+    // Variables for DB.
+    protected appDB: Promise<SQLiteDB>;
+    protected resolveAppDB!: (appDB: SQLiteDB) => void;
+
     constructor() {
+        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreFilepoolProvider');
 
-        this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
-            // Ignore errors.
-        });
-
         this.init();
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        try {
+            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+        } catch (e) {
+            // Ignore errors.
+        }
+
+        this.resolveAppDB(CoreApp.instance.getDB());
     }
 
     /**
@@ -264,11 +275,11 @@ export class CoreFilepoolProvider {
         options: CoreFilepoolFileOptions = {},
         link?: CoreFilepoolComponentLink,
     ): Promise<void> {
-        await this.dbReady;
-
         this.logger.debug(`Adding ${fileId} to the queue`);
 
-        await this.appDB.insertRecord(QUEUE_TABLE_NAME, {
+        const db = await this.appDB;
+
+        await db.insertRecord(QUEUE_TABLE_NAME, {
             siteId,
             fileId,
             url,
@@ -318,8 +329,6 @@ export class CoreFilepoolProvider {
         revision?: number,
         alreadyFixed?: boolean,
     ): Promise<void> {
-        await this.dbReady;
-
         if (!CoreFile.instance.isAvailable()) {
             throw new CoreError('File system cannot be used.');
         }
@@ -398,7 +407,9 @@ export class CoreFilepoolProvider {
             // Update only when required.
             this.logger.debug(`Updating file ${fileId} which is already in queue`);
 
-            return this.appDB.updateRecords(QUEUE_TABLE_NAME, newData, primaryKey).then(() =>
+            const db = await this.appDB;
+
+            return db.updateRecords(QUEUE_TABLE_NAME, newData, primaryKey).then(() =>
                 this.getQueuePromise(siteId, fileId, true, onProgress));
         }
 
@@ -2110,9 +2121,8 @@ export class CoreFilepoolProvider {
      * @return Resolved with file object from DB on success, rejected otherwise.
      */
     protected async hasFileInQueue(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
-        await this.dbReady;
-
-        const entry = await this.appDB.getRecord<CoreFilepoolQueueEntry>(QUEUE_TABLE_NAME, { siteId, fileId });
+        const db = await this.appDB;
+        const entry = await db.getRecord<CoreFilepoolQueueEntry>(QUEUE_TABLE_NAME, { siteId, fileId });
 
         if (typeof entry === 'undefined') {
             throw new CoreError('File not found in queue.');
@@ -2444,12 +2454,11 @@ export class CoreFilepoolProvider {
      * @return Resolved on success. Rejected on failure.
      */
     protected async processImportantQueueItem(): Promise<void> {
-        await this.dbReady;
-
         let items: CoreFilepoolQueueEntry[];
+        const db = await this.appDB;
 
         try {
-            items = await this.appDB.getRecords<CoreFilepoolQueueEntry>(
+            items = await db.getRecords<CoreFilepoolQueueEntry>(
                 QUEUE_TABLE_NAME,
                 undefined,
                 'priority DESC, added ASC',
@@ -2593,9 +2602,9 @@ export class CoreFilepoolProvider {
      * @return Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      */
     protected async removeFromQueue(siteId: string, fileId: string): Promise<void> {
-        await this.dbReady;
+        const db = await this.appDB;
 
-        await this.appDB.deleteRecords(QUEUE_TABLE_NAME, { siteId, fileId });
+        await db.deleteRecords(QUEUE_TABLE_NAME, { siteId, fileId });
     }
 
     /**

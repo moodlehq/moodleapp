@@ -25,7 +25,15 @@ import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
-import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/db/app';
+import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
+
+/**
+ * Object responsible of managing schema versions.
+ */
+type SchemaVersionsManager = {
+    get(schemaName: string): Promise<number>;
+    set(schemaName: string, version: number): Promise<void>;
+};
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -55,14 +63,13 @@ export class CoreAppProvider {
     protected forceOffline = false;
 
     // Variables for DB.
-    protected createVersionsTableReady: Promise<void>;
+    protected schemaVersionsManager: Promise<SchemaVersionsManager>;
+    protected resolveSchemaVersionsManager!: (schemaVersionsManager: SchemaVersionsManager) => void;
 
     constructor(protected router: Router) {
-        this.logger = CoreLogger.getInstance('CoreAppProvider');
+        this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
         this.db = CoreDB.instance.getDB(DBNAME);
-
-        // Create the schema versions table.
-        this.createVersionsTableReady = this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
+        this.logger = CoreLogger.getInstance('CoreAppProvider');
 
         // @todo
         // this.platform.registerBackButtonAction(() => {
@@ -77,6 +84,30 @@ export class CoreAppProvider {
      */
     static isAutomated(): boolean {
         return !!navigator.webdriver;
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        await this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
+
+        this.resolveSchemaVersionsManager({
+            get: async name => {
+                try {
+                    // Fetch installed version of the schema.
+                    const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name });
+
+                    return entry.version;
+                } catch (error) {
+                    // No installed version yet.
+                    return  0;
+                }
+            },
+            set: async (name, version) => {
+                await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version });
+            },
+        });
     }
 
     /**
@@ -115,20 +146,8 @@ export class CoreAppProvider {
     async createTablesFromSchema(schema: CoreAppSchema): Promise<void> {
         this.logger.debug(`Apply schema to app DB: ${schema.name}`);
 
-        let oldVersion: number;
-
-        try {
-            // Wait for the schema versions table to be created.
-            await this.createVersionsTableReady;
-
-            // Fetch installed version of the schema.
-            const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name });
-
-            oldVersion = entry.version;
-        } catch (error) {
-            // No installed version yet.
-            oldVersion = 0;
-        }
+        const schemaVersionsManager = await this.schemaVersionsManager;
+        const oldVersion = await schemaVersionsManager.get(schema.name);
 
         if (oldVersion >= schema.version) {
             // Version already installed, nothing else to do.
@@ -145,7 +164,7 @@ export class CoreAppProvider {
         }
 
         // Set installed version.
-        await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name, version: schema.version });
+        schemaVersionsManager.set(schema.name, schema.version);
     }
 
     /**

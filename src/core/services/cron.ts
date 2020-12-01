@@ -23,7 +23,7 @@ import { CoreError } from '@classes/errors/error';
 
 import { makeSingleton, Network } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/db/cron';
+import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/database/cron';
 
 /*
  * Service to handle cron processes. The registered processes will be executed every certain time.
@@ -37,18 +37,16 @@ export class CoreCronDelegate {
     static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
 
     protected logger: CoreLogger;
-    protected appDB: SQLiteDB;
-    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected handlers: { [s: string]: CoreCronHandler } = {};
     protected queuePromise: Promise<void> = Promise.resolve();
 
-    constructor(zone: NgZone) {
-        this.logger = CoreLogger.getInstance('CoreCronDelegate');
+    // Variables for DB.
+    protected appDB: Promise<SQLiteDB>;
+    protected resolveAppDB!: (appDB: SQLiteDB) => void;
 
-        this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
-            // Ignore errors.
-        });
+    constructor(zone: NgZone) {
+        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
+        this.logger = CoreLogger.getInstance('CoreCronDelegate');
 
         // When the app is re-connected, start network handlers that were stopped.
         Network.instance.onConnect().subscribe(() => {
@@ -57,6 +55,19 @@ export class CoreCronDelegate {
                 this.startNetworkHandlers();
             });
         });
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        try {
+            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+        } catch (e) {
+            // Ignore errors.
+        }
+
+        this.resolveAppDB(CoreApp.instance.getDB());
     }
 
     /**
@@ -235,12 +246,11 @@ export class CoreCronDelegate {
      * @return Promise resolved with the handler's last execution time.
      */
     protected async getHandlerLastExecutionTime(name: string): Promise<number> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const id = this.getHandlerLastExecutionId(name);
 
         try {
-            const entry = await this.appDB.getRecord<CronDBEntry>(CRON_TABLE_NAME, { id });
+            const entry = await db.getRecord<CronDBEntry>(CRON_TABLE_NAME, { id });
 
             const time = Number(entry.value);
 
@@ -395,15 +405,14 @@ export class CoreCronDelegate {
      * @return Promise resolved when the execution time is saved.
      */
     protected async setHandlerLastExecutionTime(name: string, time: number): Promise<void> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const id = this.getHandlerLastExecutionId(name);
         const entry = {
             id,
             value: time,
         };
 
-        await this.appDB.insertRecord(CRON_TABLE_NAME, entry);
+        await db.insertRecord(CRON_TABLE_NAME, entry);
     }
 
     /**
