@@ -15,10 +15,9 @@
 import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
-import { CoreInit } from '@services/init';
 import { CoreLoginInitPage } from '@features/login/pages/init/init';
 import { CoreSites } from '@services/sites';
-import { SplashScreen } from '@singletons';
+import { ApplicationInit, SplashScreen } from '@singletons';
 
 import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
 
@@ -29,7 +28,7 @@ describe('CoreLoginInitPage', () => {
 
     beforeEach(() => {
         mockSingleton(CoreApp, { getRedirect: () => ({}) });
-        mockSingleton(CoreInit, { ready: () => Promise.resolve() });
+        mockSingleton(ApplicationInit, { donePromise: Promise.resolve() });
         mockSingleton(CoreSites, { isLoggedIn: () => false });
         mockSingleton(SplashScreen, ['hide']);
 
@@ -52,7 +51,7 @@ describe('CoreLoginInitPage', () => {
         const fixture = await renderComponent(CoreLoginInitPage, config);
 
         fixture.componentInstance.ngOnInit();
-        await CoreInit.instance.ready();
+        await ApplicationInit.instance.donePromise;
 
         expect(navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
     });

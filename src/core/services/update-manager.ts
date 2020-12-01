@@ -15,10 +15,9 @@
 import { Injectable } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
-import { CoreInitHandler, CoreInitDelegate } from '@services/init';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
+import { makeSingleton } from '@singletons';
 
 const VERSION_APPLIED = 'version_applied';
 
@@ -28,12 +27,7 @@ const VERSION_APPLIED = 'version_applied';
  * This service handles processes that need to be run when updating the app, like migrate Ionic 1 database data to Ionic 3.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUpdateManagerProvider implements CoreInitHandler {
-
-    // Data for init delegate.
-    name = 'CoreUpdateManager';
-    priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 300;
-    blocking = true;
+export class CoreUpdateManagerProvider {
 
     protected logger: CoreLogger;
 

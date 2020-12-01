@@ -15,18 +15,14 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApplicationInitStatus, Injector, NgModule } from '@angular/core';
 
-import { Platform } from '@ionic/angular';
-
 import { CoreApplicationInitStatus } from './classes/application-init-status';
 import { CoreFeaturesModule } from './features/features.module';
-import { CoreFile } from './services/file';
-import { CoreInit, CoreInitDelegate } from './services/init';
 import { CoreInterceptor } from './classes/interceptor';
-import { CoreSites, CORE_SITE_SCHEMAS } from './services/sites';
-import { CoreUpdateManager } from './services/update-manager';
+import { CORE_SITE_SCHEMAS } from './services/sites';
 import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './services/db/filepool';
 import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './services/db/sites';
 import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
+import { getInitializerProviders } from './initializers';
 
 @NgModule({
     imports: [
@@ -44,42 +40,7 @@ import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './services/db/sync';
             ],
             multi: true,
         },
+        ...getInitializerProviders(),
     ],
 })
-export class CoreModule {
-
-    constructor(platform: Platform) {
-        // Register a handler for platform ready.
-        CoreInit.instance.registerProcess({
-            name: 'CorePlatformReady',
-            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 400,
-            blocking: true,
-            load: async () => {
-                await platform.ready();
-            },
-        });
-
-        // Register the update manager as an init process.
-        CoreInit.instance.registerProcess(CoreUpdateManager.instance);
-
-        // Restore the user's session during the init process.
-        CoreInit.instance.registerProcess({
-            name: 'CoreRestoreSession',
-            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 200,
-            blocking: false,
-            load: CoreSites.instance.restoreSession.bind(CoreSites.instance),
-        });
-
-        // Register clear app tmp folder.
-        CoreInit.instance.registerProcess({
-            name: 'CoreClearTmpFolder',
-            priority: CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 150,
-            blocking: false,
-            load: CoreFile.instance.clearTmpFolder.bind(CoreFile.instance),
-        });
-
-        // Execute the init processes.
-        CoreInit.instance.executeInitProcesses();
-    }
-
-}
+export class CoreModule {}

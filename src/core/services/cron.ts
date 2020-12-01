@@ -14,7 +14,7 @@
 
 import { Injectable, NgZone } from '@angular/core';
 
-import { CoreApp, CoreAppProvider } from '@services/app';
+import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
@@ -57,11 +57,6 @@ export class CoreCronDelegate {
                 this.startNetworkHandlers();
             });
         });
-
-        // Export the sync provider so Behat tests can trigger cron tasks without waiting.
-        if (CoreAppProvider.isAutomated()) {
-            (<WindowForAutomatedTests> window).cronProvider = this;
-        }
     }
 
     /**
@@ -532,10 +527,3 @@ export interface CoreCronHandler {
      */
     execute?(siteId?: string, force?: boolean): Promise<void>;
 }
-
-/**
- * Extended window type for automated tests.
- */
-export type WindowForAutomatedTests = Window & {
-    cronProvider?: CoreCronDelegate;
-};

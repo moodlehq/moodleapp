@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ApplicationInitStatus, APP_INITIALIZER, Injectable, Injector } from '@angular/core';
-import { setSingletonsInjector } from '@singletons';
+import { CoreUpdateManager } from '@services/update-manager';
 
-@Injectable()
-export class CoreApplicationInitStatus extends ApplicationInitStatus {
-
-    constructor(injector: Injector) {
-        setSingletonsInjector(injector);
-
-        super(injector.get(APP_INITIALIZER, []));
-    }
-
+export default async function(): Promise<void> {
+    await CoreUpdateManager.instance.load();
 }

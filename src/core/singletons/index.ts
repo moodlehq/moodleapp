@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, NgZone as NgZoneService } from '@angular/core';
+import { ApplicationRef, ApplicationInitStatus, Injector, NgZone as NgZoneService } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import {
@@ -111,6 +111,8 @@ export class LoadingController extends makeSingleton(LoadingControllerService) {
 export class ModalController extends makeSingleton(ModalControllerService) {}
 export class ToastController extends makeSingleton(ToastControllerService) {}
 export class GestureController extends makeSingleton(GestureControllerService) {}
+export class ApplicationInit extends makeSingleton(ApplicationInitStatus) {}
+export class Application extends makeSingleton(ApplicationRef) {}
 
 // Convert external libraries injectables.
 export class Translate extends makeSingleton(TranslateService) {}

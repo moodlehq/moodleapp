@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone, ApplicationRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
@@ -57,60 +57,17 @@ export class CoreAppProvider {
     // Variables for DB.
     protected createVersionsTableReady: Promise<void>;
 
-    constructor(
-        appRef: ApplicationRef,
-        zone: NgZone,
-        protected router: Router,
-    ) {
+    constructor(protected router: Router) {
         this.logger = CoreLogger.getInstance('CoreAppProvider');
         this.db = CoreDB.instance.getDB(DBNAME);
 
         // Create the schema versions table.
         this.createVersionsTableReady = this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
-        Keyboard.instance.onKeyboardShow().subscribe((data) => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                document.body.classList.add('keyboard-is-open');
-                this.setKeyboardShown(true);
-                // Error on iOS calculating size.
-                // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
-                CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, data.keyboardHeight);
-            });
-        });
-        Keyboard.instance.onKeyboardHide().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                document.body.classList.remove('keyboard-is-open');
-                this.setKeyboardShown(false);
-                CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
-            });
-        });
-        Keyboard.instance.onKeyboardWillShow().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                this.keyboardOpening = true;
-                this.keyboardClosing = false;
-            });
-        });
-        Keyboard.instance.onKeyboardWillHide().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                this.keyboardOpening = false;
-                this.keyboardClosing = true;
-            });
-        });
-
         // @todo
         // this.platform.registerBackButtonAction(() => {
         //     this.backButtonAction();
         // }, 100);
-
-        // Export the app provider and appRef to control the application in Behat tests.
-        if (CoreAppProvider.isAutomated()) {
-            (<WindowForAutomatedTests> window).appProvider = this;
-            (<WindowForAutomatedTests> window).appRef = appRef;
-        }
     }
 
     /**
@@ -430,6 +387,44 @@ export class CoreAppProvider {
     }
 
     /**
+     * Notify that Keyboard has been shown.
+     *
+     * @param keyboardHeight Keyboard height.
+     */
+    onKeyboardShow(keyboardHeight: number): void {
+        document.body.classList.add('keyboard-is-open');
+        this.setKeyboardShown(true);
+        // Error on iOS calculating size.
+        // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
+        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, keyboardHeight);
+    }
+
+    /**
+     * Notify that Keyboard has been hidden.
+     */
+    onKeyboardHide(): void {
+        document.body.classList.remove('keyboard-is-open');
+        this.setKeyboardShown(false);
+        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
+    }
+
+    /**
+     * Notify that Keyboard is about to be shown.
+     */
+    onKeyboardWillShow(): void {
+        this.keyboardOpening = true;
+        this.keyboardClosing = false;
+    }
+
+    /**
+     * Notify that Keyboard is about to be hidden.
+     */
+    onKeyboardWillHide(): void {
+        this.keyboardOpening = false;
+        this.keyboardClosing = true;
+    }
+
+    /**
      * Set keyboard shown or hidden.
      *
      * @param Whether the keyboard is shown or hidden.
@@ -734,12 +729,4 @@ export type CoreAppSchema = {
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number): Promise<void>;
-};
-
-/**
- * Extended window type for automated tests.
- */
-export type WindowForAutomatedTests = Window & {
-    appProvider?: CoreAppProvider;
-    appRef?: ApplicationRef;
 };

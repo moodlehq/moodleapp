@@ -18,7 +18,6 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
-import { CoreInit } from '@services/init';
 import { CorePluginFile } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile } from '@services/ws';
@@ -31,7 +30,7 @@ import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Network, NgZone, Translate } from '@singletons';
+import { ApplicationInit, makeSingleton, Network, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -108,7 +107,7 @@ export class CoreFilepoolProvider {
      */
     protected async init(): Promise<void> {
         // Waiting for the app to be ready to start processing the queue.
-        await CoreInit.instance.ready();
+        await ApplicationInit.instance.donePromise;
 
         this.checkQueueProcessing();
 

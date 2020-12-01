@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ApplicationInitStatus, APP_INITIALIZER, Injectable, Injector } from '@angular/core';
-import { setSingletonsInjector } from '@singletons';
+import { Platform } from '@singletons';
 
-@Injectable()
-export class CoreApplicationInitStatus extends ApplicationInitStatus {
+export default async function(): Promise<void> {
+    await Platform.instance.ready();
 
-    constructor(injector: Injector) {
-        setSingletonsInjector(injector);
-
-        super(injector.get(APP_INITIALIZER, []));
+    if (!window.cordova?.InAppBrowser) {
+        return;
     }
 
+    window.open = window.cordova.InAppBrowser.open;
 }
