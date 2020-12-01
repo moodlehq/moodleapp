@@ -41,6 +41,13 @@ const routes: Routes = [
             ],
             multi: true,
         },
+        // { @todo: Uncomment when the init process has been fixed.
+        //     provide: APP_INITIALIZER,
+        //     multi: true,
+        //     deps: [CoreCronDelegate, CoreUserSyncCronHandler],
+        //     useFactory: (cronDelegate: CoreCronDelegate, syncHandler: CoreUserSyncCronHandler) =>
+        //         () => cronDelegate.register(syncHandler),
+        // },
     ],
 })
 export class CoreUserModule {}

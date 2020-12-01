@@ -112,7 +112,7 @@ export class CoreSyncProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with done.
      */
-    async insertOrUpdateSyncRecord(component: string, id: string, data: CoreSyncRecord, siteId?: string): Promise<void> {
+    async insertOrUpdateSyncRecord(component: string, id: string, data: Partial<CoreSyncRecord>, siteId?: string): Promise<void> {
         const db = await CoreSites.instance.getSiteDb(siteId);
 
         data.component = component;
