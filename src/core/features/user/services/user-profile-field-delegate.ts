@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Injector, Type } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreError } from '@classes/errors/error';
@@ -32,10 +32,9 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
      * Return the Component to use to display the user profile field.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param injector Injector.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(injector: Injector): Type<unknown> | Promise<Type<unknown>>;
+    getComponent(): Type<unknown> | Promise<Type<unknown>>;
 
     /**
      * Get the data to send for the field based on the input data.
@@ -51,7 +50,7 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
         signup: boolean,
         registerAuth: string,
         formValues: Record<string, unknown>,
-    ): Promise<CoreUserProfileFieldHandlerData>;
+    ): Promise<CoreUserProfileFieldHandlerData | undefined>;
 }
 
 export interface CoreUserProfileFieldHandlerData {
@@ -104,7 +103,6 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate<CoreUserProfileFi
      * @return Promise resolved with component to use, undefined if not found.
      */
     async getComponent(
-        injector: Injector,
         field: AuthEmailSignupProfileField | CoreUserProfileField,
         signup: boolean,
     ): Promise<Type<unknown> | undefined> {
@@ -112,9 +110,9 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate<CoreUserProfileFi
 
         try {
             if (signup) {
-                return await this.executeFunction(type, 'getComponent', [injector]);
+                return await this.executeFunction(type, 'getComponent', []);
             } else {
-                return await this.executeFunctionOnEnabled(type, 'getComponent', [injector]);
+                return await this.executeFunctionOnEnabled(type, 'getComponent', []);
             }
         } catch (error) {
             this.logger.error('Error getting component for field', type, error);
@@ -135,7 +133,7 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate<CoreUserProfileFi
         signup: boolean,
         registerAuth: string,
         formValues: Record<string, unknown>,
-    ): Promise<CoreUserProfileFieldHandlerData> {
+    ): Promise<CoreUserProfileFieldHandlerData | undefined> {
         const type = this.getType(field);
         const handler = this.getHandler(type, !signup);
 

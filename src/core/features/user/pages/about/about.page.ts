@@ -34,10 +34,10 @@ import { CoreUserHelper } from '@features/user/services/user-helper';
 })
 export class CoreUserAboutPage implements OnInit {
 
-    protected courseId!: number;
     protected userId!: number;
     protected siteId: string;
 
+    courseId!: number;
     userLoaded = false;
     hasContact = false;
     hasDetails = false;

@@ -9,7 +9,7 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item *ngIf="siteInfo" class="ion-text-wrap" core-user-link [userId]="siteInfo.userid">
+        <ion-item button *ngIf="siteInfo" class="ion-text-wrap" core-user-link [userId]="siteInfo.userid">
             <ion-avatar slot="start"></ion-avatar> <!-- @todo core-user-avatar [user]="siteInfo" -->
             <ion-label>
                 <h2>{{siteInfo.fullname}}</h2>

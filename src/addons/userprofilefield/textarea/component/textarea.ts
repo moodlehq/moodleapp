@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
-import { AddonFilterModule } from './filter/filter.module';
-import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
+import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
 
-@NgModule({
-    imports: [
-        AddonPrivateFilesModule,
-        AddonFilterModule,
-        AddonUserProfileFieldModule,
-    ],
+/**
+ * Directive to render a textarea user profile field.
+ */
+@Component({
+    selector: 'addon-user-profile-field-textarea',
+    templateUrl: 'addon-user-profile-field-textarea.html',
 })
-export class AddonsModule {}
+export class AddonUserProfileFieldTextareaComponent extends CoreUserProfileFieldBaseComponent {}

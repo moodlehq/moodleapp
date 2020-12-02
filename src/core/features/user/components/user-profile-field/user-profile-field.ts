@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Injector, Type } from '@angular/core';
+import { Component, Input, OnInit, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
@@ -42,7 +42,6 @@ export class CoreUserProfileFieldComponent implements OnInit {
 
     constructor(
         protected userProfileFieldsDelegate: CoreUserProfileFieldDelegate,
-        protected injector: Injector,
     ) { }
 
     /**
@@ -53,7 +52,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
             return;
         }
 
-        this.componentClass = await this.userProfileFieldsDelegate.getComponent(this.injector, this.field, this.signup);
+        this.componentClass = await this.userProfileFieldsDelegate.getComponent(this.field, this.signup);
 
         this.data.field = this.field;
         this.data.edit = CoreUtils.instance.isTrueOrOne(this.edit);
