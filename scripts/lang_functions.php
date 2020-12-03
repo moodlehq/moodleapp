@@ -400,6 +400,9 @@ function override_component_lang_files($keys, $translations) {
             case 'assets':
                 $path .= $type.'/'.$component;
                 break;
+            default:
+                $path .= $type.'/lang';
+                break;
 
         }
 
