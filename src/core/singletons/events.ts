@@ -249,3 +249,17 @@ export type CoreEventUserDeletedData = CoreEventSiteData & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     params: any; // Params sent to the WS that failed.
 };
+
+export enum CoreEventFormAction {
+    CANCEL = 'cancel',
+    SUBMIT = 'submit',
+}
+
+/**
+ * Data passed to FORM_ACTION event.
+ */
+export type CoreEventFormActionData = CoreEventSiteData & {
+    action: CoreEventFormAction; // Action performed.
+    form: HTMLElement; // Form element.
+    online?: boolean; // Whether the data was sent to server or not. Only when submitting.
+};

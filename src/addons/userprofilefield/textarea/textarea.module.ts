@@ -23,7 +23,7 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
 import { AddonUserProfileFieldTextareaComponent } from './component/textarea';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-// @todo import { CoreEditorComponentsModule } from '@core/editor/components/components.module';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 @NgModule({
     declarations: [
@@ -37,7 +37,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
         ReactiveFormsModule,
         CoreComponentsModule,
         CoreDirectivesModule,
-        // CoreEditorComponentsModule,
+        CoreEditorComponentsModule,
     ],
     providers: [
         {

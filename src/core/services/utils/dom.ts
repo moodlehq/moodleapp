@@ -20,7 +20,7 @@ import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventFormAction, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils, CoreTextErrorObject } from '@services/utils/text';
@@ -1717,7 +1717,7 @@ export class CoreDomUtilsProvider {
         }
 
         CoreEvents.trigger(CoreEvents.FORM_ACTION, {
-            action: 'cancel',
+            action: CoreEventFormAction.CANCEL,
             form: formRef.nativeElement,
         }, siteId);
     }
@@ -1735,7 +1735,7 @@ export class CoreDomUtilsProvider {
         }
 
         CoreEvents.trigger(CoreEvents.FORM_ACTION, {
-            action: 'submit',
+            action: CoreEventFormAction.SUBMIT,
             form: formRef.nativeElement || formRef,
             online: !!online,
         }, siteId);
