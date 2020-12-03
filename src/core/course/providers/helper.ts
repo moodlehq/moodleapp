@@ -34,7 +34,7 @@ import { CoreCourseProvider } from './course';
 import { CoreCourseOfflineProvider } from './course-offline';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseModulePrefetchDelegate } from './module-prefetch-delegate';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '@core/login/providers/helper';
 import { CoreConstants } from '@core/constants';
 import { CoreSite } from '@classes/site';
 import { CoreLoggerProvider } from '@providers/logger';
@@ -122,7 +122,6 @@ export class CoreCourseHelperProvider {
             private timeUtils: CoreTimeUtilsProvider,
             private utils: CoreUtilsProvider,
             private translate: TranslateService,
-            private loginHelper: CoreLoginHelperProvider,
             private courseOptionsDelegate: CoreCourseOptionsDelegate,
             private siteHomeProvider: CoreSiteHomeProvider,
             private eventsProvider: CoreEventsProvider,
@@ -1302,7 +1301,7 @@ export class CoreCourseHelperProvider {
             if (courseId == site.getSiteHomeId()) {
                 // Check if site home is available.
                 return this.siteHomeProvider.isAvailable().then(() => {
-                    this.loginHelper.redirect('CoreSiteHomeIndexPage', params, siteId);
+                    CoreLoginHelper.instance.redirect('CoreSiteHomeIndexPage', params, siteId);
                 }).finally(() => {
                     modal.dismiss();
                 });
@@ -1610,7 +1609,7 @@ export class CoreCourseHelperProvider {
             params = params || {};
             Object.assign(params, { course: course });
 
-            return this.loginHelper.redirect(CoreLoginHelperProvider.OPEN_COURSE, params, siteId);
+            return CoreLoginHelper.instance.redirect(CoreLoginHelperProvider.OPEN_COURSE, params, siteId);
         }
     }
 
