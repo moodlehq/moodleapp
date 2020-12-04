@@ -12,15 +12,14 @@
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user && !isDeleted && isEnrolled">
-            <ion-item class="ion-text-center item-avatar-center">
-                <ion-avatar>
-                    <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false"
-                    [checkOnline]="true">
-                        <ion-icon *ngIf="canChangeProfilePicture" name="fa-pen" class="core-icon-foreground"
-                            (click)="changeProfilePicture()">
+            <ion-item class="ion-text-center core-user-profile-maininfo">
+                <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false"
+                [checkOnline]="true">
+                    <div class="core-icon-foreground">
+                        <ion-icon *ngIf="canChangeProfilePicture" name="fa-pen" (click)="changeProfilePicture()">
                         </ion-icon>
-                    </core-user-avatar>
-                </ion-avatar>
+                    </div>
+                </core-user-avatar>
                 <ion-label>
                     <h2>{{ user.fullname }}</h2>
                     <p *ngIf="user.address">{{ user.address }}</p>

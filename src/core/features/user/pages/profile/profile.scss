@@ -1,31 +1,49 @@
 :host {
+
+    .core-user-profile-maininfo::part(native) {
+        flex-direction: column;
+    }
+    ::ng-deep {
+        core-user-avatar {
+            display: block;
+            --core-avatar-size: var(--core-large-avatar-size);
+
+            img {
+                margin: 0;
+            }
+
+            .contact-status {
+                width: 24px !important;
+                height: 24px !important;
+            }
+
+            .core-icon-foreground {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                line-height: 30px;
+                text-align: center;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background-color:var(--background);
+
+                :host-context([dir="rtl"]) & {
+                    left: 0;
+                    right: unset;
+                }
+            }
+        }
+    }
+
+}
+
+:host-context([dir="rtl"]) ::ng-deep core-user-avatar .core-icon-foreground {
+    left: 0;
+    right: unset;
+}
+
     // @todo
-    // .core-icon-foreground {
-    //     position: absolute;
-    //     @include position(null, 0, 0, null);
-    //     font-size: 24px;
-    //     line-height: 30px;
-    //     text-align: center;
-
-    //     width: 30px;
-    //     height: 30px;
-    //     border-radius: 50%;
-    //     background-color: $white;
-    //     @include darkmode() {
-    //         background: $core-dark-item-bg-color;
-    //     }
-    // }
-    // [core-user-avatar].item-avatar-center {
-    //     display: inline-block;
-    //     img {
-    //         margin: 0;
-    //     }
-    //     .contact-status {
-    //         width: 24px;
-    //         height: 24px;
-    //     }
-    // }
-
     // .core-user-communication-handlers {
     //     background: $list-background-color;
     //     border-bottom: 1px solid $list-border-color;
@@ -66,4 +84,4 @@
     //         @include margin(null, null, null, 0.3em);
     //     }
     // }
-}
+

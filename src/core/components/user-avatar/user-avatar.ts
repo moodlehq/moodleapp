@@ -26,7 +26,7 @@ import { CoreUserProvider, CoreUserBasicData, CoreUserProfilePictureUpdatedData 
 /**
  * Component to display a "user avatar".
  *
- * Example: <ion-avatar core-user-avatar [user]="participant"></ion-avatar>
+ * Example: <core-user-avatar [user]="participant"></core-user-avatar>
  */
 @Component({
     selector: 'core-user-avatar',

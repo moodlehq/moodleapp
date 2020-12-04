@@ -1,6 +1,11 @@
 :host {
     position: relative;
     cursor: pointer;
+    img {
+        border-radius: 50%;
+        width: var(--core-avatar-size);
+        height: var(--core-avatar-size);
+    }
 
     .contact-status {
         position: absolute;
@@ -30,4 +35,9 @@
 :host-context(.toolbar) .contact-status {
     width: 10px;
     height: 10px;
+}
+
+:host-context([dir="rtl"]) .contact-status {
+    left: 0;
+    right: unset;
 }

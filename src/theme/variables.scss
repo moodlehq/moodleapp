@@ -170,6 +170,10 @@
     --core-course-color-8: var(--custom-course-color-9, #fd79a8);
     --core-course-color-9: var(--custom-course-color-90, #6c5ce7);
     --core-star-color: var(--custom-star-color, var(--core-color));
+
+    --core-large-avatar-size:  var(--custom-large-avatar-size, 90px);
+
+    --core-avatar-size:  var(--custom-avatar-size, 64px);
 }
 
 /*
