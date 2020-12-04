@@ -124,7 +124,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @return Function returned value or default value.
      */
     protected executeFunction<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T | undefined {
-        return this.execute(this.handlers[handlerName], fnName, params);
+        return this.execute<T>(this.handlers[handlerName], fnName, params);
     }
 
     /**
