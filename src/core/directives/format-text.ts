@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional } from '@angular/core';
+import {
+    Directive,
+    ElementRef,
+    Input,
+    Output,
+    EventEmitter,
+    OnChanges,
+    SimpleChange,
+    Optional,
+    ViewContainerRef,
+} from '@angular/core';
 import { NavController, IonContent } from '@ionic/angular';
 
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -25,6 +35,9 @@ import { CoreSite } from '@classes/site';
 import { Translate } from '@singletons';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreLinkDirective } from './link';
+import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
+import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
+import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -73,6 +86,7 @@ export class CoreFormatTextDirective implements OnChanges {
         element: ElementRef,
         @Optional() protected navCtrl: NavController,
         @Optional() protected content: IonContent,
+        protected viewContainerRef: ViewContainerRef,
     ) {
 
         this.element = element.nativeElement;
@@ -371,8 +385,17 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         if (result.options.filter) {
-            // Let filters hnadle HTML. We do it here because we don't want them to block the render of the text.
-            // @todo
+            // Let filters handle HTML. We do it here because we don't want them to block the render of the text.
+            CoreFilterDelegate.instance.handleHtml(
+                this.element,
+                result.filters,
+                this.viewContainerRef,
+                result.options,
+                [],
+                this.component,
+                this.componentId,
+                result.siteId,
+            );
         }
 
         this.element.classList.remove('core-disable-media-adapt');
@@ -388,6 +411,8 @@ export class CoreFormatTextDirective implements OnChanges {
         // Retrieve the site since it might be needed later.
         const site = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSite(this.siteId));
 
+        const siteId = site?.getId();
+
         if (site && this.contextLevel == 'course' && this.contextInstanceId !== undefined && this.contextInstanceId <= 0) {
             this.contextInstanceId = site.getSiteHomeId();
         }
@@ -395,7 +420,7 @@ export class CoreFormatTextDirective implements OnChanges {
         const filter = typeof this.filter == 'undefined' ?
             !!(this.contextLevel && typeof this.contextInstanceId != 'undefined') : CoreUtils.instance.isTrueOrOne(this.filter);
 
-        const options = {
+        const options: CoreFilterFormatTextOptions = {
             clean: CoreUtils.instance.isTrueOrOne(this.clean),
             singleLine: CoreUtils.instance.isTrueOrOne(this.singleLine),
             highlight: this.highlight,
@@ -404,13 +429,21 @@ export class CoreFormatTextDirective implements OnChanges {
         };
 
         let formatted: string;
+        let filters: CoreFilterFilter[] = [];
 
         if (filter) {
-            // @todo
-            formatted = this.text!;
+            const filterResult = await CoreFilterHelper.instance.getFiltersAndFormatText(
+                this.text || '',
+                this.contextLevel || '',
+                this.contextInstanceId ?? -1,
+                options,
+                siteId,
+            );
+
+            filters = filterResult.filters;
+            formatted = filterResult.text;
         } else {
-            // @todo
-            formatted = this.text!;
+            formatted = await CoreFilter.instance.formatText(this.text || '', options, [], siteId);
         }
 
         formatted = this.treatWindowOpen(formatted);
@@ -423,9 +456,9 @@ export class CoreFormatTextDirective implements OnChanges {
 
         return {
             div,
-            filters: [],
+            filters,
             options,
-            siteId: site?.getId(),
+            siteId,
         };
     }
 
@@ -747,7 +780,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
 type FormatContentsResult = {
     div: HTMLElement;
-    filters: any[];
-    options: any;
+    filters: CoreFilterFilter[];
+    options: CoreFilterFormatTextOptions;
     siteId?: string;
 };
