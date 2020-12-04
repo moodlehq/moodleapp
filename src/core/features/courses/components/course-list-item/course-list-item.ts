@@ -98,10 +98,10 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
         /* if (this.isEnrolled) {
             CoreCourseHelper.instance.openCourse(this.course);
         } else {
-            this.navCtrl.navigateForward('/courses/preview', { queryParams: { course: this.course } });
+            this.navCtrl.navigateForward('/main/home/courses/preview', { queryParams: { course: this.course } });
         } */
         // @todo while opencourse function is not completed, open preview page.
-        this.navCtrl.navigateForward('/courses/preview', { queryParams: { course: this.course } });
+        this.navCtrl.navigateForward('/main/home/courses/preview', { queryParams: { course: this.course } });
     }
 
 }

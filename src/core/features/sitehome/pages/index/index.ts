@@ -194,7 +194,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Open page to manage courses storage.
      */
     manageCoursesStorage(): void {
-        // @todo this.navCtrl.navigateForward(['/courses/storage']);
+        // @todo this.navCtrl.navigateForward(['/main/home/courses/storage']);
     }
 
     /**

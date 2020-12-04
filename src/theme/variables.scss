@@ -104,6 +104,9 @@
     ion-toolbar {
         --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
         --background: var(--ion-statusbar-background);
+        ion-button {
+            --ion-toolbar-color: transparent;
+        }
 
         ion-spinner {
             --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
