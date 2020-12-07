@@ -15,7 +15,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CoreSingletonClass } from '@classes/singletons-factory';
+import { CoreSingletonClass } from '@singletons';
 
 abstract class WrapperComponent<U> {
 
