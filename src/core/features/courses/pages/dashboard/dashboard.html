@@ -12,8 +12,19 @@
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>
-    <!-- @todo -->
-    <core-empty-box icon="fa-home" [message]="'core.courses.nocourses' | translate">
-        <div>Dashboard</div>
-    </core-empty-box>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDashboard($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <ion-list>
+            <ng-container *ngFor="let block of blocks">
+                <core-block *ngIf="block.visible" [block]="block" contextLevel="user" [instanceId]="userId"
+                [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
+            </ng-container>
+        </ion-list>
+
+        <core-empty-box *ngIf="blocks.length == 0" icon="fas-th-large" [message]="'core.course.nocontentavailable' | translate">
+        </core-empty-box>
+    </core-loading>
 </ion-content>

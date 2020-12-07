@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { makeSingleton } from '@singletons';
+import { CoreCoursesDashboard } from '../dashboard';
 
 /**
  * Handler to add dashboard into home page.
@@ -42,10 +44,10 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
      * @param siteId Site ID. If not defined, current site.
      * @return Whether or not the handler is enabled on a site level.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        // @todo return this.blockDelegate.hasSupportedBlock(this.blocks);
-        return true;
+        const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
+
+        return CoreBlockDelegate.instance.hasSupportedBlock(blocks);
     }
 
     /**

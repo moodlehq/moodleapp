@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonRefresher, NavController } from '@ionic/angular';
 
@@ -24,6 +24,7 @@ import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 
 /**
  * Page that displays site home index.
@@ -34,7 +35,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 })
 export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
-    // @todo  @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent: CoreBlockCourseBlocksComponent;
+    @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent?: CoreBlockCourseBlocksComponent;
 
     dataLoaded = false;
     section?: CoreCourseSection & {
@@ -158,13 +159,17 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             //  @todo promises.push(this.prefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
-        // @todo promises.push(this.courseBlocksComponent.invalidateBlocks());
+        if (this.courseBlocksComponent) {
+            promises.push(this.courseBlocksComponent.invalidateBlocks());
+        }
 
         Promise.all(promises).finally(async () => {
             const p2: Promise<unknown>[] = [];
 
             p2.push(this.loadContent());
-            // @todo  p2.push(this.courseBlocksComponent.loadContent());
+            if (this.courseBlocksComponent) {
+                p2.push(this.courseBlocksComponent.loadContent());
+            }
 
             await Promise.all(p2).finally(() => {
                 refresher?.detail.complete();

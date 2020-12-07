@@ -13,8 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { makeSingleton } from '@singletons';
+import { CoreCoursesDashboard } from '../dashboard';
 
 /**
  * Handler to add my courses into home page.
@@ -42,10 +45,10 @@ export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeH
      * @param siteId Site ID. If not defined, current site.
      * @return Whether or not the handler is enabled on a site level.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        // @todo return !this.blockDelegate.hasSupportedBlock(this.blocks) && !CoreSiteHome.instance.isAvailable(siteId);
-        return true;
+        const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
+
+        return !CoreBlockDelegate.instance.hasSupportedBlock(blocks)&& !CoreSiteHome.instance.isAvailable(siteId);
     }
 
     /**

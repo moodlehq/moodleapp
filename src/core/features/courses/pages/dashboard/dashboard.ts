@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { IonRefresher, NavController } from '@ionic/angular';
 
 import { CoreCourses, CoreCoursesProvider } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
+import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreCourseBlock } from '@features/course/services/course';
+import { CoreBlockComponent } from '@features/block/components/block/block';
 
 /**
  * Page that displays the dashboard page.
@@ -29,15 +33,19 @@ import { CoreSites } from '@services/sites';
 })
 export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
+    @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
+
+
     searchEnabled = false;
     downloadEnabled = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     downloadEnabledIcon = 'far-square';
+    userId?: number;
+    blocks: Partial<CoreCourseBlock>[] = [];
+    loaded = false;
 
     protected updateSiteObserver?: CoreEventObserver;
-
-    siteName = 'Hello world';
 
     constructor(
         protected navCtrl: NavController,
@@ -59,7 +67,81 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
             this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
         }, CoreSites.instance.getCurrentSiteId());
+
+        this.loadContent();
     }
+
+    /**
+     * Convenience function to fetch the dashboard data.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadContent(): Promise<void> {
+        const available = await CoreCoursesDashboard.instance.isAvailable();
+
+        if (available) {
+            this.userId = CoreSites.instance.getCurrentSiteUserId();
+
+            try {
+                this.blocks = await CoreCoursesDashboard.instance.getDashboardBlocks();
+            } catch (error) {
+                CoreDomUtils.instance.showErrorModal(error);
+
+                // Cannot get the blocks, just show dashboard if needed.
+                this.loadFallbackBlocks();
+            }
+        } else if (!CoreCoursesDashboard.instance.isDisabledInSite()) {
+            // Not available, but not disabled either. Use fallback.
+            this.loadFallbackBlocks();
+        } else {
+            // Disabled.
+            this.blocks = [];
+        }
+
+        // this.dashboardEnabled = this.blockDelegate.hasSupportedBlock(this.blocks);
+        this.loaded = true;
+    }
+
+    /**
+     * Load fallback blocks to shown before 3.6 when dashboard blocks are not supported.
+     */
+    protected loadFallbackBlocks(): void {
+        this.blocks = [
+            {
+                name: 'myoverview',
+                visible: true,
+            },
+            {
+                name: 'timeline',
+                visible: true,
+            },
+        ];
+    }
+
+    /**
+     * Refresh the dashboard data.
+     *
+     * @param refresher Refresher.
+     */
+    refreshDashboard(refresher: CustomEvent<IonRefresher>): void {
+        const promises: Promise<void>[] = [];
+
+        promises.push(CoreCoursesDashboard.instance.invalidateDashboardBlocks());
+
+        // Invalidate the blocks.
+        this.blocksComponents?.forEach((blockComponent) => {
+            promises.push(blockComponent.invalidate().catch(() => {
+                // Ignore errors.
+            }));
+        });
+
+        Promise.all(promises).finally(() => {
+            this.loadContent().finally(() => {
+                refresher?.detail.complete();
+            });
+        });
+    }
+
 
     /**
      * Toggle download enabled.

@@ -19,7 +19,7 @@ import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/hom
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 
 import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './services/handlers/dashboard-home';
-import { CoreCoursesMyCoursesHomeHandler, CoreCoursesMyCoursesHomeHandlerService } from './services/handlers/my-courses.home';
+import { CoreCoursesMyCoursesHomeHandler, CoreCoursesMyCoursesHomeHandlerService } from './services/handlers/my-courses-home';
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {
