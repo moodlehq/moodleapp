@@ -14,6 +14,17 @@
 
 import { NgModule } from '@angular/core';
 
+import { AddonBlockActivityResultsModule } from './block/activityresults/activityresults.module';
+import { AddonBlockBadgesModule } from './block/badges/badges.module';
+import { AddonBlockBlogMenuModule } from './block/blogmenu/blogmenu.module';
+import { AddonBlockBlogRecentModule } from './block/blogrecent/blogrecent.module';
+import { AddonBlockBlogTagsModule } from './block/blogtags/blogtags.module';
+import { AddonBlockGlossaryRandomModule } from './block/glossaryrandom/glossaryrandom.module';
+import { AddonBlockHtmlModule } from './block/html/html.module';
+import { AddonBlockNewsItemsModule } from './block/newsitems/newsitems.module';
+import { AddonBlockOnlineUsersModule } from './block/onlineusers/onlineusers.module';
+import { AddonBlockRssClientModule } from './block/rssclient/rssclient.module';
+import { AddonBlockTagsModule } from './block/tags/tags.module';
 import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 import { AddonFilterModule } from './filter/filter.module';
 import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
@@ -22,6 +33,17 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
     imports: [
         AddonPrivateFilesModule,
         AddonFilterModule,
+        AddonBlockActivityResultsModule,
+        AddonBlockBadgesModule,
+        AddonBlockBlogMenuModule,
+        AddonBlockBlogRecentModule,
+        AddonBlockBlogTagsModule,
+        AddonBlockGlossaryRandomModule,
+        AddonBlockHtmlModule,
+        AddonBlockNewsItemsModule,
+        AddonBlockOnlineUsersModule,
+        AddonBlockRssClientModule,
+        AddonBlockTagsModule,
         AddonUserProfileFieldModule,
     ],
 })

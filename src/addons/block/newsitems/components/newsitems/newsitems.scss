@@ -1,0 +1,27 @@
+:host {
+    .core-block-content ::ng-deep {
+        .unlist {
+            list-style-type: none;
+            margin-left: 0;
+            margin-right: 0;
+            -webkit-padding-start: 0;
+
+            li.post {
+                padding-bottom: 16px;
+            }
+            li.post:last-child {
+                padding-bottom: 0;
+            }
+        }
+    }
+
+    // Hide RSS link.
+    .core-block-footer ::ng-deep {
+        a {
+            display: none;
+        }
+        a:first-child {
+            display: inline;
+        }
+    }
+}
