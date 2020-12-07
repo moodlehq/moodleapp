@@ -14,36 +14,39 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-
 import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreBlockComponent } from './block/block';
+import { CoreBlockOnlyTitleComponent } from './only-title-block/only-title-block';
+import { CoreBlockPreRenderedComponent } from './pre-rendered-block/pre-rendered-block';
+import { CoreBlockCourseBlocksComponent } from './course-blocks/course-blocks';
 import { CoreComponentsModule } from '@components/components.module';
-import { CoreBlockComponentsModule } from '@/core/features/block/components/components.module';
-
-import { CoreSiteHomeIndexPage } from '.';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreSiteHomeIndexPage,
-    },
-];
 
 @NgModule({
+    declarations: [
+        CoreBlockComponent,
+        CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
+        CoreBlockCourseBlocksComponent,
+    ],
     imports: [
-        RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
-        TranslateModule.forChild(),
         CoreDirectivesModule,
+        TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreBlockComponentsModule,
     ],
-    declarations: [
-        CoreSiteHomeIndexPage,
+    exports: [
+        CoreBlockComponent,
+        CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
+        CoreBlockCourseBlocksComponent,
     ],
-    exports: [RouterModule],
+    entryComponents: [
+        CoreBlockOnlyTitleComponent,
+        CoreBlockPreRenderedComponent,
+        CoreBlockCourseBlocksComponent,
+    ],
 })
-export class CoreSiteHomeIndexPageModule {}
+export class CoreBlockComponentsModule {}

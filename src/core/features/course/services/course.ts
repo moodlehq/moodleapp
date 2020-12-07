@@ -1301,6 +1301,11 @@ export type CoreCourseBlock = {
         value: string; // JSON encoded representation of the config value.
         type: string; // Type (instance or plugin).
     }[];
+    configsRecord?: Record<string, { // Block instance and plugin configuration settings.
+        name: string; // Name.
+        value: string; // JSON encoded representation of the config value.
+        type: string; // Type (instance or plugin).
+    }>;
 };
 
 /**
