@@ -19,11 +19,18 @@ import { AddonBlockBadgesModule } from './block/badges/badges.module';
 import { AddonBlockBlogMenuModule } from './block/blogmenu/blogmenu.module';
 import { AddonBlockBlogRecentModule } from './block/blogrecent/blogrecent.module';
 import { AddonBlockBlogTagsModule } from './block/blogtags/blogtags.module';
+import { AddonBlockCalendarMonthModule } from './block/calendarmonth/calendarmonth.module';
+import { AddonBlockCalendarUpcomingModule } from './block/calendarupcoming/calendarupcoming.module';
+import { AddonBlockCommentsModule } from './block/comments/comments.module';
+import { AddonBlockCompletionStatusModule } from './block/completionstatus/completionstatus.module';
 import { AddonBlockGlossaryRandomModule } from './block/glossaryrandom/glossaryrandom.module';
 import { AddonBlockHtmlModule } from './block/html/html.module';
+import { AddonBlockLearningPlansModule } from './block/learningplans/learningplans.module';
 import { AddonBlockNewsItemsModule } from './block/newsitems/newsitems.module';
 import { AddonBlockOnlineUsersModule } from './block/onlineusers/onlineusers.module';
+import { AddonBlockPrivateFilesModule } from './block/privatefiles/privatefiles.module';
 import { AddonBlockRssClientModule } from './block/rssclient/rssclient.module';
+import { AddonBlockSelfCompletionModule } from './block/selfcompletion/selfcompletion.module';
 import { AddonBlockTagsModule } from './block/tags/tags.module';
 import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 import { AddonFilterModule } from './filter/filter.module';
@@ -38,11 +45,18 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
         AddonBlockBlogMenuModule,
         AddonBlockBlogRecentModule,
         AddonBlockBlogTagsModule,
+        AddonBlockCalendarMonthModule,
+        AddonBlockCalendarUpcomingModule,
+        AddonBlockCommentsModule,
+        AddonBlockCompletionStatusModule,
         AddonBlockGlossaryRandomModule,
         AddonBlockHtmlModule,
+        AddonBlockLearningPlansModule,
         AddonBlockNewsItemsModule,
         AddonBlockOnlineUsersModule,
+        AddonBlockPrivateFilesModule,
         AddonBlockRssClientModule,
+        AddonBlockSelfCompletionModule,
         AddonBlockTagsModule,
         AddonUserProfileFieldModule,
     ],
