@@ -17,6 +17,7 @@ import { Params } from '@angular/router';
 
 import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/delegate';
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all main menu handlers must implement.
@@ -97,7 +98,7 @@ export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, Cor
 @Injectable({
     providedIn: 'root',
 })
-export class CoreMainMenuDelegate extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
+export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
 
     protected featurePrefix = 'CoreMainMenuDelegate_';
 
@@ -106,3 +107,5 @@ export class CoreMainMenuDelegate extends CoreSortedDelegate<CoreMainMenuHandler
     }
 
 }
+
+export class CoreMainMenuDelegate extends makeSingleton(CoreMainMenuDelegateService) {}

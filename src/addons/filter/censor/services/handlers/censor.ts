@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Word censorship filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterCensorHandler extends CoreFilterDefaultHandler {
+export class AddonFilterCensorHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterCensorHandler';
     filterName = 'censor';
@@ -41,3 +42,5 @@ export class AddonFilterCensorHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterCensorHandler extends makeSingleton(AddonFilterCensorHandlerService) {}

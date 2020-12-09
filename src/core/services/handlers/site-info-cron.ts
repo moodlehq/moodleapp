@@ -42,7 +42,7 @@ export class CoreSiteInfoCronHandler implements CoreCronHandler {
     }
 
     /**
-     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
+     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegateService.DEFAULT_INTERVAL.
      *
      * @return Interval time (in milliseconds).
      */

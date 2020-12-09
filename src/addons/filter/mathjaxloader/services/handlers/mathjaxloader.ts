@@ -22,12 +22,13 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the MathJax filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
+export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterMathJaxLoaderHandler';
     filterName = 'mathjaxloader';
@@ -394,6 +395,8 @@ export class AddonFilterMathJaxLoaderHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterMathJaxLoaderHandler extends makeSingleton(AddonFilterMathJaxLoaderHandlerService) {}
 
 type MathJaxWindow = Window & {
     MathJax?: any; // eslint-disable-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any

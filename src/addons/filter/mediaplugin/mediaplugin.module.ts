@@ -26,8 +26,8 @@ import { AddonFilterMediaPluginHandler } from './services/handlers/mediaplugin';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterMediaPluginHandler],
-            useFactory: (handler: AddonFilterMediaPluginHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterMediaPluginHandler.instance),
         },
     ],
 })

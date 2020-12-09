@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Activity names filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterActivityNamesHandler extends CoreFilterDefaultHandler {
+export class AddonFilterActivityNamesHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterActivityNamesHandler';
     filterName = 'activitynames';
@@ -41,3 +42,5 @@ export class AddonFilterActivityNamesHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterActivityNamesHandler extends makeSingleton(AddonFilterActivityNamesHandlerService) {}

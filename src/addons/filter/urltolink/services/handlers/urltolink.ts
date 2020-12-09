@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the URL to link and images filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterUrlToLinkHandler extends CoreFilterDefaultHandler {
+export class AddonFilterUrlToLinkHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterUrlToLinkHandler';
     filterName = 'urltolink';
@@ -41,3 +42,5 @@ export class AddonFilterUrlToLinkHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterUrlToLinkHandler extends makeSingleton(AddonFilterUrlToLinkHandlerService) {}

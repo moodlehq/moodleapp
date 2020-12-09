@@ -19,12 +19,13 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSiteHome } from '../sitehome';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to treat links to site home index.
  */
-Injectable();
-export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
+@Injectable({ providedIn: 'root' })
+export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreSiteHomeIndexLinkHandler';
     featureName = 'CoreMainMenuDelegate_CoreSiteHome';
@@ -73,3 +74,5 @@ export class CoreSiteHomeIndexLinkHandler extends CoreContentLinksHandlerBase {
     }
 
 }
+
+export class CoreSiteHomeIndexLinkHandler extends makeSingleton(CoreSiteHomeIndexLinkHandlerService) {}

@@ -18,7 +18,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
-import { CorePluginFile } from '@services/plugin-file-delegate';
+import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -697,7 +697,7 @@ export class CoreFilepoolProvider {
 
             const entry = await CoreWS.instance.downloadFile(fileUrl, path, addExtension, onProgress);
             const fileEntry = entry;
-            await CorePluginFile.instance.treatDownloadedFile(fileUrl, fileEntry, siteId, onProgress);
+            await CorePluginFileDelegate.instance.treatDownloadedFile(fileUrl, fileEntry, siteId, onProgress);
 
             await this.addFileToPool(siteId, fileId, {
                 downloadTime: Date.now(),
@@ -1062,7 +1062,7 @@ export class CoreFilepoolProvider {
         }
 
         // Now get other files from plugin file handlers.
-        urls = urls.concat(CorePluginFile.instance.getDownloadableFilesFromHTML(element));
+        urls = urls.concat(CorePluginFileDelegate.instance.getDownloadableFilesFromHTML(element));
 
         return urls;
     }
@@ -1159,7 +1159,7 @@ export class CoreFilepoolProvider {
      * @return Promise resolved with the file data to use.
      */
     protected async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSExternalFile> {
-        const file = await CorePluginFile.instance.getDownloadableFile({ fileurl: fileUrl, timemodified });
+        const file = await CorePluginFileDelegate.instance.getDownloadableFile({ fileurl: fileUrl, timemodified });
         const site = await CoreSites.instance.getSite(siteId);
 
         file.fileurl = await site.checkAndFixPluginfileURL(file.fileurl);
@@ -1918,7 +1918,7 @@ export class CoreFilepoolProvider {
             return 0;
         }
 
-        const revisionRegex = CorePluginFile.instance.getComponentRevisionRegExp(args);
+        const revisionRegex = CorePluginFileDelegate.instance.getComponentRevisionRegExp(args);
         if (!revisionRegex) {
             return 0;
         }
@@ -2662,7 +2662,7 @@ export class CoreFilepoolProvider {
         this.notifyFileDeleted(siteId, fileId, links);
 
         if (fileUrl) {
-            await CoreUtils.instance.ignoreErrors(CorePluginFile.instance.fileDeleted(fileUrl, path, siteId));
+            await CoreUtils.instance.ignoreErrors(CorePluginFileDelegate.instance.fileDeleted(fileUrl, path, siteId));
         }
     }
 
@@ -2710,7 +2710,7 @@ export class CoreFilepoolProvider {
             return url;
         }
 
-        return CorePluginFile.instance.removeRevisionFromUrl(url, args);
+        return CorePluginFileDelegate.instance.removeRevisionFromUrl(url, args);
     }
 
     /**

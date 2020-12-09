@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the TeX notation filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterTexHandler extends CoreFilterDefaultHandler {
+export class AddonFilterTexHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterTexHandler';
     filterName = 'tex';
@@ -41,3 +42,5 @@ export class AddonFilterTexHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterTexHandler extends makeSingleton(AddonFilterTexHandlerService) {}

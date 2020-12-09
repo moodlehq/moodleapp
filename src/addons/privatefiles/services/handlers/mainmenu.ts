@@ -16,12 +16,13 @@ import { Injectable } from '@angular/core';
 
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { AddonPrivateFiles } from '@/addons/privatefiles/services/privatefiles';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to inject an option into main menu.
  */
-@Injectable()
-export class AddonPrivateFilesMainMenuHandler implements CoreMainMenuHandler {
+@Injectable({ providedIn: 'root' })
+export class AddonPrivateFilesMainMenuHandlerService implements CoreMainMenuHandler {
 
     static readonly PAGE_NAME = 'private';
 
@@ -46,10 +47,12 @@ export class AddonPrivateFilesMainMenuHandler implements CoreMainMenuHandler {
         return {
             icon: 'fas-folder',
             title: 'addon.privatefiles.files',
-            page: AddonPrivateFilesMainMenuHandler.PAGE_NAME,
+            page: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
             subPage: 'root',
             class: 'addon-privatefiles-handler',
         };
     }
 
 }
+
+export class AddonPrivateFilesMainMenuHandler extends makeSingleton(AddonPrivateFilesMainMenuHandlerService) {}

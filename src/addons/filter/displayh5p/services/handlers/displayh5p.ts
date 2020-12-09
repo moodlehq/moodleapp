@@ -16,13 +16,14 @@ import { Injectable, ViewContainerRef, ComponentFactoryResolver } from '@angular
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
+import { makeSingleton } from '@singletons';
 // @todo import { CoreH5PPlayerComponent } from '@core/h5p/components/h5p-player/h5p-player';
 
 /**
  * Handler to support the Display H5P filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterDisplayH5PHandler extends CoreFilterDefaultHandler {
+export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterDisplayH5PHandler';
     filterName = 'displayh5p';
@@ -108,3 +109,5 @@ export class AddonFilterDisplayH5PHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterDisplayH5PHandler extends makeSingleton(AddonFilterDisplayH5PHandlerService) {}

@@ -14,12 +14,13 @@
 
 import { Injectable } from '@angular/core';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to add my courses into home page.
  */
-Injectable();
-export class CoreCoursesMyCoursesHomeHandler implements CoreMainMenuHomeHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeHandler {
 
     static readonly PAGE_NAME = 'courses';
 
@@ -55,7 +56,7 @@ export class CoreCoursesMyCoursesHomeHandler implements CoreMainMenuHomeHandler 
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         return {
             title: 'core.courses.mycourses',
-            page: CoreCoursesMyCoursesHomeHandler.PAGE_NAME,
+            page: CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME,
             class: 'core-courses-my-courses-handler',
             icon: 'fas-graduation-cap',
             selectPriority: 900,
@@ -63,3 +64,5 @@ export class CoreCoursesMyCoursesHomeHandler implements CoreMainMenuHomeHandler 
     }
 
 }
+
+export class CoreCoursesMyCoursesHomeHandler extends makeSingleton(CoreCoursesMyCoursesHomeHandlerService) {}

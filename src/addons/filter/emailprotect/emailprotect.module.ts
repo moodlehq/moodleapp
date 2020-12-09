@@ -26,8 +26,8 @@ import { AddonFilterEmailProtectHandler } from './services/handlers/emailprotect
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterEmailProtectHandler],
-            useFactory: (handler: AddonFilterEmailProtectHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterEmailProtectHandler.instance),
         },
     ],
 })

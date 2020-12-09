@@ -14,12 +14,13 @@
 
 import { Injectable } from '@angular/core';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to add dashboard into home page.
  */
-Injectable();
-export class CoreDashboardHomeHandler implements CoreMainMenuHomeHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler {
 
     static readonly PAGE_NAME = 'dashboard';
 
@@ -55,7 +56,7 @@ export class CoreDashboardHomeHandler implements CoreMainMenuHomeHandler {
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         return {
             title: 'core.courses.mymoodle',
-            page: CoreDashboardHomeHandler.PAGE_NAME,
+            page: CoreDashboardHomeHandlerService.PAGE_NAME,
             class: 'core-courses-dashboard-handler',
             icon: 'fas-tachometer-alt',
             selectPriority: 1000,
@@ -63,3 +64,5 @@ export class CoreDashboardHomeHandler implements CoreMainMenuHomeHandler {
     }
 
 }
+
+export class CoreDashboardHomeHandler extends makeSingleton(CoreDashboardHomeHandlerService) {}

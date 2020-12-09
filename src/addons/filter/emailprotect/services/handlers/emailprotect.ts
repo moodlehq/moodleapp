@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Email protection filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterEmailProtectHandler extends CoreFilterDefaultHandler {
+export class AddonFilterEmailProtectHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterEmailProtectHandler';
     filterName = 'emailprotect';
@@ -41,3 +42,5 @@ export class AddonFilterEmailProtectHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterEmailProtectHandler extends makeSingleton(AddonFilterEmailProtectHandlerService) {}

@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Algebra notation filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterAlgebraHandler extends CoreFilterDefaultHandler {
+export class AddonFilterAlgebraHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterAlgebraHandler';
     filterName = 'algebra';
@@ -41,3 +42,5 @@ export class AddonFilterAlgebraHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterAlgebraHandler extends makeSingleton(AddonFilterAlgebraHandlerService) {}

@@ -18,12 +18,13 @@ import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/def
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Multimedia filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
+export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterMediaPluginHandler';
     filterName = 'mediaplugin';
@@ -89,6 +90,8 @@ export class AddonFilterMediaPluginHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterMediaPluginHandler extends makeSingleton(AddonFilterMediaPluginHandlerService) {}
 
 type VideoDataSetup = {
     techOrder?: string[];

@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Database auto-link filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterDataHandler extends CoreFilterDefaultHandler {
+export class AddonFilterDataHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterDataHandler';
     filterName = 'data';
@@ -41,3 +42,5 @@ export class AddonFilterDataHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterDataHandler extends makeSingleton(AddonFilterDataHandlerService) {}

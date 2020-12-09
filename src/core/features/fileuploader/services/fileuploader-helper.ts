@@ -47,7 +47,7 @@ export class CoreFileUploaderHelperProvider {
     protected filePickerDeferred?: PromiseDefer<CoreWSUploadFileResult | FileEntry>;
     protected actionSheet?: HTMLIonActionSheetElement;
 
-    constructor(protected uploaderDelegate: CoreFileUploaderDelegate) {
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreFileUploaderHelperProvider');
     }
 
@@ -351,7 +351,7 @@ export class CoreFileUploaderHelperProvider {
                 this.filePickerClosed();
             },
         }];
-        const handlers = this.uploaderDelegate.getHandlers(mimetypes);
+        const handlers = CoreFileUploaderDelegate.instance.getHandlers(mimetypes);
 
         this.filePickerDeferred = CoreUtils.instance.promiseDefer();
 

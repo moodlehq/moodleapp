@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
-import { AddonPrivateFilesMainMenuHandler } from './services/handlers/mainmenu';
+import { AddonPrivateFilesMainMenuHandler, AddonPrivateFilesMainMenuHandlerService } from './services/handlers/mainmenu';
 
 const routes: Routes = [
     {
-        path: AddonPrivateFilesMainMenuHandler.PAGE_NAME,
+        path: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
         loadChildren: () => import('@/addons/privatefiles/privatefiles-lazy.module').then(m => m.AddonPrivateFilesLazyModule),
     },
 ];
@@ -30,16 +30,14 @@ const routes: Routes = [
     imports: [CoreMainMenuRoutingModule.forChild({ children: routes })],
     exports: [CoreMainMenuRoutingModule],
     providers: [
-        AddonPrivateFilesMainMenuHandler,
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreMainMenuDelegate.instance.registerHandler(AddonPrivateFilesMainMenuHandler.instance);
+            },
+        },
     ],
 })
-export class AddonPrivateFilesModule {
-
-    constructor(
-        mainMenuDelegate: CoreMainMenuDelegate,
-        mainMenuHandler: AddonPrivateFilesMainMenuHandler,
-    ) {
-        mainMenuDelegate.registerHandler(mainMenuHandler);
-    }
-
-}
+export class AddonPrivateFilesModule {}

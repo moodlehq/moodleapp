@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreApp } from '@services/app';
-import { CoreCron } from '@services/cron';
+import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/site';
@@ -277,7 +277,7 @@ export class CoreSettingsHelperProvider {
         }
 
         const site = await CoreSites.instance.getSite(siteId);
-        const hasSyncHandlers = CoreCron.instance.hasManualSyncHandlers();
+        const hasSyncHandlers = CoreCronDelegate.instance.hasManualSyncHandlers();
 
         if (site.isLoggedOut()) {
             // Cannot sync logged out sites.
@@ -296,7 +296,7 @@ export class CoreSettingsHelperProvider {
             site.invalidateWsCache(),
             this.checkSiteLocalMobile(site),
             CoreSites.instance.updateSiteInfo(site.getId()),
-            CoreCron.instance.forceSyncExecution(site.getId()),
+            CoreCronDelegate.instance.forceSyncExecution(site.getId()),
         // eslint-disable-next-line arrow-body-style
         ]).then(() => {
             return;

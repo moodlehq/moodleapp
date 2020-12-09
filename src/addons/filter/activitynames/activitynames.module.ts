@@ -26,8 +26,8 @@ import { AddonFilterActivityNamesHandler } from './services/handlers/activitynam
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterActivityNamesHandler],
-            useFactory: (handler: AddonFilterActivityNamesHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterActivityNamesHandler.instance),
         },
     ],
 })

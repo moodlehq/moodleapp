@@ -26,8 +26,8 @@ import { AddonFilterEmoticonHandler } from './services/handlers/emoticon';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterEmoticonHandler],
-            useFactory: (handler: AddonFilterEmoticonHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterEmoticonHandler.instance),
         },
     ],
 })

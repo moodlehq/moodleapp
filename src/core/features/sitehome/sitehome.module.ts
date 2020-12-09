@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreSiteHomeHomeHandler } from './services/handlers/sitehome-home';
+import { CoreSiteHomeHomeHandler, CoreSiteHomeHomeHandlerService } from './services/handlers/sitehome-home';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
 
 const mainMenuHomeRoutes: Routes = [
     {
-        path: CoreSiteHomeHomeHandler.PAGE_NAME,
+        path: CoreSiteHomeHomeHandlerService.PAGE_NAME,
         loadChildren: () => import('./pages/index/index.module').then(m => m.CoreSiteHomeIndexPageModule),
     },
 ];
@@ -32,20 +32,15 @@ const mainMenuHomeRoutes: Routes = [
     imports: [CoreMainMenuHomeRoutingModule.forChild({ children: mainMenuHomeRoutes })],
     exports: [CoreMainMenuHomeRoutingModule],
     providers: [
-        CoreSiteHomeIndexLinkHandler,
-        CoreSiteHomeHomeHandler,
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreContentLinksDelegate.instance.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
+                CoreMainMenuHomeDelegate.instance.registerHandler(CoreSiteHomeHomeHandler.instance);
+            },
+        },
     ],
 })
-export class CoreSiteHomeModule {
-
-    constructor(
-        contentLinksDelegate: CoreContentLinksDelegate,
-        homeDelegate: CoreMainMenuHomeDelegate,
-        siteHomeIndexLinkHandler: CoreSiteHomeIndexLinkHandler,
-        siteHomeDashboardHandler: CoreSiteHomeHomeHandler,
-    ) {
-        contentLinksDelegate.registerHandler(siteHomeIndexLinkHandler);
-        homeDelegate.registerHandler(siteHomeDashboardHandler);
-    }
-
-}
+export class CoreSiteHomeModule {}

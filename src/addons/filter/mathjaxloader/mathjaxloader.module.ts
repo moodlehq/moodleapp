@@ -26,11 +26,11 @@ import { AddonFilterMathJaxLoaderHandler } from './services/handlers/mathjaxload
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterMathJaxLoaderHandler],
-            useFactory: (handler: AddonFilterMathJaxLoaderHandler) => async () => {
-                CoreFilterDelegate.instance.registerHandler(handler);
+            deps: [],
+            useFactory: () => async () => {
+                CoreFilterDelegate.instance.registerHandler(AddonFilterMathJaxLoaderHandler.instance);
 
-                await handler.initialize();
+                await AddonFilterMathJaxLoaderHandler.instance.initialize();
             },
         },
     ],

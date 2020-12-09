@@ -26,8 +26,8 @@ import { AddonFilterTexHandler } from './services/handlers/tex';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterTexHandler],
-            useFactory: (handler: AddonFilterTexHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterTexHandler.instance),
         },
     ],
 })

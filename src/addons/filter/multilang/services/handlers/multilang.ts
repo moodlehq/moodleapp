@@ -18,12 +18,13 @@ import { CoreLang } from '@services/lang';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Multilang filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterMultilangHandler extends CoreFilterDefaultHandler {
+export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterMultilangHandler';
     filterName = 'multilang';
@@ -82,3 +83,5 @@ export class AddonFilterMultilangHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterMultilangHandler extends makeSingleton(AddonFilterMultilangHandlerService) {}

@@ -26,8 +26,8 @@ import { AddonFilterDisplayH5PHandler } from './services/handlers/displayh5p';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterDisplayH5PHandler],
-            useFactory: (handler: AddonFilterDisplayH5PHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterDisplayH5PHandler.instance),
         },
     ],
 })

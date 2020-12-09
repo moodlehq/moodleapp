@@ -26,8 +26,8 @@ import { AddonFilterAlgebraHandler } from './services/handlers/algebra';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterAlgebraHandler],
-            useFactory: (handler: AddonFilterAlgebraHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterAlgebraHandler.instance),
         },
     ],
 })

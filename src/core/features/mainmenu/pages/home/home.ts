@@ -40,15 +40,13 @@ export class CoreMainMenuHomePage implements OnInit {
     protected subscription?: Subscription;
     protected updateSiteObserver?: CoreEventObserver;
 
-    constructor(protected homeDelegate: CoreMainMenuHomeDelegate) {}
-
     /**
      * Initialize the component.
      */
     ngOnInit(): void {
         this.loadSiteName();
 
-        this.subscription = this.homeDelegate.getHandlersObservable().subscribe((handlers) => {
+        this.subscription = CoreMainMenuHomeDelegate.instance.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
 
@@ -90,7 +88,7 @@ export class CoreMainMenuHomePage implements OnInit {
 
         this.tabs = newTabs;
 
-        this.loaded = this.homeDelegate.areHandlersLoaded();
+        this.loaded = CoreMainMenuHomeDelegate.instance.areHandlersLoaded();
     }
 
     /**

@@ -35,7 +35,7 @@ export class CoreMainMenuProvider {
 
     protected tablet = false;
 
-    constructor(protected menuDelegate: CoreMainMenuDelegate) {
+    constructor() {
         this.tablet = !!(window?.innerWidth && window.innerWidth >= 576 && window.innerHeight >= 576);
     }
 
@@ -47,7 +47,7 @@ export class CoreMainMenuProvider {
     getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
         const deferred = CoreUtils.instance.promiseDefer<CoreMainMenuHandlerToDisplay[]>();
 
-        const subscription = this.menuDelegate.getHandlersObservable().subscribe((handlers) => {
+        const subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
             subscription?.unsubscribe();
 
             // Remove the handlers that should only appear in the More menu.

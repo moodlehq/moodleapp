@@ -16,14 +16,15 @@ import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CoreUtils } from '@services/utils/utils';
+import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
 
 /**
  * Handler to upload files from the album.
  */
-@Injectable()
-export class CoreFileUploaderAlbumHandler implements CoreFileUploaderHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHandler {
 
     name = 'CoreFileUploaderAlbum';
     priority = 2000;
@@ -75,3 +76,5 @@ export class CoreFileUploaderAlbumHandler implements CoreFileUploaderHandler {
     }
 
 }
+
+export class CoreFileUploaderAlbumHandler extends makeSingleton(CoreFileUploaderAlbumHandlerService) {}

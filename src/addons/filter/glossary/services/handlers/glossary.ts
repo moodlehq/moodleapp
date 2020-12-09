@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Glossary auto-link filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterGlossaryHandler extends CoreFilterDefaultHandler {
+export class AddonFilterGlossaryHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterGlossaryHandler';
     filterName = 'glossary';
@@ -41,3 +42,5 @@ export class AddonFilterGlossaryHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterGlossaryHandler extends makeSingleton(AddonFilterGlossaryHandlerService) {}

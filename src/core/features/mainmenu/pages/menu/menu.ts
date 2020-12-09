@@ -57,7 +57,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
         protected navCtrl: NavController,
-        protected menuDelegate: CoreMainMenuDelegate,
         protected changeDetector: ChangeDetectorRef,
         protected router: Router,
     ) {
@@ -98,7 +97,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             }
         });
 
-        this.subscription = this.menuDelegate.getHandlersObservable().subscribe((handlers) => {
+        this.subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
             this.allHandlers = handlers.filter((handler) => !handler.onlyInMore);
 
@@ -164,7 +163,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             // Sort them by priority so new handlers are in the right position.
             this.tabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-            this.loaded = this.menuDelegate.areHandlersLoaded();
+            this.loaded = CoreMainMenuDelegate.instance.areHandlersLoaded();
 
             if (this.loaded && this.mainTabs && !this.mainTabs.getSelected()) {
                 // Select the first tab.

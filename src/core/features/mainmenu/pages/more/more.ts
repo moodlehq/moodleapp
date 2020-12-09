@@ -49,9 +49,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     protected langObserver: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
 
-    constructor(
-        protected menuDelegate: CoreMainMenuDelegate,
-    ) {
+    constructor() {
 
         this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
         this.updateSiteObserver = CoreEvents.on(
@@ -69,7 +67,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Load the handlers.
-        this.subscription = this.menuDelegate.getHandlersObservable().subscribe((handlers) => {
+        this.subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
             this.allHandlers = handlers;
 
             this.initHandlers();
@@ -104,7 +102,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
         // Get only the handlers that don't appear in the main view.
         this.handlers = this.allHandlers.filter((handler) => mainHandlers.indexOf(handler) == -1);
 
-        this.handlersLoaded = this.menuDelegate.areHandlersLoaded();
+        this.handlersLoaded = CoreMainMenuDelegate.instance.areHandlersLoaded();
     }
 
     /**

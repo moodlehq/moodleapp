@@ -17,12 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSite } from '@classes/site';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support the Emoticon filter.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonFilterEmoticonHandler extends CoreFilterDefaultHandler {
+export class AddonFilterEmoticonHandlerService extends CoreFilterDefaultHandler {
 
     name = 'AddonFilterEmoticonHandler';
     filterName = 'emoticon';
@@ -41,3 +42,5 @@ export class AddonFilterEmoticonHandler extends CoreFilterDefaultHandler {
     }
 
 }
+
+export class AddonFilterEmoticonHandler extends makeSingleton(AddonFilterEmoticonHandlerService) {}

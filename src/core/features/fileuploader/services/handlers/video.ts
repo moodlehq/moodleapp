@@ -16,13 +16,14 @@ import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CoreUtils } from '@services/utils/utils';
+import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
 /**
  * Handler to record a video to upload it.
  */
-@Injectable()
-export class CoreFileUploaderVideoHandler implements CoreFileUploaderHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHandler {
 
     name = 'CoreFileUploaderVideo';
     priority = 1400;
@@ -90,3 +91,5 @@ export class CoreFileUploaderVideoHandler implements CoreFileUploaderHandler {
     }
 
 }
+
+export class CoreFileUploaderVideoHandler extends makeSingleton(CoreFileUploaderVideoHandlerService) {}

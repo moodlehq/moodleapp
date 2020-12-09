@@ -25,7 +25,7 @@ import { resolveModuleRoutes } from '@/app/app-routing.module';
 
 import { MAIN_MENU_ROUTES } from './mainmenu-routing.module';
 import { CoreMainMenuPage } from './pages/menu/menu';
-import { CoreMainMenuHomeHandler } from './services/handlers/mainmenu';
+import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
     const routes = resolveModuleRoutes(injector, MAIN_MENU_ROUTES);
@@ -38,10 +38,10 @@ function buildRoutes(injector: Injector): Routes {
                 {
                     path: '',
                     pathMatch: 'full',
-                    redirectTo: CoreMainMenuHomeHandler.PAGE_NAME,
+                    redirectTo: CoreMainMenuHomeHandlerService.PAGE_NAME,
                 },
                 {
-                    path: CoreMainMenuHomeHandler.PAGE_NAME,
+                    path: CoreMainMenuHomeHandlerService.PAGE_NAME,
                     loadChildren: () => import('./pages/home/home.module').then(m => m.CoreMainMenuHomePageModule),
                 },
                 {
@@ -68,7 +68,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreMainMenuPage,
     ],
     providers: [
-        CoreMainMenuHomeHandler,
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
     ],
 })

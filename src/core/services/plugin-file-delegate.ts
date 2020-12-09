@@ -25,7 +25,7 @@ import { makeSingleton } from '@singletons';
  * Delegate to register pluginfile information handlers.
  */
 @Injectable({ providedIn: 'root' })
-export class CorePluginFileDelegate extends CoreDelegate<CorePluginFileHandler> {
+export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHandler> {
 
     protected handlerNameProperty = 'component';
 
@@ -288,7 +288,7 @@ export class CorePluginFileDelegate extends CoreDelegate<CorePluginFileHandler> 
 
 }
 
-export class CorePluginFile extends makeSingleton(CorePluginFileDelegate) {}
+export class CorePluginFileDelegate extends makeSingleton(CorePluginFileDelegateService) {}
 
 /**
  * Interface that all plugin file handlers must implement.

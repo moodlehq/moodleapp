@@ -26,8 +26,8 @@ import { AddonFilterUrlToLinkHandler } from './services/handlers/urltolink';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AddonFilterUrlToLinkHandler],
-            useFactory: (handler: AddonFilterUrlToLinkHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+            deps: [],
+            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterUrlToLinkHandler.instance),
         },
     ],
 })

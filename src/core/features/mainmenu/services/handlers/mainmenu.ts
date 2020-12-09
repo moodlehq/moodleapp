@@ -13,13 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { makeSingleton } from '@singletons';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
 
 /**
  * Handler to add Home into main menu.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreMainMenuHomeHandler implements CoreMainMenuHandler {
+export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
 
     static readonly PAGE_NAME = 'home';
 
@@ -56,10 +57,12 @@ export class CoreMainMenuHomeHandler implements CoreMainMenuHandler {
         return {
             icon: 'fa-home',
             title: 'core.mainmenu.home',
-            page: CoreMainMenuHomeHandler.PAGE_NAME,
+            page: CoreMainMenuHomeHandlerService.PAGE_NAME,
             // @todo: subPage? The page can change due to core-tabs.
             class: 'core-home-handler',
         };
     }
 
 }
+
+export class CoreMainMenuHomeHandler extends makeSingleton(CoreMainMenuHomeHandlerService) {}

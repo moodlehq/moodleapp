@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { AuthGuard } from '@guards/auth';
 
@@ -37,14 +37,15 @@ const appRoutes: Routes = [
 
 @NgModule({
     imports: [AppRoutingModule.forChild(appRoutes)],
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreMainMenuDelegate.instance.registerHandler(CoreMainMenuHomeHandler.instance);
+            },
+        },
+    ],
 })
-export class CoreMainMenuModule {
-
-    constructor(
-        mainMenuDelegate: CoreMainMenuDelegate,
-        homeMainMenuHandler: CoreMainMenuHomeHandler,
-    ) {
-        mainMenuDelegate.registerHandler(homeMainMenuHandler);
-    }
-
-}
+export class CoreMainMenuModule {}

@@ -19,13 +19,13 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
 import { CoreFileUploader } from '../fileuploader';
-import { Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to upload any type of file.
  */
-@Injectable()
-export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandler {
 
     name = 'CoreFileUploaderFile';
     priority = 1200;
@@ -156,3 +156,5 @@ export class CoreFileUploaderFileHandler implements CoreFileUploaderHandler {
     }
 
 }
+
+export class CoreFileUploaderFileHandler extends makeSingleton(CoreFileUploaderFileHandlerService) {}
