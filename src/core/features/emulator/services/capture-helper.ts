@@ -23,9 +23,7 @@ import { CaptureMediaComponentInputs, CoreEmulatorCaptureMediaComponent } from '
 /**
  * Helper service with some features to capture media (image, audio, video).
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreEmulatorCaptureHelperProvider {
 
     protected possibleAudioMimeTypes = {

@@ -41,9 +41,7 @@ const ROOT_CACHE_KEY = 'mmCourse:';
 /**
  * Service that provides some features regarding a course.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreCourseProvider {
 
     static readonly ALL_SECTIONS_ID = -2;

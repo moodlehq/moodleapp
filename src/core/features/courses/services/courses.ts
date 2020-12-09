@@ -26,9 +26,7 @@ const ROOT_CACHE_KEY = 'mmCourses:';
 /**
  * Service that provides some features regarding lists of courses and categories.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreCoursesProvider {
 
     static readonly SEARCH_PER_PAGE = 20;

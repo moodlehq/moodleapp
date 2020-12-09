@@ -19,9 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 /**
  * Service with helper functions for tags.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreTagHelperProvider {
 
     /**

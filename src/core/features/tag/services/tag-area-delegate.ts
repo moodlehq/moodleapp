@@ -46,9 +46,7 @@ export interface CoreTagAreaHandler extends CoreDelegateHandler {
 /**
  * Delegate to register tag area handlers.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler> {
 
     protected handlerNameProperty = 'type';

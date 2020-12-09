@@ -48,9 +48,7 @@ export const enum CoreColorScheme {
 /**
  * Settings helper service.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreSettingsHelperProvider {
 
     protected syncPromises: { [s: string]: Promise<void> } = {};

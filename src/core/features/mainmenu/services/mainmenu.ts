@@ -25,9 +25,7 @@ import { makeSingleton } from '@singletons';
 /**
  * Service that provides some features regarding Main Menu.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreMainMenuProvider {
 
     static readonly NUM_MAIN_HANDLERS = 4;

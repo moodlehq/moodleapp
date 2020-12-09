@@ -63,9 +63,7 @@ export type CoreSettingsHandlerToDisplay = CoreDelegateToDisplay & CoreSettingsH
  * Service to interact with addons to be shown in app settings. Provides functions to register a plugin
  * and notify an update in the data.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreSettingsDelegateService extends CoreSortedDelegate<CoreSettingsHandlerToDisplay, CoreSettingsHandler> {
 
     constructor() {

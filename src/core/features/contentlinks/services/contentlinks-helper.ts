@@ -27,9 +27,7 @@ import { Params } from '@angular/router';
 /**
  * Service that provides some features regarding content links.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreContentLinksHelperProvider {
 
     constructor(

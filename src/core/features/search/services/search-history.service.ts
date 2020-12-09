@@ -22,9 +22,7 @@ import { makeSingleton } from '@singletons';
 /**
  * Service that enables adding a history to a search box.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreSearchHistoryProvider {
 
     protected static readonly HISTORY_LIMIT = 10;

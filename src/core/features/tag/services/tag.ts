@@ -23,9 +23,7 @@ const ROOT_CACHE_KEY = 'CoreTag:';
 /**
  * Service to handle tags.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreTagProvider {
 
     static readonly SEARCH_LIMIT = 150;
