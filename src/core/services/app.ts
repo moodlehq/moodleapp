@@ -85,9 +85,9 @@ export class CoreAppProvider {
     }
 
     /**
-     * Initialise database.
+     * Initialize database.
      */
-    async initialiseDatabase(): Promise<void> {
+    async initializeDatabase(): Promise<void> {
         await this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
         this.resolveSchemaVersionsManager({

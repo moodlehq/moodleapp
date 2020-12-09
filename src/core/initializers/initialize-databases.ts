@@ -21,11 +21,11 @@ import { CoreSites } from '@services/sites';
 
 export default async function(): Promise<void> {
     await Promise.all([
-        CoreApp.instance.initialiseDatabase(),
-        CoreConfig.instance.initialiseDatabase(),
-        CoreCronDelegate.instance.initialiseDatabase(),
-        CoreFilepool.instance.initialiseDatabase(),
-        CoreLocalNotifications.instance.initialiseDatabase(),
-        CoreSites.instance.initialiseDatabase(),
+        CoreApp.instance.initializeDatabase(),
+        CoreConfig.instance.initializeDatabase(),
+        CoreCronDelegate.instance.initializeDatabase(),
+        CoreFilepool.instance.initializeDatabase(),
+        CoreLocalNotifications.instance.initializeDatabase(),
+        CoreSites.instance.initializeDatabase(),
     ]);
 }
