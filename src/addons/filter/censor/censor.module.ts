@@ -12,15 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
-import { AddonFilterModule } from './filter/filter.module';
+import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
+import { AddonFilterCensorHandler } from './services/handlers/censor';
 
 @NgModule({
+    declarations: [
+    ],
     imports: [
-        AddonPrivateFilesModule,
-        AddonFilterModule,
+    ],
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [AddonFilterCensorHandler],
+            useFactory: (handler: AddonFilterCensorHandler) => () => CoreFilterDelegate.instance.registerHandler(handler),
+        },
     ],
 })
-export class AddonsModule {}
+export class AddonFilterCensorModule {}
