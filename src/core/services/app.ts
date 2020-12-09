@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone, ApplicationRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
@@ -25,7 +25,15 @@ import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
-import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/db/app';
+import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
+
+/**
+ * Object responsible of managing schema versions.
+ */
+type SchemaVersionsManager = {
+    get(schemaName: string): Promise<number>;
+    set(schemaName: string, version: number): Promise<void>;
+};
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -55,62 +63,18 @@ export class CoreAppProvider {
     protected forceOffline = false;
 
     // Variables for DB.
-    protected createVersionsTableReady: Promise<void>;
+    protected schemaVersionsManager: Promise<SchemaVersionsManager>;
+    protected resolveSchemaVersionsManager!: (schemaVersionsManager: SchemaVersionsManager) => void;
 
-    constructor(
-        appRef: ApplicationRef,
-        zone: NgZone,
-        protected router: Router,
-    ) {
-        this.logger = CoreLogger.getInstance('CoreAppProvider');
+    constructor(protected router: Router) {
+        this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
         this.db = CoreDB.instance.getDB(DBNAME);
-
-        // Create the schema versions table.
-        this.createVersionsTableReady = this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
-
-        Keyboard.instance.onKeyboardShow().subscribe((data) => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                document.body.classList.add('keyboard-is-open');
-                this.setKeyboardShown(true);
-                // Error on iOS calculating size.
-                // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
-                CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, data.keyboardHeight);
-            });
-        });
-        Keyboard.instance.onKeyboardHide().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                document.body.classList.remove('keyboard-is-open');
-                this.setKeyboardShown(false);
-                CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
-            });
-        });
-        Keyboard.instance.onKeyboardWillShow().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                this.keyboardOpening = true;
-                this.keyboardClosing = false;
-            });
-        });
-        Keyboard.instance.onKeyboardWillHide().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                this.keyboardOpening = false;
-                this.keyboardClosing = true;
-            });
-        });
+        this.logger = CoreLogger.getInstance('CoreAppProvider');
 
         // @todo
         // this.platform.registerBackButtonAction(() => {
         //     this.backButtonAction();
         // }, 100);
-
-        // Export the app provider and appRef to control the application in Behat tests.
-        if (CoreAppProvider.isAutomated()) {
-            (<WindowForAutomatedTests> window).appProvider = this;
-            (<WindowForAutomatedTests> window).appRef = appRef;
-        }
     }
 
     /**
@@ -120,6 +84,30 @@ export class CoreAppProvider {
      */
     static isAutomated(): boolean {
         return !!navigator.webdriver;
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        await this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
+
+        this.resolveSchemaVersionsManager({
+            get: async name => {
+                try {
+                    // Fetch installed version of the schema.
+                    const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name });
+
+                    return entry.version;
+                } catch (error) {
+                    // No installed version yet.
+                    return  0;
+                }
+            },
+            set: async (name, version) => {
+                await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version });
+            },
+        });
     }
 
     /**
@@ -158,20 +146,8 @@ export class CoreAppProvider {
     async createTablesFromSchema(schema: CoreAppSchema): Promise<void> {
         this.logger.debug(`Apply schema to app DB: ${schema.name}`);
 
-        let oldVersion: number;
-
-        try {
-            // Wait for the schema versions table to be created.
-            await this.createVersionsTableReady;
-
-            // Fetch installed version of the schema.
-            const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name });
-
-            oldVersion = entry.version;
-        } catch (error) {
-            // No installed version yet.
-            oldVersion = 0;
-        }
+        const schemaVersionsManager = await this.schemaVersionsManager;
+        const oldVersion = await schemaVersionsManager.get(schema.name);
 
         if (oldVersion >= schema.version) {
             // Version already installed, nothing else to do.
@@ -188,7 +164,7 @@ export class CoreAppProvider {
         }
 
         // Set installed version.
-        await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name, version: schema.version });
+        schemaVersionsManager.set(schema.name, schema.version);
     }
 
     /**
@@ -427,6 +403,44 @@ export class CoreAppProvider {
         if (this.isAndroid()) {
             Keyboard.instance.show();
         }
+    }
+
+    /**
+     * Notify that Keyboard has been shown.
+     *
+     * @param keyboardHeight Keyboard height.
+     */
+    onKeyboardShow(keyboardHeight: number): void {
+        document.body.classList.add('keyboard-is-open');
+        this.setKeyboardShown(true);
+        // Error on iOS calculating size.
+        // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
+        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, keyboardHeight);
+    }
+
+    /**
+     * Notify that Keyboard has been hidden.
+     */
+    onKeyboardHide(): void {
+        document.body.classList.remove('keyboard-is-open');
+        this.setKeyboardShown(false);
+        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
+    }
+
+    /**
+     * Notify that Keyboard is about to be shown.
+     */
+    onKeyboardWillShow(): void {
+        this.keyboardOpening = true;
+        this.keyboardClosing = false;
+    }
+
+    /**
+     * Notify that Keyboard is about to be hidden.
+     */
+    onKeyboardWillHide(): void {
+        this.keyboardOpening = false;
+        this.keyboardClosing = true;
     }
 
     /**
@@ -734,12 +748,4 @@ export type CoreAppSchema = {
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number): Promise<void>;
-};
-
-/**
- * Extended window type for automated tests.
- */
-export type WindowForAutomatedTests = Window & {
-    appProvider?: CoreAppProvider;
-    appRef?: ApplicationRef;
 };

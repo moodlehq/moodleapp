@@ -16,8 +16,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
 import { CoreApp, CoreRedirectData } from '@services/app';
-import { CoreInit } from '@services/init';
-import { SplashScreen } from '@singletons';
+import { ApplicationInit, SplashScreen } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -39,7 +38,7 @@ export class CoreLoginInitPage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         // Wait for the app to be ready.
-        await CoreInit.instance.ready();
+        await ApplicationInit.instance.donePromise;
 
         // Check if there was a pending redirect.
         const redirectData = CoreApp.instance.getRedirect();

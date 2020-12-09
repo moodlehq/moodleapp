@@ -34,7 +34,7 @@ import {
     COMPONENTS_TABLE_NAME,
     SITES_TABLE_NAME,
     CodeRequestsQueueItem,
-} from '@services/db/local-notifications';
+} from '@services/database/local-notifications';
 
 /**
  * Service to handle local notifications.
@@ -43,8 +43,6 @@ import {
 export class CoreLocalNotificationsProvider {
 
     protected logger: CoreLogger;
-    protected appDB: SQLiteDB;
-    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected codes: { [s: string]: number } = {};
     protected codeRequestsQueue: {[key: string]: CodeRequestsQueueItem} = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,15 +56,29 @@ export class CoreLocalNotificationsProvider {
     protected updateSubscription?: Subscription;
     protected queueRunner: CoreQueueRunner; // Queue to decrease the number of concurrent calls to the plugin (see MOBILE-3477).
 
+    // Variables for DB.
+    protected appDB: Promise<SQLiteDB>;
+    protected resolveAppDB!: (appDB: SQLiteDB) => void;
+
     constructor() {
+        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreLocalNotificationsProvider');
         this.queueRunner = new CoreQueueRunner(10);
-        this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
-            // Ignore errors.
-        });
 
         this.init();
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        try {
+            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+        } catch (e) {
+            // Ignore errors.
+        }
+
+        this.resolveAppDB(CoreApp.instance.getDB());
     }
 
     /**
@@ -212,8 +224,6 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the code is retrieved.
      */
     protected async getCode(table: string, id: string): Promise<number> {
-        await this.dbReady;
-
         const key = table + '#' + id;
 
         // Check if the code is already in memory.
@@ -221,23 +231,25 @@ export class CoreLocalNotificationsProvider {
             return this.codes[key];
         }
 
+        const db = await this.appDB;
+
         try {
             // Check if we already have a code stored for that ID.
-            const entry = await this.appDB.getRecord<{id: string; code: number}>(table, { id: id });
+            const entry = await db.getRecord<{id: string; code: number}>(table, { id: id });
 
             this.codes[key] = entry.code;
 
             return entry.code;
         } catch (err) {
             // No code stored for that ID. Create a new code for it.
-            const entries = await this.appDB.getRecords<{id: string; code: number}>(table, undefined, 'code DESC');
+            const entries = await db.getRecords<{id: string; code: number}>(table, undefined, 'code DESC');
 
             let newCode = 0;
             if (entries.length > 0) {
                 newCode = entries[0].code + 1;
             }
 
-            await this.appDB.insertRecord(table, { id: id, code: newCode });
+            await db.insertRecord(table, { id: id, code: newCode });
             this.codes[key] = newCode;
 
             return newCode;
@@ -324,10 +336,10 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
     async isTriggered(notification: ILocalNotification, useQueue: boolean = true): Promise<boolean> {
-        await this.dbReady;
+        const db = await this.appDB;
 
         try {
-            const stored = await this.appDB.getRecord<{ id: number; at: number }>(
+            const stored = await db.getRecord<{ id: number; at: number }>(
                 TRIGGERED_TABLE_NAME,
                 { id: notification.id },
             );
@@ -481,9 +493,9 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when it is removed.
      */
     async removeTriggered(id: number): Promise<void> {
-        await this.dbReady;
+        const db = await this.appDB;
 
-        await this.appDB.deleteRecords(TRIGGERED_TABLE_NAME, { id: id });
+        await db.deleteRecords(TRIGGERED_TABLE_NAME, { id: id });
     }
 
     /**
@@ -639,14 +651,13 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when stored, rejected otherwise.
      */
     async trigger(notification: ILocalNotification): Promise<number> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const entry = {
             id: notification.id,
             at: notification.trigger && notification.trigger.at ? notification.trigger.at.getTime() : Date.now(),
         };
 
-        return this.appDB.insertRecord(TRIGGERED_TABLE_NAME, entry);
+        return db.insertRecord(TRIGGERED_TABLE_NAME, entry);
     }
 
     /**
@@ -657,12 +668,12 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when done.
      */
     async updateComponentName(oldName: string, newName: string): Promise<void> {
-        await this.dbReady;
+        const db = await this.appDB;
 
         const oldId = COMPONENTS_TABLE_NAME + '#' + oldName;
         const newId = COMPONENTS_TABLE_NAME + '#' + newName;
 
-        await this.appDB.updateRecords(COMPONENTS_TABLE_NAME, { id: newId }, { id: oldId });
+        await db.updateRecords(COMPONENTS_TABLE_NAME, { id: newId }, { id: oldId });
     }
 
 }

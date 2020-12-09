@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { File } from '@ionic-native/file/ngx';
 
 import { CoreFile } from '@services/file';
-import { CoreInitDelegate, CoreInitHandler } from '@services/init';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
 import { FileMock } from './file';
@@ -25,14 +24,8 @@ import { FileTransferErrorMock } from './file-transfer';
 /**
  * Helper service for the emulator feature. It also acts as an init handler.
  */
-@Injectable({
-    providedIn: 'root',
-})
-export class CoreEmulatorHelperProvider implements CoreInitHandler {
-
-    name = 'CoreEmulator';
-    priority = CoreInitDelegate.MAX_RECOMMENDED_PRIORITY + 500;
-    blocking = true;
+@Injectable({ providedIn: 'root' })
+export class CoreEmulatorHelperProvider {
 
     protected logger: CoreLogger;
 

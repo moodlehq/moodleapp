@@ -26,7 +26,7 @@ import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile } from '@services/ws';
 
-import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './db/course';
+import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {

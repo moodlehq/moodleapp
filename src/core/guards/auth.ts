@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 import { Router, CanLoad, CanActivate, UrlTree } from '@angular/router';
 
-import { CoreInit } from '@services/init';
 import { CoreSites } from '@services/sites';
+import { ApplicationInit } from '@singletons';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanLoad, CanActivate {
@@ -32,7 +32,7 @@ export class AuthGuard implements CanLoad, CanActivate {
     }
 
     private async guard(): Promise<true | UrlTree> {
-        await CoreInit.instance.ready();
+        await ApplicationInit.instance.donePromise;
 
         return CoreSites.instance.isLoggedIn() || this.router.parseUrl('/login');
     }

@@ -47,7 +47,7 @@ import {
     SiteDBEntry,
     CurrentSiteDBEntry,
     SchemaVersionsDBEntry,
-} from '@services/db/sites';
+} from '@services/database/sites';
 import { CoreArray } from '../singletons/array';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken('CORE_SITE_SCHEMAS');
@@ -61,25 +61,27 @@ export const CORE_SITE_SCHEMAS = new InjectionToken('CORE_SITE_SCHEMAS');
 export class CoreSitesProvider {
 
     // Constants to validate a site version.
-    protected readonly WORKPLACE_APP = 3;
-    protected readonly MOODLE_APP = 2;
-    protected readonly VALID_VERSION = 1;
-    protected readonly INVALID_VERSION = -1;
+    protected static readonly WORKPLACE_APP = 3;
+    protected static readonly MOODLE_APP = 2;
+    protected static readonly VALID_VERSION = 1;
+    protected static readonly INVALID_VERSION = -1;
 
     protected isWPApp = false;
-
     protected logger: CoreLogger;
     protected services = {};
     protected sessionRestored = false;
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
-    protected appDB: SQLiteDB;
-    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
     protected siteSchemasMigration: { [siteId: string]: Promise<void> } = {};
     protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
     protected pluginsSiteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
 
+    // Variables for DB.
+    protected appDB: Promise<SQLiteDB>;
+    protected resolveAppDB!: (appDB: SQLiteDB) => void;
+
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
+        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
         this.siteSchemas = CoreArray.flatten(siteSchemas).reduce(
             (siteSchemas, schema) => {
@@ -89,10 +91,19 @@ export class CoreSitesProvider {
             },
             this.siteSchemas,
         );
-        this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        try {
+            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+        } catch (e) {
             // Ignore errors.
-        });
+        }
+
+        this.resolveAppDB(CoreApp.instance.getDB());
     }
 
     /**
@@ -429,7 +440,7 @@ export class CoreSitesProvider {
             const info = await candidateSite.fetchSiteInfo();
 
             const result = this.isValidMoodleVersion(info);
-            if (result != this.VALID_VERSION) {
+            if (result != CoreSitesProvider.VALID_VERSION) {
                 return this.treatInvalidAppVersion(result, siteUrl);
             }
 
@@ -491,7 +502,7 @@ export class CoreSitesProvider {
         } catch (error) {
             // Error invaliddevice is returned by Workplace server meaning the same as connecttoworkplaceapp.
             if (error && error.errorcode == 'invaliddevice') {
-                return this.treatInvalidAppVersion(this.WORKPLACE_APP, siteUrl);
+                return this.treatInvalidAppVersion(CoreSitesProvider.WORKPLACE_APP, siteUrl);
             }
 
             throw error;
@@ -512,11 +523,11 @@ export class CoreSitesProvider {
         let translateParams;
 
         switch (result) {
-            case this.MOODLE_APP:
+            case CoreSitesProvider.MOODLE_APP:
                 errorKey = 'core.login.connecttomoodleapp';
                 errorCode = 'connecttomoodleapp';
                 break;
-            case this.WORKPLACE_APP:
+            case CoreSitesProvider.WORKPLACE_APP:
                 errorKey = 'core.login.connecttoworkplaceapp';
                 errorCode = 'connecttoworkplaceapp';
                 break;
@@ -581,7 +592,7 @@ export class CoreSitesProvider {
      */
     protected isValidMoodleVersion(info: CoreSiteInfoResponse): number {
         if (!info) {
-            return this.INVALID_VERSION;
+            return CoreSitesProvider.INVALID_VERSION;
         }
 
         const version31 = 2016052300;
@@ -606,7 +617,7 @@ export class CoreSitesProvider {
         }
 
         // Couldn't validate it.
-        return this.INVALID_VERSION;
+        return CoreSitesProvider.INVALID_VERSION;
     }
 
     /**
@@ -623,14 +634,14 @@ export class CoreSitesProvider {
         }
 
         if (!this.isWPApp && isWorkplace) {
-            return this.WORKPLACE_APP;
+            return CoreSitesProvider.WORKPLACE_APP;
         }
 
         if (this.isWPApp && !isWorkplace) {
-            return this.MOODLE_APP;
+            return CoreSitesProvider.MOODLE_APP;
         }
 
-        return this.VALID_VERSION;
+        return CoreSitesProvider.VALID_VERSION;
     }
 
     /**
@@ -669,8 +680,7 @@ export class CoreSitesProvider {
         config?: CoreSiteConfig,
         oauthId?: number,
     ): Promise<void> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const entry = {
             id,
             siteUrl,
@@ -682,7 +692,7 @@ export class CoreSitesProvider {
             oauthId,
         };
 
-        await this.appDB.insertRecord(SITES_TABLE_NAME, entry);
+        await db.insertRecord(SITES_TABLE_NAME, entry);
     }
 
     /**
@@ -893,8 +903,6 @@ export class CoreSitesProvider {
      * @return Promise to be resolved when the site is deleted.
      */
     async deleteSite(siteId: string): Promise<void> {
-        await this.dbReady;
-
         this.logger.debug(`Delete site ${siteId}`);
 
         if (typeof this.currentSite != 'undefined' && this.currentSite.id == siteId) {
@@ -909,7 +917,9 @@ export class CoreSitesProvider {
         delete this.sites[siteId];
 
         try {
-            await this.appDB.deleteRecords(SITES_TABLE_NAME, { id: siteId });
+            const db = await this.appDB;
+
+            await db.deleteRecords(SITES_TABLE_NAME, { id: siteId });
         } catch (err) {
             // DB remove shouldn't fail, but we'll go ahead even if it does.
         }
@@ -926,9 +936,8 @@ export class CoreSitesProvider {
      * @return Promise resolved with true if there are sites and false if there aren't.
      */
     async hasSites(): Promise<boolean> {
-        await this.dbReady;
-
-        const count = await this.appDB.countRecords(SITES_TABLE_NAME);
+        const db = await this.appDB;
+        const count = await db.countRecords(SITES_TABLE_NAME);
 
         return count > 0;
     }
@@ -940,8 +949,6 @@ export class CoreSitesProvider {
      * @return Promise resolved with the site.
      */
     async getSite(siteId?: string): Promise<CoreSite> {
-        await this.dbReady;
-
         if (!siteId) {
             if (this.currentSite) {
                 return this.currentSite;
@@ -954,7 +961,8 @@ export class CoreSitesProvider {
             return this.sites[siteId];
         } else {
             // Retrieve and create the site.
-            const data = await this.appDB.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
+            const db = await this.appDB;
+            const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
 
             return this.makeSiteFromSiteListEntry(data);
         }
@@ -1025,9 +1033,8 @@ export class CoreSitesProvider {
      * @return Promise resolved when the sites are retrieved.
      */
     async getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
-        await this.dbReady;
-
-        const sites = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
+        const db = await this.appDB;
+        const sites = await db.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
 
         const formattedSites: CoreSiteBasicInfo[] = [];
         sites.forEach((site) => {
@@ -1089,9 +1096,8 @@ export class CoreSitesProvider {
      * @return Promise resolved when the sites IDs are retrieved.
      */
     async getLoggedInSitesIds(): Promise<string[]> {
-        await this.dbReady;
-
-        const sites = await this.appDB.getRecords<SiteDBEntry>(SITES_TABLE_NAME, { loggedOut : 0 });
+        const db = await this.appDB;
+        const sites = await db.getRecords<SiteDBEntry>(SITES_TABLE_NAME, { loggedOut : 0 });
 
         return sites.map((site) => site.id);
     }
@@ -1102,9 +1108,8 @@ export class CoreSitesProvider {
      * @return Promise resolved when the sites IDs are retrieved.
      */
     async getSitesIds(): Promise<string[]> {
-        await this.dbReady;
-
-        const sites = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
+        const db = await this.appDB;
+        const sites = await db.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
 
         return sites.map((site) => site.id);
     }
@@ -1116,14 +1121,13 @@ export class CoreSitesProvider {
      * @return Promise resolved when current site is stored.
      */
     async login(siteId: string): Promise<void> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const entry = {
             id: 1,
             siteId,
         };
 
-        await this.appDB.insertRecord(CURRENT_SITE_TABLE_NAME, entry);
+        await db.insertRecord(CURRENT_SITE_TABLE_NAME, entry);
 
         CoreEvents.trigger(CoreEvents.LOGIN, {}, siteId);
     }
@@ -1134,12 +1138,11 @@ export class CoreSitesProvider {
      * @return Promise resolved when the user is logged out.
      */
     async logout(): Promise<void> {
-        await this.dbReady;
-
         let siteId: string | undefined;
         const promises: Promise<unknown>[] = [];
 
         if (this.currentSite) {
+            const db = await this.appDB;
             const siteConfig = this.currentSite.getStoredConfig();
             siteId = this.currentSite.getId();
 
@@ -1149,7 +1152,7 @@ export class CoreSitesProvider {
                 promises.push(this.setSiteLoggedOut(siteId, true));
             }
 
-            promises.push(this.appDB.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
+            promises.push(db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
         }
 
         try {
@@ -1169,12 +1172,12 @@ export class CoreSitesProvider {
             return Promise.reject(new CoreError('Session already restored.'));
         }
 
-        await this.dbReady;
+        const db = await this.appDB;
 
         this.sessionRestored = true;
 
         try {
-            const currentSite = await this.appDB.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
+            const currentSite = await db.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
             const siteId = currentSite.siteId;
             this.logger.debug(`Restore session in site ${siteId}`);
 
@@ -1192,8 +1195,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when done.
      */
     async setSiteLoggedOut(siteId: string, loggedOut: boolean): Promise<void> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const site = await this.getSite(siteId);
         const newValues = {
             token: '', // Erase the token for security.
@@ -1202,7 +1204,7 @@ export class CoreSitesProvider {
 
         site.setLoggedOut(loggedOut);
 
-        await this.appDB.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+        await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
     }
 
     /**
@@ -1238,8 +1240,7 @@ export class CoreSitesProvider {
      * @return A promise resolved when the site is updated.
      */
     async updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<void> {
-        await this.dbReady;
-
+        const db = await this.appDB;
         const site = await this.getSite(siteId);
         const newValues = {
             token,
@@ -1251,7 +1252,7 @@ export class CoreSitesProvider {
         site.privateToken = privateToken;
         site.setLoggedOut(false); // Token updated means the user authenticated again, not logged out anymore.
 
-        await this.appDB.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+        await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
     }
 
     /**
@@ -1261,8 +1262,6 @@ export class CoreSitesProvider {
      * @return A promise resolved when the site is updated.
      */
     async updateSiteInfo(siteId: string): Promise<void> {
-        await this.dbReady;
-
         const site = await this.getSite(siteId);
 
         try {
@@ -1270,7 +1269,7 @@ export class CoreSitesProvider {
             site.setInfo(info);
 
             const versionCheck = this.isValidMoodleVersion(info);
-            if (versionCheck != this.VALID_VERSION) {
+            if (versionCheck != CoreSitesProvider.VALID_VERSION) {
                 // The Moodle version is not supported, reject.
                 return this.treatInvalidAppVersion(versionCheck, site.getURL(), site.getId());
             }
@@ -1295,7 +1294,9 @@ export class CoreSitesProvider {
             }
 
             try {
-                await this.appDB.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+                const db = await this.appDB;
+
+                await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
             } finally {
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
@@ -1328,8 +1329,6 @@ export class CoreSitesProvider {
      * @return Promise resolved with the site IDs (array).
      */
     async getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string): Promise<string[]> {
-        await this.dbReady;
-
         // If prioritize is true, check current site first.
         if (prioritize && this.currentSite && this.currentSite.containsUrl(url)) {
             if (!username || this.currentSite?.getInfo()?.username == username) {
@@ -1354,7 +1353,8 @@ export class CoreSitesProvider {
         }
 
         try {
-            const siteEntries = await this.appDB.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
+            const db = await this.appDB;
+            const siteEntries = await db.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
             const ids: string[] = [];
             const promises: Promise<unknown>[] = [];
 
@@ -1385,9 +1385,8 @@ export class CoreSitesProvider {
      * @return Promise resolved with the site ID.
      */
     async getStoredCurrentSiteId(): Promise<string> {
-        await this.dbReady;
-
-        const currentSite = await this.appDB.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
+        const db = await this.appDB;
+        const currentSite = await db.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
 
         return currentSite.siteId;
     }

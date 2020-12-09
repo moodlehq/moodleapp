@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { ApplicationInitStatus, APP_INITIALIZER, Injectable, Injector } from '@angular/core';
+import { setSingletonsInjector } from '@singletons';
 
-import { CORE_SITE_SCHEMAS } from '@services/sites';
+@Injectable()
+export class CoreApplicationInitStatus extends ApplicationInitStatus {
 
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
+    constructor(injector: Injector) {
+        setSingletonsInjector(injector);
 
-@NgModule({
-    providers: [
-        {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
-            multi: true,
-        },
-    ],
-})
-export class CoreCourseModule {
+        super(injector.get(APP_INITIALIZER, []));
+    }
+
 }

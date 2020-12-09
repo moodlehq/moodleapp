@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-
+import { Provider } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
+import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './filepool';
+import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './sites';
+import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './sync';
 
-@NgModule({
-    providers: [
-        {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
-            multi: true,
-        },
-    ],
-})
-export class CoreCourseModule {
+export function getDatabaseProviders(): Provider[] {
+    return [{
+        provide: CORE_SITE_SCHEMAS,
+        useValue: [
+            FILEPOOL_SITE_SCHEMA,
+            SITES_SITE_SCHEMA,
+            SYNC_SITE_SCHEMA,
+        ],
+        multi: true,
+    }];
 }

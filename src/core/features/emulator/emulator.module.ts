@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
-import { CoreInitDelegate } from '@services/init';
 import { CoreEmulatorHelperProvider } from './services/emulator-helper';
 import { CoreEmulatorComponentsModule } from './components/components.module';
 
@@ -141,20 +140,18 @@ import { ZipMock } from './services/zip';
             deps: [Platform, File],
             useFactory: (platform: Platform, file: File): Zip => platform.is('cordova') ? new Zip() : new ZipMock(file),
         },
+        {
+            provide: APP_INITIALIZER,
+            deps: [Platform, CoreEmulatorHelperProvider],
+            useFactory: (platform: Platform, helperProvider: CoreEmulatorHelperProvider) => () => {
+                if (platform.is('cordova')) {
+                    return;
+                }
+
+                return helperProvider.load();
+            },
+            multi: true,
+        },
     ],
 })
-export class CoreEmulatorModule {
-
-    constructor(
-        platform: Platform,
-        initDelegate: CoreInitDelegate,
-        helper: CoreEmulatorHelperProvider,
-    ) {
-
-        if (!platform.is('cordova')) {
-            // Register an init process to load the Mocks that need it.
-            initDelegate.registerProcess(helper);
-        }
-    }
-
-}
+export class CoreEmulatorModule {}

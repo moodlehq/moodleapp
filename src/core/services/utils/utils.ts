@@ -26,9 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
-import {
-    makeSingleton, Clipboard, InAppBrowser, Platform, FileOpener, WebIntent, QRScanner, Translate,
-} from '@singletons';
+import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
@@ -48,9 +46,6 @@ export class CoreUtilsProvider {
 
     constructor(protected zone: NgZone) {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
-
-        // eslint-disable-next-line promise/catch-or-return
-        Platform.instance.ready().then(() => this.overrideWindowOpen());
     }
 
     /**
@@ -1604,17 +1599,6 @@ export class CoreUtilsProvider {
      */
     wait(milliseconds: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
-
-    /**
-     * Override native window.open with InAppBrowser if available.
-     */
-    private overrideWindowOpen() {
-        if (!window.cordova?.InAppBrowser) {
-            return;
-        }
-
-        window.open = window.cordova.InAppBrowser.open;
     }
 
 }

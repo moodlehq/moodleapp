@@ -26,7 +26,8 @@
         "dom-mediacapture-record",
         "faker",
         "jest",
-        "node"
+        "node",
+        "webpack-env"
     ],
     "paths": {
       "@classes/*": ["core/classes/*"],

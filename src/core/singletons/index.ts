@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, NgZone as NgZoneService } from '@angular/core';
+import { ApplicationRef, ApplicationInitStatus, Injector, NgZone as NgZoneService, Type } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import {
@@ -52,9 +52,23 @@ import { Zip as ZipService } from '@ionic-native/zip/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { CoreSingletonsFactory, CoreInjectionToken, CoreSingletonClass } from '@classes/singletons-factory';
+/**
+ * Injector instance used to resolve singletons.
+ */
+let singletonsInjector: Injector | null = null;
 
-const factory = new CoreSingletonsFactory();
+/**
+ * Stub class used to type anonymous classes created in the makeSingleton method.
+ */
+class CoreSingleton {}
+
+/**
+ * Singleton class created using the factory.
+ */
+export type CoreSingletonClass<Service> = typeof CoreSingleton & {
+    instance: Service;
+    setInstance(instance: Service): void;
+};
 
 /**
  * Set the injector that will be used to resolve instances in the singletons of this module.
@@ -62,17 +76,38 @@ const factory = new CoreSingletonsFactory();
  * @param injector Module injector.
  */
 export function setSingletonsInjector(injector: Injector): void {
-    factory.setInjector(injector);
+    singletonsInjector = injector;
 }
 
 /**
- * Make a singleton for this module.
+ * Make a singleton for the given injection token.
  *
  * @param injectionToken Injection token used to resolve the singleton instance. This is usually the service class if the
  * provider was defined using a class or the string used in the `provide` key if it was defined using an object.
  */
-export function makeSingleton<Service>(injectionToken: CoreInjectionToken<Service>): CoreSingletonClass<Service> {
-    return factory.makeSingleton(injectionToken);
+export function makeSingleton<Service>(injectionToken: Type<Service> | Type<unknown> | string): CoreSingletonClass<Service> {
+    return class {
+
+        private static serviceInstance: Service;
+
+        static get instance(): Service {
+            // Initialize instances lazily.
+            if (!this.serviceInstance) {
+                if (!singletonsInjector) {
+                    throw new Error('Can\'t resolve a singleton instance without an injector');
+                }
+
+                this.serviceInstance = singletonsInjector.get(injectionToken);
+            }
+
+            return this.serviceInstance;
+        }
+
+        static setInstance(instance: Service): void {
+            this.serviceInstance = instance;
+        }
+
+    };
 }
 
 // Convert ionic-native services to singleton.
@@ -111,6 +146,8 @@ export class LoadingController extends makeSingleton(LoadingControllerService) {
 export class ModalController extends makeSingleton(ModalControllerService) {}
 export class ToastController extends makeSingleton(ToastControllerService) {}
 export class GestureController extends makeSingleton(GestureControllerService) {}
+export class ApplicationInit extends makeSingleton(ApplicationInitStatus) {}
+export class Application extends makeSingleton(ApplicationRef) {}
 
 // Convert external libraries injectables.
 export class Translate extends makeSingleton(TranslateService) {}

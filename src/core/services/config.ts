@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { makeSingleton } from '@singletons';
-import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/db/config';
+import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/database/config';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.
@@ -26,14 +26,24 @@ import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/db/confi
 @Injectable({ providedIn: 'root' })
 export class CoreConfigProvider {
 
-    protected appDB: SQLiteDB;
-    protected dbReady: Promise<void>; // Promise resolved when the app DB is initialized.
+    protected appDB: Promise<SQLiteDB>;
+    protected resolveAppDB!: (appDB: SQLiteDB) => void;
 
     constructor() {
-        this.appDB = CoreApp.instance.getDB();
-        this.dbReady = CoreApp.instance.createTablesFromSchema(APP_SCHEMA).catch(() => {
+        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
+    }
+
+    /**
+     * Initialise database.
+     */
+    async initialiseDatabase(): Promise<void> {
+        try {
+            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+        } catch (e) {
             // Ignore errors.
-        });
+        }
+
+        this.resolveAppDB(CoreApp.instance.getDB());
     }
 
     /**
@@ -43,9 +53,9 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async delete(name: string): Promise<void> {
-        await this.dbReady;
+        const db = await this.appDB;
 
-        await this.appDB.deleteRecords(CONFIG_TABLE_NAME, { name });
+        await db.deleteRecords(CONFIG_TABLE_NAME, { name });
     }
 
     /**
@@ -56,10 +66,10 @@ export class CoreConfigProvider {
      * @return Resolves upon success along with the config data. Reject on failure.
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
-        await this.dbReady;
+        const db = await this.appDB;
 
         try {
-            const entry = await this.appDB.getRecord<ConfigDBEntry>(CONFIG_TABLE_NAME, { name });
+            const entry = await db.getRecord<ConfigDBEntry>(CONFIG_TABLE_NAME, { name });
 
             return entry.value;
         } catch (error) {
@@ -79,9 +89,9 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
-        await this.dbReady;
+        const db = await this.appDB;
 
-        await this.appDB.insertRecord(CONFIG_TABLE_NAME, { name, value });
+        await db.insertRecord(CONFIG_TABLE_NAME, { name, value });
     }
 
 }

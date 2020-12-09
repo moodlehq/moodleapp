@@ -12,20 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { Platform } from '@singletons';
 
-import { CORE_SITE_SCHEMAS } from '@services/sites';
-
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
-
-@NgModule({
-    providers: [
-        {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
-            multi: true,
-        },
-    ],
-})
-export class CoreCourseModule {
+export default async function(): Promise<void> {
+    await Platform.instance.ready();
 }
