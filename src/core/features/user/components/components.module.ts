@@ -21,10 +21,12 @@ import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
+import { CoreUserTagAreaComponent } from './tag-area/tag-area';
 
 @NgModule({
     declarations: [
         CoreUserProfileFieldComponent,
+        CoreUserTagAreaComponent,
     ],
     imports: [
         CommonModule,
@@ -38,6 +40,7 @@ import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile
     ],
     exports: [
         CoreUserProfileFieldComponent,
+        CoreUserTagAreaComponent,
     ],
 })
 export class CoreUserComponentsModule {}

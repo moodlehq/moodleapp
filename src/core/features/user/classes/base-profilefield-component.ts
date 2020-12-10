@@ -24,7 +24,7 @@ import { CoreUserProfileField } from '@features/user/services/user';
 @Component({
     template: '',
 })
-export class CoreUserProfileFieldBaseComponent implements OnInit {
+export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
 
     @Input() field?: AuthEmailSignupProfileField | CoreUserProfileField; // The profile field to be rendered.
     @Input() edit = false; // True if editing the field. Defaults to false.

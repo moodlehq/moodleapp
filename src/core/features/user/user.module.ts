@@ -25,6 +25,8 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreUserProfileLinkHandler } from './services/handlers/profile-link';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreUserSyncCronHandler } from './services/handlers/sync-cron';
+import { CoreUserTagAreaHandler } from './services/handlers/tag-area-handler';
+import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 
 const routes: Routes = [
     {
@@ -55,6 +57,7 @@ const routes: Routes = [
                 CoreUserDelegate.instance.registerHandler(CoreUserProfileMailHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(CoreUserProfileLinkHandler.instance);
                 CoreCronDelegate.instance.register(CoreUserSyncCronHandler.instance);
+                CoreTagAreaDelegate.instance.registerHandler(CoreUserTagAreaHandler.instance);
             },
         },
     ],

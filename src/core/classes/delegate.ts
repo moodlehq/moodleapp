@@ -86,7 +86,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @param delegateName Delegate name used for logging purposes.
      * @param listenSiteEvents Whether to update the handler when a site event occurs (login, site updated, ...).
      */
-    constructor(delegateName: string, listenSiteEvents?: boolean) {
+    constructor(delegateName: string, listenSiteEvents: boolean = true) {
         this.logger = CoreLogger.getInstance(delegateName);
 
         this.handlersInitPromise = new Promise((resolve): void => {

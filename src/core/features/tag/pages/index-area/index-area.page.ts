@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Type } from '@angular/core';
 import { IonInfiniteScroll, IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
@@ -20,6 +20,7 @@ import { CoreTagFeedElement } from '../../services/tag-helper';
 import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
 import { Translate } from '@singletons';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays the tag index area.
@@ -47,7 +48,7 @@ export class CoreTagIndexAreaPage implements OnInit {
     items: CoreTagFeedElement[] = [];
     nextPage = 0;
     canLoadMore = false;
-    areaComponent: any; // @todo
+    areaComponent?: Type<unknown>;
     loadMoreError = false;
 
     constructor(
@@ -59,7 +60,7 @@ export class CoreTagIndexAreaPage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
 
-        const navParams = this.route.snapshot.queryParamMap;
+        const navParams = this.route.snapshot.queryParams;
 
         this.tagId = navParams['tagId'] ? parseInt(navParams['tagId'], 10) : this.tagId;
         this.tagName = navParams['tagName'] || this.tagName;
@@ -74,8 +75,8 @@ export class CoreTagIndexAreaPage implements OnInit {
         this.componentName = navParams['componentName'];
         this.itemType = navParams['itemType'];
         this.items = []; // @todo navParams['items'] || [];
-        this.nextPage = navParams.has('nextPage') ? parseInt(navParams['nextPage']!, 10) : 0;
-        this.canLoadMore = !!navParams['canLoadMore'];
+        this.nextPage = typeof navParams['nextPage'] != 'undefined' ? parseInt(navParams['nextPage'], 10) : 0;
+        this.canLoadMore = CoreUtils.instance.isTrueOrOne(navParams['canLoadMore']);
 
         try {
             if (!this.componentName || !this.itemType || !this.items.length || this.nextPage == 0) {

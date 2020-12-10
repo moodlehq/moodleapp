@@ -168,8 +168,11 @@ export class CoreTagIndexPage implements OnInit {
             canLoadMore: area.canLoadMore,
             nextPage: 1,
         };
-        // this.splitviewCtrl.push('core-tag-index-area', params);
-        this.router.navigate(['core-tag-index-area'], { queryParams: params });
+        // this.splitviewCtrl.push('index-area', params);
+        this.router.navigate(['../index-area'], {
+            queryParams: params,
+            relativeTo: this.route,
+        });
 
     }
 
