@@ -17,7 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonRefresher, NavController } from '@ionic/angular';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
-import { CoreCourse, CoreCourseSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -44,13 +44,14 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     hasContent = false;
     items: string[] = [];
-    siteHomeId?: number;
+    siteHomeId = 1;
     currentSite?: CoreSite;
     searchEnabled = false;
     downloadEnabled = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     downloadEnabledIcon = 'far-square';
+    newsForumModule?: CoreCourseModuleBasicInfo;
 
     protected updateSiteObserver?: CoreEventObserver;
 
@@ -80,7 +81,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }, CoreSites.instance.getCurrentSiteId());
 
         this.currentSite = CoreSites.instance.getCurrentSite()!;
-        this.siteHomeId = this.currentSite.getSiteHomeId();
+        this.siteHomeId = this.currentSite?.getSiteHomeId() || 1;
 
         const module = navParams['module'];
         if (module) {
@@ -106,6 +107,23 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.items = await CoreSiteHome.instance.getFrontPageItems(config.frontpageloggedin);
         this.hasContent = this.items.length > 0;
 
+        if (this.items.some((item) => item == 'NEWS_ITEMS')) {
+            // Get the news forum.
+            try {
+                const forum = await CoreSiteHome.instance.getNewsForum();
+                this.newsForumModule = await CoreCourse.instance.getModuleBasicInfo(forum.cmid);
+                /* @todo this.newsForumModule.handlerData = this.moduleDelegate.getModuleDataFor(
+                    this.newsForumModule.modname,
+                    this.newsForumModule,
+                    this.siteHomeId,
+                    this.newsForumModule.section,
+                    true,
+                );*/
+            } catch {
+                // Ignore errors.
+            }
+        }
+
         try {
             const sections = await CoreCourse.instance.getSections(this.siteHomeId!, false, true);
 
@@ -114,13 +132,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             if (this.section) {
                 this.section.hasContent = false;
                 this.section.hasContent = CoreCourseHelper.instance.sectionHasContent(this.section);
-                /* @todo this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
+                this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
                     undefined,
                     true,
-                ) || this.hasContent;*/
+                ) || this.hasContent;
             }
 
             // Add log in Moodle.

@@ -33,6 +33,7 @@ import { AddonBlockPrivateFilesModule } from './block/privatefiles/privatefiles.
 import { AddonBlockRecentlyAccessedCoursesModule } from './block/recentlyaccessedcourses/recentlyaccessedcourses.module';
 import { AddonBlockRssClientModule } from './block/rssclient/rssclient.module';
 import { AddonBlockSelfCompletionModule } from './block/selfcompletion/selfcompletion.module';
+import { AddonBlockSiteMainMenuModule } from './block/sitemainmenu/sitemainmenu.module';
 import { AddonBlockStarredCoursesModule } from './block/starredcourses/starredcourses.module';
 import { AddonBlockTagsModule } from './block/tags/tags.module';
 import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
@@ -62,6 +63,7 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
         AddonBlockRecentlyAccessedCoursesModule,
         AddonBlockRssClientModule,
         AddonBlockSelfCompletionModule,
+        AddonBlockSiteMainMenuModule,
         AddonBlockStarredCoursesModule,
         AddonBlockTagsModule,
         AddonUserProfileFieldModule,

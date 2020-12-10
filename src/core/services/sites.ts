@@ -1618,7 +1618,7 @@ export class CoreSitesProvider {
      * @param strategy Reading strategy.
      * @return PreSets options object.
      */
-    getReadingStrategyPreSets(strategy: CoreSitesReadingStrategy): CoreSiteWSPreSets {
+    getReadingStrategyPreSets(strategy?: CoreSitesReadingStrategy): CoreSiteWSPreSets {
         switch (strategy) {
             case CoreSitesReadingStrategy.PreferCache:
                 return {

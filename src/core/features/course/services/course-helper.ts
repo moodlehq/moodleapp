@@ -134,8 +134,52 @@ export class CoreCourseHelperProvider {
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Whether the sections have content.
      */
-    addHandlerDataForModules(): void {
-        // @todo params and logic
+    addHandlerDataForModules(
+        sections: CoreCourseSection[],
+        courseId: number,
+        completionStatus?: any, // eslint-disable-line @typescript-eslint/no-unused-vars
+        courseName?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+        forCoursePage = false, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): boolean {
+
+        let hasContent = false;
+
+        sections.forEach((section) => {
+            if (!section || !this.sectionHasContent(section) || !section.modules) {
+                return;
+            }
+
+            hasContent = true;
+
+            /* @todo
+            section.modules.forEach((module) => {
+                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id,
+                        forCoursePage);
+
+                if (module.completiondata && module.completion > 0) {
+                    module.completiondata.courseId = courseId;
+                    module.completiondata.courseName = courseName;
+                    module.completiondata.tracking = module.completion;
+                    module.completiondata.cmid = module.id;
+
+                    // Use of completionstatus is deprecated, use completiondata instead.
+                    module.completionstatus = module.completiondata;
+                } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                    // Should not happen on > 3.6. Check if activity has completions and if it's marked.
+                    module.completiondata = completionStatus[module.id];
+                    module.completiondata.courseId = courseId;
+                    module.completiondata.courseName = courseName;
+
+                    // Use of completionstatus is deprecated, use completiondata instead.
+                    module.completionstatus = module.completiondata;
+                }
+
+                // Check if the module is stealth.
+                module.isStealth = module.visibleoncoursepage === 0 || (module.visible && !section.visible);
+            });*/
+        });
+
+        return hasContent;
     }
 
     /**
@@ -913,7 +957,7 @@ export class CoreCourseHelperProvider {
      * @return Whether the section has content.
      * @todo section type.
      */
-    sectionHasContent(section: any): boolean {
+    sectionHasContent(section: CoreCourseSection): boolean {
         if (section.hiddenbynumsections) {
             return false;
         }
