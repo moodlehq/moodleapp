@@ -277,3 +277,11 @@ ion-select.core-button-select,
     cursor: pointer;
     text-decoration: underline;
 }
+
+// Horizontal scrolling elements
+.core-horizontal-scroll {
+    display: flex;
+    flex-flow: nowrap;
+    overflow-x: scroll;
+    flex-direction: row;
+}
