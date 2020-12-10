@@ -22,6 +22,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -76,8 +77,10 @@ export class CoreLinkDirective implements OnInit {
             if (CoreUtils.instance.isTrueOrOne(this.capture)) {
                 href = CoreTextUtils.instance.decodeURI(href);
 
-                // @todo: Handle link.
-                this.navigate(href, openIn);
+                const treated = CoreContentLinksHelper.instance.handleLink(href, undefined, true, true);
+                if (!treated) {
+                    this.navigate(href, openIn);
+                }
             } else {
                 this.navigate(href, openIn);
             }
