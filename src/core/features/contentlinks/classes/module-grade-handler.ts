@@ -16,7 +16,7 @@ import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreCourseHelperProvider } from '@features/course/providers/helper';
+// import { CoreCourseHelper } from '@features/course/services/helper';
 import { Params } from '@angular/router';
 
 /**
@@ -77,7 +77,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
                 const site = await CoreSites.instance.getSite(siteId);
                 if (!params.userid || params.userid == site.getUserId()) {
                     // No user specified or current user. Navigate to module.
-                    // @todo this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
+                    // @todo CoreCourseHelper.instance.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
                     //        this.useModNameToGetModule ? this.modName : undefined, undefined, navCtrl);
                 } else if (this.canReview) {
                     // Use the goToReview function.
