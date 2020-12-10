@@ -13,8 +13,7 @@
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user && !isDeleted && isEnrolled">
             <ion-item class="ion-text-center core-user-profile-maininfo">
-                <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false"
-                [checkOnline]="true">
+                <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     <div class="core-icon-foreground">
                         <ion-icon *ngIf="canChangeProfilePicture" name="fa-pen" (click)="changeProfilePicture()">
                         </ion-icon>
