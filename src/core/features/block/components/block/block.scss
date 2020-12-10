@@ -1,30 +1,11 @@
 :host {
-  // @todo
-  position: relative;
-  display: block;
-
-  core-loading.core-loading-center {
+    position: relative;
     display: block;
 
-    .core-loading-container {
-        margin-top: 10px;
-        position: relative;
+    ion-item-divider {
+        min-height: 60px;
+        .core-button-spinner {
+            margin: 0;
+        }
     }
-  }
-
-  core-empty-box .core-empty-box {
-    position: relative;
-    z-index: initial;
-    //@include position(initial, initial, null, initial);
-    height: auto;
-  }
-
-  ion-item-divider {
-    //@include padding-horizontal(null, 0px);
-    min-height: 60px;
-  }
-
-  ion-item-divider .core-button-spinner {
-    margin: 0;
-  }
 }

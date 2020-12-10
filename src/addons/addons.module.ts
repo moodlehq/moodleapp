@@ -26,6 +26,7 @@ import { AddonBlockCompletionStatusModule } from './block/completionstatus/compl
 import { AddonBlockGlossaryRandomModule } from './block/glossaryrandom/glossaryrandom.module';
 import { AddonBlockHtmlModule } from './block/html/html.module';
 import { AddonBlockLearningPlansModule } from './block/learningplans/learningplans.module';
+import { AddonBlockMyOverviewModule } from './block/myoverview/myoverview.module';
 import { AddonBlockNewsItemsModule } from './block/newsitems/newsitems.module';
 import { AddonBlockOnlineUsersModule } from './block/onlineusers/onlineusers.module';
 import { AddonBlockPrivateFilesModule } from './block/privatefiles/privatefiles.module';
@@ -51,6 +52,7 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
         AddonBlockCompletionStatusModule,
         AddonBlockGlossaryRandomModule,
         AddonBlockHtmlModule,
+        AddonBlockMyOverviewModule,
         AddonBlockLearningPlansModule,
         AddonBlockNewsItemsModule,
         AddonBlockOnlineUsersModule,

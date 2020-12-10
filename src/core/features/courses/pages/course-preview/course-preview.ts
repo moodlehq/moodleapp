@@ -27,7 +27,7 @@ import {
     CoreCoursesProvider,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
-// import { CoreCourseOptionsDelegate } from '@features/course/services/options-delegate';
+import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { Translate } from '@singletons';
@@ -77,7 +77,6 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
 
     constructor(
         protected modalCtrl: ModalController,
-        // protected courseOptionsDelegate: CoreCourseOptionsDelegate,
         protected zone: NgZone,
         protected route: ActivatedRoute,
         protected navCtrl: NavController,
@@ -389,7 +388,7 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
         promises.push(CoreCourses.instance.invalidateUserCourses());
         promises.push(CoreCourses.instance.invalidateCourse(this.course!.id));
         promises.push(CoreCourses.instance.invalidateCourseEnrolmentMethods(this.course!.id));
-        // @todo promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions(this.course!.id));
+        promises.push(CoreCourseOptionsDelegate.instance.clearAndInvalidateCoursesOptions(this.course!.id));
         if (CoreSites.instance.getCurrentSite() && !CoreSites.instance.getCurrentSite()!.isVersionGreaterEqualThan('3.7')) {
             promises.push(CoreCourses.instance.invalidateCoursesByField('id', this.course!.id));
         }

@@ -35,6 +35,11 @@ import { CoreArray } from '@singletons/array';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseOffline } from './course-offline';
 import { CoreNavHelper, CoreNavHelperService } from '@services/nav-helper';
+import {
+    CoreCourseOptionsDelegate,
+    CoreCourseOptionsHandlerToDisplay,
+    CoreCourseOptionsMenuHandlerToDisplay,
+} from './course-options-delegate';
 
 /**
  * Prefetch info of a module.
@@ -197,8 +202,8 @@ export class CoreCourseHelperProvider {
         const promises = courses.map((course) => {
             const subPromises: Promise<void>[] = [];
             let sections: CoreCourseSection[];
-            let handlers: any;
-            let menuHandlers: any;
+            let handlers: CoreCourseOptionsHandlerToDisplay[] = [];
+            let menuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
             let success = true;
 
             // Get the sections and the handlers.
@@ -208,15 +213,16 @@ export class CoreCourseHelperProvider {
                 return;
             }));
 
-            /**
-             * @todo
-            subPromises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, course).then((cHandlers: any) => {
+            subPromises.push(CoreCourseOptionsDelegate.instance.getHandlersToDisplay(course).then((cHandlers) => {
                 handlers = cHandlers;
+
+                return;
             }));
-            subPromises.push(this.courseOptionsDelegate.getMenuHandlersToDisplay(this.injector, course).then((mHandlers: any) => {
+            subPromises.push(CoreCourseOptionsDelegate.instance.getMenuHandlersToDisplay(course).then((mHandlers) => {
                 menuHandlers = mHandlers;
+
+                return;
             }));
-             */
 
             return Promise.all(subPromises).then(() => this.prefetchCourse(course, sections, handlers, menuHandlers, siteId))
                 .catch((error) => {
@@ -777,8 +783,8 @@ export class CoreCourseHelperProvider {
     async prefetchCourse(
         course: CoreEnrolledCourseDataWithExtraInfoAndOptions,
         sections: CoreCourseSection[],
-        courseHandlers: any[], // @todo CoreCourseOptionsHandlerToDisplay[],
-        courseMenuHandlers: any[], // @todo CoreCourseOptionsMenuHandlerToDisplay[],
+        courseHandlers: CoreCourseOptionsHandlerToDisplay[],
+        courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[],
         siteId?: string,
     ): Promise<void> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
@@ -797,16 +803,15 @@ export class CoreCourseHelperProvider {
             siteId,
         ).then(async () => {
 
-            const promises: Promise<any>[] = [];
+            const promises: Promise<unknown>[] = [];
 
+            /* @todo
             // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
-            /*
-             * @todo
-            let allSectionsSection = sections[0];
-             if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
+            let allSectionsSection: Partial<CoreCourseSection> = sections[0];
+            if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
                 allSectionsSection = { id: CoreCourseProvider.ALL_SECTIONS_ID };
             }
-            promises.push(this.prefetchSection(allSectionsSection, course.id, sections));
+            promises.push(this.prefetchSection(allSectionsSection, course.id, sections));*/
 
             // Prefetch course options.
             courseHandlers.forEach((handler) => {
@@ -818,7 +823,7 @@ export class CoreCourseHelperProvider {
                 if (handler.prefetch) {
                     promises.push(handler.prefetch(course));
                 }
-            });*/
+            });
 
             // Prefetch other data needed to render the course.
             if (CoreCourses.instance.isGetCoursesByFieldAvailable()) {
@@ -832,10 +837,11 @@ export class CoreCourseHelperProvider {
 
             // @todo promises.push(this.filterHelper.getFilters('course', course.id));
 
-            return CoreUtils.instance.allPromises(promises);
-        }).then(() =>
+            await CoreUtils.instance.allPromises(promises);
+
             // Download success, mark the course as downloaded.
-            CoreCourse.instance.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId)).catch(async (error) => {
+            return CoreCourse.instance.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId);
+        }).catch(async (error) => {
             // Error, restore previous status.
             await CoreCourse.instance.setCoursePreviousStatus(course.id, siteId);
 

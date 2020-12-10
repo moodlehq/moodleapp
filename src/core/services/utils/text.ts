@@ -650,7 +650,7 @@ export class CoreTextUtilsProvider {
      * @param logErrorFn An error to call with the exception to log the error. If not supplied, no error.
      * @return JSON parsed as object or what it gets.
      */
-    parseJSON<T>(json: string, defaultValue?: T, logErrorFn?: (error?: Error) => void): T | string {
+    parseJSON<T>(json: string, defaultValue?: T, logErrorFn?: (error?: Error) => void): T {
         try {
             return JSON.parse(json);
         } catch (error) {
@@ -661,7 +661,11 @@ export class CoreTextUtilsProvider {
         }
 
         // Error parsing, return the default value or the original value.
-        return typeof defaultValue != 'undefined' ? defaultValue : json;
+        if (typeof defaultValue != 'undefined') {
+            return defaultValue;
+        }
+
+        throw new CoreError('JSON cannot be parsed and not default value has been provided') ;
     }
 
     /**

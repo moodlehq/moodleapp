@@ -81,7 +81,7 @@ ion-item-divider {
 
 // Ionic list.
 ion-list.list-md {
-    padding-bottom: 0;
+    padding: 0;
 }
 
 // Header.
@@ -248,10 +248,15 @@ ion-avatar ion-img, ion-avatar img {
 // Select.
 ion-select.core-button-select,
 .core-button-select {
-    background-color: var(--ion-color-primary-contrast);
+    background: var(--ion-color-primary-contrast);
     color: var(--ion-color-primary);
     white-space: normal;
     min-height: 45px;
+    margin: 8px;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    &::part(icon) {
+        margin: 0 8px;
+    }
 }
 
 // File uploader.

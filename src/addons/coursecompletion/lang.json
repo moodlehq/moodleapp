@@ -1,0 +1,23 @@
+{
+    "complete": "Complete",
+    "completecourse": "Complete course",
+    "completed": "Completed",
+    "completiondate": "Completion date",
+    "completionmenuitem": "Completion",
+    "couldnotloadreport": "Could not load the course completion report. Please try again later.",
+    "coursecompletion": "Course completion",
+    "criteria": "Criteria",
+    "criteriagroup": "Criteria group",
+    "criteriarequiredall": "All criteria below are required",
+    "criteriarequiredany": "Any criteria below are required",
+    "inprogress": "In progress",
+    "manualselfcompletion": "Manual self completion",
+    "nottracked": "You are currently not being tracked by completion in this course",
+    "notyetstarted": "Not yet started",
+    "pending": "Pending",
+    "required": "Required",
+    "requiredcriteria": "Required criteria",
+    "requirement": "Requirement",
+    "status": "Status",
+    "viewcoursereport": "View course report"
+}
