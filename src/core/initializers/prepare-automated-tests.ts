@@ -14,19 +14,19 @@
 
 import { ApplicationRef } from '@angular/core';
 import { CoreApp, CoreAppProvider } from '@services/app';
-import { CoreCron, CoreCronDelegate } from '@services/cron';
+import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { Application } from '@singletons';
 
 type AutomatedTestsWindow = Window & {
     appRef?: ApplicationRef;
     appProvider?: CoreAppProvider;
-    cronProvider?: CoreCronDelegate;
+    cronProvider?: CoreCronDelegateService;
 };
 
 function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
     window.appRef = Application.instance;
     window.appProvider = CoreApp.instance;
-    window.cronProvider = CoreCron.instance;
+    window.cronProvider = CoreCronDelegate.instance;
 }
 
 export default function(): void {

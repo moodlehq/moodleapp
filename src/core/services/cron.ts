@@ -29,7 +29,7 @@ import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/database/cro
  * Service to handle cron processes. The registered processes will be executed every certain time.
 */
 @Injectable({ providedIn: 'root' })
-export class CoreCronDelegate {
+export class CoreCronDelegateService {
 
     // Constants.
     static readonly DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
@@ -108,7 +108,7 @@ export class CoreCronDelegate {
                 // Cannot execute in this network connection, retry soon.
                 const message = `Cannot execute handler because device is using limited connection: ${name}`;
                 this.logger.debug(message);
-                this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
+                this.scheduleNextExecution(name, CoreCronDelegateService.MIN_INTERVAL);
 
                 throw new CoreError(message);
             }
@@ -130,7 +130,7 @@ export class CoreCronDelegate {
                 // Handler call failed. Retry soon.
                 const message = `Execution of handler '${name}' failed.`;
                 this.logger.error(message, error);
-                this.scheduleNextExecution(name, CoreCronDelegate.MIN_INTERVAL);
+                this.scheduleNextExecution(name, CoreCronDelegateService.MIN_INTERVAL);
 
                 throw new CoreError(message);
             }
@@ -160,7 +160,7 @@ export class CoreCronDelegate {
                 // The handler took too long. Resolve because we don't want to retry soon.
                 this.logger.debug(`Resolving execution of handler '${name}' because it took too long.`);
                 resolve();
-            }, CoreCronDelegate.MAX_TIME_PROCESS);
+            }, CoreCronDelegateService.MAX_TIME_PROCESS);
         });
     }
 
@@ -215,15 +215,15 @@ export class CoreCronDelegate {
     protected getHandlerInterval(name: string): number {
         if (!this.handlers[name] || !this.handlers[name].getInterval) {
             // Invalid, return default.
-            return CoreCronDelegate.DEFAULT_INTERVAL;
+            return CoreCronDelegateService.DEFAULT_INTERVAL;
         }
 
         // Don't allow intervals lower than the minimum.
-        const minInterval = CoreCronDelegate.MIN_INTERVAL;
+        const minInterval = CoreCronDelegateService.MIN_INTERVAL;
         const handlerInterval = this.handlers[name].getInterval!();
 
         if (!handlerInterval) {
-            return CoreCronDelegate.DEFAULT_INTERVAL;
+            return CoreCronDelegateService.DEFAULT_INTERVAL;
         } else {
             return Math.max(minInterval, handlerInterval);
         }
@@ -476,7 +476,7 @@ export class CoreCronDelegate {
 
 }
 
-export class CoreCron extends makeSingleton(CoreCronDelegate) {}
+export class CoreCronDelegate extends makeSingleton(CoreCronDelegateService) {}
 
 
 /**
@@ -499,7 +499,7 @@ export interface CoreCronHandler {
     timeout?: number;
 
     /**
-     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegate.DEFAULT_INTERVAL.
+     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegateService.DEFAULT_INTERVAL.
      *
      * @return Interval time (in milliseconds).
      */

@@ -18,6 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Params } from '@angular/router';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all handlers must implement.
@@ -132,10 +133,8 @@ export interface CoreContentLinksHandlerActions {
 /**
  * Delegate to register handlers to handle links.
  */
-@Injectable({
-    providedIn: 'root',
-})
-export class CoreContentLinksDelegate {
+@Injectable({ providedIn: 'root' })
+export class CoreContentLinksDelegateService {
 
     protected logger: CoreLogger;
     protected handlers: { [s: string]: CoreContentLinksHandler } = {}; // All registered handlers.
@@ -307,3 +306,5 @@ export class CoreContentLinksDelegate {
     }
 
 }
+
+export class CoreContentLinksDelegate extends makeSingleton(CoreContentLinksDelegateService) {}

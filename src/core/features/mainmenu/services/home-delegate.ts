@@ -17,6 +17,7 @@ import { Params } from '@angular/router';
 
 import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/delegate';
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all home handlers must implement.
@@ -85,7 +86,7 @@ export interface CoreMainMenuHomeHandlerToDisplay extends CoreDelegateToDisplay,
 @Injectable({
     providedIn: 'root',
 })
-export class CoreMainMenuHomeDelegate extends CoreSortedDelegate<CoreMainMenuHomeHandlerToDisplay, CoreMainMenuHomeHandler> {
+export class CoreMainMenuHomeDelegateService extends CoreSortedDelegate<CoreMainMenuHomeHandlerToDisplay, CoreMainMenuHomeHandler> {
 
     protected featurePrefix = 'CoreMainMenuHomeDelegate_';
 
@@ -94,3 +95,5 @@ export class CoreMainMenuHomeDelegate extends CoreSortedDelegate<CoreMainMenuHom
     }
 
 }
+
+export class CoreMainMenuHomeDelegate extends makeSingleton(CoreMainMenuHomeDelegateService) {}

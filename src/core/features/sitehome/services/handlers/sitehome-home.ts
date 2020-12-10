@@ -16,12 +16,13 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { CoreSiteHome } from '../sitehome';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to add site home into home page.
  */
-Injectable();
-export class CoreSiteHomeHomeHandler implements CoreMainMenuHomeHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
 
     static readonly PAGE_NAME = 'site';
 
@@ -58,7 +59,7 @@ export class CoreSiteHomeHomeHandler implements CoreMainMenuHomeHandler {
 
         return {
             title: 'core.sitehome.sitehome',
-            page: CoreSiteHomeHomeHandler.PAGE_NAME,
+            page: CoreSiteHomeHomeHandlerService.PAGE_NAME,
             class: 'core-sitehome-dashboard-handler',
             icon: 'fas-home',
             selectPriority: displaySiteHome ? 1100 : 900,
@@ -66,3 +67,5 @@ export class CoreSiteHomeHomeHandler implements CoreMainMenuHomeHandler {
     }
 
 }
+
+export class CoreSiteHomeHomeHandler extends makeSingleton(CoreSiteHomeHomeHandlerService) {}

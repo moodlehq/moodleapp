@@ -60,9 +60,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     protected fileSize?: number;
     protected observer?: CoreEventObserver;
 
-    constructor(
-        protected pluginFileDelegate: CorePluginFileDelegate,
-    ) {
+    constructor() {
         this.onDelete = new EventEmitter<void>();
     }
 
@@ -195,7 +193,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         } else {
             try {
                 // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-                const size = await this.pluginFileDelegate.getFileSize(this.file, this.siteId);
+                const size = await CorePluginFileDelegate.instance.getFileSize(this.file, this.siteId);
 
                 if (size) {
                     await CoreDomUtils.instance.confirmDownloadSize({ size: size, total: true });

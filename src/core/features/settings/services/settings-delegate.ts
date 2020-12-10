@@ -17,6 +17,7 @@ import { Params } from '@angular/router';
 
 import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/delegate';
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all settings handlers must implement.
@@ -65,10 +66,12 @@ export type CoreSettingsHandlerToDisplay = CoreDelegateToDisplay & CoreSettingsH
 @Injectable({
     providedIn: 'root',
 })
-export class CoreSettingsDelegate extends CoreSortedDelegate<CoreSettingsHandlerToDisplay, CoreSettingsHandler> {
+export class CoreSettingsDelegateService extends CoreSortedDelegate<CoreSettingsHandlerToDisplay, CoreSettingsHandler> {
 
     constructor() {
         super('CoreSettingsDelegate');
     }
 
 }
+
+export class CoreSettingsDelegate extends makeSingleton(CoreSettingsDelegateService) {}

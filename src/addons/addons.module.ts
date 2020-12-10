@@ -15,10 +15,12 @@
 import { NgModule } from '@angular/core';
 
 import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
+import { AddonFilterModule } from './filter/filter.module';
 
 @NgModule({
     imports: [
         AddonPrivateFilesModule,
+        AddonFilterModule,
     ],
 })
 export class AddonsModule {}

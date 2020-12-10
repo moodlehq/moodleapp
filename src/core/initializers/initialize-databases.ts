@@ -14,7 +14,7 @@
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreCron } from '@services/cron';
+import { CoreCronDelegate } from '@services/cron';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
@@ -23,7 +23,7 @@ export default async function(): Promise<void> {
     await Promise.all([
         CoreApp.instance.initialiseDatabase(),
         CoreConfig.instance.initialiseDatabase(),
-        CoreCron.instance.initialiseDatabase(),
+        CoreCronDelegate.instance.initialiseDatabase(),
         CoreFilepool.instance.initialiseDatabase(),
         CoreLocalNotifications.instance.initialiseDatabase(),
         CoreSites.instance.initialiseDatabase(),

@@ -33,7 +33,6 @@ import { Params } from '@angular/router';
 export class CoreContentLinksHelperProvider {
 
     constructor(
-        protected contentLinksDelegate: CoreContentLinksDelegate,
         protected navCtrl: NavController,
     ) { }
 
@@ -80,7 +79,7 @@ export class CoreContentLinksHelperProvider {
         username?: string,
         data?: unknown,
     ): Promise<CoreContentLinksAction | undefined> {
-        const actions = await this.contentLinksDelegate.getActionsFor(url, courseId, username, data);
+        const actions = await CoreContentLinksDelegate.instance.getActionsFor(url, courseId, username, data);
         if (!actions) {
             return;
         }

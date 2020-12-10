@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 
-import { CoreDashboardHomeHandler } from './services/handlers/dashboard-home';
-import { CoreCoursesMyCoursesHomeHandler } from './services/handlers/my-courses.home';
+import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './services/handlers/dashboard-home';
+import { CoreCoursesMyCoursesHomeHandler, CoreCoursesMyCoursesHomeHandlerService } from './services/handlers/my-courses.home';
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        redirectTo: CoreDashboardHomeHandler.PAGE_NAME,
+        redirectTo: CoreDashboardHomeHandlerService.PAGE_NAME,
     },
     {
-        path: CoreDashboardHomeHandler.PAGE_NAME,
+        path: CoreDashboardHomeHandlerService.PAGE_NAME,
         loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.CoreCoursesDashboardPageModule),
     },
     {
-        path: CoreCoursesMyCoursesHomeHandler.PAGE_NAME,
+        path: CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME,
         loadChildren: () => import('./pages/my-courses/my-courses.module').then(m => m.CoreCoursesMyCoursesPageModule),
     },
 ];
@@ -52,19 +52,15 @@ const mainMenuHomeSiblingRoutes: Routes = [
         }),
     ],
     providers: [
-        CoreDashboardHomeHandler,
-        CoreCoursesMyCoursesHomeHandler,
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreMainMenuHomeDelegate.instance.registerHandler(CoreDashboardHomeHandler.instance);
+                CoreMainMenuHomeDelegate.instance.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
+            },
+        },
     ],
 })
-export class CoreCoursesModule {
-
-    constructor(
-        homeDelegate: CoreMainMenuHomeDelegate,
-        coursesDashboardHandler: CoreDashboardHomeHandler,
-        coursesMyCoursesHandler: CoreCoursesMyCoursesHomeHandler,
-    ) {
-        homeDelegate.registerHandler(coursesDashboardHandler);
-        homeDelegate.registerHandler(coursesMyCoursesHandler);
-    }
-
-}
+export class CoreCoursesModule {}

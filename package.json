@@ -221,5 +221,8 @@
       "cordova-plugin-globalization": {},
       "cordova-plugin-file-transfer": {}
     }
+  },
+  "optionalDependencies": {
+    "keytar": "^7.2.0"
   }
 }

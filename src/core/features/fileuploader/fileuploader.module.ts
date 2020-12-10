@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreFileUploaderDelegate } from './services/fileuploader-delegate';
 import { CoreFileUploaderAlbumHandler } from './services/handlers/album';
@@ -26,28 +26,18 @@ import { CoreFileUploaderVideoHandler } from './services/handlers/video';
     imports: [],
     declarations: [],
     providers: [
-        CoreFileUploaderAlbumHandler,
-        CoreFileUploaderAudioHandler,
-        CoreFileUploaderCameraHandler,
-        CoreFileUploaderFileHandler,
-        CoreFileUploaderVideoHandler,
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderAlbumHandler.instance);
+                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderAudioHandler.instance);
+                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderCameraHandler.instance);
+                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderVideoHandler.instance);
+                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderFileHandler.instance);
+            },
+        },
     ],
 })
-export class CoreFileUploaderModule {
-
-    constructor(
-        delegate: CoreFileUploaderDelegate,
-        albumHandler: CoreFileUploaderAlbumHandler,
-        audioHandler: CoreFileUploaderAudioHandler,
-        cameraHandler: CoreFileUploaderCameraHandler,
-        videoHandler: CoreFileUploaderVideoHandler,
-        fileHandler: CoreFileUploaderFileHandler,
-    ) {
-        delegate.registerHandler(albumHandler);
-        delegate.registerHandler(audioHandler);
-        delegate.registerHandler(cameraHandler);
-        delegate.registerHandler(videoHandler);
-        delegate.registerHandler(fileHandler);
-    }
-
-}
+export class CoreFileUploaderModule {}

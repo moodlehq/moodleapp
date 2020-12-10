@@ -18,6 +18,7 @@ import { FileEntry } from '@ionic-native/file';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreEvents } from '@singletons/events';
 import { CoreWSUploadFileResult } from '@services/ws';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all handlers must implement.
@@ -141,7 +142,7 @@ export interface CoreFileUploaderHandlerDataToReturn extends CoreFileUploaderHan
 @Injectable({
     providedIn: 'root',
 })
-export class CoreFileUploaderDelegate extends CoreDelegate<CoreFileUploaderHandler> {
+export class CoreFileUploaderDelegateService extends CoreDelegate<CoreFileUploaderHandler> {
 
     constructor() {
         super('CoreFileUploaderDelegate', true);
@@ -196,3 +197,5 @@ export class CoreFileUploaderDelegate extends CoreDelegate<CoreFileUploaderHandl
     }
 
 }
+
+export class CoreFileUploaderDelegate extends makeSingleton(CoreFileUploaderDelegateService) {}

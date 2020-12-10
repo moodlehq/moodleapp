@@ -57,7 +57,6 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     protected isDestroyed = false;
 
     constructor(
-        protected settingsDelegate: CoreSettingsDelegate,
         protected route: ActivatedRoute,
         protected router: Router, // Will be removed when splitview is implemented
     ) {
@@ -97,7 +96,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
      * Fetch Data.
      */
     protected async fetchData(): Promise<void> {
-        this.handlers = this.settingsDelegate.getHandlers();
+        this.handlers = CoreSettingsDelegate.instance.getHandlers();
 
         const currentSite = CoreSites.instance.getCurrentSite();
         this.siteInfo = currentSite!.getInfo();
