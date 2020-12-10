@@ -39,7 +39,7 @@
                 </ion-label>
             </ion-item-divider>
             <section *ngFor="let category of categories">
-                <ion-item class="ion-text-wrap" router-direction="forward" [routerLink]="['/courses/categories', category.id]"
+                <ion-item class="ion-text-wrap" router-direction="forward" [routerLink]="['/main/home/courses/categories', category.id]"
                 [title]="category.name" detail>
                     <ion-icon name="fas-folder" slot="start"></ion-icon>
                     <ion-label>

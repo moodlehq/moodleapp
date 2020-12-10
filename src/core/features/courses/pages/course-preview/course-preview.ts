@@ -64,6 +64,7 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
     downloadCourseEnabled: boolean;
     courseUrl = '';
     courseImageUrl?: string;
+    isMobile: boolean;
 
     protected isGuestEnabled = false;
     protected guestInstanceId?: number;
@@ -71,7 +72,6 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
     protected waitStart = 0;
     protected enrolUrl = '';
     protected paypalReturnUrl = '';
-    protected isMobile: boolean;
     protected pageDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
 

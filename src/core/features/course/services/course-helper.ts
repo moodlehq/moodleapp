@@ -107,9 +107,7 @@ export type CorePrefetchStatusInfo = {
 /**
  * Helper to gather some common course functions.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreCourseHelperProvider {
 
     protected courseDwnPromises: { [s: string]: { [id: number]: Promise<void> } } = {};

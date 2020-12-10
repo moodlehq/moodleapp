@@ -28,6 +28,7 @@ import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
 import { Platform } from '@singletons';
 
 import { mock, mockSingleton, RenderConfig, renderWrapperComponent } from '@/testing/utils';
+import { CoreFilter } from '@features/filter/services/filter';
 
 describe('CoreFormatTextDirective', () => {
 
@@ -54,6 +55,7 @@ describe('CoreFormatTextDirective', () => {
         const sentence = Faker.lorem.sentence();
 
         mockSingleton(CoreSites, { getSite: () => Promise.reject() });
+        mockSingleton(CoreFilter, { formatText: (text) => Promise.resolve(text) });
 
         // Act
         const fixture = await renderWrapperComponent(
@@ -85,6 +87,7 @@ describe('CoreFormatTextDirective', () => {
             getSite: jest.fn(() => Promise.resolve(site)),
             getCurrentSite: () => Promise.resolve(site),
         });
+        mockSingleton(CoreFilter, { formatText: (text) => Promise.resolve(text) });
 
         // Act
         const fixture = await renderWrapperComponent(

@@ -38,9 +38,7 @@ import { CoreWSUploadFileResult } from '@services/ws';
 /**
  * Helper service to upload files.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreFileUploaderHelperProvider {
 
     protected logger: CoreLogger;

@@ -25,9 +25,7 @@ import { CoreWSExternalFile } from '@services/ws';
 /**
  * Helper to gather some common courses functions.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreCoursesHelperProvider {
 
     /**

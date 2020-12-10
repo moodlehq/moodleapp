@@ -25,9 +25,7 @@ const ROOT_CACHE_KEY = 'mmaFiles:';
 /**
  * Service to handle my files and site files.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AddonPrivateFilesProvider {
 
     // Keep old names for backwards compatibility.

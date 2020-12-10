@@ -37,12 +37,14 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
     hideMenu = true; // It will be unhidden when items are added.
     expanded = false;
+    uniqueId: string;
+
     protected items: CoreContextMenuItemComponent[] = [];
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
     protected instanceId: string;
     protected parentContextMenu?: CoreContextMenuComponent;
-    protected uniqueId: string;
+
 
     constructor(
         protected popoverCtrl: PopoverController,

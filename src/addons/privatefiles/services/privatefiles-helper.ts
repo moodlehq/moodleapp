@@ -24,9 +24,7 @@ import { makeSingleton, Translate } from '@singletons';
 /**
  * Service that provides some helper functions regarding private and site files.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AddonPrivateFilesHelperProvider {
 
     /**

@@ -45,9 +45,7 @@ export interface CoreFileUploaderOptions extends CoreWSFileUploadOptions {
 /**
  * Service to upload files.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreFileUploaderProvider {
 
     static readonly LIMITED_SIZE_WARNING = 1048576; // 1 MB.

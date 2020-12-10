@@ -40,9 +40,7 @@ import { CoreObject } from '@singletons/object';
 /**
  * Helper provider that provides some common features regarding authentication.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
     static readonly OPEN_COURSE = 'open_course';

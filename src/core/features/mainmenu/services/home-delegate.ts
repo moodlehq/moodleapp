@@ -83,9 +83,7 @@ export interface CoreMainMenuHomeHandlerToDisplay extends CoreDelegateToDisplay,
  * Service to interact with plugins to be shown in the main menu. Provides functions to register a plugin
  * and notify an update in the data.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreMainMenuHomeDelegateService extends CoreSortedDelegate<CoreMainMenuHomeHandlerToDisplay, CoreMainMenuHomeHandler> {
 
     protected featurePrefix = 'CoreMainMenuHomeDelegate_';

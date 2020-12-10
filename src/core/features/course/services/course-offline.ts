@@ -21,9 +21,7 @@ import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 /**
  * Service to handle offline data for courses.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreCourseOfflineProvider {
 
     /**

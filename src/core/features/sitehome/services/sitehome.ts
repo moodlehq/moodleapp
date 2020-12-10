@@ -35,9 +35,7 @@ export enum FrontPageItemNames {
 /**
  * Service that provides some features regarding site home.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreSiteHomeProvider {
 
     /**
