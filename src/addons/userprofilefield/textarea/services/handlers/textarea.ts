@@ -19,12 +19,13 @@ import { AddonUserProfileFieldTextareaComponent } from '../../component/textarea
 import { CoreTextUtils } from '@services/utils/text';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
+import { makeSingleton } from '@singletons';
 
 /**
  * Textarea user profile field handlers.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonUserProfileFieldTextareaHandler implements CoreUserProfileFieldHandler {
+export class AddonUserProfileFieldTextareaHandlerService implements CoreUserProfileFieldHandler {
 
     name = 'AddonUserProfileFieldTextarea';
     type = 'textarea';
@@ -83,3 +84,5 @@ export class AddonUserProfileFieldTextareaHandler implements CoreUserProfileFiel
     }
 
 }
+
+export class AddonUserProfileFieldTextareaHandler extends makeSingleton(AddonUserProfileFieldTextareaHandlerService) {}

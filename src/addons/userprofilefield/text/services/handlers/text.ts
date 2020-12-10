@@ -19,12 +19,13 @@ import { AddonUserProfileFieldTextComponent } from '../../component/text';
 import { CoreTextUtils } from '@services/utils/text';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
+import { makeSingleton } from '@singletons';
 
 /**
  * Text user profile field handlers.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHandler {
+export class AddonUserProfileFieldTextHandlerService implements CoreUserProfileFieldHandler {
 
     name = 'AddonUserProfileFieldText';
     type = 'text';
@@ -73,3 +74,5 @@ export class AddonUserProfileFieldTextHandler implements CoreUserProfileFieldHan
     }
 
 }
+
+export class AddonUserProfileFieldTextHandler extends makeSingleton(AddonUserProfileFieldTextHandlerService) {}

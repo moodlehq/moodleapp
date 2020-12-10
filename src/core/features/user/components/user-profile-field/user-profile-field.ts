@@ -40,10 +40,6 @@ export class CoreUserProfileFieldComponent implements OnInit {
     componentClass?: Type<unknown>; // The class of the component to render.
     data: CoreUserProfileFieldComponentData = {}; // Data to pass to the component.
 
-    constructor(
-        protected userProfileFieldsDelegate: CoreUserProfileFieldDelegate,
-    ) { }
-
     /**
      * Component being initialized.
      */
@@ -52,7 +48,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
             return;
         }
 
-        this.componentClass = await this.userProfileFieldsDelegate.getComponent(this.field, this.signup);
+        this.componentClass = await CoreUserProfileFieldDelegate.instance.getComponent(this.field, this.signup);
 
         this.data.field = this.field;
         this.data.edit = CoreUtils.instance.isTrueOrOne(this.edit);

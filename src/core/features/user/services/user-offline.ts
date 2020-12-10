@@ -16,14 +16,12 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './db/user';
+import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './database/user';
 
 /**
  * Service to handle offline user preferences.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreUserOfflineProvider {
 
     /**

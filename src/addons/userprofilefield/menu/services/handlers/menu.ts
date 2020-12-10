@@ -17,13 +17,14 @@ import { Injectable, Type } from '@angular/core';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
+import { makeSingleton } from '@singletons';
 import { AddonUserProfileFieldMenuComponent } from '../../component/menu';
 
 /**
  * Menu user profile field handlers.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHandler {
+export class AddonUserProfileFieldMenuHandlerService implements CoreUserProfileFieldHandler {
 
     name = 'AddonUserProfileFieldMenu';
     type = 'menu';
@@ -74,3 +75,5 @@ export class AddonUserProfileFieldMenuHandler implements CoreUserProfileFieldHan
     }
 
 }
+
+export class AddonUserProfileFieldMenuHandler extends makeSingleton(AddonUserProfileFieldMenuHandlerService) {}

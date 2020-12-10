@@ -41,11 +41,9 @@ import { CoreDirectivesModule } from '@directives/directives.module';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [CoreUserProfileFieldDelegate, AddonUserProfileFieldMenuHandler],
-            useFactory: (
-                userProfileFieldDelegate: CoreUserProfileFieldDelegate,
-                handler: AddonUserProfileFieldMenuHandler,
-            ) => () => userProfileFieldDelegate.registerHandler(handler),
+            deps: [],
+            useFactory: () => () =>
+                CoreUserProfileFieldDelegate.instance.registerHandler(AddonUserProfileFieldMenuHandler.instance),
         },
     ],
     exports: [

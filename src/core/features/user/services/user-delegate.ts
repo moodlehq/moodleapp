@@ -19,6 +19,7 @@ import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreUserProfile } from './user';
+import { makeSingleton } from '@singletons';
 
 /**
  * Interface that all user profile handlers must implement.
@@ -127,10 +128,8 @@ export interface CoreUserProfileHandlerToDisplay {
  * Service to interact with plugins to be shown in user profile. Provides functions to register a plugin
  * and notify an update in the data.
  */
-@Injectable({
-    providedIn: 'root',
-})
-export class CoreUserDelegate extends CoreDelegate<CoreUserProfileHandler> {
+@Injectable({ providedIn: 'root' })
+export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler> {
 
     /**
      * User profile handler type for communication.
@@ -164,7 +163,7 @@ export class CoreUserDelegate extends CoreDelegate<CoreUserProfileHandler> {
     constructor() {
         super('CoreUserDelegate', true);
 
-        CoreEvents.on<CoreUserUpdateHandlerData>(CoreUserDelegate.UPDATE_HANDLER_EVENT, (data) => {
+        CoreEvents.on<CoreUserUpdateHandlerData>(CoreUserDelegateService.UPDATE_HANDLER_EVENT, (data) => {
             if (!data || !data.handler || !this.userHandlers[data.userId]) {
                 return;
             }
@@ -255,7 +254,7 @@ export class CoreUserDelegate extends CoreDelegate<CoreUserProfileHandler> {
                         name: name,
                         data: handler.getDisplayData(user, courseId),
                         priority: handler.priority || 0,
-                        type: handler.type || CoreUserDelegate.TYPE_NEW_PAGE,
+                        type: handler.type || CoreUserDelegateService.TYPE_NEW_PAGE,
                     });
                 }
             } catch {
@@ -270,6 +269,8 @@ export class CoreUserDelegate extends CoreDelegate<CoreUserProfileHandler> {
     }
 
 }
+
+export class CoreUserDelegate extends makeSingleton(CoreUserDelegateService) {}
 
 /**
  * Data passed to UPDATE_HANDLER_EVENT event.

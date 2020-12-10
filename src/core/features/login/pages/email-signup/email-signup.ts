@@ -83,7 +83,6 @@ export class CoreLoginEmailSignupPage implements OnInit {
         protected navCtrl: NavController,
         protected fb: FormBuilder,
         protected route: ActivatedRoute,
-        protected userProfileFieldDelegate: CoreUserProfileFieldDelegate,
     ) {
         // Create the ageVerificationForm.
         this.ageVerificationForm = this.fb.group({
@@ -191,7 +190,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             { siteUrl: this.siteUrl },
         );
 
-        if (this.userProfileFieldDelegate.hasRequiredUnsupportedField(this.settings.profilefields)) {
+        if (CoreUserProfileFieldDelegate.instance.hasRequiredUnsupportedField(this.settings.profilefields)) {
             this.allRequiredSupported = false;
 
             throw new Error(Translate.instance.instant('core.login.signuprequiredfieldnotsupported'));
@@ -302,7 +301,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
         try {
             // Get the data for the custom profile fields.
-            params.customprofilefields = await this.userProfileFieldDelegate.getDataForFields(
+            params.customprofilefields = await CoreUserProfileFieldDelegate.instance.getDataForFields(
                 this.settings?.profilefields,
                 true,
                 'email',

@@ -17,6 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreError } from '@classes/errors/error';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
+import { makeSingleton } from '@singletons';
 import { CoreUserProfileField } from './user';
 
 /**
@@ -73,10 +74,8 @@ export interface CoreUserProfileFieldHandlerData {
 /**
  * Service to interact with user profile fields.
  */
-@Injectable({
-    providedIn: 'root',
-})
-export class CoreUserProfileFieldDelegate extends CoreDelegate<CoreUserProfileFieldHandler> {
+@Injectable({ providedIn: 'root' })
+export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserProfileFieldHandler> {
 
     protected handlerNameProperty = 'type';
 
@@ -206,3 +205,5 @@ export class CoreUserProfileFieldDelegate extends CoreDelegate<CoreUserProfileFi
     }
 
 }
+
+export class CoreUserProfileFieldDelegate extends makeSingleton(CoreUserProfileFieldDelegateService) {}

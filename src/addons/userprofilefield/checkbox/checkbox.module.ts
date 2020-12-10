@@ -39,11 +39,9 @@ import { CoreComponentsModule } from '@components/components.module';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [CoreUserProfileFieldDelegate, AddonUserProfileFieldCheckboxHandler],
-            useFactory: (
-                userProfileFieldDelegate: CoreUserProfileFieldDelegate,
-                handler: AddonUserProfileFieldCheckboxHandler,
-            ) => () => userProfileFieldDelegate.registerHandler(handler),
+            deps: [],
+            useFactory: () => () =>
+                CoreUserProfileFieldDelegate.instance.registerHandler(AddonUserProfileFieldCheckboxHandler.instance),
         },
     ],
     exports: [

@@ -17,12 +17,14 @@ import { Routes } from '@angular/router';
 
 import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/db/user';
+import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
 import { CoreUserComponentsModule } from './components/components.module';
 import { CoreUserDelegate } from './services/user-delegate';
 import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreUserProfileLinkHandler } from './services/handlers/profile-link';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreUserSyncCronHandler } from './services/handlers/sync-cron';
 
 const routes: Routes = [
     {
@@ -48,17 +50,11 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [CoreUserDelegate, CoreUserProfileMailHandler, CoreContentLinksDelegate, CoreUserProfileLinkHandler],
-            useFactory: (
-                userDelegate: CoreUserDelegate,
-                mailHandler: CoreUserProfileMailHandler,
-                linksDelegate: CoreContentLinksDelegate,
-                profileLinkHandler: CoreUserProfileLinkHandler,
-
-            ) => () => {
-                // @todo: Register sync handler when init process has been fixed.
-                userDelegate.registerHandler(mailHandler);
-                linksDelegate.registerHandler(profileLinkHandler);
+            deps: [],
+            useFactory: () => () => {
+                CoreUserDelegate.instance.registerHandler(CoreUserProfileMailHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(CoreUserProfileLinkHandler.instance);
+                CoreCronDelegate.instance.register(CoreUserSyncCronHandler.instance);
             },
         },
     ],

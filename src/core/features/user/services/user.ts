@@ -25,16 +25,14 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventUserDeletedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
-import { USERS_TABLE_NAME, CoreUserDBRecord } from './db/user';
+import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
 /**
  * Service to provide user functionalities.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreUserProvider {
 
     static readonly PARTICIPANTS_LIST_LIMIT = 50; // Max of participants to retrieve in each WS call.

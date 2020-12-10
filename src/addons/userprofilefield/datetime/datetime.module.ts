@@ -41,11 +41,9 @@ import { CorePipesModule } from '@pipes/pipes.module';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [CoreUserProfileFieldDelegate, AddonUserProfileFieldDatetimeHandler],
-            useFactory: (
-                userProfileFieldDelegate: CoreUserProfileFieldDelegate,
-                handler: AddonUserProfileFieldDatetimeHandler,
-            ) => () => userProfileFieldDelegate.registerHandler(handler),
+            deps: [],
+            useFactory: () => () =>
+                CoreUserProfileFieldDelegate.instance.registerHandler(AddonUserProfileFieldDatetimeHandler.instance),
         },
     ],
     exports: [

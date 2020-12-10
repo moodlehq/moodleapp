@@ -15,13 +15,14 @@
 import { Injectable } from '@angular/core';
 
 import { CoreCronHandler } from '@services/cron';
+import { makeSingleton } from '@singletons';
 import { CoreUserSync } from '../user-sync';
 
 /**
  * Synchronization cron handler.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUserSyncCronHandler implements CoreCronHandler {
+export class CoreUserSyncCronHandlerService implements CoreCronHandler {
 
     name = 'CoreUserSyncCronHandler';
 
@@ -48,3 +49,5 @@ export class CoreUserSyncCronHandler implements CoreCronHandler {
     }
 
 }
+
+export class CoreUserSyncCronHandler extends makeSingleton(CoreUserSyncCronHandlerService) {}

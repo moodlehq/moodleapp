@@ -31,7 +31,7 @@ import {
     CoreUserProvider,
 } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
-import { CoreUserDelegate, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreUtils } from '@services/utils/utils';
@@ -64,7 +64,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
         protected navCtrl: NavController,
-        protected userDelegate: CoreUserDelegate,
     ) {
 
         this.obsProfileRefreshed = CoreEvents.on<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, (data) => {
@@ -127,26 +126,26 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             // If there's already a subscription, unsubscribe because we'll get a new one.
             this.subscription?.unsubscribe();
 
-            this.subscription = this.userDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
+            this.subscription = CoreUserDelegate.instance.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
                 handlers.forEach((handler) => {
                     switch (handler.type) {
-                        case CoreUserDelegate.TYPE_COMMUNICATION:
+                        case CoreUserDelegateService.TYPE_COMMUNICATION:
                             this.communicationHandlers.push(handler.data);
                             break;
-                        case CoreUserDelegate.TYPE_ACTION:
+                        case CoreUserDelegateService.TYPE_ACTION:
                             this.actionHandlers.push(handler.data);
                             break;
-                        case CoreUserDelegate.TYPE_NEW_PAGE:
+                        case CoreUserDelegateService.TYPE_NEW_PAGE:
                         default:
                             this.newPageHandlers.push(handler.data);
                             break;
                     }
                 });
 
-                this.isLoadingHandlers = !this.userDelegate.areHandlersLoaded(user.id);
+                this.isLoadingHandlers = !CoreUserDelegate.instance.areHandlersLoaded(user.id);
             });
 
             await this.checkUserImageUpdated();

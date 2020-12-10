@@ -17,13 +17,14 @@ import { Injectable, Type } from '@angular/core';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
+import { makeSingleton } from '@singletons';
 import { AddonUserProfileFieldCheckboxComponent } from '../../component/checkbox';
 
 /**
  * Checkbox user profile field handlers.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonUserProfileFieldCheckboxHandler implements CoreUserProfileFieldHandler {
+export class AddonUserProfileFieldCheckboxHandlerService implements CoreUserProfileFieldHandler {
 
     name = 'AddonUserProfileFieldCheckbox';
     type = 'checkbox';
@@ -74,3 +75,5 @@ export class AddonUserProfileFieldCheckboxHandler implements CoreUserProfileFiel
     }
 
 }
+
+export class AddonUserProfileFieldCheckboxHandler extends makeSingleton(AddonUserProfileFieldCheckboxHandlerService) {}

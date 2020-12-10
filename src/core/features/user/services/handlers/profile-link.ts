@@ -18,12 +18,13 @@ import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to treat links to user profiles.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUserProfileLinkHandler extends CoreContentLinksHandlerBase {
+export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreUserProfileLinkHandler';
     // Match user/view.php and user/profile.php but NOT grade/report/user/.
@@ -74,3 +75,5 @@ export class CoreUserProfileLinkHandler extends CoreContentLinksHandlerBase {
     }
 
 }
+
+export class CoreUserProfileLinkHandler extends makeSingleton(CoreUserProfileLinkHandlerService) {}

@@ -14,20 +14,21 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUserDelegate, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../user-delegate';
+import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../user-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUserProfile } from '../user';
+import { makeSingleton } from '@singletons';
 
 /**
  * Handler to send a email to a user.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
+export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler {
 
     name = 'CoreUserProfileMail';
     priority = 700;
-    type = CoreUserDelegate.TYPE_COMMUNICATION;
+    type = CoreUserDelegateService.TYPE_COMMUNICATION;
 
     /**
      * Check if handler is enabled.
@@ -73,3 +74,5 @@ export class CoreUserProfileMailHandler implements CoreUserProfileHandler {
     }
 
 }
+
+export class CoreUserProfileMailHandler extends makeSingleton(CoreUserProfileMailHandlerService) {}

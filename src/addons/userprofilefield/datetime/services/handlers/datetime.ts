@@ -18,13 +18,14 @@ import { AuthEmailSignupProfileField } from '@features/login/services/login-help
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { CoreTimeUtils } from '@services/utils/time';
+import { makeSingleton } from '@singletons';
 import { AddonUserProfileFieldDatetimeComponent } from '../../component/datetime';
 
 /**
  * Datetime user profile field handlers.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFieldHandler {
+export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProfileFieldHandler {
 
     name = 'AddonUserProfileFieldDatetime';
     type = 'datetime';
@@ -76,3 +77,5 @@ export class AddonUserProfileFieldDatetimeHandler implements CoreUserProfileFiel
     }
 
 }
+
+export class AddonUserProfileFieldDatetimeHandler extends makeSingleton(AddonUserProfileFieldDatetimeHandlerService) {}

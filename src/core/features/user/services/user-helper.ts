@@ -20,9 +20,7 @@ import { CoreUserRole } from './user';
 /**
  * Service that provides some features regarding users information.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class CoreUserHelperProvider {
 
     /**
