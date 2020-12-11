@@ -87,6 +87,10 @@ export class CoreLocalNotificationsProvider {
     protected async init(): Promise<void> {
         await Platform.instance.ready();
 
+        if (!this.isAvailable()) {
+            return;
+        }
+
         // Listen to events.
         this.triggerSubscription = LocalNotifications.instance.on('trigger').subscribe((notification: ILocalNotification) => {
             this.trigger(notification);
