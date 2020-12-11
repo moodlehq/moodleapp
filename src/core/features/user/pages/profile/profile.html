@@ -49,7 +49,7 @@
             </ion-grid>
 
             <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
-                title="{{ 'core.user.details' | translate }}">
+                title="{{ 'core.user.details' | translate }}" detail>
                 <ion-icon name="fa-user" slot="start"></ion-icon>
                 <ion-label>
                     <h2>{{ 'core.user.details' | translate }}</h2>
@@ -61,9 +61,9 @@
 
             <ion-item button *ngFor="let handler of newPageHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
-                title="{{ handler.title | translate }}">
+                title="{{ handler.title | translate }}" detail>
+                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
                 <ion-label>
-                    <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
                     <h2>{{ handler.title | translate }}</h2>
                 </ion-label>
             </ion-item>
@@ -72,8 +72,8 @@
                 <ion-button *ngFor="let handler of actionHandlers" expand="block" fill="outline"
                     [ngClass]="['core-user-profile-handler', handler.class]" (click)="handlerClicked($event, handler)"
                     [hidden]="handler.hidden" title="{{ handler.title | translate }}" [disabled]="handler.spinner">
+                    <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
                     <ion-label>
-                        <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
                         <span>{{ handler.title | translate }}</span>
                     </ion-label>
                     <ion-spinner *ngIf="handler.spinner"></ion-spinner>
