@@ -12,23 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injector, NgModule } from '@angular/core';
+import { RouterModule, ROUTES, Routes } from '@angular/router';
 
-const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'root', // Fake "hash".
-        pathMatch: 'full',
-    },
-    {
-        path: ':hash',
-        loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
-    },
-];
+import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+
+function buildRoutes(injector: Injector): Routes {
+    return [
+        {
+            path: ':hash',
+            loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
+        },
+        ...buildTabMainRoutes(injector, {
+            redirectTo: 'root', // Fake "hash".
+            pathMatch: 'full',
+        }),
+    ];
+}
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
+    providers: [
+        {
+            provide: ROUTES,
+            multi: true,
+            deps: [Injector],
+            useFactory: buildRoutes,
+        },
+    ],
 })
 export class AddonPrivateFilesLazyModule {}

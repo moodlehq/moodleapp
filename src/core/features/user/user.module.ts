@@ -15,7 +15,7 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
 import { CoreUserComponentsModule } from './components/components.module';
@@ -37,7 +37,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreMainMenuMoreRoutingModule.forChild({ siblings: routes }),
+        CoreMainMenuTabRoutingModule.forChild({ siblings: routes }),
         CoreUserComponentsModule,
     ],
     providers: [

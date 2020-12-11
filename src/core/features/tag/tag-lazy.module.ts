@@ -12,31 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {  NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injector, NgModule } from '@angular/core';
+import { RouterModule, ROUTES, Routes } from '@angular/router';
 
-const routes: Routes = [
-    {
-        path: 'index',
-        loadChildren: () => import('@features/tag/pages/index/index.page.module').then(m => m.CoreTagIndexPageModule),
-    },
-    {
-        path: 'search',
-        loadChildren: () => import('@features/tag//pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
-    },
-    {
-        path: 'index-area',
-        loadChildren: () => import('@features/tag/pages/index-area/index-area.page.module').then(m => m.CoreTagIndexAreaPageModule),
-    },
-    {
-        path: '',
-        redirectTo: 'search',
-        pathMatch: 'full',
-    },
-];
+import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+
+function buildRoutes(injector: Injector): Routes {
+    return [
+        {
+            path: 'index',
+            loadChildren: () => import('@features/tag/pages/index/index.page.module').then(m => m.CoreTagIndexPageModule),
+        },
+        {
+            path: 'search',
+            loadChildren: () => import('@features/tag//pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
+        },
+        {
+            path: 'index-area',
+            loadChildren: () =>
+                import('@features/tag/pages/index-area/index-area.page.module').then(m => m.CoreTagIndexAreaPageModule),
+        },
+        ...buildTabMainRoutes(injector, {
+            redirectTo: 'search',
+            pathMatch: 'full',
+        }),
+    ];
+}
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
+    providers: [
+        {
+            provide: ROUTES,
+            multi: true,
+            deps: [Injector],
+            useFactory: buildRoutes,
+        },
+    ],
 })
 export class CoreTagLazyModule { }

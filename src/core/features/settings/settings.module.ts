@@ -16,7 +16,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
-import { CoreMainMenuMoreRoutingModule } from '@features/mainmenu/pages/more/more-routing.module';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 import { CoreSettingsHelperProvider } from './services/settings-helper';
 
@@ -41,7 +41,7 @@ const mainMenuMoreRoutes: Routes = [
 @NgModule({
     imports: [
         AppRoutingModule.forChild(appRoutes),
-        CoreMainMenuMoreRoutingModule.forChild({ siblings: mainMenuMoreRoutes }),
+        CoreMainMenuTabRoutingModule.forChild({ siblings: mainMenuMoreRoutes }),
     ],
     providers: [
         {

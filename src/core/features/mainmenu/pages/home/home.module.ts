@@ -24,16 +24,17 @@ import { CoreDirectivesModule } from '@directives/directives.module';
 
 import { CoreMainMenuHomePage } from './home';
 import { MAIN_MENU_HOME_ROUTES } from './home-routing.module';
+import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 function buildRoutes(injector: Injector): Routes {
     const routes = resolveModuleRoutes(injector, MAIN_MENU_HOME_ROUTES);
 
     return [
-        {
+        ...buildTabMainRoutes(injector, {
             path: '',
             component: CoreMainMenuHomePage,
             children: routes.children,
-        },
+        }),
         ...routes.siblings,
     ];
 }
