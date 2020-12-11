@@ -17,7 +17,7 @@ import { Params } from '@angular/router';
 
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreNavHelper } from '@services/nav-helper';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -54,7 +54,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
                     userId: parseInt(params.id, 10),
                 };
 
-                CoreContentLinksHelper.instance.goInSite('/user', pageParams, siteId);
+                CoreNavHelper.instance.goInSite('/user', pageParams, siteId);
             },
         }];
     }

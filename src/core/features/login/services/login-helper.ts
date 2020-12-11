@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Location } from '@angular/common';
 import { Params } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -34,8 +33,8 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { CoreObject } from '@singletons/object';
+import { CoreNavHelper, CoreNavHelperOpenMainMenuOptions, CoreNavHelperService } from '@services/nav-helper';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -43,7 +42,7 @@ import { CoreObject } from '@singletons/object';
 @Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
-    static readonly OPEN_COURSE = 'open_course';
+    static readonly OPEN_COURSE = CoreNavHelperService.OPEN_COURSE; // @deprecated since 3.9.5.
     static readonly ONBOARDING_DONE = 'onboarding_done';
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation">';
@@ -51,24 +50,13 @@ export class CoreLoginHelperProvider {
     protected logger: CoreLogger;
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
-    protected pageToLoad?: {page: string; params?: Params; time: number}; // Page to load once main menu is opened.
     protected isOpeningReconnect = false;
     waitingForBrowser = false;
 
     constructor(
-        protected location: Location,
         protected navCtrl: NavController,
     ) {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
-
-        CoreEvents.on(CoreEvents.MAIN_MENU_OPEN, () => {
-            /* If there is any page pending to be opened, do it now. Don't open pages stored more than 5 seconds ago, probably
-               the function to open the page was called when it shouldn't. */
-            if (this.pageToLoad && Date.now() - this.pageToLoad.time < 5000) {
-                this.loadPageInMainMenu(this.pageToLoad.page, this.pageToLoad.params);
-                delete this.pageToLoad;
-            }
-        });
     }
 
     /**
@@ -123,7 +111,7 @@ export class CoreLoginHelperProvider {
      */
     checkLogout(): void {
         const currentSite = CoreSites.instance.getCurrentSite();
-        const currentPage = CoreApp.instance.getCurrentPage();
+        const currentPage = CoreNavHelper.instance.getCurrentPage();
 
         if (!CoreApp.instance.isSSOAuthenticationOngoing() && currentSite?.isLoggedOut() && currentPage == '/login/reconnect') {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
@@ -448,39 +436,10 @@ export class CoreLoginHelperProvider {
      * @param page Page to open.
      * @param params Params of the page.
      * @return Promise resolved when done.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.goToNoSitePage instead.
      */
-    async goToNoSitePage(page: string, params?: Params): Promise<void> {
-        const currentPage = CoreApp.instance.getCurrentPage();
-
-        if (currentPage == page) {
-            // Already at page, nothing to do.
-        } else if (page == '/login/sites') {
-            // Just open the page as root.
-            await this.navCtrl.navigateRoot(page, { queryParams: params });
-        } else if (page == '/login/credentials' && currentPage == '/login/site') {
-            // Just open the new page to keep the navigation history.
-            await this.navCtrl.navigateForward(page, { queryParams: params });
-        } else {
-            // Check if there is any site stored.
-            const hasSites = await CoreSites.instance.hasSites();
-
-            if (!hasSites) {
-                // There are sites stored, open sites page first to be able to go back.
-                await this.navCtrl.navigateRoot('/login/sites');
-
-                await this.navCtrl.navigateForward(page, { queryParams: params });
-            } else {
-                if (page != '/login/site') {
-                    // Open the new site page to be able to go back.
-                    await this.navCtrl.navigateRoot('/login/site');
-
-                    await this.navCtrl.navigateForward(page, { queryParams: params });
-                } else {
-                    // Just open the page as root.
-                    await this.navCtrl.navigateRoot(page, { queryParams: params });
-                }
-            }
-        }
+    goToNoSitePage(page: string, params?: Params): Promise<void> {
+        return CoreNavHelper.instance.goToNoSitePage(page, params);
     }
 
     /**
@@ -488,9 +447,10 @@ export class CoreLoginHelperProvider {
      *
      * @param options Options.
      * @return Promise resolved when done.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.goToSiteInitialPage instead.
      */
-    goToSiteInitialPage(options?: OpenMainMenuOptions): Promise<void> {
-        return this.openMainMenu(options);
+    goToSiteInitialPage(options?: CoreNavHelperOpenMainMenuOptions): Promise<void> {
+        return CoreNavHelper.instance.goToSiteInitialPage(options);
     }
 
     /**
@@ -642,96 +602,14 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Load a site and load a certain page in that site.
-     *
-     * @param siteId Site to load.
-     * @param page Name of the page to load.
-     * @param params Params to pass to the page.
-     * @return Promise resolved when done.
-     */
-    protected async loadSiteAndPage(siteId: string, page: string, params?: Params): Promise<void> {
-        if (siteId == CoreConstants.NO_SITE_ID) {
-            // Page doesn't belong to a site, just load the page.
-            await this.navCtrl.navigateRoot(page, params);
-
-            return;
-        }
-
-        const modal = await CoreDomUtils.instance.showModalLoading();
-
-        try {
-            const loggedIn = await CoreSites.instance.loadSite(siteId, page, params);
-
-            if (!loggedIn) {
-                return;
-            }
-
-            await this.openMainMenu({
-                redirectPage: page,
-                redirectParams: params,
-            });
-        } catch (error) {
-            // Site doesn't exist.
-            await this.navCtrl.navigateRoot('/login/sites');
-        } finally {
-            modal.dismiss();
-        }
-    }
-
-    /**
      * Load a certain page in the main menu page.
      *
      * @param page Name of the page to load.
      * @param params Params to pass to the page.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.loadPageInMainMenu instead.
      */
     loadPageInMainMenu(page: string, params?: Params): void {
-        if (!CoreApp.instance.isMainMenuOpen()) {
-            // Main menu not open. Store the page to be loaded later.
-            this.pageToLoad = {
-                page: page,
-                params: params,
-                time: Date.now(),
-            };
-
-            return;
-        }
-
-        if (page == CoreLoginHelperProvider.OPEN_COURSE) {
-            // @todo Use the openCourse function.
-        } else {
-            CoreEvents.trigger(CoreEvents.LOAD_PAGE_MAIN_MENU, { redirectPage: page, redirectParams: params });
-        }
-    }
-
-    /**
-     * Open the main menu, loading a certain page.
-     *
-     * @param options Options.
-     * @return Promise resolved when done.
-     */
-    protected async openMainMenu(options?: OpenMainMenuOptions): Promise<void> {
-
-        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-        // @todo this.location.replaceState('');
-
-        if (options?.redirectPage == CoreLoginHelperProvider.OPEN_COURSE) {
-            // Load the main menu first, and then open the course.
-            try {
-                await this.navCtrl.navigateRoot('/');
-            } finally {
-                // @todo: Open course.
-            }
-        } else {
-            // Open the main menu.
-            const queryParams: Params = Object.assign({}, options);
-            delete queryParams.navigationOptions;
-
-            await this.navCtrl.navigateRoot('/', {
-                queryParams,
-                ...options?.navigationOptions,
-            });
-        }
+        CoreNavHelper.instance.loadPageInMainMenu(page, params);
     }
 
     /**
@@ -889,7 +767,7 @@ export class CoreLoginHelperProvider {
             return; // Site that triggered the event is not current site.
         }
 
-        const currentPage = CoreApp.instance.getCurrentPage();
+        const currentPage = CoreNavHelper.instance.getCurrentPage();
 
         // If current page is already change password, stop.
         if (currentPage == '/login/changepassword') {
@@ -948,31 +826,14 @@ export class CoreLoginHelperProvider {
     /**
      * Redirect to a new page, setting it as the root page and loading the right site if needed.
      *
-     * @param page Name of the page to load. Special cases: OPEN_COURSE (to open course page).
+     * @param page Name of the page to load. Special cases: CoreNavHelperService.OPEN_COURSE (to open course page).
      * @param params Params to pass to the page.
      * @param siteId Site to load. If not defined, current site.
      * @return Promise resolved when done.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.openInSiteMainMenu instead.
      */
-    async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
-
-        if (CoreSites.instance.isLoggedIn()) {
-            if (siteId && siteId != CoreSites.instance.getCurrentSiteId()) {
-                // Target page belongs to a different site. Change site.
-                // @todo: Check site plugins.
-                await CoreSites.instance.logout();
-
-                await this.loadSiteAndPage(siteId, page, params);
-            } else {
-                this.loadPageInMainMenu(page, params);
-            }
-        } else {
-            if (siteId) {
-                await this.loadSiteAndPage(siteId, page, params);
-            } else {
-                await this.navCtrl.navigateRoot('/login/sites');
-            }
-        }
+    redirect(page: string, params?: Params, siteId?: string): Promise<void> {
+        return CoreNavHelper.instance.openInSiteMainMenu(page, params, siteId);
     }
 
     /**
@@ -1098,7 +959,7 @@ export class CoreLoginHelperProvider {
                 const info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined' && !this.isOpeningReconnect) {
                     // If current page is already reconnect, stop.
-                    if (CoreApp.instance.getCurrentPage() == '/login/reconnect') {
+                    if (CoreNavHelper.instance.getCurrentPage() == '/login/reconnect') {
                         return;
                     }
 
@@ -1266,7 +1127,7 @@ export class CoreLoginHelperProvider {
         }
 
         // If current page is already site policy, stop.
-        if (CoreApp.instance.getCurrentPage() == '/login/sitepolicy') {
+        if (CoreNavHelper.instance.getCurrentPage() == '/login/sitepolicy') {
             return;
         }
 
@@ -1473,11 +1334,4 @@ type StoredLoginLaunchData = {
     pageName: string;
     pageParams: Params;
     ssoUrlParams: CoreUrlParams;
-};
-
-type OpenMainMenuOptions = {
-    redirectPage?: string; // Route of the page to open in main menu. If not defined, default tab will be selected.
-    redirectParams?: Params; // Params to pass to the selected tab if any.
-    urlToOpen?: string; // URL to open once the main menu is loaded.
-    navigationOptions?: NavigationOptions; // Navigation options.
 };

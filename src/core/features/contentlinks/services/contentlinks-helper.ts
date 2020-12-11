@@ -16,13 +16,11 @@ import { Injectable } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
 import { CoreSite } from '@classes/site';
-import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
-import { makeSingleton, NgZone, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { Params } from '@angular/router';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Service that provides some features regarding content links.
@@ -94,50 +92,10 @@ export class CoreContentLinksHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @param checkMenu If true, check if the root page of a main menu tab. Only the page name will be checked.
      * @return Promise resolved when done.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.goInSite instead.
      */
-    goInSite(
-        pageName: string,
-        pageParams: Params,
-        siteId?: string,
-        checkMenu?: boolean,
-    ): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
-
-        const deferred = CoreUtils.instance.promiseDefer<void>();
-
-        // Execute the code in the Angular zone, so change detection doesn't stop working.
-        NgZone.instance.run(async () => {
-            try {
-                if (siteId == CoreSites.instance.getCurrentSiteId()) {
-                    if (checkMenu) {
-                        let isInMenu = false;
-                        // Check if the page is in the main menu.
-                        try {
-                            isInMenu = await CoreMainMenu.instance.isCurrentMainMenuHandler(pageName);
-                        } catch {
-                            isInMenu = false;
-                        }
-
-                        if (isInMenu) {
-                            // Just select the tab. @todo test.
-                            CoreLoginHelper.instance.loadPageInMainMenu(pageName, pageParams);
-                        } else {
-                            await this.navCtrl.navigateForward(pageName, { queryParams: pageParams });
-                        }
-                    } else {
-                        await this.navCtrl.navigateForward(pageName, { queryParams: pageParams });
-                    }
-                } else {
-                    await CoreLoginHelper.instance.redirect(pageName, pageParams, siteId);
-                }
-
-                deferred.resolve();
-            } catch (error) {
-                deferred.reject(error);
-            }
-        });
-
-        return deferred.promise;
+    goInSite(pageName: string, pageParams: Params, siteId?: string, checkMenu?: boolean): Promise<void> {
+        return CoreNavHelper.instance.goInSite(pageName, pageParams, siteId, checkMenu);
     }
 
     /**
@@ -234,7 +192,7 @@ export class CoreContentLinksHelperProvider {
             }
         } else {
             // Login in the site.
-            return CoreLoginHelper.instance.redirect('', {}, site.getId());
+            return CoreNavHelper.instance.openInSiteMainMenu('', {}, site.getId());
         }
     }
 

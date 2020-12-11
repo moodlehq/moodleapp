@@ -17,11 +17,11 @@ import { NavController } from '@ionic/angular';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -102,7 +102,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      */
     siteClicked(siteId: string): void {
         if (this.isRootURL) {
-            CoreLoginHelper.instance.redirect('', {}, siteId);
+            CoreNavHelper.instance.openInSiteMainMenu('', {}, siteId);
         } else if (this.action) {
             this.action.action(siteId);
         }

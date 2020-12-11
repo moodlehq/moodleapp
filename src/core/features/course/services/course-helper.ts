@@ -32,9 +32,9 @@ import {
 } from '@features/courses/services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreArray } from '@singletons/array';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseOffline } from './course-offline';
+import { CoreNavHelper, CoreNavHelperService } from '@services/nav-helper';
 
 /**
  * Prefetch info of a module.
@@ -938,7 +938,7 @@ export class CoreCourseHelperProvider {
             params = params || {};
             Object.assign(params, { course: course });
 
-            return CoreLoginHelper.instance.redirect(CoreLoginHelperProvider.OPEN_COURSE, params, siteId);
+            return CoreNavHelper.instance.openInSiteMainMenu(CoreNavHelperService.OPEN_COURSE, params, siteId);
         }
     }
 

@@ -22,6 +22,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/site';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Page to accept a site policy.
@@ -128,7 +129,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
             // Invalidate cache since some WS don't return error if site policy is not accepted.
             await CoreUtils.instance.ignoreErrors(this.currentSite!.invalidateWsCache());
 
-            await CoreLoginHelper.instance.goToSiteInitialPage();
+            await CoreNavHelper.instance.goToSiteInitialPage();
         } catch (error) {
             CoreDomUtils.instance.showErrorModalDefault(error, 'Error accepting site policy.');
         } finally {
