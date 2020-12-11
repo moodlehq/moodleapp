@@ -304,6 +304,9 @@ export class CoreSitesProvider {
     async siteExists(siteUrl: string): Promise<void> {
         let data: CoreSitesLoginTokenResponse;
 
+        // Use a valid path first.
+        siteUrl = CoreUrlUtils.instance.removeUrlParams(siteUrl);
+
         try {
             data = await Http.instance.post(siteUrl + '/login/token.php', {}).pipe(timeout(CoreWS.instance.getRequestTimeout()))
                 .toPromise();

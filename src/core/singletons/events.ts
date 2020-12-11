@@ -243,6 +243,15 @@ export type CoreEventCourseStatusChanged = {
 };
 
 /**
+ * Data passed to PACKAGE_STATUS_CHANGED event.
+ */
+export type CoreEventPackageStatusChanged = {
+    component: string;
+    componentId: string | number;
+    status: string;
+};
+
+/**
  * Data passed to USER_DELETED event.
  */
 export type CoreEventUserDeletedData = CoreEventSiteData & {

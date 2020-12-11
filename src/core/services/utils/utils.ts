@@ -28,6 +28,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
+import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1327,7 +1328,7 @@ export class CoreUtilsProvider {
      * @return File size and a boolean to indicate if it is the total size or only partial.
      * @deprecated since 3.8.0. Use CorePluginFileDelegate.getFilesSize instead.
      */
-    sumFileSizes(files: CoreWSExternalFile[]): { size: number; total: boolean } {
+    sumFileSizes(files: CoreWSExternalFile[]): CoreFileSizeSum {
         const result = {
             size: 0,
             total: true,

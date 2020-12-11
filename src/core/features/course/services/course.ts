@@ -345,7 +345,7 @@ export class CoreCourseProvider {
         ignoreCache: boolean = false,
         siteId?: string,
         modName?: string,
-    ): Promise<CoreCourseModule> {
+    ): Promise<CoreCourseModuleData> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         // Helper function to do the WS request without processing the result.
@@ -439,7 +439,7 @@ export class CoreCourseProvider {
             sections = await this.getSections(courseId, false, false, preSets, siteId);
         }
 
-        let foundModule: CoreCourseModule | undefined;
+        let foundModule: CoreCourseModuleData | undefined;
 
         const foundSection = sections.some((section) => {
             if (sectionId != null &&
@@ -739,12 +739,12 @@ export class CoreCourseProvider {
      * @param sections Sections.
      * @return Modules.
      */
-    getSectionsModules(sections: CoreCourseSection[]): CoreCourseModule[] {
+    getSectionsModules(sections: CoreCourseSection[]): CoreCourseModuleData[] {
         if (!sections || !sections.length) {
             return [];
         }
 
-        return sections.reduce((previous: CoreCourseModule[], section) =>  previous.concat(section.modules || []), []);
+        return sections.reduce((previous: CoreCourseModuleData[], section) =>  previous.concat(section.modules || []), []);
     }
 
     /**
@@ -829,7 +829,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when loaded.
      */
     async loadModuleContents(
-        module: CoreCourseModule & CoreCourseModuleBasicInfo,
+        module: CoreCourseModuleData & CoreCourseModuleBasicInfo,
         courseId?: number,
         sectionId?: number,
         preferCache?: boolean,
@@ -964,7 +964,7 @@ export class CoreCourseProvider {
      * @param module The module object.
      * @return Whether the module has a view page.
      */
-    moduleHasView(module: CoreCourseModuleSummary | CoreCourseModule): boolean {
+    moduleHasView(module: CoreCourseModuleSummary | CoreCourseModuleData): boolean {
         return !!module.url;
     }
 
@@ -1345,7 +1345,7 @@ export type CoreCourseSection = {
     hiddenbynumsections?: number; // Whether is a section hidden in the course format.
     uservisible?: boolean; // Is the section visible for the user?.
     availabilityinfo?: string; // Availability information.
-    modules: CoreCourseModule[];
+    modules: CoreCourseModuleData[];
 };
 
 /**
@@ -1371,11 +1371,10 @@ export type CoreCourseGetCourseModuleWSResponse = {
     warnings?: CoreStatusWithWarningsWSResponse[];
 };
 
-
 /**
  * Course module type.
  */
-export type CoreCourseModule = { // List of module.
+export type CoreCourseModuleData = { // List of module.
     id: number; // Activity id.
     course?: number; // The course id.
     url?: string; // Activity url.
@@ -1403,35 +1402,7 @@ export type CoreCourseModule = { // List of module.
         overrideby: number; // The user id who has overriden the status.
         valueused?: boolean; // Whether the completion status affects the availability of another activity.
     };
-    contents: {
-        type: string; // A file or a folder or external link.
-        filename: string; // Filename.
-        filepath: string; // Filepath.
-        filesize: number; // Filesize.
-        fileurl?: string; // Downloadable file url.
-        content?: string; // Raw content, will be used when type is content.
-        timecreated: number; // Time created.
-        timemodified: number; // Time modified.
-        sortorder: number; // Content sort order.
-        mimetype?: string; // File mime type.
-        isexternalfile?: boolean; // Whether is an external file.
-        repositorytype?: string; // The repository type for external files.
-        userid: number; // User who added this content to moodle.
-        author: string; // Content owner.
-        license: string; // Content license.
-        tags?: { // Tags.
-            id: number; // Tag id.
-            name: string; // Tag name.
-            rawname: string; // The raw, unnormalised name for the tag as entered by users.
-            isstandard: boolean; // Whether this tag is standard.
-            tagcollid: number; // Tag collection id.
-            taginstanceid: number; // Tag instance id.
-            taginstancecontextid: number; // Context the tag instance belongs to.
-            itemid: number; // Id of the record tagged.
-            ordering: number; // Tag ordering.
-            flag: number; // Whether the tag is flagged as inappropriate.
-        }[];
-    }[];
+    contents: CoreCourseModuleContentFile[];
     contentsinfo?: { // Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.
@@ -1439,6 +1410,37 @@ export type CoreCourseModule = { // List of module.
         mimetypes: string[]; // Files mime types.
         repositorytype?: string; // The repository type for the main file.
     };
+};
+
+export type CoreCourseModuleContentFile = {
+    type: string; // A file or a folder or external link.
+    filename: string; // Filename.
+    filepath: string; // Filepath.
+    filesize: number; // Filesize.
+    fileurl?: string; // Downloadable file url.
+    url?: string; // @deprecated. Use fileurl instead.
+    content?: string; // Raw content, will be used when type is content.
+    timecreated: number; // Time created.
+    timemodified: number; // Time modified.
+    sortorder: number; // Content sort order.
+    mimetype?: string; // File mime type.
+    isexternalfile?: boolean; // Whether is an external file.
+    repositorytype?: string; // The repository type for external files.
+    userid: number; // User who added this content to moodle.
+    author: string; // Content owner.
+    license: string; // Content license.
+    tags?: { // Tags.
+        id: number; // Tag id.
+        name: string; // Tag name.
+        rawname: string; // The raw, unnormalised name for the tag as entered by users.
+        isstandard: boolean; // Whether this tag is standard.
+        tagcollid: number; // Tag collection id.
+        taginstanceid: number; // Tag instance id.
+        taginstancecontextid: number; // Context the tag instance belongs to.
+        itemid: number; // Id of the record tagged.
+        ordering: number; // Tag ordering.
+        flag: number; // Whether the tag is flagged as inappropriate.
+    }[];
 };
 
 /**
