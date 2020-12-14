@@ -25,6 +25,7 @@ import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Page that displays the main menu of the app.
@@ -60,7 +61,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         protected changeDetector: ChangeDetectorRef,
         protected router: Router,
     ) {
-        this.mainMenuId = CoreApp.instance.getMainMenuId();
+        this.mainMenuId = CoreNavHelper.instance.getMainMenuId();
     }
 
     /**
@@ -131,7 +132,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             });
         }
 
-        CoreApp.instance.setMainMenuOpen(this.mainMenuId, true);
+        CoreNavHelper.instance.setMainMenuOpen(this.mainMenuId, true);
     }
 
     /**
@@ -226,7 +227,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
         this.redirectObs?.off();
         window.removeEventListener('resize', this.initHandlers.bind(this));
-        CoreApp.instance.setMainMenuOpen(this.mainMenuId, false);
+        CoreNavHelper.instance.setMainMenuOpen(this.mainMenuId, false);
         this.keyboardObserver?.off();
     }
 

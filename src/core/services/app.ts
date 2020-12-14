@@ -13,19 +13,19 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params, Router } from '@angular/router';
+import { Params } from '@angular/router';
 import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
-import { CoreUrlUtils } from '@services/utils/url';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
+import { CoreNavHelper } from './nav-helper';
 
 /**
  * Object responsible of managing schema versions.
@@ -58,15 +58,13 @@ export class CoreAppProvider {
     protected keyboardOpening = false;
     protected keyboardClosing = false;
     protected backActions: {callback: () => boolean; priority: number}[] = [];
-    protected mainMenuId = 0;
-    protected mainMenuOpen?: number;
     protected forceOffline = false;
 
     // Variables for DB.
     protected schemaVersionsManager: Promise<SchemaVersionsManager>;
     protected resolveSchemaVersionsManager!: (schemaVersionsManager: SchemaVersionsManager) => void;
 
-    constructor(protected router: Router) {
+    constructor() {
         this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
         this.db = CoreDB.instance.getDB(DBNAME);
         this.logger = CoreLogger.getInstance('CoreAppProvider');
@@ -168,15 +166,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Get current page route without params.
-     *
-     * @return Current page route.
-     */
-    getCurrentPage(): string {
-        return CoreUrlUtils.instance.removeUrlParams(this.router.url);
-    }
-
-    /**
      * Get the application global database.
      *
      * @return App's DB.
@@ -189,9 +178,10 @@ export class CoreAppProvider {
      * Get an ID for a main menu.
      *
      * @return Main menu ID.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.getMainMenuId instead.
      */
     getMainMenuId(): number {
-        return this.mainMenuId++;
+        return CoreNavHelper.instance.getMainMenuId();
     }
 
     /**
@@ -231,7 +221,7 @@ export class CoreAppProvider {
      * Checks if the app is running in a 64 bits desktop environment (not browser).
      *
      * @return false.
-     * @deprecated Desktop support has been removed.
+     * @deprecated since 3.9.5 Desktop support has been removed.
      */
     is64Bits(): boolean {
         return false;
@@ -250,7 +240,7 @@ export class CoreAppProvider {
      * Checks if the app is running in a desktop environment (not browser).
      *
      * @return false.
-     * @deprecated Desktop support has been removed.
+     * @deprecated since 3.9.5 Desktop support has been removed.
      */
     isDesktop(): boolean {
         return false;
@@ -296,7 +286,7 @@ export class CoreAppProvider {
      * Check if the app is running in a Linux environment.
      *
      * @return false.
-     * @deprecated Desktop support has been removed.
+     * @deprecated since 3.9.5 Desktop support has been removed.
      */
     isLinux(): boolean {
         return false;
@@ -306,7 +296,7 @@ export class CoreAppProvider {
      * Check if the app is running in a Mac OS environment.
      *
      * @return false.
-     * @deprecated Desktop support has been removed.
+     * @deprecated since 3.9.5 Desktop support has been removed.
      */
     isMac(): boolean {
         return false;
@@ -316,9 +306,10 @@ export class CoreAppProvider {
      * Check if the main menu is open.
      *
      * @return Whether the main menu is open.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.isMainMenuOpen instead.
      */
     isMainMenuOpen(): boolean {
-        return typeof this.mainMenuOpen != 'undefined';
+        return CoreNavHelper.instance.isMainMenuOpen();
     }
 
     /**
@@ -389,7 +380,7 @@ export class CoreAppProvider {
      * Check if the app is running in a Windows environment.
      *
      * @return false.
-     * @deprecated Desktop support has been removed.
+     * @deprecated since 3.9.5 Desktop support has been removed.
      */
     isWindows(): boolean {
         return false;
@@ -459,14 +450,10 @@ export class CoreAppProvider {
      *
      * @param id Main menu ID.
      * @param open Whether it's open or not.
+     * @deprecated since 3.9.5. Use CoreNavHelperService.setMainMenuOpen instead.
      */
     setMainMenuOpen(id: number, open: boolean): void {
-        if (open) {
-            this.mainMenuOpen = id;
-            CoreEvents.trigger(CoreEvents.MAIN_MENU_OPEN);
-        } else if (this.mainMenuOpen == id) {
-            delete this.mainMenuOpen;
-        }
+        CoreNavHelper.instance.setMainMenuOpen(id, open);
     }
 
     /**

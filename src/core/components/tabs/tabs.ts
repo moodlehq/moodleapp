@@ -82,7 +82,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     direction = 'ltr';
     description = '';
     lastScroll = 0;
-    slideOpts = {
+    slidesOpts = {
         initialSlide: 0,
         slidesPerView: 3,
         centerInsufficientSlides: true,
@@ -381,13 +381,12 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected async updateSlides(): Promise<void> {
         this.numTabsShown = this.tabs.reduce((prev: number, current: CoreTab) => current.enabled ? prev + 1 : prev, 0);
 
-        this.slideOpts.slidesPerView = Math.min(this.maxSlides, this.numTabsShown);
-        this.slidesSwiper.params.slidesPerView = this.slideOpts.slidesPerView;
+        this.slidesOpts = { ...this.slidesOpts, slidesPerView: Math.min(this.maxSlides, this.numTabsShown) };
 
         this.calculateTabBarHeight();
         await this.slides!.update();
 
-        if (!this.hasSliddenToInitial && this.selectedIndex && this.selectedIndex >= this.slideOpts.slidesPerView) {
+        if (!this.hasSliddenToInitial && this.selectedIndex && this.selectedIndex >= this.slidesOpts.slidesPerView) {
             this.hasSliddenToInitial = true;
             this.shouldSlideToInitial = true;
 
@@ -637,6 +636,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             window.removeEventListener('resize', this.resizeFunction);
         }
         this.stackEventsSubscription?.unsubscribe();
+        this.languageChangedSubscription.unsubscribe();
     }
 
 }

@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import { ModuleRoutes } from '@/app/app-routing.module';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { CoreEditorComponentsModule } from './components/components.module';
+import { SITE_SCHEMA } from './services/database/editor';
 
-export const MAIN_MENU_MORE_ROUTES = new InjectionToken('MAIN_MENU_MORE_ROUTES');
-
-@NgModule()
-export class CoreMainMenuMoreRoutingModule {
-
-    static forChild(routes: Partial<ModuleRoutes>): ModuleWithProviders<CoreMainMenuMoreRoutingModule> {
-        return {
-            ngModule: CoreMainMenuMoreRoutingModule,
-            providers: [
-                { provide: MAIN_MENU_MORE_ROUTES, multi: true, useValue: routes },
-            ],
-        };
-    }
-
-}
+@NgModule({
+    declarations: [
+    ],
+    imports: [
+        CoreEditorComponentsModule,
+    ],
+    providers: [
+        {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [SITE_SCHEMA],
+            multi: true,
+        },
+    ],
+})
+export class CoreEditorModule {}

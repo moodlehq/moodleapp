@@ -26,6 +26,7 @@ import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Page to enter the user credentials.
@@ -244,7 +245,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             this.siteId = id;
 
-            await CoreLoginHelper.instance.goToSiteInitialPage({ urlToOpen: this.urlToOpen });
+            await CoreNavHelper.instance.goToSiteInitialPage({ urlToOpen: this.urlToOpen });
         } catch (error) {
             CoreLoginHelper.instance.treatUserTokenError(siteUrl, error, username, password);
 

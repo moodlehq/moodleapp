@@ -1,0 +1,87 @@
+:host {
+
+    .core-user-profile-maininfo::part(native) {
+        flex-direction: column;
+    }
+    ::ng-deep {
+        core-user-avatar {
+            display: block;
+            --core-avatar-size: var(--core-large-avatar-size);
+
+            img {
+                margin: 0;
+            }
+
+            .contact-status {
+                width: 24px !important;
+                height: 24px !important;
+            }
+
+            .core-icon-foreground {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                line-height: 30px;
+                text-align: center;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background-color:var(--background);
+
+                :host-context([dir="rtl"]) & {
+                    left: 0;
+                    right: unset;
+                }
+            }
+        }
+    }
+
+}
+
+:host-context([dir="rtl"]) ::ng-deep core-user-avatar .core-icon-foreground {
+    left: 0;
+    right: unset;
+}
+
+    // @todo
+    // .core-user-communication-handlers {
+    //     background: $list-background-color;
+    //     border-bottom: 1px solid $list-border-color;
+
+    //     @include darkmode() {
+    //         background: $core-dark-item-bg-color;
+    //     }
+
+    //     .core-user-profile-handler {
+    //         background: $list-background-color;
+    //         border: 0;
+    //         color: $core-user-profile-communication-icons-color;
+
+    //         @include darkmode() {
+    //            background: $core-dark-item-bg-color;
+    //         }
+
+    //         p {
+    //             margin: 0;
+    //         }
+
+    //         .icon {
+    //             border-radius: 50%;
+    //             width: 32px;
+    //             height: 32px;
+    //             max-width: 32px;
+    //             font-size: 22px;
+    //             line-height: 32px;
+    //             color: white;
+    //             background-color: $core-user-profile-communication-icons-color;
+    //             margin-bottom: 5px;
+    //       }
+    //     }
+    // }
+
+    // .core-user-profile-handler {
+    //     ion-spinner {
+    //         @include margin(null, null, null, 0.3em);
+    //     }
+    // }
+

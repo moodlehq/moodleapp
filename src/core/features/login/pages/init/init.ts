@@ -20,6 +20,7 @@ import { ApplicationInit, SplashScreen } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -79,7 +80,7 @@ export class CoreLoginInitPage implements OnInit {
                         return;
                     }
 
-                    return CoreLoginHelper.instance.goToSiteInitialPage({
+                    return CoreNavHelper.instance.goToSiteInitialPage({
                         redirectPage: redirectData.page,
                         redirectParams: redirectData.params,
                     });
@@ -89,7 +90,7 @@ export class CoreLoginInitPage implements OnInit {
                 }
             } else if (redirectData.page) {
                 // No site to load, open the page.
-                return CoreLoginHelper.instance.goToNoSitePage(redirectData.page, redirectData.params);
+                return CoreNavHelper.instance.goToNoSitePage(redirectData.page, redirectData.params);
             }
         }
 
@@ -109,7 +110,7 @@ export class CoreLoginInitPage implements OnInit {
                 return this.loadPage();
             }
 
-            return CoreLoginHelper.instance.goToSiteInitialPage();
+            return CoreNavHelper.instance.goToSiteInitialPage();
         }
 
         await this.navCtrl.navigateRoot('/login/sites');

@@ -52,7 +52,7 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
     protected handlerNameProperty = 'type';
 
     constructor() {
-        super('CoreTagAreaDelegate');
+        super('CoreTagAreaDelegate', true);
     }
 
     /**

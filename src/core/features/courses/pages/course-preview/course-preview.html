@@ -43,19 +43,15 @@
                         <h2>{{ 'core.teachers' | translate }}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <!-- @todo <ion-item class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link
-                    [userId]="contact.id"
-                    [courseId]="isEnrolled ? course.id : null"
-                    [attr.aria-label]="'core.viewprofile' | translate">
-                    <ion-avatar core-user-avatar
-                        [user]="contact" slot="start"
-                        [userId]="contact.id"
+                <ion-item class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id"
+                    [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate">
+                    <core-user-avatar [user]="contact" slot="start" [userId]="contact.id"
                         [courseId]="isEnrolled ? course.id : null">
-                    </ion-avatar>
+                    </core-user-avatar>
                     <ion-label>
                         <h2>{{contact.fullname}}</h2>
                     </ion-label>
-                </ion-item>-->
+                </ion-item>
                 <ion-item-divider></ion-item-divider>
             </ng-container>
 

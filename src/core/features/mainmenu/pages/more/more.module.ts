@@ -14,29 +14,14 @@
 
 import { Injector, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { RouterModule, ROUTES } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { resolveModuleRoutes } from '@/app/app-routing.module';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
-
 import { CoreMainMenuMorePage } from './more';
-import { MAIN_MENU_MORE_ROUTES } from './more-routing.module';
-
-function buildRoutes(injector: Injector): Routes {
-    const routes = resolveModuleRoutes(injector, MAIN_MENU_MORE_ROUTES);
-
-    return [
-        {
-            path: '',
-            component: CoreMainMenuMorePage,
-            children: routes.children,
-        },
-        ...routes.siblings,
-    ];
-}
+import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 @NgModule({
     imports: [
@@ -47,7 +32,14 @@ function buildRoutes(injector: Injector): Routes {
         CoreDirectivesModule,
     ],
     providers: [
-        { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
+        {
+            provide: ROUTES,
+            multi: true,
+            deps: [Injector],
+            useFactory: (injector: Injector) => buildTabMainRoutes(injector, {
+                component: CoreMainMenuMorePage,
+            }),
+        },
     ],
     declarations: [
         CoreMainMenuMorePage,

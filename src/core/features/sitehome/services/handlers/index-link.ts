@@ -16,10 +16,10 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Handler to treat links to site home index.
@@ -43,7 +43,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId: string): void => {
-                CoreContentLinksHelper.instance.goInSite('sitehome', [], siteId);
+                CoreNavHelper.instance.goInSite('sitehome', [], siteId);
             },
         }];
     }

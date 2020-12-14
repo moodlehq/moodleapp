@@ -24,6 +24,7 @@
     --purple:          var(--custom-purple, #8e24aa); // Accent (never text).
 
     --core-color: var(--custom-main-color, var(--orange));
+    --core-online-color: #5cb85c;
 
     --ion-color-primary: var(--core-color);
     --ion-color-primary-rgb: 249,128,18;
@@ -169,6 +170,10 @@
     --core-course-color-8: var(--custom-course-color-9, #fd79a8);
     --core-course-color-9: var(--custom-course-color-90, #6c5ce7);
     --core-star-color: var(--custom-star-color, var(--core-color));
+
+    --core-large-avatar-size:  var(--custom-large-avatar-size, 90px);
+
+    --core-avatar-size:  var(--custom-avatar-size, 64px);
 }
 
 /*

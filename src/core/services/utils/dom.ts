@@ -20,7 +20,7 @@ import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventFormAction, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils, CoreTextErrorObject } from '@services/utils/text';
@@ -656,6 +656,10 @@ export class CoreDomUtilsProvider {
      * @return Error message, null if no error should be displayed.
      */
     getErrorMessage(error: CoreError | CoreTextErrorObject | string, needsTranslate?: boolean): string | null {
+        if (typeof error != 'string' && !error) {
+            return null;
+        }
+
         let extraInfo = '';
         let errorMessage: string | undefined;
 
@@ -1332,21 +1336,21 @@ export class CoreDomUtilsProvider {
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
      * @return Promise resolved with the alert modal.
      */
-    showErrorModal(
+    async showErrorModal(
         error: CoreError | CoreTextErrorObject | string,
         needsTranslate?: boolean,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
         if (this.isCanceledError(error)) {
             // It's a canceled error, don't display an error.
-            return Promise.resolve(null);
+            return null;
         }
 
         const message = this.getErrorMessage(error, needsTranslate);
 
         if (message === null) {
             // Message doesn't need to be displayed, stop.
-            return Promise.resolve(null);
+            return null;
         }
 
         const alertOptions: AlertOptions = {
@@ -1713,7 +1717,7 @@ export class CoreDomUtilsProvider {
         }
 
         CoreEvents.trigger(CoreEvents.FORM_ACTION, {
-            action: 'cancel',
+            action: CoreEventFormAction.CANCEL,
             form: formRef.nativeElement,
         }, siteId);
     }
@@ -1731,7 +1735,7 @@ export class CoreDomUtilsProvider {
         }
 
         CoreEvents.trigger(CoreEvents.FORM_ACTION, {
-            action: 'submit',
+            action: CoreEventFormAction.SUBMIT,
             form: formRef.nativeElement || formRef,
             online: !!online,
         }, siteId);

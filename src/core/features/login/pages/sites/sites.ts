@@ -19,6 +19,7 @@ import { Component, OnInit } from '@angular/core';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreLogger } from '@singletons/logger';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -124,7 +125,7 @@ export class CoreLoginSitesPage implements OnInit {
             const loggedIn = await CoreSites.instance.loadSite(siteId);
 
             if (loggedIn) {
-                return CoreLoginHelper.instance.goToSiteInitialPage();
+                return CoreNavHelper.instance.goToSiteInitialPage();
             }
         } catch (error) {
             this.logger.error('Error loading site ' + siteId, error);

@@ -23,6 +23,7 @@ import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
 import { CoreSettingsModule } from './settings/settings.module';
 import { CoreSiteHomeModule } from './sitehome/sitehome.module';
 import { CoreTagModule } from './tag/tag.module';
+import { CoreUserModule } from './user/user.module';
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import { CoreTagModule } from './tag/tag.module';
         CoreSettingsModule,
         CoreSiteHomeModule,
         CoreTagModule,
+        CoreUserModule,
     ],
 })
 export class CoreFeaturesModule {}

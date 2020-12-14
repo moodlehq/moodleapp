@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreContentLinksHelper } from '../services/contentlinks-helper';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { Translate } from '@singletons';
 import { Params } from '@angular/router';
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
+import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Handler to handle URLs pointing to a list of a certain type of modules.
@@ -65,7 +65,7 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
                     title: this.title || Translate.instance.instant('addon.mod_' + this.modName + '.modulenameplural'),
                 };
 
-                CoreContentLinksHelper.instance.goInSite('CoreCourseListModTypePage @todo', stateParams, siteId);
+                CoreNavHelper.instance.goInSite('CoreCourseListModTypePage @todo', stateParams, siteId);
             },
         }];
     }
