@@ -75,7 +75,9 @@ export class CoreDynamicComponent implements OnChanges, DoCheck {
     // Get the container where to put the dynamic component.
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) set dynamicComponent(el: ViewContainerRef) {
         this.container = el;
-        this.createComponent();
+
+        // Use a timeout to avoid ExpressionChangedAfterItHasBeenCheckedError.
+        setTimeout(() => this.createComponent());
     }
 
     instance?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
