@@ -19,11 +19,11 @@ const gulp = require('gulp');
 
 const paths = {
     lang: [
-        './src/addons/**/lang/',
-        './src/assets/countries/',
-        './src/assets/mimetypes/',
-        './src/core/features/**/lang/',
-        './src/core/lang/',
+        './src/addons/**/',
+        './src/assets/countries.json',
+        './src/assets/mimetypes.json',
+        './src/core/features/**/',
+        './src/core/',
     ],
 };
 
@@ -31,7 +31,7 @@ const args = Utils.getCommandLineArguments();
 
 // Build the language files into a single file per language.
 gulp.task('lang', (done) => {
-    new BuildLangTask().run('en', paths.lang, done);
+    new BuildLangTask().run(paths.lang, done);
 });
 
 gulp.task('push', (done) => {
@@ -41,7 +41,5 @@ gulp.task('push', (done) => {
 gulp.task('default', gulp.parallel('lang'));
 
 gulp.task('watch', () => {
-    const langsPaths = paths.lang.map(path => path + 'en.json');
-
     gulp.watch(langsPaths, { interval: 500 }, gulp.parallel('lang'));
 });

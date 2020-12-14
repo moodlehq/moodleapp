@@ -41,22 +41,24 @@ class BuildLangTask {
     /**
      * Run the task.
      *
-     * @param language Language to treat.
      * @param langPaths Paths to the possible language files.
      * @param done Function to call when done.
      */
-    run(language, langPaths, done) {
-        const filename = language + '.json';
+    run(langPaths, done) {
         const data = {};
         let firstFile = null;
         const self = this;
 
         const paths = langPaths.map((path) => {
-            if (path.slice(-1) != '/') {
+            if (path.endsWith('.json')) {
+                return path;
+            }
+
+            if (!path.endsWith('/')) {
                 path = path + '/';
             }
 
-            return path + language + '.json';
+            return path + 'lang.json';
         });
 
         gulp.src(paths, { allowEmpty: true })
@@ -72,7 +74,7 @@ class BuildLangTask {
                 /* This implementation is based on gulp-jsoncombine module.
                  * https://github.com/reflog/gulp-jsoncombine */
                 if (firstFile) {
-                    const joinedPath = pathLib.join(firstFile.base, language + '.json');
+                    const joinedPath = pathLib.join(firstFile.base, 'en.json');
 
                     const joinedFile = new File({
                         cwd: firstFile.cwd,
@@ -138,29 +140,28 @@ class BuildLangTask {
         const mergedOrdered = {};
         const getPrefix = (path) => {
             const folders = path.split(/[\/\\]/);
+            let filename = folders.pop();
 
             switch (folders[0]) {
                 case 'core':
                     switch (folders[1]) {
-                        case 'lang':
-                            return 'core.';
                         case 'features':
                             return `core.${folders[2]}.`;
+                        default:
+                            return 'core.';
                     }
-
-                    break;
                 case 'addons':
-                    return `addon.${folders.slice(1, -2).join('_')}.`;
+                    return `addon.${folders.slice(1).join('_')}.`;
                 case 'assets':
-                    return `assets.${folders[1]}.`;
+                    filename = filename.split('.').slice(0, -1).join('.');
+                    return `assets.${filename}.`;
+                default:
+                    return `${folders[0]}.${folders[1]}.`;
             }
-
-            return null;
         }
 
         for (let filepath in data) {
             const prefix = getPrefix(filepath);
-
             if (prefix) {
                 this.addProperties(merged, data[filepath], prefix);
             }
