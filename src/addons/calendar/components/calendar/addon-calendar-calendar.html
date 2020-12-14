@@ -1,0 +1,79 @@
+
+<!-- Add buttons to the nav bar. -->
+<core-navbar-buttons slot="end" prepend>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="canNavigate && !isCurrentMonth && displayNavButtons" [priority]="900"
+        [content]="'addon.calendar.currentmonth' | translate" iconAction="fas-calendar-day"
+        (action)="goToCurrentMonth()"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
+    <!-- Period name and arrows to navigate. -->
+    <ion-grid class="ion-no-padding addon-calendar-navigation">
+        <ion-row class="ion-align-items-center">
+            <ion-col class="ion-text-start" *ngIf="canNavigate">
+                <ion-button fill="clear" (click)="loadPrevious()" [title]="'core.previous' | translate">
+                    <ion-icon name="fas-chevron-left" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-col>
+            <ion-col class="ion-text-center addon-calendar-period">
+                <h3>{{ periodName }}</h3>
+            </ion-col>
+            <ion-col class="ion-text-end" *ngIf="canNavigate">
+                <ion-button fill="clear" (click)="loadNext()" [title]="'core.next' | translate">
+                    <ion-icon name="fas-chevron-right" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- Calendar view. -->
+    <ion-grid class="addon-calendar-months">
+        <!-- List of days. -->
+        <ion-row>
+            <ion-col class="ion-text-center" *ngFor="let day of weekDays" class="addon-calendar-weekday">
+                <span class="ion-hide-md-up" [title]="day.fullname | translate">{{ day.shortname | translate }}</span>
+                <span class="ion-hide-md-down">{{ day.fullname | translate }}</span>
+            </ion-col>
+        </ion-row>
+
+        <!-- Weeks. -->
+        <ion-row *ngFor="let week of weeks" class="addon-calendar-week">
+            <!-- Empty slots (first week). -->
+            <ion-col *ngFor="let value of week.prepadding" class="dayblank addon-calendar-day"></ion-col>
+            <ion-col class="ion-text-center" *ngFor="let day of week.days"  (click)="dayClicked(day.mday)"
+            [ngClass]='{"hasevents": day.hasevents, "today": isCurrentMonth && day.istoday,
+                "weekend": day.isweekend, "duration_finish": day.haslastdayofevent}'
+            class="addon-calendar-day" [class.addon-calendar-event-past-day]="isPastMonth || day.ispast">
+                <p class="addon-calendar-day-number"><span>{{ day.mday }}</span></p>
+
+                <!-- In phone, display some dots to indicate the type of events. -->
+                <p class="ion-hide-md-up addon-calendar-dot-types"><span *ngFor="let type of day.calendareventtypes"
+                    class="calendar_event_type calendar_event_{{type}}"></span></p>
+
+                <!-- In tablet, display list of events. -->
+                <div class="ion-hide-md-down addon-calendar-day-events">
+                    <ng-container *ngFor="let event of day.filteredEvents | slice:0:4; let index = index">
+                        <p *ngIf="index < 3 || day.filteredEvents.length == 4" class="addon-calendar-event"
+                        (click)="eventClicked(event, $event)" [class.addon-calendar-event-past]="event.ispast">
+                            <span class="calendar_event_type calendar_event_{{event.formattedType}}"></span>
+                            <ion-icon *ngIf="event.offline && !event.deleted" name="far-clock"></ion-icon>
+                            <ion-icon *ngIf="event.deleted" name="fas-trash"></ion-icon>
+                            <span class="addon-calendar-event-time">{{ event.timestart * 1000 | coreFormatDate: timeFormat }}</span>
+                            <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation"
+                                class="core-module-icon">
+                            <span class="addon-calendar-event-name">{{event.name}}</span>
+                        </p>
+                    </ng-container>
+                    <p *ngIf="day.filteredEvents.length > 4" class="addon-calendar-day-more">
+                        <b>{{ 'core.nummore' | translate:{$a: day.filteredEvents.length - 3} }}</b>
+                    </p>
+                </div>
+            </ion-col>
+            <!-- Empty slots (last week). -->
+            <ion-col *ngFor="let value of week.postpadding" class="dayblank addon-calendar-day"></ion-col>
+        </ion-row>
+    </ion-grid>
+
+</core-loading>

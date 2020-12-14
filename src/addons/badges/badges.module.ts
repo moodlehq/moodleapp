@@ -24,7 +24,7 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
 
-const mainMenuHomeSiblingRoutes: Routes = [
+const mainMenuRoutes: Routes = [
     {
         path: 'badges',
         loadChildren: () => import('./badges-lazy.module').then(m => m.AddonBadgesLazyModule),
@@ -33,7 +33,7 @@ const mainMenuHomeSiblingRoutes: Routes = [
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild(mainMenuHomeSiblingRoutes),
+        CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
     ],
     providers: [
         {

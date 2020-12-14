@@ -58,8 +58,8 @@ export class CoreUserAboutPage implements OnInit {
      * @return Promise resolved when done.
      */
     async ngOnInit(): Promise<void> {
-        this.userId = this.route.snapshot.queryParams['userId'];
-        this.courseId = this.route.snapshot.queryParams['courseId'];
+        this.userId = parseInt(this.route.snapshot.queryParams['userId'], 10) || 0;
+        this.courseId = parseInt(this.route.snapshot.queryParams['courseId'], 10) || 0;
 
         this.fetchUser().finally(() => {
             this.userLoaded = true;

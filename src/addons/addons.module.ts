@@ -40,10 +40,12 @@ import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 import { AddonFilterModule } from './filter/filter.module';
 import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
 import { AddonBadgesModule } from './badges/badges.module';
+import { AddonCalendarModule } from './calendar/calendar.module';
 
 @NgModule({
     imports: [
         AddonBadgesModule,
+        AddonCalendarModule,
         AddonPrivateFilesModule,
         AddonFilterModule,
         AddonBlockActivityResultsModule,

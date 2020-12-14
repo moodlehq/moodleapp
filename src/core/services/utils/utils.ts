@@ -95,6 +95,16 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Combination of allPromises and ignoreErrors functions.
+     *
+     * @param promises Promises.
+     * @return Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
+     */
+    async allPromisesIgnoringErrors(promises: Promise<unknown>[]): Promise<void> {
+        await CoreUtils.instance.ignoreErrors(this.allPromises(promises));
+    }
+
+    /**
      * Converts an array of objects to an object, using a property of each entry as the key.
      * It can also be used to convert an array of strings to an object where the keys are the elements of the array.
      * E.g. [{id: 10, name: 'A'}, {id: 11, name: 'B'}] => {10: {id: 10, name: 'A'}, 11: {id: 11, name: 'B'}}
@@ -1199,6 +1209,13 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Function to enumerate enum keys.
+     */
+    enumKeys<O, K extends keyof O = keyof O>(enumeration: O): K[] {
+        return Object.keys(enumeration).filter(k => Number.isNaN(+k)) as K[];
+    }
+
+    /**
      * Similar to AngularJS $q.defer().
      *
      * @return The deferred promise.
@@ -1434,12 +1451,12 @@ export class CoreUtilsProvider {
             const value = key ? entry[key] : entry;
 
             if (value in unique) {
-                unique[value] = true;
-
-                return true;
+                return false;
             }
 
-            return false;
+            unique[value] = true;
+
+            return true;
         });
     }
 

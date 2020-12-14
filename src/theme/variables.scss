@@ -94,6 +94,7 @@
 
     ion-content {
         --background: var(--gray-light);
+        --contrast-background: var(--white);
     }
 
     ion-tab-bar {
@@ -156,6 +157,10 @@
         --side-blocks-min-width: var(--custom-side-blocks-min-width, 280px);
     }
 
+    ion-item-divider {
+        --background: var(--gray-lighter);
+    }
+
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 
@@ -179,6 +184,15 @@
     --core-large-avatar-size:  var(--custom-large-avatar-size, 90px);
 
     --core-avatar-size:  var(--custom-avatar-size, 64px);
+
+    --addon-calendar-event-category-color: var(--custom-calendar-event-category-color, var(--purple));
+    --addon-calendar-event-course-color: var(--custom-calendar-event-course-color, var(--red));
+    --addon-calendar-event-group-color: var(--custom-calendar-event-group-color, var(--yellow));
+    --addon-calendar-event-user-color: var(--custom-calendar-event-user-color, var(--blue));
+    --addon-calendar-event-site-color: var(--custom-calendar-event-site-color, var(--green));
+    --addon-calendar-today-bgcolor: var(--custom-calendar-today-bgcolor, var(--core-color));
+    --addon-calendar-today-color: var(--custom-calendar-today-color, var(--white));
+    --addon-calendar-border-color: var(--custom-calendar-border-color, var(--gray));
 }
 
 /*
@@ -222,6 +236,7 @@
 
     ion-content {
         --background: var(--ion-background-color);
+        --contrast-background: var(--ion-background-color);
     }
 
     core-tabs {
@@ -235,6 +250,14 @@
 
     core-progress-bar {
         --text-color: var(--custom-progress-text-color, var(--gray-lighter));
+    }
+
+    ion-item-divider {
+        --background: var(--black);
+        --color: var(--white);
+        .item-detail-icon {
+            color: var(--white);
+        }
     }
 
     --core-login-background: var(--custom-login-background, #3a3a3a);

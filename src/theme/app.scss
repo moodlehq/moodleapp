@@ -8,6 +8,7 @@ ion-item.ion-text-wrap ion-label {
 ion-toolbar ion-back-button,
 ion-toolbar .in-toolbar.button-clear {
     --color: var(--ion-color-primary-contrast);
+    --ion-toolbar-color: var(--ion-color-primary-contrast);
 }
 
 ion-toolbar .core-navbar-button-hidden {
@@ -71,7 +72,6 @@ ion-alert.core-nohead {
 
 // Ionic item divider.
 ion-item-divider {
-    --background: var(--gray-lighter);
     .item-detail-icon {
         font-size: 20px;
         opacity: 0.25;
@@ -178,25 +178,49 @@ ion-card.core-success-card,
 ion-card.core-warning-card,
 ion-card.core-danger-card {
     border-bottom: 3px solid transparent;
+    ion-item::part(native) {
+        --inner-border-width: 0;
+    }
+    ion-label {
+        white-space: normal !important;
+    }
 }
 ion-card.core-primary-card {
     border-bottom-color: var(--ion-color-primary);
+    ion-icon {
+        color: var(--ion-color-primary);
+    }
 }
 ion-card.core-info-card,
 ion-card.core-secondary-card {
     border-bottom-color: var(--ion-color-secondary);
+    ion-icon {
+        color: var(--ion-color-secondary);
+    }
 }
 ion-card.core-tertiary-card {
     border-bottom-color: var(--ion-color-tertiary);
+    ion-icon {
+        color: var(--ion-color-tertiary);
+    }
 }
 ion-card.core-success-card {
     border-bottom-color: var(--ion-color-success);
+    ion-icon {
+        color: var(--ion-color-success);
+    }
 }
 ion-card.core-warning-card {
     border-bottom-color: var(--ion-color-warning);
+    ion-icon {
+        color: var(--ion-color-warning);
+    }
 }
 ion-card.core-danger-card {
     border-bottom-color: var(--ion-color-danger);
+    ion-icon {
+        color: var(--ion-color-danger);
+    }
 }
 
 // Avatar
@@ -225,6 +249,18 @@ ion-avatar.large-avatar {
 ion-avatar ion-img, ion-avatar img {
     text-indent: -99999px;
     background-color: var(--gray-light);
+}
+
+// Activity modules
+ion-item img.core-module-icon[slot="start"] {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-right: 32px;
+    padding: 6px;
+}
+[dir=rtl] ion-item img.core-module-icon[slot="start"] {
+    margin-right: unset;
+    margin-left: 32px;
 }
 
 // Action sheet.
