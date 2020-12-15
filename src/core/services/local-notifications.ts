@@ -69,9 +69,9 @@ export class CoreLocalNotificationsProvider {
     }
 
     /**
-     * Initialise database.
+     * Initialize database.
      */
-    async initialiseDatabase(): Promise<void> {
+    async initializeDatabase(): Promise<void> {
         try {
             await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
         } catch (e) {

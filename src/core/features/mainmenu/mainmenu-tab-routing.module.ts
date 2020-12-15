@@ -15,7 +15,7 @@
 import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 
-import { ModuleRoutes, resolveModuleRoutes } from '@/app/app-routing.module';
+import { ModuleRoutesConfig, resolveModuleRoutes } from '@/app/app-routing.module';
 
 export const MAIN_MENU_TAB_ROUTES = new InjectionToken('MAIN_MENU_TAB_ROUTES');
 
@@ -35,7 +35,7 @@ export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes
 @NgModule()
 export class CoreMainMenuTabRoutingModule {
 
-    static forChild(routes: Partial<ModuleRoutes>): ModuleWithProviders<CoreMainMenuTabRoutingModule> {
+    static forChild(routes: ModuleRoutesConfig): ModuleWithProviders<CoreMainMenuTabRoutingModule> {
         return {
             ngModule: CoreMainMenuTabRoutingModule,
             providers: [

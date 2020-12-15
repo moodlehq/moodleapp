@@ -16,7 +16,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRe
 
 import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
-import { coreShowHideAnimation } from '@classes/animations';
+import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
 
 /**
@@ -43,7 +43,7 @@ import { Translate } from '@singletons';
     selector: 'core-loading',
     templateUrl: 'core-loading.html',
     styleUrls: ['loading.scss'],
-    animations: [coreShowHideAnimation],
+    animations: [CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 

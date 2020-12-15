@@ -14,14 +14,14 @@
 
 import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 
-import { ModuleRoutes } from '@/app/app-routing.module';
+import { ModuleRoutesConfig } from '@/app/app-routing.module';
 
 export const MAIN_MENU_HOME_ROUTES = new InjectionToken('MAIN_MENU_HOME_ROUTES');
 
 @NgModule()
 export class CoreMainMenuHomeRoutingModule {
 
-    static forChild(routes: Partial<ModuleRoutes>): ModuleWithProviders<CoreMainMenuHomeRoutingModule> {
+    static forChild(routes: ModuleRoutesConfig): ModuleWithProviders<CoreMainMenuHomeRoutingModule> {
         return {
             ngModule: CoreMainMenuHomeRoutingModule,
             providers: [

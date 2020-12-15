@@ -22,13 +22,27 @@ function buildAppRoutes(injector: Injector): Routes {
 }
 
 export type ModuleRoutes = { children: Routes; siblings: Routes };
+export type ModuleRoutesConfig = Routes | Partial<ModuleRoutes>;
 
-export function resolveModuleRoutes(injector: Injector, token: InjectionToken<Partial<ModuleRoutes>[]>): ModuleRoutes {
-    const routes = injector.get(token, []);
+export function resolveModuleRoutes(injector: Injector, token: InjectionToken<ModuleRoutesConfig[]>): ModuleRoutes {
+    const configs = injector.get(token, []);
+    const routes = configs.map(config => {
+        if (Array.isArray(config)) {
+            return {
+                children: [],
+                siblings: config,
+            };
+        }
+
+        return {
+            children: config.children || [],
+            siblings: config.siblings || [],
+        };
+    });
 
     return {
-        children: CoreArray.flatten(routes.map(r => r.children || [])),
-        siblings: CoreArray.flatten(routes.map(r => r.siblings || [])),
+        children: CoreArray.flatten(routes.map(r => r.children)),
+        siblings: CoreArray.flatten(routes.map(r => r.siblings)),
     };
 }
 

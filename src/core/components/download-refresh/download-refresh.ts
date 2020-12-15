@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
-import { coreShowHideAnimation } from '@classes/animations';
+import { CoreAnimations } from '@components/animations';
 
 /**
  * Component to show a download button with refresh option, the spinner and the status of it.
@@ -26,7 +26,7 @@ import { coreShowHideAnimation } from '@classes/animations';
     selector: 'core-download-refresh',
     templateUrl: 'core-download-refresh.html',
     styleUrls: ['download-refresh.scss'],
-    animations: [coreShowHideAnimation],
+    animations: [CoreAnimations.SHOW_HIDE],
 })
 export class CoreDownloadRefreshComponent {
 

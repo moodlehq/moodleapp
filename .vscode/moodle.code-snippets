@@ -1,0 +1,22 @@
+{
+    "[Moodle] Service Singleton": {
+        "scope": "typescript",
+        "prefix": "massingleton",
+        "body": [
+
+            "import { Injectable } from '@angular/core';",
+            "import { makeSingleton } from '@singletons';",
+            "",
+            "@Injectable({ providedIn: 'root' })",
+            "export class ${1:${TM_FILENAME_BASE}}Service {",
+            "",
+            "    $0",
+            "",
+            "}",
+            "",
+            "export class ${1:${TM_FILENAME_BASE}} extends makeSingleton(${1:${TM_FILENAME_BASE}}Service) {}",
+            ""
+        ],
+        "description": "[Moodle] Create a Service Singleton"
+    }
+}

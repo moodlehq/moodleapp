@@ -33,9 +33,7 @@ const mainMenuHomeSiblingRoutes: Routes = [
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild({
-            siblings: mainMenuHomeSiblingRoutes,
-        }),
+        CoreMainMenuTabRoutingModule.forChild(mainMenuHomeSiblingRoutes),
     ],
     providers: [
         {

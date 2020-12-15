@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { CoreComponentsModule } from '@components/components.module';
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
 
-import { ModuleRoutesConfig } from '@/app/app-routing.module';
-
-export const MAIN_MENU_ROUTES = new InjectionToken('MAIN_MENU_ROUTES');
-
-@NgModule()
-export class CoreMainMenuRoutingModule {
-
-    static forChild(routes: ModuleRoutesConfig): ModuleWithProviders<CoreMainMenuRoutingModule> {
-        return {
-            ngModule: CoreMainMenuRoutingModule,
-            providers: [
-                { provide: MAIN_MENU_ROUTES, multi: true, useValue: routes },
-            ],
-        };
-    }
-
-}
+@NgModule({
+    imports: [
+        CoreComponentsModule,
+        CoreDirectivesModule,
+        CorePipesModule,
+    ],
+})
+export class CoreSharedModule {}

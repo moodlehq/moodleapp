@@ -37,7 +37,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild({ siblings: routes }),
+        CoreMainMenuTabRoutingModule.forChild(routes),
         CoreUserComponentsModule,
     ],
     providers: [
