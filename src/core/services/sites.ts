@@ -304,6 +304,9 @@ export class CoreSitesProvider {
     async siteExists(siteUrl: string): Promise<void> {
         let data: CoreSitesLoginTokenResponse;
 
+        // Use a valid path first.
+        siteUrl = CoreUrlUtils.instance.removeUrlParams(siteUrl);
+
         try {
             data = await Http.instance.post(siteUrl + '/login/token.php', {}).pipe(timeout(CoreWS.instance.getRequestTimeout()))
                 .toPromise();
@@ -1618,7 +1621,7 @@ export class CoreSitesProvider {
      * @param strategy Reading strategy.
      * @return PreSets options object.
      */
-    getReadingStrategyPreSets(strategy: CoreSitesReadingStrategy): CoreSiteWSPreSets {
+    getReadingStrategyPreSets(strategy?: CoreSitesReadingStrategy): CoreSiteWSPreSets {
         switch (strategy) {
             case CoreSitesReadingStrategy.PreferCache:
                 return {

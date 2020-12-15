@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonRefresher, NavController } from '@ionic/angular';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
-import { CoreCourse, CoreCourseSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 
 /**
  * Page that displays site home index.
@@ -34,7 +35,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 })
 export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
-    // @todo  @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent: CoreBlockCourseBlocksComponent;
+    @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent?: CoreBlockCourseBlocksComponent;
 
     dataLoaded = false;
     section?: CoreCourseSection & {
@@ -43,13 +44,14 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     hasContent = false;
     items: string[] = [];
-    siteHomeId?: number;
+    siteHomeId = 1;
     currentSite?: CoreSite;
     searchEnabled = false;
     downloadEnabled = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     downloadEnabledIcon = 'far-square';
+    newsForumModule?: CoreCourseModuleBasicInfo;
 
     protected updateSiteObserver?: CoreEventObserver;
 
@@ -79,7 +81,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }, CoreSites.instance.getCurrentSiteId());
 
         this.currentSite = CoreSites.instance.getCurrentSite()!;
-        this.siteHomeId = this.currentSite.getSiteHomeId();
+        this.siteHomeId = this.currentSite?.getSiteHomeId() || 1;
 
         const module = navParams['module'];
         if (module) {
@@ -105,6 +107,23 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.items = await CoreSiteHome.instance.getFrontPageItems(config.frontpageloggedin);
         this.hasContent = this.items.length > 0;
 
+        if (this.items.some((item) => item == 'NEWS_ITEMS')) {
+            // Get the news forum.
+            try {
+                const forum = await CoreSiteHome.instance.getNewsForum();
+                this.newsForumModule = await CoreCourse.instance.getModuleBasicInfo(forum.cmid);
+                /* @todo this.newsForumModule.handlerData = this.moduleDelegate.getModuleDataFor(
+                    this.newsForumModule.modname,
+                    this.newsForumModule,
+                    this.siteHomeId,
+                    this.newsForumModule.section,
+                    true,
+                );*/
+            } catch {
+                // Ignore errors.
+            }
+        }
+
         try {
             const sections = await CoreCourse.instance.getSections(this.siteHomeId!, false, true);
 
@@ -113,13 +132,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             if (this.section) {
                 this.section.hasContent = false;
                 this.section.hasContent = CoreCourseHelper.instance.sectionHasContent(this.section);
-                /* @todo this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
+                this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
                     undefined,
                     true,
-                ) || this.hasContent;*/
+                ) || this.hasContent;
             }
 
             // Add log in Moodle.
@@ -158,13 +177,17 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             //  @todo promises.push(this.prefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
-        // @todo promises.push(this.courseBlocksComponent.invalidateBlocks());
+        if (this.courseBlocksComponent) {
+            promises.push(this.courseBlocksComponent.invalidateBlocks());
+        }
 
         Promise.all(promises).finally(async () => {
             const p2: Promise<unknown>[] = [];
 
             p2.push(this.loadContent());
-            // @todo  p2.push(this.courseBlocksComponent.loadContent());
+            if (this.courseBlocksComponent) {
+                p2.push(this.courseBlocksComponent.loadContent());
+            }
 
             await Promise.all(p2).finally(() => {
                 refresher?.detail.complete();

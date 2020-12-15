@@ -40,4 +40,13 @@
     &.core-loading-loaded {
         position: unset;
     }
+
+    &.core-loading-center {
+        display: block;
+
+        .core-loading-container {
+            margin-top: 10px;
+            position: relative;
+        }
+    }
 }

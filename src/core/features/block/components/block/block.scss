@@ -1,0 +1,11 @@
+:host {
+    position: relative;
+    display: block;
+
+    ion-item-divider {
+        min-height: 60px;
+        .core-button-spinner {
+            margin: 0;
+        }
+    }
+}

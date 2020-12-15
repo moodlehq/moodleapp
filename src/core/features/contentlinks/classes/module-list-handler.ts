@@ -31,8 +31,6 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
     /**
      * Construct the handler.
      *
-     * @param linkHelper The CoreContentLinksHelperProvider instance.
-     * @param translate The TranslateService instance.
      * @param addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
      * @param modName Name of the module (assign, book, ...).
      */

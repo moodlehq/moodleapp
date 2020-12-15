@@ -20,6 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CoreComponentsModule } from '@components/components.module';
+import { CoreBlockComponentsModule } from '@/core/features/block/components/components.module';
 
 import { CoreSiteHomeIndexPage } from '.';
 
@@ -38,6 +39,7 @@ const routes: Routes = [
         TranslateModule.forChild(),
         CoreDirectivesModule,
         CoreComponentsModule,
+        CoreBlockComponentsModule,
     ],
     declarations: [
         CoreSiteHomeIndexPage,

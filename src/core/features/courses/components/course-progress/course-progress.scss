@@ -109,27 +109,34 @@
 
 // @todo
 :host-context(.core-horizontal-scroll) {
-    /*@include horizontal_scroll_item(80%, 250px, 300px);*/
+    flex: 0 0 80%;
+    min-width: 250px;
+    max-width: 300px;
+    align-self: stretch;
+    display: block;
+
+    [text-wrap] .label {
+        h2, p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
 
     ion-card {
         .core-course-thumb {
             padding-top: 30%;
         }
 
-        .core-course-link {
-            /*@include padding(4px, 0px, 4px, 8px);*/
-            .core-course-additional-info {
-                font-size: 1.2rem;
-            }
+        .core-course-header {
+            padding-top: 4px;
+            padding-bottom: 4px;
 
             .core-course-title {
                 margin: 3px 0;
 
-                h2 {
-                    font-size: 1.5rem;
-                    ion-icon {
-                        margin-right: 2px;
-                    }
+                h2 ion-icon {
+                    margin-right: 2px;
                 }
 
                 &.core-course-with-buttons {
@@ -148,7 +155,6 @@
             .item-button[icon-only] {
                 min-width: 40px;
                 width: 40px;
-                font-size: 1.5rem;
                 padding: 8px;
             }
 

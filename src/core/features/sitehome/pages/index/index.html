@@ -16,7 +16,7 @@
         (ionRefresh)="doRefresh($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <!-- @todo  <core-block-course-blocks [courseId]="siteHomeId" [downloadEnabled]="downloadEnabled">-->
+    <core-block-course-blocks [courseId]="siteHomeId" [downloadEnabled]="downloadEnabled">
         <core-loading [hideUntil]="dataLoaded">
                 <ion-list>
                     <!-- Site home main contents. -->
@@ -56,7 +56,7 @@
 
             </core-empty-box>
         </core-loading>
-    <!-- @todo </core-block-course-blocks> -->
+    </core-block-course-blocks>
 </ion-content>
 
 <ng-template #allCourseList>
@@ -72,7 +72,7 @@
     <ion-item>
         <ion-label>News (TODO)</ion-label>
     </ion-item>
-    <!-- @todo <core-course-module class="core-sitehome-news" *ngIf="show" [module]="module" [courseId]="siteHomeId"></core-course-module> -->
+    <!-- @todo <core-course-module class="core-sitehome-news" *ngIf="newsForumModule" [module]="module" [courseId]="siteHomeId"></core-course-module> -->
 </ng-template>
 
 <ng-template #categories>

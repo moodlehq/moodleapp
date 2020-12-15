@@ -21,7 +21,7 @@ import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@single
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 // import { CoreSplitViewComponent } from '@components/split-view/split-view';
-// import { CoreSharedFiles } from '@features/sharedfiles/providers/sharedfiles';
+// import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
 import { CoreSiteInfo } from '@classes/site';

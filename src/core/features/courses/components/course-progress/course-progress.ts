@@ -17,7 +17,7 @@ import { PopoverController } from '@ionic/angular';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreUserProvider } from '@core/user/providers/user';
+// import { CoreUser } from '@core/user/services/user';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
@@ -252,7 +252,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Hide/Unhide the course from the course list.
      *
      * @param hide True to hide and false to show.
-     * @todo
+     * @todo CoreUser
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected setCourseHidden(hide: boolean): void {
@@ -263,7 +263,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Favourite/Unfavourite the course from the course list.
      *
      * @param favourite True to favourite and false to unfavourite.
-     * @todo
+     * @todo CoreUser
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected setCourseFavourite(favourite: boolean): void {

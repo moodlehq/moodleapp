@@ -24,8 +24,8 @@ import {
     CoreFilterClassifiedFilters,
     CoreFiltersGetAvailableInContextWSParamContext,
 } from './filter';
-// import { CoreCourseProvider } from '@features/course/providers/course';
-// import { CoreCoursesProvider } from '@features/courses/providers/courses';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourses } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -73,22 +73,19 @@ export class CoreFilterHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the contexts.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getBlocksContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        return [];
-        // @todo
-        // const blocks = await this.courseProvider.getCourseBlocks(courseId, siteId);
+        const blocks = await CoreCourse.instance.getCourseBlocks(courseId, siteId);
 
-        // const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
+        const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
-        // blocks.forEach((block) => {
-        //     contexts.push({
-        //         contextlevel: 'block',
-        //         instanceid: block.instanceid,
-        //     });
-        // });
+        blocks.forEach((block) => {
+            contexts.push({
+                contextlevel: 'block',
+                instanceid: block.instanceid,
+            });
+        });
 
-        // return contexts;
+        return contexts;
     }
 
     /**
@@ -132,22 +129,19 @@ export class CoreFilterHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the contexts.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getCourseContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        // @todo
-        return [];
-        // const courseIds = await this.coursesProvider.getCourseIdsIfEnrolled(courseId, siteId);
+        const courseIds = await CoreCourses.instance.getCourseIdsIfEnrolled(courseId, siteId);
 
-        // const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
+        const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
-        // courseIds.forEach((courseId) => {
-        //     contexts.push({
-        //         contextlevel: 'course',
-        //         instanceid: courseId
-        //     });
-        // });
+        courseIds.forEach((courseId) => {
+            contexts.push({
+                contextlevel: 'course',
+                instanceid: courseId,
+            });
+        });
 
-        // return contexts;
+        return contexts;
     }
 
     /**
@@ -157,29 +151,25 @@ export class CoreFilterHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the contexts.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getCourseModulesContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        // @todo
-        return [];
+        const sections = await CoreCourse.instance.getSections(courseId, false, true, undefined, siteId);
 
-        // const sections = await this.courseProvider.getSections(courseId, false, true, undefined, siteId);
+        const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
-        // const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
+        sections.forEach((section) => {
+            if (section.modules) {
+                section.modules.forEach((module) => {
+                    if (module.uservisible) {
+                        contexts.push({
+                            contextlevel: 'module',
+                            instanceid: module.id,
+                        });
+                    }
+                });
+            }
+        });
 
-        // sections.forEach((section) => {
-        //     if (section.modules) {
-        //         section.modules.forEach((module) => {
-        //             if (module.uservisible) {
-        //                 contexts.push({
-        //                     contextlevel: 'module',
-        //                     instanceid: module.id
-        //                 });
-        //             }
-        //         });
-        //     }
-        // });
-
-        // return contexts;
+        return contexts;
     }
 
     /**
@@ -243,7 +233,7 @@ export class CoreFilterHelperProvider {
                 const getFilters = this.getCourseContexts.bind(this, instanceId, siteId);
 
                 return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
-            } else if (contextLevel == 'block' && options.courseId) { // @todo && this.courseProvider.canGetCourseBlocks(site)
+            } else if (contextLevel == 'block' && options.courseId && CoreCourse.instance.canGetCourseBlocks(site)) {
                 // Get all the course blocks filters with a single call to decrease number of WS calls.
                 const getFilters = this.getBlocksContexts.bind(this, options.courseId, siteId);
 

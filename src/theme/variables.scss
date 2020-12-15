@@ -151,6 +151,11 @@
         --background: var(--custom-progress-background, var(--gray-lighter));
     }
 
+    core-block-course-blocks {
+        --side-blocks-max-width: var(--custom-side-blocks-max-width, 30%);
+        --side-blocks-min-width: var(--custom-side-blocks-min-width, 280px);
+    }
+
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 

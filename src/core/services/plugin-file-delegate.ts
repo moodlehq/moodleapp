@@ -133,7 +133,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId: string): Promise<{ size: number; total: boolean }> {
+    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId: string): Promise<CoreFileSizeSum> {
         const filteredFiles = <CoreWSExternalFile[]>[];
 
         await Promise.all(files.map(async (file) => {
@@ -154,7 +154,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<{ size: number; total: boolean }> {
+    async getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<CoreFileSizeSum> {
         const result = {
             size: 0,
             total: true,
@@ -401,4 +401,12 @@ export type CorePluginFileDownloadableResult = {
      * If not downloadable, the reason why it isn't.
      */
     reason?: string;
+};
+
+/**
+ * Sum of file sizes.
+ */
+export type CoreFileSizeSum = {
+    size: number; // Sum of file sizes.
+    total: boolean; // False if any file size is not avalaible.
 };

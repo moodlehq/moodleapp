@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
-// import { CoreFilterProvider } from '@features/filter/providers/filter';
+import { CoreFilter } from '@features/filter/services/filter';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
@@ -55,8 +55,6 @@ export class CoreSettingsHelperProvider {
     protected prefersDark?: MediaQueryList;
 
     constructor() {
-        // protected filterProvider: CoreFilterProvider,
-
         if (!CoreConstants.CONFIG.forceColorScheme) {
             // Update color scheme when a user enters or leaves a site, or when the site info is updated.
             const applySiteScheme = (): void => {
@@ -87,7 +85,6 @@ export class CoreSettingsHelperProvider {
      * @param siteName Site Name.
      * @param siteId: Site ID.
      * @return Resolved with detailed new info when done.
-     * @todo filterProvider and courseProviderpart.
      */
     async deleteSiteStorage(siteName: string, siteId: string): Promise<CoreSiteSpaceUsage> {
         const siteInfo: CoreSiteSpaceUsage = {
@@ -95,7 +92,7 @@ export class CoreSettingsHelperProvider {
             spaceUsage: 0,
         };
 
-        // siteName = await this.filterProvider.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], siteId);
+        siteName = await CoreFilter.instance.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], siteId);
 
         const title = Translate.instance.instant('core.settings.deletesitefilestitle');
         const message = Translate.instance.instant('core.settings.deletesitefiles', { sitename: siteName });
@@ -187,16 +184,16 @@ export class CoreSettingsHelperProvider {
      * @param name Name of the processor to get.
      * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
      * @return Processor.
-     * @todo
+     * @todo typings
      */
     getProcessor(processors: any[], name: string, fallback: boolean = true): any {
         if (!processors || !processors.length) {
             return;
         }
-        for (let i = 0; i < processors.length; i++) {
-            if (processors[i].name == name) {
-                return processors[i];
-            }
+
+        const processor = processors.find((processor) => processor.name == name);
+        if (processor) {
+            return processor;
         }
 
         // Processor not found, return first if requested.

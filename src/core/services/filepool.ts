@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
@@ -544,7 +544,7 @@ export class CoreFilepoolProvider {
 
         entries.forEach((entry) => {
             // Trigger module status changed, setting it as not downloaded.
-            this.triggerPackageStatusChanged(siteId, CoreConstants.NOT_DOWNLOADED, entry.component, entry.componentId);
+            this.triggerPackageStatusChanged(siteId, CoreConstants.NOT_DOWNLOADED, entry.component!, entry.componentId);
         });
     }
 
@@ -2949,8 +2949,8 @@ export class CoreFilepoolProvider {
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
      */
-    protected triggerPackageStatusChanged(siteId: string, status: string, component?: string, componentId?: string | number): void {
-        const data = {
+    protected triggerPackageStatusChanged(siteId: string, status: string, component: string, componentId?: string | number): void {
+        const data: CoreEventPackageStatusChanged = {
             component,
             componentId: this.fixComponentId(componentId),
             status,

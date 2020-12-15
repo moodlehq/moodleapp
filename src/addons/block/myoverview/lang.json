@@ -1,0 +1,14 @@
+{
+    "all": "All (except removed from view)",
+    "allincludinghidden": "All",
+    "favourites": "Starred",
+    "future": "Future",
+    "hiddencourses": "Removed from view",
+    "inprogress": "In progress",
+    "lastaccessed": "Last accessed",
+    "nocourses": "No courses",
+    "past": "Past",
+    "pluginname": "Course overview",
+    "shortname": "Short name",
+    "title": "Course name"
+}

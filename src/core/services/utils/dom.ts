@@ -34,6 +34,7 @@ import { CoreSilentError } from '@classes/errors/silenterror';
 
 import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
+import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -134,7 +135,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved when the user confirms or if no confirm needed.
      */
     async confirmDownloadSize(
-        size: {size: number; total: boolean},
+        size: CoreFileSizeSum,
         message?: string,
         unknownMessage?: string,
         wifiThreshold?: number,

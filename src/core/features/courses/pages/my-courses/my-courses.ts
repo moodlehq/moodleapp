@@ -25,7 +25,7 @@ import {
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreConstants } from '@/core/constants';
-// import { CoreCourseOptionsDelegate } from '@core/course/services/options-delegate';
+import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -128,7 +128,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourses.instance.invalidateUserCourses());
-        // @todo promises.push(this.courseOptionsDelegate.clearAndInvalidateCoursesOptions());
+        promises.push(CoreCourseOptionsDelegate.instance.clearAndInvalidateCoursesOptions());
         if (this.courseIds) {
             promises.push(CoreCourses.instance.invalidateCoursesByField('ids', this.courseIds));
         }

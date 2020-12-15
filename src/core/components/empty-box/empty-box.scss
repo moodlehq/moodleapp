@@ -62,6 +62,12 @@
             }
         }
     }
+
+     &.core-empty-inline .core-empty-box {
+        position: relative;
+        z-index: initial;
+        height: auto;
+    }
 }
 
 :host-context(core-block-course-blocks) .core-empty-box {

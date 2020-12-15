@@ -398,6 +398,9 @@ function override_component_lang_files($keys, $translations) {
             case 'assets':
                 $path .= $type.'/'.$component.'.json';
                 break;
+            default:
+                $path .= $type.'/lang.json';
+                break;
 
         }
 

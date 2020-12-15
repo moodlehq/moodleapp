@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreCourses, CoreCourseSearchedData, CoreCourseUserAdminOrNavOptionIndexed, CoreEnrolledCourseData } from './courses';
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
-// import { AddonCourseCompletionProvider } from '@addon/coursecompletion/providers/coursecompletion';
+import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 // import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
 
 /**
@@ -161,8 +161,97 @@ export class CoreCoursesHelperProvider {
      * @param loadCategoryNames Whether load category names or not.
      * @return Courses filled with options.
      */
-    async getUserCoursesWithOptions(): Promise<void> {
-        // @todo params and logic
+    async getUserCoursesWithOptions(
+        sort: string = 'fullname',
+        slice: number = 0,
+        filter?: string,
+        loadCategoryNames: boolean = false,
+    ): Promise<CoreEnrolledCourseDataWithOptions[]> {
+
+        let courses: CoreEnrolledCourseDataWithOptions[] = await CoreCourses.instance.getUserCourses();
+        if (courses.length <= 0) {
+            return [];
+        }
+
+        const promises: Promise<void>[] = [];
+        const courseIds = courses.map((course) => course.id);
+
+        if (CoreCourses.instance.canGetAdminAndNavOptions()) {
+            // Load course options of the course.
+            promises.push(CoreCourses.instance.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                courses.forEach((course) => {
+                    course.navOptions = options.navOptions[course.id];
+                    course.admOptions = options.admOptions[course.id];
+                });
+
+                return;
+            }));
+        }
+
+        promises.push(this.loadCoursesExtraInfo(courses, loadCategoryNames));
+
+        await Promise.all(promises);
+
+        switch (filter) {
+            case 'isfavourite':
+                courses = courses.filter((course) => !!course.isfavourite);
+                break;
+            default:
+            // Filter not implemented.
+        }
+
+        switch (sort) {
+            case 'fullname':
+                courses.sort((a, b) => {
+                    const compareA = a.fullname.toLowerCase();
+                    const compareB = b.fullname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+                break;
+            case 'lastaccess':
+                courses.sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0));
+                break;
+            // @todo Time modified property is not defined in CoreEnrolledCourseDataWithOptions, so it won't do nothing.
+            // case 'timemodified':
+            //    courses.sort((a, b) => b.timemodified - a.timemodified);
+            //    break;
+            case 'shortname':
+                courses.sort((a, b) => {
+                    const compareA = a.shortname.toLowerCase();
+                    const compareB = b.shortname.toLowerCase();
+
+                    return compareA.localeCompare(compareB);
+                });
+                break;
+            default:
+            // Sort not implemented. Do not sort.
+        }
+
+        courses = slice > 0 ? courses.slice(0, slice) : courses;
+
+        return Promise.all(courses.map(async (course) => {
+            if (typeof course.completed != 'undefined') {
+                // The WebService already returns the completed status, no need to fetch it.
+                return course;
+            }
+
+            if (typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
+                // Completion is disabled for this course, there is no need to fetch the completion status.
+                return course;
+            }
+
+            try {
+                const completion = await AddonCourseCompletion.instance.getCompletion(course.id);
+
+                course.completed = completion?.completed;
+            } catch {
+                // Ignore error, maybe course completion is disabled or user has no permission.
+                course.completed = false;
+            }
+
+            return course;
+        }));
     }
 
     /**

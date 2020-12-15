@@ -2,6 +2,10 @@
     margin: 0;
 }
 
+:host-context([dir=rtl]).icon-flip-rtl {
+    transform: scaleX(-1);
+}
+
 :host-context(ion-item.md) ion-icon {
     &[slot] {
         font-size: 1.6em;
