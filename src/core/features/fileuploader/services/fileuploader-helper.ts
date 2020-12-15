@@ -420,7 +420,7 @@ export class CoreFileUploaderHelperProvider {
             header: title ? title : Translate.instance.instant('core.fileuploader.' + (upload ? 'uploadafile' : 'selectafile')),
             buttons: buttons,
         });
-        this.actionSheet.present();
+        await this.actionSheet.present();
 
         // Call afterRender for each button.
         setTimeout(() => {

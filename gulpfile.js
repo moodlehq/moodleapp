@@ -41,5 +41,5 @@ gulp.task('push', (done) => {
 gulp.task('default', gulp.parallel('lang'));
 
 gulp.task('watch', () => {
-    gulp.watch(langsPaths, { interval: 500 }, gulp.parallel('lang'));
+    gulp.watch(paths.lang, { interval: 500 }, gulp.parallel('lang'));
 });

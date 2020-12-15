@@ -213,7 +213,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             },
             event: e,
         });
-        popover.present();
+        await popover.present();
 
         const action = await popover.onDidDismiss<string>();
 

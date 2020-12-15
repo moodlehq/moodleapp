@@ -103,7 +103,7 @@ export class AddonCourseCompletionProvider {
         userId = userId || site.getUserId();
         this.logger.debug('Get completion for course ' + courseId + ' and user ' + userId);
 
-        const data: CoreCompletionGetCourseCompletionStatusWSParams = {
+        const data: AddonCourseCompletionGetCourseCompletionStatusWSParams = {
             courseid: courseId,
             userid: userId,
         };
@@ -112,7 +112,7 @@ export class AddonCourseCompletionProvider {
         preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_SOMETIMES;
         preSets.cacheErrors = ['notenroled'];
 
-        const result: CoreCompletionGetCourseCompletionStatusWSResponse =
+        const result: AddonCourseCompletionGetCourseCompletionStatusWSResponse =
             await site.read('core_completion_get_course_completion_status', data, preSets);
         if (result.completionstatus) {
             return result.completionstatus;
@@ -253,7 +253,7 @@ export class AddonCourseCompletionProvider {
     async markCourseAsSelfCompleted(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        const params: CoreCompletionMarkCourseSelfCompletedWSParams = {
+        const params: AddonCourseCompletionMarkCourseSelfCompletedWSParams = {
             courseid: courseId,
         };
 
@@ -292,7 +292,7 @@ export type AddonCourseCompletionCourseCompletionStatus = {
 /**
  * Params of core_completion_get_course_completion_status WS.
  */
-export type CoreCompletionGetCourseCompletionStatusWSParams = {
+export type AddonCourseCompletionGetCourseCompletionStatusWSParams = {
     courseid: number; // Course ID.
     userid: number; // User ID.
 };
@@ -300,7 +300,7 @@ export type CoreCompletionGetCourseCompletionStatusWSParams = {
 /**
  * Data returned by core_completion_get_course_completion_status WS.
  */
-export type CoreCompletionGetCourseCompletionStatusWSResponse = {
+export type AddonCourseCompletionGetCourseCompletionStatusWSResponse = {
     completionstatus: AddonCourseCompletionCourseCompletionStatus; // Course status.
     warnings?: CoreWSExternalWarning[];
 };
@@ -308,6 +308,6 @@ export type CoreCompletionGetCourseCompletionStatusWSResponse = {
 /**
  * Params of core_completion_mark_course_self_completed WS.
  */
-export type CoreCompletionMarkCourseSelfCompletedWSParams = {
+export type AddonCourseCompletionMarkCourseSelfCompletedWSParams = {
     courseid: number; // Course ID.
 };

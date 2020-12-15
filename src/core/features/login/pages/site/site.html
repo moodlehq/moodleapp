@@ -74,7 +74,11 @@
         </ng-container>
 
         <ion-item *ngIf="siteSelector == 'url'" lines="none">
-            <ion-button expand="block" [disabled]="!siteForm.valid" text-wrap>{{ 'core.login.connect' | translate }}</ion-button>
+            <ion-label>
+                <ion-button expand="block" [disabled]="!siteForm.valid" text-wrap>
+                    {{ 'core.login.connect' | translate }}
+                </ion-button>
+            </ion-label>
         </ion-item>
     </form>
 

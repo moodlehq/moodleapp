@@ -130,7 +130,7 @@ export class CoreFileUploaderProvider {
             backdropDismiss: false,
         });
 
-        modal.present();
+        await modal.present();
 
         const result = await modal.onWillDismiss();
 
