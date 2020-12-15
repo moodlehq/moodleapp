@@ -41,7 +41,7 @@ const mainMenuMoreRoutes: Routes = [
 @NgModule({
     imports: [
         AppRoutingModule.forChild(appRoutes),
-        CoreMainMenuTabRoutingModule.forChild({ siblings: mainMenuMoreRoutes }),
+        CoreMainMenuTabRoutingModule.forChild(mainMenuMoreRoutes),
     ],
     providers: [
         {
