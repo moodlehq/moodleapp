@@ -39,9 +39,11 @@ import { AddonBlockTagsModule } from './block/tags/tags.module';
 import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 import { AddonFilterModule } from './filter/filter.module';
 import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
+import { AddonBadgesModule } from './badges/badges.module';
 
 @NgModule({
     imports: [
+        AddonBadgesModule,
         AddonPrivateFilesModule,
         AddonFilterModule,
         AddonBlockActivityResultsModule,

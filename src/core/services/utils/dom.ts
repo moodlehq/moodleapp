@@ -1574,7 +1574,7 @@ export class CoreDomUtilsProvider {
             cssClass: cssClass,
         });
 
-        loader.present();
+        await loader.present();
 
         return loader;
     }

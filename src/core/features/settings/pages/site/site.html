@@ -24,7 +24,7 @@
                     <p>{{ siteUrl }}</p>
                 </ion-label>
             </ion-item>
-            <ion-item-divider></ion-item-divider>
+            <ion-item-divider><ion-label></ion-label></ion-item-divider>
             <ion-item *ngIf="isIOS"
                 (click)="openHandler('CoreSharedFilesListPage', {manage: true, siteId: siteId, hideSitePicker: true})"
                 [title]="'core.sharedfiles.sharedfiles' | translate"

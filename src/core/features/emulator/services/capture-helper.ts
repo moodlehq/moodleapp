@@ -107,7 +107,7 @@ export class CoreEmulatorCaptureHelperProvider {
             componentProps: params,
         });
 
-        modal.present();
+        await modal.present();
 
         const result = await modal.onDidDismiss();
 

@@ -20,6 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreUserProfile } from './user';
 import { makeSingleton } from '@singletons';
+import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 
 /**
  * Interface that all user profile handlers must implement.
@@ -48,7 +49,12 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * @param admOptions Admin options for the course.
      * @return Whether or not the handler is enabled for a user.
      */
-    isEnabledForUser(user: CoreUserProfile, courseId: number, navOptions?: unknown, admOptions?: unknown): Promise<boolean>;
+    isEnabledForUser(
+        user: CoreUserProfile,
+        courseId: number,
+        navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+        admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+    ): Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.

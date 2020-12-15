@@ -6,7 +6,10 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <ng-container *ngIf="mainMenuBlock">
         <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
-            <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId" contextLevel="course" [contextInstanceId]="siteHomeId"></core-format-text>
+            <ion-label>
+                <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId"
+                    contextLevel="course" [contextInstanceId]="siteHomeId"></core-format-text>
+            </ion-label>
         </ion-item>
 
         <!--<core-course-module *ngFor="let module of mainMenuBlock.modules" [module]="module" [courseId]="siteHomeId" [downloadEnabled]="downloadEnabled" [section]="mainMenuBlock"></core-course-module>-->

@@ -93,19 +93,20 @@ export class CoreNavHelperService {
      * Goes to a certain page in a certain site. If the site is current site it will perform a regular navigation,
      * otherwise it will load the other site and open the page in main menu.
      *
-     * @param pageName Name of the page to go.
+     * @param path Path to go.
      * @param pageParams Params to send to the page.
      * @param siteId Site ID. If not defined, current site.
-     * @param checkMenu If true, check if the root page of a main menu tab. Only the page name will be checked.
+     * @param checkMenu If true, check if the root page is on a main menu tab. Only the path will be checked.
      * @return Promise resolved when done.
      */
-    async goInSite(pageName: string, pageParams: Params, siteId?: string, checkMenu?: boolean): Promise<void> {
+    async goInSite(path: string, pageParams: Params, siteId?: string, checkMenu?: boolean): Promise<void> {
+
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         // @todo: When this function was in ContentLinksHelper, this code was inside NgZone. Check if it's needed.
 
         if (!CoreSites.instance.isLoggedIn() || siteId != CoreSites.instance.getCurrentSiteId()) {
-            await this.openInSiteMainMenu(pageName, pageParams, siteId);
+            await this.openInSiteMainMenu(path, pageParams, siteId);
 
             return;
         }
@@ -114,20 +115,20 @@ export class CoreNavHelperService {
             let isInMenu = false;
             // Check if the page is in the main menu.
             try {
-                isInMenu = await CoreMainMenu.instance.isCurrentMainMenuHandler(pageName);
+                isInMenu = await CoreMainMenu.instance.isCurrentMainMenuHandler(path);
             } catch {
                 isInMenu = false;
             }
 
             if (isInMenu) {
                 // Just select the tab. @todo test.
-                CoreNavHelper.instance.loadPageInMainMenu(pageName, pageParams);
+                CoreNavHelper.instance.loadPageInMainMenu(path, pageParams);
 
                 return;
             }
         }
 
-        await this.goInCurrentMainMenuTab(pageName, pageParams);
+        await this.goInCurrentMainMenuTab(path, pageParams);
     }
 
     /**

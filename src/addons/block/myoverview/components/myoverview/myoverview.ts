@@ -231,7 +231,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected async fetchContent(): Promise<void> {
         const config = this.block.configsRecord || {};
 
-        const showCategories = config && config.displaycategories && config.displaycategories.value == '1';
+        const showCategories = config?.displaycategories?.value == '1';
 
         const courses = await CoreCoursesHelper.instance.getUserCoursesWithOptions(this.sort, undefined, undefined, showCategories);
 
@@ -257,26 +257,26 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.showFilter = false;
 
         this.showFilters.all = this.getShowFilterValue(
-            !config || config.displaygroupingall.value == '1',
+            !config || config.displaygroupingall?.value == '1',
             this.courses.all.length === 0,
         );
         // Do not show allincludinghiddenif config it's not present (before 3.8).
         this.showFilters.allincludinghidden =
             this.getShowFilterValue(
-                config.displaygroupingallincludinghidden.value == '1',
+                config?.displaygroupingallincludinghidden?.value == '1',
                 this.courses.allincludinghidden.length === 0,
             );
 
         this.showFilters.inprogress = this.getShowFilterValue(
-            !config || config.displaygroupinginprogress.value == '1',
+            !config || config.displaygroupinginprogress?.value == '1',
             this.courses.inprogress.length === 0,
         );
         this.showFilters.past = this.getShowFilterValue(
-            !config || config.displaygroupingpast.value == '1',
+            !config || config.displaygroupingpast?.value == '1',
             this.courses.past.length === 0,
         );
         this.showFilters.future = this.getShowFilterValue(
-            !config || config.displaygroupingfuture.value == '1',
+            !config || config.displaygroupingfuture?.value == '1',
             this.courses.future.length === 0,
         );
 
@@ -285,24 +285,22 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         this.showFilters.hidden = this.getShowFilterValue(
             this.showSelectorFilter && typeof courses[0].hidden != 'undefined' &&
-                (!config || config.displaygroupinghidden.value == '1'),
+                (!config || config.displaygroupinghidden?.value == '1'),
             this.courses.hidden.length === 0,
         );
 
         this.showFilters.favourite = this.getShowFilterValue(
             this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined' &&
-                (!config || (config.displaygroupingstarred && config.displaygroupingstarred.value == '1') ||
-                    (config.displaygroupingfavourites && config.displaygroupingfavourites.value == '1')),
+                (!config || config.displaygroupingstarred?.value == '1' || config.displaygroupingfavourites?.value == '1'),
             this.courses.favourite.length === 0,
         );
 
         this.showFilters.custom = this.getShowFilterValue(
-            this.showSelectorFilter && config?.displaygroupingcustomfield.value == '1' &&
-                !!config?.customfieldsexport && !!config?.customfieldsexport.value,
+            this.showSelectorFilter && config?.displaygroupingcustomfield?.value == '1' && !!config?.customfieldsexport?.value,
             false,
         );
         if (this.showFilters.custom == 'show') {
-            this.customFilter = CoreTextUtils.instance.parseJSON(config.customfieldsexport.value, []);
+            this.customFilter = CoreTextUtils.instance.parseJSON(config?.customfieldsexport?.value, []);
         } else {
             this.customFilter = [];
         }
