@@ -15,5 +15,6 @@ jobs:
         node-version: '12.x'
     - run: npm ci
     - run: npm run lint
+    - run: npx tslint -c ionic-migration.json -p tsconfig.json
     - run: npm run test:ci
     - run: npm run build:prod
