@@ -16,6 +16,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { CoreH5PComponentsModule } from './components/components.module';
 import {
     CONTENT_TABLE_NAME,
     LIBRARIES_TABLE_NAME,
@@ -27,6 +28,7 @@ import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
 
 @NgModule({
     imports: [
+        CoreH5PComponentsModule,
     ],
     providers: [
         {
