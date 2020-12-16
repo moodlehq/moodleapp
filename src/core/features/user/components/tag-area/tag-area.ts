@@ -14,7 +14,7 @@
 
 import { Component, Input } from '@angular/core';
 
-import { CoreUserTagFeedElement } from '@features/user/services/handlers/tag-area-handler';
+import { CoreUserTagFeedElement } from '@features/user/services/handlers/tag-area';
 
 /**
  * Component to render the user tag area.

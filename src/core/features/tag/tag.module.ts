@@ -17,9 +17,9 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '../mainmenu/mainmenu-routing.module';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreTagMainMenuHandler, CoreTagMainMenuHandlerService } from './services/handlers/tag.mainmenu';
-import { CoreTagIndexLinkHandler } from './services/handlers/index.link';
-import { CoreTagSearchLinkHandler } from './services/handlers/search.link';
+import { CoreTagMainMenuHandler, CoreTagMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreTagIndexLinkHandler } from './services/handlers/index-link';
+import { CoreTagSearchLinkHandler } from './services/handlers/search-link';
 
 const routes: Routes = [
     {

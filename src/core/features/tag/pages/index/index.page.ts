@@ -17,7 +17,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 // import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTag } from '@features/tag/services/tag';
-import { CoreTagAreaDelegate } from '@/core/features/tag/services/tag-area-delegate';
+import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoreTagFeedElement } from '../../services/tag-helper';
 
