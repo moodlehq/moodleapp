@@ -18,6 +18,7 @@ import { CoreCourseModule } from './course/course.module';
 import { CoreCoursesModule } from './courses/courses.module';
 import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreFileUploaderModule } from './fileuploader/fileuploader.module';
+import { CoreH5PModule } from './h5p/h5p.module';
 import { CoreLoginModule } from './login/login.module';
 import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
 import { CoreSettingsModule } from './settings/settings.module';
@@ -41,6 +42,7 @@ import { CoreXAPIModule } from './xapi/xapi.module';
         CoreUserModule,
         CorePushNotificationsModule,
         CoreXAPIModule,
+        CoreH5PModule,
     ],
 })
 export class CoreFeaturesModule {}

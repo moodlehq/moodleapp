@@ -70,10 +70,25 @@ export const enum CoreFileFormat {
 export class CoreFileProvider {
 
     // Formats to read a file.
+    /**
+     * @deprecated since 3.9.5, use CoreFileFormat directly.
+     */
     static readonly FORMATTEXT = CoreFileFormat.FORMATTEXT;
+    /**
+     * @deprecated since 3.9.5, use CoreFileFormat directly.
+     */
     static readonly FORMATDATAURL = CoreFileFormat.FORMATDATAURL;
+    /**
+     * @deprecated since 3.9.5, use CoreFileFormat directly.
+     */
     static readonly FORMATBINARYSTRING = CoreFileFormat.FORMATBINARYSTRING;
+    /**
+     * @deprecated since 3.9.5, use CoreFileFormat directly.
+     */
     static readonly FORMATARRAYBUFFER = CoreFileFormat.FORMATARRAYBUFFER;
+    /**
+     * @deprecated since 3.9.5, use CoreFileFormat directly.
+     */
     static readonly FORMATJSON = CoreFileFormat.FORMATJSON;
 
     // Folders.
@@ -460,19 +475,25 @@ export class CoreFileProvider {
      * @param format Format to read the file.
      * @return Promise to be resolved when the file is read.
      */
-    readFile(path: string, format: CoreFileFormat = CoreFileProvider.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
+    readFile(
+        path: string,
+        format?: CoreFileFormat.FORMATTEXT | CoreFileFormat.FORMATDATAURL | CoreFileFormat.FORMATBINARYSTRING,
+    ): Promise<string>;
+    readFile(path: string, format: CoreFileFormat.FORMATARRAYBUFFER): Promise<ArrayBuffer>;
+    readFile<T = unknown>(path: string, format: CoreFileFormat.FORMATJSON): Promise<T>;
+    readFile(path: string, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
         // Remove basePath if it's in the path.
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
         this.logger.debug('Read file ' + path + ' with format ' + format);
 
         switch (format) {
-            case CoreFileProvider.FORMATDATAURL:
+            case CoreFileFormat.FORMATDATAURL:
                 return File.instance.readAsDataURL(this.basePath, path);
-            case CoreFileProvider.FORMATBINARYSTRING:
+            case CoreFileFormat.FORMATBINARYSTRING:
                 return File.instance.readAsBinaryString(this.basePath, path);
-            case CoreFileProvider.FORMATARRAYBUFFER:
+            case CoreFileFormat.FORMATARRAYBUFFER:
                 return File.instance.readAsArrayBuffer(this.basePath, path);
-            case CoreFileProvider.FORMATJSON:
+            case CoreFileFormat.FORMATJSON:
                 return File.instance.readAsText(this.basePath, path).then((text) => {
                     const parsed = CoreTextUtils.instance.parseJSON(text, null);
 
@@ -494,8 +515,8 @@ export class CoreFileProvider {
      * @param format Format to read the file.
      * @return Promise to be resolved when the file is read.
      */
-    readFileData(fileData: IFile, format: CoreFileFormat = CoreFileProvider.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
-        format = format || CoreFileProvider.FORMATTEXT;
+    readFileData(fileData: IFile, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
+        format = format || CoreFileFormat.FORMATTEXT;
         this.logger.debug('Read file from file data with format ' + format);
 
         return new Promise((resolve, reject): void => {
@@ -503,7 +524,7 @@ export class CoreFileProvider {
 
             reader.onloadend = (event): void => {
                 if (event.target?.result !== undefined && event.target.result !== null) {
-                    if (format == CoreFileProvider.FORMATJSON) {
+                    if (format == CoreFileFormat.FORMATJSON) {
                         // Convert to object.
                         const parsed = CoreTextUtils.instance.parseJSON(<string> event.target.result, null);
 
@@ -535,13 +556,13 @@ export class CoreFileProvider {
             }, 3000);
 
             switch (format) {
-                case CoreFileProvider.FORMATDATAURL:
+                case CoreFileFormat.FORMATDATAURL:
                     reader.readAsDataURL(fileData);
                     break;
-                case CoreFileProvider.FORMATBINARYSTRING:
+                case CoreFileFormat.FORMATBINARYSTRING:
                     reader.readAsBinaryString(fileData);
                     break;
-                case CoreFileProvider.FORMATARRAYBUFFER:
+                case CoreFileFormat.FORMATARRAYBUFFER:
                     reader.readAsArrayBuffer(fileData);
                     break;
                 default:
