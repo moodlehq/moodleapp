@@ -14,6 +14,7 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
+import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import {
     CONTENT_TABLE_NAME,
@@ -22,6 +23,7 @@ import {
     CONTENTS_LIBRARIES_TABLE_NAME,
     LIBRARIES_CACHEDASSETS_TABLE_NAME,
 } from './services/database/h5p';
+import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
 
 @NgModule({
     imports: [
@@ -43,7 +45,7 @@ import {
             multi: true,
             deps: [],
             useFactory: () => () => {
-                // @todo
+                CorePluginFileDelegate.instance.registerHandler(CoreH5PPluginFileHandler.instance);
             },
         },
     ],
