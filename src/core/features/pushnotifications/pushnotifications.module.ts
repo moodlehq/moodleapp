@@ -14,6 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
+import { CoreCronDelegate } from '@services/cron';
+import { CorePushNotificationsRegisterCronHandler } from './services/handlers/register-cron';
+import { CorePushNotificationsUnregisterCronHandler } from './services/handlers/unregister-cron';
 import { CorePushNotifications } from './services/pushnotifications';
 
 @NgModule({
@@ -27,6 +30,10 @@ import { CorePushNotifications } from './services/pushnotifications';
             multi: true,
             deps: [],
             useFactory: () => async () => {
+                // Register the handlers.
+                CoreCronDelegate.instance.register(CorePushNotificationsRegisterCronHandler.instance);
+                CoreCronDelegate.instance.register(CorePushNotificationsUnregisterCronHandler.instance);
+
                 await CorePushNotifications.instance.initialize();
             },
         },
