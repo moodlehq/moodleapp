@@ -47,7 +47,7 @@ export class CoreSiteHomeProvider {
      */
     async getNewsForum(siteHomeId?: number): Promise<AddonModForumData> {
         if (!siteHomeId) {
-            siteHomeId = CoreSites.instance.getCurrentSite()?.getSiteHomeId() || 1;
+            siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
         }
 
         const forums = await AddonModForum.instance.getCourseForums(siteHomeId);

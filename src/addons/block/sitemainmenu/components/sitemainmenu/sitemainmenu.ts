@@ -45,7 +45,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.siteHomeId = CoreSites.instance.getCurrentSite()?.getSiteHomeId() || 1;
+        this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
 
         super.ngOnInit();
     }
