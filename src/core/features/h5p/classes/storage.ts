@@ -77,7 +77,7 @@ export class CoreH5PStorage {
 
             // Convert metadataSettings values to boolean and json_encode it before saving.
             libraryData.metadataSettings = libraryData.metadataSettings ?
-                CoreH5PMetadata.boolifyAndEncodeSettings(<CoreH5PLibraryMetadataSettings> libraryData.metadataSettings) : undefined;
+                CoreH5PMetadata.boolifyAndEncodeSettings(libraryData.metadataSettings) : undefined;
 
             // Save the library data in DB.
             await this.h5pFramework.saveLibraryData(libraryData, siteId);

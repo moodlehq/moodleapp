@@ -26,7 +26,11 @@ export class CoreH5PMetadata {
      * @param metadataSettings Settings.
      * @return Stringified settings.
      */
-    static boolifyAndEncodeSettings(metadataSettings: CoreH5PLibraryMetadataSettings): string {
+    static boolifyAndEncodeSettings(metadataSettings: CoreH5PLibraryMetadataSettings | string): string {
+        if (typeof metadataSettings == 'string') {
+            return metadataSettings;
+        }
+
         // Convert metadataSettings values to boolean.
         if (typeof metadataSettings.disable != 'undefined') {
             metadataSettings.disable = metadataSettings.disable === 1;

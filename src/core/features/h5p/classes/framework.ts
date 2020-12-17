@@ -40,7 +40,8 @@ import {
 import { CoreError } from '@classes/errors/error';
 import { CoreH5PSemantics } from './content-validator';
 import { CoreH5PContentBeingSaved, CoreH5PLibraryBeingSaved } from './storage';
-import { CoreH5PLibraryAddTo } from './validator';
+import { CoreH5PLibraryAddTo, CoreH5PLibraryMetadataSettings } from './validator';
+import { CoreH5PMetadata } from './metadata';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -625,6 +626,7 @@ export class CoreH5PFramework {
         return Object.assign(library, {
             semantics: library.semantics ? CoreTextUtils.instance.parseJSON(library.semantics, null) : null,
             addto: library.addto ? CoreTextUtils.instance.parseJSON(library.addto, null) : null,
+            metadatasettings: library.metadatasettings ? CoreTextUtils.instance.parseJSON(library.metadatasettings, null) : null,
         });
     }
 
@@ -712,6 +714,8 @@ export class CoreH5PFramework {
             droplibrarycss: dropLibraryCSS,
             semantics: typeof libraryData.semantics != 'undefined' ? JSON.stringify(libraryData.semantics) : null,
             addto: typeof libraryData.addTo != 'undefined' ? JSON.stringify(libraryData.addTo) : null,
+            metadatasettings: typeof libraryData.metadataSettings != 'undefined' ?
+                CoreH5PMetadata.boolifyAndEncodeSettings(libraryData.metadataSettings) : null,
         };
 
         if (libraryData.libraryId) {
@@ -898,9 +902,10 @@ export type CoreH5PFrameworkContentData = {
     metadata: unknown; // Content metadata.
 };
 
-export type CoreH5PLibraryParsedDBRecord = Omit<CoreH5PLibraryDBRecord, 'semantics'|'addto'> & {
+export type CoreH5PLibraryParsedDBRecord = Omit<CoreH5PLibraryDBRecord, 'semantics'|'addto'|'metadatasettings'> & {
     semantics: CoreH5PSemantics[] | null;
     addto: CoreH5PLibraryAddTo | null;
+    metadatasettings: CoreH5PLibraryMetadataSettings | null;
 };
 
 type LibraryDependency = {

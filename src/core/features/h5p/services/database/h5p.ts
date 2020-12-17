@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
@@ -19,7 +20,7 @@ import { CoreSiteSchema } from '@services/sites';
  */
 // DB table names.
 export const CONTENT_TABLE_NAME = 'h5p_content'; // H5P content.
-export const LIBRARIES_TABLE_NAME = 'h5p_libraries'; // Installed libraries.
+export const LIBRARIES_TABLE_NAME = 'h5p_libraries_2'; // Installed libraries.
 export const LIBRARY_DEPENDENCIES_TABLE_NAME = 'h5p_library_dependencies'; // Library dependencies.
 export const CONTENTS_LIBRARIES_TABLE_NAME = 'h5p_contents_libraries'; // Which library is used in which content.
 export const LIBRARIES_CACHEDASSETS_TABLE_NAME = 'h5p_libraries_cachedassets'; // H5P cached library assets.
@@ -148,6 +149,10 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     name: 'addto',
                     type: 'TEXT',
                 },
+                {
+                    name: 'metadatasettings',
+                    type: 'TEXT',
+                },
             ],
         },
         {
@@ -239,6 +244,28 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             ],
         },
     ],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<void> {
+        if (oldVersion >= 2) {
+            return;
+        }
+
+        const newTable = LIBRARIES_TABLE_NAME;
+        const oldTable = 'h5p_libraries';
+
+        try {
+            await db.tableExists(oldTable);
+
+            // Move the records from the old table.
+            const entries = await db.getAllRecords<CoreH5PLibraryDBRecord>(oldTable);
+
+            await Promise.all(entries.map((entry) => db.insertRecord(newTable, entry)));
+
+            await db.dropTable(oldTable);
+        } catch {
+            // Old table does not exist, ignore.
+        }
+    },
 };
 
 /**
@@ -273,6 +300,7 @@ export type CoreH5PLibraryDBRecord = {
     droplibrarycss?: string | null; // Libraries that should not have CSS included if this lib is used. Comma separated list.
     semantics?: string | null; // The semantics definition.
     addto?: string | null; // Plugin configuration data.
+    metadatasettings?: string | null; // Metadata settings.
 };
 
 /**
