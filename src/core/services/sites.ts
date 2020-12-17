@@ -972,6 +972,23 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Finds a site with a certain URL. It will return the first site found.
+     *
+     * @param siteUrl The site URL.
+     * @return Promise resolved with the site.
+     */
+    async getSiteByUrl(siteUrl: string): Promise<CoreSite> {
+        const db = await this.appDB;
+        const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { siteUrl });
+
+        if (typeof this.sites[data.id] != 'undefined') {
+            return this.sites[data.id];
+        }
+
+        return this.makeSiteFromSiteListEntry(data);
+    }
+
+    /**
      * Create a site from an entry of the sites list DB. The new site is added to the list of "cached" sites: this.sites.
      *
      * @param entry Site list entry.
