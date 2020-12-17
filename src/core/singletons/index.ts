@@ -25,6 +25,7 @@ import {
     ActionSheetController as ActionSheetControllerService,
 } from '@ionic/angular';
 
+import { Badge as BadgeService } from '@ionic-native/badge/ngx';
 import { Camera as CameraService } from '@ionic-native/camera/ngx';
 import { Chooser as ChooserService } from '@ionic-native/chooser/ngx';
 import { Clipboard as ClipboardService } from '@ionic-native/clipboard/ngx';
@@ -111,6 +112,7 @@ export function makeSingleton<Service>(injectionToken: Type<Service> | Type<unkn
 }
 
 // Convert ionic-native services to singleton.
+export class Badge extends makeSingleton(BadgeService) {}
 export class Camera extends makeSingleton(CameraService) {}
 export class Chooser extends makeSingleton(ChooserService) {}
 export class Clipboard extends makeSingleton(ClipboardService) {}
