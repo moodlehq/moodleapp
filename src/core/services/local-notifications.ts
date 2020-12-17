@@ -45,8 +45,7 @@ export class CoreLocalNotificationsProvider {
     protected logger: CoreLogger;
     protected codes: { [s: string]: number } = {};
     protected codeRequestsQueue: {[key: string]: CodeRequestsQueueItem} = {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected observables: {[eventName: string]: {[component: string]: Subject<any>}} = {};
+    protected observables: {[eventName: string]: {[component: string]: Subject<unknown>}} = {};
 
     protected triggerSubscription?: Subscription;
     protected clickSubscription?: Subscription;
@@ -373,8 +372,7 @@ export class CoreLocalNotificationsProvider {
      *
      * @param data Data received by the notification.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    notifyClick(data: any): void {
+    notifyClick(data: Record<string, unknown>): void {
         this.notifyEvent('click', data);
     }
 
@@ -384,11 +382,10 @@ export class CoreLocalNotificationsProvider {
      * @param eventName Name of the event to notify.
      * @param data Data received by the notification.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    notifyEvent(eventName: string, data: any): void {
+    notifyEvent(eventName: string, data: Record<string, unknown>): void {
         // Execute the code in the Angular zone, so change detection doesn't stop working.
         NgZone.instance.run(() => {
-            const component = data.component;
+            const component = <string> data.component;
             if (component) {
                 if (this.observables[eventName] && this.observables[eventName][component]) {
                     this.observables[eventName][component].next(data);
@@ -403,8 +400,7 @@ export class CoreLocalNotificationsProvider {
      * @param data Notification data.
      * @return Parsed data.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected parseNotificationData(data: any): any {
+    protected parseNotificationData(data: unknown): unknown {
         if (!data) {
             return {};
         } else if (typeof data == 'string') {
@@ -457,8 +453,8 @@ export class CoreLocalNotificationsProvider {
      * @param callback Function to call with the data received by the notification.
      * @return Object with an "off" property to stop listening for clicks.
      */
-    registerClick(component: string, callback: CoreLocalNotificationsClickCallback): CoreEventObserver {
-        return this.registerObserver('click', component, callback);
+    registerClick<T = unknown>(component: string, callback: CoreLocalNotificationsClickCallback<T>): CoreEventObserver {
+        return this.registerObserver<T>('click', component, callback);
     }
 
     /**
@@ -469,7 +465,11 @@ export class CoreLocalNotificationsProvider {
      * @param callback Function to call with the data received by the notification.
      * @return Object with an "off" property to stop listening for events.
      */
-    registerObserver<T>(eventName: string, component: string, callback: CoreLocalNotificationsClickCallback): CoreEventObserver {
+    registerObserver<T = unknown>(
+        eventName: string,
+        component: string,
+        callback: CoreLocalNotificationsClickCallback<T>,
+    ): CoreEventObserver {
         this.logger.debug(`Register observer '${component}' for event '${eventName}'.`);
 
         if (typeof this.observables[eventName] == 'undefined') {
