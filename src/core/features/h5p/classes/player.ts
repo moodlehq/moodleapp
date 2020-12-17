@@ -226,6 +226,8 @@ export class CoreH5PPlayer {
 
         settings.moodleLibraryPaths = await this.h5pCore.getDependencyRoots(id);
 
+        // The Moodle component is added dynamically using the params.js script instead of doing it here.
+
         /* The filterParameters function should be called before getting the dependency files because it rebuilds content
            dependency cache. */
         settings.contents[contentId].jsonContent = await this.h5pCore.filterParameters(content, siteId);

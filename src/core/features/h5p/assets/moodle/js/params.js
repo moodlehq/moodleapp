@@ -39,6 +39,9 @@ if (window.H5PIntegration && window.H5PIntegration.contents && location.search) 
             }
         } else if (nameAndValue[0] == 'component') {
             window.H5PIntegration.moodleComponent = nameAndValue[1];
+            if (window.H5PIntegration.moodleComponent) {
+                window.H5PIntegration.reportingIsEnabled = true;
+            }
         } else if (nameAndValue[0] == 'trackingUrl' && contentData) {
             contentData.url = nameAndValue[1];
         }
