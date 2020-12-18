@@ -55,7 +55,7 @@ export class CoreUrlUtilsProvider {
      * @param boolToNumber Whether to convert bools to 1 or 0.
      * @return URL with params.
      */
-    addParamsToUrl(url: string, params?: CoreUrlParams, anchor?: string, boolToNumber?: boolean): string {
+    addParamsToUrl(url: string, params?: Record<string, unknown>, anchor?: string, boolToNumber?: boolean): string {
         let separator = url.indexOf('?') != -1 ? '&' : '?';
 
         for (const key in params) {

@@ -17,7 +17,7 @@ import { Injectable, ViewContainerRef, ComponentFactoryResolver } from '@angular
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { makeSingleton } from '@singletons';
-// @todo import { CoreH5PPlayerComponent } from '@core/h5p/components/h5p-player/h5p-player';
+import { CoreH5PPlayerComponent } from '@features/h5p/components/h5p-player/h5p-player';
 
 /**
  * Handler to support the Display H5P filter.
@@ -80,32 +80,31 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
      * @return If async, promise resolved when done.
      */
     handleHtml(
-        container: HTMLElement, // eslint-disable-line @typescript-eslint/no-unused-vars
-        filter: CoreFilterFilter, // eslint-disable-line @typescript-eslint/no-unused-vars
-        options: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
-        viewContainerRef: ViewContainerRef, // eslint-disable-line @typescript-eslint/no-unused-vars
-        component?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        componentId?: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
+        container: HTMLElement,
+        filter: CoreFilterFilter,
+        options: CoreFilterFormatTextOptions,
+        viewContainerRef: ViewContainerRef,
+        component?: string,
+        componentId?: string | number,
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): void | Promise<void> {
-        // @todo
 
-        // const placeholders = <HTMLElement[]> Array.from(container.querySelectorAll('div.core-h5p-tmp-placeholder'));
+        const placeholders = <HTMLElement[]> Array.from(container.querySelectorAll('div.core-h5p-tmp-placeholder'));
 
-        // placeholders.forEach((placeholder) => {
-        //     const url = placeholder.getAttribute('data-player-src');
+        placeholders.forEach((placeholder) => {
+            const url = placeholder.getAttribute('data-player-src') || '';
 
-        //     Create the component to display the player.
-        //     const factory = this.factoryResolver.resolveComponentFactory(CoreH5PPlayerComponent);
-        //     const componentRef = viewContainerRef.createComponent<CoreH5PPlayerComponent>(factory);
+            // Create the component to display the player.
+            const factory = this.factoryResolver.resolveComponentFactory(CoreH5PPlayerComponent);
+            const componentRef = viewContainerRef.createComponent<CoreH5PPlayerComponent>(factory);
 
-        //     componentRef.instance.src = url;
-        //     componentRef.instance.component = component;
-        //     componentRef.instance.componentId = componentId;
+            componentRef.instance.src = url;
+            componentRef.instance.component = component;
+            componentRef.instance.componentId = componentId;
 
-        //     // Move the component to its right position.
-        //     placeholder.parentElement?.replaceChild(componentRef.instance.elementRef.nativeElement, placeholder);
-        // });
+            // Move the component to its right position.
+            placeholder.parentElement?.replaceChild(componentRef.instance.elementRef.nativeElement, placeholder);
+        });
     }
 
 }

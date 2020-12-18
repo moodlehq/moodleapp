@@ -23,7 +23,7 @@ import { timeout } from 'rxjs/operators';
 
 import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
 import { CoreApp } from '@services/app';
-import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
@@ -855,9 +855,9 @@ export class CoreWSProvider {
             // Use the cordova plugin.
             if (url.indexOf('file://') === 0) {
                 // We cannot load local files using the http native plugin. Use file provider instead.
-                const format = options.responseType == 'json' ? CoreFileProvider.FORMATJSON : CoreFileProvider.FORMATTEXT;
-
-                const content = await CoreFile.instance.readFile(url, format);
+                const content = options.responseType == 'json' ?
+                    await CoreFile.instance.readFile<T>(url, CoreFileFormat.FORMATJSON) :
+                    await CoreFile.instance.readFile(url, CoreFileFormat.FORMATTEXT);
 
                 return new HttpResponse<T>({
                     body: <T> content,
