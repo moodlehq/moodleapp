@@ -35,6 +35,7 @@ import {
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -73,7 +74,6 @@ export class CoreCourseProvider {
         // @todo
         // protected courseFormatDelegate: CoreCourseFormatDelegate,
         // protected sitePluginsProvider: CoreSitePluginsProvider,
-        // protected pushNotificationsProvider: CorePushNotificationsProvider,
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
     }
 
@@ -857,7 +857,6 @@ export class CoreCourseProvider {
      * @return Promise resolved when the WS call is successful.
      * @todo use logHelper. Remove eslint disable when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async logView(courseId: number, sectionNumber?: number, siteId?: string, name?: string): Promise<void> {
         const params: CoreCourseViewCourseWSParams = {
             courseid: courseId,
@@ -869,8 +868,7 @@ export class CoreCourseProvider {
         }
 
         const site = await CoreSites.instance.getSite(siteId);
-        // @todo
-        // this.pushNotificationsProvider.logViewEvent(courseId, name, 'course', wsName, { sectionnumber: sectionNumber }, siteId);
+        CorePushNotifications.instance.logViewEvent(courseId, name, 'course', wsName, { sectionnumber: sectionNumber }, siteId);
         const response: CoreStatusWithWarningsWSResponse = await site.write(wsName, params);
 
         if (!response.status) {

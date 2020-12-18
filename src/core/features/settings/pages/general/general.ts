@@ -18,7 +18,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreSettingsHelper, CoreColorScheme } from '../../services/settings-helper';
 
 /**
@@ -160,7 +160,7 @@ export class CoreSettingsGeneralPage {
      * @todo
      */
     async analyticsEnabledChanged(): Promise<void> {
-        // await this.pushNotificationsProvider.enableAnalytics(this.analyticsEnabled);
+        await CorePushNotifications.instance.enableAnalytics(this.analyticsEnabled);
 
         CoreConfig.instance.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
     }
