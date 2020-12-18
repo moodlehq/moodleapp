@@ -20,6 +20,7 @@ import { CoreSecondsToHMSPipe } from './seconds-to-hms';
 import { CoreTimeAgoPipe } from './time-ago';
 import { CoreBytesToSizePipe } from './bytes-to-size';
 import { CoreDurationPipe } from './duration';
+import { CoreDateDayOrTimePipe } from './date-day-or-time';
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import { CoreDurationPipe } from './duration';
         CoreBytesToSizePipe,
         CoreSecondsToHMSPipe,
         CoreDurationPipe,
+        CoreDateDayOrTimePipe,
     ],
     imports: [],
     exports: [
@@ -40,6 +42,7 @@ import { CoreDurationPipe } from './duration';
         CoreBytesToSizePipe,
         CoreSecondsToHMSPipe,
         CoreDurationPipe,
+        CoreDateDayOrTimePipe,
     ],
 })
 export class CorePipesModule {}

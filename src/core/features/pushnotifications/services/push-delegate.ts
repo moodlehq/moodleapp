@@ -149,7 +149,7 @@ export class CorePushNotificationsDelegateService {
      * @param eventName Only receive is permitted.
      * @return Observer to subscribe.
      */
-    on<T = unknown>(eventName: string): Subject<T> {
+    on<T = CorePushNotificationsNotificationBasicData>(eventName: string): Subject<T> {
         if (typeof this.observables[eventName] == 'undefined') {
             const eventNames = Object.keys(this.observables).join(', ');
             this.logger.warn(`'${eventName}' event name is not allowed. Use one of the following: '${eventNames}'.`);

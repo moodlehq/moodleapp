@@ -13,15 +13,23 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { AddonNotificationsActionsComponent } from './actions/actions';
 
 @NgModule({
+    declarations: [
+        AddonNotificationsActionsComponent,
+    ],
+    imports: [
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+    ],
     exports: [
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        AddonNotificationsActionsComponent,
     ],
 })
-export class CoreSharedModule {}
+export class AddonNotificationsComponentsModule {}
