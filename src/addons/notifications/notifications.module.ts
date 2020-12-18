@@ -15,9 +15,13 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
+import { CoreCronDelegate } from '@services/cron';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonNotificationsMainMenuHandler, AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
+import { AddonNotificationsCronHandler } from './services/handlers/cron';
+import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
 
 const routes: Routes = [
     {
@@ -36,6 +40,8 @@ const routes: Routes = [
             deps: [],
             useFactory: () => () => {
                 CoreMainMenuDelegate.instance.registerHandler(AddonNotificationsMainMenuHandler.instance);
+                CoreCronDelegate.instance.register(AddonNotificationsCronHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(AddonNotificationsPushClickHandler.instance);
             },
         },
     ],
