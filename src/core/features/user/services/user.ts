@@ -26,6 +26,7 @@ import { CoreEvents, CoreEventUserDeletedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -526,7 +527,7 @@ export class CoreUserProvider {
             params.courseid = courseId;
         }
 
-        // @todo this.pushNotificationsProvider.logViewEvent(userId, name, 'user', wsName, {courseid: courseId});
+        CorePushNotifications.instance.logViewEvent(userId, name, 'user', wsName, { courseid: courseId });
 
         return site.write(wsName, params);
     }
@@ -544,7 +545,7 @@ export class CoreUserProvider {
             courseid: courseId,
         };
 
-        // @todo this.pushNotificationsProvider.logViewListEvent('user', 'core_user_view_user_list', params);
+        CorePushNotifications.instance.logViewListEvent('user', 'core_user_view_user_list', params);
 
         return site.write('core_user_view_user_list', params);
     }

@@ -21,8 +21,8 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonBadgesUserHandler } from './services/handlers/user';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-// @todo import { CorePushNotificationsDelegate } from '@core/pushnotifications/services/delegate';
-// import { AddonBadgesPushClickHandler } from './services/push-click-handler';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
 
 const mainMenuHomeSiblingRoutes: Routes = [
     {
@@ -44,7 +44,7 @@ const mainMenuHomeSiblingRoutes: Routes = [
                 CoreContentLinksDelegate.instance.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(AddonBadgesBadgeLinkHandler.instance);
                 CoreUserDelegate.instance.registerHandler(AddonBadgesUserHandler.instance);
-                // CorePushNotificationsDelegate.instance.registerHandler(AddonBadgesPushClickHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(AddonBadgesPushClickHandler.instance);
             },
         },
     ],

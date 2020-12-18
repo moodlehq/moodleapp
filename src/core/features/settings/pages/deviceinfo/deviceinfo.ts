@@ -22,6 +22,7 @@ import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { Subscription } from 'rxjs';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -50,7 +51,7 @@ interface CoreSettingsDeviceInfo {
     osVersion?: string;
     model?: string;
     uuid?: string;
-    pushId: string;
+    pushId?: string;
     localNotifAvailable: string;
 }
 
@@ -86,7 +87,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             networkStatus: appProvider.isOnline() ? 'online' : 'offline',
             wifiConnection: appProvider.isWifi() ? 'yes' : 'no',
             localNotifAvailable: CoreLocalNotifications.instance.isAvailable() ? 'yes' : 'no',
-            pushId: '',// TODO pushNotificationsProvider.getPushId(),
+            pushId: CorePushNotifications.instance.getPushId(),
             deviceType: '',
         };
 

@@ -24,6 +24,7 @@ import { CoreSettingsModule } from './settings/settings.module';
 import { CoreSiteHomeModule } from './sitehome/sitehome.module';
 import { CoreTagModule } from './tag/tag.module';
 import { CoreUserModule } from './user/user.module';
+import { CorePushNotificationsModule } from './pushnotifications/pushnotifications.module';
 
 @NgModule({
     imports: [
@@ -37,6 +38,7 @@ import { CoreUserModule } from './user/user.module';
         CoreSiteHomeModule,
         CoreTagModule,
         CoreUserModule,
+        CorePushNotificationsModule,
     ],
 })
 export class CoreFeaturesModule {}

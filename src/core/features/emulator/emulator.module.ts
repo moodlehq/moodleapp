@@ -19,6 +19,7 @@ import { CoreEmulatorHelperProvider } from './services/emulator-helper';
 import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
+import { Badge } from '@ionic-native/badge/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 import { Chooser } from '@ionic-native/chooser/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
@@ -72,6 +73,7 @@ import { ZipMock } from './services/zip';
         CoreEmulatorComponentsModule,
     ],
     providers: [
+        Badge,
         {
             provide: Camera,
             deps: [Platform],

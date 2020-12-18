@@ -69,6 +69,7 @@ export class CoreEvents {
     static readonly SITE_STORAGE_DELETED = 'site_storage_deleted';
     static readonly FORM_ACTION = 'form_action';
     static readonly ACTIVITY_DATA_SENT = 'activity_data_sent';
+    static readonly DEVICE_REGISTERED_IN_MOODLE = 'device_registered_in_moodle';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
     protected static observables: { [eventName: string]: Subject<unknown> } = {};
