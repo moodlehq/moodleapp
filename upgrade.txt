@@ -1,0 +1,48 @@
+This files describes API changes in the Moodle Mobile app,
+information provided here is intended especially for developers.
+
+=== 3.9.3 ===
+
+- In the core-attachments component, passing a -1 as maxSize or maxSubmissions used to mean "unknown limit". Now -1 means unlimited. Also, passing a 0 to maxSize used to mean "unknown" too, now 0 means user max size.
+
+=== 3.8.3 ===
+
+- CoreFileProvider.writeFileDataInFile has been deprecated. Please use CoreFileHelperProvider.writeFileDataInFile instead.
+
+=== 3.8.0 ===
+
+- CoreDomUtilsProvider.extractDownloadableFilesFromHtml and CoreDomUtilsProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects have been deprecated. Please use CoreFilepoolProvider.extractDownloadableFilesFromHtml and CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects. We had to move them to prevent a circular dependency.
+
+=== 3.7.1 ===
+
+- CoreGroupsProvider.getActivityAllowedGroups and CoreGroupsProvider.getActivityAllowedGroupsIfEnabled now return the full response of core_group_get_activity_allowed_groups instead of just the groups.
+
+=== 3.7.0 ===
+
+- The pushnotifications addon has been moved to core. All imports of that addon need to be fixed to use the right path and name.
+- Now the expirationTime of cache entries contains the time the entry was modified, not the expiration time. This is to allow calculating dynamic expiration times. We decided to reuse the same field to prevent modifying the database table.
+
+=== 3.6.1 ===
+
+- The local notifications plugin was updated to its latest version. The new API has some breaking changes, so please check its documentation if you're using local notifications. Also, you need to run "npm install" to update the ionic-native library.
+- New method CoreSitesProvider.registerSiteSchema allows to register table schemas and migration functions for site databases. Prefer this method over CoreSitesProvider.createTablesFromSchema: it supports schema migrations and it tracks the installed version of the schema, so it does not try to create the tables on every app boot.
+
+=== 3.6.0 ===
+
+- gulp was updated to v4. In order for gulp to work, you need to install gulp-cli: npm install -g gulp-cli
+  It's also recommended to update ionic cli to v4, otherwise some errors could be raised while building: npm install -g ionic
+- The value of the constant CoreCourseProvider.ALL_SECTIONS_ID has changed from -1 to -2.
+- Use of completionstatus on the module object has been deprecated, use completiondata instead.
+- The function CoreSitesProvider.loadSite has changed, now it will trigger SESSION_EXPIRED event if the site is logged out. Its params and return value have changed.
+- When using CoreDomUtils.showAlert, please use alert.didDismiss.subscribe() instead of alert.onDidDismiss().
+- The page CoreSharedFilesChooseSitePage now expects to receive the full path to the file (file.toURL()) instead of the relative path.
+- The following strings have been deprecated:
+    core.dfdaymonthyear. Please use core.strftimedatefullshort instead.
+    core.dfdayweekmonth. Please use core.strftimedayshort instead.
+    core.dffulldate. Please use core.strftimedaydatetime instead.
+    core.dfmediumdate. Please use core.strftimedaydatetime instead.
+    core.dftimedate. Please use core.strftimetime instead.
+
+=== 3.5.2 ===
+
+- CoreChartDirective changed from directive to component (CoreChartComponent) and the selector to use it changed from canvas[core-chart] to core-chart.
