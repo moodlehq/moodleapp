@@ -588,7 +588,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         }
         const ok = await this.navCtrl.navigateForward(selectedTab.page, pageParams);
 
-        if (ok) {
+        if (ok !== false) {
             this.selectHistory.push(tabId);
             this.selected = tabId;
             this.selectedIndex = index;
