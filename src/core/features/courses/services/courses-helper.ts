@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import {
     CoreCourseAnyCourseDataWithOptions,
     CoreCourses,
@@ -216,9 +216,14 @@ export class CoreCoursesHelperProvider {
         slice: number = 0,
         filter?: string,
         loadCategoryNames: boolean = false,
+        options: CoreSitesCommonWSOptions = {},
     ): Promise<CoreEnrolledCourseDataWithOptions[]> {
 
-        let courses: CoreEnrolledCourseDataWithOptions[] = await CoreCourses.getUserCourses();
+        let courses: CoreEnrolledCourseDataWithOptions[] = await CoreCourses.getUserCourses(
+            false,
+            options.siteId,
+            options.readingStrategy,
+        );
         if (courses.length <= 0) {
             return [];
         }
@@ -227,7 +232,7 @@ export class CoreCoursesHelperProvider {
         const courseIds = courses.map((course) => course.id);
 
         // Load course options of the course.
-        promises.push(CoreCourses.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+        promises.push(CoreCourses.getCoursesAdminAndNavOptions(courseIds, options.siteId).then((options) => {
             courses.forEach((course) => {
                 course.navOptions = options.navOptions[course.id];
                 course.admOptions = options.admOptions[course.id];
@@ -290,7 +295,7 @@ export class CoreCoursesHelperProvider {
             }
 
             try {
-                const completion = await AddonCourseCompletion.getCompletion(course.id);
+                const completion = await AddonCourseCompletion.getCompletion(course.id, undefined, undefined, options.siteId);
 
                 course.completed = completion?.completed;
             } catch {

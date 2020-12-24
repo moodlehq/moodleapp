@@ -16,8 +16,8 @@ import { Component, OnInit, Input, OnDestroy, ViewChild, OnChanges, SimpleChange
 import { IonSearchbar } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCourses } from '@features/courses/services/courses';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreCoursesProvider, CoreCourses, CoreCoursesMyCoursesUpdatedEventData } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -162,7 +162,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
             (data) => {
 
-                if (data.action == CoreCoursesProvider.ACTION_ENROL || data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+                if (this.shouldRefreshOnUpdatedEvent(data)) {
                     this.refreshCourseList();
                 }
             },
@@ -224,16 +224,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Fetch the courses for my overview.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(): Promise<void> {
+    protected async fetchContent(refresh?: boolean): Promise<void> {
         const config = this.block.configsRecord;
 
         const showCategories = config?.displaycategories?.value == '1';
 
-        const courses = await CoreCoursesHelper.getUserCoursesWithOptions(this.sort, undefined, undefined, showCategories);
+        const courses = await CoreCoursesHelper.getUserCoursesWithOptions(this.sort, undefined, undefined, showCategories, {
+            readingStrategy: refresh ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
+        });
 
         // Check to show sort by short name only if the text is visible.
         if (courses.length > 0) {
@@ -336,6 +336,41 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
+     * Whether list should be refreshed based on a EVENT_MY_COURSES_UPDATED event.
+     *
+     * @param data Event data.
+     * @return Whether to refresh.
+     */
+    protected shouldRefreshOnUpdatedEvent(data: CoreCoursesMyCoursesUpdatedEventData): boolean {
+        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+            // Always update if user enrolled in a course.
+            return true;
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+            // Update list when course state changes (favourite, hidden).
+            return true;
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+            // User viewed a course. If it isn't the most recent accessed course, update the list.
+            let recentAccessedCourse: CoreEnrolledCourseDataWithOptions | undefined;
+            if (this.sort == 'lastaccess') {
+                recentAccessedCourse = this.courses.allincludinghidden[0];
+            } else {
+                recentAccessedCourse = Array.from(this.courses.allincludinghidden)
+                    .sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0))[0];
+            }
+
+            if (recentAccessedCourse && data.courseId != recentAccessedCourse.id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * The filter has changed.
      *
      * @param Received Event.
@@ -402,12 +437,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     protected async refreshCourseList(): Promise<void> {
         CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
-
-        try {
-            await CoreCourses.invalidateUserCourses();
-        } catch (error) {
-            // Ignore errors.
-        }
 
         await this.loadContent(true);
     }
