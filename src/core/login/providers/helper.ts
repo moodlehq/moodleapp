@@ -34,6 +34,7 @@ import { CoreConstants } from '@core/constants';
 import { Md5 } from 'ts-md5/dist/md5';
 import { CoreSite } from '@classes/site';
 import { CoreUrl } from '@singletons/url';
+import { makeSingleton } from '@singletons/core.singletons';
 
 /**
  * Data related to a SSO authentication.
@@ -1417,3 +1418,5 @@ export class CoreLoginHelperProvider {
         });
     }
 }
+
+export class CoreLoginHelper extends makeSingleton(CoreLoginHelperProvider) {}

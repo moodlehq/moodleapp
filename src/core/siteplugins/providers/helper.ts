@@ -439,7 +439,21 @@ export class CoreSitePluginsHelperProvider {
         styleEl.setAttribute('id', 'siteplugin-' + uniqueName);
         styleEl.innerHTML = cssCode;
 
-        document.head.appendChild(styleEl);
+        // To ensure consistency, insert in alphabetical order among other site plugin styles.
+        let lowestGreater = null;
+        Array.from(document.head.querySelectorAll('style')).forEach((other) => {
+            if (/^siteplugin-/.test(other.id) && other.id > styleEl.id) {
+                if (lowestGreater === null || other.id < lowestGreater.id) {
+                    lowestGreater = other;
+                }
+            }
+        });
+
+        if (lowestGreater) {
+            document.head.insertBefore(styleEl, lowestGreater);
+        } else {
+            document.head.appendChild(styleEl);
+        }
 
         // Styles have been loaded, now treat the CSS.
         this.filepoolProvider.treatCSSCode(siteId, fileUrl, cssCode, CoreSitePluginsProvider.COMPONENT, uniqueName, version)

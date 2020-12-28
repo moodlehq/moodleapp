@@ -19,43 +19,35 @@ git:
   depth: 3
 
 before_cache:
-  - rm -rf $HOME/.cache/electron-builder/wine
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 cache:
   directories:
     - $HOME/.npm
-    - $HOME/.cache/electron
-    - $HOME/.cache/electron-builder
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
 before_script:
-  - if [ "$TRAVIS_OS_NAME" != 'windows' ] ; then  npm install npm@latest -g ; fi
+  - npm install npm@latest -g
   - gulp
 
 jobs:
   include:
   - stage: check
     if: NOT branch =~ /(master|integration|desktop)$/ AND env(DEPLOY) IS blank
-    os: linux
     script: npm run build --bailOnLintError true --typeCheckOnLint true
   - stage: mirror
     if: branch IN (master, integration, desktop) AND repo = moodlehq/moodleapp AND type != cron
-    os: linux
     script: scripts/mirror.sh
   - stage: prepare
-    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1 AND type != cron
-    os: linux
+    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS present AND env(PREPARE) = 1 AND type != cron AND tag IS blank
     script: scripts/aot.sh
   - stage: build
     name: "Build Android"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch != desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
-    os: linux
+    if: env(DEPLOY) IS present AND type != cron AND ((env(DEPLOY) = 1 AND tag IS blank) OR (env(DEPLOY) = 2 AND tag IS present))
     dist: trusty
-    group: edge
     language: android
     env:
     - BUILD_PLATFORM='android'
@@ -67,56 +59,24 @@ jobs:
     - npm ci
     - npm install -g gulp
     script: scripts/aot.sh
-  - stage: build
-    name: "Build iOS"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch != desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
-    os: osx
-    osx_image: xcode12.2
-    env:
-    - BUILD_PLATFORM='ios'
-    script: scripts/aot.sh
-  - stage: build
-    name: "Build Linux"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
-    os: linux
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - BUILD_PLATFORM='linux'
-    script: scripts/aot.sh
-  - stage: build
-    name: "Build MacOS"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
-    os: osx
-    osx_image: xcode12.2
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - BUILD_PLATFORM='osx'
-    script: scripts/aot.sh
-  - stage: build
-    name: "Build Windows"
-    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
-    os: windows
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true
-    - DEBUG=electron-windows-store
-    - BUILD_PLATFORM='windows'
-    script: scripts/aot.sh
   - stage: test
-    name: "End to end tests (mod_forum, mod_messages and mod_comments)"
+    name: "End to end tests (mod_forum and mod_messages)"
     services:
     - docker
     if: type = cron
-    script: scripts/test_e2e.sh "@app&&@mod_forum" "@app&&@mod_messages" "@app&&@mod_comments"
+    script: scripts/test_e2e.sh "@app&&@mod_forum" "@app&&@mod_messages"
   - stage: test
-    name: "End to end tests (mod_data, mod_survey, mod_course, core_course and mod_courses)"
+    name: "End to end tests (mod_data and mod_survey)"
     services:
     - docker
     if: type = cron
-    script: scripts/test_e2e.sh "@app&&@mod_data" "@app&&@mod_survey" "@app&&@mod_course" "@app&&@core_course" "@app&&@mod_courses"
+    script: scripts/test_e2e.sh "@app&&@mod_data" "@app&&@mod_survey"
+  - stage: test
+    name: "End to end tests (mod_comments, mod_course, core_course and mod_courses)"
+    services:
+    - docker
+    if: type = cron
+    script: scripts/test_e2e.sh "@app&&@mod_comments" "@app&&@mod_course" "@app&&@core_course" "@app&&@mod_courses"
   - stage: test
     name: "End to end tests (others)"
     services:
