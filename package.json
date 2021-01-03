@@ -1,10 +1,10 @@
 {
   "name": "moodlemobile",
   "version": "3.9.4",
-  "description": "The official app for Moodle.",
+  "description": "The official app for eSHiksha.",
   "author": {
-    "name": "Moodle Pty Ltd.",
-    "email": "mobile@moodle.com"
+    "name": "eShiksha.co",
+    "email": "mobile@eshiksha.co"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
