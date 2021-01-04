@@ -1,10 +1,10 @@
 {
   "name": "moodlemobile",
   "version": "3.9.4",
-  "description": "The official app for eSHiksha.",
+  "description": "The official app for eShiksha.",
   "author": {
     "name": "eShiksha.co",
-    "email": "mobile@eshiksha.co"
+    "email": "admin@eshiksha.co"
   },
   "config": {
     "ionic_webpack": "./config/webpack.config.js",
@@ -126,6 +126,7 @@
     "ionic-angular": "3.9.9",
     "ionicons": "3.0.0",
     "jszip": "3.1.5",
+    "keytar": "^6.0.1",
     "mathjax": "2.7.7",
     "moment": "2.24.0",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
@@ -231,8 +232,8 @@
   },
   "main": "desktop/electron.js",
   "build": {
-    "appId": "com.moodle.moodledesktop",
-    "productName": "Moodle Desktop",
+    "appId": "eShiksha desktop",
+    "productName": "eShiksha Desktop",
     "files": [
       "desktop/electron.js",
       "www/**/*",
