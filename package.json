@@ -1,6 +1,6 @@
 {
-  "name": "moodlemobile",
-  "version": "3.9.4",
+  "name": "eshiksha",
+  "version": "3.10",
   "description": "The official app for eShiksha.",
   "author": {
     "name": "eShiksha.co",
@@ -267,7 +267,7 @@
       "category": "public.app-category.education",
       "icon": "resources/desktop/icon.icns",
       "target": "mas",
-      "bundleVersion": "3.9.4",
+      "bundleVersion": "3.10",
       "extendInfo": {
         "ElectronTeamID": "2NU57U5PAW",
         "NSLocationWhenInUseUsageDescription": "We need your location so you can attach it as part of your submissions.",
