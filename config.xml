@@ -2,7 +2,7 @@
 <widget android-versionCode="39400" id="eshiksha.co" ios-CFBundleVersion="3.9.4.0" version="3.9.4" versionCode="39400" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>eShiksha</name>
     <description>eShiksha official app</description>
-    <author email="mobile@eshiksha.co" href="https://demo.eshiksha.co">eShiksha Mobile team</author>
+    <author email="admin@eshiksha.co" href="https://lms.eshiksha.co">eShiksha Mobile team</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
