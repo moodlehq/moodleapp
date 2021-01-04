@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39400" id="eshiksha.co" ios-CFBundleVersion="3.9.4.0" version="3.9.4" versionCode="39400" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="31000" id="eshiksha.co" ios-CFBundleVersion="3.10" version="3.10" versionCode="31000" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>eShiksha</name>
     <description>eShiksha official app</description>
     <author email="admin@eshiksha.co" href="https://lms.eshiksha.co">eShiksha Mobile team</author>
