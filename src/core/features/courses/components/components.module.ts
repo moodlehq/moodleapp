@@ -18,10 +18,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
 import { CoreCoursesCourseProgressComponent } from './course-progress/course-progress';
 import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/course-options-menu';
@@ -39,9 +36,7 @@ import { CoreCoursesSelfEnrolPasswordComponent } from './self-enrol-password/sel
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     exports: [
         CoreCoursesCourseListItemComponent,

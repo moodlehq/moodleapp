@@ -19,8 +19,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { AddonMessageOutputAirnotifierDevicesPage } from './devices';
 
 const routes: Routes = [
@@ -37,8 +36,7 @@ const routes: Routes = [
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         AddonMessageOutputAirnotifierDevicesPage,

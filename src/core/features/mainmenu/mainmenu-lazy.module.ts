@@ -15,11 +15,9 @@
 import { CommonModule } from '@angular/common';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 import { resolveModuleRoutes } from '@/app/app-routing.module';
 
@@ -60,9 +58,7 @@ function buildRoutes(injector: Injector): Routes {
         CommonModule,
         IonicModule,
         TranslateModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreMainMenuPage,

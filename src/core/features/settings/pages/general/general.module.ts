@@ -19,9 +19,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSettingsGeneralPage } from './general';
 
 const routes: Routes = [
@@ -38,8 +36,7 @@ const routes: Routes = [
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreSettingsGeneralPage,

@@ -18,8 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 import { CoreTagSearchPage } from './search.page';
@@ -41,8 +40,7 @@ const routes: Routes = [
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
         CoreSearchComponentsModule,
     ],
     exports: [RouterModule],

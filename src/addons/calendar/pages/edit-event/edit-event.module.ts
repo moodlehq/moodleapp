@@ -19,8 +19,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 import { AddonCalendarEditEventPage } from './edit-event.page';
@@ -40,8 +39,7 @@ const routes: Routes = [
         FormsModule,
         ReactiveFormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
         CoreEditorComponentsModule,
     ],
     declarations: [

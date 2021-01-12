@@ -18,9 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreTagIndexAreaPage } from './index-area.page';
 
 const routes: Routes = [
@@ -39,8 +37,7 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     exports: [RouterModule],
 })

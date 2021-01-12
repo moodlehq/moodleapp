@@ -18,9 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSettingsLicensesPage } from './licenses';
 
 const routes: Routes = [
@@ -36,8 +34,7 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreSettingsLicensesPage,

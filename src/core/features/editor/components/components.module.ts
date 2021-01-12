@@ -18,7 +18,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreEditorRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
-import { CoreComponentsModule } from '@components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
     declarations: [
@@ -28,7 +28,7 @@ import { CoreComponentsModule } from '@components/components.module';
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
+        CoreSharedModule,
     ],
     providers: [
     ],

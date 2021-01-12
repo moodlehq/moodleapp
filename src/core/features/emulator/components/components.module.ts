@@ -17,9 +17,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEmulatorCaptureMediaComponent } from './capture-media/capture-media';
 
 @NgModule({
@@ -30,9 +28,7 @@ import { CoreEmulatorCaptureMediaComponent } from './capture-media/capture-media
         CommonModule,
         IonicModule.forRoot(),
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     exports: [
         CoreEmulatorCaptureMediaComponent,

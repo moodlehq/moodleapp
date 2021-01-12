@@ -17,8 +17,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreComponentsModule } from '@components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreH5PPlayerComponent } from './h5p-player/h5p-player';
 import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
 
@@ -30,9 +29,8 @@ import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
     imports: [
         CommonModule,
         IonicModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
     ],
     providers: [
     ],

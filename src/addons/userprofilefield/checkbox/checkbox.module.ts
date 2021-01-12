@@ -21,7 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AddonUserProfileFieldCheckboxHandler } from './services/handlers/checkbox';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { AddonUserProfileFieldCheckboxComponent } from './component/checkbox';
-import { CoreComponentsModule } from '@components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
     declarations: [
@@ -33,7 +33,7 @@ import { CoreComponentsModule } from '@components/components.module';
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
-        CoreComponentsModule,
+        CoreSharedModule,
     ],
     providers: [
         {

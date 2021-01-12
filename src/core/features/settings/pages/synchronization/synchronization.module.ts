@@ -19,9 +19,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSettingsSynchronizationPage } from './synchronization';
 import { FormsModule } from '@angular/forms';
 
@@ -39,8 +37,7 @@ const routes: Routes = [
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreSettingsSynchronizationPage,

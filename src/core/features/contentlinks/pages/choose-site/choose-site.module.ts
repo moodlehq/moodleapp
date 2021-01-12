@@ -19,9 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreContentLinksChooseSitePage } from './choose-site';
 
 const routes: Routes = [
@@ -40,8 +38,7 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
 })
 export class CoreContentLinksChooseSitePageModule {}
