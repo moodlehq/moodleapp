@@ -27,7 +27,7 @@ import { AddonNotifications, AddonNotificationsProvider } from '../notifications
 /**
  * Handler for non-messaging push notifications clicks.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AddonNotificationsPushClickHandlerService implements CorePushNotificationsClickHandler {
 
     name = 'AddonNotificationsPushClickHandler';

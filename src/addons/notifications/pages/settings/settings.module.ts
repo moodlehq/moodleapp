@@ -14,18 +14,18 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonNotificationsComponentsModule } from '../../components/components.module';
-import { AddonNotificationsListPage } from './list';
+import { AddonNotificationsSettingsPage } from './settings';
 
 const routes: Routes = [
     {
         path: '',
-        component: AddonNotificationsListPage,
+        component: AddonNotificationsSettingsPage,
     },
 ];
 
@@ -33,14 +33,14 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CommonModule,
+        FormsModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-        AddonNotificationsComponentsModule,
     ],
     declarations: [
-        AddonNotificationsListPage,
+        AddonNotificationsSettingsPage,
     ],
     exports: [RouterModule],
 })
-export class AddonNotificationsListPageModule {}
+export class AddonNotificationsSettingsPageModule {}

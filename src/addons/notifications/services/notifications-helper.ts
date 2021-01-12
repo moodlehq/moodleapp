@@ -15,11 +15,18 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
     AddonNotifications,
     AddonNotificationsAnyNotification,
     AddonNotificationsGetNotificationsOptions,
+    AddonNotificationsPreferences,
+    AddonNotificationsPreferencesComponent,
+    AddonNotificationsPreferencesNotification,
+    AddonNotificationsPreferencesNotificationProcessor,
+    AddonNotificationsPreferencesProcessor,
     AddonNotificationsProvider,
 } from './notifications';
 
@@ -28,6 +35,28 @@ import {
  */
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsHelperProvider {
+
+    /**
+     * Format preferences data.
+     *
+     * @param preferences Preferences to format.
+     * @return Formatted preferences.
+     */
+    formatPreferences(preferences: AddonNotificationsPreferences): AddonNotificationsPreferencesFormatted {
+        const formattedPreferences: AddonNotificationsPreferencesFormatted = preferences;
+
+        formattedPreferences.processors.forEach((processor) => {
+            processor.supported = AddonMessageOutputDelegate.instance.hasHandler(processor.name, true);
+        });
+
+        formattedPreferences.components.forEach((component) => {
+            component.notifications.forEach((notification) => {
+                notification.processorsByName = CoreUtils.instance.arrayToObject(notification.processors, 'name');
+            });
+        });
+
+        return formattedPreferences;
+    }
 
     /**
      * Get some notifications. It will try to use the new WS if available.
@@ -82,6 +111,101 @@ export class AddonNotificationsHelperProvider {
         };
     }
 
+    /**
+     * Get a certain processor from a list of processors.
+     *
+     * @param processors List of processors.
+     * @param name Name of the processor to get.
+     * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
+     * @return Processor.
+     */
+    getProcessor(
+        processors: AddonNotificationsPreferencesProcessor[],
+        name: string,
+        fallback: boolean = true,
+    ): AddonNotificationsPreferencesProcessor | undefined {
+        if (!processors || !processors.length) {
+            return;
+        }
+
+        const processor = processors.find((processor) => processor.name == name);
+        if (processor) {
+            return processor;
+        }
+
+        // Processor not found, return first if requested.
+        if (fallback) {
+            return processors[0];
+        }
+    }
+
+    /**
+     * Return the components and notifications that have a certain processor.
+     *
+     * @param processorName Name of the processor to filter.
+     * @param components Array of components.
+     * @return Filtered components.
+     */
+    getProcessorComponents(
+        processorName: string,
+        components: AddonNotificationsPreferencesComponentFormatted[],
+    ): AddonNotificationsPreferencesComponentFormatted[] {
+        const result: AddonNotificationsPreferencesComponentFormatted[] = [];
+
+        components.forEach((component) => {
+            // Check if the component has any notification with this processor.
+            const notifications: AddonNotificationsPreferencesNotificationFormatted[] = [];
+
+            component.notifications.forEach((notification) => {
+                const processor = notification.processorsByName?.[processorName];
+
+                if (processor) {
+                    // Add the notification.
+                    notifications.push(notification);
+                }
+            });
+
+            if (notifications.length) {
+                // At least 1 notification added, add the component to the result.
+                result.push({
+                    displayname: component.displayname,
+                    notifications,
+                });
+            }
+        });
+
+        return result;
+    }
+
 }
 
 export class AddonNotificationsHelper extends makeSingleton(AddonNotificationsHelperProvider) {}
+
+/**
+ * Preferences with some calculated data.
+ */
+export type AddonNotificationsPreferencesFormatted = Omit<AddonNotificationsPreferences, 'processors'|'components'> & {
+    processors: AddonNotificationsPreferencesProcessorFormatted[]; // Config form values.
+    components: AddonNotificationsPreferencesComponentFormatted[]; // Available components.
+};
+
+/**
+ * Preferences component with some calculated data.
+ */
+export type AddonNotificationsPreferencesComponentFormatted = Omit<AddonNotificationsPreferencesComponent, 'notifications'> & {
+    notifications: AddonNotificationsPreferencesNotificationFormatted[]; // List of notificaitons for the component.
+};
+
+/**
+ * Preferences notification with some calculated data.
+ */
+export type AddonNotificationsPreferencesNotificationFormatted = AddonNotificationsPreferencesNotification & {
+    processorsByName?: Record<string, AddonNotificationsPreferencesNotificationProcessor>; // Calculated in the app.
+};
+
+/**
+ * Preferences processor with some calculated data.
+ */
+export type AddonNotificationsPreferencesProcessorFormatted = AddonNotificationsPreferencesProcessor & {
+    supported?: boolean; // Calculated in the app. Whether the processor is supported in the app.
+};

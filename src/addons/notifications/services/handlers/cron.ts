@@ -24,7 +24,7 @@ import { AddonNotifications, AddonNotificationsProvider } from '../notifications
 /**
  * Notifications cron handler.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AddonNotificationsCronHandlerService implements CoreCronHandler {
 
     name = 'AddonNotificationsCronHandler';

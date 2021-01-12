@@ -21,6 +21,7 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
 import { AddonBadgesModule } from './badges/badges.module';
 import { AddonCalendarModule } from './calendar/calendar.module';
 import { AddonNotificationsModule } from './notifications/notifications.module';
+import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
 
 @NgModule({
     imports: [
@@ -31,6 +32,7 @@ import { AddonNotificationsModule } from './notifications/notifications.module';
         AddonFilterModule,
         AddonUserProfileFieldModule,
         AddonNotificationsModule,
+        AddonMessageOutputModule,
     ],
 })
 export class AddonsModule {}

@@ -16,12 +16,17 @@ import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
 
 function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'list',
             loadChildren: () => import('./pages/list/list.module').then(m => m.AddonNotificationsListPageModule),
+        },
+        {
+            path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
+            loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonNotificationsSettingsPageModule),
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'list',

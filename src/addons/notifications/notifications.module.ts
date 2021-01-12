@@ -18,10 +18,13 @@ import { Routes } from '@angular/router';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonNotificationsMainMenuHandler, AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
 import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
+import { AddonNotificationsSettingsHandler } from './services/handlers/settings';
 
 const routes: Routes = [
     {
@@ -31,7 +34,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [CoreMainMenuRoutingModule.forChild({ children: routes })],
+    imports: [
+        CoreMainMenuRoutingModule.forChild({ children: routes }),
+        CoreMainMenuTabRoutingModule.forChild(routes),
+    ],
     exports: [CoreMainMenuRoutingModule],
     providers: [
         {
@@ -42,6 +48,7 @@ const routes: Routes = [
                 CoreMainMenuDelegate.instance.registerHandler(AddonNotificationsMainMenuHandler.instance);
                 CoreCronDelegate.instance.register(AddonNotificationsCronHandler.instance);
                 CorePushNotificationsDelegate.instance.registerClickHandler(AddonNotificationsPushClickHandler.instance);
+                CoreSettingsDelegate.instance.registerHandler(AddonNotificationsSettingsHandler.instance);
             },
         },
     ],
