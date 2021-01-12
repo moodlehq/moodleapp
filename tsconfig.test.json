@@ -15,6 +15,7 @@
       "node"
     ],
     "paths": {
+      "@addons/*": ["addons/*"],
       "@classes/*": ["core/classes/*"],
       "@components/*": ["core/components/*"],
       "@directives/*": ["core/directives/*"],
