@@ -25,6 +25,7 @@ import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/co
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
+import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 
 /**
  * Page that displays site home index.
@@ -51,7 +52,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     downloadEnabledIcon = 'far-square';
-    newsForumModule?: CoreCourseModuleBasicInfo;
+    newsForumModule?: NewsForum;
 
     protected updateSiteObserver?: CoreEventObserver;
 
@@ -112,13 +113,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             try {
                 const forum = await CoreSiteHome.instance.getNewsForum();
                 this.newsForumModule = await CoreCourse.instance.getModuleBasicInfo(forum.cmid);
-                /* @todo this.newsForumModule.handlerData = this.moduleDelegate.getModuleDataFor(
+                this.newsForumModule.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
                     this.newsForumModule.modname,
                     this.newsForumModule,
                     this.siteHomeId,
                     this.newsForumModule.section,
                     true,
-                );*/
+                );
             } catch {
                 // Ignore errors.
             }
@@ -235,3 +236,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
 }
+
+type NewsForum = CoreCourseModuleBasicInfo & {
+    handlerData?: CoreCourseModuleHandlerData;
+};

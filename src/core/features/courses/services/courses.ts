@@ -1174,7 +1174,7 @@ export class CoreCourses extends makeSingleton(CoreCoursesProvider) {}
 export type CoreCoursesMyCoursesUpdatedEventData = {
     action: string; // Action performed.
     courseId?: number; // Course ID affected (if any).
-    course?: any; // Course affected (if any).
+    course?: CoreCourseAnyCourseData; // Course affected (if any).
     state?: string; // Only for ACTION_STATE_CHANGED. The state that changed (hidden, favourite).
     value?: boolean; // The new value for the state changed.
 };

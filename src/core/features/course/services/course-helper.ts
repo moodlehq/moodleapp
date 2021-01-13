@@ -15,7 +15,13 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreSites } from '@services/sites';
-import { CoreCourse, CoreCourseSection } from './course';
+import {
+    CoreCourse,
+    CoreCourseCompletionActivityStatus,
+    CoreCourseModuleCompletionData,
+    CoreCourseModuleData,
+    CoreCourseSection,
+} from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, Translate } from '@singletons';
@@ -36,6 +42,7 @@ import {
     CoreCourseOptionsHandlerToDisplay,
     CoreCourseOptionsMenuHandlerToDisplay,
 } from './course-options-delegate';
+import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from './module-delegate';
 
 /**
  * Prefetch info of a module.
@@ -131,11 +138,11 @@ export class CoreCourseHelperProvider {
      * @return Whether the sections have content.
      */
     addHandlerDataForModules(
-        sections: CoreCourseSection[],
+        sections: CoreCourseSectionFormatted[],
         courseId: number,
-        completionStatus?: any, // eslint-disable-line @typescript-eslint/no-unused-vars
-        courseName?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        forCoursePage = false, // eslint-disable-line @typescript-eslint/no-unused-vars
+        completionStatus?: Record<string, CoreCourseCompletionActivityStatus>,
+        courseName?: string,
+        forCoursePage = false,
     ): boolean {
 
         let hasContent = false;
@@ -147,32 +154,39 @@ export class CoreCourseHelperProvider {
 
             hasContent = true;
 
-            /* @todo
             section.modules.forEach((module) => {
-                module.handlerData = this.moduleDelegate.getModuleDataFor(module.modname, module, courseId, section.id,
-                        forCoursePage);
+                module.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
+                    module.modname,
+                    module,
+                    courseId,
+                    section.id,
+                    forCoursePage,
+                );
 
-                if (module.completiondata && module.completion > 0) {
+                if (module.completiondata && module.completion && module.completion > 0) {
                     module.completiondata.courseId = courseId;
                     module.completiondata.courseName = courseName;
                     module.completiondata.tracking = module.completion;
                     module.completiondata.cmid = module.id;
-
-                    // Use of completionstatus is deprecated, use completiondata instead.
-                    module.completionstatus = module.completiondata;
                 } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
                     // Should not happen on > 3.6. Check if activity has completions and if it's marked.
-                    module.completiondata = completionStatus[module.id];
-                    module.completiondata.courseId = courseId;
-                    module.completiondata.courseName = courseName;
+                    const activityStatus = completionStatus[module.id];
 
-                    // Use of completionstatus is deprecated, use completiondata instead.
-                    module.completionstatus = module.completiondata;
+                    module.completiondata = {
+                        state: activityStatus.state,
+                        timecompleted: activityStatus.timecompleted,
+                        overrideby: activityStatus.overrideby || 0,
+                        valueused: activityStatus.valueused,
+                        tracking: activityStatus.tracking,
+                        courseId,
+                        courseName,
+                        cmid: module.id,
+                    };
                 }
 
                 // Check if the module is stealth.
-                module.isStealth = module.visibleoncoursepage === 0 || (module.visible && !section.visible);
-            });*/
+                module.isStealth = module.visibleoncoursepage === 0 || (!!module.visible && !section.visible);
+            });
         });
 
         return hasContent;
@@ -295,7 +309,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      * @todo module type.
      */
-    async confirmAndRemoveFiles(module: any, courseId: number, done?: () => void): Promise<void> {
+    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number, done?: () => void): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
 
         try {
@@ -724,7 +738,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved with the module's course ID.
      * @todo module type.
      */
-    async getModuleCourseIdByInstance(id: number, module: any, siteId?: string): Promise<number> {
+    async getModuleCourseIdByInstance(id: number, module: string, siteId?: string): Promise<number> {
         try {
             const cm = await CoreCourse.instance.getModuleBasicInfoByInstance(id, module, siteId);
 
@@ -1017,7 +1031,7 @@ export class CoreCourseHelperProvider {
      */
     // @todo remove when done.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async removeModuleStoredData(module: any, courseId: number): Promise<void> {
+    async removeModuleStoredData(module: CoreCourseModuleData, courseId: number): Promise<void> {
         const promises: Promise<void>[] = [];
 
         // @todo
@@ -1035,3 +1049,29 @@ export class CoreCourseHelperProvider {
 }
 
 export class CoreCourseHelper extends makeSingleton(CoreCourseHelperProvider) {}
+
+/**
+ * Section with calculated data.
+ */
+export type CoreCourseSectionFormatted = Omit<CoreCourseSection, 'modules'> & {
+    modules: CoreCourseModuleDataFormatted[];
+};
+
+/**
+ * Module with calculated data.
+ */
+export type CoreCourseModuleDataFormatted = Omit<CoreCourseModuleData, 'completiondata'> & {
+    isStealth?: boolean;
+    handlerData?: CoreCourseModuleHandlerData;
+    completiondata?: CoreCourseModuleCompletionDataFormatted;
+};
+
+/**
+ * Module completion with calculated data.
+ */
+export type CoreCourseModuleCompletionDataFormatted = CoreCourseModuleCompletionData & {
+    courseId?: number;
+    courseName?: string;
+    tracking?: number;
+    cmid?: number;
+};

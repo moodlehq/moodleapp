@@ -31,12 +31,13 @@ import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreCourseAnyCourseData,
+    CoreCoursesMyCoursesUpdatedEventData,
     CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreCourseHelper } from './course-helper';
+import { CoreCourseHelper, CoreCourseModuleCompletionDataFormatted } from './course-helper';
 import { CoreCourseFormatDelegate } from './format-delegate';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
@@ -110,7 +111,7 @@ export class CoreCourseProvider {
      * @param completion Completion status of the module.
      * @todo Add completion type.
      */
-    checkModuleCompletion(courseId: number, completion: any): void {
+    checkModuleCompletion(courseId: number, completion: CoreCourseModuleCompletionDataFormatted): void {
         if (completion && completion.tracking === 2 && completion.state === 0) {
             this.invalidateSections(courseId).finally(() => {
                 CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, { courseId: courseId });
@@ -874,7 +875,7 @@ export class CoreCourseProvider {
         if (!response.status) {
             throw Error('WS core_course_view_course failed.');
         } else {
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: courseId,
                 action: CoreCoursesProvider.ACTION_VIEW,
             }, site.getId());
@@ -1352,7 +1353,7 @@ export type CoreCourseGetCourseModuleWSResponse = {
 /**
  * Course module type.
  */
-export type CoreCourseModuleData = { // List of module.
+export type CoreCourseModuleData = {
     id: number; // Activity id.
     course?: number; // The course id.
     url?: string; // Activity url.
@@ -1374,12 +1375,7 @@ export type CoreCourseModuleData = { // List of module.
     customdata?: string; // Custom data (JSON encoded).
     noviewlink?: boolean; // Whether the module has no view page.
     completion?: number; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
-    completiondata?: { // Module completion data.
-        state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
-        timecompleted: number; // Timestamp for completion status.
-        overrideby: number; // The user id who has overriden the status.
-        valueused?: boolean; // Whether the completion status affects the availability of another activity.
-    };
+    completiondata?: CoreCourseModuleCompletionData; // Module completion data.
     contents: CoreCourseModuleContentFile[];
     contentsinfo?: { // Contents summary information.
         filescount: number; // Total number of files.
@@ -1388,6 +1384,16 @@ export type CoreCourseModuleData = { // List of module.
         mimetypes: string[]; // Files mime types.
         repositorytype?: string; // The repository type for the main file.
     };
+};
+
+/**
+ * Module completion data.
+ */
+export type CoreCourseModuleCompletionData = {
+    state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
+    timecompleted: number; // Timestamp for completion status.
+    overrideby: number; // The user id who has overriden the status.
+    valueused?: boolean; // Whether the completion status affects the availability of another activity.
 };
 
 export type CoreCourseModuleContentFile = {
