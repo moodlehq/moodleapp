@@ -86,7 +86,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
             // Display the text in a modal.
             return CoreTextUtils.instance.viewText(notification.title || '', <string> notification.customdata.extendedtext, {
                 displayCopyButton: true,
-                // @todo modalOptions: { cssClass: 'core-modal-fullscreen' },
+                modalOptions: { cssClass: 'core-modal-fullscreen' },
             });
         }
 
