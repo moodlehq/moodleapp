@@ -1588,3 +1588,5 @@ type CoreCourseSetFavouriteCoursesWSParams = {
         favourite: boolean; // Favourite status.
     }[];
 };
+
+export type CoreCourseAnyCourseData = CoreEnrolledCourseData | CoreCourseSearchedData | CoreCourseGetCoursesData;

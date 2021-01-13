@@ -23,12 +23,9 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import {
+    CoreCourseAnyCourseData,
     CoreCourseBasicData,
-    CoreCourseGetCoursesData,
     CoreCourses,
-    CoreCourseSearchedData,
-    CoreEnrolledCourseBasicData,
-    CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreArray } from '@singletons/array';
@@ -463,10 +460,10 @@ export class CoreCourseHelperProvider {
     async getCourse(
         courseId: number,
         siteId?: string,
-    ): Promise<{ enrolled: boolean; course: CoreEnrolledCourseData | CoreCourseSearchedData | CoreCourseGetCoursesData }> {
+    ): Promise<{ enrolled: boolean; course: CoreCourseAnyCourseData }> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
-        let course: CoreEnrolledCourseData | CoreCourseSearchedData | CoreCourseGetCoursesData;
+        let course: CoreCourseAnyCourseData;
 
         // Try with enrolled courses first.
         try {
@@ -495,11 +492,12 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID.
      * @param params Other params to pass to the course page.
      * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
      */
-    async getAndOpenCourse(courseId: number, params?: Params, siteId?: string): Promise<any> {
+    async getAndOpenCourse(courseId: number, params?: Params, siteId?: string): Promise<void> {
         const modal = await CoreDomUtils.instance.showModalLoading();
 
-        let course: CoreEnrolledCourseData | CoreCourseSearchedData | CoreCourseGetCoursesData | { id: number };
+        let course: CoreCourseAnyCourseData | { id: number };
 
         try {
             const data = await this.getCourse(courseId, siteId);
@@ -575,7 +573,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async loadOfflineCompletion(courseId: number, sections: any[], siteId?: string): Promise<void> {
+    async loadOfflineCompletion(courseId: number, sections: CoreCourseSection[], siteId?: string): Promise<void> {
         const offlineCompletions = await CoreCourseOffline.instance.getCourseManualCompletions(courseId, siteId);
 
         if (!offlineCompletions || !offlineCompletions.length) {
@@ -602,7 +600,7 @@ export class CoreCourseHelperProvider {
                     offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
                     // The module has offline completion. Load it.
                     module.completiondata.state = offlineCompletion.completed;
-                    module.completiondata.offline = true;
+                    // @todo module.completiondata.offline = true;
 
                     // If all completions have been loaded, stop.
                     loaded++;
@@ -758,7 +756,7 @@ export class CoreCourseHelperProvider {
      * @return Section download ID.
      * @todo section type.
      */
-    getSectionDownloadId(section: any): string {
+    getSectionDownloadId(section: CoreCourseSection): string {
         return 'Section-' + section.id;
     }
 
@@ -978,7 +976,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async openCourse(course: CoreEnrolledCourseBasicData | { id: number }, params?: Params, siteId?: string): Promise<void> {
+    async openCourse(course: CoreCourseAnyCourseData | { id: number }, params?: Params, siteId?: string): Promise<void> {
         if (!siteId || siteId == CoreSites.instance.getCurrentSiteId()) {
             // Current site, we can open the course.
             return CoreCourse.instance.openCourse(course, params);

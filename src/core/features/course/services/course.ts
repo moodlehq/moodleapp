@@ -30,12 +30,14 @@ import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {
-    CoreCourses,
+    CoreCourseAnyCourseData,
     CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreCourseHelper } from './course-helper';
+import { CoreCourseFormatDelegate } from './format-delegate';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -71,9 +73,6 @@ export class CoreCourseProvider {
     protected logger: CoreLogger;
 
     constructor() {
-        // @todo
-        // protected courseFormatDelegate: CoreCourseFormatDelegate,
-        // protected sitePluginsProvider: CoreSitePluginsProvider,
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
     }
 
@@ -981,39 +980,22 @@ export class CoreCourseProvider {
      * @param params Other params to pass to the course page.
      * @return Promise resolved when done.
      */
-    async openCourse(
-        course: { id: number ; format?: string },
-        params?: Params, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): Promise<void> {
+    async openCourse(course: CoreCourseAnyCourseData | { id: number }, params?: Params): Promise<void> {
         // @todo const loading = await CoreDomUtils.instance.showModalLoading();
 
         // Wait for site plugins to be fetched.
         // @todo await this.sitePluginsProvider.waitFetchPlugins();
 
-        if (typeof course.format == 'undefined') {
-            // This block can be replaced by a call to CourseHelper.getCourse(), but it is circular dependant.
-            const coursesProvider = CoreCourses.instance;
-            try {
-                course = await coursesProvider.getUserCourse(course.id, true);
-            } catch (error) {
-                // Not enrolled or an error happened. Try to use another WebService.
-                const available = coursesProvider.isGetCoursesByFieldAvailableInSite();
-                try {
-                    if (available) {
-                        course = await coursesProvider.getCourseByField('id', course.id);
-                    } else {
-                        course = await coursesProvider.getCourse(course.id);
-                    }
-                } catch (error) {
-                    // Ignore errors.
-                }
-            }
+        if (!('format' in course) || typeof course.format == 'undefined') {
+            const result = await CoreCourseHelper.instance.getCourse(course.id);
+
+            course = result.course;
         }
 
         /* @todo
         if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
             // No custom format plugin. We don't need to wait for anything.
-            await this.courseFormatDelegate.openCourse(course, params);
+            await CoreCourseFormatDelegate.instance.openCourse(course, params);
             loading.dismiss();
 
             return;
@@ -1024,20 +1006,17 @@ export class CoreCourseProvider {
             /* @todo await this.sitePluginsProvider.sitePluginLoaded('format_' + course.format);
             // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
             if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                return this.courseFormatDelegate.openCourse(course, params);
+                return CoreCourseFormatDelegate.instance.openCourse(course, params);
             }*/
 
             // Wait for plugins to be loaded.
             const deferred = CoreUtils.instance.promiseDefer<void>();
 
             const observer = CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => {
-                observer && observer.off();
+                observer?.off();
 
-                /* @todo this.courseFormatDelegate.openCourse(course, params).then((response) => {
-                    deferred.resolve(response);
-                }).catch((error) => {
-                    deferred.reject(error);
-                });*/
+                CoreCourseFormatDelegate.instance.openCourse(<CoreCourseAnyCourseData> course, params)
+                    .then(deferred.resolve).catch(deferred.reject);
             });
 
             return deferred.promise;

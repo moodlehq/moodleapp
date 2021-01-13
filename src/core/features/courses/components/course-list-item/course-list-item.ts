@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { NavController } from '@ionic/angular';
 import { CoreCourses, CoreCourseSearchedData } from '../../services/courses';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '../../services/courses-helper';
@@ -95,13 +96,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
      * @param course The course to open.
      */
     openCourse(): void {
-        /* if (this.isEnrolled) {
+        if (this.isEnrolled) {
             CoreCourseHelper.instance.openCourse(this.course);
         } else {
             this.navCtrl.navigateForward('/main/home/courses/preview', { queryParams: { course: this.course } });
-        } */
-        // @todo while opencourse function is not completed, open preview page.
-        this.navCtrl.navigateForward('/main/home/courses/preview', { queryParams: { course: this.course } });
+        }
     }
 
 }
