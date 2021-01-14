@@ -1,6 +1,6 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id": "at.lernvorsprung.mobileapp",
+    "appname": "Lernvorsprung mobile",
     "desktopappname": "Moodle Desktop",
     "versioncode": 3940,
     "versionname": "3.9.4",
@@ -63,25 +63,14 @@
     },
     "wsservice": "moodle_mobile_app",
     "wsextservice": "local_mobile",
-    "demo_sites": {
-        "student": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "student",
-            "password": "moodle"
-        },
-        "teacher": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle"
-        }
-    },
+
     "font_sizes": [
         62.5,
         75.89,
         93.75
     ],
     "customurlscheme": "moodlemobile",
-    "siteurl": "",
+    "siteurl": "htts://lms.lernvorsprung.at",
     "sitename": "",
     "multisitesdisplay": "",
     "sitefindersettings": {},
