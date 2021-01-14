@@ -31,7 +31,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreLoginSiteHelpComponent } from '@features/login/components/site-help/site-help';
 import { CoreLoginSiteOnboardingComponent } from '@features/login/components/site-onboarding/site-onboarding';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -329,7 +329,9 @@ export class CoreLoginSitePage implements OnInit {
 
             CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
 
-            return CoreNavHelper.instance.goToSiteInitialPage();
+            await CoreNavigator.instance.navigateToSiteHome();
+
+            return;
         } catch (error) {
             CoreLoginHelper.instance.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
 

@@ -15,7 +15,7 @@
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 import { CoreObject } from '@singletons/object';
 
@@ -54,10 +54,12 @@ export class CoreUserLinkDirective implements OnInit {
             event.stopPropagation();
 
             // @todo If this directive is inside a split view, use the split view's master nav.
-            CoreNavHelper.instance.goInCurrentMainMenuTab('user', CoreObject.removeUndefined({
-                userId: this.userId,
-                courseId: this.courseId,
-            }));
+            CoreNavigator.instance.navigateToSitePath('user', {
+                params: CoreObject.withoutEmpty({
+                    userId: this.userId,
+                    courseId: this.courseId,
+                }),
+            });
         });
     }
 

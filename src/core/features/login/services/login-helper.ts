@@ -34,7 +34,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
-import { CoreNavHelper, CoreNavHelperOpenMainMenuOptions, CoreNavHelperService } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -42,7 +42,11 @@ import { CoreNavHelper, CoreNavHelperOpenMainMenuOptions, CoreNavHelperService }
 @Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
-    static readonly OPEN_COURSE = CoreNavHelperService.OPEN_COURSE; // @deprecated since 3.9.5.
+    /**
+     * @deprecated since 3.9.5.
+     */
+    static readonly OPEN_COURSE = 'open_course';
+
     static readonly ONBOARDING_DONE = 'onboarding_done';
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation">';
@@ -111,9 +115,12 @@ export class CoreLoginHelperProvider {
      */
     checkLogout(): void {
         const currentSite = CoreSites.instance.getCurrentSite();
-        const currentPage = CoreNavHelper.instance.getCurrentPage();
 
-        if (!CoreApp.instance.isSSOAuthenticationOngoing() && currentSite?.isLoggedOut() && currentPage == '/login/reconnect') {
+        if (
+            !CoreApp.instance.isSSOAuthenticationOngoing() &&
+            currentSite?.isLoggedOut() &&
+            CoreNavigator.instance.isCurrent('/login/reconnect')
+        ) {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
             CoreSites.instance.logout();
         }
@@ -436,21 +443,33 @@ export class CoreLoginHelperProvider {
      * @param page Page to open.
      * @param params Params of the page.
      * @return Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.goToNoSitePage instead.
+     * @deprecated since 3.9.5. Use CoreNavigator.navigateToLoginCredentials instead.
      */
-    goToNoSitePage(page: string, params?: Params): Promise<void> {
-        return CoreNavHelper.instance.goToNoSitePage(page, params);
+    async goToNoSitePage(page: string, params?: Params): Promise<void> {
+        await CoreNavigator.instance.navigateToLoginCredentials(params);
     }
 
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
-     * @param options Options.
+     * @param navCtrl NavController to use. Defaults to app root NavController.
+     * @param page Name of the page to load after loading the main page.
+     * @param params Params to pass to the page.
+     * @param options Navigation options.
+     * @param url URL to open once the main menu is loaded.
      * @return Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.goToSiteInitialPage instead.
+     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSiteHome or CoreNavigator.navigateToSitePath instead.
      */
-    goToSiteInitialPage(options?: CoreNavHelperOpenMainMenuOptions): Promise<void> {
-        return CoreNavHelper.instance.goToSiteInitialPage(options);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: any, url?: string): Promise<void> {
+        await CoreNavigator.instance.navigateToSiteHome({
+            ...options,
+            params: {
+                redirectPath: page,
+                redirectParams: params,
+                urlToOpen: url,
+            },
+        });
     }
 
     /**
@@ -606,10 +625,10 @@ export class CoreLoginHelperProvider {
      *
      * @param page Name of the page to load.
      * @param params Params to pass to the page.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.loadPageInMainMenu instead.
+     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitepath instead.
      */
     loadPageInMainMenu(page: string, params?: Params): void {
-        CoreNavHelper.instance.loadPageInMainMenu(page, params);
+        CoreNavigator.instance.navigateToSitePath(page, { params });
     }
 
     /**
@@ -767,10 +786,8 @@ export class CoreLoginHelperProvider {
             return; // Site that triggered the event is not current site.
         }
 
-        const currentPage = CoreNavHelper.instance.getCurrentPage();
-
         // If current page is already change password, stop.
-        if (currentPage == '/login/changepassword') {
+        if (CoreNavigator.instance.isCurrent('/login/changepassword')) {
             return;
         }
 
@@ -826,14 +843,14 @@ export class CoreLoginHelperProvider {
     /**
      * Redirect to a new page, setting it as the root page and loading the right site if needed.
      *
-     * @param page Name of the page to load. Special cases: CoreNavHelperService.OPEN_COURSE (to open course page).
+     * @param page Name of the page to load.
      * @param params Params to pass to the page.
      * @param siteId Site to load. If not defined, current site.
      * @return Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.openInSiteMainMenu instead.
+     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
      */
-    redirect(page: string, params?: Params, siteId?: string): Promise<void> {
-        return CoreNavHelper.instance.openInSiteMainMenu(page, params, siteId);
+    async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
+        await CoreNavigator.instance.navigateToSitePath(page, { params, siteId });
     }
 
     /**
@@ -959,14 +976,14 @@ export class CoreLoginHelperProvider {
                 const info = currentSite.getInfo();
                 if (typeof info != 'undefined' && typeof info.username != 'undefined' && !this.isOpeningReconnect) {
                     // If current page is already reconnect, stop.
-                    if (CoreNavHelper.instance.getCurrentPage() == '/login/reconnect') {
+                    if (CoreNavigator.instance.isCurrent('/login/reconnect')) {
                         return;
                     }
 
                     this.isOpeningReconnect = true;
 
                     await CoreUtils.instance.ignoreErrors(this.navCtrl.navigateRoot('/login/reconnect', {
-                        queryParams: CoreObject.removeUndefined({
+                        queryParams: CoreObject.withoutEmpty({
                             siteId,
                             pageName: data.pageName,
                             pageParams: data.params,
@@ -1127,7 +1144,7 @@ export class CoreLoginHelperProvider {
         }
 
         // If current page is already site policy, stop.
-        if (CoreNavHelper.instance.getCurrentPage() == '/login/sitepolicy') {
+        if (CoreNavigator.instance.isCurrent('/login/sitepolicy')) {
             return;
         }
 

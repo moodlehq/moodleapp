@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreTag } from '../tag';
 
@@ -57,11 +57,11 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
                 };
 
                 if (!pageParams.tagId && (!pageParams.tagName || !pageParams.collectionId)) {
-                    CoreNavHelper.instance.goInSite('/tag/search', {}, siteId);
+                    CoreNavigator.instance.navigateToSitePath('/tag/search', { siteId });
                 } else if (pageParams.areaId) {
-                    CoreNavHelper.instance.goInSite('/tag/index-area', pageParams, siteId);
+                    CoreNavigator.instance.navigateToSitePath('/tag/index-area', { params: pageParams, siteId });
                 } else {
-                    CoreNavHelper.instance.goInSite('/tag/index', pageParams, siteId);
+                    CoreNavigator.instance.navigateToSitePath('/tag/index', { params: pageParams, siteId });
                 }
             },
         }];

@@ -21,7 +21,7 @@ import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -102,7 +102,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      */
     siteClicked(siteId: string): void {
         if (this.isRootURL) {
-            CoreNavHelper.instance.openInSiteMainMenu('', {}, siteId);
+            CoreNavigator.instance.navigateToSiteHome({ siteId });
         } else if (this.action) {
             this.action.action(siteId);
         }

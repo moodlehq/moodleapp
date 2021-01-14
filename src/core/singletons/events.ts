@@ -61,9 +61,7 @@ export class CoreEvents {
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
     static readonly CORE_LOADING_CHANGED = 'core_loading_changed';
     static readonly ORIENTATION_CHANGE = 'orientation_change';
-    static readonly LOAD_PAGE_MAIN_MENU = 'load_page_main_menu';
     static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
-    static readonly MAIN_MENU_OPEN = 'main_menu_open';
     static readonly SELECT_COURSE_TAB = 'select_course_tab';
     static readonly WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
     static readonly SITE_STORAGE_DELETED = 'site_storage_deleted';
@@ -225,14 +223,6 @@ export type CoreEventSessionExpiredData = CoreEventSiteData & {
 export type CoreEventLoadingChangedData = {
     loaded: boolean;
     uniqueId: string;
-};
-
-/**
- * Data passed to LOAD_PAGE_MAIN_MENU event.
- */
-export type CoreEventLoadPageMainMenuData = {
-    redirectPage: string;
-    redirectParams?: Params;
 };
 
 /**

@@ -19,7 +19,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Handler to treat links to site home index.
@@ -43,7 +43,8 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId: string): void => {
-                CoreNavHelper.instance.goInSite('sitehome', [], siteId);
+                // @todo This should open the 'sitehome' setting as well.
+                CoreNavigator.instance.navigateToSiteHome({ siteId });
             },
         }];
     }

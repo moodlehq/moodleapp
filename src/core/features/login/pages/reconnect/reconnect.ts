@@ -25,7 +25,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -207,9 +207,12 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.credForm.controls['password'].reset();
 
             // Go to the site initial page.
-            await CoreNavHelper.instance.goToSiteInitialPage({
-                redirectPage: this.page,
-                redirectParams: this.pageParams,
+            // @todo test that this is working properly (could we use navigateToSitePath instead?).
+            await CoreNavigator.instance.navigateToSiteHome({
+                params: {
+                    redirectPath: this.page,
+                    redirectParams: this.pageParams,
+                },
             });
         } catch (error) {
             CoreLoginHelper.instance.treatUserTokenError(this.siteUrl, error, this.username, password);

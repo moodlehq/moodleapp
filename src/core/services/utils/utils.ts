@@ -1580,15 +1580,19 @@ export class CoreUtilsProvider {
      * Ignore errors from a promise.
      *
      * @param promise Promise to ignore errors.
-     * @return Promise with ignored errors.
+     * @param fallbackResult Value to return if the promise is rejected.
+     * @return Promise with ignored errors, resolving to the fallback result if provided.
      */
-    async ignoreErrors<T>(promise: Promise<T>): Promise<T | undefined> {
+    async ignoreErrors<Result>(promise: Promise<Result>): Promise<Result | undefined>;
+    async ignoreErrors<Result, Fallback>(promise: Promise<Result>, fallback: Fallback): Promise<Result | Fallback>;
+    async ignoreErrors<Result, Fallback>(promise: Promise<Result>, fallback?: Fallback): Promise<Result | Fallback | undefined> {
         try {
             const result = await promise;
 
             return result;
         } catch (error) {
             // Ignore errors.
+            return fallback;
         }
     }
 

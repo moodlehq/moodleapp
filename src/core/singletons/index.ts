@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ApplicationRef, ApplicationInitStatus, Injector, NgZone as NgZoneService, Type } from '@angular/core';
+import { Router as RouterService } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import {
@@ -23,6 +24,7 @@ import {
     ToastController as ToastControllerService,
     GestureController as GestureControllerService,
     ActionSheetController as ActionSheetControllerService,
+    NavController as NavControllerService,
 } from '@ionic/angular';
 
 import { Badge as BadgeService } from '@ionic-native/badge/ngx';
@@ -150,6 +152,8 @@ export class ToastController extends makeSingleton(ToastControllerService) {}
 export class GestureController extends makeSingleton(GestureControllerService) {}
 export class ApplicationInit extends makeSingleton(ApplicationInitStatus) {}
 export class Application extends makeSingleton(ApplicationRef) {}
+export class NavController extends makeSingleton(NavControllerService) {}
+export class Router extends makeSingleton(RouterService) {}
 
 // Convert external libraries injectables.
 export class Translate extends makeSingleton(TranslateService) {}

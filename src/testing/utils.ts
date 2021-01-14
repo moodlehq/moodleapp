@@ -47,22 +47,26 @@ export function mock<T>(
     return instance as T;
 }
 
-export function mockSingleton(singletonClass: CoreSingletonClass<unknown>, instance?: Record<string, unknown>): void;
-export function mockSingleton(
+export function mockSingleton<T>(singletonClass: CoreSingletonClass<T>, instance: T): T;
+export function mockSingleton<T>(singletonClass: CoreSingletonClass<unknown>, instance?: Record<string, unknown>): T;
+export function mockSingleton<T>(
     singletonClass: CoreSingletonClass<unknown>,
     methods: string[],
     instance?: Record<string, unknown>,
-): void;
-export function mockSingleton(
-    singletonClass: CoreSingletonClass<unknown>,
+): T;
+export function mockSingleton<T>(
+    singletonClass: CoreSingletonClass<T>,
     methodsOrInstance: string[] | Record<string, unknown> = [],
     instance: Record<string, unknown> = {},
-): void {
+): T {
     instance = Array.isArray(methodsOrInstance) ? instance : methodsOrInstance;
 
     const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
+    const mockInstance = mock<T>(methods, instance);
 
-    singletonClass.setInstance(mock(methods, instance));
+    singletonClass.setInstance(mockInstance);
+
+    return mockInstance;
 }
 
 export async function renderComponent<T>(component: Type<T>, config: Partial<RenderConfig> = {}): Promise<ComponentFixture<T>> {

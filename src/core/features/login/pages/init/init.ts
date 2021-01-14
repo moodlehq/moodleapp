@@ -20,7 +20,7 @@ import { ApplicationInit, SplashScreen } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -32,6 +32,8 @@ import { CoreNavHelper } from '@services/nav-helper';
 })
 export class CoreLoginInitPage implements OnInit {
 
+    // @todo this page should be removed in favor of native splash
+    // or a splash component rendered in the root app component
     constructor(protected navCtrl: NavController) {}
 
     /**
@@ -80,17 +82,21 @@ export class CoreLoginInitPage implements OnInit {
                         return;
                     }
 
-                    return CoreNavHelper.instance.goToSiteInitialPage({
-                        redirectPage: redirectData.page,
-                        redirectParams: redirectData.params,
+                    await CoreNavigator.instance.navigateToSiteHome({
+                        params: {
+                            redirectPath: redirectData.page,
+                            redirectParams: redirectData.params,
+                        },
                     });
+
+                    return;
                 } catch (error) {
                     // Site doesn't exist.
                     return this.loadPage();
                 }
             } else if (redirectData.page) {
                 // No site to load, open the page.
-                return CoreNavHelper.instance.goToNoSitePage(redirectData.page, redirectData.params);
+                // @todo return CoreNavigator.instance.goToNoSitePage(redirectData.page, redirectData.params);
             }
         }
 
@@ -110,7 +116,9 @@ export class CoreLoginInitPage implements OnInit {
                 return this.loadPage();
             }
 
-            return CoreNavHelper.instance.goToSiteInitialPage();
+            await CoreNavigator.instance.navigateToSiteHome();
+
+            return;
         }
 
         await this.navCtrl.navigateRoot('/login/sites');

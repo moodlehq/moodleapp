@@ -19,8 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
 import { CoreSite } from '@classes/site';
 import { makeSingleton, Translate } from '@singletons';
-import { Params } from '@angular/router';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Service that provides some features regarding content links.
@@ -92,10 +91,11 @@ export class CoreContentLinksHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @param checkMenu If true, check if the root page of a main menu tab. Only the page name will be checked.
      * @return Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.goInSite instead.
+     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
      */
-    goInSite(pageName: string, pageParams: Params, siteId?: string, checkMenu?: boolean): Promise<void> {
-        return CoreNavHelper.instance.goInSite(pageName, pageParams, siteId, checkMenu);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): Promise<void> {
+        await CoreNavigator.instance.navigateToSitePath(pageName, { params: pageParams, siteId });
     }
 
     /**
@@ -192,7 +192,7 @@ export class CoreContentLinksHelperProvider {
             }
         } else {
             // Login in the site.
-            return CoreNavHelper.instance.openInSiteMainMenu('', {}, site.getId());
+            await CoreNavigator.instance.navigateToSiteHome({ siteId: site.getId() });
         }
     }
 

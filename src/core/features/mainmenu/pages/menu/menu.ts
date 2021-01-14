@@ -13,19 +13,19 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, IonTabs } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreEvents, CoreEventObserver, CoreEventLoadPageMainMenuData } from '@singletons/events';
+import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreRedirectPayload } from '@services/navigator';
 
 /**
  * Page that displays the main menu of the app.
@@ -40,17 +40,14 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     tabs: CoreMainMenuHandlerToDisplay[] = [];
     allHandlers?: CoreMainMenuHandlerToDisplay[];
     loaded = false;
-    redirectPage?: string;
-    redirectParams?: Params;
     showTabs = false;
     tabsPlacement = 'bottom';
     hidden = false;
 
     protected subscription?: Subscription;
     protected redirectObs?: CoreEventObserver;
-    protected pendingRedirect?: CoreEventLoadPageMainMenuData;
+    protected pendingRedirect?: CoreRedirectPayload;
     protected urlToOpen?: string;
-    protected mainMenuId: number;
     protected keyboardObserver?: CoreEventObserver;
 
     @ViewChild('mainTabs') mainTabs?: IonTabs;
@@ -60,43 +57,31 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         protected navCtrl: NavController,
         protected changeDetector: ChangeDetectorRef,
         protected router: Router,
-    ) {
-        this.mainMenuId = CoreNavHelper.instance.getMainMenuId();
-    }
+    ) {}
 
     /**
      * Initialize the component.
      */
     ngOnInit(): void {
+        // @TODO this should be handled by route guards and can be removed
         if (!CoreSites.instance.isLoggedIn()) {
             this.navCtrl.navigateRoot('/login/init');
 
             return;
         }
 
-        this.route.queryParams.subscribe(params => {
-            const redirectPage = params['redirectPage'];
-            if (redirectPage) {
+        this.route.queryParams.subscribe((params: Partial<CoreRedirectPayload> & { urlToOpen?: string }) => {
+            if (params.redirectPath) {
                 this.pendingRedirect = {
-                    redirectPage: redirectPage,
-                    redirectParams: params['redirectParams'],
+                    redirectPath: params.redirectPath,
+                    redirectParams: params.redirectParams,
                 };
             }
 
-            this.urlToOpen = params['urlToOpen'];
+            this.urlToOpen = params.urlToOpen;
         });
 
         this.showTabs = true;
-
-        this.redirectObs = CoreEvents.on(CoreEvents.LOAD_PAGE_MAIN_MENU, (data: CoreEventLoadPageMainMenuData) => {
-            if (!this.loaded) {
-                // View isn't ready yet, wait for it to be ready.
-                this.pendingRedirect = data;
-            } else {
-                delete this.pendingRedirect;
-                this.handleRedirect(data);
-            }
-        });
 
         this.subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
@@ -131,8 +116,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
                 }
             });
         }
-
-        CoreNavHelper.instance.setMainMenuOpen(this.mainMenuId, true);
     }
 
     /**
@@ -201,13 +184,13 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      *
      * @param data Data received.
      */
-    protected handleRedirect(data: CoreEventLoadPageMainMenuData): void {
+    protected handleRedirect(data: CoreRedirectPayload): void {
         // Check if the redirect page is the root page of any of the tabs.
-        const i = this.tabs.findIndex((tab) => tab.page == data.redirectPage);
+        const i = this.tabs.findIndex((tab) => tab.page == data.redirectPath);
 
         if (i >= 0) {
             // Tab found. Open it with the params.
-            this.navCtrl.navigateForward(data.redirectPage, {
+            this.navCtrl.navigateForward(data.redirectPath, {
                 queryParams: data.redirectParams,
                 animated: false,
             });
@@ -227,7 +210,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
         this.redirectObs?.off();
         window.removeEventListener('resize', this.initHandlers.bind(this));
-        CoreNavHelper.instance.setMainMenuOpen(this.mainMenuId, false);
         this.keyboardObserver?.off();
     }
 
