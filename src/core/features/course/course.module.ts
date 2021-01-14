@@ -17,15 +17,15 @@ import { NgModule } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
+import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
 
 @NgModule({
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
+            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA],
             multi: true,
         },
     ],
 })
-export class CoreCourseModule {
-}
+export class CoreCourseModule {}

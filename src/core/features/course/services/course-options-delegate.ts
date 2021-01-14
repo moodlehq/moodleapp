@@ -47,8 +47,9 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
      * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @return True or promise resolved with true if enabled.
      */
-    isEnabledForCourse(courseId: number,
-        accessData: CoreCourseAccessData,
+    isEnabledForCourse(
+        courseId: number,
+        accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): boolean | Promise<boolean>;
@@ -56,7 +57,7 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @param course The course. // @todo: define type in the whole file.
+     * @param course The course.
      * @return Data or promise resolved with the data.
      */
     getDisplayData?(
@@ -226,7 +227,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 
     protected coursesHandlers: {
         [courseId: number]: {
-            access: any;
+            access: CoreCourseAccess;
             navOptions?: CoreCourseUserAdminOrNavOptionIndexed;
             admOptions?: CoreCourseUserAdminOrNavOptionIndexed;
             deferred: PromiseDefer<void>;
@@ -320,7 +321,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
     protected async getHandlersForAccess(
         courseId: number,
         refresh: boolean,
-        accessData: any,
+        accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<CoreCourseOptionsHandler[]> {
@@ -618,7 +619,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      */
     async updateHandlersForCourse(
         courseId: number,
-        accessData: any,
+        accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<void> {
@@ -673,5 +674,6 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 
 export class CoreCourseOptionsDelegate extends makeSingleton(CoreCourseOptionsDelegateService) {}
 
-// @todo define
-export type CoreCourseAccessData = any;
+export type CoreCourseAccess = {
+    type: string; // Either CoreCourseProvider.ACCESS_GUEST or CoreCourseProvider.ACCESS_DEFAULT.
+};

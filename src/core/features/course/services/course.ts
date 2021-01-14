@@ -856,7 +856,6 @@ export class CoreCourseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @param name Name of the course.
      * @return Promise resolved when the WS call is successful.
-     * @todo use logHelper. Remove eslint disable when done.
      */
     async logView(courseId: number, sectionNumber?: number, siteId?: string, name?: string): Promise<void> {
         const params: CoreCourseViewCourseWSParams = {
