@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreCourseComponentsModule } from './components/components.module';
-import { CoreCourseFormatModule } from './format/formats.module';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
-import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
+import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
+import { CoreCourseFormatTopicsHandler } from './services/handlers/topics-format';
 
 @NgModule({
-    imports: [
-        CoreCourseFormatModule,
-        CoreCourseComponentsModule,
-    ],
+    declarations: [],
+    imports: [],
     providers: [
         {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA],
+            provide: APP_INITIALIZER,
             multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreCourseFormatDelegate.instance.registerHandler(CoreCourseFormatTopicsHandler.instance);
+            },
         },
     ],
 })
-export class CoreCourseModule {}
+export class CoreCourseFormatTopicsModule {}

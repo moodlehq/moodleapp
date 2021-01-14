@@ -14,23 +14,20 @@
 
 import { NgModule } from '@angular/core';
 
-import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreCourseComponentsModule } from './components/components.module';
-import { CoreCourseFormatModule } from './format/formats.module';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
-import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
+import { CoreCourseFormatSingleActivityModule } from './singleactivity/singleactivity.module';
+import { CoreCourseFormatSocialModule } from './social/social.module';
+import { CoreCourseFormatTopicsModule } from './topics/topics.module';
+import { CoreCourseFormatWeeksModule } from './weeks/weeks.module';
 
 @NgModule({
+    declarations: [],
     imports: [
-        CoreCourseFormatModule,
-        CoreCourseComponentsModule,
+        CoreCourseFormatSingleActivityModule,
+        CoreCourseFormatSocialModule,
+        CoreCourseFormatTopicsModule,
+        CoreCourseFormatWeeksModule,
     ],
-    providers: [
-        {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA],
-            multi: true,
-        },
-    ],
+    providers: [],
+    exports: [],
 })
-export class CoreCourseModule {}
+export class CoreCourseFormatModule { }

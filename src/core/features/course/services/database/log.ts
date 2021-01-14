@@ -44,7 +44,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                 {
                     name: 'time',
                     type: 'INTEGER',
-                }
+                },
             ],
             primaryKeys: ['component', 'componentid', 'ws', 'time'],
         },
