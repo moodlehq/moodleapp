@@ -1,0 +1,15 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+        </ion-title>
+
+        <ion-buttons slot="end"></ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-tabs [tabs]="tabs" [hideUntil]="loaded"></core-tabs>
+</ion-content>

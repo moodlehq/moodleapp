@@ -1589,4 +1589,15 @@ type CoreCourseSetFavouriteCoursesWSParams = {
     }[];
 };
 
+/**
+ * Any of the possible course data.
+ */
 export type CoreCourseAnyCourseData = CoreEnrolledCourseData | CoreCourseSearchedData | CoreCourseGetCoursesData;
+
+/**
+ * Course data with admin and navigation option availability.
+ */
+export type CoreCourseAnyCourseDataWithOptions = CoreCourseAnyCourseData & {
+    navOptions?: CoreCourseUserAdminOrNavOptionIndexed;
+    admOptions?: CoreCourseUserAdminOrNavOptionIndexed;
+};

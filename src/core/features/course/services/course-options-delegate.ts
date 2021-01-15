@@ -13,12 +13,18 @@
 // limitations under the License.
 // @todo test delegate
 
-import { Injectable, Type } from '@angular/core';
-import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
+import { Injectable } from '@angular/core';
+import { CoreDelegate, CoreDelegateHandler, CoreDelegateToDisplay } from '@classes/delegate';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
-import { CoreCourses, CoreCoursesProvider, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
+import {
+    CoreCourseAnyCourseData,
+    CoreCourseAnyCourseDataWithOptions,
+    CoreCourses,
+    CoreCoursesProvider,
+    CoreCourseUserAdminOrNavOptionIndexed,
+} from '@features/courses/services/courses';
 import { CoreCourseProvider } from './course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
@@ -61,7 +67,7 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
      * @return Data or promise resolved with the data.
      */
     getDisplayData?(
-        course: CoreEnrolledCourseDataWithExtraInfoAndOptions,
+        course: CoreCourseAnyCourseDataWithOptions,
     ): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData>;
 
     /**
@@ -98,7 +104,7 @@ export interface CoreCourseOptionsMenuHandler extends CoreCourseOptionsHandler {
      * @return Data or promise resolved with data.
      */
     getMenuDisplayData(
-        course: CoreEnrolledCourseDataWithExtraInfoAndOptions,
+        course: CoreCourseAnyCourseDataWithOptions,
     ): CoreCourseOptionsMenuHandlerData | Promise<CoreCourseOptionsMenuHandlerData>;
 }
 
@@ -117,15 +123,14 @@ export interface CoreCourseOptionsHandlerData {
     class?: string;
 
     /**
-     * The component to render the handler. It must be the component class, not the name or an instance.
-     * When the component is created, it will receive the courseId as input.
+     * Path of the page to load for the handler.
      */
-    component: Type<unknown>;
+    page: string;
 
     /**
-     * Data to pass to the component. All the properties in this object will be passed to the component as inputs.
+     * Params to pass to the page (other than 'courseId' which is always sent).
      */
-    componentData?: Record<string | number, unknown>;
+    pageParams?: Params;
 }
 
 /**
@@ -143,7 +148,7 @@ export interface CoreCourseOptionsMenuHandlerData {
     class?: string;
 
     /**
-     * Name of the page to load for the handler.
+     * Path of the page to load for the handler.
      */
     page: string;
 
@@ -161,21 +166,11 @@ export interface CoreCourseOptionsMenuHandlerData {
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreCourseOptionsHandlerToDisplay {
+export interface CoreCourseOptionsHandlerToDisplay extends CoreDelegateToDisplay {
     /**
      * Data to display.
      */
     data: CoreCourseOptionsHandlerData;
-
-    /**
-     * Name of the handler, or name and sub context (AddonMessages, AddonMessages:blockContact, ...).
-     */
-    name: string;
-
-    /**
-     * The highest priority is displayed first.
-     */
-    priority?: number;
 
     /**
      * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
@@ -368,7 +363,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @return Promise resolved with array of handlers.
      */
     getHandlersToDisplay(
-        course: CoreEnrolledCourseDataWithExtraInfoAndOptions,
+        course: CoreCourseAnyCourseData,
         refresh = false,
         isGuest = false,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
@@ -390,7 +385,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @return Promise resolved with array of handlers.
      */
     getMenuHandlersToDisplay(
-        course: CoreEnrolledCourseDataWithExtraInfoAndOptions,
+        course: CoreCourseAnyCourseData,
         refresh = false,
         isGuest = false,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
@@ -414,28 +409,31 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      */
     protected async getHandlersToDisplayInternal(
         menu: boolean,
-        course: CoreEnrolledCourseDataWithExtraInfoAndOptions,
+        course: CoreCourseAnyCourseData,
         refresh = false,
         isGuest = false,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<CoreCourseOptionsHandlerToDisplay[] | CoreCourseOptionsMenuHandlerToDisplay[]> {
 
+        const courseWithOptions: CoreCourseAnyCourseDataWithOptions = course;
         const accessData = {
             type: isGuest ? CoreCourseProvider.ACCESS_GUEST : CoreCourseProvider.ACCESS_DEFAULT,
         };
         const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] | CoreCourseOptionsMenuHandlerToDisplay[] = [];
 
         if (navOptions) {
-            course.navOptions = navOptions;
+            courseWithOptions.navOptions = navOptions;
         }
         if (admOptions) {
-            course.admOptions = admOptions;
+            courseWithOptions.admOptions = admOptions;
         }
 
-        await this.loadCourseOptions(course, refresh);
+        await this.loadCourseOptions(courseWithOptions, refresh);
+
         // Call getHandlersForAccess to make sure the handlers have been loaded.
-        await this.getHandlersForAccess(course.id, refresh, accessData, course.navOptions, course.admOptions);
+        await this.getHandlersForAccess(course.id, refresh, accessData, courseWithOptions.navOptions, courseWithOptions.admOptions);
+
         const promises: Promise<void>[] = [];
 
         let handlerList: CoreCourseOptionsMenuHandler[] | CoreCourseOptionsHandler[];
@@ -450,7 +448,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
                 ? (handler as CoreCourseOptionsMenuHandler).getMenuDisplayData
                 : (handler as CoreCourseOptionsHandler).getDisplayData;
 
-            promises.push(Promise.resolve(getFunction!.call(handler, course)).then((data) => {
+            promises.push(Promise.resolve(getFunction!.call(handler, courseWithOptions)).then((data) => {
                 handlersToDisplay.push({
                     data: data,
                     priority: handler.priority,
@@ -587,7 +585,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @param refresh True if it should refresh the list.
      * @return Promise resolved when done.
      */
-    protected async loadCourseOptions(course: CoreEnrolledCourseDataWithExtraInfoAndOptions, refresh = false): Promise<void> {
+    protected async loadCourseOptions(course: CoreCourseAnyCourseDataWithOptions, refresh = false): Promise<void> {
         if (CoreCourses.instance.canGetAdminAndNavOptions() &&
                 (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh)) {
 

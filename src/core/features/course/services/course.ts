@@ -981,7 +981,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when done.
      */
     async openCourse(course: CoreCourseAnyCourseData | { id: number }, params?: Params): Promise<void> {
-        // @todo const loading = await CoreDomUtils.instance.showModalLoading();
+        const loading = await CoreDomUtils.instance.showModalLoading();
 
         // Wait for site plugins to be fetched.
         // @todo await this.sitePluginsProvider.waitFetchPlugins();
@@ -992,14 +992,13 @@ export class CoreCourseProvider {
             course = result.course;
         }
 
-        /* @todo
-        if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+        if (course) { // @todo Replace with: if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
             // No custom format plugin. We don't need to wait for anything.
-            await CoreCourseFormatDelegate.instance.openCourse(course, params);
+            await CoreCourseFormatDelegate.instance.openCourse(<CoreCourseAnyCourseData> course, params);
             loading.dismiss();
 
             return;
-        } */
+        }
 
         // This course uses a custom format plugin, wait for the format plugin to finish loading.
         try {

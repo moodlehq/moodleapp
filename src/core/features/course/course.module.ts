@@ -13,18 +13,38 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { Routes } from '@angular/router';
 
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreCourseComponentsModule } from './components/components.module';
 import { CoreCourseFormatModule } from './format/formats.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
 import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
+import { CoreCourseIndexRoutingModule } from './pages/index/index-routing.module';
+
+const routes: Routes = [
+    {
+        path: 'course',
+        loadChildren: () => import('@features/course/course-lazy.module').then(m => m.CoreCourseLazyModule),
+    },
+];
+
+const courseIndexRoutes: Routes = [
+    {
+        path: 'contents',
+        loadChildren: () => import('./pages/contents/contents.module').then(m => m.CoreCourseContentsPageModule),
+    },
+];
 
 @NgModule({
     imports: [
+        CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
+        CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseFormatModule,
         CoreCourseComponentsModule,
     ],
+    exports: [CoreCourseIndexRoutingModule],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

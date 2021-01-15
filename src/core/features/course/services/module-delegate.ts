@@ -54,8 +54,8 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
     getData(
         module: CoreCourseModuleData | CoreCourseModuleBasicInfo,
         courseId: number,
-        sectionId: number,
-        forCoursePage: boolean,
+        sectionId?: number,
+        forCoursePage?: boolean,
     ): CoreCourseModuleHandlerData;
 
     /**
@@ -270,7 +270,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         modname: string,
         module: CoreCourseModuleData | CoreCourseModuleBasicInfo,
         courseId: number,
-        sectionId: number,
+        sectionId?: number,
         forCoursePage?: boolean,
     ): CoreCourseModuleHandlerData | undefined {
         return this.executeFunctionOnEnabled<CoreCourseModuleHandlerData>(

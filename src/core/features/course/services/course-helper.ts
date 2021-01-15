@@ -122,7 +122,6 @@ export class CoreCourseHelperProvider {
     protected logger: CoreLogger;
 
     constructor() {
-
         this.logger = CoreLogger.getInstance('CoreCourseHelperProvider');
     }
 
@@ -138,17 +137,24 @@ export class CoreCourseHelperProvider {
      * @return Whether the sections have content.
      */
     addHandlerDataForModules(
-        sections: CoreCourseSectionFormatted[],
+        sections: CoreCourseSection[],
         courseId: number,
         completionStatus?: Record<string, CoreCourseCompletionActivityStatus>,
         courseName?: string,
         forCoursePage = false,
-    ): boolean {
+    ): { hasContent: boolean; sections: CoreCourseSectionFormatted[] } {
 
+        const formattedSections: CoreCourseSectionFormatted[] = sections;
         let hasContent = false;
 
-        sections.forEach((section) => {
-            if (!section || !this.sectionHasContent(section) || !section.modules) {
+        formattedSections.forEach((section) => {
+            if (!section || !section.modules) {
+                return;
+            }
+
+            section.hasContent = this.sectionHasContent(section);
+
+            if (!section.hasContent) {
                 return;
             }
 
@@ -189,7 +195,7 @@ export class CoreCourseHelperProvider {
             });
         });
 
-        return hasContent;
+        return { hasContent, sections: formattedSections };
     }
 
     /**
@@ -821,8 +827,24 @@ export class CoreCourseHelperProvider {
      * @param modParams Params to pass to the module
      * @param True if module can be opened, false otherwise.
      */
-    openModule(): void {
-        // @todo params and logic
+    openModule(module: CoreCourseModuleDataFormatted, courseId: number, sectionId?: number, modParams?: Params): boolean {
+        if (!module.handlerData) {
+            module.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
+                module.modname,
+                module,
+                courseId,
+                sectionId,
+                false,
+            );
+        }
+
+        if (module.handlerData?.action) {
+            module.handlerData.action(new Event('click'), module, courseId, { animated: false }, modParams);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -1054,6 +1076,7 @@ export class CoreCourseHelper extends makeSingleton(CoreCourseHelperProvider) {}
  * Section with calculated data.
  */
 export type CoreCourseSectionFormatted = Omit<CoreCourseSection, 'modules'> & {
+    hasContent?: boolean;
     modules: CoreCourseModuleDataFormatted[];
 };
 

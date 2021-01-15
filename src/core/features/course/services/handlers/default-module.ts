@@ -49,8 +49,8 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
     getData(
         module: CoreCourseModuleData | CoreCourseModuleBasicInfo,
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        sectionId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        forCoursePage: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
+        sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
+        forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): CoreCourseModuleHandlerData {
         // Return the default data.
         const defaultData: CoreCourseModuleHandlerData = {

@@ -131,15 +131,14 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             // Check "Include a topic section" setting from numsections.
             this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
             if (this.section) {
-                this.section.hasContent = false;
-                this.section.hasContent = CoreCourseHelper.instance.sectionHasContent(this.section);
-                this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
+                const result = CoreCourseHelper.instance.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
                     undefined,
                     true,
-                ) || this.hasContent;
+                );
+                this.hasContent = result.hasContent || this.hasContent;
             }
 
             // Add log in Moodle.

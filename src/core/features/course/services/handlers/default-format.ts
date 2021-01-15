@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
+import { CoreNavHelper } from '@services/nav-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseSection } from '../course';
 import { CoreCourseFormatHandler } from '../format-delegate';
@@ -175,7 +176,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         Object.assign(params, { course: course });
 
         // Don't return the .push promise, we don't want to display a loading modal during the page transition.
-        // @todo navCtrl.push('CoreCourseSectionPage', params);
+        CoreNavHelper.instance.goInCurrentMainMenuTab('course', params);
     }
 
     /**
