@@ -335,3 +335,11 @@ ion-select.core-button-select,
     overflow-x: scroll;
     flex-direction: row;
 }
+
+// Text for accessibility, hidden from the view.
+.accesshide {
+    position: absolute;
+    left: -10000px;
+    font-weight: normal;
+    font-size: 1em;
+}

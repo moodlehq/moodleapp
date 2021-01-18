@@ -19,11 +19,17 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
+import { CoreCourseFormatComponent } from './format/format';
+import { CoreCourseModuleComponent } from './module/module';
+import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 
 @NgModule({
     declarations: [
+        CoreCourseFormatComponent,
+        CoreCourseModuleComponent,
+        CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
         CoreCourseUnsupportedModuleComponent,
     ],
@@ -35,6 +41,9 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreSharedModule,
     ],
     exports: [
+        CoreCourseFormatComponent,
+        CoreCourseModuleComponent,
+        CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
         CoreCourseUnsupportedModuleComponent,
     ],

@@ -593,7 +593,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async loadOfflineCompletion(courseId: number, sections: CoreCourseSection[], siteId?: string): Promise<void> {
+    async loadOfflineCompletion(courseId: number, sections: CoreCourseSectionFormatted[], siteId?: string): Promise<void> {
         const offlineCompletions = await CoreCourseOffline.instance.getCourseManualCompletions(courseId, siteId);
 
         if (!offlineCompletions || !offlineCompletions.length) {
@@ -620,7 +620,7 @@ export class CoreCourseHelperProvider {
                     offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
                     // The module has offline completion. Load it.
                     module.completiondata.state = offlineCompletion.completed;
-                    // @todo module.completiondata.offline = true;
+                    module.completiondata.offline = true;
 
                     // If all completions have been loaded, stop.
                     loaded++;
@@ -776,7 +776,7 @@ export class CoreCourseHelperProvider {
      * @return Section download ID.
      * @todo section type.
      */
-    getSectionDownloadId(section: CoreCourseSection): string {
+    getSectionDownloadId(section: {id: number}): string {
         return 'Section-' + section.id;
     }
 
@@ -1097,4 +1097,5 @@ export type CoreCourseModuleCompletionDataFormatted = CoreCourseModuleCompletion
     courseName?: string;
     tracking?: number;
     cmid?: number;
+    offline?: boolean;
 };

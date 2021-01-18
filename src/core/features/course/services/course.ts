@@ -953,7 +953,20 @@ export class CoreCourseProvider {
             completed: completed,
         };
 
-        return site.write('core_completion_update_activity_completion_status_manually', params);
+        const result = await site.write<CoreStatusWithWarningsWSResponse>(
+            'core_completion_update_activity_completion_status_manually',
+            params,
+        );
+
+        if (!result.status) {
+            if (result.warnings && result.warnings.length) {
+                throw new CoreWSError(result.warnings[0]);
+            } else {
+                throw new CoreError('Cannot change completion.');
+            }
+        }
+
+        return result;
     }
 
     /**

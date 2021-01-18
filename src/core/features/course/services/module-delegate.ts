@@ -209,11 +209,15 @@ export interface CoreCourseModuleHandlerButton {
 
     /**
      * The name of the button icon to use in iOS instead of "icon".
+     *
+     * @deprecated since 3.9.5. Now the icon must be the same for all platforms.
      */
     iosIcon?: string;
 
     /**
      * The name of the button icon to use in MaterialDesign instead of "icon".
+     *
+     * @deprecated since 3.9.5. Now the icon must be the same for all platforms.
      */
     mdIcon?: string;
 

@@ -18,6 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Component that displays the list of course blocks.
@@ -106,6 +107,17 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
             this.element.classList.add('core-no-blocks');
             scrollElement.classList.remove('core-course-block-with-blocks');
         }
+    }
+
+    /**
+     * Refresh data.
+     *
+     * @return Promise resolved when done.
+     */
+    async doRefresh(): Promise<void> {
+        await CoreUtils.instance.ignoreErrors(this.invalidateBlocks());
+
+        await this.loadContent();
     }
 
 }

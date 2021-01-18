@@ -286,3 +286,11 @@ export type CoreEventSelectCourseTabData = CoreEventSiteData & {
 export type CoreEventCompletionModuleViewedData = CoreEventSiteData & {
     courseId?: number;
 };
+
+/**
+ * Data passed to SECTION_STATUS_CHANGED event.
+ */
+export type CoreEventSectionStatusChangedData = CoreEventSiteData & {
+    courseId: number;
+    sectionId?: number;
+};

@@ -35,7 +35,6 @@ import {
 } from '@features/course/services/course-options-delegate';
 // import { CoreCourseSyncProvider } from '../../providers/sync';
 // import { CoreCourseFormatComponent } from '../../components/format/format';
-import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import {
     CoreEvents,
     CoreEventObserver,
@@ -58,7 +57,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     // @ViewChild(CoreCourseFormatComponent) formatComponent: CoreCourseFormatComponent;
 
     course!: CoreCourseAnyCourseData;
-    sections?: Section[];
+    sections?: CoreCourseSectionFormatted[];
     sectionId?: number;
     sectionNumber?: number;
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
@@ -211,11 +210,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             this.course = result.course;
         }
 
-        // @todo: Get the overview files. Maybe move it to format component?
-        // if ('overviewfiles' in this.course && this.course.overviewfiles) {
-        //     this.course.imageThumb = this.course.overviewfiles[0] && this.course.overviewfiles[0].fileurl;
-        // }
-
         if (sync) {
             // Try to synchronize the course data.
             // @todo return this.syncProvider.syncCourse(this.course.id).then((result) => {
@@ -281,19 +275,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             this.course.fullname,
             true,
         );
-
-        // Format the name of each section.
-        result.sections.forEach(async (section: Section) => {
-            const result = await CoreFilterHelper.instance.getFiltersAndFormatText(
-                section.name.trim(),
-                'course',
-                this.course.id,
-                { clean: true, singleLine: true },
-            );
-
-            section.formattedName = result.text;
-        });
-
         this.sections = result.sections;
 
         if (CoreCourseFormatDelegate.instance.canViewAllSections(this.course)) {
@@ -527,7 +508,3 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     }
 
 }
-
-type Section = CoreCourseSectionFormatted & {
-    formattedName?: string;
-};
