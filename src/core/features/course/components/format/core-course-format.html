@@ -2,7 +2,7 @@
 <core-navbar-buttons slot="end" *ngIf="loaded">
     <core-context-menu>
         <core-context-menu-item [hidden]="!displaySectionSelector || !sections || !sections.length" [priority]="500"
-            [content]="'core.course.sections' | translate" (action)="showSectionSelector($event)" iconAction="menu">
+            [content]="'core.course.sections' | translate" (action)="showSectionSelector()" iconAction="menu">
         </core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
@@ -19,7 +19,7 @@
                 <div *ngIf="displaySectionSelector && sections && hasSeveralSections"
                     class="ion-text-wrap clearfix ion-justify-content-between core-button-selector-row"
                     [class.core-section-download]="downloadEnabled">
-                    <ion-button class="ion-float-start" (click)="showSectionSelector($event)" color="light" aria-haspopup="true"
+                    <ion-button class="ion-float-start" (click)="showSectionSelector()" color="light" aria-haspopup="true"
                         class="core-button-select button-no-uppercase" [attr.aria-expanded]="sectionSelectorExpanded"
                         id="core-course-section-button" expand="block"> <!-- @todo: attr.aria-label? -->
                         <core-icon name="fas-folder" slot="start"></core-icon>

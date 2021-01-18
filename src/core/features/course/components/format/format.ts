@@ -46,6 +46,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 import { CoreCourseSectionFormatted } from '@features/course/services/course-helper';
 import { CoreCourseModuleStatusChangedData } from '../module/module';
+import { ModalController } from '@singletons';
+import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -330,29 +332,30 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Display the section selector modal.
-     *
-     * @param event Event.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    showSectionSelector(event?: MouseEvent): void {
+    async showSectionSelector(): Promise<void> {
         if (this.sectionSelectorExpanded) {
             return;
         }
 
-        // @todo this.sectionSelectorExpanded = true;
-        // const modal = this.modalCtrl.create('CoreCourseSectionSelectorPage',
-        //     {course: this.course, sections: this.sections, selected: this.selectedSection});
-        // modal.onDidDismiss((newSection) => {
-        //     if (newSection) {
-        //         this.sectionChanged(newSection);
-        //     }
+        this.sectionSelectorExpanded = true;
 
-        //     this.sectionSelectorExpanded = false;
-        // });
+        const modal = await ModalController.instance.create({
+            component: CoreCourseSectionSelectorComponent,
+            componentProps: {
+                course: this.course,
+                sections: this.sections,
+                selected: this.selectedSection,
+            },
+        });
+        await modal.present();
 
-        // modal.present({
-        //     ev: event
-        // });
+        const result = await modal.onWillDismiss();
+
+        this.sectionSelectorExpanded = false;
+        if (result?.data) {
+            this.sectionChanged(result?.data);
+        }
     }
 
     /**

@@ -169,6 +169,9 @@ ion-toolbar {
 .item.core-danger-item {
     --border-color: var(--ion-color-danger);
 }
+.item-dimmed {
+    opacity: 0.71;
+}
 
 // Extra text colors.
 .text-gray {
