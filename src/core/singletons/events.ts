@@ -84,7 +84,11 @@ export class CoreEvents {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    static on<T = unknown>(eventName: string, callBack: (value: T) => void, siteId?: string): CoreEventObserver {
+    static on<T = unknown>(
+        eventName: string,
+        callBack: (value: T & { siteId?: string }) => void,
+        siteId?: string,
+    ): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
