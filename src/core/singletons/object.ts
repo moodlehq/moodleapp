@@ -12,24 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+export type CoreObjectWithoutEmpty<T> = {
+    [k in keyof T]: T[k] extends undefined | null ? never : T[k];
+};
+
 /**
  * Singleton with helper functions for objects.
  */
 export class CoreObject {
 
     /**
-     * Delete all keys from an object whose value are null or undefined.
+     * Check whether the given object is empty.
      *
-     * @param object Object to modify.
+     * @param object Object.
+     * @return Whether the given object is empty.
      */
-    static removeUndefined<T>(object: T): T {
-        for (const name in object) {
-            if (object[name] === undefined) {
-                delete object[name];
-            }
+    static isEmpty(object: Record<string, unknown>): boolean {
+        return Object.keys(object).length === 0;
+    }
+
+    /**
+     * Create a new object without the specified keys.
+     *
+     * @param obj Object.
+     * @param keys Keys to remove from the new object.
+     * @return New object without the specified keys.
+     */
+    static without<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, keyof { [k in K]: unknown }> {
+        const newObject: T = { ...obj };
+
+        for (const key of keys) {
+            delete newObject[key];
         }
 
-        return object;
+        return newObject;
+    }
+
+    /**
+     * Create a new object without empty values (null or undefined).
+     *
+     * @param obj Objet.
+     * @return New object without empty values.
+     */
+    static withoutEmpty<T>(obj: T): CoreObjectWithoutEmpty<T> {
+        const cleanObj = {};
+
+        for (const [key, value] of Object.entries(obj)) {
+            if (value === null || value === undefined) {
+                continue;
+            }
+
+            cleanObj[key] = value;
+        }
+
+        return cleanObj as CoreObjectWithoutEmpty<T>;
     }
 
 }

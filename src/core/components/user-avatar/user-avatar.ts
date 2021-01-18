@@ -145,7 +145,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         // @todo Decide which navCtrl to use. If this component is inside a split view, use the split view's master nav.
         this.navCtrl.navigateForward(['user'], {
             relativeTo: this.route,
-            queryParams: CoreObject.removeUndefined({
+            queryParams: CoreObject.withoutEmpty({
                 userId: this.userId,
                 courseId: this.courseId,
             }),

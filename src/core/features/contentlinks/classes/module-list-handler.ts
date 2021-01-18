@@ -16,7 +16,6 @@ import { CoreContentLinksHandlerBase } from './base-handler';
 import { Translate } from '@singletons';
 import { Params } from '@angular/router';
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
-import { CoreNavHelper } from '@services/nav-helper';
 
 /**
  * Handler to handle URLs pointing to a list of a certain type of modules.
@@ -56,14 +55,16 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
     getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         return [{
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             action: (siteId): void => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const stateParams = {
                     courseId: params.id,
                     modName: this.modName,
                     title: this.title || Translate.instance.instant('addon.mod_' + this.modName + '.modulenameplural'),
                 };
 
-                CoreNavHelper.instance.goInSite('CoreCourseListModTypePage @todo', stateParams, siteId);
+                // @todo CoreNavigator.instance.goInSite('CoreCourseListModTypePage', stateParams, siteId);
             },
         }];
     }

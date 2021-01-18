@@ -34,7 +34,6 @@ import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses
 import { CoreArray } from '@singletons/array';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseOffline } from './course-offline';
-import { CoreNavHelper, CoreNavHelperService } from '@services/nav-helper';
 import {
     CoreCourseOptionsDelegate,
     CoreCourseOptionsHandlerToDisplay,
@@ -979,7 +978,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    openCourse(course: CoreEnrolledCourseBasicData | { id: number }, params?: Params, siteId?: string): Promise<void> {
+    async openCourse(course: CoreEnrolledCourseBasicData | { id: number }, params?: Params, siteId?: string): Promise<void> {
         if (!siteId || siteId == CoreSites.instance.getCurrentSiteId()) {
             // Current site, we can open the course.
             return CoreCourse.instance.openCourse(course, params);
@@ -988,7 +987,9 @@ export class CoreCourseHelperProvider {
             params = params || {};
             Object.assign(params, { course: course });
 
-            return CoreNavHelper.instance.openInSiteMainMenu(CoreNavHelperService.OPEN_COURSE, params, siteId);
+            // @todo implement open course.
+            // await CoreNavigator.instance.navigateToSitePath('/course/.../...', { siteId, queryParams: params });
+            // return CoreNavigator.instance.openInSiteMainMenu(CoreNavigatorService.OPEN_COURSE, params, siteId);
         }
     }
 

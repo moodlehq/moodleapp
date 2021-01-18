@@ -25,7 +25,6 @@ import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
-import { CoreNavHelper } from './nav-helper';
 
 /**
  * Object responsible of managing schema versions.
@@ -178,10 +177,10 @@ export class CoreAppProvider {
      * Get an ID for a main menu.
      *
      * @return Main menu ID.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.getMainMenuId instead.
+     * @deprecated since 3.9.5. No longer supported.
      */
     getMainMenuId(): number {
-        return CoreNavHelper.instance.getMainMenuId();
+        return 0;
     }
 
     /**
@@ -306,10 +305,10 @@ export class CoreAppProvider {
      * Check if the main menu is open.
      *
      * @return Whether the main menu is open.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.isMainMenuOpen instead.
+     * @deprecated since 3.9.5. No longer supported.
      */
     isMainMenuOpen(): boolean {
-        return CoreNavHelper.instance.isMainMenuOpen();
+        return false;
     }
 
     /**
@@ -443,17 +442,6 @@ export class CoreAppProvider {
         this.isKeyboardShown = shown;
         this.keyboardOpening = false;
         this.keyboardClosing = false;
-    }
-
-    /**
-     * Set a main menu as open or not.
-     *
-     * @param id Main menu ID.
-     * @param open Whether it's open or not.
-     * @deprecated since 3.9.5. Use CoreNavHelperService.setMainMenuOpen instead.
-     */
-    setMainMenuOpen(id: number, open: boolean): void {
-        CoreNavHelper.instance.setMainMenuOpen(id, open);
     }
 
     /**

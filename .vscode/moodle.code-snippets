@@ -3,10 +3,12 @@
         "scope": "typescript",
         "prefix": "massingleton",
         "body": [
-
             "import { Injectable } from '@angular/core';",
             "import { makeSingleton } from '@singletons';",
             "",
+            "/**",
+            " * $2.",
+            " */",
             "@Injectable({ providedIn: 'root' })",
             "export class ${1:${TM_FILENAME_BASE}}Service {",
             "",
@@ -18,5 +20,21 @@
             ""
         ],
         "description": "[Moodle] Create a Service Singleton"
+    },
+    "[Moodle] Singleton": {
+        "scope": "typescript",
+        "prefix": "masingleton",
+        "body": [
+            "/**",
+            " * Singleton$2.",
+            " */",
+            "export class ${1:${TM_FILENAME_BASE}} {",
+            "",
+            "    $0",
+            "",
+            "}",
+            ""
+        ],
+        "description": "[Moodle] Create a Pure Singleton"
     }
 }

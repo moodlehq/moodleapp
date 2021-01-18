@@ -17,7 +17,6 @@ import { Injectable } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-delegate';
 import { makeSingleton } from '@singletons';
@@ -42,20 +41,10 @@ export class CoreMainMenuProvider {
      *
      * @return Promise resolved with the current main menu handlers.
      */
-    getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
-        const deferred = CoreUtils.instance.promiseDefer<CoreMainMenuHandlerToDisplay[]>();
-
-        const subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
-            subscription?.unsubscribe();
-
-            // Remove the handlers that should only appear in the More menu.
-            handlers = handlers.filter(handler => !handler.onlyInMore);
-
-            // Return main handlers.
-            deferred.resolve(handlers.slice(0, this.getNumItems()));
-        });
-
-        return deferred.promise;
+    getCurrentMainMenuHandlers(): CoreMainMenuHandlerToDisplay[] {
+        return CoreMainMenuDelegate.instance.getHandlers()
+            .filter(handler => !handler.onlyInMore)
+            .slice(0, this.getNumItems());
     }
 
     /**

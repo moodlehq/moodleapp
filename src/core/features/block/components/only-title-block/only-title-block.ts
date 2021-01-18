@@ -14,7 +14,7 @@
 
 import { OnInit, Component } from '@angular/core';
 import { CoreBlockBaseComponent } from '../../classes/base-block-component';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component to render blocks with only a title and link.
@@ -24,7 +24,7 @@ import { CoreNavHelper } from '@services/nav-helper';
     templateUrl: 'core-block-only-title.html',
     styleUrls: ['only-title-block.scss'],
 })
-export class CoreBlockOnlyTitleComponent  extends CoreBlockBaseComponent implements OnInit {
+export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implements OnInit {
 
     constructor() {
         super('CoreBlockOnlyTitleComponent');
@@ -43,7 +43,8 @@ export class CoreBlockOnlyTitleComponent  extends CoreBlockBaseComponent impleme
      * Go to the block page.
      */
     gotoBlock(): void {
-        CoreNavHelper.instance.goInSite(this.link!, this.linkParams!, undefined, true);
+        // @todo test that this is working properly.
+        CoreNavigator.instance.navigateToSitePath(this.link!, { params: this.linkParams });
     }
 
 }

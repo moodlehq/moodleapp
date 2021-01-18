@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreTag } from '../tag';
 
@@ -47,7 +47,7 @@ export class CoreTagSearchLinkHandlerService extends CoreContentLinksHandlerBase
                     query: params.query || '',
                 };
 
-                CoreNavHelper.instance.goInSite('/tag/search', pageParams, siteId);
+                CoreNavigator.instance.navigateToSitePath('/tag/search', { params: pageParams, siteId });
             },
         }];
     }

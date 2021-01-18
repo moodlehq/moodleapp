@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that shows instructions to change the password.
@@ -63,7 +63,7 @@ export class CoreLoginChangePasswordPage {
      * Login the user.
      */
     login(): void {
-        CoreNavHelper.instance.goToSiteInitialPage();
+        CoreNavigator.instance.navigateToSiteHome();
         this.changingPassword = false;
     }
 

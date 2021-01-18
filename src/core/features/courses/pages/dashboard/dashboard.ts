@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 
 import { CoreCourses, CoreCoursesProvider } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -22,6 +22,7 @@ import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockComponent } from '@features/block/components/block/block';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the dashboard page.
@@ -35,7 +36,6 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 
-
     searchEnabled = false;
     downloadEnabled = false;
     downloadCourseEnabled = false;
@@ -46,10 +46,6 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     loaded = false;
 
     protected updateSiteObserver?: CoreEventObserver;
-
-    constructor(
-        protected navCtrl: NavController,
-    ) { }
 
     /**
      * Initialize the component.
@@ -171,8 +167,8 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     /**
      * Go to search courses.
      */
-    openSearch(): void {
-        this.navCtrl.navigateForward(['/main/home/courses/search']);
+    async openSearch(): Promise<void> {
+        CoreNavigator.instance.navigateToSitePath('/courses/search');
     }
 
     /**

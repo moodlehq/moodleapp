@@ -19,7 +19,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
 // @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
@@ -107,7 +107,7 @@ export class AddonBadgesUserBadgesPage implements OnInit {
         const params = { courseId: this.courseId, userId: this.userId, badgeHash: badgeHash };
         // @todo use splitview.
         // this.splitviewCtrl.push('AddonBadgesIssuedBadgePage', params);
-        CoreNavHelper.instance.goInSite('/badges/issue', params);
+        CoreNavigator.instance.navigateToSitePath('/badges/issue', { params });
     }
 
 }
