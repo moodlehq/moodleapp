@@ -13,17 +13,105 @@
 // limitations under the License.
 
 import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, ROUTES, Routes } from '@angular/router';
+import {
+    PreloadAllModules,
+    RouterModule,
+    Route,
+    Routes,
+    ROUTES,
+    UrlMatcher,
+    UrlMatchResult,
+    UrlSegment,
+    UrlSegmentGroup,
+} from '@angular/router';
 
 import { CoreArray } from '@singletons/array';
 
+/**
+ * Build app routes.
+ *
+ * @param injector Module injector.
+ * @return App routes.
+ */
 function buildAppRoutes(injector: Injector): Routes {
     return CoreArray.flatten(injector.get<Routes[]>(APP_ROUTES, []));
+}
+
+/**
+ * Create a url matcher that will only match when a given condition is met.
+ *
+ * @param condition Condition.
+ * @return Conditional url matcher.
+ */
+function buildConditionalUrlMatcher(condition: () => boolean): UrlMatcher {
+    // Create a matcher based on Angular's default matcher.
+    // see https://github.com/angular/angular/blob/10.0.x/packages/router/src/shared.ts#L127
+    return (segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult | null => {
+        // If the condition isn't met, the route will never match.
+        if (!condition()) {
+            return null;
+        }
+
+        const { path, pathMatch } = route as { path: string; pathMatch?: 'full' };
+        const posParams: Record<string, UrlSegment> = {};
+        const isFullMatch = pathMatch === 'full';
+        const parts = path.split('/');
+
+        // The actual URL is shorter than the config, no match.
+        if (parts.length > segments.length) {
+            return null;
+        }
+
+        // The config is longer than the actual URL but we are looking for a full match, return null.
+        if (isFullMatch && (segmentGroup.hasChildren() || parts.length < segments.length)) {
+            return null;
+        }
+
+        // Check each config part against the actual URL.
+        for (let index = 0; index < parts.length; index++) {
+            const part = parts[index];
+            const segment = segments[index];
+            const isParameter = part.startsWith(':');
+
+            if (isParameter) {
+                posParams[part.substring(1)] = segment;
+            } else if (part !== segment.path) {
+                // The actual URL part does not match the config, no match.
+                return null;
+            }
+        }
+
+        // Return consumed segments with params.
+        return { consumed: segments.slice(0, parts.length), posParams };
+    };
 }
 
 export type ModuleRoutes = { children: Routes; siblings: Routes };
 export type ModuleRoutesConfig = Routes | Partial<ModuleRoutes>;
 
+/**
+ * Configure routes so that they'll only match when a given condition is met.
+ *
+ * @param routes Routes.
+ * @param condition Condition to determine if routes should be activated or not.
+ * @return Conditional routes.
+ */
+export function conditionalRoutes(routes: Routes, condition: () => boolean): Routes {
+    const conditionalMatcher = buildConditionalUrlMatcher(condition);
+
+    return routes.map(route => ({
+        ...route,
+        matcher: conditionalMatcher,
+    }));
+}
+
+/**
+ * Resolve module routes.
+ *
+ * @param injector Module injector.
+ * @param token Routes injection token.
+ * @return Routes.
+ */
 export function resolveModuleRoutes(injector: Injector, token: InjectionToken<ModuleRoutesConfig[]>): ModuleRoutes {
     const configs = injector.get(token, []);
     const routes = configs.map(config => {

@@ -19,6 +19,7 @@ import { mock, mockSingleton } from '@/testing/utils';
 import { CoreNavigatorService } from '@services/navigator';
 import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
 import { CoreUrlUtils, CoreUrlUtilsProvider } from '@services/utils/url';
+import { CoreTextUtils, CoreTextUtilsProvider } from '@services/utils/text';
 import { NavController, Router } from '@singletons';
 import { ActivatedRoute, RouterState } from '@angular/router';
 import { CoreSites } from '@services/sites';
@@ -43,6 +44,7 @@ describe('CoreNavigator', () => {
         mockSingleton(Router, router);
         mockSingleton(CoreUtils, new CoreUtilsProvider(mock()));
         mockSingleton(CoreUrlUtils, new CoreUrlUtilsProvider());
+        mockSingleton(CoreTextUtils, new CoreTextUtilsProvider(mock()));
         mockSingleton(CoreSites, { getCurrentSiteId: () => 42, isLoggedIn: () => true });
         mockSingleton(CoreMainMenu, { isMainMenuTab: path => Promise.resolve(currentMainMenuHandlers.includes(path)) });
     });
@@ -73,9 +75,9 @@ describe('CoreNavigator', () => {
 
     it('navigates to relative paths', async () => {
         // Arrange.
-        const mainOutletRoute = { routeConfig: { path: 'foo' }, children: [] };
-        const primaryOutletRoute = { routeConfig: { path: 'main' }, children: [mainOutletRoute] };
-        const rootRoute = { children: [primaryOutletRoute] };
+        const mainOutletRoute = { routeConfig: { path: 'foo' } };
+        const primaryOutletRoute = { routeConfig: { path: 'main' }, firstChild: mainOutletRoute };
+        const rootRoute = { firstChild: primaryOutletRoute };
 
         router.routerState = { root: rootRoute as unknown as ActivatedRoute };
 

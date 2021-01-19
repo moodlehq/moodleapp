@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
-const routes: Routes = [
-    {
-        path: 'about',
-        loadChildren: () => import('./pages/about/about.module').then(m => m.CoreSettingsAboutPageModule),
-    },
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreScreen } from '@services/screen';
+
+import { CoreSettingsIndexPage } from './pages/index';
+
+const sectionRoutes: Routes = [
     {
         path: 'general',
         loadChildren: () => import('./pages/general/general.module').then(m => m.CoreSettingsGeneralPageModule),
@@ -34,13 +39,43 @@ const routes: Routes = [
             import('./pages/synchronization/synchronization.module')
                 .then(m => m.CoreSettingsSynchronizationPageModule),
     },
+    // @todo sharedfiles
     {
-        path: '',
-        loadChildren: () => import('./pages/app/app.module').then(m => m.CoreSettingsAppPageModule),
+        path: 'about',
+        loadChildren: () => import('./pages/about/about.module').then(m => m.CoreSettingsAboutPageModule),
     },
 ];
 
+const routes: Routes = [
+    {
+        matcher: segments => {
+            const matches = CoreScreen.instance.isMobile ? segments.length === 0 : true;
+
+            return matches ? { consumed: [] } : null;
+        },
+        component: CoreSettingsIndexPage,
+        children: conditionalRoutes([
+            {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'general',
+            },
+            ...sectionRoutes,
+        ], () => !CoreScreen.instance.isMobile),
+    },
+    ...conditionalRoutes(sectionRoutes, () => CoreScreen.instance.isMobile),
+];
+
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule,
+        CoreSharedModule,
+    ],
+    declarations: [
+        CoreSettingsIndexPage,
+    ],
 })
 export class CoreSettingsLazyModule {}

@@ -78,4 +78,19 @@ describe('CoreTextUtilsProvider', () => {
         expect(CoreApp.instance.isAndroid).toHaveBeenCalled();
     });
 
+    it('matches glob patterns', () => {
+        expect(textUtils.matchesGlob('/foo/bar', '/foo/bar')).toBe(true);
+        expect(textUtils.matchesGlob('/foo/bar', '/foo/bar/')).toBe(false);
+        expect(textUtils.matchesGlob('/foo', '/foo/*')).toBe(false);
+        expect(textUtils.matchesGlob('/foo/', '/foo/*')).toBe(true);
+        expect(textUtils.matchesGlob('/foo/bar', '/foo/*')).toBe(true);
+        expect(textUtils.matchesGlob('/foo/bar/', '/foo/*')).toBe(false);
+        expect(textUtils.matchesGlob('/foo/bar/baz', '/foo/*')).toBe(false);
+        expect(textUtils.matchesGlob('/foo/bar/baz', '/foo/**')).toBe(true);
+        expect(textUtils.matchesGlob('/foo/bar/baz/', '/foo/**')).toBe(true);
+        expect(textUtils.matchesGlob('/foo/bar/baz', '**/baz')).toBe(true);
+        expect(textUtils.matchesGlob('/foo/bar/baz', '**/bar')).toBe(false);
+        expect(textUtils.matchesGlob('/foo/bar/baz', '/foo/ba?/ba?')).toBe(true);
+    });
+
 });

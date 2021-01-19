@@ -25,6 +25,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
+import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
@@ -55,11 +56,11 @@ export class CoreNavigatorService {
     /**
      * Check whether the active route is using the given path.
      *
-     * @param path Path.
+     * @param path Path, can be a glob pattern.
      * @return Whether the active route is using the given path.
      */
     isCurrent(path: string): boolean {
-        return this.getCurrentPath() === path;
+        return CoreTextUtils.instance.matchesGlob(this.getCurrentPath(), path);
     }
 
     /**
@@ -195,7 +196,7 @@ export class CoreNavigatorService {
     protected getCurrentRoute(route?: ActivatedRoute): ActivatedRoute {
         route = route ?? Router.instance.routerState.root;
 
-        return route.children.length === 0 ? route : this.getCurrentRoute(route.children[0]);
+        return route.firstChild ? this.getCurrentRoute(route.firstChild) : route;
     }
 
     /**
