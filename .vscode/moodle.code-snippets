@@ -1,4 +1,42 @@
 {
+    "[Moodle] Component class": {
+        "scope": "typescript",
+        "prefix": "macomponent",
+        "body": [
+            "import { Component } from '@angular/core';",
+            "",
+            "@Component({",
+            "    selector: '$2${TM_FILENAME_BASE}',",
+            "    templateUrl: '${TM_FILENAME_BASE}.html',",
+            "})",
+            "export class ${1:${TM_FILENAME_BASE}}Component {",
+            "",
+            "    $0",
+            "",
+            "}",
+            ""
+        ],
+        "description": "[Moodle] Create a Component class"
+    },
+    "[Moodle] Page class": {
+        "scope": "typescript",
+        "prefix": "mapage",
+        "body": [
+            "import { Component } from '@angular/core';",
+            "",
+            "@Component({",
+            "    selector: 'page-$2${TM_FILENAME_BASE}',",
+            "    templateUrl: '${TM_FILENAME_BASE}.html',",
+            "})",
+            "export class ${1:${TM_FILENAME_BASE}}Page {",
+            "",
+            "    $0",
+            "",
+            "}",
+            ""
+        ],
+        "description": "[Moodle] Create a Page class"
+    },
     "[Moodle] Service Singleton": {
         "scope": "typescript",
         "prefix": "massingleton",
