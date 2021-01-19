@@ -72,11 +72,16 @@ export class CoreWSProvider {
      *
      * @param method The WebService method to be called.
      * @param siteUrl Complete site url to perform the call.
-     * @param ajaxData Arguments to pass to the method.
+     * @param data Arguments to pass to the method.
      * @param preSets Extra settings and information.
      * @return Deferred promise resolved with the response data in success and rejected with the error if it fails.
      */
-    protected addToRetryQueue<T = unknown>(method: string, siteUrl: string, data: unknown, preSets: CoreWSPreSets): Promise<T> {
+    protected addToRetryQueue<T = unknown>(
+        method: string,
+        siteUrl: string,
+        data: Record<string, unknown>,
+        preSets: CoreWSPreSets,
+    ): Promise<T> {
         const call = {
             method,
             siteUrl,
@@ -98,7 +103,7 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information.
      * @return Promise resolved with the response data in success and rejected if it fails.
      */
-    call<T = unknown>(method: string, data: unknown, preSets: CoreWSPreSets): Promise<T> {
+    call<T = unknown>(method: string, data: Record<string, unknown>, preSets: CoreWSPreSets): Promise<T> {
         if (!preSets) {
             throw new CoreError(Translate.instance.instant('core.unexpectederror'));
         } else if (!CoreApp.instance.isOnline()) {
@@ -493,7 +498,7 @@ export class CoreWSProvider {
     }
 
     /**
-     * Perform the post call and save the promise while waiting to be resolved.
+     * Perform the post call. It can be split into several requests.
      *
      * @param method The WebService method to be called.
      * @param siteUrl Complete site url to perform the call.
@@ -501,7 +506,12 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information.
      * @return Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
-    performPost<T = unknown>(method: string, siteUrl: string, ajaxData: unknown, preSets: CoreWSPreSets): Promise<T> {
+    async performPost<T = unknown>(
+        method: string,
+        siteUrl: string,
+        ajaxData: Record<string, unknown>,
+        preSets: CoreWSPreSets,
+    ): Promise<T> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const options: any = {};
 
@@ -509,6 +519,71 @@ export class CoreWSProvider {
         if (preSets.typeExpected == 'number' || preSets.typeExpected == 'boolean' || preSets.typeExpected == 'string') {
             options.responseType = 'text';
         }
+
+        if (!preSets.splitRequest || !ajaxData[preSets.splitRequest.param]) {
+            return this.performSinglePost(method, siteUrl, ajaxData, preSets, options);
+        }
+
+        // Split the request into several requests if needed.
+        const promises: Promise<T>[] = [];
+        const splitParam = <unknown[]> ajaxData[preSets.splitRequest.param];
+
+        for (let i = 0; i < splitParam.length; i += preSets.splitRequest.maxLength) {
+            // Limit the array sent.
+            const limitedData = Object.assign({}, ajaxData);
+            limitedData[preSets.splitRequest.param] = splitParam.slice(i, i + preSets.splitRequest.maxLength);
+
+            promises.push(this.performSinglePost(method, siteUrl, limitedData, preSets, options));
+        }
+
+        const results = await Promise.all(promises);
+
+        // Combine the results.
+        const firstResult = results.shift();
+
+        if (preSets.splitRequest.combineCallback) {
+            return <T> results.reduce(preSets.splitRequest.combineCallback, firstResult);
+        }
+
+        return <T> results.reduce((previous: T, current: T) => this.combineObjectsArrays<T>(previous, current), firstResult);
+    }
+
+    /**
+     * Combine the arrays of two objects, adding them to the first object.
+     *
+     * @param object1 First object.
+     * @param object2 Second object.
+     * @return First object with items added.
+     */
+    protected combineObjectsArrays<T>(object1: T, object2: T): T {
+        for (const name in object2) {
+            const value = object2[name];
+
+            if (Array.isArray(value)) {
+                (object1 as Record<string, unknown>)[name] = (object1[name] as typeof value).concat(value);
+            }
+        }
+
+        return object1;
+    }
+
+    /**
+     * Perform a single post request.
+     *
+     * @param method The WebService method to be called.
+     * @param siteUrl Complete site url to perform the call.
+     * @param ajaxData Arguments to pass to the method.
+     * @param preSets Extra settings and information.
+     * @param options Request options.
+     * @return Promise resolved with the response data in success and rejected with CoreWSError if it fails.
+     */
+    protected performSinglePost<T>(
+        method: string,
+        siteUrl: string,
+        ajaxData: Record<string, unknown>,
+        preSets: CoreWSPreSets,
+        options: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    ): Promise<T> {
 
         // We add the method name to the URL purely to help with debugging.
         // This duplicates what is in the ajaxData, but that does no harm.
@@ -1089,6 +1164,32 @@ export type CoreWSPreSets = {
      * Defaults to false. Clean multibyte Unicode chars from data.
      */
     cleanUnicode?: boolean;
+
+    /**
+     * Whether to split a request if it has too many parameters. Sending too many parameters to the site
+     * can cause the request to fail (see PHP's max_input_vars).
+     */
+    splitRequest?: CoreWSPreSetsSplitRequest;
+};
+
+/**
+ * Options to split a request.
+ */
+export type CoreWSPreSetsSplitRequest = {
+    /**
+     * Name of the parameter used to split the request if too big. Must be an array parameter.
+     */
+    param: string;
+
+    /**
+     * Max number of entries sent per request.
+     */
+    maxLength: number;
+
+    /**
+     * Callback to combine the results. If not supplied, arrays in the result will be concatenated.
+     */
+    combineCallback?: (previousValue: unknown, currentValue: unknown, currentIndex: number, array: unknown[]) => unknown;
 };
 
 /**
@@ -1188,7 +1289,7 @@ type AngularHttpRequestOptions = Omit<HttpRequestOptions, 'data'|'params'> & {
 type RetryCall = {
     method: string;
     siteUrl: string;
-    data: unknown;
+    data: Record<string, unknown>;
     preSets: CoreWSPreSets;
     deferred: PromiseDefer<unknown>;
 };

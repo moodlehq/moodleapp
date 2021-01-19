@@ -26,6 +26,7 @@ import {
     CoreWSAjaxPreSets,
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
+    CoreWSPreSetsSplitRequest,
 } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -516,6 +517,7 @@ export class CoreSite {
             cleanUnicode: this.cleanUnicode,
             typeExpected: preSets.typeExpected,
             responseExpected: preSets.responseExpected,
+            splitRequest: preSets.splitRequest,
         };
 
         if (wsPreSets.cleanUnicode && CoreTextUtils.instance.hasUnicodeData(data)) {
@@ -2052,6 +2054,12 @@ export type CoreSiteWSPreSets = {
      * Component id. Optionally included when 'component' is set.
      */
     componentId?: number;
+
+    /**
+     * Whether to split a request if it has too many parameters. Sending too many parameters to the site
+     * can cause the request to fail (see PHP's max_input_vars).
+     */
+    splitRequest?: CoreWSPreSetsSplitRequest;
 };
 
 /**
