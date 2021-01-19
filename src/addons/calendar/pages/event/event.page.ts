@@ -40,7 +40,7 @@ import { CoreGroups } from '@services/groups';
 // @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { Network, NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonCalendarReminderDBRecord } from '../../services/database/calendar';
 import { ActivatedRoute } from '@angular/router';
@@ -422,8 +422,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      */
     openEdit(): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
-        // const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/edit', { eventId: this.eventId });
+        // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        CoreNavigator.instance.navigateToSitePath('/calendar/edit', { params: { eventId: this.eventId } });
     }
 
     /**

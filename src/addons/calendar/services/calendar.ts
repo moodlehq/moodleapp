@@ -36,7 +36,7 @@ import { ApplicationInit, makeSingleton, Translate, Platform } from '@singletons
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { AddonCalendarMainMenuHandlerService } from './handlers/mainmenu';
 import { SafeUrl } from '@angular/platform-browser';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -350,7 +350,10 @@ export class AddonCalendarProvider {
                     const site = await CoreSites.instance.getSite(notification.siteId);
                     const pageName = this.getMainCalendarPagePath(site);
 
-                    CoreNavHelper.instance.openInSiteMainMenu(pageName, { eventId: notification.eventId }, notification.siteId);
+                    CoreNavigator.instance.navigateToSitePath(
+                        pageName,
+                        { params: { eventId: notification.eventId }, siteId: notification.siteId },
+                    );
                 }
             },
         );

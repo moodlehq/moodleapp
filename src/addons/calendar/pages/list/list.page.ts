@@ -39,7 +39,7 @@ import { Subscription } from 'rxjs';
 import { Network, NgZone } from '@singletons';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of calendar events.
@@ -643,14 +643,14 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             params.courseId = this.filter.courseId;
         }
 
-        // CoreNavHelper.instance.push('/calendar/edit', params, this.splitviewCtrl);
+        CoreNavigator.instance.navigateToSitePath('/calendar/edit', { params }); // @todo , this.splitviewCtrl);
     }
 
     /**
      * Open calendar events settings.
      */
     openSettings(): void {
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/settings');
+        CoreNavigator.instance.navigateToSitePath('/calendar/settings');
     }
 
     /**

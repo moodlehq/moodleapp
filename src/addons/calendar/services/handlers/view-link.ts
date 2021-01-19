@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCalendar } from '../calendar';
 
@@ -54,7 +54,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.month = date.getMonth() + 1;
 
                     // @todo: Add checkMenu param.
-                    CoreNavHelper.instance.goInSite('/calendar/index', stateParams, siteId, true);
+                    CoreNavigator.instance.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
 
                 } else if (params.view == 'day') {
                     // Daily view, open the page.
@@ -68,7 +68,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.month = date.getMonth() + 1;
                     stateParams.day = date.getDate();
 
-                    CoreNavHelper.instance.goInSite('/calendar/day', stateParams, siteId);
+                    CoreNavigator.instance.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
 
                 } else if (params.view == 'upcoming' || params.view == 'upcoming_mini') {
                     // Upcoming view, open the calendar tab.
@@ -78,7 +78,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
 
                     // @todo: Add checkMenu param.
-                    CoreNavHelper.instance.goInSite('/calendar/index', stateParams, siteId, true);
+                    CoreNavigator.instance.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
 
                 }
             },

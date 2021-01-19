@@ -30,7 +30,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { CoreLocalNotifications } from '@services/local-notifications';
 
 
@@ -312,9 +312,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             // It's an offline event, go to the edit page.
             this.openEdit(eventId);
         } else {
-            CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/event', {
-                id: eventId,
-            });
+            CoreNavigator.instance.navigateToSitePath('/calendar/event', { params: { id: eventId } });
         }
     }
 
@@ -334,7 +332,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             params[key] = this.filter[key];
         });
 
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/day', params);
+        CoreNavigator.instance.navigateToSitePath('/calendar/day', { params });
     }
 
     /**
@@ -369,14 +367,14 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             params.courseId = this.filter.courseId;
         }
 
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/edit', params);
+        CoreNavigator.instance.navigateToSitePath('/calendar/edit', { params });
     }
 
     /**
      * Open calendar events settings.
      */
     openSettings(): void {
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/settings');
+        CoreNavigator.instance.navigateToSitePath('/calendar/settings');
     }
 
     /**

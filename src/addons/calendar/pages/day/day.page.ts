@@ -36,7 +36,7 @@ import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
 import moment from 'moment';
 import { Network, NgZone } from '@singletons';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
@@ -529,9 +529,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             // It's an offline event, go to the edit page.
             this.openEdit(eventId);
         } else {
-            CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/event', {
-                id: eventId,
-            });
+            CoreNavigator.instance.navigateToSitePath('/calendar/event', { params: { id: eventId } });
         }
     }
 
@@ -571,7 +569,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             params.courseId = this.filter.courseId;
         }
 
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/calendar/edit', params);
+        CoreNavigator.instance.navigateToSitePath('/calendar/edit', { params });
     }
 
     /**
