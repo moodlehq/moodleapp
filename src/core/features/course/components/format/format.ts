@@ -37,15 +37,13 @@ import {
     CoreCourseModuleData,
     CoreCourseProvider,
 } from '@features/course/services/course';
-// import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseSectionFormatted, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreEventObserver, CoreEvents, CoreEventSectionStatusChangedData, CoreEventSelectCourseTabData } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
-// import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
-import { CoreCourseSectionFormatted } from '@features/course/services/course-helper';
-import { CoreCourseModuleStatusChangedData } from '../module/module';
 import { ModalController } from '@singletons';
 import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
 
@@ -62,13 +60,14 @@ import { CoreCourseSectionSelectorComponent } from '../section-selector/section-
 @Component({
     selector: 'core-course-format',
     templateUrl: 'core-course-format.html',
+    styleUrls: ['format.scss'],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     static readonly LOAD_MORE_ACTIVITIES = 20; // How many activities should load each time showMoreActivities is called.
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSectionFormatted[]; // List of course sections.
+    @Input() sections?: CoreCourseSectionWithStatus[]; // List of course sections. The status will be calculated in this component.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
@@ -125,26 +124,26 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     return;
                 }
 
-                // @todo Check if the affected section is being downloaded.
+                // Check if the affected section is being downloaded.
                 // If so, we don't update section status because it'll already be updated when the download finishes.
-                // const downloadId = CoreCourseHelper.instance.getSectionDownloadId({ id: data.sectionId });
-                // if (prefetchDelegate.isBeingDownloaded(downloadId)) {
-                //     return;
-                // }
+                const downloadId = CoreCourseHelper.instance.getSectionDownloadId({ id: data.sectionId });
+                if (CoreCourseModulePrefetchDelegate.instance.isBeingDownloaded(downloadId)) {
+                    return;
+                }
 
                 // Get the affected section.
-                // const section = this.sections.find(section => section.id == data.sectionId);
-                // if (!section) {
-                //     return;
-                // }
+                const section = this.sections.find(section => section.id == data.sectionId);
+                if (!section) {
+                    return;
+                }
 
                 // Recalculate the status.
-                // await CoreCourseHelper.instance.calculateSectionStatus(section, this.course.id, false);
+                await CoreCourseHelper.instance.calculateSectionStatus(section, this.course.id, false);
 
-                // if (section.isDownloading && !prefetchDelegate.isBeingDownloaded(downloadId)) {
-                //     // All the modules are now downloading, set a download all promise.
-                //     this.prefetch(section);
-                // }
+                if (section.isDownloading && !CoreCourseModulePrefetchDelegate.instance.isBeingDownloaded(downloadId)) {
+                    // All the modules are now downloading, set a download all promise.
+                    this.prefetch(section);
+                }
             },
             CoreSites.instance.getCurrentSiteId(),
         );
@@ -392,7 +391,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.canLoadMore = false;
             this.showSectionId = 0;
             this.showMoreActivities();
-            // @todo CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
+            if (this.downloadEnabled) {
+                this.calculateSectionsStatus(false);
+            }
         }
 
         if (this.moduleId && typeof previousValue == 'undefined') {
@@ -427,11 +428,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param refresh If refresh or not.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected calculateSectionsStatus(refresh?: boolean): void {
-        // @todo CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, refresh).catch(() => {
-        //     // Ignore errors (shouldn't happen).
-        // });
+        if (!this.sections || !this.course) {
+            return;
+        }
+
+        CoreUtils.instance.ignoreErrors(CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, refresh));
     }
 
     /**
@@ -440,38 +442,42 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param section Section to download.
      * @param refresh Refresh clicked (not used).
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    prefetch(section: CoreCourseSectionFormatted): void {
-        // section.isCalculating = true;
-        // @todo CoreCourseHelper.instance.confirmDownloadSizeSection(this.course.id, section, this.sections).then(() => {
-        //     this.prefetchSection(section, true);
-        // }, (error) => {
-        //     // User cancelled or there was an error calculating the size.
-        //     if (error) {
-        //         CoreDomUtils.instance.showErrorModal(error);
-        //     }
-        // }).finally(() => {
-        //     section.isCalculating = false;
-        // });
+    async prefetch(section: CoreCourseSectionWithStatus): Promise<void> {
+        section.isCalculating = true;
+
+        try {
+            await CoreCourseHelper.instance.confirmDownloadSizeSection(this.course!.id, section, this.sections);
+
+            await this.prefetchSection(section, true);
+        } catch (error) {
+            // User cancelled or there was an error calculating the size.
+            if (error) {
+                CoreDomUtils.instance.showErrorModal(error);
+            }
+        } finally {
+            section.isCalculating = false;
+        }
     }
 
     /**
-     * Prefetch a section. @todo
+     * Prefetch a section.
      *
      * @param section The section to download.
      * @param manual Whether the prefetch was started manually or it was automatically started because all modules
      *               are being downloaded.
      */
-    // protected prefetchSection(section: Section, manual?: boolean): void {
-    //     CoreCourseHelper.instance.prefetchSection(section, this.course.id, this.sections).catch((error) => {
-    //         // Don't show error message if it's an automatic download.
-    //         if (!manual) {
-    //             return;
-    //         }
+    protected async prefetchSection(section: CoreCourseSectionWithStatus, manual?: boolean): Promise<void> {
+        try {
+            await CoreCourseHelper.instance.prefetchSection(section, this.course!.id, this.sections);
+        } catch (error) {
+            // Don't show error message if it's an automatic download.
+            if (!manual) {
+                return;
+            }
 
-    //         CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
-    //     });
-    // }
+            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
+        }
+    }
 
     /**
      * Refresh the data.
@@ -550,14 +556,16 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             component.callComponentFunction('ionViewDidEnter');
         });
 
-        // @todo if (this.downloadEnabled) {
-        //     // The download status of a section might have been changed from within a module page.
-        //     if (this.selectedSection && this.selectedSection.id !== CoreCourseProvider.ALL_SECTIONS_ID) {
-        //         CoreCourseHelper.instance.calculateSectionStatus(this.selectedSection, this.course.id, false, false);
-        //     } else {
-        //         CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
-        //     }
-        // }
+        if (!this.downloadEnabled || !this.course || !this.sections) {
+            return;
+        }
+
+        // The download status of a section might have been changed from within a module page.
+        if (this.selectedSection && this.selectedSection.id !== CoreCourseProvider.ALL_SECTIONS_ID) {
+            CoreCourseHelper.instance.calculateSectionStatus(this.selectedSection, this.course.id, false, false);
+        } else {
+            CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
+        }
     }
 
     /**
@@ -609,12 +617,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Recalculate the download status of each section, in response to a module being downloaded.
-     *
-     * @param eventData
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onModuleStatusChange(eventData: CoreCourseModuleStatusChangedData): void {
-        // @todo CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
+    onModuleStatusChange(): void {
+        if (!this.downloadEnabled || !this.sections || !this.course) {
+            return;
+        }
+
+        CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
     }
 
 }

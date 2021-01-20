@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// @todo test delegate
 
 import { Injectable } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler, CoreDelegateToDisplay } from '@classes/delegate';
@@ -178,7 +177,7 @@ export interface CoreCourseOptionsHandlerToDisplay extends CoreDelegateToDisplay
      * @param course The course.
      * @return Promise resolved when done.
      */
-    prefetch?(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void>;
+    prefetch?(course: CoreCourseAnyCourseData): Promise<void>;
 }
 
 /**
@@ -206,7 +205,7 @@ export interface CoreCourseOptionsMenuHandlerToDisplay {
      * @param course The course.
      * @return Promise resolved when done.
      */
-    prefetch?(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void>;
+    prefetch?(course: CoreCourseAnyCourseData): Promise<void>;
 }
 
 /**

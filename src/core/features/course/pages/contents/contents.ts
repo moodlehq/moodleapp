@@ -28,20 +28,19 @@ import {
 } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseSectionFormatted, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
-// import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import {
     CoreCourseOptionsDelegate,
     CoreCourseOptionsMenuHandlerToDisplay,
 } from '@features/course/services/course-options-delegate';
 // import { CoreCourseSyncProvider } from '../../providers/sync';
-// import { CoreCourseFormatComponent } from '../../components/format/format';
+import { CoreCourseFormatComponent } from '../../components/format/format';
 import {
     CoreEvents,
     CoreEventObserver,
     CoreEventCourseStatusChanged,
     CoreEventCompletionModuleViewedData,
 } from '@singletons/events';
-import { Translate } from '@singletons';
 import { CoreNavHelper } from '@services/nav-helper';
 
 /**
@@ -54,7 +53,7 @@ import { CoreNavHelper } from '@services/nav-helper';
 export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
-    // @ViewChild(CoreCourseFormatComponent) formatComponent: CoreCourseFormatComponent;
+    @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;
 
     course!: CoreCourseAnyCourseData;
     sections?: CoreCourseSectionFormatted[];
@@ -244,9 +243,9 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
         if (refresh) {
             // Invalidate the recently downloaded module list. To ensure info can be prefetched.
-            // const modules = CoreCourse.instance.getSectionsModules(sections);
+            const modules = CoreCourse.instance.getSectionsModules(sections);
 
-            // @todo await this.prefetchDelegate.invalidateModules(modules, this.course.id);
+            await CoreCourseModulePrefetchDelegate.instance.invalidateModules(modules, this.course.id);
         }
 
         let completionStatus: Record<string, CoreCourseCompletionActivityStatus> = {};
@@ -279,14 +278,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
         if (CoreCourseFormatDelegate.instance.canViewAllSections(this.course)) {
             // Add a fake first section (all sections).
-            this.sections.unshift({
-                id: CoreCourseProvider.ALL_SECTIONS_ID,
-                name: Translate.instance.instant('core.course.allsections'),
-                hasContent: true,
-                summary: '',
-                summaryformat: 1,
-                modules: [],
-            });
+            this.sections.unshift(CoreCourseHelper.instance.createAllSectionsSection());
         }
 
         // Get whether to show the refresher now that we have sections.
@@ -345,8 +337,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         } finally {
             // Do not call doRefresh on the format component if the refresher is defined in the format component
             // to prevent an inifinite loop.
-            if (this.displayRefresher) {
-                // @todo await CoreUtils.instance.ignoreErrors(this.formatComponent.doRefresh(refresher));
+            if (this.displayRefresher && this.formatComponent) {
+                await CoreUtils.instance.ignoreErrors(this.formatComponent.doRefresh(refresher));
             }
 
             refresher?.detail.complete();
@@ -384,7 +376,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         promises.push(CoreCourseFormatDelegate.instance.invalidateData(this.course, this.sections || []));
 
         if (this.sections) {
-            // @todo promises.push(this.prefetchDelegate.invalidateCourseUpdates(this.course.id));
+            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateCourseUpdates(this.course.id));
         }
 
         await Promise.all(promises);
@@ -408,7 +400,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         try {
             await this.loadData(true, sync);
 
-            // @todo await this.formatComponent.doRefresh(undefined, undefined, true);
+            await this.formatComponent?.doRefresh(undefined, undefined, true);
         } finally {
             this.dataLoaded = true;
 
@@ -431,15 +423,15 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     /**
      * Prefetch the whole course.
      */
-    prefetchCourse(): void {
+    async prefetchCourse(): Promise<void> {
         try {
-            // @todo await CoreCourseHelper.instance.confirmAndPrefetchCourse(
-            //     this.prefetchCourseData,
-            //     this.course,
-            //     this.sections,
-            //     this.courseHandlers,
-            //     this.courseMenuHandlers,
-            // );
+            await CoreCourseHelper.instance.confirmAndPrefetchCourse(
+                this.prefetchCourseData,
+                this.course,
+                this.sections,
+                undefined,
+                this.courseMenuHandlers,
+            );
         } catch (error) {
             if (this.isDestroyed) {
                 return;
@@ -497,14 +489,14 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        // @todo this.formatComponent?.ionViewDidEnter();
+        this.formatComponent?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        // @todo this.formatComponent?.ionViewDidLeave();
+        this.formatComponent?.ionViewDidLeave();
     }
 
 }

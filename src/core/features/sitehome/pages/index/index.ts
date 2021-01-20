@@ -26,6 +26,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 
 /**
  * Page that displays site home index.
@@ -59,7 +60,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
         protected navCtrl: NavController,
-        // @todo private prefetchDelegate: CoreCourseModulePrefetchDelegate,
     ) {}
 
     /**
@@ -86,8 +86,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         const module = navParams['module'];
         if (module) {
-            // @todo const modParams = navParams.get('modParams');
-            // CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
+            const modParams = navParams['modParams'];
+            CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
         }
 
         this.loadContent().finally(() => {
@@ -174,7 +174,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         if (this.section && this.section.modules) {
             // Invalidate modules prefetch data.
-            //  @todo promises.push(this.prefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
+            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
         if (this.courseBlocksComponent) {

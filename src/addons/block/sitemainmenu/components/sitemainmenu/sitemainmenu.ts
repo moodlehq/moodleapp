@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreCourse, CoreCourseSection } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreSiteHome, FrontPageItemNames } from '@features/sitehome/services/sitehome';
-// @todo import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 
 /**
@@ -63,7 +63,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
 
         if (this.mainMenuBlock && this.mainMenuBlock.modules) {
             // Invalidate modules prefetch data.
-            // @todo promises.push(this.prefetchDelegate.invalidateModules(this.mainMenuBlock.modules, this.siteHomeId));
+            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateModules(this.mainMenuBlock.modules, this.siteHomeId));
         }
 
         await Promise.all(promises);

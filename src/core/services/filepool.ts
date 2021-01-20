@@ -2763,13 +2763,7 @@ export class CoreFilepoolProvider {
      * @param url File online URL.
      * @param size File size.
      * @return Promise resolved if should download before open, rejected otherwise.
-     * @description
-     * Convenience function to check if a file should be downloaded before opening it.
-     *
-     * The default behaviour in the app is to download first and then open the local file in the following cases:
-     *     - The file is small (less than DOWNLOAD_THRESHOLD).
-     *     - The file cannot be streamed.
-     * If the file is big and can be streamed, the promise returned by this function will be rejected.
+     * @ddeprecated since 3.9.5. Please use shouldDownloadFileBeforeOpen instead.
      */
     async shouldDownloadBeforeOpen(url: string, size: number): Promise<void> {
         if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
@@ -2782,6 +2776,32 @@ export class CoreFilepoolProvider {
         if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
             throw new CoreError('File is audio or video.');
         }
+    }
+
+    /**
+     * Convenience function to check if a file should be downloaded before opening it.
+     *
+     * @param url File online URL.
+     * @param size File size.
+     * @return Promise resolved with boolean: whether file should be downloaded before opening it.
+     * @description
+     * Convenience function to check if a file should be downloaded before opening it.
+     *
+     * The default behaviour in the app is to download first and then open the local file in the following cases:
+     *     - The file is small (less than DOWNLOAD_THRESHOLD).
+     *     - The file cannot be streamed.
+     * If the file is big and can be streamed, the promise returned by this function will be rejected.
+     */
+    async shouldDownloadFileBeforeOpen(url: string, size: number): Promise<boolean> {
+        if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
+            // The file is small, download it.
+            return true;
+        }
+
+        const mimetype = await CoreUtils.instance.getMimeTypeFromUrl(url);
+
+        // If the file is streaming (audio or video), return false.
+        return mimetype.indexOf('video') == -1 && mimetype.indexOf('audio') == -1;
     }
 
     /**

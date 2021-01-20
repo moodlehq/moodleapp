@@ -109,7 +109,6 @@ export class CoreCourseProvider {
      *
      * @param courseId Course ID.
      * @param completion Completion status of the module.
-     * @todo Add completion type.
      */
     checkModuleCompletion(courseId: number, completion: CoreCourseModuleCompletionDataFormatted): void {
         if (completion && completion.tracking === 2 && completion.state === 0) {
@@ -830,7 +829,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when loaded.
      */
     async loadModuleContents(
-        module: CoreCourseModuleData & CoreCourseModuleBasicInfo,
+        module: CoreCourseModuleData,
         courseId?: number,
         sectionId?: number,
         preferCache?: boolean,
@@ -1412,14 +1411,13 @@ export type CoreCourseModuleContentFile = {
     filename: string; // Filename.
     filepath: string; // Filepath.
     filesize: number; // Filesize.
-    fileurl?: string; // Downloadable file url.
-    url?: string; // @deprecated. Use fileurl instead.
+    fileurl: string; // Downloadable file url.
     content?: string; // Raw content, will be used when type is content.
     timecreated: number; // Time created.
     timemodified: number; // Time modified.
     sortorder: number; // Content sort order.
     mimetype?: string; // File mime type.
-    isexternalfile?: boolean; // Whether is an external file.
+    isexternalfile?: number; // Whether is an external file.
     repositorytype?: string; // The repository type for external files.
     userid: number; // User who added this content to moodle.
     author: string; // Content owner.

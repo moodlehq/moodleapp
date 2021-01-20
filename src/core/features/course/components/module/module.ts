@@ -14,13 +14,20 @@
 
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 
-// import { CoreSites } from '@services/sites';
-// import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseModuleDataFormatted, CoreCourseSectionFormatted } from '@features/course/services/course-helper';
+import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
+import {
+    CoreCourseHelper,
+    CoreCourseModuleDataFormatted,
+    CoreCourseSectionFormatted,
+} from '@features/course/services/course-helper';
 import { CoreCourse, CoreCourseModuleCompletionData } from '@features/course/services/course';
 import { CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
-// import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from '../../providers/module-prefetch-delegate';
+import {
+    CoreCourseModulePrefetchDelegate,
+    CoreCourseModulePrefetchHandler,
+} from '@features/course/services/module-prefetch-delegate';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -32,6 +39,7 @@ import { CoreCourseModuleHandlerButton } from '@features/course/services/module-
 @Component({
     selector: 'core-course-module',
     templateUrl: 'core-course-module.html',
+    styleUrls: ['module.scss'],
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
@@ -51,7 +59,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.spinner = true; // Show spinner while calculating the status.
 
         // Get current status to decide which icon should be shown.
-        // @todo this.prefetchDelegate.getModuleStatus(this.module, this.courseId).then(this.showStatus.bind(this));
+        this.calculateAndShowStatus();
     };
 
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
@@ -63,8 +71,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     modNameTranslated = '';
 
-    // protected prefetchHandler: CoreCourseModulePrefetchHandler;
-    // protected statusObserver?: CoreEventObserver;
+    protected prefetchHandler?: CoreCourseModulePrefetchHandler;
+    protected statusObserver?: CoreEventObserver;
     protected statusCalculated = false;
     protected isDestroyed = false;
 
@@ -86,26 +94,27 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
 
         if (this.module.handlerData.showDownloadButton) {
-            // @todo Listen for changes on this module status, even if download isn't enabled.
-            // this.prefetchHandler = this.prefetchDelegate.getPrefetchHandlerFor(this.module);
-            // this.canCheckUpdates = this.prefetchDelegate.canCheckUpdates();
+            // Listen for changes on this module status, even if download isn't enabled.
+            this.prefetchHandler = CoreCourseModulePrefetchDelegate.instance.getPrefetchHandlerFor(this.module);
+            this.canCheckUpdates = CoreCourseModulePrefetchDelegate.instance.canCheckUpdates();
 
-            // this.statusObserver = this.eventsProvider.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
-            //     if (data.componentId === this.module.id && this.prefetchHandler &&
-            //             data.component === this.prefetchHandler.component) {
+            this.statusObserver = CoreEvents.on<CoreEventPackageStatusChanged>(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
+                if (!this.module || data.componentId != this.module.id || !this.prefetchHandler ||
+                        data.component != this.prefetchHandler.component) {
+                    return;
+                }
 
-            //         // Call determineModuleStatus to get the right status to display.
-            //         const status = this.prefetchDelegate.determineModuleStatus(this.module, data.status);
+                // Call determineModuleStatus to get the right status to display.
+                const status = CoreCourseModulePrefetchDelegate.instance.determineModuleStatus(this.module, data.status);
 
-            //         if (this.downloadEnabled) {
-            //             // Download is enabled, show the status.
-            //             this.showStatus(status);
-            //         } else if (this.module.handlerData.updateStatus) {
-            //             // Download isn't enabled but the handler defines a updateStatus function, call it anyway.
-            //             this.module.handlerData.updateStatus(status);
-            //         }
-            //     }
-            // }, this.sitesProvider.getCurrentSiteId());
+                if (this.downloadEnabled) {
+                    // Download is enabled, show the status.
+                    this.showStatus(status);
+                } else if (this.module.handlerData?.updateStatus) {
+                    // Download isn't enabled but the handler defines a updateStatus function, call it anyway.
+                    this.module.handlerData.updateStatus(status);
+                }
+            }, CoreSites.instance.getCurrentSiteId());
         }
     }
 
@@ -138,36 +147,39 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * @todo Download the module.
+     * Download the module.
      *
      * @param refresh Whether it's refreshing.
+     * @return Promise resolved when done.
      */
-    // download(refresh: boolean): void {
-    //     if (!this.prefetchHandler) {
-    //         return;
-    //     }
+    async download(refresh: boolean): Promise<void> {
+        if (!this.prefetchHandler || !this.module) {
+            return;
+        }
 
-    //     // Show spinner since this operation might take a while.
-    //     this.spinner = true;
+        // Show spinner since this operation might take a while.
+        this.spinner = true;
 
-    //     // Get download size to ask for confirm if it's high.
-    //     this.prefetchHandler.getDownloadSize(this.module, this.courseId, true).then((size) => {
-    //         return this.courseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId, refresh);
-    //     }).then(() => {
-    //         const eventData = {
-    //             sectionId: this.section.id,
-    //             moduleId: this.module.id,
-    //             courseId: this.courseId
-    //         };
-    //         this.statusChanged.emit(eventData);
-    //     }).catch((error) => {
-    //         // Error, hide spinner.
-    //         this.spinner = false;
-    //         if (!this.isDestroyed) {
-    //             this.domUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-    //         }
-    //     });
-    // }
+        try {
+            // Get download size to ask for confirm if it's high.
+            const size = await this.prefetchHandler.getDownloadSize(this.module, this.courseId!, true);
+
+            await CoreCourseHelper.instance.prefetchModule(this.prefetchHandler, this.module, size, this.courseId!, refresh);
+
+            const eventData = {
+                sectionId: this.section?.id,
+                moduleId: this.module.id,
+                courseId: this.courseId!,
+            };
+            this.statusChanged.emit(eventData);
+        } catch (error) {
+            // Error, hide spinner.
+            this.spinner = false;
+            if (!this.isDestroyed) {
+                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+            }
+        }
+    }
 
     /**
      * Show download buttons according to module status.
@@ -183,6 +195,21 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.downloadStatus = status;
 
         this.module?.handlerData?.updateStatus?.(status);
+    }
+
+    /**
+     * Calculate and show module status.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async calculateAndShowStatus(): Promise<void> {
+        if (!this.module || !this.courseId) {
+            return;
+        }
+
+        const status = await CoreCourseModulePrefetchDelegate.instance.getModuleStatus(this.module, this.courseId);
+
+        this.showStatus(status);
     }
 
     /**

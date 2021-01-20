@@ -160,40 +160,39 @@ export class CoreFileHelperProvider {
                 onProgress({ calculating: true });
             }
 
-            try {
-                await CoreFilepool.instance.shouldDownloadBeforeOpen(fixedUrl, file.filesize || 0);
-            } catch (error) {
-                // Start the download if in wifi, but return the URL right away so the file is opened.
-                if (isWifi) {
-                    this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
-                }
-
-                if (!this.isStateDownloaded(state) || isOnline) {
-                    // Not downloaded or online, return the online URL.
+            const shouldDownloadFirst = await CoreFilepool.instance.shouldDownloadFileBeforeOpen(fixedUrl, file.filesize || 0);
+            if (shouldDownloadFirst) {
+                // Download the file first.
+                if (state == CoreConstants.DOWNLOADING) {
+                    // It's already downloading, stop.
                     return fixedUrl;
-                } else {
-                    // Outdated but offline, so we return the local URL.
-                    return CoreFilepool.instance.getUrlByUrl(
-                        siteId,
-                        fileUrl,
-                        component,
-                        componentId,
-                        timemodified,
-                        false,
-                        false,
-                        file,
-                    );
                 }
+
+                // Download and then return the local URL.
+                return this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
             }
 
-            // Download the file first.
-            if (state == CoreConstants.DOWNLOADING) {
-                // It's already downloading, stop.
+            // Start the download if in wifi, but return the URL right away so the file is opened.
+            if (isWifi) {
+                this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
+            }
+
+            if (!this.isStateDownloaded(state) || isOnline) {
+                // Not downloaded or online, return the online URL.
                 return fixedUrl;
+            } else {
+                // Outdated but offline, so we return the local URL.
+                return CoreFilepool.instance.getUrlByUrl(
+                    siteId,
+                    fileUrl,
+                    component,
+                    componentId,
+                    timemodified,
+                    false,
+                    false,
+                    file,
+                );
             }
-
-            // Download and then return the local URL.
-            return this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
         }
     }
 
