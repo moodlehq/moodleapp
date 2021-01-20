@@ -18,7 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { CoreCourseModuleCompletionDataFormatted } from '@features/course/services/course-helper';
+import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { Translate } from '@singletons';
 
 /**
@@ -37,10 +37,10 @@ import { Translate } from '@singletons';
 })
 export class CoreCourseModuleCompletionComponent implements OnChanges {
 
-    @Input() completion?: CoreCourseModuleCompletionDataFormatted; // The completion status.
+    @Input() completion?: CoreCourseModuleCompletionData; // The completion status.
     @Input() moduleId?: number; // The name of the module this completion affects.
     @Input() moduleName?: string; // The name of the module this completion affects.
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionDataFormatted>(); // Notify when completion changes.
+    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     completionImage?: string;
     completionDescription?: string;

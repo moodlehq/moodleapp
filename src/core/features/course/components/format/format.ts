@@ -33,11 +33,15 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
-    CoreCourseModuleCompletionData,
-    CoreCourseModuleData,
     CoreCourseProvider,
 } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseSectionFormatted, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import {
+    CoreCourseHelper,
+    CoreCourseModule,
+    CoreCourseModuleCompletionData,
+    CoreCourseSection,
+    CoreCourseSectionWithStatus,
+} from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreEventObserver, CoreEvents, CoreEventSectionStatusChangedData, CoreEventSelectCourseTabData } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
@@ -91,9 +95,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     displaySectionSelector?: boolean;
     displayBlocks?: boolean;
-    selectedSection?: CoreCourseSectionFormatted;
-    previousSection?: CoreCourseSectionFormatted;
-    nextSection?: CoreCourseSectionFormatted;
+    selectedSection?: CoreCourseSection;
+    previousSection?: CoreCourseSection;
+    nextSection?: CoreCourseSection;
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
@@ -154,7 +158,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 return;
             }
 
-            let section: CoreCourseSectionFormatted | undefined;
+            let section: CoreCourseSection | undefined;
 
             if (typeof data.sectionId != 'undefined' && data.sectionId != null && this.sections) {
                 section = this.sections.find((section) => section.id == data.sectionId);
@@ -280,7 +284,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param sections Sections to treat.
      * @return Promise resolved when done.
      */
-    protected async treatSections(sections: CoreCourseSectionFormatted[]): Promise<void> {
+    protected async treatSections(sections: CoreCourseSection[]): Promise<void> {
         const hasAllSections = sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
         this.hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
 
@@ -362,7 +366,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param newSection The new selected section.
      */
-    sectionChanged(newSection: CoreCourseSectionFormatted): void {
+    sectionChanged(newSection: CoreCourseSection): void {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
         this.data.section = this.selectedSection;
@@ -419,7 +423,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param section2 Second section.
      * @return Whether they're equal.
      */
-    compareSections(section1: CoreCourseSectionFormatted, section2: CoreCourseSectionFormatted): boolean {
+    compareSections(section1: CoreCourseSection, section2: CoreCourseSection): boolean {
         return section1 && section2 ? section1.id === section2.id : section1 === section2;
     }
 
@@ -583,7 +587,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param section The section to check.
      * @return Whether the section can be viewed.
      */
-    canViewSection(section: CoreCourseSectionFormatted): boolean {
+    canViewSection(section: CoreCourseSection): boolean {
         return section.uservisible !== false && !section.hiddenbynumsections &&
                 section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     }
@@ -601,7 +605,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-        const completionModules = (<CoreCourseModuleData[]> [])
+        const completionModules = (<CoreCourseModule[]> [])
             .concat(...this.sections!.map((section) => section.modules))
             .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
             .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0));

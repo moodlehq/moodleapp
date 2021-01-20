@@ -17,7 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonRefresher, NavController } from '@ionic/angular';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -40,7 +40,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent?: CoreBlockCourseBlocksComponent;
 
     dataLoaded = false;
-    section?: CoreCourseSection & {
+    section?: CoreCourseWSSection & {
         hasContent?: boolean;
     };
 

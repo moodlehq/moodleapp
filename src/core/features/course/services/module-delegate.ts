@@ -21,10 +21,11 @@ import { CoreSite } from '@classes/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseModuleData } from './course';
+import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSModule } from './course';
 import { CoreSites } from '@services/sites';
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { makeSingleton } from '@singletons';
+import { CoreCourseModule } from './course-helper';
 
 /**
  * Interface that all course module handlers must implement.
@@ -52,7 +53,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseModuleData | CoreCourseModuleBasicInfo,
+        module: CoreCourseWSModule | CoreCourseModuleBasicInfo,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -67,7 +68,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module The module object.
      * @return Promise resolved with component to use, undefined if not found.
      */
-    getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined>;
+    getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined>;
 
     /**
      * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
@@ -159,7 +160,7 @@ export interface CoreCourseModuleHandlerData {
      * @param options Options for the navigation.
      * @param params Params for the new page.
      */
-    action?(event: Event, module: CoreCourseModuleData, courseId: number, options?: NavigationOptions, params?: Params): void;
+    action?(event: Event, module: CoreCourseModule, courseId: number, options?: NavigationOptions, params?: Params): void;
 
     /**
      * Updates the status of the module.
@@ -229,7 +230,7 @@ export interface CoreCourseModuleHandlerButton {
      * @param module The module object.
      * @param courseId The course ID.
      */
-    action(event: Event, module: CoreCourseModuleData, courseId: number): void;
+    action(event: Event, module: CoreCourseModule, courseId: number): void;
 }
 
 /**
@@ -252,7 +253,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param module The module object.
      * @return Promise resolved with component to use, undefined if not found.
      */
-    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined> {
+    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined> {
         try {
             return await this.executeFunctionOnEnabled<Type<unknown>>(module.modname, 'getMainComponent', [course, module]);
         } catch (error) {
@@ -272,7 +273,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     getModuleDataFor(
         modname: string,
-        module: CoreCourseModuleData | CoreCourseModuleBasicInfo,
+        module: CoreCourseWSModule | CoreCourseModuleBasicInfo,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,

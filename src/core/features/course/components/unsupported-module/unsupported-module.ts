@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CoreCourse, CoreCourseModuleData } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**
@@ -27,7 +27,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 export class CoreCourseUnsupportedModuleComponent implements OnInit {
 
     @Input() courseId?: number; // The course to module belongs to.
-    @Input() module?: CoreCourseModuleData; // The module to render.
+    @Input() module?: CoreCourseWSModule; // The module to render.
 
     isDisabledInSite?: boolean;
     isSupportedByTheApp?: boolean;

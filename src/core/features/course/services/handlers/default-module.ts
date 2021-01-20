@@ -17,8 +17,10 @@ import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseModuleData } from '../course';
+import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSModule } from '../course';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
+import { CoreCourseModule } from '../course-helper';
+import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 
 /**
  * Default handler used when the module doesn't have a specific implementation.
@@ -47,7 +49,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseModuleData | CoreCourseModuleBasicInfo,
+        module: CoreCourseWSModule | CoreCourseModuleBasicInfo,
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -58,7 +60,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            action: (event: Event, module: CoreCourseModuleData, courseId: number, options?: NavigationOptions): void => {
+            action: (event: Event, module: CoreCourseModule, courseId: number, options?: NavigationOptions): void => {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -92,10 +94,8 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined> {
-        // We can't inject CoreCourseUnsupportedModuleComponent here due to circular dependencies.
-        // Don't return anything, by default it will use CoreCourseUnsupportedModuleComponent.
-        return;
+    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined> {
+        return CoreCourseUnsupportedModuleComponent;
     }
 
     /**

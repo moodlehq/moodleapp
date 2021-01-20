@@ -18,7 +18,8 @@ import { Params } from '@angular/router';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreNavHelper } from '@services/nav-helper';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourseSection } from '../course';
+import { CoreCourseWSSection } from '../course';
+import { CoreCourseSection } from '../course-helper';
 import { CoreCourseFormatHandler } from '../format-delegate';
 
 /**
@@ -108,7 +109,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @return Whether the refresher should be displayed.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    displayRefresher?(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): boolean {
+    displayRefresher?(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
         return true;
     }
 
@@ -157,7 +158,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @return Promise resolved when the data is invalidated.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<void> {
+    async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void> {
         await CoreCourses.instance.invalidateCoursesByField('id', course.id);
     }
 

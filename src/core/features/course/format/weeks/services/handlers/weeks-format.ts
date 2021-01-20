@@ -18,8 +18,9 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseFormatHandler } from '@features/course/services/format-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourseSection } from '@features/course/services/course';
+import { CoreCourseWSSection } from '@features/course/services/course';
 import { CoreConstants } from '@/core/constants';
+import { CoreCourseSection } from '@features/course/services/course-helper';
 
 /**
  * Handler to support weeks course format.
@@ -77,7 +78,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
      * @param startDate The course start date (in seconds).
      * @return An object with the start and end date of the section.
      */
-    protected getSectionDates(section: CoreCourseSection, startDate: number): { start: number; end: number } {
+    protected getSectionDates(section: CoreCourseWSSection, startDate: number): { start: number; end: number } {
         // Hack alert. We add 2 hours to avoid possible DST problems. (e.g. we go into daylight savings and the date changes).
         startDate = startDate + 7200;
 

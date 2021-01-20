@@ -20,7 +20,7 @@ import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreEventObserver, CoreEvents, CoreEventSelectCourseTabData } from '@singletons/events';
-import { CoreCourse, CoreCourseModuleData } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
@@ -84,7 +84,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Get params.
         this.course = this.route.snapshot.queryParams['course'];
         this.firstTabName = this.route.snapshot.queryParams['selectedTab'];
-        const module: CoreCourseModuleData | undefined = this.route.snapshot.queryParams['module'];
+        const module: CoreCourseWSModule | undefined = this.route.snapshot.queryParams['module'];
         const modParams: Params | undefined = this.route.snapshot.queryParams['modParams'];
 
         this.currentPagePath = CoreNavHelper.instance.getCurrentPage();

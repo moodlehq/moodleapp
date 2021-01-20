@@ -14,8 +14,8 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreCourse, CoreCourseSection } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreSiteHome, FrontPageItemNames } from '@features/sitehome/services/sitehome';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
@@ -77,8 +77,8 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     protected async fetchContent(): Promise<void> {
         const sections = await CoreCourse.instance.getSections(this.siteHomeId, false, true);
 
-        this.mainMenuBlock = sections.find((section) => section.section == 0);
-        if (!this.mainMenuBlock) {
+        const mainMenuBlock = sections.find((section) => section.section == 0);
+        if (!mainMenuBlock) {
             return;
         }
 
@@ -91,10 +91,17 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
         const items = config.frontpageloggedin.split(',');
         const hasNewsItem = items.find((item) => parseInt(item, 10) == FrontPageItemNames['NEWS_ITEMS']);
 
-        const hasContent = CoreCourseHelper.instance.sectionHasContent(this.mainMenuBlock);
-        CoreCourseHelper.instance.addHandlerDataForModules([this.mainMenuBlock], this.siteHomeId, undefined, undefined, true);
+        const result = await CoreCourseHelper.instance.addHandlerDataForModules(
+            [mainMenuBlock],
+            this.siteHomeId,
+            undefined,
+            undefined,
+            true,
+        );
 
-        if (!hasNewsItem || !hasContent) {
+        this.mainMenuBlock = result.sections[0];
+
+        if (!hasNewsItem || !this.mainMenuBlock.hasContent) {
             return;
         }
 

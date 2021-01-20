@@ -18,8 +18,8 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourseSection } from '@features/course/services/course';
 import { IonRefresher } from '@ionic/angular';
+import { CoreCourseModuleCompletionData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -33,12 +33,12 @@ import { IonRefresher } from '@ionic/angular';
 export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSection[]; // List of course sections.
+    @Input() sections?: CoreCourseSectionWithStatus[]; // List of course sections.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
+    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when any module completion changes.
 
     @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent;
 

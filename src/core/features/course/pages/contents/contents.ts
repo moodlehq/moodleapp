@@ -23,10 +23,14 @@ import { CoreCourses, CoreCourseAnyCourseData } from '@features/courses/services
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
-    CoreCourseModuleCompletionData,
     CoreCourseProvider,
 } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseSectionFormatted, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import {
+    CoreCourseHelper,
+    CoreCourseModuleCompletionData,
+    CoreCourseSection,
+    CorePrefetchStatusInfo,
+} from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import {
@@ -56,7 +60,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;
 
     course!: CoreCourseAnyCourseData;
-    sections?: CoreCourseSectionFormatted[];
+    sections?: CoreCourseSection[];
     sectionId?: number;
     sectionNumber?: number;
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];

@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CoreCourseSectionFormatted } from '@features/course/services/course-helper';
+import { CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreUtils } from '@services/utils/utils';
@@ -30,7 +30,7 @@ import { ModalController } from '@singletons';
 export class CoreCourseSectionSelectorComponent implements OnInit {
 
     @Input() sections?: SectionWithProgress[];
-    @Input() selected?: CoreCourseSectionFormatted;
+    @Input() selected?: CoreCourseSection;
     @Input() course?: CoreCourseAnyCourseData;
 
     stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
@@ -93,6 +93,6 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
 
 }
 
-type SectionWithProgress = CoreCourseSectionFormatted & {
+type SectionWithProgress = CoreCourseSection & {
     progress?: number;
 };

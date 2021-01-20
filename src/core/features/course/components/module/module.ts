@@ -19,10 +19,11 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import {
     CoreCourseHelper,
-    CoreCourseModuleDataFormatted,
-    CoreCourseSectionFormatted,
+    CoreCourseModule,
+    CoreCourseModuleCompletionData,
+    CoreCourseSection,
 } from '@features/course/services/course-helper';
-import { CoreCourse, CoreCourseModuleCompletionData } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
 import {
     CoreCourseModulePrefetchDelegate,
@@ -43,9 +44,9 @@ import {
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
-    @Input() module?: CoreCourseModuleDataFormatted; // The module to render.
+    @Input() module?: CoreCourseModule; // The module to render.
     @Input() courseId?: number; // The course the module belongs to.
-    @Input() section?: CoreCourseSectionFormatted; // The section the module belongs to.
+    @Input() section?: CoreCourseSection; // The section the module belongs to.
     // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('downloadEnabled') set enabled(value: boolean) {
         this.downloadEnabled = value;

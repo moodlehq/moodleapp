@@ -18,7 +18,8 @@ import { Params } from '@angular/router';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
-import { CoreCourseSection } from './course';
+import { CoreCourseWSSection } from './course';
+import { CoreCourseSection } from './course-helper';
 import { CoreCourseFormatDefaultHandler } from './handlers/default-format';
 
 /**
@@ -38,7 +39,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param sections List of sections.
      * @return Title.
      */
-    getCourseTitle?(course: CoreCourseAnyCourseData, sections?: CoreCourseSection[]): string;
+    getCourseTitle?(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string;
 
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
@@ -80,7 +81,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param sections List of course sections.
      * @return Whether the refresher should be displayed.
      */
-    displayRefresher?(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): boolean;
+    displayRefresher?(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean;
 
     /**
      * Given a list of sections, get the "current" section that should be displayed first. Defaults to first section.
@@ -158,7 +159,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param sections List of sections.
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateData?(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<void>;
+    invalidateData?(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void>;
 
     /**
      * Whether the view should be refreshed when completion changes. If your course format doesn't display
@@ -221,7 +222,7 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param sections List of course sections.
      * @return Whether the refresher should be displayed.
      */
-    displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): boolean {
+    displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
         return !!this.executeFunctionOnEnabled<boolean>(course.format || '', 'displayRefresher', [course, sections]);
     }
 
@@ -284,7 +285,7 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param sections List of sections.
      * @return Course title.
      */
-    getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseSection[]): string | undefined {
+    getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string | undefined {
         return this.executeFunctionOnEnabled(course.format || '', 'getCourseTitle', [course, sections]);
     }
 
@@ -346,7 +347,7 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param sections List of sections.
      * @return Promise resolved when the data is invalidated.
      */
-    async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<void> {
+    async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void> {
         await this.executeFunctionOnEnabled(course.format || '', 'invalidateData', [course, sections]);
     }
 

@@ -14,7 +14,7 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { CoreCourseSection } from '@features/course/services/course';
+import { CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseFormatHandler } from '@features/course/services/format-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -69,7 +69,7 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      * @param sections List of sections.
      * @return Title.
      */
-    getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseSection[]): string {
+    getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string {
         if (sections?.[0]?.modules?.[0]) {
             return sections[0].modules[0].name;
         }
@@ -113,7 +113,7 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      * @param sections List of course sections.
      * @return Whether the refresher should be displayed.
      */
-    displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): boolean {
+    displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
         if (sections?.[0]?.modules?.[0]) {
             return CoreCourseModuleDelegate.instance.displayRefresherInSingleActivity(sections[0].modules[0].modname);
         } else {

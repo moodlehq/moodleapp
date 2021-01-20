@@ -20,11 +20,11 @@ import { CoreSites } from '@services/sites';
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
-    CoreCourseModuleCompletionData,
+    CoreCourseModuleWSCompletionData,
     CoreCourseModuleContentFile,
-    CoreCourseModuleData,
+    CoreCourseWSModule,
     CoreCourseProvider,
-    CoreCourseSection,
+    CoreCourseWSSection,
 } from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -158,14 +158,14 @@ export class CoreCourseHelperProvider {
      * @return Whether the sections have content.
      */
     addHandlerDataForModules(
-        sections: CoreCourseSection[],
+        sections: CoreCourseWSSection[],
         courseId: number,
         completionStatus?: Record<string, CoreCourseCompletionActivityStatus>,
         courseName?: string,
         forCoursePage = false,
-    ): { hasContent: boolean; sections: CoreCourseSectionFormatted[] } {
+    ): { hasContent: boolean; sections: CoreCourseSection[] } {
 
-        const formattedSections: CoreCourseSectionFormatted[] = sections;
+        const formattedSections: CoreCourseSection[] = sections;
         let hasContent = false;
 
         formattedSections.forEach((section) => {
@@ -229,7 +229,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when the status is calculated.
      */
     async calculateSectionStatus(
-        section: CoreCourseSectionFormatted,
+        section: CoreCourseSection,
         courseId: number,
         refresh?: boolean,
         checkUpdates: boolean = true,
@@ -285,7 +285,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when the states are calculated.
      */
     async calculateSectionsStatus(
-        sections: CoreCourseSectionFormatted[],
+        sections: CoreCourseSection[],
         courseId: number,
         refresh?: boolean,
         checkUpdates: boolean = true,
@@ -346,7 +346,7 @@ export class CoreCourseHelperProvider {
     async confirmAndPrefetchCourse(
         data: CorePrefetchStatusInfo,
         course: CoreCourseAnyCourseData,
-        sections?: CoreCourseSection[],
+        sections?: CoreCourseWSSection[],
         courseHandlers?: CoreCourseOptionsHandlerToDisplay[],
         menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[],
     ): Promise<void> {
@@ -410,7 +410,7 @@ export class CoreCourseHelperProvider {
 
         const promises = courses.map((course) => {
             const subPromises: Promise<void>[] = [];
-            let sections: CoreCourseSection[];
+            let sections: CoreCourseWSSection[];
             let handlers: CoreCourseOptionsHandlerToDisplay[] = [];
             let menuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
             let success = true;
@@ -463,7 +463,7 @@ export class CoreCourseHelperProvider {
      * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
      */
-    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number, done?: () => void): Promise<void> {
+    async confirmAndRemoveFiles(module: CoreCourseWSModule, courseId: number, done?: () => void): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
 
         try {
@@ -496,8 +496,8 @@ export class CoreCourseHelperProvider {
      */
     async confirmDownloadSizeSection(
         courseId: number,
-        section?: CoreCourseSection,
-        sections?: CoreCourseSection[],
+        section?: CoreCourseWSSection,
+        sections?: CoreCourseWSSection[],
         alwaysConfirm?: boolean,
     ): Promise<void> {
         let hasEmbeddedFiles = false;
@@ -554,7 +554,7 @@ export class CoreCourseHelperProvider {
      */
     async contextMenuPrefetch(
         instance: ComponentWithContextMenu,
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         done?: () => void,
     ): Promise<void> {
@@ -585,7 +585,7 @@ export class CoreCourseHelperProvider {
      *
      * @return Created section.
      */
-    createAllSectionsSection(): CoreCourseSectionFormatted {
+    createAllSectionsSection(): CoreCourseSection {
         return {
             id: CoreCourseProvider.ALL_SECTIONS_ID,
             name: Translate.instance.instant('core.course.allsections'),
@@ -636,7 +636,7 @@ export class CoreCourseHelperProvider {
      * @return Resolved on success.
      */
     async downloadModuleAndOpenFile(
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         component?: string,
         componentId?: string | number,
@@ -720,7 +720,7 @@ export class CoreCourseHelperProvider {
     protected async openModuleFileInBrowser(
         fileUrl: string,
         site: CoreSite,
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         component?: string,
         componentId?: string | number,
@@ -769,7 +769,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     async downloadModuleWithMainFileIfNeeded(
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         component: string,
         componentId?: string | number,
@@ -840,7 +840,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     protected async downloadModuleWithMainFile(
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         fixedUrl: string,
         files: CoreCourseModuleContentFile[],
@@ -904,7 +904,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     async downloadModule(
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         component?: string,
         componentId?: string | number,
@@ -942,7 +942,7 @@ export class CoreCourseHelperProvider {
      */
     async fillContextMenu(
         instance: ComponentWithContextMenu,
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         invalidateCache?: boolean,
         component?: string,
@@ -1133,7 +1133,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async loadOfflineCompletion(courseId: number, sections: CoreCourseSectionFormatted[], siteId?: string): Promise<void> {
+    async loadOfflineCompletion(courseId: number, sections: CoreCourseSection[], siteId?: string): Promise<void> {
         const offlineCompletions = await CoreCourseOffline.instance.getCourseManualCompletions(courseId, siteId);
 
         if (!offlineCompletions || !offlineCompletions.length) {
@@ -1305,7 +1305,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved with the info.
      */
     async getModulePrefetchInfo(
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         courseId: number,
         invalidateCache?: boolean,
         component?: string,
@@ -1425,7 +1425,7 @@ export class CoreCourseHelperProvider {
      * @param modParams Params to pass to the module
      * @param True if module can be opened, false otherwise.
      */
-    openModule(module: CoreCourseModuleDataFormatted, courseId: number, sectionId?: number, modParams?: Params): boolean {
+    openModule(module: CoreCourseModule, courseId: number, sectionId?: number, modParams?: Params): boolean {
         if (!module.handlerData) {
             module.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
                 module.modname,
@@ -1457,7 +1457,7 @@ export class CoreCourseHelperProvider {
      */
     async prefetchCourse(
         course: CoreCourseAnyCourseData,
-        sections: CoreCourseSection[],
+        sections: CoreCourseWSSection[],
         courseHandlers: CoreCourseOptionsHandlerToDisplay[],
         courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[],
         siteId?: string,
@@ -1540,7 +1540,7 @@ export class CoreCourseHelperProvider {
      */
     async prefetchModule(
         handler: CoreCourseModulePrefetchHandler,
-        module: CoreCourseModuleData,
+        module: CoreCourseWSModule,
         size: CoreFileSizeSum,
         courseId: number,
         refresh?: boolean,
@@ -1717,7 +1717,7 @@ export class CoreCourseHelperProvider {
      * @param section Section to check.
      * @return Whether the section has content.
      */
-    sectionHasContent(section: CoreCourseSection): boolean {
+    sectionHasContent(section: CoreCourseWSSection): boolean {
         if (section.hiddenbynumsections) {
             return false;
         }
@@ -1778,7 +1778,7 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID the module belongs to.
      * @return Promise resolved when done.
      */
-    async removeModuleStoredData(module: CoreCourseModuleData, courseId: number): Promise<void> {
+    async removeModuleStoredData(module: CoreCourseWSModule, courseId: number): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourseModulePrefetchDelegate.instance.removeModuleFiles(module, courseId));
@@ -1799,15 +1799,15 @@ export class CoreCourseHelper extends makeSingleton(CoreCourseHelperProvider) {}
 /**
  * Section with calculated data.
  */
-export type CoreCourseSectionFormatted = Omit<CoreCourseSection, 'modules'> & {
+export type CoreCourseSection = Omit<CoreCourseWSSection, 'modules'> & {
     hasContent?: boolean;
-    modules: CoreCourseModuleDataFormatted[];
+    modules: CoreCourseModule[];
 };
 
 /**
  * Section with data about prefetch.
  */
-export type CoreCourseSectionWithStatus = CoreCourseSectionFormatted & {
+export type CoreCourseSectionWithStatus = CoreCourseSection & {
     downloadStatus?: string; // Section status.
     canCheckUpdates?: boolean; // Whether can check updates.
     isDownloading?: boolean; // Whether section is being downloaded.
@@ -1819,16 +1819,16 @@ export type CoreCourseSectionWithStatus = CoreCourseSectionFormatted & {
 /**
  * Module with calculated data.
  */
-export type CoreCourseModuleDataFormatted = Omit<CoreCourseModuleData, 'completiondata'> & {
+export type CoreCourseModule = Omit<CoreCourseWSModule, 'completiondata'> & {
     isStealth?: boolean;
     handlerData?: CoreCourseModuleHandlerData;
-    completiondata?: CoreCourseModuleCompletionDataFormatted;
+    completiondata?: CoreCourseModuleCompletionData;
 };
 
 /**
  * Module completion with calculated data.
  */
-export type CoreCourseModuleCompletionDataFormatted = CoreCourseModuleCompletionData & {
+export type CoreCourseModuleCompletionData = CoreCourseModuleWSCompletionData & {
     courseId?: number;
     courseName?: string;
     tracking?: number;
