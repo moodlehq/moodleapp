@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-import { NavParams, PopoverController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { PopoverController } from '@ionic/angular';
 import { CoreCourses } from '../../services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CorePrefetchStatusInfo } from '@features/course/services/course-helper';
@@ -27,18 +27,14 @@ import { CorePrefetchStatusInfo } from '@features/course/services/course-helper'
 })
 export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
 
-    course!: CoreEnrolledCourseDataWithExtraInfoAndOptions; // The course.
-    prefetch!: CorePrefetchStatusInfo; // The prefecth info.
+    @Input() course!: CoreEnrolledCourseDataWithExtraInfoAndOptions; // The course.
+    @Input() prefetch!: CorePrefetchStatusInfo; // The prefecth info.
 
     downloadCourseEnabled = false;
 
     constructor(
-        navParams: NavParams,
         protected popoverController: PopoverController,
-    ) {
-        this.course = navParams.get('course') || {};
-        this.prefetch = navParams.get('prefetch') || {};
-    }
+    ) { }
 
     /**
      * Component being initialized.

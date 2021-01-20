@@ -1,0 +1,20 @@
+<ion-list>
+    <ion-radio-group>
+        <ion-item *ngFor="let type of types" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+type]">
+            <ion-icon [name]="typeIcons[type]" slot="start"></ion-icon>
+            <ion-label>{{ 'addon.calendar.' + type + 'events' | translate}}</ion-label>
+            <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()" slot="end"></ion-toggle>
+        </ion-item>
+        <ion-item-divider *ngIf="filter.course || filter.category || filter.group">
+            <ion-label></ion-label>
+        </ion-item-divider>
+        <ion-list *ngIf="filter.course || filter.category || filter.group">
+            <ion-radio-group [(ngModel)]="courseId" (ionChange)="onChange()">
+                <ion-item class="ion-text-wrap" *ngFor="let course of courses">
+                    <ion-label><core-format-text [text]="course.fullname"></core-format-text></ion-label>
+                    <ion-radio slot="start" value="{{course.id}}"></ion-radio>
+                </ion-item>
+            </ion-radio-group>
+        </ion-list>
+    </ion-radio-group>
+</ion-list>

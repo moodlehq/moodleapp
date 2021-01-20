@@ -81,7 +81,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }, CoreSites.instance.getCurrentSiteId());
 
         this.currentSite = CoreSites.instance.getCurrentSite()!;
-        this.siteHomeId = this.currentSite?.getSiteHomeId() || 1;
+        this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
 
         const module = navParams['module'];
         if (module) {

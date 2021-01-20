@@ -106,7 +106,7 @@
                 <ion-label position="stacked">
                     <span core-mark-required="true">{{ 'core.login.password' | translate }}</span>
                 </ion-label>
-                <core-show-password [name]="'password'">
+                <core-show-password name="password">
                     <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
                         formControlName="password" [clearOnEdit]="false" autocomplete="new-password" required="true">
                     </ion-input>

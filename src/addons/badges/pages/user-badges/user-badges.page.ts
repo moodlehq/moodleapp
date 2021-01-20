@@ -51,7 +51,7 @@ export class AddonBadgesUserBadgesPage implements OnInit {
      */
     ngOnInit(): void {
 
-        this.courseId =  this.route.snapshot.queryParams['courseId'] || this.courseId; // Use 0 for site badges.
+        this.courseId =  parseInt(this.route.snapshot.queryParams['courseId'], 10) || this.courseId; // Use 0 for site badges.
         this.userId = this.route.snapshot.queryParams['userId'] ||
             CoreSites.instance.getCurrentSite()?.getUserId();
 

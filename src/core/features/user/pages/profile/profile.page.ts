@@ -81,8 +81,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.site = CoreSites.instance.getCurrentSite();
-        this.userId = this.route.snapshot.queryParams['userId'];
-        this.courseId = this.route.snapshot.queryParams['courseId'];
+        this.userId = parseInt(this.route.snapshot.queryParams['userId'], 10);
+        this.courseId = parseInt(this.route.snapshot.queryParams['courseId'], 10);
 
         if (!this.site) {
             return;

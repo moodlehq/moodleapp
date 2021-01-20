@@ -46,7 +46,7 @@ export class CoreCoursesAvailableCoursesPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async loadCourses(): Promise<void> {
-        const frontpageCourseId = CoreSites.instance.getCurrentSite()!.getSiteHomeId();
+        const frontpageCourseId = CoreSites.instance.getCurrentSiteHomeId();
 
         try {
             const courses = await CoreCourses.instance.getCoursesByField();

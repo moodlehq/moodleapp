@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSites } from '@services/sites';
 import { CoreCourses, CoreCourseSearchedData, CoreCourseUserAdminOrNavOptionIndexed, CoreEnrolledCourseData } from './courses';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 // import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
@@ -34,8 +34,30 @@ export class CoreCoursesHelperProvider {
      * @param courseId Course ID to get the category.
      * @return Promise resolved with the list of courses and the category.
      */
-    async getCoursesForPopover(): Promise<void> {
-        // @todo params and logic
+    async getCoursesForPopover(courseId?: number): Promise<{courses: Partial<CoreEnrolledCourseData>[]; categoryId?: number}> {
+        const courses: Partial<CoreEnrolledCourseData>[] = await CoreCourses.instance.getUserCourses(false);
+
+        // Add "All courses".
+        courses.unshift({
+            id: -1,
+            fullname: Translate.instance.instant('core.fulllistofcourses'),
+            categoryid: -1,
+        });
+
+        let categoryId: number | undefined;
+        if (courseId) {
+            // Search the course to get the category.
+            const course = courses.find((course) => course.id == courseId);
+
+            if (course) {
+                categoryId = course.categoryid;
+            }
+        }
+
+        return {
+            courses: courses,
+            categoryId: categoryId,
+        };
     }
 
     /**

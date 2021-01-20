@@ -25,7 +25,7 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreUserProfileLinkHandler } from './services/handlers/profile-link';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreUserSyncCronHandler } from './services/handlers/sync-cron';
-import { CoreUserTagAreaHandler } from './services/handlers/tag-area-handler';
+import { CoreUserTagAreaHandler } from './services/handlers/tag-area';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 
 const routes: Routes = [

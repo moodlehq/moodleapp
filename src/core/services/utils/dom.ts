@@ -1300,8 +1300,14 @@ export class CoreDomUtilsProvider {
      * @param options More options.
      * @return Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
-    showConfirm(message: string, header?: string, okText?: string, cancelText?: string, options: AlertOptions = {}): Promise<void> {
-        return new Promise<void>((resolve, reject): void => {
+    showConfirm<T>(
+        message: string,
+        header?: string,
+        okText?: string,
+        cancelText?: string,
+        options: AlertOptions = {},
+    ): Promise<T> {
+        return new Promise<T>((resolve, reject): void => {
             options.header = header;
             options.message = message;
 
@@ -1315,8 +1321,8 @@ export class CoreDomUtilsProvider {
                 },
                 {
                     text: okText || Translate.instance.instant('core.ok'),
-                    handler: () => {
-                        resolve();
+                    handler: (data: T) => {
+                        resolve(data);
                     },
                 },
             ];
