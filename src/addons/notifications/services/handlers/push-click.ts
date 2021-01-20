@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
@@ -23,6 +23,7 @@ import { CorePushNotificationsClickHandler } from '@features/pushnotifications/s
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
+import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -122,7 +123,10 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
         // No contexturl or cannot be handled by the app. Open the notifications page.
         await CoreUtils.instance.ignoreErrors(AddonNotifications.instance.invalidateNotificationsList(notification.site));
 
-        await CoreNavHelper.instance.goInSite('notifications', {}, notification.site);
+        await CoreNavigator.instance.navigateToSitePath(
+            AddonNotificationsMainMenuHandlerService.PAGE_NAME,
+            { siteId: notification.site },
+        );
     }
 
 }

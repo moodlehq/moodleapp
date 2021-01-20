@@ -26,7 +26,7 @@ import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-
 import { CoreApp } from '@services/app';
 import { CoreSiteInfo } from '@classes/site';
 import { Translate } from '@singletons';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of site settings pages.
@@ -183,7 +183,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     openHandler(page: string, params?: Params): void {
         this.selectedPage = page;
         // this.splitviewCtrl.push(page, params);
-        CoreNavHelper.instance.goInCurrentMainMenuTab(page, params);
+        CoreNavigator.instance.navigateToSitePath(page, { params });
     }
 
     /**

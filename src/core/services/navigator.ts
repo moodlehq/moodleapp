@@ -203,6 +203,7 @@ export class CoreNavigatorService {
      * If the path belongs to a visible tab, that tab will be selected.
      * If it doesn't, the current tab or the default tab will be used instead.
      *
+     * @param path Main menu path.
      * @param options Navigation options.
      * @return Whether navigation suceeded.
      */
@@ -213,22 +214,21 @@ export class CoreNavigatorService {
 
         path = path.replace(/^(\.|\/main)?\//, '');
 
-        // Open the path within the corresponding main tab.
         const pathRoot = /^[^/]+/.exec(path)?.[0] ?? '';
-        const isCurrentMainMenuHandler = await CoreUtils.instance.ignoreErrors(
-            CoreMainMenu.instance.isCurrentMainMenuHandler(pathRoot),
+        const currentMainMenuTab = this.getCurrentMainMenuTab();
+        const isMainMenuTab = await CoreUtils.instance.ignoreErrors(
+            CoreMainMenu.instance.isMainMenuTab(pathRoot),
             false,
         );
 
-        if (isCurrentMainMenuHandler) {
-            return this.navigate(`/main/${path}`, options);
+        // Open the path within the current main tab.
+        if (currentMainMenuTab && (!isMainMenuTab || pathRoot !== currentMainMenuTab)) {
+            return this.navigate(`/main/${currentMainMenuTab}/${path}`, options);
         }
 
-        // Open the path within the current main tab.
-        const currentMainMenuTab = this.getCurrentMainMenuTab();
-
-        if (currentMainMenuTab) {
-            return this.navigate(`/main/${currentMainMenuTab}/${path}`, options);
+        // Open the path within the corresponding main tab.
+        if (isMainMenuTab) {
+            return this.navigate(`/main/${path}`, options);
         }
 
         // Open the path within the default main tab.

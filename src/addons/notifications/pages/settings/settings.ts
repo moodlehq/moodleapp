@@ -37,7 +37,7 @@ import {
     AddonNotificationsPreferencesNotificationFormatted,
     AddonNotificationsPreferencesProcessorFormatted,
 } from '@addons/notifications/services/notifications-helper';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 // import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
@@ -201,7 +201,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
     openExtraPreferences(handlerData: AddonMessageOutputHandlerData): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
         // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        CoreNavHelper.instance.goInCurrentMainMenuTab(handlerData.page, handlerData.pageParams);
+        CoreNavigator.instance.navigateToSitePath(handlerData.page, { params: handlerData.pageParams });
     }
 
     /**

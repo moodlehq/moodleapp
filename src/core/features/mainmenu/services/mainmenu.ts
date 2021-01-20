@@ -29,6 +29,7 @@ export class CoreMainMenuProvider {
 
     static readonly NUM_MAIN_HANDLERS = 4;
     static readonly ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
+    static readonly MORE_PAGE_NAME = 'more';
 
     protected tablet = false;
 
@@ -192,10 +193,23 @@ export class CoreMainMenuProvider {
     }
 
     /**
+     * Check if a certain page is the root of a main menu tab.
+     *
+     * @param page Name of the page.
+     * @return Promise resolved with boolean: whether it's the root of a main menu tab.
+     */
+    async isMainMenuTab(pageName: string): Promise<boolean> {
+        if (pageName == CoreMainMenuProvider.MORE_PAGE_NAME) {
+            return true;
+        }
+
+        return this.isCurrentMainMenuHandler(pageName);
+    }
+
+    /**
      * Check if a certain page is the root of a main menu handler currently displayed.
      *
      * @param page Name of the page.
-     * @param pageParams Page params.
      * @return Promise resolved with boolean: whether it's the root of a main menu handler.
      */
     async isCurrentMainMenuHandler(pageName: string): Promise<boolean> {
