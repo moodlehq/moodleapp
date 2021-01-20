@@ -211,15 +211,15 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
                 oldTable = 'addon_calendar_events';
             }
 
-            await db.tableExists(oldTable);
-
-            // Move the records from the old table.
-            const events = await db.getAllRecords<AddonCalendarEventDBRecord>(oldTable);
-            const promises = events.map((event) => db.insertRecord(newTable, event));
-
-            await Promise.all(promises);
-
             try {
+                await db.tableExists(oldTable);
+
+                // Move the records from the old table.
+                const events = await db.getAllRecords<AddonCalendarEventDBRecord>(oldTable);
+                const promises = events.map((event) => db.insertRecord(newTable, event));
+
+                await Promise.all(promises);
+
                 db.dropTable(oldTable);
             } catch {
                 // Old table does not exist, ignore.
