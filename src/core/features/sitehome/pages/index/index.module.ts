@@ -18,8 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreComponentsModule } from '@components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@/core/features/block/components/components.module';
 
 import { CoreSiteHomeIndexPage } from '.';
@@ -37,8 +36,7 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreDirectivesModule,
-        CoreComponentsModule,
+        CoreSharedModule,
         CoreBlockComponentsModule,
     ],
     declarations: [

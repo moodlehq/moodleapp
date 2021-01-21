@@ -18,7 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginChangePasswordPage } from './change-password';
 
 const routes: Routes = [
@@ -34,7 +34,7 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreLoginChangePasswordPage,

@@ -15,8 +15,7 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { AddonBlockSiteMainMenuComponentsModule } from './components/components.module';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { AddonBlockSiteMainMenuHandler } from './services/block-handler';
@@ -24,8 +23,7 @@ import { AddonBlockSiteMainMenuHandler } from './services/block-handler';
 @NgModule({
     imports: [
         IonicModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
         AddonBlockSiteMainMenuComponentsModule,
         TranslateModule.forChild(),
     ],

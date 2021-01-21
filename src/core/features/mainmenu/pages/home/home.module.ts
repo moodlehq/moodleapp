@@ -19,8 +19,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { resolveModuleRoutes } from '@/app/app-routing.module';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 import { CoreMainMenuHomePage } from './home';
 import { MAIN_MENU_HOME_ROUTES } from './home-routing.module';
@@ -44,8 +43,7 @@ function buildRoutes(injector: Injector): Routes {
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },

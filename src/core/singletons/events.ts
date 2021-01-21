@@ -263,3 +263,11 @@ export type CoreEventFormActionData = CoreEventSiteData & {
     form: HTMLElement; // Form element.
     online?: boolean; // Whether the data was sent to server or not. Only when submitting.
 };
+
+
+/**
+ * Data passed to NOTIFICATION_SOUND_CHANGED event.
+ */
+export type CoreEventNotificationSoundChangedData = CoreEventSiteData & {
+    enabled: boolean;
+};

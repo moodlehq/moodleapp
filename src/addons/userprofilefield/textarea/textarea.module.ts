@@ -21,8 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AddonUserProfileFieldTextareaHandler } from './services/handlers/textarea';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { AddonUserProfileFieldTextareaComponent } from './component/textarea';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 @NgModule({
@@ -35,8 +34,7 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
         CoreEditorComponentsModule,
     ],
     providers: [

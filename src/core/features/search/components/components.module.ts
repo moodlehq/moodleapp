@@ -18,9 +18,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CoreComponentsModule } from '@components/components.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchBoxComponent } from './search-box/search-box';
 
 
@@ -33,8 +31,7 @@ import { CoreSearchBoxComponent } from './search-box/search-box';
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreDirectivesModule,
-        CoreComponentsModule,
+        CoreSharedModule,
     ],
     exports: [
         CoreSearchBoxComponent,

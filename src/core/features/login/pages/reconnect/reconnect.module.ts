@@ -19,9 +19,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginReconnectPage } from './reconnect';
 
 const routes: Routes = [
@@ -39,8 +37,7 @@ const routes: Routes = [
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreLoginReconnectPage,

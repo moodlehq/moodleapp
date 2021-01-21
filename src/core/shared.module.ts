@@ -18,7 +18,7 @@ import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
 
 @NgModule({
-    imports: [
+    exports: [
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,

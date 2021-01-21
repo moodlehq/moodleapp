@@ -19,9 +19,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { AddonCalendarComponentsModule } from '../../components/components.module';
 
 import { AddonCalendarEventPage } from './event.page';
@@ -40,9 +38,7 @@ const routes: Routes = [
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
         AddonCalendarComponentsModule,
     ],
     declarations: [

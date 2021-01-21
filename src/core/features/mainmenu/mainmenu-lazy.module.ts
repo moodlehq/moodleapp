@@ -15,17 +15,16 @@
 import { CommonModule } from '@angular/common';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 import { resolveModuleRoutes } from '@/app/app-routing.module';
 
 import { MAIN_MENU_ROUTES } from './mainmenu-routing.module';
 import { CoreMainMenuPage } from './pages/menu/menu';
 import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
+import { CoreMainMenuProvider } from './services/mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
     const routes = resolveModuleRoutes(injector, MAIN_MENU_ROUTES);
@@ -45,7 +44,7 @@ function buildRoutes(injector: Injector): Routes {
                     loadChildren: () => import('./pages/home/home.module').then(m => m.CoreMainMenuHomePageModule),
                 },
                 {
-                    path: 'more',
+                    path: CoreMainMenuProvider.MORE_PAGE_NAME,
                     loadChildren: () => import('./pages/more/more.module').then(m => m.CoreMainMenuMorePageModule),
                 },
                 ...routes.children,
@@ -60,9 +59,7 @@ function buildRoutes(injector: Injector): Routes {
         CommonModule,
         IonicModule,
         TranslateModule,
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreMainMenuPage,

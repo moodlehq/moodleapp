@@ -18,9 +18,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { AddonBlockTagsComponent } from './tags/tags';
 
 @NgModule({
@@ -32,8 +30,7 @@ import { AddonBlockTagsComponent } from './tags/tags';
         IonicModule,
         FormsModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     exports: [
         AddonBlockTagsComponent,

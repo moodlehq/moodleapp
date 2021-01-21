@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
-import { CoreMainMenu } from '../../services/mainmenu';
+import { CoreMainMenu, CoreMainMenuProvider } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
@@ -43,6 +43,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     showTabs = false;
     tabsPlacement = 'bottom';
     hidden = false;
+    morePageName = CoreMainMenuProvider.MORE_PAGE_NAME;
 
     protected subscription?: Subscription;
     protected redirectObs?: CoreEventObserver;
@@ -152,7 +153,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             if (this.loaded && this.mainTabs && !this.mainTabs.getSelected()) {
                 // Select the first tab.
                 setTimeout(() => {
-                    this.mainTabs!.select(this.tabs[0]?.page || 'more');
+                    this.mainTabs!.select(this.tabs[0]?.page || this.morePageName);
                 });
             }
         }

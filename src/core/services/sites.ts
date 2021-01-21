@@ -1016,7 +1016,7 @@ export class CoreSitesProvider {
      * @param site Site object or siteId to be compared. If not defined, use current site.
      * @return Whether site or siteId is the current one.
      */
-    isCurrentSite(site: string | CoreSite): boolean {
+    isCurrentSite(site?: string | CoreSite): boolean {
         if (!site || !this.currentSite) {
             return !!this.currentSite;
         }

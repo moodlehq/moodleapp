@@ -18,10 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSettingsDeviceInfoPage } from './deviceinfo';
 
 const routes: Routes = [
@@ -37,9 +34,7 @@ const routes: Routes = [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreSettingsDeviceInfoPage,

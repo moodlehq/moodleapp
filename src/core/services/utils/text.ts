@@ -14,13 +14,15 @@
 
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ModalOptions } from '@ionic/core';
 
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { CoreError } from '@classes/errors/error';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton, ModalController, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
+import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
 
 /**
  * Different type of errors the app can treat.
@@ -461,7 +463,7 @@ export class CoreTextUtilsProvider {
         contextLevel?: string,
         instanceId?: number,
         courseId?: number,
-    ): void {
+    ): Promise<void> {
         return this.viewText(title, text, {
             component,
             componentId,
@@ -947,13 +949,31 @@ export class CoreTextUtilsProvider {
      * Shows a text on a new page.
      *
      * @param title Title of the new state.
-     * @param text Content of the text to be expanded.
+     * @param content Content of the text to be expanded.
      * @param component Component to link the embedded files to.
      * @param options Options.
+     * @return Promise resolved when the modal is displayed.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    viewText(title: string, text: string, options?: CoreTextUtilsViewTextOptions): void {
-        // @todo
+    async viewText(title: string, content: string, options?: CoreTextUtilsViewTextOptions): Promise<void> {
+        if (!content.length) {
+            return;
+        }
+
+        options = options || {};
+
+        const modalOptions: ModalOptions = Object.assign(options.modalOptions || {}, {
+            component: CoreViewerTextComponent,
+        });
+        delete options.modalOptions;
+        modalOptions.componentProps = {
+            title,
+            content,
+            ...options,
+        };
+
+        const modal = await ModalController.instance.create(modalOptions);
+
+        await modal.present();
     }
 
 }
@@ -970,7 +990,7 @@ export type CoreTextUtilsViewTextOptions = {
     instanceId?: number; // The instance ID related to the context.
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     displayCopyButton?: boolean; // Whether to display a button to copy the text.
-    // modalOptions?: ModalOptions; // Modal options. @todo
+    modalOptions?: Partial<ModalOptions>; // Modal options.
 };
 
 export class CoreTextUtils extends makeSingleton(CoreTextUtilsProvider) {}

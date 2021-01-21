@@ -19,7 +19,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginForgottenPasswordPage } from './forgotten-password';
 
 const routes: Routes = [
@@ -37,7 +37,7 @@ const routes: Routes = [
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     declarations: [
         CoreLoginForgottenPasswordPage,

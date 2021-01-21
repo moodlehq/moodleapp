@@ -184,66 +184,23 @@ export class CoreSettingsHelperProvider {
      * @param name Name of the processor to get.
      * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
      * @return Processor.
-     * @todo typings
+     * @deprecated since 3.9.5. This function has been moved to AddonNotificationsHelperProvider.
      */
-    getProcessor(processors: any[], name: string, fallback: boolean = true): any {
-        if (!processors || !processors.length) {
-            return;
-        }
-
-        const processor = processors.find((processor) => processor.name == name);
-        if (processor) {
-            return processor;
-        }
-
-        // Processor not found, return first if requested.
-        if (fallback) {
-            return processors[0];
-        }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getProcessor(processors: unknown[], name: string, fallback: boolean = true): undefined {
+        return;
     }
 
     /**
      * Return the components and notifications that have a certain processor.
      *
-     * @param processor Name of the processor to filter.
+     * @param processorName Name of the processor to filter.
      * @param components Array of components.
      * @return Filtered components.
-     * @todo
+     * @deprecated since 3.9.5. This function has been moved to AddonNotificationsHelperProvider.
      */
-    getProcessorComponents(processor: string, components: any[]): any[] {
-        return processor? components : [];
-        /*
-        const result = [];
-
-        components.forEach((component) => {
-            // Create a copy of the component with an empty list of notifications.
-            const componentCopy = CoreUtils.instance.clone(component);
-            componentCopy.notifications = [];
-
-            component.notifications.forEach((notification) => {
-                let hasProcessor = false;
-                for (let i = 0; i < notification.processors.length; i++) {
-                    const proc = notification.processors[i];
-                    if (proc.name == processor) {
-                        hasProcessor = true;
-                        notification.currentProcessor = proc;
-                        break;
-                    }
-                }
-
-                if (hasProcessor) {
-                    // Add the notification.
-                    componentCopy.notifications.push(notification);
-                }
-            });
-
-            if (componentCopy.notifications.length) {
-                // At least 1 notification added, add the component to the result.
-                result.push(componentCopy);
-            }
-        });
-
-        return result;*/
+    getProcessorComponents(processorName: string, components: unknown[]): unknown[] {
+        return components;
     }
 
     /**

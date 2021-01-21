@@ -18,8 +18,7 @@ import { RouterModule, ROUTES } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuMorePage } from './more';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
@@ -28,8 +27,7 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
     ],
     providers: [
         {

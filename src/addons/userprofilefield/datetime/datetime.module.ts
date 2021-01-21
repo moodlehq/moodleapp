@@ -21,8 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AddonUserProfileFieldDatetimeHandler } from './services/handlers/datetime';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { AddonUserProfileFieldDatetimeComponent } from './component/datetime';
-import { CoreComponentsModule } from '@components/components.module';
-import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
     declarations: [
@@ -34,8 +33,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
-        CoreComponentsModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     providers: [
         {

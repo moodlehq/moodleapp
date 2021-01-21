@@ -17,8 +17,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreComponentsModule } from '@components/components.module';
-import { CoreDirectivesModule } from '@directives/directives.module';
+import { CoreSharedModule } from '@/core/shared.module';
 // import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
@@ -32,8 +31,7 @@ import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        CoreComponentsModule,
-        CoreDirectivesModule,
+        CoreSharedModule,
         // CoreCourseComponentsModule,
     ],
     exports: [
