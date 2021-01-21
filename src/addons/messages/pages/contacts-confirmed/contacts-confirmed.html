@@ -1,0 +1,30 @@
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded" class="core-loading-center">
+        <ion-list  class="ion-no-margin">
+            <ion-item class="ion-text-wrap" *ngFor="let contact of contacts" [title]="contact.fullname"
+                (click)="selectUser(contact.id)"
+                [class.core-split-item-selected]="contact.id == selectedUserId" class="addon-messages-conversation-item">
+                <core-user-avatar slot="start" core-user-avatar [user]="contact" [checkOnline]="contact.showonlinestatus"
+                    [linkProfile]="false"></core-user-avatar>
+                <ion-label>
+                    <h2>
+                        {{ contact.fullname }}
+                        <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end">
+                        </ion-icon>
+                    </h2>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+
+        <core-empty-box *ngIf="!contacts.length" icon="far-address-book"
+            [message]="'addon.messages.nocontactsgetstarted' | translate">
+        </core-empty-box>
+
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError"
+            position="bottom">
+        </core-infinite-loading>
+    </core-loading>
+</ion-content>

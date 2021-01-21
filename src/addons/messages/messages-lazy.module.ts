@@ -16,6 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonMessagesContactsRoutingModule } from './pages/contacts/messages-contacts-routing.module';
 import { AddonMessagesIndexRoutingModule } from './pages/index-35/messages-index-routing.module';
 
 function buildRoutes(injector: Injector): Routes {
@@ -33,6 +34,11 @@ function buildRoutes(injector: Injector): Routes {
             path: 'search',
             loadChildren: () => import('./pages/search/search.module')
                 .then(m => m.AddonMessagesSearchPageModule),
+        },
+        {
+            path: 'contacts', // 3.6 or greater.
+            loadChildren: () => import('./pages/contacts/contacts.module')
+                .then(m => m.AddonMessagesContactsPageModule),
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
@@ -53,8 +59,25 @@ const indexTabRoutes: Routes = [
     },
 ];
 
+// 3.6 or greater.
+const contactsTabRoutes: Routes = [
+    {
+        path: 'confirmed',
+        loadChildren: () => import('./pages/contacts-confirmed/contacts-confirmed.module')
+            .then(m => m.AddonMessagesContactsConfirmedPageModule),
+    },
+    {
+        path: 'requests',
+        loadChildren: () => import('./pages/contacts-requests/contacts-requests.module')
+            .then(m => m.AddonMessagesContactsRequestsPageModule),
+    },
+];
+
 @NgModule({
-    imports: [AddonMessagesIndexRoutingModule.forChild({ children: indexTabRoutes })],
+    imports: [
+        AddonMessagesIndexRoutingModule.forChild({ children: indexTabRoutes }),
+        AddonMessagesContactsRoutingModule.forChild({ children: contactsTabRoutes }),
+    ],
     exports: [RouterModule],
     providers: [
         {
