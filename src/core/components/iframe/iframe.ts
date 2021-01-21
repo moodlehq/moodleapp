@@ -16,7 +16,6 @@ import {
     Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { NavController } from '@ionic/angular';
 
 import { CoreFile } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -47,7 +46,6 @@ export class CoreIframeComponent implements OnChanges {
 
     constructor(
         protected sanitizer: DomSanitizer,
-        protected navCtrl: NavController,
     ) {
 
         this.logger = CoreLogger.getInstance('CoreIframe');
@@ -77,7 +75,8 @@ export class CoreIframeComponent implements OnChanges {
         this.loading = !this.src || !CoreUrlUtils.instance.isLocalFileUrl(this.src);
 
         // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        CoreIframeUtils.instance.treatFrame(iframe, false, this.navCtrl);
+        // CoreIframeUtils.instance.treatFrame(iframe, false, this.navCtrl);
+        CoreIframeUtils.instance.treatFrame(iframe, false);
 
         iframe.addEventListener('load', () => {
             this.loading = false;

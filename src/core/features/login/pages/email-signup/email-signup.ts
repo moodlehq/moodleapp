@@ -15,7 +15,7 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { NavController, IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent, IonRefresher } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -32,6 +32,7 @@ import {
     AuthEmailSignupSettings,
     CoreLoginHelper,
 } from '@features/login/services/login-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page to signup using email.
@@ -80,7 +81,6 @@ export class CoreLoginEmailSignupPage implements OnInit {
     namefieldsErrors?: Record<string, Record<string, string>>;
 
     constructor(
-        protected navCtrl: NavController,
         protected fb: FormBuilder,
         protected route: ActivatedRoute,
     ) {
@@ -238,7 +238,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                     { $a: Translate.instance.instant('core.login.auth_email') },
                 ),
             );
-            this.navCtrl.pop();
+            CoreNavigator.instance.back();
 
             return false;
         }
@@ -321,7 +321,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                 // Show alert and ho back.
                 const message = Translate.instance.instant('core.login.emailconfirmsent', { $a: params.email });
                 CoreDomUtils.instance.showAlert(Translate.instance.instant('core.success'), message);
-                this.navCtrl.pop();
+                CoreNavigator.instance.back();
             } else {
                 if (result.warnings && result.warnings.length) {
                     let error = result.warnings[0].message;

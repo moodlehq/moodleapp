@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { IonContent, IonRefresher, NavController } from '@ionic/angular';
+import { IonContent, IonRefresher } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -45,7 +44,7 @@ import {
     CoreEventCourseStatusChanged,
     CoreEventCompletionModuleViewedData,
 } from '@singletons/events';
-import { CoreNavHelper } from '@services/nav-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the contents of a course.
@@ -84,27 +83,23 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected navCtrl: NavController,
-    ) { }
-
     /**
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        // Get params.
-        this.course = this.route.snapshot.queryParams['course'];
-        this.sectionId = this.route.snapshot.queryParams['sectionId'];
-        this.sectionNumber = this.route.snapshot.queryParams['sectionNumber'];
-        this.moduleId = this.route.snapshot.queryParams['moduleId'];
+        const course = CoreNavigator.instance.getRouteParam<CoreCourseAnyCourseData>('course');
 
-        if (!this.course) {
+        if (!course) {
             CoreDomUtils.instance.showErrorModal('Missing required course parameter.');
-            this.navCtrl.pop();
+            CoreNavigator.instance.back();
 
             return;
         }
+
+        this.course = course;
+        this.sectionId = CoreNavigator.instance.getRouteParam('sectionId');
+        this.sectionNumber = CoreNavigator.instance.getRouteParam('sectionNumber');
+        this.moduleId = CoreNavigator.instance.getRouteParam('moduleId');
 
         this.displayEnableDownload = !CoreSites.instance.getCurrentSite()?.isOfflineDisabled() &&
             CoreCourseFormatDelegate.instance.displayEnableDownload(this.course);
@@ -466,7 +461,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * Open the course summary
      */
     openCourseSummary(): void {
-        CoreNavHelper.instance.goInCurrentMainMenuTab('/courses/preview', { course: this.course, avoidOpenCourse: true });
+        CoreNavigator.instance.navigateToSitePath('/courses/preview', { params: { course: this.course, avoidOpenCourse: true } });
     }
 
     /**
@@ -476,7 +471,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      */
     openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
         const params = Object.assign({ course: this.course }, item.data.pageParams);
-        CoreNavHelper.instance.goInCurrentMainMenuTab(item.data.page, params);
+        CoreNavigator.instance.navigateToSitePath(item.data.page, { params });
     }
 
     /**

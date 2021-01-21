@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * App settings about menu page.
@@ -32,7 +33,6 @@ export class CoreSettingsAboutPage {
     privacyPolicy: string;
 
     constructor(
-        protected router: Router,
         protected route: ActivatedRoute,
     ) {
         const currentSite = CoreSites.instance.getCurrentSite();
@@ -53,7 +53,7 @@ export class CoreSettingsAboutPage {
     openPage(page: string): void {
         // const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         // navCtrl.push(page);
-        this.router.navigate([page], { relativeTo: this.route });
+        CoreNavigator.instance.navigate(page);
     }
 
 }

@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -40,7 +39,6 @@ export class CoreLoginSitePolicyPage implements OnInit {
     protected currentSite?: CoreSite;
 
     constructor(
-        protected navCtrl: NavController,
         protected route: ActivatedRoute,
     ) {
     }
@@ -111,7 +109,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
     async cancel(): Promise<void> {
         await CoreUtils.instance.ignoreErrors(CoreSites.instance.logout());
 
-        await this.navCtrl.navigateRoot('/login/sites');
+        await CoreNavigator.instance.navigate('/login/sites', { reset: true });
     }
 
     /**

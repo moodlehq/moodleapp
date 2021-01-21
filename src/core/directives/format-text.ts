@@ -23,7 +23,7 @@ import {
     Optional,
     ViewContainerRef,
 } from '@angular/core';
-import { NavController, IonContent } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -84,7 +84,6 @@ export class CoreFormatTextDirective implements OnChanges {
 
     constructor(
         element: ElementRef,
-        @Optional() protected navCtrl: NavController,
         @Optional() protected content: IonContent,
         protected viewContainerRef: ViewContainerRef,
     ) {
@@ -471,7 +470,8 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected async treatHTMLElements(div: HTMLElement, site?: CoreSite): Promise<void> {
         const canTreatVimeo = site?.isVersionGreaterEqualThan(['3.3.4', '3.4']) || false;
-        const navCtrl = this.navCtrl; // @todo this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        // @todo this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        // @todo: Pass navCtrl to all treateFrame calls?
 
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));
@@ -521,7 +521,7 @@ export class CoreFormatTextDirective implements OnChanges {
         });
 
         iframes.forEach((iframe) => {
-            this.treatIframe(iframe, site, canTreatVimeo, navCtrl);
+            this.treatIframe(iframe, site, canTreatVimeo);
         });
 
         svgImages.forEach((image) => {
@@ -554,7 +554,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
         // Handle all kind of frames.
         frames.forEach((frame: HTMLFrameElement | HTMLObjectElement | HTMLEmbedElement) => {
-            CoreIframeUtils.instance.treatFrame(frame, false, navCtrl);
+            CoreIframeUtils.instance.treatFrame(frame, false);
         });
 
         CoreDomUtils.instance.handleBootstrapTooltips(div);
@@ -671,13 +671,11 @@ export class CoreFormatTextDirective implements OnChanges {
      * @param iframe Iframe to treat.
      * @param site Site instance.
      * @param canTreatVimeo Whether Vimeo videos can be treated in the site.
-     * @param navCtrl NavController to use.
      */
     protected async treatIframe(
         iframe: HTMLIFrameElement,
         site: CoreSite | undefined,
         canTreatVimeo: boolean,
-        navCtrl: NavController,
     ): Promise<void> {
         const src = iframe.src;
         const currentSite = CoreSites.instance.getCurrentSite();
@@ -689,8 +687,7 @@ export class CoreFormatTextDirective implements OnChanges {
             const finalUrl = await currentSite.getAutoLoginUrl(src, false);
 
             iframe.src = finalUrl;
-
-            CoreIframeUtils.instance.treatFrame(iframe, false, navCtrl);
+            CoreIframeUtils.instance.treatFrame(iframe, false);
 
             return;
         }
@@ -751,7 +748,7 @@ export class CoreFormatTextDirective implements OnChanges {
             }
         }
 
-        CoreIframeUtils.instance.treatFrame(iframe, false, navCtrl);
+        CoreIframeUtils.instance.treatFrame(iframe, false);
     }
 
     /**

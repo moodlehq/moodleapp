@@ -20,6 +20,7 @@ import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoreTagFeedElement } from '../../services/tag-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the tag index.
@@ -169,11 +170,7 @@ export class CoreTagIndexPage implements OnInit {
             nextPage: 1,
         };
         // this.splitviewCtrl.push('index-area', params);
-        this.router.navigate(['../index-area'], {
-            queryParams: params,
-            relativeTo: this.route,
-        });
-
+        CoreNavigator.instance.navigate('../index-area', { params });
     }
 
 }

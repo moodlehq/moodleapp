@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 
 import { CoreApp } from '@services/app';
@@ -42,7 +42,6 @@ export class CoreTagSearchPage implements OnInit {
     searching = false;
 
     constructor(
-        protected navCtrl: NavController,
         protected route: ActivatedRoute,
     ) {
 

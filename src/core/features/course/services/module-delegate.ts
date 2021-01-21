@@ -226,7 +226,6 @@ export interface CoreCourseModuleHandlerButton {
      * Action to perform when the button is clicked.
      *
      * @param event The click event.
-     * @param navCtrl NavController instance.
      * @param module The module object.
      * @param courseId The course ID.
      */

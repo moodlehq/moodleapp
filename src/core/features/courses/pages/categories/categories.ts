@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -39,7 +39,6 @@ export class CoreCoursesCategoriesPage implements OnInit {
     protected categoryId = 0;
 
     constructor(
-        protected navCtrl: NavController,
         protected route: ActivatedRoute,
     ) {
         this.title = Translate.instance.instant('core.courses.categories');

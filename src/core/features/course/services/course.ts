@@ -133,9 +133,8 @@ export class CoreCourseProvider {
     }
 
     /**
-     * Check if the current view in a NavController is a certain course initial page.
+     * Check if the current view is a certain course initial page.
      *
-     * @param navCtrl NavController.
      * @param courseId Course ID.
      * @return Whether the current view is a certain course.
      */

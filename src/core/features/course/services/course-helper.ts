@@ -1389,8 +1389,6 @@ export class CoreCourseHelperProvider {
      * @param useModNameToGetModule If true, the app will retrieve all modules of this type with a single WS call. This reduces the
      *                              number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @param modParams Params to pass to the module
-     * @param navCtrl NavController for adding new pages to the current history. Optional for legacy support, but
-     *                generates a warning if omitted.
      * @return Promise resolved when done.
      */
     navigateToModuleByInstance(): void {
@@ -1407,8 +1405,6 @@ export class CoreCourseHelperProvider {
      * @param modName If set, the app will retrieve all modules of this type with a single WS call. This reduces the
      *                number of WS calls, but it isn't recommended for modules that can return a lot of contents.
      * @param modParams Params to pass to the module
-     * @param navCtrl NavController for adding new pages to the current history. Optional for legacy support, but
-     *                generates a warning if omitted.
      * @return Promise resolved when done.
      */
     navigateToModule(): void {
@@ -1418,7 +1414,6 @@ export class CoreCourseHelperProvider {
     /**
      * Open a module.
      *
-     * @param navCtrl The NavController to use.
      * @param module The module to open.
      * @param courseId The course ID of the module.
      * @param sectionId The section ID of the module.

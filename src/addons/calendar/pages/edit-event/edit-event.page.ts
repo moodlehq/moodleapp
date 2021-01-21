@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
@@ -43,6 +43,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { ActivatedRoute } from '@angular/router';
 import { AddonCalendarOfflineEventDBRecord } from '../../services/database/calendar-offline';
 import { CoreError } from '@classes/errors/error';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -90,7 +91,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     protected gotEventData = false;
 
     constructor(
-        protected navCtrl: NavController,
         protected route: ActivatedRoute,
         protected fb: FormBuilder,
     ) {
@@ -578,7 +578,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             this.originalData = CoreUtils.instance.clone(this.form.value);
         } else {*/
         this.originalData = undefined; // Avoid asking for confirmation.
-        this.navCtrl.pop();
+        CoreNavigator.instance.back();
     }
 
     /**

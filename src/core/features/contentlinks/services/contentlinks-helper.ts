@@ -20,16 +20,13 @@ import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks
 import { CoreSite } from '@classes/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
+import { Params } from '@angular/router';
 
 /**
  * Service that provides some features regarding content links.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreContentLinksHelperProvider {
-
-    constructor(
-        protected navCtrl: NavController,
-    ) { }
 
     /**
      * Check whether a link can be handled by the app.
@@ -93,8 +90,7 @@ export class CoreContentLinksHelperProvider {
      * @return Promise resolved when done.
      * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async goInSite(navCtrl: NavController, pageName: string, pageParams: any, siteId?: string): Promise<void> {
+    async goInSite(navCtrl: NavController, pageName: string, pageParams: Params, siteId?: string): Promise<void> {
         await CoreNavigator.instance.navigateToSitePath(pageName, { params: pageParams, siteId });
     }
 
@@ -105,7 +101,7 @@ export class CoreContentLinksHelperProvider {
      * @todo set correct root.
      */
     async goToChooseSite(url: string): Promise<void> {
-        await this.navCtrl.navigateRoot('CoreContentLinksChooseSitePage @todo', { queryParams: { url } });
+        await CoreNavigator.instance.navigate('CoreContentLinksChooseSitePage @todo', { params: { url }, reset: true });
     }
 
     /**

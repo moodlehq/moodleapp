@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/site';
@@ -35,6 +35,7 @@ import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData }
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreNavigator } from '@services/navigator';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -63,7 +64,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
     constructor(
         protected route: ActivatedRoute,
-        protected navCtrl: NavController,
     ) {
 
         this.obsProfileRefreshed = CoreEvents.on<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, (data) => {
@@ -257,9 +257,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     openUserDetails(): void {
         // @todo: Navigate out of split view if this page is in the right pane.
-        this.navCtrl.navigateForward(['../about'], {
-            relativeTo: this.route,
-            queryParams: {
+        CoreNavigator.instance.navigate('../about', {
+            params: {
                 courseId: this.courseId,
                 userId: this.userId,
             },

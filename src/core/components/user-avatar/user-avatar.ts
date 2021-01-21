@@ -14,14 +14,13 @@
 
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreObject } from '@singletons/object';
 import { CoreUserProvider, CoreUserBasicData, CoreUserProfilePictureUpdatedData } from '@features/user/services/user';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component to display a "user avatar".
@@ -54,7 +53,6 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     protected pictureObserver: CoreEventObserver;
 
     constructor(
-        protected navCtrl: NavController,
         protected route: ActivatedRoute,
     ) {
         this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
@@ -143,12 +141,11 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         event.stopPropagation();
 
         // @todo Decide which navCtrl to use. If this component is inside a split view, use the split view's master nav.
-        this.navCtrl.navigateForward(['user'], {
-            relativeTo: this.route,
-            queryParams: CoreObject.withoutEmpty({
+        CoreNavigator.instance.navigateToSitePath('user', {
+            params: {
                 userId: this.userId,
                 courseId: this.courseId,
-            }),
+            },
         });
     }
 

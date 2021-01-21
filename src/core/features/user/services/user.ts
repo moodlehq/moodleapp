@@ -257,8 +257,12 @@ export class CoreUserProvider {
 
         try {
             return await this.getUserFromWS(userId, courseId, siteId);
-        } catch {
-            return this.getUserFromLocalDb(userId, siteId);
+        } catch (error) {
+            try {
+                return await this.getUserFromLocalDb(userId, siteId);
+            } catch {
+                throw error;
+            }
         }
     }
 

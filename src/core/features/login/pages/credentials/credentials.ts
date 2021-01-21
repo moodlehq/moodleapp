@@ -15,7 +15,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -63,7 +62,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     constructor(
         protected fb: FormBuilder,
         protected route: ActivatedRoute,
-        protected navCtrl: NavController,
     ) {
 
         const canScanQR = CoreUtils.instance.canScanQR();
@@ -251,7 +249,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             CoreLoginHelper.instance.treatUserTokenError(siteUrl, error, username, password);
 
             if (error.loggedout) {
-                this.navCtrl.navigateRoot('/login/sites');
+                CoreNavigator.instance.navigate('/login/sites', { reset: true });
             } else if (error.errorcode == 'forcepasswordchangenotice') {
                 // Reset password field.
                 this.credForm.controls.password.reset();

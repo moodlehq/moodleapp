@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Observable } from 'rxjs';
-import { NavController } from '@ionic/angular';
 
 import { AppComponent } from '@/app/app.component';
 import { CoreApp } from '@services/app';
@@ -22,11 +21,12 @@ import { CoreLangProvider } from '@services/lang';
 import { Network, Platform, NgZone } from '@singletons';
 
 import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
+import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 
 describe('AppComponent', () => {
 
     let langProvider: CoreLangProvider;
-    let navController: NavController;
+    let navigator: CoreNavigatorService;
     let config: Partial<RenderConfig>;
 
     beforeEach(() => {
@@ -35,12 +35,11 @@ describe('AppComponent', () => {
         mockSingleton(Platform, { ready: () => Promise.resolve() });
         mockSingleton(NgZone, { run: jest.fn() });
 
+        navigator = mockSingleton(CoreNavigator, ['navigate']);
         langProvider = mock<CoreLangProvider>(['clearCustomStrings']);
-        navController = mock<NavController>(['navigateRoot']);
         config = {
             providers: [
                 { provide: CoreLangProvider, useValue: langProvider },
-                { provide: NavController, useValue: navController },
             ],
         };
     });
@@ -59,7 +58,7 @@ describe('AppComponent', () => {
         CoreEvents.trigger(CoreEvents.LOGOUT);
 
         expect(langProvider.clearCustomStrings).toHaveBeenCalled();
-        expect(navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
+        expect(navigator.navigate).toHaveBeenCalledWith('/login/sites', { reset: true });
     });
 
     it.todo('shows loading while app isn\'t ready');

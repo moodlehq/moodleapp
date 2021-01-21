@@ -24,18 +24,18 @@ import {
     ViewChild,
     ElementRef,
 } from '@angular/core';
-import { Platform, IonSlides, IonTabs, NavController } from '@ionic/angular';
+import { Platform, IonSlides, IonTabs } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CoreUtils } from '@services/utils/utils';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreDomUtils } from '@services/utils/dom';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -114,7 +114,6 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         protected element: ElementRef,
         platform: Platform,
         translate: TranslateService,
-        protected navCtrl: NavController,
     ) {
         this.direction = platform.isRTL ? 'rtl' : 'ltr';
 
@@ -594,11 +593,9 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             await this.slides!.slideTo(index);
         }
 
-        const pageParams: NavigationOptions = {};
-        if (tabToSelect.pageParams) {
-            pageParams.queryParams = tabToSelect.pageParams;
-        }
-        const ok = await this.navCtrl.navigateForward(tabToSelect.page, pageParams);
+        const ok = await CoreNavigator.instance.navigate(tabToSelect.page, {
+            params: tabToSelect.pageParams,
+        });
 
         if (ok !== false) {
             this.selectHistory.push(tabToSelect.id!);

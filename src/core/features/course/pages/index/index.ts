@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Params } from '@angular/router';
 
 import { CoreTab, CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseFormatDelegate } from '../../services/format-delegate';
@@ -24,8 +24,7 @@ import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreNavHelper } from '@services/nav-helper';
-import { CoreObject } from '@singletons/object';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -52,9 +51,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         pageParams: {},
     };
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.selectTabObserver = CoreEvents.on<CoreEventSelectCourseTabData>(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
@@ -82,18 +79,18 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         // Get params.
-        this.course = this.route.snapshot.queryParams['course'];
-        this.firstTabName = this.route.snapshot.queryParams['selectedTab'];
-        const module: CoreCourseWSModule | undefined = this.route.snapshot.queryParams['module'];
-        const modParams: Params | undefined = this.route.snapshot.queryParams['modParams'];
+        this.course = CoreNavigator.instance.getRouteParam('course');
+        this.firstTabName = CoreNavigator.instance.getRouteParam('selectedTab');
+        const module = CoreNavigator.instance.getRouteParam<CoreCourseWSModule>('module');
+        const modParams = CoreNavigator.instance.getRouteParam<Params>('modParams');
 
-        this.currentPagePath = CoreNavHelper.instance.getCurrentPage();
+        this.currentPagePath = CoreNavigator.instance.getCurrentPath();
         this.contentsTab.page = CoreTextUtils.instance.concatenatePaths(this.currentPagePath, this.contentsTab.page);
-        this.contentsTab.pageParams = CoreObject.removeUndefined({
+        this.contentsTab.pageParams = {
             course: this.course,
-            sectionId: this.route.snapshot.queryParams['sectionId'],
-            sectionNumber: this.route.snapshot.queryParams['sectionNumber'],
-        });
+            sectionId: CoreNavigator.instance.getRouteParam<number>('sectionId'),
+            sectionNumber: CoreNavigator.instance.getRouteParam<number>('sectionNumber'),
+        };
 
         if (module) {
             this.contentsTab.pageParams!.moduleId = module.id;

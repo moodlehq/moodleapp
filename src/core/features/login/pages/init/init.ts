@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
 
 import { CoreApp, CoreRedirectData } from '@services/app';
 import { ApplicationInit, SplashScreen } from '@singletons';
@@ -34,7 +33,6 @@ export class CoreLoginInitPage implements OnInit {
 
     // @todo this page should be removed in favor of native splash
     // or a splash component rendered in the root app component
-    constructor(protected navCtrl: NavController) {}
 
     /**
      * Initialize the component.
@@ -121,7 +119,7 @@ export class CoreLoginInitPage implements OnInit {
             return;
         }
 
-        await this.navCtrl.navigateRoot('/login/sites');
+        await CoreNavigator.instance.navigate('/login/sites', { reset: true });
     }
 
 }

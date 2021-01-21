@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
 import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSSection } from '@features/course/services/course';
@@ -27,6 +27,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays site home index.
@@ -59,7 +60,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     constructor(
         protected route: ActivatedRoute,
-        protected navCtrl: NavController,
     ) {}
 
     /**
@@ -224,7 +224,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        this.navCtrl.navigateForward(['/main/home/courses/search']);
+        CoreNavigator.instance.navigateToSitePath('courses/search');
     }
 
     /**

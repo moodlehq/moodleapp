@@ -15,12 +15,12 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate, Platform } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page to recover a forgotten password.
@@ -38,7 +38,6 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
     autoFocus!: boolean;
 
     constructor(
-        protected navCtrl: NavController,
         protected formBuilder: FormBuilder,
         protected route: ActivatedRoute,
     ) {
@@ -97,7 +96,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
                 CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
 
                 CoreDomUtils.instance.showAlert(Translate.instance.instant('core.success'), response.notice);
-                this.navCtrl.pop();
+                CoreNavigator.instance.back();
             }
         } catch (error) {
             CoreDomUtils.instance.showErrorModal(error);

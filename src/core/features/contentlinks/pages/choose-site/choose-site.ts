@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
@@ -42,7 +41,6 @@ export class CoreContentLinksChooseSitePage implements OnInit {
 
     constructor(
         route: ActivatedRoute,
-        protected navCtrl: NavController,
     ) {
         this.url = route.snapshot.queryParamMap.get('url')!;
     }
@@ -115,7 +113,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
         try {
             await CoreSites.instance.logout();
         } finally {
-            await this.navCtrl.navigateRoot('/login/sites');
+            await CoreNavigator.instance.navigate('/login/sites', { reset: true });
         }
     }
 

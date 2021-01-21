@@ -24,12 +24,10 @@ import {
     KeyValueDiffers,
     SimpleChange,
     ChangeDetectorRef,
-    Optional,
     ElementRef,
     KeyValueDiffer,
     Type,
 } from '@angular/core';
-import { NavController } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLogger } from '@singletons/logger';
@@ -57,7 +55,7 @@ import { CoreLogger } from '@singletons/logger';
  *
  * Alternatively, you can also supply a ComponentRef instead of the class of the component. In this case, the component won't
  * be instantiated because it already is, it will be attached to the view and the right data will be passed to it.
- * Passing ComponentRef is meant for site plugins, so we'll inject a NavController instance to the component.
+ * Passing ComponentRef is meant for site plugins.
  *
  * The contents of this component will be displayed if no component is supplied or it cannot be created. In the example above,
  * if no component is supplied then the template will show the message "Cannot render the data.".
@@ -90,7 +88,6 @@ export class CoreDynamicComponent implements OnChanges, DoCheck {
     constructor(
         protected factoryResolver: ComponentFactoryResolver,
         differs: KeyValueDiffers,
-        @Optional() protected navCtrl: NavController,
         protected cdr: ChangeDetectorRef,
         protected element: ElementRef,
     ) {
@@ -167,7 +164,6 @@ export class CoreDynamicComponent implements OnChanges, DoCheck {
 
             // This feature is usually meant for site plugins. Inject some properties.
             this.instance['ChangeDetectorRef'] = this.cdr;
-            this.instance['NavController'] = this.navCtrl;
             this.instance['componentContainer'] = this.element.nativeElement;
         } else {
             try {

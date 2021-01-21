@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
@@ -32,6 +32,7 @@ import {
 } from '@/addons/privatefiles/services/privatefiles';
 import { AddonPrivateFilesHelper } from '@/addons/privatefiles/services/privatefiles-helper';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of files.
@@ -60,7 +61,6 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     constructor(
         protected route: ActivatedRoute,
-        protected navCtrl: NavController,
     ) {
         // Update visibility if current site info is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
@@ -254,10 +254,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
         const hash = <string> Md5.hashAsciiStr(JSON.stringify(params));
 
-        this.navCtrl.navigateForward([`../${hash}`], {
-            relativeTo: this.route,
-            queryParams: params,
-        });
+        CoreNavigator.instance.navigate(`../${hash}`, { params });
     }
 
     /**

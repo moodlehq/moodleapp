@@ -15,7 +15,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -60,7 +59,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     protected eventThrown = false;
 
     constructor(
-        protected navCtrl: NavController,
         protected fb: FormBuilder,
         protected route: ActivatedRoute,
     ) {

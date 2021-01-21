@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavController } from '@ionic/angular';
+
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -23,9 +25,10 @@ import { CoreUtils } from '@services/utils/utils';
 export type CoreWindowOpenOptions = {
     /**
      * NavController to use when opening the link in the app.
+     *
+     * @deprecated since 3.9.5
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    navCtrl?: any; // @todo NavController;
+    navCtrl?: NavController;
 };
 
 /**

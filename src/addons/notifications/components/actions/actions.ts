@@ -74,7 +74,6 @@ export class AddonNotificationsActionsComponent implements OnInit {
      * Default action. Open in browser.
      *
      * @param siteId Site ID to use.
-     * @param navCtrl NavController.
      */
     protected async openInBrowser(siteId?: string): Promise<void> {
         const url = <string> this.data?.appurl || this.contextUrl;
