@@ -406,6 +406,12 @@ ion-button.core-button-select {
     flex-direction: row;
 }
 
+// Text formats.
+// Highlight text.
+.matchtext {
+  background-color: var(--text-hightlight-background-color);
+}
+
 // Text for accessibility, hidden from the view.
 .accesshide {
     position: absolute;

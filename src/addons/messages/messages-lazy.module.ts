@@ -29,6 +29,11 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () => import('./pages/group-conversations/group-conversations.module')
                 .then(m => m.AddonMessagesGroupConversationsPageModule),
         },
+        {
+            path: 'search',
+            loadChildren: () => import('./pages/search/search.module')
+                .then(m => m.AddonMessagesSearchPageModule),
+        },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
             pathMatch: 'full',

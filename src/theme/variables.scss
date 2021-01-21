@@ -93,6 +93,8 @@
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
 
+    --text-hightlight-background-color: var(--custom-text-hightlight-background-color, #99c1ed);
+
     ion-content {
         --background: var(--gray-light);
         --contrast-background: var(--white);
