@@ -21,6 +21,9 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { AddonMessagesMainMenuHandler, AddonMessagesMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreCronDelegate } from '@services/cron';
+import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
+import { AddonMessagesSettingsHandler } from './services/handlers/settings';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 const mainMenuChildrenRoutes: Routes = [
     {
@@ -32,6 +35,7 @@ const mainMenuChildrenRoutes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
+        CoreMainMenuTabRoutingModule.forChild( mainMenuChildrenRoutes),
     ],
     providers: [
         {
@@ -46,6 +50,7 @@ const mainMenuChildrenRoutes: Routes = [
             useFactory: () => () => {
                 CoreMainMenuDelegate.instance.registerHandler(AddonMessagesMainMenuHandler.instance);
                 CoreCronDelegate.instance.register(AddonMessagesMainMenuHandler.instance);
+                CoreSettingsDelegate.instance.registerHandler(AddonMessagesSettingsHandler.instance);
             },
         },
 
@@ -67,8 +72,6 @@ export class AddonMessagesModule {
         messagesProvider: AddonMessagesProvider,
         sitesProvider: CoreSitesProvider,
         linkHelper: CoreContentLinksHelperProvider,
-        settingsHandler: AddonMessagesSettingsHandler,
-        settingsDelegate: CoreSettingsDelegate,
         pushNotificationsDelegate: CorePushNotificationsDelegate,
         addContactHandler: AddonMessagesAddContactUserHandler,
         blockContactHandler: AddonMessagesBlockContactUserHandler,
@@ -83,7 +86,6 @@ export class AddonMessagesModule {
         userDelegate.registerHandler(addContactHandler);
         userDelegate.registerHandler(blockContactHandler);
         cronDelegate.register(syncHandler);
-        settingsDelegate.registerHandler(settingsHandler);
         pushNotificationsDelegate.registerClickHandler(pushClickHandler);
 
         // Sync some discussions when device goes online.

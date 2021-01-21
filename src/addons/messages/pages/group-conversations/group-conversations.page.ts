@@ -38,6 +38,7 @@ import {
     AddonMessagesOfflineConversationMessagesDBRecordFormatted,
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from '@addons/messages/services/database/messages';
+import { AddonMessagesSettingsHandlerService } from '@addons/messages/services/handlers/settings';
 // import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
@@ -522,7 +523,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     gotoSettings(): void {
         // @todo this.splitviewCtrl.push
-        CoreNavigator.instance.navigateToSitePath('settings');
+        CoreNavigator.instance.navigateToSitePath(AddonMessagesSettingsHandlerService.PAGE_NAME);
     }
 
     /**
