@@ -251,19 +251,18 @@ export class AddonMessagesProvider {
      * @param deleteForAll Whether the message should be deleted for all users.
      * @return Promise resolved when the message has been deleted.
      */
-    deleteMessage(message: any, deleteForAll?: boolean): Promise<void> {
-        // @todo Add message type.
-        if (message.id) {
+    deleteMessage(message: AddonMessagesConversationMessageFormatted, deleteForAll?: boolean): Promise<void> {
+        if ('id' in message) {
             // Message has ID, it means it has been sent to the server.
             if (deleteForAll) {
                 return this.deleteMessageForAllOnline(message.id);
             } else {
-                return this.deleteMessageOnline(message.id, message.read);
+                return this.deleteMessageOnline(message.id, !!('read' in message && message.read));
             }
         }
 
         // It's an offline message.
-        if (!message.conversationid) {
+        if (!('conversationid' in message)) {
             return AddonMessagesOffline.instance.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
         }
 
@@ -1433,7 +1432,7 @@ export class AddonMessagesProvider {
         const response: AddonMessagesGetMessagesResult = await site.read('core_message_get_messages', params, preSets);
 
         response.messages.forEach((message) => {
-            message.read = !params.read ? 0 : 1;
+            message.read = !!params.read;
             // Convert times to milliseconds.
             message.timecreated = message.timecreated ? message.timecreated * 1000 : 0;
             message.timeread = message.timeread ? message.timeread * 1000 : 0;
@@ -2787,6 +2786,9 @@ export class AddonMessagesProvider {
      * @return Messages sorted with most recent last.
      */
     sortMessages(
+        messages: AddonMessagesConversationMessageFormatted[],
+    ): AddonMessagesConversationMessageFormatted[];
+    sortMessages(
         messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[],
     ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[];
     sortMessages(
@@ -2794,9 +2796,11 @@ export class AddonMessagesProvider {
     ): (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[];
     sortMessages(
         messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] |
-        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[],
+        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[] |
+        AddonMessagesConversationMessageFormatted[],
     ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] |
-        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[] {
+        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[] |
+        AddonMessagesConversationMessageFormatted[] {
         return messages.sort((a, b) => {
             // Pending messages last.
             if (a.pending && !b.pending) {
@@ -3040,6 +3044,23 @@ export type AddonMessagesConversationMessage = {
     text: string; // The text of the message.
     timecreated: number; // The timecreated timestamp for the message.
 };
+
+/**
+ * Conversation message with some calculated data.
+ */
+export type AddonMessagesConversationMessageFormatted =
+    (AddonMessagesConversationMessage
+    | AddonMessagesGetMessagesMessage
+    | AddonMessagesOfflineMessagesDBRecordFormatted
+    | AddonMessagesOfflineConversationMessagesDBRecordFormatted) & {
+        pending?: boolean; // Calculated in the app. Whether the message is pending to be sent.
+        sending?: boolean; // Calculated in the app. Whether the message is being sent right now.
+        hash?: string; // Calculated in the app. A hash to identify the message.
+        showDate?: boolean; // Calculated in the app. Whether to show the date before the message.
+        showUserData?: boolean; // Calculated in the app. Whether to show the user data in the message.
+        showTail?: boolean; // Calculated in the app. Whether to show a "tail" in the message.
+    };
+
 
 /**
  * Data returned by core_message_get_user_message_preferences WS.
@@ -3417,7 +3438,7 @@ export type AddonMessagesMessagePreferencesCalculatedData = {
  */
 export type AddonMessagesGetMessagesMessageCalculatedData = {
     pending?: boolean; // Calculated in the app. Whether the message is pending to be sent.
-    read?: number; // Calculated in the app. Whether the message has been read.
+    read?: boolean; // Calculated in the app. Whether the message has been read.
 };
 
 /**
@@ -3690,4 +3711,41 @@ export type AddonMessagesSplitViewLoadIndexEventData = {
 export type AddonMessagesSplitViewLoadContactsEventData = {
     userId: number;
     onInit: boolean;
+};
+
+/**
+ * Data sent by READ_CHANGED_EVENT event.
+ */
+export type AddonMessagesReadChangedEventData = {
+    userId?: number;
+    conversationId?: number;
+};
+
+/**
+ * Data sent by NEW_MESSAGE_EVENT event.
+ */
+export type AddonMessagesNewMessagedEventData = {
+    conversationId?: number;
+    userId?: number;
+    message: string;
+    timecreated: number;
+    isfavourite: boolean;
+    type?: number;
+};
+
+/**
+ * Data sent by UPDATE_CONVERSATION_LIST_EVENT event.
+ */
+export type AddonMessagesUpdateConversationListEventData = {
+    conversationId: number;
+    action: string;
+    value?: boolean;
+};
+
+/**
+ * Data sent by OPEN_CONVERSATION_EVENT event.
+ */
+export type AddonMessagesOpenConversationEventData = {
+    userId?: number;
+    conversationId?: number;
 };

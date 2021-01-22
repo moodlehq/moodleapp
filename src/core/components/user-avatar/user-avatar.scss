@@ -6,6 +6,13 @@
         width: var(--core-avatar-size);
         height: var(--core-avatar-size);
     }
+    &.core-bar-button-image img {
+        padding: 0;
+        width: var(--core-toolbar-button-image-width);
+        height: var(--core-toolbar-button-image-width);
+        max-width: var(--core-toolbar-button-image-width);
+        border-radius: 50%;
+    }
 
     .contact-status {
         position: absolute;

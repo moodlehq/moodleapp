@@ -19,7 +19,9 @@ import {
     AddonMessages,
     AddonMessagesDiscussion,
     AddonMessagesMessageAreaContact,
+    AddonMessagesNewMessagedEventData,
     AddonMessagesProvider,
+    AddonMessagesReadChangedEventData,
     AddonMessagesSplitViewLoadIndexEventData,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -78,38 +80,46 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         this.siteId = CoreSites.instance.getCurrentSiteId();
 
         // Update discussions when new message is received.
-        this.newMessagesObserver = CoreEvents.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data: any) => {
-            if (data.userId && this.discussions) {
-                const discussion = this.discussions.find((disc) => disc.message!.user == data.userId);
+        this.newMessagesObserver = CoreEvents.on<AddonMessagesNewMessagedEventData>(
+            AddonMessagesProvider.NEW_MESSAGE_EVENT,
+            (data) => {
+                if (data.userId && this.discussions) {
+                    const discussion = this.discussions.find((disc) => disc.message!.user == data.userId);
 
-                if (typeof discussion == 'undefined') {
-                    this.loaded = false;
-                    this.refreshData().finally(() => {
-                        this.loaded = true;
-                    });
-                } else {
+                    if (typeof discussion == 'undefined') {
+                        this.loaded = false;
+                        this.refreshData().finally(() => {
+                            this.loaded = true;
+                        });
+                    } else {
                     // An existing discussion has a new message, update the last message.
-                    discussion.message!.message = data.message;
-                    discussion.message!.timecreated = data.timecreated;
+                        discussion.message!.message = data.message;
+                        discussion.message!.timecreated = data.timecreated;
+                    }
                 }
-            }
-        }, this.siteId);
+            },
+            this.siteId,
+        );
 
         // Update discussions when a message is read.
-        this.readChangedObserver = CoreEvents.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data: any) => {
-            if (data.userId && this.discussions) {
-                const discussion = this.discussions.find((disc) => disc.message!.user == data.userId);
+        this.readChangedObserver = CoreEvents.on<AddonMessagesReadChangedEventData>(
+            AddonMessagesProvider.READ_CHANGED_EVENT,
+            (data) => {
+                if (data.userId && this.discussions) {
+                    const discussion = this.discussions.find((disc) => disc.message!.user == data.userId);
 
-                if (typeof discussion != 'undefined') {
+                    if (typeof discussion != 'undefined') {
                     // A discussion has been read reset counter.
-                    discussion.unread = false;
+                        discussion.unread = false;
 
-                    // Conversations changed, invalidate them and refresh unread counts.
-                    AddonMessages.instance.invalidateConversations(this.siteId);
-                    AddonMessages.instance.refreshUnreadConversationCounts(this.siteId);
+                        // Conversations changed, invalidate them and refresh unread counts.
+                        AddonMessages.instance.invalidateConversations(this.siteId);
+                        AddonMessages.instance.refreshUnreadConversationCounts(this.siteId);
+                    }
                 }
-            }
-        }, this.siteId);
+            },
+            this.siteId,
+        );
 
         // Update unread conversation counts.
         this.cronObserver = CoreEvents.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, () => {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Params, Router as RouterService } from '@angular/router';
 
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
@@ -27,6 +27,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
+import { CoreScreen } from './screen';
+import { filter } from 'rxjs/operators';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
 
@@ -55,6 +57,17 @@ export class CoreNavigatorService {
 
     protected storedParams: Record<number, unknown> = {};
     protected lastParamId = 0;
+    protected currentPath?: string;
+    protected previousPath?: string;
+
+    // @todo Param router is an optional param to let the mocking work.
+    constructor(router?: RouterService) {
+        router?.events.pipe(filter(event => event instanceof NavigationStart)).subscribe((routerEvent: NavigationStart) => {
+            // Using NavigationStart instead of NavigationEnd so it can be check on ngOnInit.
+            this.previousPath = this.currentPath;
+            this.currentPath = routerEvent.url;
+        });
+    }
 
     /**
      * Check whether the active route is using the given path.
@@ -194,6 +207,15 @@ export class CoreNavigatorService {
         return CoreUrlUtils.instance.removeUrlParams(Router.instance.url);
     }
 
+    /**
+     * Get the previous navigation route path.
+     *
+     * @return Previous path.
+     */
+    getPreviousPath(): string {
+        return CoreUrlUtils.instance.removeUrlParams(this.previousPath || '');
+    }
+    
     /**
      * Get a parameter for the current route.
      * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,

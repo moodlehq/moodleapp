@@ -32,6 +32,11 @@ function buildRoutes(injector: Injector): Routes {
                 .then(m => m.AddonMessagesGroupConversationsPageModule),
         },
         {
+            path: 'discussion',
+            loadChildren: () => import('./pages/discussion/discussion.module')
+                .then(m => m.AddonMessagesDiscussionPageModule),
+        },
+        {
             path: 'search',
             loadChildren: () => import('./pages/search/search.module')
                 .then(m => m.AddonMessagesSearchPageModule),

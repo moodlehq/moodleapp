@@ -97,6 +97,7 @@
 
     ion-content {
         --background: var(--gray-light);
+        --background-lighter: var(--gray-lighter);
         --contrast-background: var(--white);
     }
 
@@ -190,6 +191,11 @@
 
     --core-avatar-size:  var(--custom-avatar-size, 40px);
 
+    --core-toolbar-button-image-width: var(--custom-toolbar-button-image-width, 32px);
+
+    --core-send-message-input-background: var(--custom-send-message-input-background, var(--gray));
+    --core-send-message-input-color: var(--custom-send-message-input-color, var(--black));
+
     --addon-calendar-event-category-color: var(--custom-calendar-event-category-color, var(--purple));
     --addon-calendar-event-course-color: var(--custom-calendar-event-course-color, var(--red));
     --addon-calendar-event-group-color: var(--custom-calendar-event-group-color, var(--yellow));
@@ -198,6 +204,16 @@
     --addon-calendar-today-bgcolor: var(--custom-calendar-today-bgcolor, var(--core-color));
     --addon-calendar-today-color: var(--custom-calendar-today-color, var(--white));
     --addon-calendar-border-color: var(--custom-calendar-border-color, var(--gray));
+
+    --addon-messages-message-bg: var(--custom-messages-message-bg, var(--white));
+    --addon-messages-message-activated-bg: var(--custom-messages-message-activated-bg, var(--gray-light));
+    --addon-messages-message-note-text: var(--custom-messages-message-note-text, var(--gray-dark));
+    --addon-messages-message-note-font-size: var(--custom-messages-message-note-font-size, 75%);
+    --addon-messages-message-mine-bg: var(--custom-messages-message-mine-bg, var(--gray-light));
+    --addon-messages-message-mine-activated-bg: var(--custom-messages-message-mine-activated-bg, var(--gray));
+    --addon-messages-avatar-size: var(--custom-messages-avatar-size, 30px);
+    --addon-messages-discussion-badge: var(--custom-messages-discussion-badge, var(--core-color));
+    --addon-messages-discussion-badge-text: var(--custom-messages-discussion-badge-text, var(--white));
 }
 
 /*
@@ -255,6 +271,7 @@
 
     ion-content {
         --background: var(--ion-background-color);
+        --background-lighter: var(--gray-darker);
         --contrast-background: var(--ion-background-color);
     }
 

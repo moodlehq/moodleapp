@@ -20,6 +20,7 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
+import { CoreError } from '@classes/errors/error';
 
 const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
 
@@ -118,7 +119,7 @@ export class AddonCourseCompletionProvider {
             return result.completionstatus;
         }
 
-        throw null;
+        throw new CoreError('Cannot fetch course completion status');
     }
 
     /**
@@ -165,7 +166,7 @@ export class AddonCourseCompletionProvider {
      */
     async isPluginViewEnabledForCourse(courseId: number, preferCache: boolean = true): Promise<boolean> {
         if (!courseId) {
-            throw null;
+            throw new CoreError('No courseId provided');
         }
 
         const course = await CoreCourses.instance.getUserCourse(courseId, preferCache);
@@ -260,7 +261,7 @@ export class AddonCourseCompletionProvider {
         const response = await site.write<CoreStatusWithWarningsWSResponse>('core_completion_mark_course_self_completed', params);
 
         if (!response.status) {
-            throw null;
+            throw new CoreError('Cannot mark course as self completed');
         }
     }
 

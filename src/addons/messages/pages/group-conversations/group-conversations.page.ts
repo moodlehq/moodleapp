@@ -23,6 +23,10 @@ import {
     AddonMessagesMemberInfoChangedEventData,
     AddonMessagesContactRequestCountEventData,
     AddonMessagesUnreadConversationCountsEventData,
+    AddonMessagesReadChangedEventData,
+    AddonMessagesUpdateConversationListEventData,
+    AddonMessagesNewMessagedEventData,
+    AddonMessagesOpenConversationEventData,
 } from '../../services/messages';
 import { AddonMessagesOffline } from '../../services/messages-offline';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -112,47 +116,53 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
 
         // Update conversations when new message is received.
-        this.newMessagesObserver = CoreEvents.on(AddonMessagesProvider.NEW_MESSAGE_EVENT, (data: any) => {
+        this.newMessagesObserver = CoreEvents.on<AddonMessagesNewMessagedEventData>(
+            AddonMessagesProvider.NEW_MESSAGE_EVENT,
+            (data) => {
             // Check if the new message belongs to the option that is currently expanded.
-            const expandedOption = this.getExpandedOption();
-            const messageOption = this.getConversationOption(data);
+                const expandedOption = this.getExpandedOption();
+                const messageOption = this.getConversationOption(data);
 
-            if (expandedOption != messageOption) {
-                return; // Message doesn't belong to current list, stop.
-            }
-
-            // Search the conversation to update.
-            const conversation = this.findConversation(data.conversationId, data.userId, expandedOption);
-
-            if (typeof conversation == 'undefined') {
-                // Probably a new conversation, refresh the list.
-                this.loaded = false;
-                this.refreshData().finally(() => {
-                    this.loaded = true;
-                });
-
-                return;
-            }
-            if (conversation.lastmessage != data.message || conversation.lastmessagedate != data.timecreated / 1000) {
-                const isNewer = data.timecreated / 1000 > (conversation.lastmessagedate || 0);
-
-                // An existing conversation has a new message, update the last message.
-                conversation.lastmessage = data.message;
-                conversation.lastmessagedate = data.timecreated / 1000;
-
-                // Sort the affected list.
-                const option = this.getConversationOption(conversation);
-                option.conversations = AddonMessages.instance.sortConversations(option.conversations || []);
-
-                if (isNewer) {
-                    // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
-                    this.content?.scrollToTop();
+                if (expandedOption != messageOption) {
+                    return; // Message doesn't belong to current list, stop.
                 }
-            }
-        }, this.siteId);
+
+                // Search the conversation to update.
+                const conversation = this.findConversation(data.conversationId, data.userId, expandedOption);
+
+                if (typeof conversation == 'undefined') {
+                // Probably a new conversation, refresh the list.
+                    this.loaded = false;
+                    this.refreshData().finally(() => {
+                        this.loaded = true;
+                    });
+
+                    return;
+                }
+                if (conversation.lastmessage != data.message || conversation.lastmessagedate != data.timecreated / 1000) {
+                    const isNewer = data.timecreated / 1000 > (conversation.lastmessagedate || 0);
+
+                    // An existing conversation has a new message, update the last message.
+                    conversation.lastmessage = data.message;
+                    conversation.lastmessagedate = data.timecreated / 1000;
+
+                    // Sort the affected list.
+                    const option = this.getConversationOption(conversation);
+                    option.conversations = AddonMessages.instance.sortConversations(option.conversations || []);
+
+                    if (isNewer) {
+                    // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
+                        this.content?.scrollToTop();
+                    }
+                }
+            },
+            this.siteId,
+        );
 
         // Update conversations when a message is read.
-        this.readChangedObserver = CoreEvents.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data: any) => {
+        this.readChangedObserver = CoreEvents.on<AddonMessagesReadChangedEventData>(AddonMessagesProvider.READ_CHANGED_EVENT, (
+            data,
+        ) => {
             if (data.conversationId) {
                 const conversation = this.findConversation(data.conversationId);
 
@@ -168,11 +178,15 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         }, this.siteId);
 
         // Load a discussion if we receive an event to do so.
-        this.openConversationObserver = CoreEvents.on(AddonMessagesProvider.OPEN_CONVERSATION_EVENT, (data: any) => {
-            if (data.conversationId || data.userId) {
-                this.gotoConversation(data.conversationId, data.userId);
-            }
-        }, this.siteId);
+        this.openConversationObserver = CoreEvents.on<AddonMessagesOpenConversationEventData>(
+            AddonMessagesProvider.OPEN_CONVERSATION_EVENT,
+            (data) => {
+                if (data.conversationId || data.userId) {
+                    this.gotoConversation(data.conversationId, data.userId);
+                }
+            },
+            this.siteId,
+        );
 
         // Refresh the view when the app is resumed.
         this.appResumeSubscription = Platform.instance.resume.subscribe(() => {
@@ -186,24 +200,28 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         });
 
         // Update conversations if we receive an event to do so.
-        this.updateConversationListObserver = CoreEvents.on(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, (data: any) => {
-            if (data && data.action == 'mute') {
+        this.updateConversationListObserver = CoreEvents.on<AddonMessagesUpdateConversationListEventData>(
+            AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT,
+            (data) => {
+                if (data && data.action == 'mute') {
                 // If the conversation is displayed, change its muted value.
-                const expandedOption = this.getExpandedOption();
+                    const expandedOption = this.getExpandedOption();
 
-                if (expandedOption && expandedOption.conversations) {
-                    const conversation = this.findConversation(data.conversationId, undefined, expandedOption);
-                    if (conversation) {
-                        conversation.ismuted = data.value;
+                    if (expandedOption && expandedOption.conversations) {
+                        const conversation = this.findConversation(data.conversationId, undefined, expandedOption);
+                        if (conversation) {
+                            conversation.ismuted = !!data.value;
+                        }
                     }
+
+                    return;
                 }
 
-                return;
-            }
+                this.refreshData();
 
-            this.refreshData();
-
-        }, this.siteId);
+            },
+            this.siteId,
+        );
 
         // If a message push notification is received, refresh the view.
         this.pushObserver = CorePushNotificationsDelegate.instance.on<CorePushNotificationsNotificationBasicData>('receive')
@@ -667,7 +685,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param conversation Conversation to check.
      * @return Option object.
      */
-    protected getConversationOption(conversation: AddonMessagesConversationForList): AddonMessagesGroupConversationOption {
+    protected getConversationOption(
+        conversation: AddonMessagesConversationForList | AddonMessagesNewMessagedEventData,
+    ): AddonMessagesGroupConversationOption {
         if (conversation.isfavourite) {
             return this.favourites;
         }

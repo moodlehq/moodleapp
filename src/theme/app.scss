@@ -309,6 +309,15 @@ ion-item img.core-module-icon[slot="start"] {
     margin-left: 32px;
 }
 
+ion-toolbar ion-title img.core-bar-button-image,
+ion-toolbar ion-title .core-bar-button-image img {
+    padding: 0;
+    width: var(--core-toolbar-button-image-width);
+    height: var(--core-toolbar-button-image-width);
+    max-width: var(--core-toolbar-button-image-width);
+    border-radius: 50%;
+}
+
 // Action sheet.
 .md ion-action-sheet {
     .action-sheet-group-cancel {

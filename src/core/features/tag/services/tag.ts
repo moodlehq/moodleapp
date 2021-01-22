@@ -17,6 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreError } from '@classes/errors/error';
 
 const ROOT_CACHE_KEY = 'CoreTag:';
 
@@ -121,7 +122,7 @@ export class CoreTagProvider {
         const response: CoreTagCollections = await site.read('core_tag_get_tag_collections', null, preSets);
 
         if (!response || !response.collections) {
-            throw null;
+            throw new CoreError('Cannot fetch tag collections');
         }
 
         return response.collections;
@@ -185,7 +186,7 @@ export class CoreTagProvider {
         }
 
         if (!response) {
-            throw null;
+            throw new CoreError('Cannot fetch tag index per area');
         }
 
         return response;
