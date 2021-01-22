@@ -24,6 +24,16 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonMessagesSettingsHandler } from './services/handlers/settings';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { AddonMessagesIndexLinkHandler } from './services/handlers/index-link';
+import { AddonMessagesDiscussionLinkHandler } from './services/handlers/discussion-link';
+import { AddonMessagesContactRequestLinkHandler } from './services/handlers/contact-request-link';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { AddonMessagesPushClickHandler } from './services/handlers/push-click';
+import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-send-message';
+import { AddonMessagesAddContactUserHandler } from './services/handlers/user-add-contact';
+import { AddonMessagesBlockContactUserHandler } from './services/handlers/user-block-contact';
 
 const mainMenuChildrenRoutes: Routes = [
     {
@@ -48,84 +58,29 @@ const mainMenuChildrenRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
+                // Register handlers.
                 CoreMainMenuDelegate.instance.registerHandler(AddonMessagesMainMenuHandler.instance);
                 CoreCronDelegate.instance.register(AddonMessagesMainMenuHandler.instance);
+                // @todo CoreCronDelegate.instance.register(AddonMessagesSyncCronHandler.instance);
                 CoreSettingsDelegate.instance.registerHandler(AddonMessagesSettingsHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonMessagesIndexLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonMessagesDiscussionLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonMessagesContactRequestLinkHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(AddonMessagesPushClickHandler.instance);
+                CoreUserDelegate.instance.registerHandler(AddonMessagesSendMessageUserHandler.instance);
+                CoreUserDelegate.instance.registerHandler(AddonMessagesAddContactUserHandler.instance);
+                CoreUserDelegate.instance.registerHandler(AddonMessagesBlockContactUserHandler.instance);
+
+                // Sync some discussions when device goes online.
+                /* @todo Network.instance.onConnect().subscribe(() => {
+                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                    NgZone.instance.run(() => {
+                        AddonMessagesSync.instance.syncAllDiscussions(undefined, true);
+                    });
+                });*/
             },
         },
 
     ],
 })
-export class AddonMessagesModule {
-
-    /* constructor(
-        contentLinksDelegate: CoreContentLinksDelegate,
-        indexLinkHandler: AddonMessagesIndexLinkHandler,
-        discussionLinkHandler: AddonMessagesDiscussionLinkHandler,
-        sendMessageHandler: AddonMessagesSendMessageUserHandler,
-        userDelegate: CoreUserDelegate,
-        cronDelegate: CoreCronDelegate,
-        syncHandler: AddonMessagesSyncCronHandler,
-        network: Network,
-        zone: NgZone,
-        messagesSync: AddonMessagesSyncProvider,
-        messagesProvider: AddonMessagesProvider,
-        sitesProvider: CoreSitesProvider,
-        linkHelper: CoreContentLinksHelperProvider,
-        pushNotificationsDelegate: CorePushNotificationsDelegate,
-        addContactHandler: AddonMessagesAddContactUserHandler,
-        blockContactHandler: AddonMessagesBlockContactUserHandler,
-        contactRequestLinkHandler: AddonMessagesContactRequestLinkHandler,
-        pushClickHandler: AddonMessagesPushClickHandler,
-    ) {
-        // Register handlers.
-        contentLinksDelegate.registerHandler(indexLinkHandler);
-        contentLinksDelegate.registerHandler(discussionLinkHandler);
-        contentLinksDelegate.registerHandler(contactRequestLinkHandler);
-        userDelegate.registerHandler(sendMessageHandler);
-        userDelegate.registerHandler(addContactHandler);
-        userDelegate.registerHandler(blockContactHandler);
-        cronDelegate.register(syncHandler);
-        pushNotificationsDelegate.registerClickHandler(pushClickHandler);
-
-        // Sync some discussions when device goes online.
-        network.onConnect().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                messagesSync.syncAllDiscussions(undefined, true);
-            });
-        });
-
-        const notificationClicked = (notification: any): void => {
-            messagesProvider.isMessagingEnabledForSite(notification.site).then(() => {
-                sitesProvider.isFeatureDisabled('CoreMainMenuDelegate_AddonMessages', notification.site).then((disabled) => {
-                    if (disabled) {
-                        // Messages are disabled, stop.
-                        return;
-                    }
-
-                    messagesProvider.invalidateDiscussionsCache(notification.site).finally(() => {
-                        // Check if group messaging is enabled, to determine which page should be loaded.
-                        messagesProvider.isGroupMessagingEnabledInSite(notification.site).then((enabled) => {
-                            const pageParams: any = {};
-                            let pageName = 'AddonMessagesIndexPage';
-                            if (enabled) {
-                                pageName = 'AddonMessagesGroupConversationsPage';
-                            }
-
-                            // Check if we have enough information to open the conversation.
-                            if (notification.convid && enabled) {
-                                pageParams.conversationId = Number(notification.convid);
-                            } else if (notification.userfromid || notification.useridfrom) {
-                                pageParams.discussionUserId = Number(notification.userfromid || notification.useridfrom);
-                            }
-
-                            linkHelper.goInSite(undefined, pageName, pageParams, notification.site);
-                        });
-                    });
-                });
-            });
-        };
-    }*/
-
-}
+export class AddonMessagesModule {}
