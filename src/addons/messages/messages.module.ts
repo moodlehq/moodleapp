@@ -34,6 +34,8 @@ import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-send-message';
 import { AddonMessagesAddContactUserHandler } from './services/handlers/user-add-contact';
 import { AddonMessagesBlockContactUserHandler } from './services/handlers/user-block-contact';
+import { Network, NgZone } from '@singletons';
+import { AddonMessagesSync } from './services/messages-sync';
 
 const mainMenuChildrenRoutes: Routes = [
     {
@@ -61,7 +63,7 @@ const mainMenuChildrenRoutes: Routes = [
                 // Register handlers.
                 CoreMainMenuDelegate.instance.registerHandler(AddonMessagesMainMenuHandler.instance);
                 CoreCronDelegate.instance.register(AddonMessagesMainMenuHandler.instance);
-                // @todo CoreCronDelegate.instance.register(AddonMessagesSyncCronHandler.instance);
+                CoreCronDelegate.instance.register(AddonMessagesPushClickHandler.instance);
                 CoreSettingsDelegate.instance.registerHandler(AddonMessagesSettingsHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(AddonMessagesIndexLinkHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(AddonMessagesDiscussionLinkHandler.instance);
@@ -72,12 +74,12 @@ const mainMenuChildrenRoutes: Routes = [
                 CoreUserDelegate.instance.registerHandler(AddonMessagesBlockContactUserHandler.instance);
 
                 // Sync some discussions when device goes online.
-                /* @todo Network.instance.onConnect().subscribe(() => {
+                Network.instance.onConnect().subscribe(() => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
                     NgZone.instance.run(() => {
                         AddonMessagesSync.instance.syncAllDiscussions(undefined, true);
                     });
-                });*/
+                });
             },
         },
 

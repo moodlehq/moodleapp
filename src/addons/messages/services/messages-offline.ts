@@ -348,7 +348,7 @@ export class AddonMessagesOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async setMessagesDeviceOffline(
-        messages: (AddonMessagesOfflineConversationMessagesDBRecord | AddonMessagesOfflineMessagesDBRecord)[],
+        messages: (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[],
         value: boolean,
         siteId?: string,
     ): Promise<void> {
@@ -359,7 +359,7 @@ export class AddonMessagesOfflineProvider {
         const promises: Promise<number>[] = [];
         const data = { deviceoffline: value ? 1 : 0 };
 
-        messages.forEach((message: AddonMessagesOfflineConversationMessagesDBRecord | AddonMessagesOfflineMessagesDBRecord) => {
+        messages.forEach((message) => {
             if ('conversationid' in message) {
                 promises.push(db.updateRecords(
                     CONVERSATION_MESSAGES_TABLE,

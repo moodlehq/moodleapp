@@ -2568,7 +2568,10 @@ export class AddonMessagesProvider {
      * @return Promise resolved if success, rejected if failure. Promise resolved doesn't mean that messages
      *         have been sent, the resolve param can contain errors for messages not sent.
      */
-    async sendMessagesOnline(messages: any[], siteId?: string): Promise<AddonMessagesSendInstantMessagesMessage[]> {
+    async sendMessagesOnline(
+        messages: AddonMessagesMessageData[],
+        siteId?: string,
+    ): Promise<AddonMessagesSendInstantMessagesMessage[]> {
         const site = await CoreSites.instance.getSite(siteId);
 
         const data: AddonMessagesSendInstantMessagesWSParams = {
@@ -2590,7 +2593,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async sendMessageToConversation(
-        conversation: any,
+        conversation: AddonMessagesConversation,
         message: string,
         siteId?: string,
     ): Promise<{ sent: boolean; message: AddonMessagesSendMessagesToConversationMessage }> {
@@ -2696,12 +2699,12 @@ export class AddonMessagesProvider {
      */
     async sendMessagesToConversationOnline(
         conversationId: number,
-        messages: any[],
+        messages: CoreMessageSendMessagesToConversationMessageData[],
         siteId?: string,
     ): Promise<AddonMessagesSendMessagesToConversationMessage[]> {
 
         const site = await CoreSites.instance.getSite(siteId);
-        const params = {
+        const params: CoreMessageSendMessagesToConversationWSParams = {
             conversationid: conversationId,
             messages: messages.map((message) => ({
                 text: message.text,
@@ -2785,7 +2788,15 @@ export class AddonMessagesProvider {
      */
     sortMessages(
         messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[],
-    ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] {
+    ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[];
+    sortMessages(
+        messages: (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[],
+    ): (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[];
+    sortMessages(
+        messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] |
+        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[],
+    ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] |
+        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[] {
         return messages.sort((a, b) => {
             // Pending messages last.
             if (a.pending && !b.pending) {
@@ -3241,7 +3252,7 @@ export type AddonMessagesGetConversationsResult = {
 /**
  * Params of core_message_get_messages WS.
  */
-type AddonMessagesGetMessagesWSParams = {
+export type AddonMessagesGetMessagesWSParams = {
     useridto: number; // The user id who received the message, 0 for any user.
     useridfrom?: number; // The user id who send the message, 0 for any user. -10 or -20 for no-reply or support user.
     type?: string; // Type of message to return, expected values are: notifications, conversations and both.
@@ -3355,6 +3366,19 @@ export type AddonMessagesSendInstantMessagesMessage = {
     conversationid?: number; // @since 3.6. The conversation id for this message.
     useridfrom?: number; // @since 3.6. The user id who sent the message.
     candeletemessagesforallusers: boolean; // @since 3.7. If the user can delete messages in the conversation for all users.
+};
+
+export type CoreMessageSendMessagesToConversationMessageData ={
+    text: string; // The text of the message.
+    textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+};
+
+/**
+ * Params of core_message_send_messages_to_conversation WS.
+ */
+type CoreMessageSendMessagesToConversationWSParams = {
+    conversationid: number; // Id of the conversation.
+    messages: CoreMessageSendMessagesToConversationMessageData[];
 };
 
 /**
@@ -3584,15 +3608,20 @@ type AddonMessagesDeleteContactsWSParams = {
 };
 
 /**
+ * One message data.
+ */
+export type AddonMessagesMessageData = {
+    touserid: number; // Id of the user to send the private message.
+    text: string; // The text of the message.
+    textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    clientmsgid?: string; // Your own client id for the message. If this id is provided, the fail message id will be returned.
+};
+
+/**
  * Params of core_message_send_instant_messages WS.
  */
 type AddonMessagesSendInstantMessagesWSParams = {
-    messages: {
-        touserid: number; // Id of the user to send the private message.
-        text: string; // The text of the message.
-        textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-        clientmsgid?: string; // Your own client id for the message. If this id is provided, the fail message id will be returned.
-    }[];
+    messages: AddonMessagesMessageData[];
 };
 
 /**
