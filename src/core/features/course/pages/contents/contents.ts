@@ -36,7 +36,7 @@ import {
     CoreCourseOptionsDelegate,
     CoreCourseOptionsMenuHandlerToDisplay,
 } from '@features/course/services/course-options-delegate';
-// import { CoreCourseSyncProvider } from '../../providers/sync';
+import { CoreCourseAutoSyncData, CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import {
     CoreEvents,
@@ -144,15 +144,17 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             },
         );
 
-        // @todo this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
-        //     if (data && data.courseId == this.course.id) {
-        //         this.refreshAfterCompletionChange(false);
+        this.syncObserver = CoreEvents.on<CoreCourseAutoSyncData>(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
+            if (!data || data.courseId != this.course.id) {
+                return;
+            }
 
-        //         if (data.warnings && data.warnings[0]) {
-        //             CoreDomUtils.instance.showErrorModal(data.warnings[0]);
-        //         }
-        //     }
-        // });
+            this.refreshAfterCompletionChange(false);
+
+            if (data.warnings && data.warnings[0]) {
+                CoreDomUtils.instance.showErrorModal(data.warnings[0]);
+            }
+        });
     }
 
     /**
@@ -210,13 +212,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
         if (sync) {
             // Try to synchronize the course data.
-            // @todo return this.syncProvider.syncCourse(this.course.id).then((result) => {
-            //     if (result.warnings && result.warnings.length) {
-            //         CoreDomUtils.instance.showErrorModal(result.warnings[0]);
-            //     }
-            // }).catch(() => {
-            //     // For now we don't allow manual syncing, so ignore errors.
-            // });
+            // For now we don't allow manual syncing, so ignore errors.
+            const result = await CoreUtils.instance.ignoreErrors(CoreCourseSync.instance.syncCourse(this.course.id));
+            if (result?.warnings?.length) {
+                CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+            }
         }
 
         try {

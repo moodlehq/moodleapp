@@ -36,6 +36,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -107,7 +108,7 @@ export class CoreWSProvider {
         if (!preSets) {
             throw new CoreError(Translate.instance.instant('core.unexpectederror'));
         } else if (!CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
@@ -249,7 +250,7 @@ export class CoreWSProvider {
         this.logger.debug('Downloading file', url, path, addExtension);
 
         if (!CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         // Use a tmp path to download the file and then move it to final location.
@@ -741,7 +742,7 @@ export class CoreWSProvider {
         if (!preSets) {
             throw new CoreError(Translate.instance.instant('core.unexpectederror'));
         } else if (!CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
@@ -825,7 +826,7 @@ export class CoreWSProvider {
         }
 
         if (!CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         const uploadUrl = preSets.siteUrl + '/webservice/upload.php';

@@ -35,6 +35,7 @@ import { CoreSilentError } from '@classes/errors/silenterror';
 import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -642,11 +643,13 @@ export class CoreDomUtilsProvider {
      * Given a message, it deduce if it's a network error.
      *
      * @param message Message text.
+     * @param error Error object.
      * @return True if the message error is a network error, false otherwise.
      */
-    protected isNetworkError(message: string): boolean {
+    protected isNetworkError(message: string, error?: CoreError | CoreTextErrorObject | string): boolean {
         return message == Translate.instance.instant('core.networkerrormsg') ||
-            message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload');
+            message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload') ||
+            error instanceof CoreNetworkError;
     }
 
     /**
@@ -1365,7 +1368,7 @@ export class CoreDomUtilsProvider {
             buttons: [Translate.instance.instant('core.ok')],
         };
 
-        if (this.isNetworkError(message)) {
+        if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
         } else {
             alertOptions.header = Translate.instance.instant('core.error');

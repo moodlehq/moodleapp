@@ -25,6 +25,9 @@ import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
 import { SITE_SCHEMA as PREFETCH_SITE_SCHEMA } from './services/database/module-prefetch';
 import { CoreCourseIndexRoutingModule } from './pages/index/index-routing.module';
 import { CoreCourseModulePrefetchDelegate } from './services/module-prefetch-delegate';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreCourseLogCronHandler } from './services/handlers/log-cron';
+import { CoreCourseSyncCronHandler } from './services/handlers/sync-cron';
 
 const routes: Routes = [
     {
@@ -60,6 +63,9 @@ const courseIndexRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
+                CoreCronDelegate.instance.register(CoreCourseSyncCronHandler.instance);
+                CoreCronDelegate.instance.register(CoreCourseLogCronHandler.instance);
+
                 CoreCourseModulePrefetchDelegate.instance.initialize();
             },
         },

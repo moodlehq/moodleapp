@@ -63,6 +63,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
  * Prefetch info of a module.
@@ -732,7 +733,7 @@ export class CoreCourseHelperProvider {
             try {
                 path = await CoreFilepool.instance.getInternalUrlByUrl(site.getId(), fileUrl);
             } catch {
-                throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+                throw new CoreNetworkError();
             }
 
             return CoreUtils.instance.openFile(path);
@@ -857,7 +858,7 @@ export class CoreCourseHelperProvider {
 
         if (!isOnline && status === CoreConstants.NOT_DOWNLOADED) {
             // Not downloaded and we're offline, reject.
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         const shouldDownloadFirst = await CoreFilepool.instance.shouldDownloadFileBeforeOpen(fixedUrl, mainFile.filesize);

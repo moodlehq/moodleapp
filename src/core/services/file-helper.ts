@@ -26,6 +26,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -152,7 +153,7 @@ export class CoreFileHelperProvider {
         } else {
             if (!isOnline && !this.isStateDownloaded(state)) {
                 // Not downloaded and user is offline, reject.
-                throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+                throw new CoreNetworkError();
             }
 
             if (onProgress) {
