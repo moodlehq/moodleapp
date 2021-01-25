@@ -16,7 +16,6 @@ import { Component, OnInit, Type } from '@angular/core';
 import { IonInfiniteScroll, IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
-import { CoreTagFeedElement } from '../../services/tag-helper';
 import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
 import { Translate } from '@singletons';
@@ -45,7 +44,7 @@ export class CoreTagIndexAreaPage implements OnInit {
     loaded = false;
     componentName?: string;
     itemType?: string;
-    items: CoreTagFeedElement[] = [];
+    items: unknown[] = [];
     nextPage = 0;
     canLoadMore = false;
     areaComponent?: Type<unknown>;

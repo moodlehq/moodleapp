@@ -23,7 +23,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton, Platform, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile } from '@services/ws';
 
 import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
@@ -39,6 +39,8 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCourseHelper, CoreCourseModuleCompletionData } from './course-helper';
 import { CoreCourseFormatDelegate } from './format-delegate';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreCourseLogCronHandler } from './handlers/log-cron';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -75,6 +77,27 @@ export class CoreCourseProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
+    }
+
+    /**
+     * Initialize.
+     */
+    initialize(): void {
+        Platform.instance.resume.subscribe(() => {
+            // Run the handler the app is open to keep user in online status.
+            setTimeout(() => {
+                CoreCronDelegate.instance.forceCronHandlerExecution(CoreCourseLogCronHandler.instance.name);
+            }, 1000);
+        });
+
+        CoreEvents.on(CoreEvents.LOGIN, () => {
+            setTimeout(() => {
+                // Ignore errors here, since probably login is not complete: it happens on token invalid.
+                CoreUtils.instance.ignoreErrors(
+                    CoreCronDelegate.instance.forceCronHandlerExecution(CoreCourseLogCronHandler.instance.name),
+                );
+            }, 1000);
+        });
     }
 
     /**

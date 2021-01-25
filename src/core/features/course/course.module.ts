@@ -28,6 +28,10 @@ import { CoreCourseModulePrefetchDelegate } from './services/module-prefetch-del
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './services/handlers/log-cron';
 import { CoreCourseSyncCronHandler } from './services/handlers/sync-cron';
+import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
+import { CoreCourseTagAreaHandler } from './services/handlers/course-tag-area';
+import { CoreCourseModulesTagAreaHandler } from './services/handlers/modules-tag-area';
+import { CoreCourse } from './services/course';
 
 const routes: Routes = [
     {
@@ -65,7 +69,10 @@ const courseIndexRoutes: Routes = [
             useFactory: () => () => {
                 CoreCronDelegate.instance.register(CoreCourseSyncCronHandler.instance);
                 CoreCronDelegate.instance.register(CoreCourseLogCronHandler.instance);
+                CoreTagAreaDelegate.instance.registerHandler(CoreCourseTagAreaHandler.instance);
+                CoreTagAreaDelegate.instance.registerHandler(CoreCourseModulesTagAreaHandler.instance);
 
+                CoreCourse.instance.initialize();
                 CoreCourseModulePrefetchDelegate.instance.initialize();
             },
         },

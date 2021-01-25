@@ -24,6 +24,7 @@ import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
 import { CoreCourseSectionSelectorComponent } from './section-selector/section-selector';
+import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 
 @NgModule({
@@ -33,6 +34,7 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
         CoreCourseSectionSelectorComponent,
+        CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
     ],
     imports: [
@@ -48,6 +50,7 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
         CoreCourseSectionSelectorComponent,
+        CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
     ],
 })

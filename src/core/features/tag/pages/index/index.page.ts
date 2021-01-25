@@ -19,7 +19,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CoreTagFeedElement } from '../../services/tag-helper';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -180,7 +179,7 @@ export type CoreTagAreaDisplay = {
     componentName: string;
     itemType: string;
     nameKey: string;
-    items: CoreTagFeedElement[];
+    items: unknown[];
     canLoadMore: boolean;
     badge: string;
 };
