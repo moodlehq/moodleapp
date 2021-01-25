@@ -23,6 +23,7 @@ import { CoreLongPressDirective } from './long-press';
 import { CoreSupressEventsDirective } from './supress-events';
 import { CoreFaIconDirective } from './fa-icon';
 import { CoreUserLinkDirective } from './user-link';
+import { CoreAutoRowsDirective } from './auto-rows';
 
 @NgModule({
     declarations: [
@@ -35,6 +36,7 @@ import { CoreUserLinkDirective } from './user-link';
         CoreFabDirective,
         CoreFaIconDirective,
         CoreUserLinkDirective,
+        CoreAutoRowsDirective,
     ],
     imports: [],
     exports: [
@@ -47,6 +49,7 @@ import { CoreUserLinkDirective } from './user-link';
         CoreFabDirective,
         CoreFaIconDirective,
         CoreUserLinkDirective,
+        CoreAutoRowsDirective,
     ],
 })
 export class CoreDirectivesModule {}
