@@ -28,6 +28,7 @@ import { CoreMarkRequiredComponent } from './mark-required/mark-required';
 import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
 import { CoreRecaptchaModalComponent } from './recaptcha/recaptcha-modal';
 import { CoreShowPasswordComponent } from './show-password/show-password';
+import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
@@ -55,6 +56,7 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreRecaptchaComponent,
         CoreRecaptchaModalComponent,
         CoreShowPasswordComponent,
+        CoreSplitViewComponent,
         CoreEmptyBoxComponent,
         CoreTabsComponent,
         CoreInfiniteLoadingComponent,
@@ -85,6 +87,7 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreRecaptchaComponent,
         CoreRecaptchaModalComponent,
         CoreShowPasswordComponent,
+        CoreSplitViewComponent,
         CoreEmptyBoxComponent,
         CoreTabsComponent,
         CoreInfiniteLoadingComponent,

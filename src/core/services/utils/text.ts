@@ -645,6 +645,29 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Check whether the given text matches a glob pattern.
+     *
+     * @param text Text to match against.
+     * @param pattern Glob pattern.
+     * @return Whether the pattern matches.
+     */
+    matchesGlob(text: string, pattern: string): boolean {
+        pattern = pattern
+            .replace(/\*\*/g, '%RECURSIVE_MATCH%')
+            .replace(/\*/g, '%LOCAL_MATCH%')
+            .replace(/\?/g, '%CHARACTER_MATCH%');
+
+        pattern = this.escapeForRegex(pattern);
+
+        pattern = pattern
+            .replace(/%RECURSIVE_MATCH%/g, '.*')
+            .replace(/%LOCAL_MATCH%/g, '[^/]*')
+            .replace(/%CHARACTER_MATCH%/g, '[^/]');
+
+        return new RegExp(`^${pattern}$`).test(text);
+    }
+
+    /**
      * Same as Javascript's JSON.parse, but it will handle errors.
      *
      * @param json JSON text.

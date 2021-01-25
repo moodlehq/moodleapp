@@ -35,8 +35,8 @@
                 <h2>
                     <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
                 </h2>
-            <p>{{ site.fullName }}</p>
-            <p>{{ site.siteUrl }}</p>
+                <p>{{ site.fullName }}</p>
+                <p>{{ site.siteUrl }}</p>
             </ion-label>
             <ion-button fill="clear" slot="end" *ngIf="!isSynchronizing(site.id)" (click)="synchronize(site.id)"
                 [title]="site.siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
