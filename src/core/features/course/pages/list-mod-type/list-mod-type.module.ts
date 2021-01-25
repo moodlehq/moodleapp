@@ -13,30 +13,34 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseListModTypePage } from './list-mod-type';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'index',
-        pathMatch: 'full',
-    },
-    {
-        path: 'index',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.CoreCourseIndexPageModule),
-    },
-    {
-        path: 'unsupported-module',
-        loadChildren: () => import('./pages/unsupported-module/unsupported-module.module')
-            .then( m => m.CoreCourseUnsupportedModulePageModule),
-    },
-    {
-        path: 'list-mod-type',
-        loadChildren: () => import('./pages/list-mod-type/list-mod-type').then( m => m.CoreCourseListModTypePage),
+        component: CoreCourseListModTypePage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    declarations: [
+        CoreCourseListModTypePage,
+    ],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
+    exports: [RouterModule],
 })
-export class CoreCourseLazyModule {}
+export class CoreCourseListModTypePageModule {}
