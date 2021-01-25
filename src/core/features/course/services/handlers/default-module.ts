@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
@@ -21,6 +20,7 @@ import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSModule } from '../co
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseModule } from '../course-helper';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 
 /**
  * Default handler used when the module doesn't have a specific implementation.
@@ -59,12 +59,14 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
             icon: CoreCourse.instance.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: NavigationOptions): void => {
+            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                // @todo navCtrl.push('CoreCourseUnsupportedModulePage', { module: module, courseId: courseId }, options);
+                options = options || {};
+                options.params = { module, courseId };
+
+                CoreNavigator.instance.navigateToSitePath('course/unsupported-module', options);
             },
         };
 

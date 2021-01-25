@@ -25,6 +25,11 @@ const routes: Routes = [
         path: 'index',
         loadChildren: () => import('./pages/index/index.module').then( m => m.CoreCourseIndexPageModule),
     },
+    {
+        path: 'unsupported-module',
+        loadChildren: () => import('./pages/unsupported-module/unsupported-module.module')
+            .then( m => m.CoreCourseUnsupportedModulePageModule),
+    },
 ];
 
 @NgModule({
