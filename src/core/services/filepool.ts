@@ -797,7 +797,7 @@ export class CoreFilepoolProvider {
      * @param onProgress Function to call on progress.
      * @return Promise resolved when the package is downloaded.
      */
-    protected downloadOrPrefetchPackage(
+    downloadOrPrefetchPackage(
         siteId: string,
         fileList: CoreWSExternalFile[],
         prefetch: boolean,

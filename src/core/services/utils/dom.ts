@@ -1181,7 +1181,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     async showAlert(
-        header: string,
+        header: string | undefined,
         message: string,
         buttonText?: string,
         autocloseTime?: number,
@@ -1263,12 +1263,17 @@ export class CoreDomUtilsProvider {
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
      * @return Promise resolved with the alert modal.
      */
-    showAlertTranslated(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<HTMLIonAlertElement> {
-        title = title ? Translate.instance.instant(title) : title;
+    showAlertTranslated(
+        header: string | undefined,
+        message: string,
+        buttonText?: string,
+        autocloseTime?: number,
+    ): Promise<HTMLIonAlertElement> {
+        header = header ? Translate.instance.instant(header) : header;
         message = message ? Translate.instance.instant(message) : message;
         buttonText = buttonText ? Translate.instance.instant(buttonText) : buttonText;
 
-        return this.showAlert(title, message, buttonText, autocloseTime);
+        return this.showAlert(header, message, buttonText, autocloseTime);
     }
 
     /**

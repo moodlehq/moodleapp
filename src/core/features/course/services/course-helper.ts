@@ -1332,17 +1332,17 @@ export class CoreCourseHelperProvider {
         moduleInfo.status = results[1];
         switch (results[1]) {
             case CoreConstants.NOT_DOWNLOADED:
-                moduleInfo.statusIcon = 'cloud-download';
+                moduleInfo.statusIcon = 'fas-cloud-download-alt';
                 break;
             case CoreConstants.DOWNLOADING:
                 moduleInfo.statusIcon = 'spinner';
                 break;
             case CoreConstants.OUTDATED:
-                moduleInfo.statusIcon = 'refresh';
+                moduleInfo.statusIcon = 'fas-redo';
                 break;
             case CoreConstants.DOWNLOADED:
                 if (!CoreCourseModulePrefetchDelegate.instance.canCheckUpdates()) {
-                    moduleInfo.statusIcon = 'refresh';
+                    moduleInfo.statusIcon = 'fas-redo';
                 }
                 break;
             default:
