@@ -36,7 +36,7 @@ export class CoreCourseUnsupportedModulePage implements OnInit {
      */
     ngOnInit(): void {
         this.module = CoreNavigator.instance.getRouteParam('module');
-        this.courseId = CoreNavigator.instance.getRouteParam('courseId');
+        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
     }
 
     /**

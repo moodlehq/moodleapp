@@ -210,9 +210,33 @@ export class CoreNavigatorService {
         // Remove the parameter from our map if it's in there.
         delete this.storedParams[value];
 
-        // @todo: Convert strings to number/boolean if needed? All number & boolean params are converted to string.
-
         return <T> storedParam ?? value;
+    }
+
+    /**
+     * Get a number route param.
+     * Angular router automatically converts numbers to string, this function automatically converts it back to number.
+     *
+     * @param name Name of the parameter.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRouteNumberParam(name: string): number | undefined {
+        const value = this.getRouteParam<string>(name);
+
+        return value !== undefined ? Number(value) : value;
+    }
+
+    /**
+     * Get a boolean route param.
+     * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
+     *
+     * @param name Name of the parameter.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRouteBooleanParam(name: string): boolean | undefined {
+        const value = this.getRouteParam<string>(name);
+
+        return value !== undefined ? Boolean(value) : value;
     }
 
     /**

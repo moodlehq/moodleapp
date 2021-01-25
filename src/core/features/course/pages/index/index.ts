@@ -88,8 +88,8 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         this.contentsTab.page = CoreTextUtils.instance.concatenatePaths(this.currentPagePath, this.contentsTab.page);
         this.contentsTab.pageParams = {
             course: this.course,
-            sectionId: CoreNavigator.instance.getRouteParam<number>('sectionId'),
-            sectionNumber: CoreNavigator.instance.getRouteParam<number>('sectionNumber'),
+            sectionId: CoreNavigator.instance.getRouteNumberParam('sectionId'),
+            sectionNumber: CoreNavigator.instance.getRouteNumberParam('sectionNumber'),
         };
 
         if (module) {

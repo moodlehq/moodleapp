@@ -47,7 +47,7 @@ export class CoreCourseListModTypePage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         this.title = CoreNavigator.instance.getRouteParam('title') || '';
-        this.courseId = CoreNavigator.instance.getRouteParam('courseId');
+        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
         this.modName = CoreNavigator.instance.getRouteParam('modName');
         this.downloadEnabled = !CoreSites.instance.getCurrentSite()?.isOfflineDisabled();
 

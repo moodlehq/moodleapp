@@ -97,9 +97,9 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
 
         this.course = course;
-        this.sectionId = CoreNavigator.instance.getRouteParam('sectionId');
-        this.sectionNumber = CoreNavigator.instance.getRouteParam('sectionNumber');
-        this.moduleId = CoreNavigator.instance.getRouteParam('moduleId');
+        this.sectionId = CoreNavigator.instance.getRouteNumberParam('sectionId');
+        this.sectionNumber = CoreNavigator.instance.getRouteNumberParam('sectionNumber');
+        this.moduleId = CoreNavigator.instance.getRouteNumberParam('moduleId');
 
         this.displayEnableDownload = !CoreSites.instance.getCurrentSite()?.isOfflineDisabled() &&
             CoreCourseFormatDelegate.instance.displayEnableDownload(this.course);

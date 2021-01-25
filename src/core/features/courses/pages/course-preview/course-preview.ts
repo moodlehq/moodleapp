@@ -97,7 +97,7 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.course = CoreNavigator.instance.getRouteParam('course');
-        this.avoidOpenCourse = !!CoreNavigator.instance.getRouteParam('avoidOpenCourse');
+        this.avoidOpenCourse = !!CoreNavigator.instance.getRouteBooleanParam('avoidOpenCourse');
 
         if (!this.course) {
             CoreNavigator.instance.back();
