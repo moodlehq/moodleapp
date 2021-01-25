@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 
 import { CoreChronoComponent } from './chrono/chrono';
 import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
@@ -38,10 +39,11 @@ import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
+import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
+import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 
 @NgModule({
     declarations: [
@@ -67,10 +69,12 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreNavBarButtonsComponent,
         CoreUserAvatarComponent,
         CoreDynamicComponent,
+        CoreSendMessageFormComponent,
     ],
     imports: [
         CommonModule,
         IonicModule.forRoot(),
+        FormsModule,
         TranslateModule.forChild(),
         CoreDirectivesModule,
         CorePipesModule,
@@ -98,6 +102,7 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
         CoreNavBarButtonsComponent,
         CoreUserAvatarComponent,
         CoreDynamicComponent,
+        CoreSendMessageFormComponent,
     ],
 })
 export class CoreComponentsModule {}
