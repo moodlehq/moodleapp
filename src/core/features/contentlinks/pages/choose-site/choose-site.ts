@@ -18,7 +18,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
-import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 
@@ -33,26 +32,22 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreContentLinksChooseSitePage implements OnInit {
 
-    url: string;
+    url!: string;
     sites: CoreSiteBasicInfo[] = [];
     loaded = false;
     protected action?: CoreContentLinksAction;
     protected isRootURL = false;
 
-    constructor(
-        route: ActivatedRoute,
-    ) {
-        this.url = route.snapshot.queryParamMap.get('url')!;
-    }
-
     /**
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        if (!this.url) {
+        const url = CoreNavigator.instance.getRouteParam<string>('url');
+        if (!url) {
             return this.leaveView();
         }
 
+        this.url = url;
         let siteIds: string[] | undefined = [];
 
         try {

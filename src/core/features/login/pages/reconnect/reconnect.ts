@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
@@ -60,7 +60,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     constructor(
         protected fb: FormBuilder,
-        protected route: ActivatedRoute,
     ) {
 
         const currentSite = CoreSites.instance.getCurrentSite();
@@ -75,11 +74,14 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * Initialize the component.
      */
     async ngOnInit(): Promise<void> {
-        const params = this.route.snapshot.queryParams;
+        const siteId = CoreNavigator.instance.getRouteParam<string>('siteId');
+        if (!siteId) {
+            return this.cancel();
+        }
 
-        this.siteId = params['siteId'];
-        this.page = params['pageName'];
-        this.pageParams = params['pageParams'];
+        this.siteUrl = siteId;
+        this.page = CoreNavigator.instance.getRouteParam('pageName');
+        this.pageParams = CoreNavigator.instance.getRouteParam('pageParams');
 
         try {
             const site = await CoreSites.instance.getSite(this.siteId);

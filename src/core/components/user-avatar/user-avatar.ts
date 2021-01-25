@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -52,9 +51,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     protected currentUserId: number;
     protected pictureObserver: CoreEventObserver;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
 
         this.pictureObserver = CoreEvents.on<CoreUserProfilePictureUpdatedData>(

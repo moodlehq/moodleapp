@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
@@ -32,9 +31,7 @@ export class CoreSettingsAboutPage {
     versionName: string;
     privacyPolicy: string;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         const currentSite = CoreSites.instance.getCurrentSite();
 
         this.appName = CoreConstants.CONFIG.appname;

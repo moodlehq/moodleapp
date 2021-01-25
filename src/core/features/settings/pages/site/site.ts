@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../services/settings-delegate';
@@ -57,15 +57,10 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     protected sitesObserver: CoreEventObserver;
     protected isDestroyed = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected router: Router, // Will be removed when splitview is implemented
-    ) {
+    constructor() {
 
         this.isIOS = CoreApp.instance.isIOS();
         this.siteId = CoreSites.instance.getCurrentSiteId();
-
-        this.selectedPage = route.snapshot.paramMap.get('page') || undefined;
 
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, (data: CoreEventSiteUpdatedData) => {
             if (data.siteId == this.siteId) {
@@ -78,6 +73,8 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
+        // @todo this.selectedPage = route.snapshot.paramMap.get('page') || undefined;
+
         this.fetchData().finally(() => {
             this.loaded = true;
 

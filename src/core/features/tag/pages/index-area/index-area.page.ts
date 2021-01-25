@@ -16,10 +16,9 @@ import { Component, OnInit, Type } from '@angular/core';
 import { IonInfiniteScroll, IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
-import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
 import { Translate } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the tag index area.
@@ -50,32 +49,25 @@ export class CoreTagIndexAreaPage implements OnInit {
     areaComponent?: Type<unknown>;
     loadMoreError = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) { }
-
     /**
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
+        this.tagId = CoreNavigator.instance.getRouteNumberParam('tagId') || this.tagId;
+        this.tagName = CoreNavigator.instance.getRouteParam('tagName') || this.tagName;
+        this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || this.collectionId;
+        this.areaId = CoreNavigator.instance.getRouteNumberParam('areaId') || this.areaId;
+        this.fromContextId = CoreNavigator.instance.getRouteNumberParam('fromContextId') || this.fromContextId;
+        this.contextId = CoreNavigator.instance.getRouteNumberParam('contextId') || this.contextId;
+        this.recursive = CoreNavigator.instance.getRouteBooleanParam('recursive') ?? true;
 
-        const navParams = this.route.snapshot.queryParams;
-
-        this.tagId = navParams['tagId'] ? parseInt(navParams['tagId'], 10) : this.tagId;
-        this.tagName = navParams['tagName'] || this.tagName;
-        this.collectionId = navParams['collectionId'] ? parseInt(navParams['collectionId'], 10) : this.collectionId;
-        this.areaId = navParams['areaId'] ? parseInt(navParams['areaId']!, 10) : this.areaId;
-        this.fromContextId = parseInt(navParams['fromContextId'], 10) || this.fromContextId;
-        this.contextId = navParams['contextId'] ? parseInt(navParams['contextId'], 10) : this.contextId;
-        this.recursive = typeof navParams['recursive'] == 'undefined'? true : navParams['recursive'];
-
-        this.areaNameKey = navParams['areaNameKey'];
+        this.areaNameKey = CoreNavigator.instance.getRouteParam('areaNameKey') || '';
         // Pass the the following parameters to avoid fetching the first page.
-        this.componentName = navParams['componentName'];
-        this.itemType = navParams['itemType'];
-        this.items = []; // @todo navParams['items'] || [];
-        this.nextPage = typeof navParams['nextPage'] != 'undefined' ? parseInt(navParams['nextPage'], 10) : 0;
-        this.canLoadMore = CoreUtils.instance.isTrueOrOne(navParams['canLoadMore']);
+        this.componentName = CoreNavigator.instance.getRouteParam('componentName');
+        this.itemType = CoreNavigator.instance.getRouteParam('itemType');
+        this.items = CoreNavigator.instance.getRouteParam<unknown[]>('items') || [];
+        this.nextPage = CoreNavigator.instance.getRouteNumberParam('nextPage') || 0;
+        this.canLoadMore = CoreNavigator.instance.getRouteBooleanParam('canLoadMore') || false;
 
         try {
             if (!this.componentName || !this.itemType || !this.items.length || this.nextPage == 0) {

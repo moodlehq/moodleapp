@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreDomUtils } from '@services/utils/dom';
@@ -39,7 +38,6 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
 
     constructor(
         protected formBuilder: FormBuilder,
-        protected route: ActivatedRoute,
     ) {
     }
 
@@ -47,13 +45,19 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-        const params = this.route.snapshot.queryParams;
+        const siteUrl = CoreNavigator.instance.getRouteParam<string>('siteUrl');
+        if (!siteUrl) {
+            CoreDomUtils.instance.showErrorModal('Site URL not supplied.');
+            CoreNavigator.instance.back();
 
-        this.siteUrl = params['siteUrl'];
+            return;
+        }
+
+        this.siteUrl = siteUrl;
         this.autoFocus = Platform.instance.is('tablet');
         this.myForm = this.formBuilder.group({
             field: ['username', Validators.required],
-            value: [params['username'] || '', Validators.required],
+            value: [CoreNavigator.instance.getRouteParam<string>('username') || '', Validators.required],
         });
     }
 

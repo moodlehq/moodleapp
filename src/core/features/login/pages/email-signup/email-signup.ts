@@ -14,7 +14,6 @@
 
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonRefresher } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
@@ -82,7 +81,6 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
     constructor(
         protected fb: FormBuilder,
-        protected route: ActivatedRoute,
     ) {
         // Create the ageVerificationForm.
         this.ageVerificationForm = this.fb.group({
@@ -115,7 +113,15 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Component initialized.
      */
     ngOnInit(): void {
-        this.siteUrl = this.route.snapshot.queryParams['siteUrl'];
+        const siteUrl = CoreNavigator.instance.getRouteParam<string>('siteUrl');
+        if (!siteUrl) {
+            CoreDomUtils.instance.showErrorModal('Site URL not supplied.');
+            CoreNavigator.instance.back();
+
+            return;
+        }
+
+        this.siteUrl = siteUrl;
 
         // Fetch the data.
         this.fetchData().finally(() => {

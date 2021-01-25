@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -38,18 +37,12 @@ export class CoreLoginSitePolicyPage implements OnInit {
     protected siteId?: string;
     protected currentSite?: CoreSite;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
-    }
-
     /**
      * Component initialized.
      */
     ngOnInit(): void {
-        const params = this.route.snapshot.queryParams;
 
-        this.siteId = params['siteId'];
+        this.siteId = CoreNavigator.instance.getRouteParam('siteId');
         this.currentSite = CoreSites.instance.getCurrentSite();
 
         if (!this.currentSite) {

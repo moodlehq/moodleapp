@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
+import { Params } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
 import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSSection } from '@features/course/services/course';
@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -58,16 +58,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     protected updateSiteObserver?: CoreEventObserver;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {}
-
     /**
      * Page being initialized.
      */
     ngOnInit(): void {
-        const navParams = this.route.snapshot.queryParams;
-
         this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
         this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
@@ -84,9 +78,9 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.currentSite = CoreSites.instance.getCurrentSite()!;
         this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
 
-        const module = navParams['module'];
+        const module = CoreNavigator.instance.getRouteParam<CoreCourseModule>('module');
         if (module) {
-            const modParams = navParams['modParams'];
+            const modParams = CoreNavigator.instance.getRouteParam<Params>('modParams');
             CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
         }
 

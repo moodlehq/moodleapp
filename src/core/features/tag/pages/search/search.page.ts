@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
 
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -23,6 +22,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -41,20 +41,12 @@ export class CoreTagSearchPage implements OnInit {
     loaded = false;
     searching = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
-
-    }
-
     /**
      * View loaded.
      */
     ngOnInit(): void {
-        // @todo: Check params work.
-        this.collectionId = this.route.snapshot.queryParamMap.has('collectionId') ?
-            parseInt(this.route.snapshot.queryParamMap.get('collectionId')!, 10) : 0;
-        this.query = this.route.snapshot.queryParamMap.get('query') || '';
+        this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || 0;
+        this.query = CoreNavigator.instance.getRouteParam('query') || '';
 
         this.fetchData().finally(() => {
             this.loaded = true;

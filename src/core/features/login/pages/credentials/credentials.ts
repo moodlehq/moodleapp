@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
@@ -61,7 +60,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     constructor(
         protected fb: FormBuilder,
-        protected route: ActivatedRoute,
     ) {
 
         const canScanQR = CoreUtils.instance.canScanQR();
@@ -80,17 +78,23 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Initialize the component.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
-            this.siteUrl = params['siteUrl'];
-            this.siteName = params['siteName'] || undefined;
-            this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && params['logoUrl'] || undefined;
-            this.siteConfig = params['siteConfig'];
-            this.urlToOpen = params['urlToOpen'];
+        const siteUrl = CoreNavigator.instance.getRouteParam<string>('siteUrl');
+        if (!siteUrl) {
+            CoreDomUtils.instance.showErrorModal('Site URL not supplied.');
+            CoreNavigator.instance.back();
 
-            this.credForm = this.fb.group({
-                username: [params['username'] || '', Validators.required],
-                password: ['', Validators.required],
-            });
+            return;
+        }
+
+        this.siteUrl = siteUrl;
+        this.siteName = CoreNavigator.instance.getRouteParam('siteName');
+        this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.instance.getRouteParam('logoUrl') || undefined;
+        this.siteConfig = CoreNavigator.instance.getRouteParam('siteConfig');
+        this.urlToOpen = CoreNavigator.instance.getRouteParam('urlToOpen');
+
+        this.credForm = this.fb.group({
+            username: [CoreNavigator.instance.getRouteParam<string>('username') || '', Validators.required],
+            password: ['', Validators.required],
         });
 
         this.treatSiteConfig();

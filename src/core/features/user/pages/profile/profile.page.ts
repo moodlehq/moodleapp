@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
@@ -44,7 +43,7 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreUserProfilePage implements OnInit, OnDestroy {
 
-    protected courseId!: number;
+    protected courseId?: number;
     protected userId!: number;
     protected site?: CoreSite;
     protected obsProfileRefreshed: CoreEventObserver;
@@ -62,10 +61,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     newPageHandlers: CoreUserProfileHandlerData[] = [];
     communicationHandlers: CoreUserProfileHandlerData[] = [];
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
-
+    constructor() {
         this.obsProfileRefreshed = CoreEvents.on<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
@@ -81,12 +77,20 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.site = CoreSites.instance.getCurrentSite();
-        this.userId = parseInt(this.route.snapshot.queryParams['userId'], 10);
-        this.courseId = parseInt(this.route.snapshot.queryParams['courseId'], 10);
+        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
+        const userId = CoreNavigator.instance.getRouteNumberParam('userId');
 
         if (!this.site) {
             return;
         }
+        if (userId === undefined) {
+            CoreDomUtils.instance.showErrorModal('User ID not supplied');
+            CoreNavigator.instance.back();
+
+            return;
+        }
+
+        this.userId = userId;
 
         // Allow to change the profile image only in the app profile page.
         this.canChangeProfilePicture =

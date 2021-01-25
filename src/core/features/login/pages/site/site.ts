@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
@@ -59,7 +58,6 @@ export class CoreLoginSitePage implements OnInit {
     siteFinderSettings: SiteFinderSettings;
 
     constructor(
-        protected route: ActivatedRoute,
         protected formBuilder: FormBuilder,
     ) {
 
@@ -115,9 +113,7 @@ export class CoreLoginSitePage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
-            this.showKeyboard = !!params['showKeyboard'];
-        });
+        this.showKeyboard = !!CoreNavigator.instance.getRouteBooleanParam('showKeyboard');
     }
 
     /**

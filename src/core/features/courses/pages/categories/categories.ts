@@ -19,7 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData } from '../../services/courses';
 import { Translate } from '@singletons';
-import { ActivatedRoute } from '@angular/router';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays a list of categories and the courses in the current category if any.
@@ -38,9 +38,7 @@ export class CoreCoursesCategoriesPage implements OnInit {
 
     protected categoryId = 0;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.title = Translate.instance.instant('core.courses.categories');
     }
 
@@ -48,7 +46,7 @@ export class CoreCoursesCategoriesPage implements OnInit {
      * View loaded.
      */
     ngOnInit(): void {
-        this.categoryId = parseInt(this.route.snapshot.params['id'], 0) || 0;
+        this.categoryId = CoreNavigator.instance.getRouteNumberParam('id') || 0;
 
         this.fetchCategories().finally(() => {
             this.categoriesLoaded = true;
