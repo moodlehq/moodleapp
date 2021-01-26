@@ -13,36 +13,27 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { RouterModule, Routes } from '@angular/router';
-import { CommonModule } from '@angular/common';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
-import { AddonMessagesDiscussionPage } from './discussion.page';
-import { AddonMessagesComponentsModule } from '@addons/messages/components/components.module';
+import { AddonMessagesConversationInfoComponent } from './conversation-info/conversation-info';
 
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonMessagesDiscussionPage,
-    },
-];
 
 @NgModule({
+    declarations: [
+        AddonMessagesConversationInfoComponent,
+    ],
     imports: [
-        RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-        AddonMessagesComponentsModule,
     ],
-    declarations: [
-        AddonMessagesDiscussionPage,
+    entryComponents: [
+        AddonMessagesConversationInfoComponent,
     ],
-    exports: [RouterModule],
 })
-export class AddonMessagesDiscussionPageModule {}
-
+export class AddonMessagesComponentsModule {}

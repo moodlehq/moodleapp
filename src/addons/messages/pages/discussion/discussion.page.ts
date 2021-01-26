@@ -52,6 +52,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from '@addons/messages/services/database/messages';
+import { AddonMessagesConversationInfoComponent } from '../../components/conversation-info/conversation-info';
 
 /**
  * Page that displays a message discussion page.
@@ -171,8 +172,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             this.showInfo = !backViewPage || !CoreTextUtils.instance.matchesGlob(backViewPage, '**/user/profile');
 
             this.loaded = false;
-            this.conversationId = parseInt(params['conversationId'], 10) || undefined;
-            this.userId = parseInt(params['userId'], 10) || undefined;
+            this.conversationId = params['conversationId'] ? parseInt(params['conversationId'], 10) : undefined;
+            this.userId = params['userId'] ? parseInt(params['userId'], 10) : undefined;
             this.showKeyboard = !!params['showKeyboard'];
 
             await this.fetchData();
@@ -289,7 +290,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     // Get the member info. Invalidate first to make sure we get the latest status.
                     promises.push(AddonMessages.instance.invalidateMemberInfo(this.userId).then(() =>
                         AddonMessages.instance.getMemberInfo(this.userId!)).then((member) => {
-                        this.otherMember = member;
                         if (!exists && member) {
                             this.conversationImage = member.profileimageurl;
                             this.title = member.fullname;
@@ -362,10 +362,10 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         if (this.messagesBeingSent > 0) {
             // We do not poll while a message is being sent or we could confuse the user.
             // Otherwise, his message would disappear from the list, and he'd have to wait for the interval to check for messages.
-            throw null;
+            return;
         } else if (this.fetching) {
             // Already fetching.
-            throw null;
+            return;
         } else if (this.groupMessagingEnabled && !this.conversationId) {
             // Don't have enough data to fetch messages.
             throw new CoreError('No enough data provided to fetch messages');
@@ -1286,7 +1286,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         if (this.isGroup) {
             // Display the group information.
             const modal = await ModalController.instance.create({
-                component: 'AddonMessagesConversationInfoPage', // @todo
+                component: AddonMessagesConversationInfoComponent,
                 componentProps: {
                     conversationId: this.conversationId,
                 },
@@ -1296,7 +1296,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             const result = await modal.onDidDismiss();
 
-            if (typeof result.data.userId != 'undefined') {
+            if (typeof result.data != 'undefined') {
                 const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/**/discussion');
 
                 // Open user conversation.
@@ -1304,7 +1304,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     // Notify the left pane to load it, this way the right conversation will be highlighted.
                     CoreEvents.trigger<AddonMessagesOpenConversationEventData>(
                         AddonMessagesProvider.OPEN_CONVERSATION_EVENT,
-                        { userId: result.data.userId },
+                        { userId: result.data },
                         this.siteId,
                     );
                 } else {
