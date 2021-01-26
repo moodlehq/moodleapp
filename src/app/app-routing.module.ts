@@ -40,10 +40,11 @@ function buildAppRoutes(injector: Injector): Routes {
 /**
  * Create a url matcher that will only match when a given condition is met.
  *
+ * @param pathOrMatcher Original path or matcher configured in the route.
  * @param condition Condition.
  * @return Conditional url matcher.
  */
-function buildConditionalUrlMatcher(condition: () => boolean): UrlMatcher {
+function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, condition: () => boolean): UrlMatcher {
     // Create a matcher based on Angular's default matcher.
     // see https://github.com/angular/angular/blob/10.0.x/packages/router/src/shared.ts#L127
     return (segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult | null => {
@@ -52,10 +53,20 @@ function buildConditionalUrlMatcher(condition: () => boolean): UrlMatcher {
             return null;
         }
 
-        const { path, pathMatch } = route as { path: string; pathMatch?: 'full' };
-        const posParams: Record<string, UrlSegment> = {};
-        const isFullMatch = pathMatch === 'full';
+        // Use existing matcher if any.
+        if (typeof pathOrMatcher === 'function') {
+            return pathOrMatcher(segments, segmentGroup, route);
+        }
+
+        const path = pathOrMatcher;
         const parts = path.split('/');
+        const isFullMatch = route.pathMatch === 'full';
+        const posParams: Record<string, UrlSegment> = {};
+
+        // The path matches anything.
+        if (path === '') {
+            return (!isFullMatch || segments.length === 0) ? { consumed: [] } : null;
+        }
 
         // The actual URL is shorter than the config, no match.
         if (parts.length > segments.length) {
@@ -97,12 +108,15 @@ export type ModuleRoutesConfig = Routes | Partial<ModuleRoutes>;
  * @return Conditional routes.
  */
 export function conditionalRoutes(routes: Routes, condition: () => boolean): Routes {
-    const conditionalMatcher = buildConditionalUrlMatcher(condition);
+    return routes.map(route => {
+        // We need to remove the path from the route because Angular doesn't call the matcher for empty paths.
+        const { path, matcher, ...newRoute } = route;
 
-    return routes.map(route => ({
-        ...route,
-        matcher: conditionalMatcher,
-    }));
+        return {
+            ...newRoute,
+            matcher: buildConditionalUrlMatcher(matcher || path!, condition),
+        };
+    });
 }
 
 /**

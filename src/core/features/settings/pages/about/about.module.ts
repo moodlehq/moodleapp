@@ -26,18 +26,6 @@ const routes: Routes = [
         path: '',
         component: CoreSettingsAboutPage,
     },
-    {
-        path: 'deviceinfo',
-        loadChildren: () =>
-            import('@features/settings/pages/deviceinfo/deviceinfo.module')
-                .then(m => m.CoreSettingsDeviceInfoPageModule),
-    },
-    {
-        path: 'licenses',
-        loadChildren: () =>
-            import('@features/settings/pages/licenses/licenses.module')
-                .then(m => m.CoreSettingsLicensesPageModule),
-    },
 ];
 
 @NgModule({
