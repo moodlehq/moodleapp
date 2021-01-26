@@ -18,9 +18,9 @@ import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 
 enum CoreSplitViewMode {
-    Default = '', // Shows both menu and content.
     MenuOnly = 'menu-only', // Hides content.
     ContentOnly = 'content-only', // Hides menu.
+    MenuAndContent = 'menu-and-content', // Shows both menu and content.
 }
 
 @Component({
@@ -32,8 +32,8 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild(IonRouterOutlet) outlet!: IonRouterOutlet;
     @HostBinding('class') classes = '';
+    isNested = false;
 
-    private isNestedSplitView = false;
     private subscriptions?: Subscription[];
 
     constructor(private element: ElementRef<HTMLElement>) {}
@@ -42,7 +42,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.isNestedSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
+        this.isNested = !!this.element.nativeElement.parentElement?.closest('core-split-view');
         this.subscriptions = [
             this.outlet.activateEvents.subscribe(() => this.updateClasses()),
             this.outlet.deactivateEvents.subscribe(() => this.updateClasses()),
@@ -63,7 +63,13 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * Update host classes.
      */
     private updateClasses(): void {
-        this.classes = this.getCurrentMode();
+        const classes: string[] = [this.getCurrentMode()];
+
+        if (this.isNested) {
+            classes.push('nested');
+        }
+
+        this.classes = classes.join(' ');
     }
 
     /**
@@ -73,7 +79,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * @return Split view mode.
      */
     private getCurrentMode(): CoreSplitViewMode {
-        if (this.isNestedSplitView) {
+        if (this.isNested) {
             return CoreSplitViewMode.MenuOnly;
         }
 
@@ -83,7 +89,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
                 : CoreSplitViewMode.MenuOnly;
         }
 
-        return CoreSplitViewMode.Default;
+        return CoreSplitViewMode.MenuAndContent;
     }
 
 }

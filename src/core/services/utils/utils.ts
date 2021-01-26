@@ -846,7 +846,7 @@ export class CoreUtilsProvider {
         defaultLabel?: string,
         separator: string = ',',
         defaultValue?: T,
-    ): { label: string; value: T | number }[] {
+    ): CoreMenuItem<T>[] {
         // Split and format the list.
         const split = list.split(separator).map((label, index) => ({
             label: label.trim(),
@@ -1672,4 +1672,12 @@ export type OrderedPromiseData = {
 export type CoreCountry = {
     code: string;
     name: string;
+};
+
+/**
+ * Menu item.
+ */
+export type CoreMenuItem<T = number> = {
+    label: string;
+    value: T | number;
 };
