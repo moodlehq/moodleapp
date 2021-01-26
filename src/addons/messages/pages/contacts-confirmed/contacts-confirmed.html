@@ -4,14 +4,14 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded" class="core-loading-center">
         <ion-list  class="ion-no-margin">
-            <ion-item class="ion-text-wrap" *ngFor="let contact of contacts" [title]="contact.fullname"
-                (click)="selectUser(contact.id)"
-                [class.core-split-item-selected]="contact.id == selectedUserId" class="addon-messages-conversation-item">
+            <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let contact of contacts"
+                [title]="contact.fullname" (click)="selectUser(contact.id)" detail
+                [class.core-selected-item]="contact.id == selectedUserId">
                 <core-user-avatar slot="start" core-user-avatar [user]="contact" [checkOnline]="contact.showonlinestatus"
                     [linkProfile]="false"></core-user-avatar>
                 <ion-label>
                     <h2>
-                        {{ contact.fullname }}
+                        <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0"></core-format-text>
                         <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end">
                         </ion-icon>
                     </h2>

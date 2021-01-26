@@ -25,6 +25,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { IonRefresher } from '@ionic/angular';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Component that displays the list of contact requests.
@@ -32,6 +33,7 @@ import { IonRefresher } from '@ionic/angular';
 @Component({
     selector: 'addon-messages-contact-requests',
     templateUrl: 'contacts-requests.html',
+    styleUrls: ['../../messages-common.scss'],
 })
 export class AddonMessagesContactsRequestsPage implements OnInit, OnDestroy {
 
@@ -67,7 +69,7 @@ export class AddonMessagesContactsRequestsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         try {
             await this.fetchData();
-            if (this.requests.length) {
+            if (this.requests.length && CoreScreen.instance.isTablet) {
                 this.selectUser(this.requests[0].id, true);
             }
         } finally {
@@ -146,9 +148,6 @@ export class AddonMessagesContactsRequestsPage implements OnInit, OnDestroy {
         };
 
         CoreEvents.trigger(AddonMessagesProvider.SPLIT_VIEW_LOAD_CONTACTS_EVENT, data);
-
-        // @todo: Check if split view is visible before
-        CoreNavigator.instance.navigateToSitePath('discussion', { params : { userId } });
     }
 
     /**

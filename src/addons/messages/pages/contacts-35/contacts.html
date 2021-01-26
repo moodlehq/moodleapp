@@ -22,9 +22,9 @@
                 </ion-item-divider>
                 <ng-container *ngFor="let contact of contacts[contactType]">
                     <!-- Don't show deleted users -->
-                    <ion-item class="ion-text-wrap" *ngIf="contact.profileimageurl || contact.profileimageurlsmall"
-                        [title]="contact.fullname" (click)="gotoDiscussion(contact.id)"
-                        [class.core-split-item-selected]="contact.id == discussionUserId" class="addon-messages-conversation-item">
+                    <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngIf="contact.profileimageurl || contact.profileimageurlsmall"
+                        [title]="contact.fullname" (click)="gotoDiscussion(contact.id)" detail
+                        [class.core-selected-item]="contact.id == discussionUserId">
                         <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus"></core-user-avatar>
                         <ion-label><h2>{{ contact.fullname }}</h2></ion-label>
                     </ion-item>

@@ -17,6 +17,9 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { CoreScreen } from '@services/screen';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { discussionRoute } from '@addons/messages/messages-lazy.module';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
@@ -25,9 +28,21 @@ import { AddonMessagesSearchPage } from './search.page';
 
 const routes: Routes = [
     {
-        path: '',
+        matcher: segments => {
+            const matches = CoreScreen.instance.isMobile ? segments.length === 0 : true;
+
+            return matches ? { consumed: [] } : null;
+        },
         component: AddonMessagesSearchPage,
+        children: conditionalRoutes([
+            {
+                path: '',
+                pathMatch: 'full',
+            },
+            discussionRoute,
+        ], () => CoreScreen.instance.isTablet),
     },
+    ...conditionalRoutes([discussionRoute], () => CoreScreen.instance.isMobile),
 ];
 
 @NgModule({

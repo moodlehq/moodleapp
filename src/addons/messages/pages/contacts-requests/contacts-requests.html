@@ -4,12 +4,12 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded" class="core-loading-center">
         <ion-list  class="ion-no-margin">
-            <ion-item class="ion-text-wrap" *ngFor="let request of requests" [title]="request.fullname"
-                (click)="selectUser(request.id)" [class.core-split-item-selected]="request.id == selectedUserId"
-                class="addon-messages-conversation-item">
+            <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let request of requests"
+                [title]="request.fullname" (click)="selectUser(request.id)"
+                [class.core-selected-item]="request.id == selectedUserId" detail>
                 <core-user-avatar slot="start" [user]="request" [linkProfile]="false"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ request.fullname }}</h2>
+                    <core-format-text [text]="request.fullname" contextLevel="system" [contextInstanceId]="0"></core-format-text>
                     <p *ngIf="!request.iscontact">
                         {{ 'addon.messages.wouldliketocontactyou' | translate }}
                     </p>

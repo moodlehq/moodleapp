@@ -30,6 +30,7 @@ import {
     AddonMessagesNewMessagedEventData,
     AddonMessagesUpdateConversationListEventData,
     AddonMessagesConversationMessageFormatted,
+    AddonMessagesOpenConversationEventData,
 } from '../../services/messages';
 import { AddonMessagesOffline } from '../../services/messages-offline';
 import { AddonMessagesSync, AddonMessagesSyncEvents, AddonMessagesSyncProvider } from '../../services/messages-sync';
@@ -51,7 +52,6 @@ import { ActivatedRoute } from '@angular/router';
 import {
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from '@addons/messages/services/database/messages';
-// @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays a message discussion page.
@@ -119,9 +119,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
     constructor(
         protected route: ActivatedRoute,
-        // @todo @Optional() private svComponent: CoreSplitViewComponent,
     ) {
-
         this.siteId = CoreSites.instance.getCurrentSiteId();
         this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
         this.groupMessagingEnabled = AddonMessages.instance.isGroupMessagingEnabled();
@@ -167,16 +165,19 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     async ngOnInit(): Promise<void> {
 
-        this.route.queryParams.subscribe(params => {
+        this.route.queryParams.subscribe(async params => {
             // Disable the profile button if we're already coming from a profile.
             const backViewPage = CoreNavigator.instance.getPreviousPath();
             this.showInfo = !backViewPage || !CoreTextUtils.instance.matchesGlob(backViewPage, '**/user/profile');
 
-            this.conversationId = params['conversationId'] || undefined;
-            this.userId = params['userId'] || undefined;
+            this.loaded = false;
+            this.conversationId = parseInt(params['conversationId'], 10) || undefined;
+            this.userId = parseInt(params['userId'], 10) || undefined;
             this.showKeyboard = !!params['showKeyboard'];
 
-            this.fetchData();
+            await this.fetchData();
+
+            this.scrollToBottom();
         });
     }
 
@@ -1293,24 +1294,26 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             await modal.present();
 
-            const userId = await modal.onDidDismiss();
+            const result = await modal.onDidDismiss();
 
-            if (typeof userId != 'undefined') {
+            if (typeof result.data.userId != 'undefined') {
+                const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/**/discussion');
+
                 // Open user conversation.
-                /* @todo if (this.svComponent) {
+                if (splitViewLoaded) {
                     // Notify the left pane to load it, this way the right conversation will be highlighted.
                     CoreEvents.trigger<AddonMessagesOpenConversationEventData>(
                         AddonMessagesProvider.OPEN_CONVERSATION_EVENT,
-                        { userId: userId },
-                        this.siteId);
-                } else {*/
-                // Open the discussion in a new view.
-                CoreNavigator.instance.navigateToSitePath('/messages/discussion', { params: { userId } });
-                // }
+                        { userId: result.data.userId },
+                        this.siteId,
+                    );
+                } else {
+                    // Open the discussion in a new view.
+                    CoreNavigator.instance.navigateToSitePath('/messages/discussion', { params: { userId: result.data.userId } });
+                }
             }
         } else {
             // Open the user profile.
-            // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
             CoreNavigator.instance.navigateToSitePath('/user/profile', { params: { userId: this.userId } });
         }
     }

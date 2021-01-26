@@ -24,7 +24,7 @@ import {
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
 import { IonRefresher } from '@ionic/angular';
-import { CoreNavigator } from '@services/navigator';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Component that displays the list of confirmed contacts.
@@ -32,6 +32,7 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'addon-messages-confirmed-contacts',
     templateUrl: 'contacts-confirmed.html',
+    styleUrls: ['../../messages-common.scss'],
 })
 export class AddonMessagesContactsConfirmedPage implements OnInit, OnDestroy {
 
@@ -44,8 +45,6 @@ export class AddonMessagesContactsConfirmedPage implements OnInit, OnDestroy {
     protected memberInfoObserver: CoreEventObserver;
 
     constructor() {
-        // this.onUserSelected = new EventEmitter();
-
         // Update block status of a user.
         this.memberInfoObserver = CoreEvents.on<AddonMessagesMemberInfoChangedEventData>(
             AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
@@ -74,7 +73,7 @@ export class AddonMessagesContactsConfirmedPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         try {
             await this.fetchData();
-            if (this.contacts.length) {
+            if (this.contacts.length && CoreScreen.instance.isTablet) {
                 this.selectUser(this.contacts[0].id, true);
             }
         } finally {
@@ -144,15 +143,13 @@ export class AddonMessagesContactsConfirmedPage implements OnInit, OnDestroy {
     selectUser(userId: number, onInit: boolean = false): void {
         this.selectedUserId = userId;
 
-        const data: AddonMessagesSplitViewLoadContactsEventData = {
-            userId,
-            onInit,
-        };
-
-        CoreEvents.trigger(AddonMessagesProvider.SPLIT_VIEW_LOAD_CONTACTS_EVENT, data);
-
-        // @todo: Check if split view is visible before
-        CoreNavigator.instance.navigateToSitePath('discussion', { params : { userId } });
+        CoreEvents.trigger<AddonMessagesSplitViewLoadContactsEventData>(
+            AddonMessagesProvider.SPLIT_VIEW_LOAD_CONTACTS_EVENT,
+            {
+                userId,
+                onInit,
+            },
+        );
     }
 
     /**

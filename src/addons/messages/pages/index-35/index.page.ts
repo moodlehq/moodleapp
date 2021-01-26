@@ -19,7 +19,7 @@ import { CoreTab } from '@components/tabs/tabs';
 import { Params } from '@angular/router';
 import { AddonMessagesProvider, AddonMessagesSplitViewLoadIndexEventData } from '../../services/messages';
 import { CoreNavigator } from '@services/navigator';
-// import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays the messages index page.
@@ -29,8 +29,6 @@ import { CoreNavigator } from '@services/navigator';
     templateUrl: 'index.html',
 })
 export class AddonMessagesIndex35Page implements OnDestroy {
-
-    // @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     tabs: CoreTab[] = [
         {
@@ -55,19 +53,16 @@ export class AddonMessagesIndex35Page implements OnDestroy {
     protected siteId: string;
 
     constructor() {
-
         this.siteId = CoreSites.instance.getCurrentSiteId();
 
         // Update split view or navigate.
         this.loadSplitViewObserver = CoreEvents.on<AddonMessagesSplitViewLoadIndexEventData>(
             AddonMessagesProvider.SPLIT_VIEW_LOAD_INDEX_EVENT,
             (data) => {
-                if (data.discussion /* @todo && (this.splitviewCtrl.isOn() || !data.onlyWithSplitView)*/) {
+                if (data.discussion && (CoreScreen.instance.isTablet || !data.onlyWithSplitView)) {
                     this.gotoDiscussion(data.discussion, data.message);
                 }
             },
-
-            this.siteId,
         );
     }
 
@@ -86,9 +81,16 @@ export class AddonMessagesIndex35Page implements OnDestroy {
             params.message = messageId;
         }
 
-        // @todo
-        // this.splitviewCtrl.push('discussion', { params });
-        CoreNavigator.instance.navigateToSitePath('discussion', { params });
+        let path = 'discussion';
+        if (CoreScreen.instance.isMobile) {
+            path = '../../' + path;
+        } else {
+            const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/index/**/discussion');
+            path = (splitViewLoaded ? '../' : '') + path;
+        }
+
+        CoreNavigator.instance.navigate(path, { params });
+
     }
 
 

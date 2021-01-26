@@ -23,7 +23,7 @@ import {
 } from '../../services/messages';
 import { CoreTab } from '@components/tabs/tabs';
 import { CoreNavigator } from '@services/navigator';
-// @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays contacts and contact requests.
@@ -34,15 +34,13 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
-    // @todo @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
-
     protected contactsTab: CoreTab =         {
         id: 'contacts-confirmed',
         class: '',
         title: 'addon.messages.contacts',
         icon: 'fas-address-book',
         enabled: true,
-        page: 'main/messages/contacts/confirmed',
+        page: '/main/messages/contacts/confirmed',
     };
 
     protected requestsTab: CoreTab = {
@@ -51,7 +49,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
         title: 'addon.messages.requests',
         icon: 'fas-user-plus',
         enabled: true,
-        page: 'main/messages/contacts/requests',
+        page: '/main/messages/contacts/requests',
         badge: '',
     };
 
@@ -83,8 +81,8 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
             (data) => {
                 this.selectUser(data.userId, data.onInit);
             },
-            this.siteId,
         );
+
     }
 
     /**
@@ -108,19 +106,28 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * @param onInit Whether the contact was selected on initial load.
      */
     selectUser(userId: number, onInit = false): void {
-        /* @todo if (userId == this.selectedUserId && this.splitviewCtrl.isOn()) {
+        if (userId == this.selectedUserId && CoreScreen.instance.isTablet) {
             // No user conversation to open or it is already opened.
             return;
         }
 
-        if (onInit && !this.splitviewCtrl.isOn()) {
+        if (onInit && CoreScreen.instance.isMobile) {
             // Do not open a conversation by default when split view is not visible.
             return;
-        }*/
+        }
 
         this.selectedUserId = userId;
-        // @todo this.splitviewCtrl.push('AddonMessagesDiscussionPage', { userId });
-        CoreNavigator.instance.navigateToSitePath('discussion', { params : { userId } });
+
+        // @todo it does not seem to work load anything.
+        let path = 'discussion';
+        if (CoreScreen.instance.isMobile) {
+            path = '../../' + path;
+        } else {
+            const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/contacts/**/discussion');
+            path = (splitViewLoaded ? '../' : '') + path;
+        }
+
+        CoreNavigator.instance.navigate(path, { params : { userId } });
     }
 
     /**

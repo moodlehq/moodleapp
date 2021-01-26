@@ -13,12 +13,18 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonMessagesContactsRoutingModule } from './pages/contacts/messages-contacts-routing.module';
 import { AddonMessagesIndexRoutingModule } from './pages/index-35/messages-index-routing.module';
 import { AddonMessagesSettingsHandlerService } from './services/handlers/settings';
+
+export const discussionRoute: Route = {
+    path: 'discussion',
+    loadChildren: () => import('./pages/discussion/discussion.module')
+        .then(m => m.AddonMessagesDiscussionPageModule),
+};
 
 function buildRoutes(injector: Injector): Routes {
     return [
@@ -31,11 +37,7 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () => import('./pages/group-conversations/group-conversations.module')
                 .then(m => m.AddonMessagesGroupConversationsPageModule),
         },
-        {
-            path: 'discussion',
-            loadChildren: () => import('./pages/discussion/discussion.module')
-                .then(m => m.AddonMessagesDiscussionPageModule),
-        },
+        discussionRoute,
         {
             path: 'search',
             loadChildren: () => import('./pages/search/search.module')

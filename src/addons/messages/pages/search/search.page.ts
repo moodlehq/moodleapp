@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
-// @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page for searching users.
@@ -70,8 +70,6 @@ export class AddonMessagesSearchPage implements OnDestroy {
 
     protected memberInfoObserver: CoreEventObserver;
 
-    // @todo @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
-
     constructor() {
         // Update block status of a user.
         this.memberInfoObserver = CoreEvents.on<AddonMessagesMemberInfoChangedEventData>(
@@ -108,7 +106,12 @@ export class AddonMessagesSearchPage implements OnDestroy {
     clearSearch(): void {
         this.query = '';
         this.displayResults = false;
-        // @todo this.splitviewCtrl.emptyDetails();
+
+        // Empty details.
+        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/search/discussion');
+        if (splitViewLoaded) {
+            CoreNavigator.instance.navigate('../');
+        }
     }
 
     /**
@@ -245,7 +248,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
      * @param onInit Whether the tser was selected on initial load.
      */
     openConversation(result: AddonMessagesConversationMember | AddonMessagesMessageAreaContact, onInit: boolean = false): void {
-        if (!onInit /* @todo || this.splitviewCtrl.isOn()*/) {
+        if (!onInit || CoreScreen.instance.isTablet) {
             this.selectedResult = result;
 
             const params: Params = {};
@@ -255,8 +258,9 @@ export class AddonMessagesSearchPage implements OnDestroy {
                 params.userId = result.id;
             }
 
-            // @todo this.splitviewCtrl.push('AddonMessagesDiscussionPage', params);
-            CoreNavigator.instance.navigateToSitePath('discussion', { params });
+            const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/search/discussion');
+            const path = (splitViewLoaded ? '../' : '') + 'discussion';
+            CoreNavigator.instance.navigate(path, { params });
         }
     }
 

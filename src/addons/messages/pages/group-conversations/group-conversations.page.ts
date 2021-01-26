@@ -43,7 +43,7 @@ import {
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from '@addons/messages/services/database/messages';
 import { AddonMessagesSettingsHandlerService } from '@addons/messages/services/handlers/settings';
-// import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -55,7 +55,6 @@ import { AddonMessagesSettingsHandlerService } from '@addons/messages/services/h
 })
 export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
-    // @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('favlist') favListEl?: ElementRef;
     @ViewChild('grouplist') groupListEl?: ElementRef;
@@ -110,7 +109,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-
         this.loadingMessage = Translate.instance.instant('core.loading');
         this.siteId = CoreSites.instance.getCurrentSiteId();
         this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
@@ -284,8 +282,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.route.queryParams.subscribe(async params => {
             // Conversation to load.
-            this.conversationId = params['conversationId'] || undefined;
-            this.discussionUserId = !this.conversationId && (params['discussionUserId'] || undefined);
+            this.conversationId = params['conversationId'] ? parseInt(params['conversationId'], 10) : undefined;
+            if (!this.conversationId) {
+                this.discussionUserId = params['discussionUserId'] ? parseInt(params['discussionUserId'], 10) : undefined;
+            }
 
             if (this.conversationId || this.discussionUserId) {
                 // There is a discussion to load, open the discussion in a new state.
@@ -293,7 +293,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
 
             await this.fetchData();
-            /* @todo  if (!this.conversationId && !this.discussionUserId && this.splitviewCtrl.isOn()) {
+            if (!this.conversationId && !this.discussionUserId && CoreScreen.instance.isTablet) {
                 // Load the first conversation.
                 let conversation: AddonMessagesConversationForList;
                 const expandedOption = this.getExpandedOption();
@@ -305,7 +305,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                         this.gotoConversation(conversation.id);
                     }
                 }
-            }*/
+            }
         });
     }
 
@@ -368,10 +368,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async fetchDataForExpandedOption(): Promise<void> {
-        // Calculate which option should be expanded initially.
-        this.favourites.expanded = this.favourites.count != 0 && !this.group.unread && !this.individual.unread;
-        this.group.expanded = !this.favourites.expanded && this.group.count != 0 && !this.individual.unread;
-        this.individual.expanded = !this.favourites.expanded && !this.group.expanded;
+        if (typeof this.favourites.expanded == 'undefined') {
+            // Calculate which option should be expanded initially.
+            this.favourites.expanded = this.favourites.count != 0 && !this.group.unread && !this.individual.unread;
+            this.group.expanded = !this.favourites.expanded && this.group.count != 0 && !this.individual.unread;
+            this.individual.expanded = !this.favourites.expanded && !this.group.expanded;
+        }
 
         this.loadCurrentListElement();
 
@@ -508,7 +510,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to contacts view.
      */
     gotoContacts(): void {
-        // @todo this.splitviewCtrl.getMasterNav().push('AddonMessagesContactsPage');
         CoreNavigator.instance.navigateToSitePath('contacts');
 
     }
@@ -524,23 +525,26 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.selectedConversationId = conversationId;
         this.selectedUserId = userId;
 
-        const params: Params = {
-            conversationId: conversationId,
-            userId: userId,
-        };
+        const params: Params = {};
+        if (conversationId) {
+            params.conversationId = conversationId;
+        }
+        if (userId) {
+            params.userId = userId;
+        }
         if (messageId) {
             params.message = messageId;
         }
 
-        // @todo this.splitviewCtrl.push
-        CoreNavigator.instance.navigateToSitePath('discussion', { params });
+        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/group-conversations/discussion');
+        const path = (splitViewLoaded ? '../' : '') + 'discussion';
+        CoreNavigator.instance.navigate(path, { params });
     }
 
     /**
      * Navigate to message settings.
      */
     gotoSettings(): void {
-        // @todo this.splitviewCtrl.push
         CoreNavigator.instance.navigateToSitePath(AddonMessagesSettingsHandlerService.PAGE_NAME);
     }
 

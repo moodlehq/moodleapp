@@ -43,7 +43,7 @@
                         <ion-label>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap" [title]="event.name" (click)="gotoEvent(event.id)"
-                    [class.core-split-item-selected]="event.id == eventId" class="addon-calendar-event"
+                    [class.core-selected-item]="event.id == eventId" class="addon-calendar-event"
                     [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                         <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon">
                         <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start">

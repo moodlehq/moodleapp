@@ -17,19 +17,34 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { conditionalRoutes, resolveModuleRoutes } from '@/app/app-routing.module';
+import { discussionRoute } from '@addons/messages/messages-lazy.module';
+import { CoreScreen } from '@services/screen';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonMessagesIndex35Page } from './index.page';
 import { ADDON_MESSAGES_INDEX_ROUTES } from './messages-index-routing.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { resolveModuleRoutes } from '@/app/app-routing.module';
 
+// @todo mix both routes to get messages/index/discussions/discussion and messages/index/contacts/discussion working
 const routes: Routes = [
     {
-        path: '',
+        matcher: segments => {
+            const matches = CoreScreen.instance.isMobile ? segments.length === 0 : true;
+
+            return matches ? { consumed: [] } : null;
+        },
         component: AddonMessagesIndex35Page,
+        children: conditionalRoutes([
+            {
+                path: '',
+                pathMatch: 'full',
+            },
+            discussionRoute,
+        ], () => CoreScreen.instance.isTablet),
     },
+    ...conditionalRoutes([discussionRoute], () => CoreScreen.instance.isMobile),
 ];
 
 function buildRoutes(injector: Injector): Routes {

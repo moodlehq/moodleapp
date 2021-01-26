@@ -18,7 +18,7 @@
             </ion-item-divider>
             <ion-item class="ion-text-wrap" *ngFor="let result of search.results" [title]="result.fullname"
                 (click)="gotoDiscussion(result.userid, result.messageid)"
-                [class.core-split-item-selected]="result.userid == discussionUserId" class="addon-message-discussion">
+                [class.core-selected-item]="result.userid == discussionUserId" class="addon-message-discussion">
                 <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
                 <ion-label>
                         <h2>{{ result.fullname }}</h2>
@@ -31,7 +31,7 @@
         <ion-list *ngIf="!search.showResults"  class="ion-no-margin">
             <ion-item class="ion-text-wrap" *ngFor="let discussion of discussions" [title]="discussion.fullname"
             (click)="gotoDiscussion(discussion.message!.user)"
-            [class.core-split-item-selected]="discussion.message!.user == discussionUserId" class="addon-message-discussion">
+            [class.core-selected-item]="discussion.message!.user == discussionUserId" class="addon-message-discussion">
                 <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
                 <ion-label>
                     <h2>{{ discussion.fullname }}</h2>

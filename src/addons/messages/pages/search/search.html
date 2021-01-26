@@ -10,26 +10,27 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<!-- @todo <core-split-view>-->
 <ion-content>
-    <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off"
-        [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"  searchArea="AddonMessagesSearch"></core-search-box>
+    <core-split-view>
+        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch($event)" [disabled]="disableSearch" autocorrect="off"
+            [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"  searchArea="AddonMessagesSearch"></core-search-box>
 
-    <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">
-        <ion-list *ngIf="displayResults">
-            <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: contacts}"></ng-container>
-            <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: nonContacts}"></ng-container>
-            <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: messages}"></ng-container>
-            <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
-            <core-infinite-loading [enabled]="messages.canLoadMore" (action)="search(query, 'messages', $event)"
-                [error]="messages.loadMoreError"></core-infinite-loading>
-        </ion-list>
+        <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">
+            <ion-list *ngIf="displayResults">
+                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: contacts}"></ng-container>
+                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: nonContacts}"></ng-container>
+                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: messages}"></ng-container>
+                <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
+                <core-infinite-loading [enabled]="messages.canLoadMore" (action)="search(query, 'messages', $event)"
+                    [error]="messages.loadMoreError"></core-infinite-loading>
+            </ion-list>
 
-        <core-empty-box
-            *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
-            icon="fas-search" [message]="'core.noresults' | translate">
-        </core-empty-box>
-    </core-loading>
+            <core-empty-box
+                *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
+                icon="fas-search" [message]="'core.noresults' | translate">
+            </core-empty-box>
+        </core-loading>
+    </core-split-view>
 </ion-content>
 
 <!-- Template to render a list of results -->
@@ -41,8 +42,8 @@
 
         <!-- List of results -->
         <ion-item class="ion-text-wrap" *ngFor="let result of item.results" [title]="result.fullname"
-            (click)="openConversation(result)" [class.core-split-item-selected]="result == selectedResult"
-            class="addon-message-discussion">
+            (click)="openConversation(result)" [class.core-selected-item]="result == selectedResult"
+            class="addon-message-discussion" detail>
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>
