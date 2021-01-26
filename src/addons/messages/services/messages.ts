@@ -42,8 +42,6 @@ export class AddonMessagesProvider {
     static readonly NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
     static readonly READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
     static readonly OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify a conversation should be opened.
-    static readonly SPLIT_VIEW_LOAD_INDEX_EVENT = 'addon_messages_split_view_load_index_event'; // Used on 3.5 or lower.
-    static readonly SPLIT_VIEW_LOAD_CONTACTS_EVENT = 'addon_messages_split_view_load_contacts_event'; // Used on 3.6 or greater.
     static readonly UPDATE_CONVERSATION_LIST_EVENT = 'addon_messages_update_conversation_list_event';
     static readonly MEMBER_INFO_CHANGED_EVENT = 'addon_messages_member_changed_event';
     static readonly UNREAD_CONVERSATION_COUNTS_EVENT = 'addon_messages_unread_conversation_counts_event';
@@ -3694,23 +3692,6 @@ export type AddonMessagesMemberInfoChangedEventData = {
     contactRequestCreated?: boolean;
     contactRequestDeclined?: boolean;
     contactRemoved?: boolean;
-};
-
-/**
- * Data sent by SPLIT_VIEW_LOAD_INDEX_EVENT event. Used on 3.5 or lower.
- */
-export type AddonMessagesSplitViewLoadIndexEventData = {
-    discussion: number;
-    onlyWithSplitView?: boolean;
-    message?: number;
-};
-
-/**
- * Data sent by SPLIT_VIEW_LOAD_CONTACTS_EVENT event. Used on 3.6 or greater.
- */
-export type AddonMessagesSplitViewLoadContactsEventData = {
-    userId: number;
-    onInit: boolean;
 };
 
 /**

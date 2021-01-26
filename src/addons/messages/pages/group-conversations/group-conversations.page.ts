@@ -511,7 +511,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     gotoContacts(): void {
         CoreNavigator.instance.navigateToSitePath('contacts');
-
     }
 
     /**

@@ -135,14 +135,21 @@
         }
     }
 
+    --core-tabs-background: var(--custom-tabs-background, var(--white));
+    --core-tab-background: var(--custom-tab-background, var(--core-tabs-background));
+    --core-tab-color: var(--custom-tab-color, var(--gray-dark));
+    --core-tab-border-color: var(--custom-tab-border-color, var(--gray));
+    --core-tab-color-active: var(--custom-tab-color-active, var(--core-color));
+    --core-tab-border-color-active: var(--custom-tab-border-color-active, var(--core-color));
+
     core-tabs {
-        --background: var(--custom-tabs-background, var(--white));
+        --background: var(--core-tabs-background);
         ion-slide {
-            --background: var(--custom-tab-background, var(--white));
-            --color: var(--custom-tab-background, var(--gray-dark));
-            --border-color: var(--custom-tab-border-color, var(--gray));
-            --color-active: var(--custom-tab-color-active, var(--color));
-            --border-color-active: var(--custom-tab-border-color-active, var(--core-color));
+            --background: var(--core-tab-background);
+            --color: var(--core-tab-color);
+            --border-color: var(--core-tab-border-colo);
+            --color-active: var(--core-tab-color-active);
+            --border-color-active: var(--core-tab-border-color-active);
         }
     }
 
@@ -276,14 +283,10 @@
         --contrast-background: var(--ion-background-color);
     }
 
-    core-tabs {
-        --background: var(--custom-tabs-background, #3a3a3a);
-        ion-slide {
-            --background: var(--custom-tab-background, #3a3a3a);
-            --color: var(--custom-tab-background, var(--white));
-            --border-color: var(--custom-tab-border-color, var(--gray-light));
-        }
-    }
+    --core-tabs-background: var(--custom-tabs-background, #3a3a3a);
+    --core-tab-background: var(--custom-tab-background, #3a3a3a);
+    --core-tab-color: var(--custom-tab-color, var(--white));
+    --core-tab-border-color: var(--custom-tab-border-color, var(--gray-light));
 
     core-progress-bar {
         --text-color: var(--custom-progress-text-color, var(--gray-lighter));

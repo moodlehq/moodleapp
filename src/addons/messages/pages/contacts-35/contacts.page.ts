@@ -21,14 +21,15 @@ import {
     AddonMessagesSearchContactsContact,
     AddonMessagesGetContactsContact,
     AddonMessages,
-    AddonMessagesSplitViewLoadIndexEventData,
     AddonMessagesMemberInfoChangedEventData,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Translate } from '@singletons';
+import { CoreScreen } from '@services/screen';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of contacts.
@@ -89,7 +90,15 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe(async params => {
-            this.discussionUserId = params['discussionUserId'] || undefined;
+            const discussionUserId = params['discussionUserId']
+                ? parseInt(params['discussionUserId'], 10)
+                : (params['userId'] ? parseInt(params['userId'], 10) : undefined);
+
+            if (this.loaded && this.discussionUserId == discussionUserId) {
+                return;
+            }
+
+            this.discussionUserId = discussionUserId;
 
             if (this.discussionUserId) {
                 // There is a discussion to load, open the discussion in a new state.
@@ -98,7 +107,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
             try {
                 await this.fetchData();
-                if (!this.discussionUserId && this.hasContacts) {
+                if (!this.discussionUserId && this.hasContacts && CoreScreen.instance.isTablet) {
                     let contact: AddonMessagesGetContactsContact | undefined;
                     for (const x in this.contacts) {
                         if (this.contacts[x].length > 0) {
@@ -109,7 +118,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
                     if (contact) {
                         // Take first and load it.
-                        this.gotoDiscussion(contact.id, true);
+                        this.gotoDiscussion(contact.id);
                     }
                 }
             } finally {
@@ -235,16 +244,18 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * Navigate to a particular discussion.
      *
      * @param discussionUserId Discussion Id to load.
-     * @param onlyWithSplitView Only go to Discussion if split view is on.
      */
-    gotoDiscussion(discussionUserId: number, onlyWithSplitView: boolean = false): void {
+    gotoDiscussion(discussionUserId: number): void {
         this.discussionUserId = discussionUserId;
 
-        const params: AddonMessagesSplitViewLoadIndexEventData = {
-            discussion: discussionUserId,
-            onlyWithSplitView: onlyWithSplitView,
+        const params: Params = {
+            userId: discussionUserId,
         };
-        CoreEvents.trigger(AddonMessagesProvider.SPLIT_VIEW_LOAD_INDEX_EVENT, params, this.siteId);
+
+        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/contacts-35/discussion');
+        const path = (splitViewLoaded ? '../' : '') + 'discussion';
+
+        CoreNavigator.instance.navigate(path, { params });
     }
 
     /**

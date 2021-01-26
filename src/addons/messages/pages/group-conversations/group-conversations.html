@@ -25,8 +25,8 @@
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
             <ion-list>
-                <ion-item class="ion-text-wrap" (click)="gotoContacts($event)" [attr.aria-label]="'addon.messages.contacts' | translate"
-                    class="addon-message-discussion">
+                <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts($event)"
+                    [attr.aria-label]="'addon.messages.contacts' | translate" detail>
                     <ion-icon name="fas-address-book" slot="start"></ion-icon>
                     <ion-label><h2>{{ 'addon.messages.contacts' | translate }}</h2></ion-label>
                     <ion-badge *ngIf="contactRequestsCount > 0" slot="end">{{contactRequestsCount}}</ion-badge>

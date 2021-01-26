@@ -22,17 +22,18 @@ import {
     AddonMessagesNewMessagedEventData,
     AddonMessagesProvider,
     AddonMessagesReadChangedEventData,
-    AddonMessagesSplitViewLoadIndexEventData,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreApp } from '@services/app';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { Subscription } from 'rxjs';
 import { Translate, Platform } from '@singletons';
 import { IonRefresher } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays the list of discussions.
@@ -46,7 +47,6 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
     protected newMessagesObserver: CoreEventObserver;
     protected readChangedObserver: CoreEventObserver;
-    protected cronObserver: CoreEventObserver;
     protected appResumeSubscription: Subscription;
     protected pushObserver: Subscription;
     protected loadingMessages: string;
@@ -121,11 +121,6 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             this.siteId,
         );
 
-        // Update unread conversation counts.
-        this.cronObserver = CoreEvents.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, () => {
-            AddonMessages.instance.refreshUnreadConversationCounts(this.siteId);
-        }, this.siteId);
-
         // Refresh the view when the app is resumed.
         this.appResumeSubscription = Platform.instance.resume.subscribe(() => {
             if (!this.loaded) {
@@ -152,7 +147,15 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe(async params => {
-            this.discussionUserId = params['discussionUserId'] || undefined;
+            const discussionUserId = params['discussionUserId']
+                ? parseInt(params['discussionUserId'], 10)
+                : (params['userId'] ? parseInt(params['userId'], 10) : undefined);
+
+            if (this.loaded && this.discussionUserId == discussionUserId) {
+                return;
+            }
+
+            this.discussionUserId = discussionUserId;
 
             if (this.discussionUserId) {
                 // There is a discussion to load, open the discussion in a new state.
@@ -161,9 +164,9 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
             await this.fetchData();
 
-            if (!this.discussionUserId && this.discussions.length > 0) {
+            if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.instance.isTablet) {
                 // Take first and load it.
-                this.gotoDiscussion(this.discussions[0].message!.user, undefined, true);
+                this.gotoDiscussion(this.discussions[0].message!.user);
             }
         });
     }
@@ -267,17 +270,34 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      * @param messageId Message to scroll after loading the discussion. Used when searching.
      * @param onlyWithSplitView Only go to Discussion if split view is on.
      */
-    gotoDiscussion(discussionUserId: number, messageId?: number, onlyWithSplitView: boolean = false): void {
+    gotoDiscussion(discussionUserId: number, messageId?: number): void {
         this.discussionUserId = discussionUserId;
 
-        const params: AddonMessagesSplitViewLoadIndexEventData = {
-            discussion: discussionUserId,
-            onlyWithSplitView: onlyWithSplitView,
+        const params: Params = {
+            userId: discussionUserId,
         };
+
         if (messageId) {
             params.message = messageId;
         }
-        CoreEvents.trigger(AddonMessagesProvider.SPLIT_VIEW_LOAD_INDEX_EVENT, params, this.siteId);
+
+        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/index/discussion');
+        const path = (splitViewLoaded ? '../' : '') + 'discussion';
+
+        CoreNavigator.instance.navigate(path, { params });
+    }
+
+    /**
+     * Navigate to contacts view.
+     */
+    gotoContacts(): void {
+        const params: Params = {};
+
+        if (CoreScreen.instance.isTablet && this.discussionUserId) {
+            params.discussionUserId = this.discussionUserId;
+        }
+
+        CoreNavigator.instance.navigateToSitePath('contacts-35', { params });
     }
 
     /**
@@ -286,7 +306,6 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.newMessagesObserver?.off();
         this.readChangedObserver?.off();
-        this.cronObserver?.off();
         this.appResumeSubscription?.unsubscribe();
         this.pushObserver?.unsubscribe();
     }

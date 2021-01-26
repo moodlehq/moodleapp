@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { conditionalRoutes, resolveModuleRoutes } from '@/app/app-routing.module';
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { discussionRoute } from '@addons/messages/messages-lazy.module';
 import { CoreScreen } from '@services/screen';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
-import { ADDON_MESSAGES_CONTACTS_ROUTES } from './messages-contacts-routing.module';
 import { AddonMessagesContactsPage } from './contacts.page';
-import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
-// @todo mix both routes to get messages/contacts/requests/discussion and messages/contacts/confirmed/discussion working
 const routes: Routes = [
     {
         matcher: segments => {
@@ -47,19 +44,6 @@ const routes: Routes = [
     ...conditionalRoutes([discussionRoute], () => CoreScreen.instance.isMobile),
 ];
 
-function buildRoutes(injector: Injector): Routes {
-    const routes = resolveModuleRoutes(injector, ADDON_MESSAGES_CONTACTS_ROUTES);
-
-    return [
-        ...buildTabMainRoutes(injector, {
-            path: '',
-            component: AddonMessagesContactsPage,
-            children: routes.children,
-        }),
-        ...routes.siblings,
-    ];
-}
-
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
@@ -67,9 +51,6 @@ function buildRoutes(injector: Injector): Routes {
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-    ],
-    providers: [
-        { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
     ],
     declarations: [
         AddonMessagesContactsPage,
