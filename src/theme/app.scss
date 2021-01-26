@@ -69,6 +69,10 @@ ion-icon {
     }
 }
 
+[dir=rtl] ion-icon.icon-flip-rtl {
+    transform: scaleX(-1);
+}
+
 // Ionic alert.
 ion-alert.core-alert-network-error .alert-head {
     position: relative;

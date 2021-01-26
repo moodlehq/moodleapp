@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnDestroy, ViewChild } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
@@ -32,6 +32,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild(IonRouterOutlet) outlet!: IonRouterOutlet;
     @HostBinding('class') classes = '';
+    @Input() placeholderText = 'core.emptysplit';
     isNested = false;
 
     private subscriptions?: Subscription[];
@@ -65,6 +66,10 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     private updateClasses(): void {
         const classes: string[] = [this.getCurrentMode()];
 
+        if (this.outlet.isActivated) {
+            classes.push('outlet-activated');
+        }
+
         if (this.isNested) {
             classes.push('nested');
         }
@@ -90,6 +95,15 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         }
 
         return CoreSplitViewMode.MenuAndContent;
+    }
+
+    /**
+     * Check if both panels are shown. It depends on screen width.
+     *
+     * @return If split view is enabled.
+     */
+    isOn(): boolean {
+        return this.outlet.isActivated;
     }
 
 }

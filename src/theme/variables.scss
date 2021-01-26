@@ -106,6 +106,7 @@
         --color: var(--custom-bottom-tabs-color, var(--white));
     }
 
+    --core-toolbar-button-image-width: var(--custom-toolbar-button-image-width, 32px);
     --ion-statusbar-background: var(--custom-toolbar-background, var(--ion-color-primary));
     ion-toolbar {
         --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
@@ -170,8 +171,6 @@
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 
-    --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
-
     --core-login-background: var(--custom-login-background, var(--white));
     --core-login-text-color: var(--custom-login-text-color, var(--black));
 
@@ -188,10 +187,7 @@
     --core-star-color: var(--custom-star-color, var(--core-color));
 
     --core-large-avatar-size:  var(--custom-large-avatar-size, 90px);
-
     --core-avatar-size:  var(--custom-avatar-size, 40px);
-
-    --core-toolbar-button-image-width: var(--custom-toolbar-button-image-width, 32px);
 
     --core-send-message-input-background: var(--custom-send-message-input-background, var(--gray));
     --core-send-message-input-color: var(--custom-send-message-input-color, var(--black));
@@ -214,6 +210,11 @@
     --addon-messages-avatar-size: var(--custom-messages-avatar-size, 30px);
     --addon-messages-discussion-badge: var(--custom-messages-discussion-badge, var(--core-color));
     --addon-messages-discussion-badge-text: var(--custom-messages-discussion-badge-text, var(--white));
+
+    --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
+
+    --core-menu-box-shadow-end: var(--custom-menu-box-shadow-end, -4px 0px 16px rgba(0, 0, 0, 0.18));
+    --core-menu-box-shadow-start: var(--custom-menu-box-shadow-start, 4px 0px 16px rgba(0, 0, 0, 0.18));
 }
 
 /*

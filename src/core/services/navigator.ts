@@ -92,6 +92,21 @@ export class CoreNavigatorService {
     }
 
     /**
+     * Returns if a section is loaded on the split view (tablet mode).
+     *
+     * @param path Path, can be a glob pattern.
+     * @return Whether the active route is using the given path.
+     */
+    isCurrentPathInTablet(path: string): boolean {
+        if (CoreScreen.instance.isMobile) {
+            // Split view is off.
+            return false;
+        }
+
+        return this.isCurrent(path);
+    }
+
+    /**
      * Navigate to a new path.
      *
      * @param path Path to navigate to.
@@ -213,9 +228,11 @@ export class CoreNavigatorService {
      * @return Previous path.
      */
     getPreviousPath(): string {
+        // @todo: Remove this method and the used attributes.
+        // This is a quick workarround to avoid loops. Ie, in messages we can navigate to user profile and there to messages.
         return CoreUrlUtils.instance.removeUrlParams(this.previousPath || '');
     }
-    
+
     /**
      * Get a parameter for the current route.
      * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
