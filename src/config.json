@@ -1,9 +1,9 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "desktopappname": "Moodle Desktop",
-    "versioncode": 3940,
-    "versionname": "3.9.4",
+    "app_id": "com.trimex.trimexlms",
+    "appname": "Trimex Colleges LMS",
+    "desktopappname": "Trimex Colleges LMS",
+    "versioncode": 111,
+    "versionname": "1.1.1",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -80,9 +80,9 @@
         75.89,
         93.75
     ],
-    "customurlscheme": "moodlemobile",
-    "siteurl": "",
-    "sitename": "",
+    "customurlscheme": "trimexlms",
+    "siteurl": "https://trimexlms.com",
+    "sitename": "Trimex Colleges LMS",
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -104,9 +104,9 @@
     "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "com.trimex.trimexlms",
         "ios": "id633359593",
-        "windows": "moodle-desktop\/9p9bwvhdc8c8",
+        "windows": "trimex-lms\/9p9bwvhdc8c8",
         "mac": "id1255924440",
         "linux": "https:\/\/download.moodle.org\/desktop\/download.php?platform=linux&arch=64"
     }
