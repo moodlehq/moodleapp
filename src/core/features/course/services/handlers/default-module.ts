@@ -72,7 +72,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
 
         if ('url' in module && module.url) {
             defaultData.buttons = [{
-                icon: 'open',
+                icon: 'fas-external-link-alt',
                 label: 'core.openinbrowser',
                 action: (e: Event): void => {
                     e.preventDefault();

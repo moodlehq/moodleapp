@@ -21,6 +21,7 @@
                 max-width: var(--side-blocks-max-width);
                 min-width: var(--side-blocks-min-width);
                 box-shadow: -4px 0px 16px rgba(0, 0, 0, 0.18);
+                z-index: 2;
                 // @todo @include core-split-area-end();
             }
 

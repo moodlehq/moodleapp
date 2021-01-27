@@ -7,7 +7,8 @@
         <ion-list>
             <!-- Course expand="block"s. -->
             <ng-container *ngFor="let block of blocks">
-                <core-block *ngIf="block.visible" [block]="block" contextLevel="course" [instanceId]="courseId" [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
+                <core-block *ngIf="block.visible" [block]="block" contextLevel="course" [instanceId]="courseId"
+                [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
             </ng-container>
         </ion-list>
     </core-loading>

@@ -19,17 +19,17 @@
                 <div *ngIf="displaySectionSelector && sections && hasSeveralSections"
                     class="ion-text-wrap clearfix ion-justify-content-between core-button-selector-row"
                     [class.core-section-download]="downloadEnabled">
-                    <ion-button class="ion-float-start" (click)="showSectionSelector()" color="light" aria-haspopup="true"
-                        class="core-button-select button-no-uppercase" [attr.aria-expanded]="sectionSelectorExpanded"
+                    <ion-button class="core-button-select button-no-uppercase" (click)="showSectionSelector()"
+                        aria-haspopup="true" [attr.aria-expanded]="sectionSelectorExpanded"
                         id="core-course-section-button" expand="block"> <!-- @todo: attr.aria-label? -->
-                        <core-icon name="fas-folder" slot="start"></core-icon>
+                        <ion-icon name="fas-folder" slot="start"></ion-icon>
                         <span class="core-button-select-text">
                             <core-format-text *ngIf="selectedSection" [text]="selectedSection.name" contextLevel="course"
                                 [contextInstanceId]="course?.id" [clean]="true" [singleLine]="true">
                             </core-format-text>
                             <span *ngIf="!selectedSection">{{ 'core.course.sections' | translate }}</span>
                         </span>
-                        <core-icon name="fas-chevron-down" slot="end"></core-icon>
+                        <div class="select-icon" slot="end"><div class="select-icon-inner"></div></div>
                     </ion-button>
                     <!-- Section download. -->
                     <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
@@ -93,17 +93,17 @@
                 <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
             </div>
 
-            <ion-buttons class="ion-padding" class="core-course-section-nav-buttons safe-padding-horizontal"
+            <ion-buttons class="ion-padding core-course-section-nav-buttons safe-padding-horizontal"
                 *ngIf="displaySectionSelector && sections?.length">
-                <ion-button *ngIf="previousSection" color="light" (click)="sectionChanged(previousSection)"
+                <ion-button *ngIf="previousSection" color="medium" (click)="sectionChanged(previousSection)"
                     title="{{ 'core.previous' | translate }}">
-                    <core-icon name="fas-chevron-left" slot="icon-only"></core-icon>
+                    <ion-icon name="fas-chevron-left" slot="icon-only"></ion-icon>
                     <core-format-text class="accesshide" [text]="previousSection.name" contextLevel="course"
                         [contextInstanceId]="course?.id">
                     </core-format-text>
                 </ion-button>
                 <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" title="{{ 'core.next' | translate }}">
-                    <core-icon name="fas-chevron-right" slot="icon-only"></core-icon>
+                    <ion-icon name="fas-chevron-right" slot="icon-only"></ion-icon>
                     <core-format-text class="accesshide" [text]="nextSection.name" contextLevel="course"
                         [contextInstanceId]="course?.id">
                     </core-format-text>
@@ -120,21 +120,23 @@
         <ion-item-divider *ngIf="selectedSection?.id == allSectionsId && section.name" class="ion-text-wrap" color="light"
             [class.core-section-download]="downloadEnabled"
             [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
-            <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
-            <!-- Section download. -->
-            <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
-            <p *ngIf="section.visible === 0 || section.availabilityinfo">
-                <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible !== false" class="ion-text-wrap">
-                    {{ 'core.course.hiddenfromstudents' | translate }}
-                </ion-badge>
-                <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible === false" class="ion-text-wrap">
-                    {{ 'core.notavailable' | translate }}
-                </ion-badge>
-                <ion-badge color="secondary" *ngIf="section.availabilityinfo" class="ion-text-wrap">
-                    <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course?.id">
-                    </core-format-text>
-                </ion-badge>
-            </p>
+            <ion-label>
+                <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+                <!-- Section download. -->
+                <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
+                <p *ngIf="section.visible === 0 || section.availabilityinfo">
+                    <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible !== false" class="ion-text-wrap">
+                        {{ 'core.course.hiddenfromstudents' | translate }}
+                    </ion-badge>
+                    <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible === false" class="ion-text-wrap">
+                        {{ 'core.notavailable' | translate }}
+                    </ion-badge>
+                    <ion-badge color="secondary" *ngIf="section.availabilityinfo" class="ion-text-wrap">
+                        <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course?.id">
+                        </core-format-text>
+                    </ion-badge>
+                </p>
+            </ion-label>
         </ion-item-divider>
 
         <ion-item class="ion-text-wrap" *ngIf="section.summary">

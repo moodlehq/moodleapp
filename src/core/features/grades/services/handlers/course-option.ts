@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCourseProvider } from '@features/course/services/course';
 import {
-    CoreCourseAccessData,
+    CoreCourseAccess,
     CoreCourseOptionsHandler,
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
@@ -68,7 +68,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      */
     isEnabledForCourse(
         courseId: number,
-        accessData: CoreCourseAccessData,
+        accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): boolean | Promise<boolean> {
         if (accessData && accessData.type == CoreCourseProvider.ACCESS_GUEST) {

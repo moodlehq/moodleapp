@@ -149,6 +149,9 @@
         display: inline-block;
         vertical-align: bottom;
     }
+    .core-module-icon[slot="start"] {
+        padding: 6px;
+    }
 }
 
 :host-context([dir=rtl]) {

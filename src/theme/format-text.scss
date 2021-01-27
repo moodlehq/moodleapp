@@ -1,0 +1,83 @@
+@import "./mixins.scss";
+
+/** Format Text - Show more styles. */
+/** Styles of elements inside the directive should be placed in format-text.scss */
+core-format-text {
+    user-select: text;
+    word-break: break-word;
+    word-wrap: break-word;
+
+    &[maxHeight],
+    &[ng-reflect-max-height] {
+        display: block;
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+
+        /* Force display inline */
+        &.inline {
+            display: inline-block;
+            width: auto;
+        }
+
+        // This is to allow clicks in radio/checkbox content.
+        &.core-text-formatted {
+            cursor: pointer;
+            pointer-events: auto;
+
+            .core-show-more {
+                display: none;
+            }
+
+            &:not(.core-shortened) {
+                max-height: none !important;
+            }
+
+            &.core-shortened {
+                overflow: hidden;
+                min-height: 50px;
+
+                .core-show-more {
+                    text-align: end;
+                    font-size: 14px;
+                    display: block;
+                    position: absolute;
+                    @include position(null, 0, 0, null);
+                    z-index: 7;
+                    background-color: var(--background);
+                    color: var(--color);
+                    padding-left: 10px; // RTL
+                    /*@include darkmode() {
+                        color: var(--white);
+                        background-color: $core-dark-item-bg-color;
+                    }*/
+                }
+
+                &:before {
+                    content: '';
+                    height: 100%;
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) calc(100% - 50px), var(--background) calc(100% - 15px));
+                    background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(0, 0, 0, 0)), color-stop(calc(100% - 15px), var(--background)));
+                    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) calc(100% - 50px), var(--background) calc(100% - 15px));
+                    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) calc(100% - 50px), var(--background) calc(100% - 15px));
+                    z-index: 6;
+                }
+            }
+        }
+
+        &.core-expand-in-fullview {
+            .core-show-more {
+                @include push-arrow-color(dedede, true);
+                @include padding-horizontal(null, 18px);
+                @include background-position(end, 0, center);
+
+                background-repeat: no-repeat;
+                background-size: 14px 14px;
+            }
+        }
+    }
+}
