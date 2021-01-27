@@ -32,8 +32,6 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { AddonMessagesPushClickHandler } from './services/handlers/push-click';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-send-message';
-import { AddonMessagesAddContactUserHandler } from './services/handlers/user-add-contact';
-import { AddonMessagesBlockContactUserHandler } from './services/handlers/user-block-contact';
 import { Network, NgZone } from '@singletons';
 import { AddonMessagesSync } from './services/messages-sync';
 
@@ -70,8 +68,6 @@ const mainMenuChildrenRoutes: Routes = [
                 CoreContentLinksDelegate.instance.registerHandler(AddonMessagesContactRequestLinkHandler.instance);
                 CorePushNotificationsDelegate.instance.registerClickHandler(AddonMessagesPushClickHandler.instance);
                 CoreUserDelegate.instance.registerHandler(AddonMessagesSendMessageUserHandler.instance);
-                CoreUserDelegate.instance.registerHandler(AddonMessagesAddContactUserHandler.instance);
-                CoreUserDelegate.instance.registerHandler(AddonMessagesBlockContactUserHandler.instance);
 
                 // Sync some discussions when device goes online.
                 Network.instance.onConnect().subscribe(() => {
