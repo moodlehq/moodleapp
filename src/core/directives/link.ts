@@ -58,7 +58,7 @@ export class CoreLinkDirective implements OnInit {
 
         // @todo: Handle split view?
 
-        this.element.addEventListener('click', (event) => {
+        this.element.addEventListener('click', async (event) => {
             if (event.defaultPrevented) {
                 return; // Link already treated, stop.
             }
@@ -77,7 +77,8 @@ export class CoreLinkDirective implements OnInit {
             if (CoreUtils.instance.isTrueOrOne(this.capture)) {
                 href = CoreTextUtils.instance.decodeURI(href);
 
-                const treated = CoreContentLinksHelper.instance.handleLink(href, undefined, true, true);
+                const treated = await CoreContentLinksHelper.instance.handleLink(href, undefined, true, true);
+
                 if (!treated) {
                     this.navigate(href, openIn);
                 }

@@ -58,6 +58,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
+     * @param data Extra data to handle the URL.
      * @return List of (or promise resolved with list of) actions.
      */
     getActions(
@@ -69,6 +70,8 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
         params: Params,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         courseId?: number,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        data?: unknown,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [];
     }

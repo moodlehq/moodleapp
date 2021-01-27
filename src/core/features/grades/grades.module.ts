@@ -14,9 +14,17 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import CoreGradesMainMenuHandler, { CoreGradesMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
+import { CoreGradesUserHandler } from './services/handlers/user';
+import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
 
 const routes: Routes = [
     {
@@ -26,8 +34,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [CoreMainMenuRoutingModule.forChild({ children: routes })],
-    exports: [CoreMainMenuRoutingModule],
+    imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreMainMenuRoutingModule.forChild({ children: routes }),
+    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -35,6 +45,10 @@ const routes: Routes = [
             deps: [],
             useValue: () => {
                 CoreMainMenuDelegate.instance.registerHandler(CoreGradesMainMenuHandler.instance);
+                CoreUserDelegate.instance.registerHandler(CoreGradesUserHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(CoreGradesUserLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(CoreGradesOverviewLinkHandler.instance);
+                CoreCourseOptionsDelegate.instance.registerHandler(CoreGradesCourseOptionHandler.instance);
             },
         },
     ],
