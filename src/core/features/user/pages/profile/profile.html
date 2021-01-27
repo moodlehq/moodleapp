@@ -14,8 +14,8 @@
         <ion-list *ngIf="user && !isDeleted && isEnrolled">
             <ion-item class="ion-text-center core-user-profile-maininfo">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
-                    <div class="core-icon-foreground">
-                        <ion-icon *ngIf="canChangeProfilePicture" name="fa-pen" (click)="changeProfilePicture()">
+                    <div class="core-icon-foreground" *ngIf="canChangeProfilePicture">
+                        <ion-icon name="fa-pen" (click)="changeProfilePicture()">
                         </ion-icon>
                     </div>
                 </core-user-avatar>
@@ -29,24 +29,23 @@
                 </ion-label>
             </ion-item>
 
-            <ion-grid class="core-user-communication-handlers"
+            <div class="core-user-communication-handlers"
                 *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
-                <ion-row class="ion-no-padding justify-content-between"
-                    *ngIf="communicationHandlers && communicationHandlers.length">
-                    <ion-col *ngFor="let handler of communicationHandlers" class="ion-align-self-center ion-text-center">
-                        <a (click)="handlerClicked($event, handler)" [ngClass]="['core-user-profile-handler', handler.class || '']"
-                            title="{{handler.title | translate}}">
-                            <ion-icon [name]="handler.icon" slot="start"></ion-icon>
-                            <p>{{handler.title | translate}}</p>
-                        </a>
-                    </ion-col>
-                </ion-row>
-                <ion-row class="ion-no-padding">
-                    <ion-col class="ion-text-center core-loading-handlers" *ngIf="isLoadingHandlers">
-                        <ion-spinner></ion-spinner>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
+                <ion-item *ngIf="communicationHandlers && communicationHandlers.length">
+                    <ion-label>
+                        <ion-button *ngFor="let handler of communicationHandlers" expand="block" size="default"
+                            [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
+                            [hidden]="handler.hidden" title="{{ handler.title | translate }}" [disabled]="handler.spinner">
+                            <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
+                            {{ handler.title | translate }}
+                        </ion-button>
+                    </ion-label>
+                </ion-item>
+                <div *ngIf="isLoadingHandlers" class="ion-text-center core-loading-handlers">
+                    <ion-spinner></ion-spinner>
+                </div>
+            </div>
+
 
             <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
                 title="{{ 'core.user.details' | translate }}" detail>
@@ -70,14 +69,12 @@
 
             <ion-item *ngIf="actionHandlers && actionHandlers.length">
                 <ion-label>
-                    <ion-button *ngFor="let handler of actionHandlers" expand="block" fill="outline"
+                    <ion-button *ngFor="let handler of actionHandlers" expand="block" fill="outline" size="default"
                         [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
                         [hidden]="handler.hidden" title="{{ handler.title | translate }}" [disabled]="handler.spinner">
                         <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
-                        <ion-label>
-                            <span>{{ handler.title | translate }}</span>
-                        </ion-label>
-                        <ion-spinner *ngIf="handler.spinner"></ion-spinner>
+                        {{ handler.title | translate }}
+                        <ion-spinner *ngIf="handler.spinner" slot="end"></ion-spinner>
                     </ion-button>
                 </ion-label>
             </ion-item>
