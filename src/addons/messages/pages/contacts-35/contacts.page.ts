@@ -255,6 +255,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
         const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/contacts-35/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
 
+        // @todo Check why this is failing on ngInit.
         CoreNavigator.instance.navigate(path, { params });
     }
 

@@ -155,7 +155,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         // Recalculate footer position when keyboard is shown or hidden.
         this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
-            // @todo this.content.resize();
+            // @todo probably not needed.
+            // this.content.resize();
         });
     }
 
@@ -455,7 +456,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         });
 
         // Call resize to recalculate the dimensions.
-        // @todo this.content!.resize();
+        // @todo probably not needed.
+        // this.content!.resize();
 
         // If we received a new message while using group messaging, force mark messages as read.
         const last = this.messages[this.messages.length - 1];
@@ -1072,7 +1074,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * Content or scroll has been resized. For content, only call it if it's been added on top.
      */
     resizeContent(): void {
-        /* @todo
+        /* @todo probably not needed.
         let top = this.content!.getContentDimensions().scrollTop;
         // @todo this.content.resize();
 

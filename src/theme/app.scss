@@ -295,6 +295,16 @@ ion-avatar ion-img, ion-avatar img {
     background-color: var(--gray-light);
 }
 
+// Wait to load before showing the image.
+img[core-external-content]:not([src]) {
+    visibility: hidden;
+}
+img[alt] {
+    text-indent: -999999px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 // Activity modules
 .core-module-icon {
     width: auto;
