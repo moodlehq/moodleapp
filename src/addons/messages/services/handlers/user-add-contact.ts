@@ -186,7 +186,7 @@ export class AddonMessagesAddContactUserHandlerService implements CoreUserProfil
      */
     protected async addContact(user: CoreUserProfile): Promise<void> {
         if (!AddonMessages.instance.isGroupMessagingEnabled()) {
-            return AddonMessages.instance.addContact(user.id);
+            return AddonMessages.instance.createContactRequest(user.id);
         }
 
         const member = await AddonMessages.instance.getMemberInfo(user.id);

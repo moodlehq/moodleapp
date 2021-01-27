@@ -41,7 +41,6 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
-    protected currentUserId: number;
     protected searchingMessages: string;
     protected loadingMessages: string;
     protected siteId: string;
@@ -67,7 +66,6 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
         this.siteId = CoreSites.instance.getCurrentSiteId();
         this.searchingMessages = Translate.instance.instant('core.searching');
         this.loadingMessages = Translate.instance.instant('core.loading');
@@ -140,7 +138,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
                 await this.performSearch(this.searchString);
             } else {
                 // Update contacts.
-                await AddonMessages.instance.invalidateAllContactsCache(this.currentUserId);
+                await AddonMessages.instance.invalidateAllContactsCache();
                 await this.fetchData();
             }
         } finally {

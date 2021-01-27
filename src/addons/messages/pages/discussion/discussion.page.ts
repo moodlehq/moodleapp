@@ -277,11 +277,11 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         }
 
         try {
+            const promises: Promise<void>[] = [];
             if (this.groupMessagingEnabled) {
                 // Get the conversation ID if it exists and we don't have it yet.
                 const exists = await this.getConversation(this.conversationId, this.userId);
 
-                const promises: Promise<void>[] = [];
                 if (exists) {
                     // Fetch the messages for the first time.
                     promises.push(this.fetchMessages());
@@ -289,13 +289,14 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
                 if (this.userId) {
                     // Get the member info. Invalidate first to make sure we get the latest status.
-                    promises.push(AddonMessages.instance.invalidateMemberInfo(this.userId).then(() =>
-                        AddonMessages.instance.getMemberInfo(this.userId!)).then((member) => {
-                        if (!exists && member) {
-                            this.conversationImage = member.profileimageurl;
-                            this.title = member.fullname;
+                    promises.push(AddonMessages.instance.invalidateMemberInfo(this.userId).then(async () => {
+                        this.otherMember = await AddonMessages.instance.getMemberInfo(this.userId!);
+
+                        if (!exists && this.otherMember) {
+                            this.conversationImage = this.otherMember.profileimageurl;
+                            this.title = this.otherMember.fullname;
                         }
-                        this.blockIcon = this.otherMember?.isblocked ? 'fas-user-lock' : 'fas-user-check';
+                        this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
 
                         return;
                     }));
@@ -303,26 +304,55 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     this.otherMember = undefined;
                 }
 
-                await Promise.all(promises);
             } else {
-                this.otherMember = undefined;
+                if (this.userId) {
+                    // Fake the user member info.
+                    promises.push(CoreUser.instance.getProfile(this.userId!).then(async (user) => {
+                        this.otherMember = {
+                            id: user.id,
+                            fullname: user.fullname,
+                            profileurl: '',
+                            profileimageurl: user.profileimageurl || '',
+                            profileimageurlsmall: user.profileimageurlsmall || '',
+                            isonline: false,
+                            showonlinestatus: false,
+                            isblocked: false,
+                            iscontact: false,
+                            isdeleted: false,
+                            canmessageevenifblocked: true,
+                            canmessage: true,
+                            requirescontact: false,
+                        };
+                        this.otherMember.isblocked = await AddonMessages.instance.isBlocked(this.userId!);
+                        this.otherMember.iscontact = await AddonMessages.instance.isContact(this.userId!);
+                        this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
+
+                        return;
+                    }));
+
+
+                }
 
                 // Fetch the messages for the first time.
-                await this.fetchMessages();
-
-                if (!this.title && this.messages.length) {
-                    // Didn't receive the fullname via argument. Try to get it from messages.
-                    // It's possible that name cannot be resolved when no messages were yet exchanged.
-                    const firstMessage = this.messages[0];
-                    if ('usertofullname' in firstMessage) {
-                        if (firstMessage.useridto != this.currentUserId) {
-                            this.title = firstMessage.usertofullname || '';
-                        } else {
-                            this.title = firstMessage.userfromfullname || '';
+                promises.push(this.fetchMessages().then(() => {
+                    if (!this.title && this.messages.length) {
+                        // Didn't receive the fullname via argument. Try to get it from messages.
+                        // It's possible that name cannot be resolved when no messages were yet exchanged.
+                        const firstMessage = this.messages[0];
+                        if ('usertofullname' in firstMessage) {
+                            if (firstMessage.useridto != this.currentUserId) {
+                                this.title = firstMessage.usertofullname || '';
+                            } else {
+                                this.title = firstMessage.userfromfullname || '';
+                            }
                         }
                     }
-                }
+
+                    return;
+                }));
             }
+
+            await Promise.all(promises);
         } catch (error) {
             CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
         } finally {

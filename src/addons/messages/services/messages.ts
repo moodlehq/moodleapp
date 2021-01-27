@@ -76,7 +76,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      * @deprecatedonmoodle since Moodle 3.6
      */
-    async addContact(userId: number, siteId?: string): Promise<void> {
+    protected async addContact(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
         const params = {
@@ -85,7 +85,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_create_contacts', params);
 
-        await this.invalidateAllContactsCache(site.getUserId(), site.getId());
+        await this.invalidateAllContactsCache(site.getId());
     }
 
     /**
@@ -161,12 +161,17 @@ export class AddonMessagesProvider {
     async createContactRequest(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
 
-        const params: AddonMessagesCreateContactRequestWSParams = {
-            userid: site.getUserId(),
-            requesteduserid: userId,
-        };
+        // Use legacy function if not available.
+        if (!site.wsAvailable('core_message_create_contact_request')) {
+            await this.addContact(userId, site.getId());
+        } else {
+            const params: AddonMessagesCreateContactRequestWSParams = {
+                userid: site.getUserId(),
+                requesteduserid: userId,
+            };
 
-        await site.write('core_message_create_contact_request', params);
+            await site.write('core_message_create_contact_request', params);
+        }
 
         await this.invalidateAllMemberInfo(userId, site).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestCreated: true };
@@ -1647,12 +1652,12 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Resolved when done.
      */
-    async invalidateAllContactsCache(userId: number, siteId?: string): Promise<void> {
+    async invalidateAllContactsCache(siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         await this.invalidateContactsCache(siteId);
 
-        await this.invalidateBlockedContactsCache(userId, siteId);
+        await this.invalidateBlockedContactsCache(siteId);
     }
 
     /**
@@ -1661,8 +1666,10 @@ export class AddonMessagesProvider {
      * @param userId The user ID.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateBlockedContactsCache(userId: number, siteId?: string): Promise<void> {
+    async invalidateBlockedContactsCache(siteId?: string): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
+
+        const userId = site.getUserId();
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForBlockedContacts(userId));
     }
@@ -1875,6 +1882,7 @@ export class AddonMessagesProvider {
         await CoreUtils.instance.allPromises([
             this.invalidateMemberInfo(userId, site.id),
             this.invalidateUserContacts(site.id),
+            this.invalidateBlockedContactsCache(site.id),
             this.invalidateContactRequestsCache(site.id),
             this.invalidateConversations(site.id),
             this.getConversationBetweenUsers(
@@ -1938,18 +1946,19 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Resolved with boolean, rejected when we do not know.
      */
-    isBlocked(userId: number, siteId?: string): Promise<boolean> {
+    async isBlocked(userId: number, siteId?: string): Promise<boolean> {
         if (this.isGroupMessagingEnabled()) {
-            return this.getMemberInfo(userId, siteId).then((member) => member.isblocked);
+            const member = await this.getMemberInfo(userId, siteId);
+
+            return member.isblocked;
         }
 
-        return this.getBlockedContacts(siteId).then((blockedContacts) => {
-            if (!blockedContacts.users || blockedContacts.users.length < 1) {
-                return false;
-            }
+        const blockedContacts = await this.getBlockedContacts(siteId);
+        if (!blockedContacts.users || blockedContacts.users.length < 1) {
+            return false;
+        }
 
-            return blockedContacts.users.some((user) => userId == user.id);
-        });
+        return blockedContacts.users.some((user) => userId == user.id);
     }
 
     /**
@@ -2291,19 +2300,16 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_delete_contacts', params, preSets);
 
-        if (this.isGroupMessagingEnabled()) {
-            return CoreUtils.instance.allPromises([
-                this.invalidateUserContacts(site.id),
-                this.invalidateAllMemberInfo(userId, site),
-            ]).then(() => {
-                const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRemoved: true };
-                CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+        return CoreUtils.instance.allPromises([
+            this.invalidateUserContacts(site.id),
+            this.invalidateAllMemberInfo(userId, site),
+            this.invalidateContactsCache(site.id),
+        ]).then(() => {
+            const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRemoved: true };
+            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
 
-                return;
-            });
-        } else {
-            return this.invalidateContactsCache(site.id);
-        }
+            return;
+        });
     }
 
     /**
