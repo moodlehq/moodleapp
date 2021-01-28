@@ -87,10 +87,9 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * Component loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(async params => {
-            const discussionUserId = params['discussionUserId']
-                ? parseInt(params['discussionUserId'], 10)
-                : (params['userId'] ? parseInt(params['userId'], 10) : undefined);
+        this.route.queryParams.subscribe(async () => {
+            const discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId') ||
+                CoreNavigator.instance.getRouteNumberParam('userId') || undefined;
 
             if (this.loaded && this.discussionUserId == discussionUserId) {
                 return;
@@ -250,7 +249,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
             userId: discussionUserId,
         };
 
-        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/contacts-35/discussion');
+        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/contacts-35/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
 
         // @todo Check why this is failing on ngInit.

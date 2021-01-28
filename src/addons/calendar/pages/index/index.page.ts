@@ -89,9 +89,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
 
         // Listen for events added. When an event is added, reload the data.
-        this.newEventObserver = CoreEvents.on(
+        this.newEventObserver = CoreEvents.on<AddonCalendarUpdatedEventEvent>(
             AddonCalendarProvider.NEW_EVENT_EVENT,
-            (data: AddonCalendarUpdatedEventEvent) => {
+            (data) => {
                 if (data && data.eventId) {
                     this.loaded = false;
                     this.refreshData(true, false);
@@ -107,9 +107,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Listen for events edited. When an event is edited, reload the data.
-        this.editEventObserver = CoreEvents.on(
+        this.editEventObserver = CoreEvents.on<AddonCalendarUpdatedEventEvent>(
             AddonCalendarProvider.EDIT_EVENT_EVENT,
-            (data: AddonCalendarUpdatedEventEvent) => {
+            (data) => {
                 if (data && data.eventId) {
                     this.loaded = false;
                     this.refreshData(true, false);
@@ -125,7 +125,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
-        this.manualSyncObserver = CoreEvents.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data: AddonCalendarSyncEvents) => {
+        this.manualSyncObserver = CoreEvents.on<AddonCalendarSyncEvents>(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
             if (data && data.source != 'index') {
                 this.loaded = false;
                 this.refreshData(false, false);
@@ -143,9 +143,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             this.hasOffline = await AddonCalendarOffline.instance.hasOfflineData();
         }, this.currentSiteId);
 
-        this.filterChangedObserver = CoreEvents.on(
+        this.filterChangedObserver = CoreEvents.on<AddonCalendarFilter>(
             AddonCalendarProvider.FILTER_CHANGED_EVENT,
-            async (filterData: AddonCalendarFilter) => {
+            async (filterData) => {
                 this.filter = filterData;
 
                 // Course viewed has changed, check if the user can create events for this course calendar.

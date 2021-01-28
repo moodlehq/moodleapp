@@ -20,7 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
-// @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays the list of calendar events.
@@ -30,8 +30,6 @@ import { CoreNavigator } from '@services/navigator';
     templateUrl: 'user-badges.html',
 })
 export class AddonBadgesUserBadgesPage implements OnInit {
-
-    // @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     courseId = 0;
     userId!: number;
@@ -50,11 +48,10 @@ export class AddonBadgesUserBadgesPage implements OnInit {
         this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || CoreSites.instance.getCurrentSite()!.getUserId();
 
         this.fetchBadges().finally(() => {
-            // @todo splitview
-            /* if (!this.badgeHash && this.splitviewCtrl.isOn() && this.badges.length > 0) {
+            if (!this.badgeHash && CoreScreen.instance.isTablet && this.badges.length > 0) {
                 // Take first and load it.
                 this.loadIssuedBadge(this.badges[0].uniquehash);
-            }*/
+            }
             this.badgesLoaded = true;
         });
     }
@@ -99,9 +96,11 @@ export class AddonBadgesUserBadgesPage implements OnInit {
     loadIssuedBadge(badgeHash: string): void {
         this.badgeHash = badgeHash;
         const params = { courseId: this.courseId, userId: this.userId, badgeHash: badgeHash };
-        // @todo use splitview.
-        // this.splitviewCtrl.push('AddonBadgesIssuedBadgePage', params);
-        CoreNavigator.instance.navigateToSitePath('/badges/issue', { params });
+
+        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/badges/user/issue');
+        const path = (splitViewLoaded ? '../' : '') + 'issue';
+
+        CoreNavigator.instance.navigate(path, { params });
     }
 
 }

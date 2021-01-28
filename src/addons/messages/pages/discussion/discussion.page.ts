@@ -61,7 +61,7 @@ import { AddonMessagesConversationInfoComponent } from '../../components/convers
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
-    styleUrls: ['discussion.scss', '../../../../theme/messages.scss'],
+    styleUrls: ['discussion.scss'],
 })
 export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
 
@@ -167,15 +167,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     async ngOnInit(): Promise<void> {
 
-        this.route.queryParams.subscribe(async params => {
+        this.route.queryParams.subscribe(async () => {
             // Disable the profile button if we're already coming from a profile.
             const backViewPage = CoreNavigator.instance.getPreviousPath();
             this.showInfo = !backViewPage || !CoreTextUtils.instance.matchesGlob(backViewPage, '**/user/profile');
 
             this.loaded = false;
-            this.conversationId = params['conversationId'] ? parseInt(params['conversationId'], 10) : undefined;
-            this.userId = params['userId'] ? parseInt(params['userId'], 10) : undefined;
-            this.showKeyboard = !!params['showKeyboard'];
+            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId') || undefined;
+            this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || undefined;
+            this.showKeyboard = CoreNavigator.instance.getRouteBooleanParam('showKeyboard') || false;
 
             await this.fetchData();
 
@@ -1329,7 +1329,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             const result = await modal.onDidDismiss();
 
             if (typeof result.data != 'undefined') {
-                const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/**/discussion');
+                const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/**/discussion');
 
                 // Open user conversation.
                 if (splitViewLoaded) {

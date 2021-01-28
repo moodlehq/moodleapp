@@ -8,7 +8,8 @@
             <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.search' | translate">
                 <ion-icon name="fas-search" slot="icon-only"></ion-icon>
             </ion-button>
-            <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu disappears in some cases. -->
+            <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu
+                disappears in some cases. -->
             <core-context-menu></core-context-menu>
         </ion-buttons>
     </ion-toolbar>
@@ -17,10 +18,10 @@
     <core-split-view>
         <ion-tab-bar class="core-tabs-bar">
             <ion-row>
-                <ion-col class="tab-slide" [attr.aria-selected]="selected == 'confirmed'" (click)="selectTab('confirmed', $event)">
+                <ion-col class="tab-slide" [attr.aria-selected]="selected == 'confirmed'" (click)="selectTab('confirmed')">
                     <ion-label>{{ 'addon.messages.contacts' | translate}}</ion-label>
                 </ion-col>
-                <ion-col class="tab-slide" [attr.aria-selected]="selected != 'confirmed'" (click)="selectTab('requests', $event)">
+                <ion-col class="tab-slide" [attr.aria-selected]="selected != 'confirmed'" (click)="selectTab('requests')">
                     <ion-label>
                         {{ 'addon.messages.requests' | translate}}
                         <ion-badge *ngIf="requestsBadge">{{ requestsBadge }}</ion-badge>

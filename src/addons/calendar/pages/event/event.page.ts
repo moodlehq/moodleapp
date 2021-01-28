@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import {
@@ -37,12 +37,14 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreGroups } from '@services/groups';
-// @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { Network, NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonCalendarReminderDBRecord } from '../../services/database/calendar';
+import { ActivatedRoute } from '@angular/router';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays a single calendar event.
@@ -85,11 +87,15 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     syncIcon = 'spinner'; // Sync icon.
     isSplitViewOn = false;
 
-    constructor() {
+    constructor(
+        @Optional() protected svComponent: CoreSplitViewComponent,
+        protected route: ActivatedRoute,
+    ) {
+
         this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
         this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
-        // this.isSplitViewOn = this.svComponent && this.svComponent.isOn();
+        this.isSplitViewOn = this.svComponent?.isOn();
 
         // Check if site supports editing and deleting. No need to check allowed types, event.canedit already does it.
         this.canEdit = AddonCalendar.instance.canEditEventsInSite();
@@ -145,18 +151,22 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        const eventId = CoreNavigator.instance.getRouteNumberParam('id');
-        if (!eventId) {
-            CoreDomUtils.instance.showErrorModal('Event ID not supplied.');
-            CoreNavigator.instance.back();
+        this.route.queryParams.subscribe(() => {
+            this.eventLoaded = false;
 
-            return;
-        }
+            const eventId = CoreNavigator.instance.getRouteNumberParam('id');
+            if (!eventId) {
+                CoreDomUtils.instance.showErrorModal('Event ID not supplied.');
+                CoreNavigator.instance.back();
 
-        this.eventId = eventId;
-        this.syncIcon = 'spinner';
+                return;
+            }
 
-        this.fetchEvent();
+            this.eventId = eventId;
+            this.syncIcon = 'spinner';
+
+            this.fetchEvent();
+        });
     }
 
     /**
@@ -501,9 +511,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 CoreDomUtils.instance.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
 
                 // Event deleted, close the view.
-                /* if (!this.svComponent || !this.svComponent.isOn()) {
-                    this.navCtrl.pop();
-                }*/
+                if (CoreScreen.instance.isMobile) {
+                    CoreNavigator.instance.back();
+                }
             } else {
                 // Event deleted in offline, just mark it as deleted.
                 this.event.deleted = true;
@@ -558,9 +568,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             CoreDomUtils.instance.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
 
             // Event was deleted, close the view.
-            /* if (!this.svComponent || !this.svComponent.isOn()) {
-                this.navCtrl.pop();
-            }*/
+            if (CoreScreen.instance.isMobile) {
+                CoreNavigator.instance.back();
+            }
         } else if (data.events && (!isManual || data.source != 'event')) {
             const event = data.events.find((ev) => ev.id == this.eventId);
 

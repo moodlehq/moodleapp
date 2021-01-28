@@ -16,6 +16,7 @@ import { Component, OnInit, Type } from '@angular/core';
 import { IonInfiniteScroll, IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
+import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -49,35 +50,43 @@ export class CoreTagIndexAreaPage implements OnInit {
     areaComponent?: Type<unknown>;
     loadMoreError = false;
 
+    constructor(
+        protected route: ActivatedRoute,
+    ) { }
+
     /**
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.tagId = CoreNavigator.instance.getRouteNumberParam('tagId') || this.tagId;
-        this.tagName = CoreNavigator.instance.getRouteParam('tagName') || this.tagName;
-        this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || this.collectionId;
-        this.areaId = CoreNavigator.instance.getRouteNumberParam('areaId') || this.areaId;
-        this.fromContextId = CoreNavigator.instance.getRouteNumberParam('fromContextId') || this.fromContextId;
-        this.contextId = CoreNavigator.instance.getRouteNumberParam('contextId') || this.contextId;
-        this.recursive = CoreNavigator.instance.getRouteBooleanParam('recursive') ?? true;
+        this.route.queryParams.subscribe(async () => {
+            this.loaded = false;
 
-        this.areaNameKey = CoreNavigator.instance.getRouteParam('areaNameKey') || '';
-        // Pass the the following parameters to avoid fetching the first page.
-        this.componentName = CoreNavigator.instance.getRouteParam('componentName');
-        this.itemType = CoreNavigator.instance.getRouteParam('itemType');
-        this.items = CoreNavigator.instance.getRouteParam<unknown[]>('items') || [];
-        this.nextPage = CoreNavigator.instance.getRouteNumberParam('nextPage') || 0;
-        this.canLoadMore = CoreNavigator.instance.getRouteBooleanParam('canLoadMore') || false;
+            this.tagId = CoreNavigator.instance.getRouteNumberParam('tagId') || this.tagId;
+            this.tagName = CoreNavigator.instance.getRouteParam('tagName') || this.tagName;
+            this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || this.collectionId;
+            this.areaId = CoreNavigator.instance.getRouteNumberParam('areaId') || this.areaId;
+            this.fromContextId = CoreNavigator.instance.getRouteNumberParam('fromContextId') || this.fromContextId;
+            this.contextId = CoreNavigator.instance.getRouteNumberParam('contextId') || this.contextId;
+            this.recursive = CoreNavigator.instance.getRouteBooleanParam('recursive') ?? true;
 
-        try {
-            if (!this.componentName || !this.itemType || !this.items.length || this.nextPage == 0) {
-                await this.fetchData(true);
+            this.areaNameKey = CoreNavigator.instance.getRouteParam('areaNameKey') || '';
+            // Pass the the following parameters to avoid fetching the first page.
+            this.componentName = CoreNavigator.instance.getRouteParam('componentName');
+            this.itemType = CoreNavigator.instance.getRouteParam('itemType');
+            this.items = CoreNavigator.instance.getRouteParam<unknown[]>('items') || [];
+            this.nextPage = CoreNavigator.instance.getRouteNumberParam('nextPage') || 0;
+            this.canLoadMore = CoreNavigator.instance.getRouteBooleanParam('canLoadMore') || false;
+
+            try {
+                if (!this.componentName || !this.itemType || !this.items.length || this.nextPage == 0) {
+                    await this.fetchData(true);
+                }
+
+                this.areaComponent = await CoreTagAreaDelegate.instance.getComponent(this.componentName!, this.itemType!);
+            } finally {
+                this.loaded = true;
             }
-
-            this.areaComponent = await CoreTagAreaDelegate.instance.getComponent(this.componentName!, this.itemType!);
-        } finally {
-            this.loaded = true;
-        }
+        });
     }
 
     /**

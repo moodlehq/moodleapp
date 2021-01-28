@@ -17,17 +17,39 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AddonCalendarEventRoute, AddonCalendarEditRoute } from '@addons/calendar/calendar-lazy.module';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonCalendarListPage } from './list.page';
 
-const routes: Routes = [
+const splitviewRoutes = [AddonCalendarEditRoute, AddonCalendarEventRoute];
+
+const mobileRoutes: Routes = [
     {
         path: '',
         component: AddonCalendarListPage,
     },
+    ...splitviewRoutes,
 ];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: AddonCalendarListPage,
+        children: [
+            ...splitviewRoutes,
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
+];
+
 
 @NgModule({
     imports: [

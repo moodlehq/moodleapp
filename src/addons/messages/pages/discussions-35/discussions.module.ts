@@ -19,30 +19,34 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CoreScreen } from '@services/screen';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { discussionRoute } from '@addons/messages/messages-lazy.module';
+import { AddonMessagesDiscussionRoute } from '@addons/messages/messages-lazy.module';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 import { AddonMessagesDiscussions35Page } from './discussions.page';
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
-        matcher: segments => {
-            const matches = CoreScreen.instance.isMobile ? segments.length === 0 : true;
-
-            return matches ? { consumed: [] } : null;
-        },
+        path: '',
         component: AddonMessagesDiscussions35Page,
-        children: conditionalRoutes([
-            {
-                path: '',
-                pathMatch: 'full',
-            },
-            discussionRoute,
-        ], () => CoreScreen.instance.isTablet),
     },
-    ...conditionalRoutes([discussionRoute], () => CoreScreen.instance.isMobile),
+    AddonMessagesDiscussionRoute,
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: AddonMessagesDiscussions35Page,
+        children: [
+            AddonMessagesDiscussionRoute,
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
 ];
 
 @NgModule({

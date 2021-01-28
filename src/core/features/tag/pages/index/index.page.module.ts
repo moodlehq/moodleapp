@@ -17,15 +17,34 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreTagIndexAreaRoute } from '@features/tag/tag-lazy.module';
+import { CoreScreen } from '@services/screen';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreTagIndexPage } from './index.page';
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
         path: '',
         component: CoreTagIndexPage,
     },
+    CoreTagIndexAreaRoute,
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: CoreTagIndexPage,
+        children: [
+            CoreTagIndexAreaRoute,
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
 ];
 
 @NgModule({

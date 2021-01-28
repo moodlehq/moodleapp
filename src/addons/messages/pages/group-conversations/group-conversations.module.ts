@@ -18,31 +18,34 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { discussionRoute } from '@addons/messages/messages-lazy.module';
+import { AddonMessagesDiscussionRoute } from '@addons/messages/messages-lazy.module';
 import { CoreScreen } from '@services/screen';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonMessagesGroupConversationsPage } from './group-conversations.page';
 
+const mobileRoutes: Routes = [
+    {
+        path: '',
+        component: AddonMessagesGroupConversationsPage,
+    },
+    AddonMessagesDiscussionRoute,
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: AddonMessagesGroupConversationsPage,
+        children: [
+            AddonMessagesDiscussionRoute,
+        ],
+    },
+];
 
 const routes: Routes = [
-    {
-        matcher: segments => {
-            const matches = CoreScreen.instance.isMobile ? segments.length === 0 : true;
-
-            return matches ? { consumed: [] } : null;
-        },
-        component: AddonMessagesGroupConversationsPage,
-        children: conditionalRoutes([
-            {
-                path: '',
-                pathMatch: 'full',
-            },
-            discussionRoute,
-        ], () => CoreScreen.instance.isTablet),
-    },
-    ...conditionalRoutes([discussionRoute], () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
 ];
 
 @NgModule({

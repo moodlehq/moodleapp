@@ -22,6 +22,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@singletons';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component that displays the list of conversations, including group conversations.
@@ -49,8 +50,8 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * Component loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(async params => {
-            this.conversationId = parseInt(params['conversationId'], 10);
+        this.route.queryParams.subscribe(async () => {
+            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId') || 0;
 
             this.loaded = false;
             this.fetchData().finally(() => {

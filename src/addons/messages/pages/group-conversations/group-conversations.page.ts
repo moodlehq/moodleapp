@@ -280,11 +280,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Component loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(async params => {
+        this.route.queryParams.subscribe(async () => {
             // Conversation to load.
-            this.conversationId = params['conversationId'] ? parseInt(params['conversationId'], 10) : undefined;
+            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId') || undefined;
             if (!this.conversationId) {
-                this.discussionUserId = params['discussionUserId'] ? parseInt(params['discussionUserId'], 10) : undefined;
+                this.discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId') || undefined;
             }
 
             if (this.conversationId || this.discussionUserId) {
@@ -535,7 +535,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             params.message = messageId;
         }
 
-        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/group-conversations/discussion');
+        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/group-conversations/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
         CoreNavigator.instance.navigate(path, { params });
     }

@@ -13,9 +13,15 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+
+export const CoreTagIndexAreaRoute: Route = {
+    path: 'index-area',
+    loadChildren: () =>
+        import('@features/tag/pages/index-area/index-area.page.module').then(m => m.CoreTagIndexAreaPageModule),
+};
 
 function buildRoutes(injector: Injector): Routes {
     return [
@@ -27,11 +33,7 @@ function buildRoutes(injector: Injector): Routes {
             path: 'search',
             loadChildren: () => import('@features/tag//pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
         },
-        {
-            path: 'index-area',
-            loadChildren: () =>
-                import('@features/tag/pages/index-area/index-area.page.module').then(m => m.CoreTagIndexAreaPageModule),
-        },
+        CoreTagIndexAreaRoute,
         ...buildTabMainRoutes(injector, {
             redirectTo: 'search',
             pathMatch: 'full',

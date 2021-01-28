@@ -17,15 +17,34 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonBadgesUserBadgesPage } from './user-badges.page';
+import { AddonBadgesIssueRoute } from '@addons/badges/badges-lazy.module';
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
         path: '',
         component: AddonBadgesUserBadgesPage,
     },
+    AddonBadgesIssueRoute,
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: AddonBadgesUserBadgesPage,
+        children: [
+            AddonBadgesIssueRoute,
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
 ];
 
 @NgModule({

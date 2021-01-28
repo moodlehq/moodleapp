@@ -108,7 +108,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
         this.displayResults = false;
 
         // Empty details.
-        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/search/discussion');
+        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/search/discussion');
         if (splitViewLoaded) {
             CoreNavigator.instance.navigate('../');
         }
@@ -258,7 +258,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
                 params.userId = result.id;
             }
 
-            const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/search/discussion');
+            const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/search/discussion');
             const path = (splitViewLoaded ? '../' : '') + 'discussion';
             CoreNavigator.instance.navigate(path, { params });
         }

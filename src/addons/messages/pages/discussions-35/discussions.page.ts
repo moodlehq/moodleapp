@@ -146,10 +146,9 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      * Component loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(async params => {
-            const discussionUserId = params['discussionUserId']
-                ? parseInt(params['discussionUserId'], 10)
-                : (params['userId'] ? parseInt(params['userId'], 10) : undefined);
+        this.route.queryParams.subscribe(async () => {
+            const discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId') ||
+                CoreNavigator.instance.getRouteNumberParam('userId') || undefined;
 
             if (this.loaded && this.discussionUserId == discussionUserId) {
                 return;
@@ -281,7 +280,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             params.message = messageId;
         }
 
-        const splitViewLoaded = CoreNavigator.instance.isSplitViewOutletLoaded('**/messages/index/discussion');
+        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/index/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
 
         CoreNavigator.instance.navigate(path, { params });

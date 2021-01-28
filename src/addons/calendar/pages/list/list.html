@@ -19,8 +19,8 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<!--<core-split-view>-->
-    <ion-content>
+<ion-content>
+    <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!eventsLoaded" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
@@ -86,5 +86,5 @@
                 <ion-icon name="fas-plus"></ion-icon>
             </ion-fab-button>
         </ion-fab>
-    </ion-content>
-<!--</core-split-view>-->
+    </core-split-view>
+</ion-content>
