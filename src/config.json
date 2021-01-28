@@ -102,7 +102,7 @@
     "enableonboarding": true,
     "forceColorScheme": "",
     "forceLoginLogo": false,
-    "ioswebviewscheme": "moodleappfs",
+    "ioswebviewscheme": "trimexcollegesappfs",
     "appstores": {
         "android": "com.trimex.trimexlms",
         "ios": "id633359593",
