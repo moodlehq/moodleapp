@@ -1556,7 +1556,7 @@ export class CoreUtilsProvider {
                 throw e;
             }
         } catch (error) {
-            // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             error.message = error.message || (error as { _message?: string })._message;
 
             throw error;

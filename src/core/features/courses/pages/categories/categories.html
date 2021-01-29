@@ -39,7 +39,8 @@
                 </ion-label>
             </ion-item-divider>
             <section *ngFor="let category of categories">
-                <ion-item class="ion-text-wrap" router-direction="forward" [routerLink]="['/main/home/courses/categories', category.id]"
+                <ion-item class="ion-text-wrap" router-direction="forward"
+                [routerLink]="['/main/home/courses/categories', category.id]"
                 [title]="category.name" detail>
                     <ion-icon name="fas-folder" slot="start"></ion-icon>
                     <ion-label>
@@ -61,7 +62,8 @@
             </ion-item-divider>
             <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
         </div>
-        <core-empty-box *ngIf="!categories.length && !courses.length" icon="fas-graduation-cap" [message]="'core.courses.nocoursesyet' | translate">
+        <core-empty-box *ngIf="!categories.length && !courses.length" icon="fas-graduation-cap"
+            [message]="'core.courses.nocoursesyet' | translate">
         </core-empty-box>
     </core-loading>
 </ion-content>

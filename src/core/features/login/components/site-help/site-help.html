@@ -67,7 +67,7 @@
                 <h2><b>{{ 'core.login.faqwhereisqrcode' | translate }}</b></h2>
             </ion-label>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="canScanQR" class="core-login-faqwhereisqrcodeanswer">
+        <ion-item class="ion-text-wrap core-login-faqwhereisqrcodeanswer" *ngIf="canScanQR">
             <ion-label>
                 <p [innerHTML]="'core.login.faqwhereisqrcodeanswer' | translate: {$image: qrCodeImageHtml}"></p>
             </ion-label>

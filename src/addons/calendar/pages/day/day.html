@@ -59,9 +59,8 @@
 
         <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
             <ng-container *ngFor="let event of filteredEvents">
-                <ion-item class="ion-text-wrap" [title]="event.name" (click)="gotoEvent(event.id)"
-                [class.item-dimmed]="event.ispast" class="addon-calendar-event"
-                [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
+                <ion-item class="addon-calendar-event ion-text-wrap" [title]="event.name" (click)="gotoEvent(event.id)"
+                [class.item-dimmed]="event.ispast" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                     <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon">
                     <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start">
                     </ion-icon>

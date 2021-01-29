@@ -216,26 +216,26 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                 document.head.appendChild(script);
 
                 // Save the lang config until MathJax is actually loaded.
-                this._lang = <string> params.lang; // eslint-disable-line no-underscore-dangle
+                this._lang = <string> params.lang;
             },
             // Set the correct language for the MathJax menus.
             _setLocale: function (): void {
-                if (!this._configured) {  // eslint-disable-line no-underscore-dangle
-                    const lang = this._lang;  // eslint-disable-line no-underscore-dangle
+                if (!this._configured) {
+                    const lang = this._lang;
 
                     if (typeof that.window.MathJax != 'undefined') {
                         that.window.MathJax.Hub.Queue(() => {
                             that.window.MathJax.Localization.setLocale(lang);
                         });
                         that.window.MathJax.Hub.Configured();
-                        this._configured = true;  // eslint-disable-line no-underscore-dangle
+                        this._configured = true;
                     }
                 }
             },
             // Called by the filter when an equation is found while rendering the page.
             typeset: function (container: HTMLElement): void {
-                if (!this._configured) { // eslint-disable-line no-underscore-dangle
-                    this._setLocale(); // eslint-disable-line no-underscore-dangle
+                if (!this._configured) {
+                    this._setLocale();
                 }
 
                 if (typeof that.window.MathJax != 'undefined') {

@@ -14,11 +14,13 @@
         <core-empty-box *ngIf="!grade" icon="stats" [message]="'core.grades.nogradesreturned' | translate"></core-empty-box>
 
         <ion-list *ngIf="grade">
-            <ion-item *ngIf="grade.itemname && grade.link" class="ion-text-wrap" detail="true" [href]="grade.link" core-link capture="true">
+            <ion-item *ngIf="grade.itemname && grade.link" class="ion-text-wrap" detail="true" [href]="grade.link" core-link
+            capture="true">
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="start"></ion-icon>
                 <img *ngIf="grade.image" [src]="grade.image" slot="start" class="core-module-icon" />
                 <ion-label>
-                    <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId"></core-format-text></h2>
+                    <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId">
+                    </core-format-text></h2>
                 </ion-label>
             </ion-item>
 
@@ -26,7 +28,8 @@
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="start"></ion-icon>
                 <img *ngIf="grade.image" [src]="grade.image" slot="start" class="core-module-icon" />
                 <ion-label>
-                    <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId"></core-format-text></h2>
+                    <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId">
+                    </core-format-text></h2>
                 </ion-label>
             </ion-item>
 
@@ -82,7 +85,8 @@
             <ion-item class="ion-text-wrap" *ngIf="grade.feedback">
                 <ion-label>
                     <h2>{{ 'core.grades.feedback' | translate}}</h2>
-                    <p><core-format-text [fullTitle]="'core.grades.feedback' | translate" maxHeight="60" fullOnClick="true" [text]="grade.feedback" contextLevel="course" [contextInstanceId]="courseId"></core-format-text></p>
+                    <p><core-format-text [fullTitle]="'core.grades.feedback' | translate" maxHeight="60" fullOnClick="true"
+                        [text]="grade.feedback" contextLevel="course" [contextInstanceId]="courseId"></core-format-text></p>
                 </ion-label>
             </ion-item>
 

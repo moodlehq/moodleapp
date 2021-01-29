@@ -33,10 +33,10 @@
     </core-context-menu>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <div class="ion-padding" [hidden]="showFilter || !showSelectorFilter" class="safe-padding-horizontal">
+    <div class="ion-padding safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
         <!-- "Time" selector. -->
-        <ion-select class="ion-text-start" [title]="'core.show' | translate" [(ngModel)]="selectedFilter"
-            (ngModelChange)="selectedChanged()" interface="popover" class="core-button-select">
+        <ion-select class="core-button-select ion-text-start" [title]="'core.show' | translate" [(ngModel)]="selectedFilter"
+            (ngModelChange)="selectedChanged()" interface="popover">
             <ion-select-option value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
                 {{ 'addon.block_myoverview.allincludinghidden' | translate }}
             </ion-select-option>

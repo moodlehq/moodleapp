@@ -97,7 +97,7 @@
                     </ion-select>
                 </ion-item>
                 <!-- The course has no groups. -->
-                <ion-item class="ion-text-wrap" *ngIf="!loadingGroups && courseGroupSet && !groups.length" class="core-danger-item">
+                <ion-item class="ion-text-wrap core-danger-item" *ngIf="!loadingGroups && courseGroupSet && !groups.length">
                     <ion-label><p>{{ 'core.coursenogroups' | translate }}</p></ion-label>
                 </ion-item>
                 <!-- Select the group. -->
@@ -119,7 +119,7 @@
             </ng-container>
 
             <!-- Advanced options. -->
-            <ion-item-divider class="ion-text-wrap" (click)="toggleAdvanced()" class="core-expandable">
+            <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()">
                 <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start"></ion-icon>
                 <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start"></ion-icon>
                 <ion-label>
@@ -147,7 +147,7 @@
                 </ion-item>
 
                 <!-- Duration. -->
-                <div class="ion-text-wrap" class="addon-calendar-radio-container">
+                <div class="ion-text-wrap addon-calendar-radio-container">
                     <ion-radio-group formControlName="duration">
                         <ion-item class="addon-calendar-radio-title">
                             <ion-label>
@@ -192,7 +192,7 @@
                 </ng-container>
 
                 <!-- Apply to all events or just this one (editing repeated events). -->
-                <div *ngIf="eventRepeatId" class="ion-text-wrap" class="addon-calendar-radio-container">
+                <div *ngIf="eventRepeatId" class="ion-text-wrap addon-calendar-radio-container">
                     <ion-radio-group formControlName="repeateditall">
                         <ion-item class="addon-calendar-radio-title">
                             <ion-label>
