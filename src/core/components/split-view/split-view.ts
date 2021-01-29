@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, HostBinding, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
+import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
+
+enum CoreSplitViewMode {
+    MenuOnly = 'menu-only', // Hides content.
+    ContentOnly = 'content-only', // Hides menu.
+    MenuAndContent = 'menu-and-content', // Shows both menu and content.
+}
 
 @Component({
     selector: 'core-split-view',
@@ -24,19 +31,25 @@ import { Subscription } from 'rxjs';
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild(IonRouterOutlet) outlet!: IonRouterOutlet;
-    @HostBinding('class.outlet-activated') outletActivated = false;
+    @HostBinding('class') classes = '';
+    isNested = false;
 
     private subscriptions?: Subscription[];
+
+    constructor(private element: ElementRef<HTMLElement>) {}
 
     /**
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.outletActivated = this.outlet.isActivated;
+        this.isNested = !!this.element.nativeElement.parentElement?.closest('core-split-view');
         this.subscriptions = [
-            this.outlet.activateEvents.subscribe(() => this.outletActivated = true),
-            this.outlet.deactivateEvents.subscribe(() => this.outletActivated = false),
+            this.outlet.activateEvents.subscribe(() => this.updateClasses()),
+            this.outlet.deactivateEvents.subscribe(() => this.updateClasses()),
+            CoreScreen.instance.layoutObservable.subscribe(() => this.updateClasses()),
         ];
+
+        this.updateClasses();
     }
 
     /**
@@ -44,6 +57,39 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.subscriptions?.forEach(subscription => subscription.unsubscribe());
+    }
+
+    /**
+     * Update host classes.
+     */
+    private updateClasses(): void {
+        const classes: string[] = [this.getCurrentMode()];
+
+        if (this.isNested) {
+            classes.push('nested');
+        }
+
+        this.classes = classes.join(' ');
+    }
+
+    /**
+     * Get the current mode. Depending on the layout, outlet status, and whether this split view
+     * is nested or not, this method will indicate which parts of the split view should be visible.
+     *
+     * @return Split view mode.
+     */
+    private getCurrentMode(): CoreSplitViewMode {
+        if (this.isNested) {
+            return CoreSplitViewMode.MenuOnly;
+        }
+
+        if (CoreScreen.instance.isMobile) {
+            return this.outlet.isActivated
+                ? CoreSplitViewMode.ContentOnly
+                : CoreSplitViewMode.MenuOnly;
+        }
+
+        return CoreSplitViewMode.MenuAndContent;
     }
 
 }

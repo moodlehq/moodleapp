@@ -46,24 +46,40 @@ const sectionRoutes: Routes = [
     },
 ];
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
-        matcher: segments => {
-            const matches = CoreScreen.instance.isMobile ? segments.length === 0 : true;
-
-            return matches ? { consumed: [] } : null;
-        },
+        path: '',
         component: CoreSettingsIndexPage,
-        children: conditionalRoutes([
+    },
+    ...sectionRoutes,
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: CoreSettingsIndexPage,
+        children: [
             {
                 path: '',
                 pathMatch: 'full',
                 redirectTo: 'general',
             },
             ...sectionRoutes,
-        ], () => !CoreScreen.instance.isMobile),
+        ],
     },
-    ...conditionalRoutes(sectionRoutes, () => CoreScreen.instance.isMobile),
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
+    {
+        path: 'about/deviceinfo',
+        loadChildren: () => import('./pages/deviceinfo/deviceinfo.module').then(m => m.CoreSettingsDeviceInfoPageModule),
+    },
+    {
+        path: 'about/licenses',
+        loadChildren: () => import('./pages/licenses/licenses.module').then(m => m.CoreSettingsLicensesPageModule),
+    },
 ];
 
 @NgModule({

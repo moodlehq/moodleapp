@@ -48,7 +48,7 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
      * @return True or promise resolved with true if enabled.
      */
     isEnabledForCourse(courseId: number,
-        accessData: any, // @todo: define type.
+        accessData: CoreCourseAccessData,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): boolean | Promise<boolean>;
@@ -672,3 +672,6 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 }
 
 export class CoreCourseOptionsDelegate extends makeSingleton(CoreCourseOptionsDelegateService) {}
+
+// @todo define
+export type CoreCourseAccessData = any;

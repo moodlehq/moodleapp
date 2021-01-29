@@ -123,10 +123,13 @@ ion-toolbar {
     font-size: 14px;
 }
 
+.core-selected-item {
+    border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
+}
+
 // Item styles
 .item.core-selected-item {
-    // TODO: Add safe are to border and RTL
-    border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
+    // TODO: Add safe area to border and RTL
     --ion-safe-area-left: calc(-1 * var(--selected-item-border-width));
 }
 
@@ -257,12 +260,18 @@ ion-avatar ion-img, ion-avatar img {
 }
 
 // Activity modules
+.core-module-icon {
+    width: auto;
+    max-width: 24px;
+    max-height: 24px;
+}
+
 ion-item img.core-module-icon[slot="start"] {
     margin-top: 12px;
     margin-bottom: 12px;
     margin-right: 32px;
-    padding: 6px;
 }
+
 [dir=rtl] ion-item img.core-module-icon[slot="start"] {
     margin-right: unset;
     margin-left: 32px;

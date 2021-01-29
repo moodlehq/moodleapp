@@ -1,0 +1,70 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'core.grades.grades' | translate }}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!gradesTableLoaded" (ionRefresh)="refreshGradesTable($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="gradesTableLoaded" class="safe-area-page">
+            <core-empty-box *ngIf="!gradesTable" icon="stats" [message]="'core.grades.nogradesreturned' | translate">
+            </core-empty-box>
+            <div *ngIf="gradesTable" class="core-grades-container">
+                <table cellspacing="0" cellpadding="0" class="core-grades-table">
+                    <thead>
+                        <tr>
+                            <th
+                                *ngFor="let column of gradesTable.columns"
+                                id="{{column.name}}"
+                                class="ion-text-start"
+                                [class.ion-hide-md-down]="column.hiddenPhone"
+                                [attr.colspan]="column.colspan"
+                            >
+                                {{ 'core.grades.' + column.name | translate }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let row of gradesTable.rows"
+                            (click)="row.itemtype != 'category' && gotoGrade(row.id)"
+                            [class]="row.rowclass"
+                            [ngClass]='{"core-grades-grade-clickable": row.itemtype != "category"}'
+                        >
+                            <ng-container *ngIf="row.itemtype">
+                                <td
+                                    *ngIf="row.itemtype == 'category'"
+                                    class="core-grades-table-category"
+                                    [attr.rowspan]="row.rowspan"
+                                ></td>
+                                <th
+                                    class="core-grades-table-gradeitem ion-text-start"
+                                    [class.column-itemname]="row.itemtype == 'category'"
+                                    [class.core-selected-item]="activeGradeId == row.id"
+                                    [attr.colspan]="row.colspan"
+                                >
+                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start"></ion-icon>
+                                    <img *ngIf="row.image" [src]="row.image" slot="start" />
+                                    <span [innerHTML]="row.gradeitem"></span>
+                                </th>
+                                <ng-container *ngFor="let column of gradesTable.columns">
+                                    <td
+                                        *ngIf="column.name != 'gradeitem' && row[column.name] != undefined"
+                                        [class]="'ion-text-start core-grades-table-' + column.name"
+                                        [class.ion-hide-md-down]="column.hiddenPhone"
+                                        [innerHTML]="row[column.name]"
+                                    ></td>
+                                </ng-container>
+                            </ng-container>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </core-loading>
+    </core-split-view>
+</ion-content>

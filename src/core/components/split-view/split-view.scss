@@ -1,11 +1,11 @@
-@import "~theme/breakpoints";
-
 // @todo RTL layout
 
 :host {
-    --side-width: 100%;
-    --side-min-width: 270px;
-    --side-max-width: 28%;
+    --menu-min-width: 270px;
+    --menu-max-width: 28%;
+    --menu-display: flex;
+    --content-display: block;
+    --border-width: 1;
 
     top: 0;
     right: 0;
@@ -19,16 +19,28 @@
     contain: strict;
 }
 
+:host(.menu-only) {
+    --menu-min-width: 0;
+    --menu-max-width: 100%;
+    --content-display: none;
+    --border-width: 0;
+}
+
+:host(.content-only) {
+    --menu-display: none;
+    --border-width: 0;
+}
+
 :host-context(ion-app.md) {
-    --border: 1px solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, .13))));
+    --border: calc(var(--border-width) * 1px) solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, .13))));
 }
 
 :host-context(ion-app.ios) {
-    --border: .55px solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-250, #c8c7cc)));
+    --border: calc(var(--border-width) * .55px) solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-250, #c8c7cc)));
 }
 
-ion-content,
-ion-router-outlet {
+.menu,
+.content {
     top: 0;
     right: 0;
     bottom: 0;
@@ -38,49 +50,25 @@ ion-router-outlet {
     z-index: 0;
 }
 
-ion-content {
-    display: flex;
+.menu {
+    display: var(--menu-display);
     flex-shrink: 0;
     order: -1;
     border-left: unset;
     border-right: unset;
     border-inline-start: 0;
-    border-inline-end: 0;
+    border-inline-end: var(--border);
+    min-width: var(--menu-min-width);
+    max-width: var(--menu-max-width);
     width: 100%;
 }
 
-ion-router-outlet {
+.content {
+    display: var(--content-display);
     flex: 1;
-    display: none;
 
     ::ng-deep ion-header {
         display: none;
-    }
-
-}
-
-:host(.outlet-activated) {
-
-    ion-router-outlet {
-        display: block;
-    }
-
-    ion-content {
-        display: none;
-    }
-
-}
-
-@media (min-width: $breakpoint-tablet) {
-
-    ion-content {
-        border-inline-end: var(--border);
-        min-width: var(--side-min-width);
-        max-width: var(--side-max-width);
-    }
-
-    :host(.outlet-activated) ion-content {
-        display: flex;
     }
 
 }

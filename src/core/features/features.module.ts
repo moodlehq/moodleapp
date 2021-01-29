@@ -18,6 +18,7 @@ import { CoreCourseModule } from './course/course.module';
 import { CoreCoursesModule } from './courses/courses.module';
 import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreFileUploaderModule } from './fileuploader/fileuploader.module';
+import { CoreGradesModule } from './grades/grades.module';
 import { CoreH5PModule } from './h5p/h5p.module';
 import { CoreLoginModule } from './login/login.module';
 import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
@@ -35,6 +36,7 @@ import { CoreViewerModule } from './viewer/viewer.module';
         CoreCoursesModule,
         CoreEmulatorModule,
         CoreFileUploaderModule,
+        CoreGradesModule,
         CoreLoginModule,
         CoreMainMenuModule,
         CoreSettingsModule,

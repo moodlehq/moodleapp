@@ -140,8 +140,9 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @return Whether the current view is a certain course.
      */
-    currentViewIsCourse(): boolean {
-        // @ todo add params and logic.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    currentViewIsCourse(navCtrl: any, courseId: number): boolean {
+        // @todo implement
         return false;
     }
 
