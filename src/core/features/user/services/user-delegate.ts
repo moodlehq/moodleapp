@@ -51,7 +51,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      */
     isEnabledForUser(
         user: CoreUserProfile,
-        courseId: number,
+        courseId?: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean>;
@@ -63,7 +63,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * @param courseId Course ID where to show.
      * @return Data to be shown.
      */
-    getDisplayData(user: CoreUserProfile, courseId: number): CoreUserProfileHandlerData;
+    getDisplayData(user: CoreUserProfile, courseId?: number): CoreUserProfileHandlerData;
 }
 
 /**
@@ -218,7 +218,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param courseId The course ID.
      * @return Resolved with the handlers.
      */
-    getProfileHandlersFor(user: CoreUserProfile, courseId: number): Subject<CoreUserProfileHandlerToDisplay[]> {
+    getProfileHandlersFor(user: CoreUserProfile, courseId?: number): Subject<CoreUserProfileHandlerToDisplay[]> {
         // Initialize the user handlers if it isn't initialized already.
         if (!this.userHandlers[user.id]) {
             this.userHandlers[user.id] = {
@@ -240,7 +240,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param courseId The course ID.
      * @return Promise resolved when done.
      */
-    protected async calculateUserHandlers(user: CoreUserProfile, courseId: number): Promise<void> {
+    protected async calculateUserHandlers(user: CoreUserProfile, courseId?: number): Promise<void> {
         // @todo: Get Course admin/nav options.
         let navOptions;
         let admOptions;

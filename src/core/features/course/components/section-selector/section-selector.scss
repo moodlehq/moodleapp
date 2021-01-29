@@ -1,0 +1,17 @@
+:host {
+    core-progress-bar {
+        .core-progress-text {
+            line-height: 24px;
+            position: absolute;
+            top: -8px;
+            right: 10px;
+        }
+        progress {
+            margin: 8px 0 4px 0;
+        }
+    }
+
+    ion-badge {
+        text-align: start;
+    }
+}

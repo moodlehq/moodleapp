@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
-import { CoreCourse, CoreCourseSection } from '../../course/services/course';
+import { CoreCourse } from '../../course/services/course';
 import { CoreCourses } from '../../courses/services/courses';
 import { AddonModForum, AddonModForumData } from '@/addons/mod/forum/services/forum';
 
@@ -90,8 +90,7 @@ export class CoreSiteHomeProvider {
             const preSets: CoreSiteWSPreSets = { emergencyCache: false };
 
             try {
-                const sections: CoreCourseSection[] =
-                    await CoreCourse.instance.getSections(siteHomeId, false, true, preSets, site.id);
+                const sections = await CoreCourse.instance.getSections(siteHomeId, false, true, preSets, site.id);
 
                 if (!sections || !sections.length) {
                     throw Error('No sections found');

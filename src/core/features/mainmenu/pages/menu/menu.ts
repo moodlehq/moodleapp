@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NavController, IonTabs } from '@ionic/angular';
+import { IonTabs } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
@@ -25,7 +25,7 @@ import { CoreMainMenu, CoreMainMenuProvider } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreRedirectPayload } from '@services/navigator';
+import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 
 /**
  * Page that displays the main menu of the app.
@@ -55,7 +55,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
     constructor(
         protected route: ActivatedRoute,
-        protected navCtrl: NavController,
         protected changeDetector: ChangeDetectorRef,
         protected router: Router,
     ) {}
@@ -66,7 +65,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         // @TODO this should be handled by route guards and can be removed
         if (!CoreSites.instance.isLoggedIn()) {
-            this.navCtrl.navigateRoot('/login/init');
+            CoreNavigator.instance.navigate('/login/init', { reset: true });
 
             return;
         }
@@ -191,8 +190,8 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         if (i >= 0) {
             // Tab found. Open it with the params.
-            this.navCtrl.navigateForward(data.redirectPath, {
-                queryParams: data.redirectParams,
+            CoreNavigator.instance.navigate(data.redirectPath, {
+                params: data.redirectParams,
                 animated: false,
             });
         } else {

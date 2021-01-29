@@ -15,7 +15,6 @@
 import { Injectable, Type } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
-import { CoreTagFeedElement } from './tag-helper';
 
 /**
  * Interface that all tag area handlers must implement.
@@ -32,7 +31,7 @@ export interface CoreTagAreaHandler extends CoreDelegateHandler {
      * @param content Rendered content.
      * @return Area items (or promise resolved with the items).
      */
-    parseContent(content: string): CoreTagFeedElement[] | Promise<CoreTagFeedElement[]>;
+    parseContent(content: string): unknown[] | Promise<unknown[]>;
 
     /**
      * Get the component to use to display items.
@@ -74,7 +73,7 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
      * @param content Rendered content.
      * @return Promise resolved with the area items, or undefined if not found.
      */
-    async parseContent(component: string, itemType: string, content: string): Promise<CoreTagFeedElement[] | undefined> {
+    async parseContent(component: string, itemType: string, content: string): Promise<unknown[] | undefined> {
         const type = component + '/' + itemType;
 
         return await this.executeFunctionOnEnabled(type, 'parseContent', [content]);

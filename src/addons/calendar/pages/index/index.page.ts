@@ -168,12 +168,12 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
 
-        this.route.queryParams.subscribe(params => {
-            this.eventId = parseInt(params['eventId'], 10) || undefined;
-            this.filter.courseId = parseInt(params['courseId'], 10) || -1;
-            this.year = parseInt(params['year'], 10) || undefined;
-            this.month = parseInt(params['month'], 10) || undefined;
-            this.loadUpcoming = !!params['upcoming'];
+        this.route.queryParams.subscribe(() => {
+            this.eventId = CoreNavigator.instance.getRouteNumberParam('eventId');
+            this.filter.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || -1;
+            this.year = CoreNavigator.instance.getRouteNumberParam('year');
+            this.month = CoreNavigator.instance.getRouteNumberParam('month');
+            this.loadUpcoming = !!CoreNavigator.instance.getRouteBooleanParam('upcoming');
             this.showCalendar = !this.loadUpcoming;
             this.filter.filtered = this.filter.courseId > 0;
 

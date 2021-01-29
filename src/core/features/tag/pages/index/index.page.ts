@@ -18,8 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 // import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CoreTagFeedElement } from '../../services/tag-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the tag index.
@@ -45,24 +44,17 @@ export class CoreTagIndexPage implements OnInit {
 
     areas: (CoreTagAreaDisplay | null)[] = [];
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected router: Router,
-    ) { }
-
     /**
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        const navParams = this.route.snapshot.queryParams;
-
-        this.tagId = navParams['tagId'] ? parseInt(navParams['tagId'], 10) : this.tagId;
-        this.tagName = navParams['tagName'] || this.tagName;
-        this.collectionId = navParams['collectionId'] ? parseInt(navParams['collectionId'], 10) : this.collectionId;
-        this.areaId = navParams['areaId'] ? parseInt(navParams['areaId']!, 10) : this.areaId;
-        this.fromContextId = parseInt(navParams['fromContextId'], 10) || this.fromContextId;
-        this.contextId = navParams['contextId'] ? parseInt(navParams['contextId'], 10) : this.contextId;
-        this.recursive = typeof navParams['recursive'] == 'undefined'? true : navParams['recursive'];
+        this.tagId = CoreNavigator.instance.getRouteNumberParam('tagId') || this.tagId;
+        this.tagName = CoreNavigator.instance.getRouteParam('tagName') || this.tagName;
+        this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || this.collectionId;
+        this.areaId = CoreNavigator.instance.getRouteNumberParam('areaId') || this.areaId;
+        this.fromContextId = CoreNavigator.instance.getRouteNumberParam('fromContextId') || this.fromContextId;
+        this.contextId = CoreNavigator.instance.getRouteNumberParam('contextId') || this.contextId;
+        this.recursive = CoreNavigator.instance.getRouteBooleanParam('recursive') ?? true;
 
         try {
             await this.fetchData();
@@ -169,11 +161,7 @@ export class CoreTagIndexPage implements OnInit {
             nextPage: 1,
         };
         // this.splitviewCtrl.push('index-area', params);
-        this.router.navigate(['../index-area'], {
-            queryParams: params,
-            relativeTo: this.route,
-        });
-
+        CoreNavigator.instance.navigate('../index-area', { params });
     }
 
 }
@@ -183,7 +171,7 @@ export type CoreTagAreaDisplay = {
     componentName: string;
     itemType: string;
     nameKey: string;
-    items: CoreTagFeedElement[];
+    items: unknown[];
     canLoadMore: boolean;
     badge: string;
 };

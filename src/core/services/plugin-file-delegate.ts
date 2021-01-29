@@ -20,6 +20,7 @@ import { CoreWSExternalFile } from '@services/ws';
 import { CoreConstants } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
+import { CoreSites } from './sites';
 
 /**
  * Delegate to register pluginfile information handlers.
@@ -133,11 +134,13 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId: string): Promise<CoreFileSizeSum> {
+    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<CoreFileSizeSum> {
+        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+
         const filteredFiles = <CoreWSExternalFile[]>[];
 
         await Promise.all(files.map(async (file) => {
-            const state = await CoreFilepool.instance.getFileStateByUrl(siteId, file.fileurl, file.timemodified);
+            const state = await CoreFilepool.instance.getFileStateByUrl(siteId!, file.fileurl, file.timemodified);
 
             if (state != CoreConstants.DOWNLOADED && state != CoreConstants.NOT_DOWNLOADABLE) {
                 filteredFiles.push(file);

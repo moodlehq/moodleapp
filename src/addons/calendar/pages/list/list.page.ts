@@ -34,7 +34,7 @@ import { CoreApp } from '@services/app';
 import moment from 'moment';
 import { CoreConstants } from '@/core/constants';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Network, NgZone } from '@singletons';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
@@ -102,7 +102,6 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
     };
 
     constructor(
-        protected route: ActivatedRoute,
         private popoverCtrl: PopoverController,
     ) {
 
@@ -248,8 +247,8 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.eventId = this.route.snapshot.queryParams['eventId'] || undefined;
-        this.filter.courseId = this.route.snapshot.queryParams['courseId'];
+        this.eventId = CoreNavigator.instance.getRouteNumberParam('eventId');
+        this.filter.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || -1;
 
         if (this.eventId) {
             // There is an event to load, open the event in a new state.

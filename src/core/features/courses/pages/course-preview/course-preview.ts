@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, NgZone, OnInit } from '@angular/core';
-import { ModalController, IonRefresher, NavController } from '@ionic/angular';
+import { ModalController, IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -31,9 +31,9 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { Translate } from '@singletons';
-import { ActivatedRoute } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../components/self-enrol-password/self-enrol-password';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
@@ -78,8 +78,6 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
     constructor(
         protected modalCtrl: ModalController,
         protected zone: NgZone,
-        protected route: ActivatedRoute,
-        protected navCtrl: NavController,
     ) {
         this.isMobile = CoreApp.instance.isMobile();
         this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
@@ -98,12 +96,11 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        const navParams = this.route.snapshot.queryParams;
-        this.course = navParams['course'];
-        this.avoidOpenCourse = !!navParams['avoidOpenCourse'];
+        this.course = CoreNavigator.instance.getRouteParam('course');
+        this.avoidOpenCourse = !!CoreNavigator.instance.getRouteBooleanParam('avoidOpenCourse');
 
         if (!this.course) {
-            this.navCtrl.back();
+            CoreNavigator.instance.back();
 
             return;
         }

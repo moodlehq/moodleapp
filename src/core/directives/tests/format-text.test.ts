@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DomSanitizer } from '@angular/platform-browser';
-import { IonContent, NavController } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { NgZone } from '@angular/core';
 import Faker from 'faker';
 
@@ -44,7 +44,6 @@ describe('CoreFormatTextDirective', () => {
 
         config = {
             providers: [
-                { provide: NavController, useValue: null },
                 { provide: IonContent, useValue: null },
             ],
         };

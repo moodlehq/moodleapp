@@ -33,7 +33,6 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
-import { CoreObject } from '@singletons/object';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -57,9 +56,7 @@ export class CoreLoginHelperProvider {
     protected isOpeningReconnect = false;
     waitingForBrowser = false;
 
-    constructor(
-        protected navCtrl: NavController,
-    ) {
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
     }
 
@@ -178,8 +175,8 @@ export class CoreLoginHelperProvider {
             const canReset = await this.canRequestPasswordReset(siteUrl);
 
             if (canReset) {
-                await this.navCtrl.navigateForward(['/login/forgottenpassword'], {
-                    queryParams: {
+                await CoreNavigator.instance.navigate('/login/forgottenpassword', {
+                    params: {
                         siteUrl,
                         username,
                     },
@@ -426,15 +423,7 @@ export class CoreLoginHelperProvider {
             params = { showKeyboard: showKeyboard };
         }
 
-        if (setRoot) {
-            await this.navCtrl.navigateRoot(pageRoute, {
-                queryParams: params,
-            });
-        } else {
-            await this.navCtrl.navigateForward(pageRoute, {
-                queryParams: params,
-            });
-        }
+        await CoreNavigator.instance.navigate(pageRoute, { params, reset: setRoot });
     }
 
     /**
@@ -791,7 +780,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        await this.navCtrl.navigateRoot('/login/changepassword', { queryParams: { siteId } });
+        await CoreNavigator.instance.navigate('/login/changepassword', { params: { siteId }, reset: true });
     }
 
     /**
@@ -982,12 +971,13 @@ export class CoreLoginHelperProvider {
 
                     this.isOpeningReconnect = true;
 
-                    await CoreUtils.instance.ignoreErrors(this.navCtrl.navigateRoot('/login/reconnect', {
-                        queryParams: CoreObject.withoutEmpty({
+                    await CoreUtils.instance.ignoreErrors(CoreNavigator.instance.navigate('/login/reconnect', {
+                        params: {
                             siteId,
                             pageName: data.pageName,
                             pageParams: data.params,
-                        }),
+                        },
+                        reset: true,
                     }));
 
                     this.isOpeningReconnect = false;
@@ -1148,7 +1138,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        this.navCtrl.navigateRoot('/login/sitepolicy', { queryParams: { siteId: siteId } });
+        CoreNavigator.instance.navigate('/login/sitepolicy', { params: { siteId }, reset: true });
     }
 
     /**

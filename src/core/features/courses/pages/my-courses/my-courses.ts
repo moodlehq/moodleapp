@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { NavController, IonSearchbar, IonRefresher } from '@ionic/angular';
+import { IonSearchbar, IonRefresher } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -26,6 +26,7 @@ import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreConstants } from '@/core/constants';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -54,9 +55,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected courseIds = '';
 
-    constructor(
-        protected navCtrl: NavController,
-    ) {
+    constructor() {
         // Update list if user enrols in a course.
         this.myCoursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
@@ -200,7 +199,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        this.navCtrl.navigateForward(['/main/home/courses/search']);
+        CoreNavigator.instance.navigate('courses/search');
     }
 
     /**

@@ -1,3 +1,31 @@
+  // Common styles.
+  .text-left           { text-align: left; }
+  .text-right          { text-align: right; }
+  .text-center         { text-align: center; }
+  .text-justify        { text-align: justify; }
+  .clearfix {
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+  }
+  .img-responsive {
+    display: block;
+    max-width: 100%;
+    &[height] {
+      height: auto;
+    }
+  }
+
+  .opacity-hide { opacity: 0; }
+  .core-big   { font-size: 115%; }
+  .invisible { visibility: hidden; }
+
+  .button-no-uppercase {
+    text-transform: none;
+  }
+
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
@@ -169,6 +197,10 @@ ion-toolbar {
 .item.core-danger-item {
     --border-color: var(--ion-color-danger);
 }
+.item-dimmed {
+    opacity: 0.7;
+    --background: var(--gray-lighter);
+}
 
 // Extra text colors.
 .text-gray {
@@ -298,14 +330,52 @@ ion-item img.core-module-icon[slot="start"] {
 // Select.
 ion-select.core-button-select,
 .core-button-select {
-    background: var(--ion-color-primary-contrast);
-    color: var(--ion-color-primary);
-    white-space: normal;
+    --background: var(--core-button-select-background);
+    background: var(--background);
+    --color: var(--ion-color-primary);
+    color: var(--color);
+    text-overflow: ellipsis;
+    white-space: nowrap;
     min-height: 45px;
+    overflow: hidden;
     margin: 8px;
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
     &::part(icon) {
         margin: 0 8px;
+    }
+    .core-button-select-text {
+        margin-inline-end: auto;
+    }
+
+}
+ion-button.core-button-select {
+    &::part(native) {
+        text-transform: none;
+        font-weight: 400;
+        font-size: 16px;
+    }
+    ion-icon {
+        margin: 0 8px;
+    }
+    .select-icon {
+        width: 19px;
+        height: 19px;
+        position: relative;
+        opacity: 0.33;
+
+        .select-icon-inner {
+            left: 5px;
+            top: 50%;
+            margin-top: -2px;
+            position: absolute;
+            width: 0px;
+            height: 0px;
+            color: currentcolor;
+            pointer-events: none;
+            border-top: 5px solid;
+            border-right: 5px solid transparent;
+            border-left: 5px solid transparent;
+        }
     }
 }
 
@@ -335,3 +405,13 @@ ion-select.core-button-select,
     overflow-x: scroll;
     flex-direction: row;
 }
+
+// Text for accessibility, hidden from the view.
+.accesshide {
+    position: absolute;
+    left: -10000px;
+    font-weight: normal;
+    font-size: 1em;
+}
+
+@import "./format-text.scss";

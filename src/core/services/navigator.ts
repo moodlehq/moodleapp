@@ -53,6 +53,9 @@ export type CoreNavigationOptions = {
 @Injectable({ providedIn: 'root' })
 export class CoreNavigatorService {
 
+    protected storedParams: Record<number, unknown> = {};
+    protected lastParamId = 0;
+
     /**
      * Check whether the active route is using the given path.
      *
@@ -89,6 +92,10 @@ export class CoreNavigatorService {
             queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : options.params,
             relativeTo: path.startsWith('/') ? null : this.getCurrentRoute(),
         });
+
+        // Remove objects from queryParams and replace them with an ID.
+        this.replaceObjectParams(navigationOptions.queryParams);
+
         const navigationResult = (options.reset ?? false)
             ? await NavController.instance.navigateRoot(url, navigationOptions)
             : await NavController.instance.navigateForward(url, navigationOptions);
@@ -183,8 +190,62 @@ export class CoreNavigatorService {
      *
      * @return Current path.
      */
-    protected getCurrentPath(): string {
+    getCurrentPath(): string {
         return CoreUrlUtils.instance.removeUrlParams(Router.instance.url);
+    }
+
+    /**
+     * Get a parameter for the current route.
+     * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
+     * unless there's a new navigation to the page.
+     *
+     * @param name Name of the parameter.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRouteParam<T = unknown>(name: string): T | undefined {
+        const route = this.getCurrentRoute();
+        const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+
+        const storedParam = this.storedParams[value];
+        // Remove the parameter from our map if it's in there.
+        delete this.storedParams[value];
+
+        return <T> storedParam ?? value;
+    }
+
+    /**
+     * Get a number route param.
+     * Angular router automatically converts numbers to string, this function automatically converts it back to number.
+     *
+     * @param name Name of the parameter.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRouteNumberParam(name: string): number | undefined {
+        const value = this.getRouteParam<string>(name);
+
+        return value !== undefined ? Number(value) : value;
+    }
+
+    /**
+     * Get a boolean route param.
+     * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
+     *
+     * @param name Name of the parameter.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRouteBooleanParam(name: string): boolean | undefined {
+        const value = this.getRouteParam<string>(name);
+
+        return value !== undefined ? Boolean(value) : value;
+    }
+
+    /**
+     * Navigate back.
+     *
+     * @return Promise resolved when done.
+     */
+    back(): Promise<void> {
+        return NavController.instance.pop();
     }
 
     /**
@@ -241,6 +302,31 @@ export class CoreNavigatorService {
                 redirectParams: options.params,
             } as CoreRedirectPayload,
         });
+    }
+
+    /**
+     * Replace all objects in query params with an ID that can be used to retrieve the object later.
+     *
+     * @param queryParams Params.
+     */
+    protected replaceObjectParams(queryParams?: Params | null): void {
+        for (const name in queryParams) {
+            const value = queryParams[name];
+            if (typeof value != 'object' || value === null) {
+                continue;
+            }
+
+            const id = this.getNewParamId();
+            this.storedParams[id] = value;
+            queryParams[name] = id;
+        }
+    }
+
+    /**
+     * Get an ID for a new parameter.
+     */
+    protected getNewParamId(): string {
+        return 'param-' + (++this.lastParamId);
     }
 
 }

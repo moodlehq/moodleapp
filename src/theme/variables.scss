@@ -162,6 +162,8 @@
         --background: var(--gray-lighter);
     }
 
+    --core-button-select-background: var(--custom-button-select-background, var(--ion-color-primary-contrast));
+
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
 
@@ -229,6 +231,20 @@
     --ion-color-step-900: #e7e7e7;
     --ion-color-step-950: #f3f3f3;
 
+    --ion-color-light: #3a3a3a;
+    --ion-color-light-rgb: 58,58,58;
+    --ion-color-light-contrast: #ffffff;
+    --ion-color-light-contrast-rgb: 255,255,255;
+    --ion-color-light-shade: #333333;
+    --ion-color-light-tint: #4e4e4e;
+
+    --ion-color-dark: #f5f5f5;
+    --ion-color-dark-rgb: 245,245,245;
+    --ion-color-dark-contrast: #000000;
+    --ion-color-dark-contrast-rgb: 0,0,0;
+    --ion-color-dark-shade: #d8d8d8;
+    --ion-color-dark-tint: #f6f6f6;
+
     --ion-tab-bar-background: #1f1f1f;
 
     --ion-item-background: #1e1e1e;
@@ -260,6 +276,9 @@
             color: var(--white);
         }
     }
+
+    --core-button-select-background: var(--custom-button-select-background, #3a3a3a);
+
 
     --core-login-background: var(--custom-login-background, #3a3a3a);
     --core-login-text-color: var(--custom-login-text-color, white);

@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreTab, CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 
 /**
@@ -33,7 +33,7 @@ export class CoreMainMenuHomePage implements OnInit {
     @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
 
     siteName!: string;
-    tabs: CoreMainMenuHomeHandlerToDisplay[] = [];
+    tabs: CoreTab[] = [];
     loaded = false;
     selectedTab?: number;
 
@@ -68,9 +68,10 @@ export class CoreMainMenuHomePage implements OnInit {
             const tab = this.tabs.find((tab) => tab.title == handler.title);
 
             return tab || handler;
-        })
+        });
+
         // Sort them by priority so new handlers are in the right position.
-            .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+        newTabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
         if (typeof this.selectedTab == 'undefined' && newTabs.length > 0) {
             let maxPriority = 0;

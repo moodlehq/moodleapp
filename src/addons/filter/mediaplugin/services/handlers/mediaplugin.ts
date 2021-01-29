@@ -61,7 +61,6 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
      * Treat video filters. Currently only treating youtube video using video JS.
      *
      * @param el Video element.
-     * @param navCtrl NavController to use.
      */
     protected treatVideoFilters(video: HTMLElement): void {
         // Treat Video JS Youtube video links and translate them to iframes.

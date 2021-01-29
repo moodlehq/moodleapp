@@ -257,8 +257,12 @@ export class CoreUserProvider {
 
         try {
             return await this.getUserFromWS(userId, courseId, siteId);
-        } catch {
-            return this.getUserFromLocalDb(userId, siteId);
+        } catch (error) {
+            try {
+                return await this.getUserFromLocalDb(userId, siteId);
+            } catch {
+                throw error;
+            }
         }
     }
 
@@ -808,7 +812,7 @@ export class CoreUser extends makeSingleton(CoreUserProvider) {}
  * Data passed to PROFILE_REFRESHED event.
  */
 export type CoreUserProfileRefreshedData = {
-    courseId: number; // Course the user profile belongs to.
+    courseId?: number; // Course the user profile belongs to.
     userId: number; // User ID.
     user?: CoreUserProfile; // User affected.
 };

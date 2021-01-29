@@ -23,19 +23,24 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton, Platform, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile } from '@services/ws';
 
 import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {
-    CoreCourses,
+    CoreCourseAnyCourseData,
+    CoreCoursesMyCoursesUpdatedEventData,
     CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreCourseHelper, CoreCourseModuleCompletionData } from './course-helper';
+import { CoreCourseFormatDelegate } from './format-delegate';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreCourseLogCronHandler } from './handlers/log-cron';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -71,10 +76,28 @@ export class CoreCourseProvider {
     protected logger: CoreLogger;
 
     constructor() {
-        // @todo
-        // protected courseFormatDelegate: CoreCourseFormatDelegate,
-        // protected sitePluginsProvider: CoreSitePluginsProvider,
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
+    }
+
+    /**
+     * Initialize.
+     */
+    initialize(): void {
+        Platform.instance.resume.subscribe(() => {
+            // Run the handler the app is open to keep user in online status.
+            setTimeout(() => {
+                CoreCronDelegate.instance.forceCronHandlerExecution(CoreCourseLogCronHandler.instance.name);
+            }, 1000);
+        });
+
+        CoreEvents.on(CoreEvents.LOGIN, () => {
+            setTimeout(() => {
+                // Ignore errors here, since probably login is not complete: it happens on token invalid.
+                CoreUtils.instance.ignoreErrors(
+                    CoreCronDelegate.instance.forceCronHandlerExecution(CoreCourseLogCronHandler.instance.name),
+                );
+            }, 1000);
+        });
     }
 
     /**
@@ -109,9 +132,8 @@ export class CoreCourseProvider {
      *
      * @param courseId Course ID.
      * @param completion Completion status of the module.
-     * @todo Add completion type.
      */
-    checkModuleCompletion(courseId: number, completion: any): void {
+    checkModuleCompletion(courseId: number, completion: CoreCourseModuleCompletionData): void {
         if (completion && completion.tracking === 2 && completion.state === 0) {
             this.invalidateSections(courseId).finally(() => {
                 CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, { courseId: courseId });
@@ -134,9 +156,8 @@ export class CoreCourseProvider {
     }
 
     /**
-     * Check if the current view in a NavController is a certain course initial page.
+     * Check if the current view is a certain course initial page.
      *
-     * @param navCtrl NavController.
      * @param courseId Course ID.
      * @return Whether the current view is a certain course.
      */
@@ -346,7 +367,7 @@ export class CoreCourseProvider {
         ignoreCache: boolean = false,
         siteId?: string,
         modName?: string,
-    ): Promise<CoreCourseModuleData> {
+    ): Promise<CoreCourseWSModule> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         // Helper function to do the WS request without processing the result.
@@ -356,7 +377,7 @@ export class CoreCourseProvider {
             modName: string | undefined,
             includeStealth: boolean,
             preferCache: boolean,
-        ): Promise<CoreCourseSection[]> => {
+        ): Promise<CoreCourseWSSection[]> => {
             const params: CoreCourseGetContentsParams = {
                 courseid: courseId!,
                 options: [],
@@ -394,7 +415,7 @@ export class CoreCourseProvider {
             }
 
             try {
-                const sections: CoreCourseSection[] = await site.read('core_course_get_contents', params, preSets);
+                const sections = await site.read<CoreCourseWSSection[]>('core_course_get_contents', params, preSets);
 
                 return sections;
             } catch {
@@ -419,7 +440,7 @@ export class CoreCourseProvider {
             courseId = module.course;
         }
 
-        let sections: CoreCourseSection[];
+        let sections: CoreCourseWSSection[];
         try {
             const site = await CoreSites.instance.getSite(siteId);
             // We have courseId, we can use core_course_get_contents for compatibility.
@@ -440,7 +461,7 @@ export class CoreCourseProvider {
             sections = await this.getSections(courseId, false, false, preSets, siteId);
         }
 
-        let foundModule: CoreCourseModuleData | undefined;
+        let foundModule: CoreCourseWSModule | undefined;
 
         const foundSection = sections.some((section) => {
             if (sectionId != null &&
@@ -637,7 +658,7 @@ export class CoreCourseProvider {
         excludeModules?: boolean,
         excludeContents?: boolean,
         siteId?: string,
-    ): Promise<CoreCourseSection> {
+    ): Promise<CoreCourseWSSection> {
 
         if (sectionId < 0) {
             throw new CoreError('Invalid section ID');
@@ -671,7 +692,7 @@ export class CoreCourseProvider {
         preSets?: CoreSiteWSPreSets,
         siteId?: string,
         includeStealthModules: boolean = true,
-    ): Promise<CoreCourseSection[]> {
+    ): Promise<CoreCourseWSSection[]> {
 
         const site = await CoreSites.instance.getSite(siteId);
         preSets = preSets || {};
@@ -698,7 +719,7 @@ export class CoreCourseProvider {
             });
         }
 
-        let sections: CoreCourseSection[];
+        let sections: CoreCourseWSSection[];
         try {
             sections = await site.read('core_course_get_contents', params, preSets);
         } catch {
@@ -740,12 +761,12 @@ export class CoreCourseProvider {
      * @param sections Sections.
      * @return Modules.
      */
-    getSectionsModules(sections: CoreCourseSection[]): CoreCourseModuleData[] {
+    getSectionsModules(sections: CoreCourseWSSection[]): CoreCourseWSModule[] {
         if (!sections || !sections.length) {
             return [];
         }
 
-        return sections.reduce((previous: CoreCourseModuleData[], section) =>  previous.concat(section.modules || []), []);
+        return sections.reduce((previous: CoreCourseWSModule[], section) =>  previous.concat(section.modules || []), []);
     }
 
     /**
@@ -830,7 +851,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when loaded.
      */
     async loadModuleContents(
-        module: CoreCourseModuleData & CoreCourseModuleBasicInfo,
+        module: CoreCourseWSModule,
         courseId?: number,
         sectionId?: number,
         preferCache?: boolean,
@@ -856,7 +877,6 @@ export class CoreCourseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @param name Name of the course.
      * @return Promise resolved when the WS call is successful.
-     * @todo use logHelper. Remove eslint disable when done.
      */
     async logView(courseId: number, sectionNumber?: number, siteId?: string, name?: string): Promise<void> {
         const params: CoreCourseViewCourseWSParams = {
@@ -875,7 +895,7 @@ export class CoreCourseProvider {
         if (!response.status) {
             throw Error('WS core_course_view_course failed.');
         } else {
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: courseId,
                 action: CoreCoursesProvider.ACTION_VIEW,
             }, site.getId());
@@ -954,7 +974,20 @@ export class CoreCourseProvider {
             completed: completed,
         };
 
-        return site.write('core_completion_update_activity_completion_status_manually', params);
+        const result = await site.write<CoreStatusWithWarningsWSResponse>(
+            'core_completion_update_activity_completion_status_manually',
+            params,
+        );
+
+        if (!result.status) {
+            if (result.warnings && result.warnings.length) {
+                throw new CoreWSError(result.warnings[0]);
+            } else {
+                throw new CoreError('Cannot change completion.');
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -963,7 +996,7 @@ export class CoreCourseProvider {
      * @param module The module object.
      * @return Whether the module has a view page.
      */
-    moduleHasView(module: CoreCourseModuleSummary | CoreCourseModuleData): boolean {
+    moduleHasView(module: CoreCourseModuleSummary | CoreCourseWSModule): boolean {
         return !!module.url;
     }
 
@@ -981,63 +1014,42 @@ export class CoreCourseProvider {
      * @param params Other params to pass to the course page.
      * @return Promise resolved when done.
      */
-    async openCourse(
-        course: { id: number ; format?: string },
-        params?: Params, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): Promise<void> {
-        // @todo const loading = await CoreDomUtils.instance.showModalLoading();
+    async openCourse(course: CoreCourseAnyCourseData | { id: number }, params?: Params): Promise<void> {
+        const loading = await CoreDomUtils.instance.showModalLoading();
 
         // Wait for site plugins to be fetched.
         // @todo await this.sitePluginsProvider.waitFetchPlugins();
 
-        if (typeof course.format == 'undefined') {
-            // This block can be replaced by a call to CourseHelper.getCourse(), but it is circular dependant.
-            const coursesProvider = CoreCourses.instance;
-            try {
-                course = await coursesProvider.getUserCourse(course.id, true);
-            } catch (error) {
-                // Not enrolled or an error happened. Try to use another WebService.
-                const available = coursesProvider.isGetCoursesByFieldAvailableInSite();
-                try {
-                    if (available) {
-                        course = await coursesProvider.getCourseByField('id', course.id);
-                    } else {
-                        course = await coursesProvider.getCourse(course.id);
-                    }
-                } catch (error) {
-                    // Ignore errors.
-                }
-            }
+        if (!('format' in course) || typeof course.format == 'undefined') {
+            const result = await CoreCourseHelper.instance.getCourse(course.id);
+
+            course = result.course;
         }
 
-        /* @todo
-        if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+        if (course) { // @todo Replace with: if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
             // No custom format plugin. We don't need to wait for anything.
-            await this.courseFormatDelegate.openCourse(course, params);
+            await CoreCourseFormatDelegate.instance.openCourse(<CoreCourseAnyCourseData> course, params);
             loading.dismiss();
 
             return;
-        } */
+        }
 
         // This course uses a custom format plugin, wait for the format plugin to finish loading.
         try {
             /* @todo await this.sitePluginsProvider.sitePluginLoaded('format_' + course.format);
             // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
             if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                return this.courseFormatDelegate.openCourse(course, params);
+                return CoreCourseFormatDelegate.instance.openCourse(course, params);
             }*/
 
             // Wait for plugins to be loaded.
             const deferred = CoreUtils.instance.promiseDefer<void>();
 
             const observer = CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => {
-                observer && observer.off();
+                observer?.off();
 
-                /* @todo this.courseFormatDelegate.openCourse(course, params).then((response) => {
-                    deferred.resolve(response);
-                }).catch((error) => {
-                    deferred.reject(error);
-                });*/
+                CoreCourseFormatDelegate.instance.openCourse(<CoreCourseAnyCourseData> course, params)
+                    .then(deferred.resolve).catch(deferred.reject);
             });
 
             return deferred.promise;
@@ -1334,7 +1346,7 @@ export type CoreCourseGetContentsParams = {
 /**
  * Data returned by core_course_get_contents WS.
  */
-export type CoreCourseSection = {
+export type CoreCourseWSSection = {
     id: number; // Section ID.
     name: string; // Section name.
     visible?: number; // Is the section visible.
@@ -1344,7 +1356,7 @@ export type CoreCourseSection = {
     hiddenbynumsections?: number; // Whether is a section hidden in the course format.
     uservisible?: boolean; // Is the section visible for the user?.
     availabilityinfo?: string; // Availability information.
-    modules: CoreCourseModuleData[];
+    modules: CoreCourseWSModule[];
 };
 
 /**
@@ -1371,9 +1383,9 @@ export type CoreCourseGetCourseModuleWSResponse = {
 };
 
 /**
- * Course module type.
+ * Course module data returned by the WS.
  */
-export type CoreCourseModuleData = { // List of module.
+export type CoreCourseWSModule = {
     id: number; // Activity id.
     course?: number; // The course id.
     url?: string; // Activity url.
@@ -1395,12 +1407,7 @@ export type CoreCourseModuleData = { // List of module.
     customdata?: string; // Custom data (JSON encoded).
     noviewlink?: boolean; // Whether the module has no view page.
     completion?: number; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
-    completiondata?: { // Module completion data.
-        state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
-        timecompleted: number; // Timestamp for completion status.
-        overrideby: number; // The user id who has overriden the status.
-        valueused?: boolean; // Whether the completion status affects the availability of another activity.
-    };
+    completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
     contents: CoreCourseModuleContentFile[];
     contentsinfo?: { // Contents summary information.
         filescount: number; // Total number of files.
@@ -1411,19 +1418,28 @@ export type CoreCourseModuleData = { // List of module.
     };
 };
 
+/**
+ * Module completion data.
+ */
+export type CoreCourseModuleWSCompletionData = {
+    state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
+    timecompleted: number; // Timestamp for completion status.
+    overrideby: number; // The user id who has overriden the status.
+    valueused?: boolean; // Whether the completion status affects the availability of another activity.
+};
+
 export type CoreCourseModuleContentFile = {
     type: string; // A file or a folder or external link.
     filename: string; // Filename.
     filepath: string; // Filepath.
     filesize: number; // Filesize.
-    fileurl?: string; // Downloadable file url.
-    url?: string; // @deprecated. Use fileurl instead.
+    fileurl: string; // Downloadable file url.
     content?: string; // Raw content, will be used when type is content.
     timecreated: number; // Time created.
     timemodified: number; // Time modified.
     sortorder: number; // Content sort order.
     mimetype?: string; // File mime type.
-    isexternalfile?: boolean; // Whether is an external file.
+    isexternalfile?: number; // Whether is an external file.
     repositorytype?: string; // The repository type for external files.
     userid: number; // User who added this content to moodle.
     author: string; // Content owner.

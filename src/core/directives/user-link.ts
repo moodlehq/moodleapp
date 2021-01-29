@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 
 import { CoreObject } from '@singletons/object';
@@ -34,8 +32,6 @@ export class CoreUserLinkDirective implements OnInit {
 
     constructor(
         element: ElementRef,
-        protected navCtrl: NavController,
-        protected route: ActivatedRoute,
     ) {
         this.element = element.nativeElement;
     }

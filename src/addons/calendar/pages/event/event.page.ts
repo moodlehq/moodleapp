@@ -43,7 +43,6 @@ import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonCalendarReminderDBRecord } from '../../services/database/calendar';
-import { ActivatedRoute } from '@angular/router';
 
 /**
  * Page that displays a single calendar event.
@@ -86,11 +85,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     syncIcon = 'spinner'; // Sync icon.
     isSplitViewOn = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-        // @Optional() private svComponent: CoreSplitViewComponent,
-    ) {
-
+    constructor() {
         this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
         this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
@@ -150,8 +145,15 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.eventId = this.route.snapshot.queryParams['id'];
+        const eventId = CoreNavigator.instance.getRouteNumberParam('id');
+        if (!eventId) {
+            CoreDomUtils.instance.showErrorModal('Event ID not supplied.');
+            CoreNavigator.instance.back();
 
+            return;
+        }
+
+        this.eventId = eventId;
         this.syncIcon = 'spinner';
 
         this.fetchEvent();

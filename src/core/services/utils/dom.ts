@@ -35,6 +35,7 @@ import { CoreSilentError } from '@classes/errors/silenterror';
 import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -642,11 +643,13 @@ export class CoreDomUtilsProvider {
      * Given a message, it deduce if it's a network error.
      *
      * @param message Message text.
+     * @param error Error object.
      * @return True if the message error is a network error, false otherwise.
      */
-    protected isNetworkError(message: string): boolean {
+    protected isNetworkError(message: string, error?: CoreError | CoreTextErrorObject | string): boolean {
         return message == Translate.instance.instant('core.networkerrormsg') ||
-            message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload');
+            message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload') ||
+            error instanceof CoreNetworkError;
     }
 
     /**
@@ -1178,7 +1181,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     async showAlert(
-        header: string,
+        header: string | undefined,
         message: string,
         buttonText?: string,
         autocloseTime?: number,
@@ -1260,12 +1263,17 @@ export class CoreDomUtilsProvider {
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
      * @return Promise resolved with the alert modal.
      */
-    showAlertTranslated(title: string, message: string, buttonText?: string, autocloseTime?: number): Promise<HTMLIonAlertElement> {
-        title = title ? Translate.instance.instant(title) : title;
+    showAlertTranslated(
+        header: string | undefined,
+        message: string,
+        buttonText?: string,
+        autocloseTime?: number,
+    ): Promise<HTMLIonAlertElement> {
+        header = header ? Translate.instance.instant(header) : header;
         message = message ? Translate.instance.instant(message) : message;
         buttonText = buttonText ? Translate.instance.instant(buttonText) : buttonText;
 
-        return this.showAlert(title, message, buttonText, autocloseTime);
+        return this.showAlert(header, message, buttonText, autocloseTime);
     }
 
     /**
@@ -1365,7 +1373,7 @@ export class CoreDomUtilsProvider {
             buttons: [Translate.instance.instant('core.ok')],
         };
 
-        if (this.isNetworkError(message)) {
+        if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
         } else {
             alertOptions.header = Translate.instance.instant('core.error');

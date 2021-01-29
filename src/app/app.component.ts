@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
 
 import { CoreLangProvider } from '@services/lang';
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
@@ -27,6 +26,7 @@ import {
 import { Network, NgZone, Platform } from '@singletons';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
+import { CoreNavigator } from '@services/navigator';
 
 @Component({
     selector: 'app-root',
@@ -37,7 +37,6 @@ export class AppComponent implements OnInit {
 
     constructor(
         protected langProvider: CoreLangProvider,
-        protected navCtrl: NavController,
         protected loginHelper: CoreLoginHelperProvider,
     ) {
     }
@@ -56,7 +55,7 @@ export class AppComponent implements OnInit {
     ngOnInit(): void {
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             // Go to sites page when user is logged out.
-            this.navCtrl.navigateRoot('/login/sites');
+            CoreNavigator.instance.navigate('/login/sites', { reset: true });
 
             // Unload lang custom strings.
             this.langProvider.clearCustomStrings();

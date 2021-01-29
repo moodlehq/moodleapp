@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from '@ionic/angular';
 import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
@@ -197,18 +196,16 @@ export class CoreIframeUtilsProvider {
      * @param element Element to treat (iframe, embed, ...).
      * @param contentWindow The window of the element contents.
      * @param contentDocument The document of the element contents.
-     * @param navCtrl NavController to use if a link can be opened in the app.
      */
     redefineWindowOpen(
         element: CoreFrameElement,
         contentWindow: Window,
         contentDocument: Document,
-        navCtrl?: NavController,
     ): void {
         if (contentWindow) {
             // Intercept window.open.
             contentWindow.open = (url: string, name: string) => {
-                this.windowOpen(url, name, element, navCtrl);
+                this.windowOpen(url, name, element);
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return null as any;
@@ -220,7 +217,7 @@ export class CoreIframeUtilsProvider {
             CoreIframeUtilsProvider.FRAME_TAGS.forEach((tag) => {
                 const elements = Array.from(contentDocument.querySelectorAll(tag));
                 elements.forEach((subElement: CoreFrameElement) => {
-                    this.treatFrame(subElement, true, navCtrl);
+                    this.treatFrame(subElement, true);
                 });
             });
         }
@@ -232,9 +229,8 @@ export class CoreIframeUtilsProvider {
      *
      * @param element Element to treat (iframe, embed, ...).
      * @param isSubframe Whether it's a frame inside another frame.
-     * @param navCtrl NavController to use if a link can be opened in the app.
      */
-    treatFrame(element: CoreFrameElement, isSubframe?: boolean, navCtrl?: NavController): void {
+    treatFrame(element: CoreFrameElement, isSubframe?: boolean): void {
         if (!element) {
             return;
         }
@@ -246,7 +242,7 @@ export class CoreIframeUtilsProvider {
 
             // Redefine window.open in this element and sub frames, it might have been loaded already.
             if (window && document) {
-                this.redefineWindowOpen(element, window, document, navCtrl);
+                this.redefineWindowOpen(element, window, document);
             }
 
             // Treat links.
@@ -309,10 +305,9 @@ export class CoreIframeUtilsProvider {
      * @param url URL passed to window.open.
      * @param name Name passed to window.open.
      * @param element HTML element of the frame.
-     * @param navCtrl NavController to use if a link can be opened in the app.
      * @return Promise resolved when done.
      */
-    protected async windowOpen(url: string, name: string, element?: CoreFrameElement, navCtrl?: NavController): Promise<void> {
+    protected async windowOpen(url: string, name: string, element?: CoreFrameElement): Promise<void> {
         const scheme = CoreUrlUtils.instance.getUrlScheme(url);
         if (!scheme) {
             // It's a relative URL, use the frame src to create the full URL.
@@ -367,9 +362,7 @@ export class CoreIframeUtilsProvider {
             }
         } else {
             // It's an external link, check if it can be opened in the app.
-            await CoreWindow.open(url, name, {
-                navCtrl,
-            });
+            await CoreWindow.open(url, name);
         }
     }
 

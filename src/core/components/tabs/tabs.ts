@@ -24,18 +24,18 @@ import {
     ViewChild,
     ElementRef,
 } from '@angular/core';
-import { Platform, IonSlides, IonTabs, NavController } from '@ionic/angular';
+import { Platform, IonSlides, IonTabs } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CoreUtils } from '@services/utils/utils';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreDomUtils } from '@services/utils/dom';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -106,7 +106,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     protected unregisterBackButtonAction: any;
     protected languageChangedSubscription: Subscription;
     protected isInTransition = false; // Weather Slides is in transition.
-    protected slidesSwiper: any;
+    protected slidesSwiper: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     protected slidesSwiperLoaded = false;
     protected stackEventsSubscription?: Subscription;
 
@@ -114,7 +114,6 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         protected element: ElementRef,
         platform: Platform,
         translate: TranslateService,
-        protected navCtrl: NavController,
     ) {
         this.direction = platform.isRTL ? 'rtl' : 'ltr';
 
@@ -338,7 +337,7 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             return;
         }
 
-        this.firstSelectedTab = selectedTab.id;
+        this.firstSelectedTab = selectedTab.id!;
         this.selectTab(this.firstSelectedTab);
 
         // Setup tab scrolling.
@@ -548,18 +547,31 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     }
 
     /**
-     * Tab selected.
+     * Select a tab by ID.
      *
-     * @param tabId Selected tab index.
+     * @param tabId Tab ID.
      * @param e Event.
+     * @return Promise resolved when done.
      */
     async selectTab(tabId: string, e?: Event): Promise<void> {
-        let index = this.tabs.findIndex((tab) => tabId == tab.id);
+        const index = this.tabs.findIndex((tab) => tabId == tab.id);
+
+        return this.selectByIndex(index, e);
+    }
+
+    /**
+     * Select a tab by index.
+     *
+     * @param index Index to select.
+     * @param e Event.
+     * @return Promise resolved when done.
+     */
+    async selectByIndex(index: number, e?: Event): Promise<void> {
         if (index < 0 || index >= this.tabs.length) {
             if (this.selected) {
                 // Invalid index do not change tab.
-                e && e.preventDefault();
-                e && e.stopPropagation();
+                e?.preventDefault();
+                e?.stopPropagation();
 
                 return;
             }
@@ -568,12 +580,11 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             index = 0;
         }
 
-        const selectedTab = this.tabs[index];
-        if (tabId == this.selected || !selectedTab || !selectedTab.enabled) {
+        const tabToSelect = this.tabs[index];
+        if (!tabToSelect || !tabToSelect.enabled || tabToSelect.id == this.selected) {
             // Already selected or not enabled.
-
-            e && e.preventDefault();
-            e && e.stopPropagation();
+            e?.preventDefault();
+            e?.stopPropagation();
 
             return;
         }
@@ -582,18 +593,16 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
             await this.slides!.slideTo(index);
         }
 
-        const pageParams: NavigationOptions = {};
-        if (selectedTab.pageParams) {
-            pageParams.queryParams = selectedTab.pageParams;
-        }
-        const ok = await this.navCtrl.navigateForward(selectedTab.page, pageParams);
+        const ok = await CoreNavigator.instance.navigate(tabToSelect.page, {
+            params: tabToSelect.pageParams,
+        });
 
         if (ok !== false) {
-            this.selectHistory.push(tabId);
-            this.selected = tabId;
+            this.selectHistory.push(tabToSelect.id!);
+            this.selected = tabToSelect.id;
             this.selectedIndex = index;
 
-            this.ionChange.emit(selectedTab);
+            this.ionChange.emit(tabToSelect);
         }
     }
 
@@ -644,16 +653,14 @@ export class CoreTabsComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 /**
  * Core Tab class.
  */
-class CoreTab {
-
-    id = ''; // Unique tab id.
-    class = ''; // Class, if needed.
-    title = ''; // The translatable tab title.
+export type CoreTab = {
+    page: string; // Page to navigate to.
+    title: string; // The translatable tab title.
+    id?: string; // Unique tab id.
+    class?: string; // Class, if needed.
     icon?: string; // The tab icon.
     badge?: string; // A badge to add in the tab.
     badgeStyle?: string; // The badge color.
-    enabled = true; // Whether the tab is enabled.
-    page = ''; // Page to navigate to.
+    enabled?: boolean; // Whether the tab is enabled.
     pageParams?: Params; // Page params.
-
-}
+};

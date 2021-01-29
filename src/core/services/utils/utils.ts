@@ -114,7 +114,7 @@ export class CoreUtilsProvider {
      * @param result Object where to put the properties. If not defined, a new object will be created.
      * @return The object.
      */
-    arrayToObject<T extends Record<string, unknown> | string>(
+    arrayToObject<T>(
         array: T[],
         propertyName?: string,
         result: Record<string, T> = {},

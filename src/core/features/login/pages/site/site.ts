@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { NavController } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
@@ -60,9 +58,7 @@ export class CoreLoginSitePage implements OnInit {
     siteFinderSettings: SiteFinderSettings;
 
     constructor(
-        protected route: ActivatedRoute,
         protected formBuilder: FormBuilder,
-        protected navCtrl: NavController,
     ) {
 
         let url = '';
@@ -117,9 +113,7 @@ export class CoreLoginSitePage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
-            this.showKeyboard = !!params['showKeyboard'];
-        });
+        this.showKeyboard = !!CoreNavigator.instance.getRouteBooleanParam('showKeyboard');
     }
 
     /**
@@ -336,7 +330,7 @@ export class CoreLoginSitePage implements OnInit {
             CoreLoginHelper.instance.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
 
             if (error.loggedout) {
-                this.navCtrl.navigateRoot('/login/sites');
+                CoreNavigator.instance.navigate('/login/sites', { reset: true });
             }
         } finally {
             modal.dismiss();
@@ -375,8 +369,8 @@ export class CoreLoginSitePage implements OnInit {
                 pageParams['logoUrl'] = foundSite.imageurl;
             }
 
-            this.navCtrl.navigateForward('/login/credentials', {
-                queryParams: pageParams,
+            CoreNavigator.instance.navigate('/login/credentials', {
+                params: pageParams,
             });
         }
     }

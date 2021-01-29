@@ -49,6 +49,7 @@ import {
     SchemaVersionsDBEntry,
 } from '@services/database/sites';
 import { CoreArray } from '../singletons/array';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken('CORE_SITE_SCHEMAS');
 
@@ -136,7 +137,7 @@ export class CoreSitesProvider {
         if (!CoreUrlUtils.instance.isHttpURL(siteUrl)) {
             throw new CoreError(Translate.instance.instant('core.login.invalidsite'));
         } else if (!CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         try {
@@ -359,7 +360,7 @@ export class CoreSitesProvider {
         retry?: boolean,
     ): Promise<CoreSiteUserTokenResponse> {
         if (!CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.networkerrormsg'));
+            throw new CoreNetworkError();
         }
 
         if (!service) {

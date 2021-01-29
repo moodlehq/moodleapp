@@ -264,10 +264,33 @@ export type CoreEventFormActionData = CoreEventSiteData & {
     online?: boolean; // Whether the data was sent to server or not. Only when submitting.
 };
 
-
 /**
  * Data passed to NOTIFICATION_SOUND_CHANGED event.
  */
 export type CoreEventNotificationSoundChangedData = CoreEventSiteData & {
     enabled: boolean;
+};
+
+/**
+ * Data passed to SELECT_COURSE_TAB event.
+ */
+export type CoreEventSelectCourseTabData = CoreEventSiteData & {
+    name?: string; // Name of the tab's handler. If not set, load course contents.
+    sectionId?: number;
+    sectionNumber?: number;
+};
+
+/**
+ * Data passed to COMPLETION_MODULE_VIEWED event.
+ */
+export type CoreEventCompletionModuleViewedData = CoreEventSiteData & {
+    courseId?: number;
+};
+
+/**
+ * Data passed to SECTION_STATUS_CHANGED event.
+ */
+export type CoreEventSectionStatusChangedData = CoreEventSiteData & {
+    courseId: number;
+    sectionId?: number;
 };

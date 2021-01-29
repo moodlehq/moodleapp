@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { SafeUrl } from '@angular/platform-browser';
 import { IonRefresher } from '@ionic/angular';
 
@@ -24,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreUser, CoreUserProfile, CoreUserProfileRefreshedData, CoreUserProvider } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays info about a user.
@@ -46,9 +46,7 @@ export class CoreUserAboutPage implements OnInit {
     formattedAddress?: string;
     encodedAddress?: SafeUrl;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.siteId = CoreSites.instance.getCurrentSiteId();
     }
 
@@ -58,8 +56,8 @@ export class CoreUserAboutPage implements OnInit {
      * @return Promise resolved when done.
      */
     async ngOnInit(): Promise<void> {
-        this.userId = parseInt(this.route.snapshot.queryParams['userId'], 10) || 0;
-        this.courseId = parseInt(this.route.snapshot.queryParams['courseId'], 10) || 0;
+        this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || 0;
+        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || 0;
 
         this.fetchUser().finally(() => {
             this.userLoaded = true;

@@ -13,18 +13,21 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
+import { Params } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
+import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays site home index.
@@ -38,7 +41,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent?: CoreBlockCourseBlocksComponent;
 
     dataLoaded = false;
-    section?: CoreCourseSection & {
+    section?: CoreCourseWSSection & {
         hasContent?: boolean;
     };
 
@@ -51,22 +54,14 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     downloadEnabledIcon = 'far-square';
-    newsForumModule?: CoreCourseModuleBasicInfo;
+    newsForumModule?: NewsForum;
 
     protected updateSiteObserver?: CoreEventObserver;
-
-    constructor(
-        protected route: ActivatedRoute,
-        protected navCtrl: NavController,
-        // @todo private prefetchDelegate: CoreCourseModulePrefetchDelegate,
-    ) {}
 
     /**
      * Page being initialized.
      */
     ngOnInit(): void {
-        const navParams = this.route.snapshot.queryParams;
-
         this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
         this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
@@ -83,10 +78,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.currentSite = CoreSites.instance.getCurrentSite()!;
         this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
 
-        const module = navParams['module'];
+        const module = CoreNavigator.instance.getRouteParam<CoreCourseModule>('module');
         if (module) {
-            // @todo const modParams = navParams.get('modParams');
-            // CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
+            const modParams = CoreNavigator.instance.getRouteParam<Params>('modParams');
+            CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
         }
 
         this.loadContent().finally(() => {
@@ -112,13 +107,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             try {
                 const forum = await CoreSiteHome.instance.getNewsForum();
                 this.newsForumModule = await CoreCourse.instance.getModuleBasicInfo(forum.cmid);
-                /* @todo this.newsForumModule.handlerData = this.moduleDelegate.getModuleDataFor(
+                this.newsForumModule.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
                     this.newsForumModule.modname,
                     this.newsForumModule,
                     this.siteHomeId,
                     this.newsForumModule.section,
                     true,
-                );*/
+                );
             } catch {
                 // Ignore errors.
             }
@@ -130,15 +125,14 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             // Check "Include a topic section" setting from numsections.
             this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
             if (this.section) {
-                this.section.hasContent = false;
-                this.section.hasContent = CoreCourseHelper.instance.sectionHasContent(this.section);
-                this.hasContent = CoreCourseHelper.instance.addHandlerDataForModules(
+                const result = CoreCourseHelper.instance.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
                     undefined,
                     true,
-                ) || this.hasContent;
+                );
+                this.hasContent = result.hasContent || this.hasContent;
             }
 
             // Add log in Moodle.
@@ -174,7 +168,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         if (this.section && this.section.modules) {
             // Invalidate modules prefetch data.
-            //  @todo promises.push(this.prefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
+            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
         if (this.courseBlocksComponent) {
@@ -224,7 +218,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        this.navCtrl.navigateForward(['/main/home/courses/search']);
+        CoreNavigator.instance.navigateToSitePath('courses/search');
     }
 
     /**
@@ -235,3 +229,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
 }
+
+type NewsForum = CoreCourseModuleBasicInfo & {
+    handlerData?: CoreCourseModuleHandlerData;
+};

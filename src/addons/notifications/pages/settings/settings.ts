@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 
 import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -61,10 +61,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 
     protected updateTimeout?: number;
 
-    constructor(
-        protected navCtrl: NavController,
-        // @Optional() protected svComponent: CoreSplitViewComponent,
-    ) {
+    constructor() { // @todo @Optional() protected svComponent: CoreSplitViewComponent,
         this.notifPrefsEnabled = AddonNotifications.instance.isNotificationPreferencesEnabled();
         this.canChangeSound = CoreLocalNotifications.instance.canDisableSound();
     }

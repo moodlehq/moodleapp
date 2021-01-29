@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/site';
@@ -35,6 +34,7 @@ import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData }
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreNavigator } from '@services/navigator';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -43,7 +43,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreUserProfilePage implements OnInit, OnDestroy {
 
-    protected courseId!: number;
+    protected courseId?: number;
     protected userId!: number;
     protected site?: CoreSite;
     protected obsProfileRefreshed: CoreEventObserver;
@@ -61,11 +61,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     newPageHandlers: CoreUserProfileHandlerData[] = [];
     communicationHandlers: CoreUserProfileHandlerData[] = [];
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected navCtrl: NavController,
-    ) {
-
+    constructor() {
         this.obsProfileRefreshed = CoreEvents.on<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
@@ -81,12 +77,20 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.site = CoreSites.instance.getCurrentSite();
-        this.userId = parseInt(this.route.snapshot.queryParams['userId'], 10);
-        this.courseId = parseInt(this.route.snapshot.queryParams['courseId'], 10);
+        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
+        const userId = CoreNavigator.instance.getRouteNumberParam('userId');
 
         if (!this.site) {
             return;
         }
+        if (userId === undefined) {
+            CoreDomUtils.instance.showErrorModal('User ID not supplied');
+            CoreNavigator.instance.back();
+
+            return;
+        }
+
+        this.userId = userId;
 
         // Allow to change the profile image only in the app profile page.
         this.canChangeProfilePicture =
@@ -257,9 +261,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     openUserDetails(): void {
         // @todo: Navigate out of split view if this page is in the right pane.
-        this.navCtrl.navigateForward(['../about'], {
-            relativeTo: this.route,
-            queryParams: {
+        CoreNavigator.instance.navigate('../about', {
+            params: {
                 courseId: this.courseId,
                 userId: this.userId,
             },

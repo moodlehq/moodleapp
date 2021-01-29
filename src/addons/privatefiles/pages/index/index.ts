@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { IonRefresher, NavController } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
@@ -32,6 +31,7 @@ import {
 } from '@/addons/privatefiles/services/privatefiles';
 import { AddonPrivateFilesHelper } from '@/addons/privatefiles/services/privatefiles-helper';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of files.
@@ -58,10 +58,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     protected updateSiteObserver: CoreEventObserver;
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected navCtrl: NavController,
-    ) {
+    constructor() {
         // Update visibility if current site info is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.setVisibility();
@@ -72,17 +69,18 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.root = this.route.snapshot.queryParams['root'];
+        this.root = CoreNavigator.instance.getRouteParam('root');
+        const contextId = CoreNavigator.instance.getRouteNumberParam('contextid');
 
-        if (this.route.snapshot.queryParams['contextid']) {
+        if (contextId) {
             // Loading a certain folder.
             this.path = {
-                contextid: this.route.snapshot.queryParams['contextid'],
-                component: this.route.snapshot.queryParams['component'],
-                filearea: this.route.snapshot.queryParams['filearea'],
-                itemid: this.route.snapshot.queryParams['itemid'],
-                filepath: this.route.snapshot.queryParams['filepath'],
-                filename: this.route.snapshot.queryParams['filename'],
+                contextid: contextId,
+                component: CoreNavigator.instance.getRouteParam<string>('component')!,
+                filearea: CoreNavigator.instance.getRouteParam<string>('filearea')!,
+                itemid: CoreNavigator.instance.getRouteNumberParam('itemid')!,
+                filepath: CoreNavigator.instance.getRouteParam<string>('filepath')!,
+                filename: CoreNavigator.instance.getRouteParam<string>('filename')!,
             };
         }
 
@@ -254,10 +252,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
         const hash = <string> Md5.hashAsciiStr(JSON.stringify(params));
 
-        this.navCtrl.navigateForward([`../${hash}`], {
-            relativeTo: this.route,
-            queryParams: params,
-        });
+        CoreNavigator.instance.navigate(`../${hash}`, { params });
     }
 
     /**

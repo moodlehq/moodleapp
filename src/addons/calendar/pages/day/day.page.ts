@@ -37,7 +37,7 @@ import { AddonCalendarFilterPopoverComponent } from '../../components/filter/fil
 import moment from 'moment';
 import { Network, NgZone } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -101,7 +101,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     };
 
     constructor(
-        protected route: ActivatedRoute,
         private popoverCtrl: PopoverController,
     ) {
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
@@ -235,19 +234,18 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         CoreUtils.instance.enumKeys(AddonCalendarEventType).forEach((name) => {
             const value = AddonCalendarEventType[name];
-            const filter = this.route.snapshot.queryParams[name];
-            this.filter[name] = typeof filter == 'undefined' ? true : filter;
+            this.filter[name] = CoreNavigator.instance.getRouteBooleanParam(name) ?? true;
             types.push(value);
         });
-        this.filter.courseId = parseInt(this.route.snapshot.queryParams['courseId'], 10) || -1;
-        this.filter.categoryId = parseInt(this.route.snapshot.queryParams['categoryId'], 10) || undefined;
+        this.filter.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || -1;
+        this.filter.categoryId = CoreNavigator.instance.getRouteNumberParam('categoryId');
 
         this.filter.filtered = typeof this.filter.courseId != 'undefined' || types.some((name) => !this.filter[name]);
 
         const now = new Date();
-        this.year = this.route.snapshot.queryParams['year'] || now.getFullYear();
-        this.month = this.route.snapshot.queryParams['month'] || (now.getMonth() + 1);
-        this.day = this.route.snapshot.queryParams['day'] || now.getDate();
+        this.year = CoreNavigator.instance.getRouteNumberParam('year') || now.getFullYear();
+        this.month = CoreNavigator.instance.getRouteNumberParam('month') || (now.getMonth() + 1);
+        this.day = CoreNavigator.instance.getRouteNumberParam('day') || now.getDate();
 
         this.calculateCurrentMoment();
         this.calculateIsCurrentDay();

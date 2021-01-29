@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NavController } from '@ionic/angular';
-
 import { CoreApp } from '@services/app';
 import { CoreLoginInitPage } from '@features/login/pages/init/init';
 import { CoreSites } from '@services/sites';
 import { ApplicationInit, SplashScreen } from '@singletons';
 
-import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
+import { mockSingleton, renderComponent } from '@/testing/utils';
+import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 
 describe('CoreLoginInitPage', () => {
 
-    let navController: NavController;
-    let config: Partial<RenderConfig>;
+    let navigator: CoreNavigatorService;
 
     beforeEach(() => {
         mockSingleton(CoreApp, { getRedirect: () => ({}) });
@@ -32,28 +30,23 @@ describe('CoreLoginInitPage', () => {
         mockSingleton(CoreSites, { isLoggedIn: () => false });
         mockSingleton(SplashScreen, ['hide']);
 
-        navController = mock<NavController>(['navigateRoot']);
-        config = {
-            providers: [
-                { provide: NavController, useValue: navController },
-            ],
-        };
+        navigator = mockSingleton(CoreNavigator, ['navigate']);
     });
 
     it('should render', async () => {
-        const fixture = await renderComponent(CoreLoginInitPage, config);
+        const fixture = await renderComponent(CoreLoginInitPage, {});
 
         expect(fixture.debugElement.componentInstance).toBeTruthy();
         expect(fixture.nativeElement.querySelector('ion-spinner')).toBeTruthy();
     });
 
     it('navigates to sites page after loading', async () => {
-        const fixture = await renderComponent(CoreLoginInitPage, config);
+        const fixture = await renderComponent(CoreLoginInitPage, {});
 
         fixture.componentInstance.ngOnInit();
         await ApplicationInit.instance.donePromise;
 
-        expect(navController.navigateRoot).toHaveBeenCalledWith('/login/sites');
+        expect(navigator.navigate).toHaveBeenCalledWith('/login/sites', { reset: true });
     });
 
 });
