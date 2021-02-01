@@ -18,7 +18,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreCourse, CoreCourseWSModule } from '../services/course';
+import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
 import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
 
 /**
@@ -41,7 +41,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @param dirPath Path of the directory where to store all the content files.
      * @return Promise resolved when all content is downloaded.
      */
-    download(module: CoreCourseWSModule, courseId: number, dirPath?: string): Promise<void> {
+    download(module: CoreCourseAnyModuleData, courseId: number, dirPath?: string): Promise<void> {
         // Same implementation for download and prefetch.
         return this.prefetch(module, courseId, false, dirPath);
     }
@@ -56,7 +56,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async prefetch(module: CoreCourseWSModule, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
+    async prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
         // To be overridden. It should call prefetchPackage
         return;
     }
@@ -77,8 +77,8 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved when the module has been downloaded. Data returned is not reliable.
      */
     async prefetchPackage(
-        module: CoreCourseWSModule,
-        courseId: number,
+        module: CoreCourseAnyModuleData,
+        courseId: number | undefined,
         downloadFunction: () => Promise<string>,
         siteId?: string,
     ): Promise<void> {
@@ -99,9 +99,18 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
         return this.addOngoingDownload(module.id, prefetchPromise, siteId);
     }
 
+    /**
+     * Change module status and call the prefetch function.
+     *
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param downloadFn Function to perform the prefetch. Please check the documentation of prefetchFunction.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the module has been downloaded. Data returned is not reliable.
+     */
     protected async changeStatusAndPrefetch(
-        module: CoreCourseWSModule,
-        courseId: number,
+        module: CoreCourseAnyModuleData,
+        courseId: number | undefined,
         downloadFunction: () => Promise<string>,
         siteId?: string,
     ): Promise<void> {
