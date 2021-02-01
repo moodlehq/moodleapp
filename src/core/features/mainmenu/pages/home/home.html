@@ -15,7 +15,8 @@
 <ion-content>
     <!-- @todo -->
     <core-loading [hideUntil]="loaded">
-        <core-tabs *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs"></core-tabs>
+        <core-tabs-outlet *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs">
+        </core-tabs-outlet>
         <ng-container *ngIf="tabs.length == 0">
             <core-empty-box icon="fas-home" [message]="'core.courses.nocourses' | translate"></core-empty-box>
         </ng-container>

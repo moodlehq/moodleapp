@@ -156,7 +156,7 @@
     --core-tab-color-active: var(--custom-tab-color-active, var(--core-color));
     --core-tab-border-color-active: var(--custom-tab-border-color-active, var(--core-color));
 
-    core-tabs {
+    core-tabs, core-tabs-outlet {
         --background: var(--core-tabs-background);
         ion-slide {
             --background: var(--core-tab-background);

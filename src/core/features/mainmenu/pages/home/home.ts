@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTab, CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 
 /**
@@ -30,10 +30,10 @@ import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../.
 })
 export class CoreMainMenuHomePage implements OnInit {
 
-    @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
+    @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
 
     siteName!: string;
-    tabs: CoreTab[] = [];
+    tabs: CoreTabsOutletTab[] = [];
     loaded = false;
     selectedTab?: number;
 

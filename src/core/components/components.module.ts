@@ -32,6 +32,8 @@ import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
 import { CoreTabsComponent } from './tabs/tabs';
+import { CoreTabComponent } from './tabs/tab';
+import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
 import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
@@ -61,6 +63,8 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreSplitViewComponent,
         CoreEmptyBoxComponent,
         CoreTabsComponent,
+        CoreTabComponent,
+        CoreTabsOutletComponent,
         CoreInfiniteLoadingComponent,
         CoreProgressBarComponent,
         CoreContextMenuComponent,
@@ -94,6 +98,8 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreSplitViewComponent,
         CoreEmptyBoxComponent,
         CoreTabsComponent,
+        CoreTabComponent,
+        CoreTabsOutletComponent,
         CoreInfiniteLoadingComponent,
         CoreProgressBarComponent,
         CoreContextMenuComponent,

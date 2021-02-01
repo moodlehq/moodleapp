@@ -15,7 +15,7 @@
 import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 
-import { CoreTab, CoreTabsComponent } from '@components/tabs/tabs';
+import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -35,7 +35,7 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
+    @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
 
     title?: string;
     course?: CoreCourseAnyCourseData;
@@ -45,7 +45,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected currentPagePath = '';
     protected selectTabObserver: CoreEventObserver;
     protected firstTabName?: string;
-    protected contentsTab: CoreTab = {
+    protected contentsTab: CoreTabsOutletTab = {
         page: 'contents',
         title: 'core.course.contents',
         pageParams: {},
@@ -183,6 +183,6 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
 }
 
-type CourseTab = CoreTab & {
+type CourseTab = CoreTabsOutletTab & {
     name?: string;
 };
