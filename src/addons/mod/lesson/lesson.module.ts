@@ -12,19 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { AddonModLessonComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/lesson';
+import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
+import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 
 @NgModule({
     imports: [
+        AddonModLessonComponentsModule,
     ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
             useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
             multi: true,
+        },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModLessonPrefetchHandler.instance);
+                CoreCronDelegate.instance.register(AddonModLessonSyncCronHandler.instance);
+            },
         },
     ],
 })

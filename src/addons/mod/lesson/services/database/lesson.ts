@@ -15,7 +15,7 @@
 import { CoreSiteSchema } from '@services/sites';
 
 /**
- * Database variables for AddonModLessonOfflineProvider.
+ * Database variables for AddonModLessonProvider.
  */
 export const PASSWORD_TABLE_NAME = 'addon_mod_lesson_password';
 export const SITE_SCHEMA: CoreSiteSchema = {
@@ -146,6 +146,39 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
 };
 
 /**
+ * Database variables for AddonModLessonSyncProvider.
+ */
+export const RETAKES_FINISHED_SYNC_TABLE_NAME = 'addon_mod_lesson_retakes_finished_sync';
+export const SYNC_SITE_SCHEMA: CoreSiteSchema = {
+    name: 'AddonModLessonSyncProvider',
+    version: 1,
+    tables: [
+        {
+            name: RETAKES_FINISHED_SYNC_TABLE_NAME,
+            columns: [
+                {
+                    name: 'lessonid',
+                    type: 'INTEGER',
+                    primaryKey: true,
+                },
+                {
+                    name: 'retake',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'pageid',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'timefinished',
+                    type: 'INTEGER',
+                },
+            ],
+        },
+    ],
+};
+
+/**
  * Lesson retake data.
  */
 export type AddonModLessonPasswordDBRecord = {
@@ -182,4 +215,14 @@ export type AddonModLessonPageAttemptDBRecord = {
     correct: number;
     answerid: number | null;
     useranswer: string | null;
+};
+
+/**
+ * Data about a retake finished in sync.
+ */
+export type AddonModLessonRetakeFinishedInSyncDBRecord = {
+    lessonid: number;
+    retake: number;
+    pageid: number;
+    timefinished: number;
 };
