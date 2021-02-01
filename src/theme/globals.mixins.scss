@@ -185,3 +185,32 @@
         }
     }
 }
+
+@mixin horizontal_scroll_item($width, $min-width, $max-width) {
+    flex: 0 0 $width;
+    min-width: $min-width;
+    max-width: $max-width;
+    align-self: stretch;
+    display: block;
+
+    ion-card {
+      height: calc(100% - 20px);
+      width: calc(100% - 20px);
+      margin-top: 10px;
+      margin-bottom: 10px;
+
+      @media (max-width: 360px) {
+        margin-left: 6px;
+        margin-right: 6px;
+        width: calc(100% - 12px);
+      }
+    }
+
+    .ion-text-wrap ion-label {
+        h2, p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}

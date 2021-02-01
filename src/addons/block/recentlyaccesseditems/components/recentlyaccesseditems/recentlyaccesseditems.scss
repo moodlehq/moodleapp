@@ -1,0 +1,7 @@
+@import "~theme/globals";
+
+:host {
+    .core-horizontal-scroll > div {
+        @include horizontal_scroll_item(80%, 250px, 300px);
+    }
+}
