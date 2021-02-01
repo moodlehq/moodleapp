@@ -13,6 +13,7 @@
 // limitations under the License.
 
 const BuildLangTask = require('./gulp/task-build-lang');
+const BuildEnvTask = require('./gulp/task-build-env');
 const PushTask = require('./gulp/task-push');
 const Utils = require('./gulp/utils');
 const gulp = require('gulp');
@@ -34,12 +35,18 @@ gulp.task('lang', (done) => {
     new BuildLangTask().run(paths.lang, done);
 });
 
+// Build an env file depending on the current environment.
+gulp.task('env', (done) => {
+    new BuildEnvTask().run(done);
+});
+
 gulp.task('push', (done) => {
     new PushTask().run(args, done);
 });
 
-gulp.task('default', gulp.parallel('lang'));
+gulp.task('default', gulp.parallel(['lang', 'env']));
 
 gulp.task('watch', () => {
     gulp.watch(paths.lang, { interval: 500 }, gulp.parallel('lang'));
+    gulp.watch(['./moodle.config.json', './moodle.*.config.json'], { interval: 500 }, gulp.parallel('env'));
 });

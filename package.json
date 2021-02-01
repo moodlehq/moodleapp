@@ -22,10 +22,10 @@
     "start": "ionic serve",
     "build": "ionic build",
     "build:prod": "ionic build --prod",
-    "test": "jest --verbose",
-    "test:ci": "jest -ci --runInBand --verbose",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "NODE_ENV=testing gulp && jest --verbose",
+    "test:ci": "NODE_ENV=testing gulp && jest -ci --runInBand --verbose",
+    "test:watch": "NODE_ENV=testing gulp watch & jest --watch",
+    "test:coverage": "NODE_ENV=testing gulp && jest --coverage",
     "lint": "ng lint",
     "ionic:serve:before": "gulp",
     "ionic:serve": "gulp watch & ng serve",
@@ -119,7 +119,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-builders/custom-webpack": "^10.0.1",
+    "@angular-devkit/architect": "^0.1101.2",
     "@angular-devkit/build-angular": "~0.1000.0",
     "@angular-eslint/builder": "0.5.0-beta.2",
     "@angular-eslint/eslint-plugin": "0.5.0-beta.2",

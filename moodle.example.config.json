@@ -1,0 +1,13 @@
+/**
+ * Application config.
+ *
+ * You can create your own environment files such as "moodle.config.prod.json" and "moodle.config.dev.json"
+ * to override some values. The values will be merged, so you don't need to duplicate everything in this file.
+ */
+
+{
+    // @todo This could be read from package.json.
+    "versionname": "3.9.3-dev",
+    // Override default language here.
+    "default_lang": "es"
+}

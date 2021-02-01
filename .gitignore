@@ -29,5 +29,8 @@ npm-debug.log*
 /plugins
 /www
 
-/config/config.*.json
+/moodle.*.config.json
+!/moodle.example.config.json
+
 /src/assets/lang/*
+/src/assets/env.json

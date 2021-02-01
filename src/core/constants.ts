@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { CoreColorScheme } from '@features/settings/services/settings-helper';
+import { CoreSitesDemoSiteData } from '@services/sites';
+import envJson from '@/assets/env.json';
+
 /**
  * Context levels enumeration.
  */
@@ -114,7 +120,51 @@ export class CoreConstants {
     static readonly MOD_ARCHETYPE_SYSTEM = 3; // System (not user-addable) module archetype.
 
     // Config & environment constants.
-    static readonly CONFIG = (window as unknown as MoodleAppWindow).MoodleApp.CONFIG; // Data parsed from config.json files.
-    static readonly BUILD = (window as unknown as MoodleAppWindow).MoodleApp.BUILD; // Environment info.
+    static readonly CONFIG = envJson.CONFIG as unknown as EnvironmentConfig; // Data parsed from config.json files.
+    static readonly BUILD = envJson.BUILD as unknown as EnvironmentBuild; // Build info.
 
 }
+
+type EnvironmentConfig = {
+    app_id: string;
+    appname: string;
+    versioncode: number;
+    versionname: string;
+    cache_update_frequency_usually: number;
+    cache_update_frequency_often: number;
+    cache_update_frequency_sometimes: number;
+    cache_update_frequency_rarely: number;
+    default_lang: string;
+    languages: Record<string, string>;
+    wsservice: string;
+    wsextservice: string;
+    demo_sites: Record<string, CoreSitesDemoSiteData>;
+    font_sizes: number[];
+    customurlscheme: string;
+    siteurl: string;
+    sitename: string;
+    multisitesdisplay: string;
+    sitefindersettings: Record<string, unknown>;
+    onlyallowlistedsites: boolean;
+    skipssoconfirmation: boolean;
+    forcedefaultlanguage: boolean;
+    privacypolicy: string;
+    notificoncolor: string;
+    enableanalytics: boolean;
+    enableonboarding: boolean;
+    forceColorScheme: CoreColorScheme;
+    forceLoginLogo: boolean;
+    ioswebviewscheme: string;
+    appstores: Record<string, string>;
+    displayqroncredentialscreen?: boolean;
+    displayqronsitescreen?: boolean;
+    forceOpenLinksIn: 'app' | 'browser';
+};
+
+type EnvironmentBuild = {
+    isProduction: boolean;
+    isTesting: boolean;
+    isDevelopment: boolean;
+    lastCommitHash: string;
+    compilationTime: number;
+};

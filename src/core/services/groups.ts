@@ -19,7 +19,6 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreCourseBase } from '@/types/global';
 
 const ROOT_CACHE_KEY = 'mmGroups:';
 
