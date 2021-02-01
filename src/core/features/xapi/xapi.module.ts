@@ -15,16 +15,14 @@
 import { NgModule } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { STATEMENTS_TABLE_NAME } from './services/database/xapi';
+import { SITE_SCHEMA } from './services/database/xapi';
 
 @NgModule({
     imports: [],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [
-                STATEMENTS_TABLE_NAME,
-            ],
+            useValue: [SITE_SCHEMA],
             multi: true,
         },
     ],

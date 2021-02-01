@@ -1087,7 +1087,7 @@ export class SQLiteDB {
 }
 
 export type SQLiteDBRecordValues = {
-    [key in string ]: SQLiteDBRecordValue | undefined | null;
+    [key: string]: SQLiteDBRecordValue | undefined | null;
 };
 
 export type SQLiteDBQueryParams = {
