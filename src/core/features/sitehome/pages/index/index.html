@@ -20,7 +20,7 @@
         <core-loading [hideUntil]="dataLoaded">
                 <ion-list>
                     <!-- Site home main contents. -->
-                    <!-- @todo <ng-container *ngIf="section && section.hasContent">
+                    <ng-container *ngIf="section && section.hasContent">
                         <ion-item class="ion-text-wrap" *ngIf="section.summary">
                             <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="siteHomeId">
                             </core-format-text>
@@ -28,7 +28,7 @@
 
                         <core-course-module *ngFor="let module of section.modules" [module]="module" [courseId]="siteHomeId"
                             [downloadEnabled]="downloadEnabled" [section]="section"></core-course-module>
-                    </ng-container> -->
+                    </ng-container>
 
                     <!-- Site home items: news, categories, courses, etc. -->
                     <ng-container *ngIf="items.length > 0">
@@ -71,11 +71,8 @@
 </ng-template>
 
 <ng-template #news>
-    <ion-item>
-        <ion-label>News (TODO)</ion-label>
-    </ion-item>
-    <!-- @todo <core-course-module class="core-sitehome-news" *ngIf="newsForumModule" [module]="module" [courseId]="siteHomeId">
-    </core-course-module> -->
+    <core-course-module class="core-sitehome-news" *ngIf="newsForumModule" [module]="newsForumModule" [courseId]="siteHomeId">
+    </core-course-module>
 </ng-template>
 
 <ng-template #categories>

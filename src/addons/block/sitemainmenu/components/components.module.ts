@@ -18,7 +18,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-// import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
 
@@ -32,7 +32,7 @@ import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-        // CoreCourseComponentsModule,
+        CoreCourseComponentsModule,
     ],
     exports: [
         AddonBlockSiteMainMenuComponent,
