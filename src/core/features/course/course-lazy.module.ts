@@ -32,7 +32,7 @@ const routes: Routes = [
     },
     {
         path: 'list-mod-type',
-        loadChildren: () => import('./pages/list-mod-type/list-mod-type').then( m => m.CoreCourseListModTypePage),
+        loadChildren: () => import('./pages/list-mod-type/list-mod-type.module').then(m => m.CoreCourseListModTypePageModule),
     },
 ];
 

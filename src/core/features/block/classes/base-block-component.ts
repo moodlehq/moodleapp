@@ -20,6 +20,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreCourseBlock } from '../../course/services/course';
 import { IonRefresher } from '@ionic/angular';
 import { Params } from '@angular/router';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Template class to easily create components for blocks.
@@ -31,7 +32,7 @@ export abstract class CoreBlockBaseComponent implements OnInit {
 
     @Input() title!: string; // The block title.
     @Input() block!: CoreCourseBlock; // The block to render.
-    @Input() contextLevel!: string; // The context where the block will be used.
+    @Input() contextLevel!: ContextLevel; // The context where the block will be used.
     @Input() instanceId!: number; // The instance ID associated with the context level.
     @Input() link?: string; // Link to go when clicked.
     @Input() linkParams?: Params; // Link params to go when clicked.
