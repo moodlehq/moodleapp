@@ -280,11 +280,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Component loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(async () => {
+        this.route.queryParams.subscribe(async (params) => {
             // Conversation to load.
-            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId') || undefined;
+            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId', params) || undefined;
             if (!this.conversationId) {
-                this.discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId') || undefined;
+                this.discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId', params) || undefined;
             }
 
             if (this.conversationId || this.discussionUserId) {

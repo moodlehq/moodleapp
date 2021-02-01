@@ -241,9 +241,19 @@ export class CoreNavigatorService {
      * @param name Name of the parameter.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteParam<T = unknown>(name: string): T | undefined {
-        const route = this.getCurrentRoute();
-        const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+    getRouteParam<T = unknown>(name: string, params?: Params): T | undefined {
+        let value: any;
+
+        if (!params) {
+            const route = this.getCurrentRoute();
+            if (!route.snapshot) {
+                return;
+            }
+
+            value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+        } else {
+            value = params[name];
+        }
 
         const storedParam = this.storedParams[value];
         // Remove the parameter from our map if it's in there.
@@ -259,8 +269,8 @@ export class CoreNavigatorService {
      * @param name Name of the parameter.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteNumberParam(name: string): number | undefined {
-        const value = this.getRouteParam<string>(name);
+    getRouteNumberParam(name: string, params?: Params): number | undefined {
+        const value = this.getRouteParam<string>(name, params);
 
         return value !== undefined ? Number(value) : value;
     }
@@ -272,8 +282,8 @@ export class CoreNavigatorService {
      * @param name Name of the parameter.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteBooleanParam(name: string): boolean | undefined {
-        const value = this.getRouteParam<string>(name);
+    getRouteBooleanParam(name: string, params?: Params): boolean | undefined {
+        const value = this.getRouteParam<string>(name, params);
 
         return value !== undefined ? Boolean(value) : value;
     }

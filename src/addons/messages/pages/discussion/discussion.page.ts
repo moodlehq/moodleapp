@@ -166,16 +166,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * Setup code for the page.
      */
     async ngOnInit(): Promise<void> {
+        // Disable the profile button if we're already coming from a profile.
+        const backViewPage = CoreNavigator.instance.getPreviousPath();
+        this.showInfo = !backViewPage || !CoreTextUtils.instance.matchesGlob(backViewPage, '**/user/profile');
 
-        this.route.queryParams.subscribe(async () => {
-            // Disable the profile button if we're already coming from a profile.
-            const backViewPage = CoreNavigator.instance.getPreviousPath();
-            this.showInfo = !backViewPage || !CoreTextUtils.instance.matchesGlob(backViewPage, '**/user/profile');
-
+        this.route.queryParams.subscribe(async (params) => {
             this.loaded = false;
-            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId') || undefined;
-            this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || undefined;
-            this.showKeyboard = CoreNavigator.instance.getRouteBooleanParam('showKeyboard') || false;
+            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId', params) || undefined;
+            this.userId = CoreNavigator.instance.getRouteNumberParam('userId', params) || undefined;
+            this.showKeyboard = CoreNavigator.instance.getRouteBooleanParam('showKeyboard', params) || false;
 
             await this.fetchData();
 
