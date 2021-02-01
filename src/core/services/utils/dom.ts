@@ -1726,7 +1726,7 @@ export class CoreDomUtilsProvider {
      * @param form Form element.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    triggerFormCancelledEvent(formRef: ElementRef, siteId?: string): void {
+    triggerFormCancelledEvent(formRef: ElementRef | HTMLFormElement | undefined, siteId?: string): void {
         if (!formRef) {
             return;
         }

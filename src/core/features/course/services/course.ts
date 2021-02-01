@@ -851,7 +851,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when loaded.
      */
     async loadModuleContents(
-        module: CoreCourseWSModule,
+        module: CoreCourseAnyModuleData,
         courseId?: number,
         sectionId?: number,
         preferCache?: boolean,
@@ -1199,6 +1199,8 @@ export class CoreCourseProvider {
 
 }
 
+export class CoreCourse extends makeSingleton(CoreCourseProvider) {}
+
 /**
  * Common options used by modules when calling a WS through CoreSite.
  */
@@ -1522,4 +1524,9 @@ type CoreCompletionUpdateActivityCompletionStatusManuallyWSParams = {
     completed: boolean; // Activity completed or not.
 };
 
-export class CoreCourse extends makeSingleton(CoreCourseProvider) {}
+/**
+ * Any of the possible module WS data.
+ */
+export type CoreCourseAnyModuleData = CoreCourseWSModule | CoreCourseModuleBasicInfo & {
+    contents?: CoreCourseModuleContentFile[]; // Calculated in the app in loadModuleContents.
+};

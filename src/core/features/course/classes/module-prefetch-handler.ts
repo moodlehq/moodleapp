@@ -16,7 +16,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalFile } from '@services/ws';
-import { CoreCourse, CoreCourseModuleContentFile, CoreCourseWSModule } from '../services/course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from '../services/course';
 import { CoreCourseModulePrefetchHandler } from '../services/module-prefetch-delegate';
 
 /**
@@ -93,7 +93,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved when all content is downloaded.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async download(module: CoreCourseWSModule, courseId: number, dirPath?: string): Promise<void> {
+    async download(module: CoreCourseAnyModuleData, courseId: number, dirPath?: string): Promise<void> {
         // To be overridden.
         return;
     }
@@ -104,7 +104,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module The module object returned by WS.
      * @return List of files.
      */
-    getContentDownloadableFiles(module: CoreCourseWSModule): CoreCourseModuleContentFile[] {
+    getContentDownloadableFiles(module: CoreCourseAnyModuleData): CoreCourseModuleContentFile[] {
         if (!module.contents?.length) {
             return [];
         }
@@ -121,7 +121,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved with the size.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getDownloadSize(module: CoreCourseWSModule, courseId: number, single?: boolean): Promise<CoreFileSizeSum> {
+    async getDownloadSize(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreFileSizeSum> {
         try {
             const files = await this.getFiles(module, courseId);
 
@@ -139,7 +139,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Size, or promise resolved with the size.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getDownloadedSize(module: CoreCourseWSModule, courseId: number): Promise<number> {
+    async getDownloadedSize(module: CoreCourseAnyModuleData, courseId: number): Promise<number> {
         const siteId = CoreSites.instance.getCurrentSiteId();
 
         return CoreFilepool.instance.getFilesSizeByComponent(siteId, this.component, module.id);
@@ -154,7 +154,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getFiles(module: CoreCourseWSModule, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
         // To be overridden.
         return [];
     }
@@ -168,7 +168,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved with list of intro files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getIntroFiles(module: CoreCourseWSModule, courseId: number, ignoreCache?: boolean): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSExternalFile[]> {
         return this.getIntroFilesFromInstance(module);
     }
 
@@ -179,7 +179,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param instance The instance to get the intro files (book, assign, ...). If not defined, module will be used.
      * @return List of intro files.
      */
-    getIntroFilesFromInstance(module: CoreCourseWSModule, instance?: ModuleInstance): CoreWSExternalFile[] {
+    getIntroFilesFromInstance(module: CoreCourseAnyModuleData, instance?: ModuleInstance): CoreWSExternalFile[] {
         if (instance) {
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
@@ -188,7 +188,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             }
         }
 
-        if (module.description) {
+        if ('description' in module && module.description) {
             return CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
         }
 
@@ -243,7 +243,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved when invalidated.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    invalidateModule(module: CoreCourseWSModule, courseId: number): Promise<void> {
+    invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return CoreCourse.instance.invalidateModule(module.id);
     }
 
@@ -255,7 +255,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Whether the module can be downloaded. The promise should never be rejected.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async isDownloadable(module: CoreCourseWSModule, courseId: number): Promise<boolean> {
+    async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         // By default, mark all instances as downloadable.
         return true;
     }
@@ -301,7 +301,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved when loaded.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async loadContents(module: CoreCourseWSModule, courseId: number, ignoreCache?: boolean): Promise<void> {
+    async loadContents(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<void> {
         // To be overridden.
         return;
     }
@@ -316,7 +316,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async prefetch(module: CoreCourseWSModule, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
+    async prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
         // To be overridden.
         return;
     }
@@ -329,7 +329,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    removeFiles(module: CoreCourseWSModule, courseId: number): Promise<void> {
+    removeFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return CoreFilepool.instance.removeFilesByComponent(CoreSites.instance.getCurrentSiteId(), this.component, module.id);
     }
 
