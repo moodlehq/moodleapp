@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
+import { IonInput } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -36,7 +37,7 @@ export class AddonModLessonPasswordModalComponent {
      * @param e Event.
      * @param password The input element.
      */
-    submitPassword(e: Event, password: HTMLInputElement): void {
+    submitPassword(e: Event, password: IonInput): void {
         e.preventDefault();
         e.stopPropagation();
 

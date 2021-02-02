@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSModule } from '../course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '../course';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseModule } from '../course-helper';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
@@ -49,7 +49,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseWSModule | CoreCourseModuleBasicInfo,
+        module: CoreCourseAnyModuleData,
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -59,7 +59,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
             icon: CoreCourse.instance.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void => {
+            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
 

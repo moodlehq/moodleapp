@@ -119,13 +119,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         this.afterViewInitTriggered = true;
         this.tabBarElement = this.element.nativeElement.querySelector('ion-tab-bar');
 
-        this.slidesSwiper = await this.slides?.getSwiper();
-        this.slidesSwiper.once('progress', () => {
-            this.slidesSwiperLoaded = true;
-            this.calculateSlides();
-        });
-
-
         if (!this.initialized && this.hideUntil) {
             // Tabs should be shown, initialize them.
             await this.initializeTabs();
@@ -272,6 +265,13 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * Initialize the tabs, determining the first tab to be shown.
      */
     protected async initializeTabs(): Promise<void> {
+        // Initialize slider.
+        this.slidesSwiper = await this.slides?.getSwiper();
+        this.slidesSwiper.once('progress', () => {
+            this.slidesSwiperLoaded = true;
+            this.calculateSlides();
+        });
+
         let selectedTab: T | undefined = this.tabs[this.selectedIndex || 0] || undefined;
 
         if (!selectedTab || !selectedTab.enabled) {

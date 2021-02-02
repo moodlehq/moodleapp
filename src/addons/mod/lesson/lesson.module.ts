@@ -13,17 +13,29 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { Routes } from '@angular/router';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModLessonComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/lesson';
+import { AddonModLessonModuleHandler, AddonModLessonModuleHandlerService } from './services/handlers/module';
 import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 
+const routes: Routes = [
+    {
+        path: AddonModLessonModuleHandlerService.PAGE_NAME,
+        loadChildren: () => import('./lesson-lazy.module').then(m => m.AddonModLessonLazyModule),
+    },
+];
+
 @NgModule({
     imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
         AddonModLessonComponentsModule,
     ],
     providers: [
@@ -37,6 +49,7 @@ import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
             multi: true,
             deps: [],
             useFactory: () => () => {
+                CoreCourseModuleDelegate.instance.registerHandler(AddonModLessonModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModLessonPrefetchHandler.instance);
                 CoreCronDelegate.instance.register(AddonModLessonSyncCronHandler.instance);
             },

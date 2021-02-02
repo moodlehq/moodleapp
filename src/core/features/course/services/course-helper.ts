@@ -1433,7 +1433,7 @@ export class CoreCourseHelperProvider {
         }
 
         if (module.handlerData?.action) {
-            module.handlerData.action(new Event('click'), module, courseId, { animated: false }, modParams);
+            module.handlerData.action(new Event('click'), module, courseId, { animated: false, params: modParams });
 
             return true;
         }

@@ -35,6 +35,9 @@ export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes
 @NgModule()
 export class CoreMainMenuTabRoutingModule {
 
+    /**
+     * Use this function to declare routes that will be children of all main menu tabs root routes.
+     */
     static forChild(routes: ModuleRoutesConfig): ModuleWithProviders<CoreMainMenuTabRoutingModule> {
         return {
             ngModule: CoreMainMenuTabRoutingModule,

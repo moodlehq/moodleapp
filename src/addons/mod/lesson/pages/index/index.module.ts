@@ -13,34 +13,34 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { AddonModLessonIndexComponent } from './index/index';
-import { AddonModLessonPasswordModalComponent } from './password-modal/password-modal';
+import { AddonModLessonComponentsModule } from '../../components/components.module';
+import { AddonModLessonIndexPage } from './index';
+
+const routes: Routes = [
+    {
+        path: '',
+        component: AddonModLessonIndexPage,
+    },
+];
 
 @NgModule({
-    declarations: [
-        AddonModLessonIndexComponent,
-        AddonModLessonPasswordModalComponent,
-    ],
     imports: [
+        RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
-        FormsModule,
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        AddonModLessonComponentsModule,
     ],
-    providers: [
+    declarations: [
+        AddonModLessonIndexPage,
     ],
-    exports: [
-        AddonModLessonIndexComponent,
-        AddonModLessonPasswordModalComponent,
-    ],
+    exports: [RouterModule],
 })
-export class AddonModLessonComponentsModule {}
+export class AddonModLessonIndexPageModule {}
