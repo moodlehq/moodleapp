@@ -17,17 +17,16 @@ import { Observable } from 'rxjs';
 import { AppComponent } from '@/app/app.component';
 import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
-import { CoreLangProvider } from '@services/lang';
+import { CoreLang, CoreLangProvider } from '@services/lang';
 import { Network, Platform, NgZone } from '@singletons';
 
-import { mock, mockSingleton, renderComponent, RenderConfig } from '@/testing/utils';
+import { mockSingleton, renderComponent } from '@/testing/utils';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 
 describe('AppComponent', () => {
 
     let langProvider: CoreLangProvider;
     let navigator: CoreNavigatorService;
-    let config: Partial<RenderConfig>;
 
     beforeEach(() => {
         mockSingleton(CoreApp, { setStatusBarColor: jest.fn() });
@@ -36,23 +35,18 @@ describe('AppComponent', () => {
         mockSingleton(NgZone, { run: jest.fn() });
 
         navigator = mockSingleton(CoreNavigator, ['navigate']);
-        langProvider = mock<CoreLangProvider>(['clearCustomStrings']);
-        config = {
-            providers: [
-                { provide: CoreLangProvider, useValue: langProvider },
-            ],
-        };
+        langProvider = mockSingleton(CoreLang, ['clearCustomStrings']);
     });
 
     it('should render', async () => {
-        const fixture = await renderComponent(AppComponent, config);
+        const fixture = await renderComponent(AppComponent);
 
         expect(fixture.debugElement.componentInstance).toBeTruthy();
         expect(fixture.nativeElement.querySelector('ion-router-outlet')).toBeTruthy();
     });
 
     it('cleans up on logout', async () => {
-        const fixture = await renderComponent(AppComponent, config);
+        const fixture = await renderComponent(AppComponent);
 
         fixture.componentInstance.ngOnInit();
         CoreEvents.trigger(CoreEvents.LOGOUT);
@@ -60,7 +54,5 @@ describe('AppComponent', () => {
         expect(langProvider.clearCustomStrings).toHaveBeenCalled();
         expect(navigator.navigate).toHaveBeenCalledWith('/login/sites', { reset: true });
     });
-
-    it.todo('shows loading while app isn\'t ready');
 
 });

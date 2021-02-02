@@ -26,6 +26,7 @@ import {
 } from '@angular/router';
 
 import { CoreArray } from '@singletons/array';
+import { CoreRedirectGuard } from '@guards/redirect';
 
 /**
  * Build app routes.
@@ -34,7 +35,16 @@ import { CoreArray } from '@singletons/array';
  * @return App routes.
  */
 function buildAppRoutes(injector: Injector): Routes {
-    return CoreArray.flatten(injector.get<Routes[]>(APP_ROUTES, []));
+    const appRoutes = CoreArray.flatten(injector.get<Routes[]>(APP_ROUTES, []));
+
+    return appRoutes.map(route => {
+        route.canLoad = route.canLoad ?? [];
+        route.canActivate = route.canActivate ?? [];
+        route.canLoad.push(CoreRedirectGuard);
+        route.canActivate.push(CoreRedirectGuard);
+
+        return route;
+    });
 }
 
 /**

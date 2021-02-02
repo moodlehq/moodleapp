@@ -14,7 +14,7 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
-import { AuthGuard } from '@guards/auth';
+import { CoreMainMenuAuthGuard } from '@features/mainmenu/guards/auth';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 
@@ -30,8 +30,8 @@ const appRoutes: Routes = [
     {
         path: 'main',
         loadChildren: () => import('./mainmenu-lazy.module').then(m => m.CoreMainMenuLazyModule),
-        canActivate: [AuthGuard],
-        canLoad: [AuthGuard],
+        canActivate: [CoreMainMenuAuthGuard],
+        canLoad: [CoreMainMenuAuthGuard],
     },
 ];
 

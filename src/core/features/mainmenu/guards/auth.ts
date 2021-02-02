@@ -13,28 +13,44 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Router, CanLoad, CanActivate, UrlTree } from '@angular/router';
+import { CanLoad, CanActivate, UrlTree } from '@angular/router';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 
 import { CoreSites } from '@services/sites';
-import { ApplicationInit } from '@singletons';
+import { Router } from '@singletons';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanLoad, CanActivate {
+export class CoreMainMenuAuthGuard implements CanLoad, CanActivate {
 
-    constructor(private router: Router) {}
-
+    /**
+     * @inheritdoc
+     */
     canActivate(): Promise<true | UrlTree> {
         return this.guard();
     }
 
+    /**
+     * @inheritdoc
+     */
     canLoad(): Promise<true | UrlTree> {
         return this.guard();
     }
 
+    /**
+     * Check if the current user should be redirected to the authentication page.
+     */
     private async guard(): Promise<true | UrlTree> {
-        await ApplicationInit.instance.donePromise;
+        if (!CoreSites.instance.isLoggedIn()) {
+            return Router.instance.parseUrl('/login');
+        }
 
-        return CoreSites.instance.isLoggedIn() || this.router.parseUrl('/login');
+        if (CoreLoginHelper.instance.isSiteLoggedOut()) {
+            await CoreSites.instance.logout();
+
+            return Router.instance.parseUrl('/login');
+        }
+
+        return true;
     }
 
 }
