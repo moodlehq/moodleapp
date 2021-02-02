@@ -38,6 +38,7 @@ import { AddonBlockStarredCoursesModule } from './starredcourses/starredcourses.
 import { AddonBlockTagsModule } from './tags/tags.module';
 import { AddonBlockActivityModulesModule } from './activitymodules/activitymodules.module';
 import { AddonBlockRecentlyAccessedItemsModule } from './recentlyaccesseditems/recentlyaccesseditems.module';
+import { AddonBlockTimelineModule } from './timeline/timeline.module';
 
 @NgModule({
     declarations: [],
@@ -66,6 +67,7 @@ import { AddonBlockRecentlyAccessedItemsModule } from './recentlyaccesseditems/r
         AddonBlockTagsModule,
         AddonBlockActivityModulesModule,
         AddonBlockRecentlyAccessedItemsModule,
+        AddonBlockTimelineModule,
     ],
     providers: [],
     exports: [],

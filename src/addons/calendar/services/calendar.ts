@@ -1749,6 +1749,7 @@ export class AddonCalendar extends makeSingleton(AddonCalendarProvider) {}
 
 /**
  * Data returned by calendar's events_exporter.
+ *  Data returned by core_calendar_get_action_events_by_course and core_calendar_get_action_events_by_timesort WS.
  */
 export type AddonCalendarEvents = {
     events: AddonCalendarEvent[]; // Events.
@@ -1757,10 +1758,44 @@ export type AddonCalendarEvents = {
 };
 
 /**
+ * Params of core_calendar_get_action_events_by_courses WS.
+ */
+export type AddonCalendarGetActionEventsByCoursesWSParams = {
+    courseids: number[];
+    timesortfrom?: number; // Time sort from.
+    timesortto?: number; // Time sort to.
+    limitnum?: number; // Limit number.
+};
+
+/**
  * Data returned by calendar's events_grouped_by_course_exporter.
+ * Data returned by core_calendar_get_action_events_by_courses WS.
  */
 export type AddonCalendarEventsGroupedByCourse = {
     groupedbycourse: AddonCalendarEventsSameCourse[]; // Groupped by course.
+};
+
+/**
+ * Params of core_calendar_get_action_events_by_course WS.
+ */
+export type AddonCalendarGetActionEventsByCourseWSParams = {
+    courseid: number; // Course id.
+    timesortfrom?: number; // Time sort from.
+    timesortto?: number; // Time sort to.
+    aftereventid?: number; // The last seen event id.
+    limitnum?: number; // Limit number.
+};
+
+/**
+ * Params of core_calendar_get_action_events_by_timesort WS.
+ */
+export type AddonCalendarGetActionEventsByTimesortWSParams = {
+    timesortfrom?: number; // Time sort from.
+    timesortto?: number; // Time sort to.
+    aftereventid?: number; // The last seen event id.
+    limitnum?: number; // Limit number.
+    limittononsuspendedevents?: boolean; // Limit the events to courses the user is not suspended in.
+    userid?: number; // The user id.
 };
 
 /**
