@@ -29,6 +29,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { filter } from 'rxjs/operators';
+import { CoreApp } from './app';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
 
@@ -255,9 +256,18 @@ export class CoreNavigatorService {
             value = params[name];
         }
 
-        const storedParam = this.storedParams[value];
+        let storedParam = this.storedParams[value];
+
         // Remove the parameter from our map if it's in there.
         delete this.storedParams[value];
+
+        if (!CoreApp.instance.isMobile() && !storedParam) {
+            // Try to retrieve the param from local storage in browser.
+            const storageParam = localStorage.getItem(value);
+            if (storageParam) {
+                storedParam = CoreTextUtils.instance.parseJSON(storageParam);
+            }
+        }
 
         return <T> storedParam ?? value;
     }
@@ -368,6 +378,11 @@ export class CoreNavigatorService {
             const id = this.getNewParamId();
             this.storedParams[id] = value;
             queryParams[name] = id;
+
+            if (!CoreApp.instance.isMobile()) {
+                // In browser, save the param in local storage to be able to retrieve it if the app is refreshed.
+                localStorage.setItem(id, JSON.stringify(value));
+            }
         }
     }
 
