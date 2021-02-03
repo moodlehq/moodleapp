@@ -1,102 +1,116 @@
-// Ionic Variables and Theming. For more info, please see:
-// http://ionicframework.com/docs/theming/
+/*
+ * App LIGHT theme CSS
+ * ----------------------------------------------------------------------------
+ * Ionic Variables and Theming. For more info, please see:
+ * http://ionicframework.com/docs/theming/
+ */
 
-@import "custom.scss";
-
-/** Ionic CSS Variables **/
 :root {
 
     // Color palette
-    --black:           var(--custom-black, #3a3a3a); // Headings, standard text.
-    --gray-darker:     var(--custom-gray-darker, #626262); // Text (emphasis-detail), placeholder, background.
-    --gray-dark:       var(--custom-gray-dark, #9e9e9e); // Borders (never text).
-    --gray:            var(--custom-gray, #dddddd);
-    --gray-light:      var(--custom-gray-light, #e9e9e9); // Background.
-    --gray-lighter:    var(--custom-gray-lighter, #f5f5f5);
-    --white:           var(--custom-white, #ffffff); // Background, reversed text.
+    --black:           #{$black}; // Headings, standard text.
+    --gray-darker:     #{$gray-darker};
+    --gray-dark:       #{$gray-dark};
+    --gray:            #{$gray};
+    --gray-light:      #{$gray-light};
+    --gray-lighter:    #{$gray-lighter};
+    --white:           #{$white};
 
-    --blue:            var(--custom-blue, #0064d2); // Link, background.
-    --turquoise:       var(--custom-turquoise, #007982); // Accent.
-    --green:           var(--custom-green, #5e8100); // Accent.
-    --red:             var(--custom-red, #cb3d4d);
-    --orange:          var(--custom-orange, #f98012); // Accent (never text).
-    --yellow:          var(--custom-yellow, #fbad1a); // Accent (never text).
-    --purple:          var(--custom-purple, #8e24aa); // Accent (never text).
+    --blue:            #{$blue};
+    --turquoise:       #{$turquoise};
+    --green:           #{$green};
+    --red:             #{$red};
+    --orange:          #{$orange};
+    --yellow:          #{$yellow};
+    --purple:          #{$purple};
 
-    --core-color: var(--custom-main-color, var(--orange));
-    --core-online-color: #5cb85c;
+    --core-color:       #{$core-color};
+    --core-online-color: #{$core-online-color};
 
-    --ion-color-primary: var(--core-color);
+    // Named Color Variables
+    --primary: var(--core-color);
+    --secondary: var(--blue);
+    --tertiary: var(--turquoise);
+    --success: var(--green);
+    --danger: var(--red);
+    --warning: var(--yellow);
+    --light: var(--gray-lighter);
+    --dark: var(--black);
+    --medium: var(--gray-light);
+    --light: var(--gray-lighter);
+    --primary: var(--core-color);
+
+    --ion-color-primary: var(--primary);
     --ion-color-primary-rgb: 249,128,18;
     --ion-color-primary-contrast: #ffffff;
     --ion-color-primary-contrast-rgb: 255,255,255;
     --ion-color-primary-shade: #db7110;
     --ion-color-primary-tint: #fa8d2a;
 
-    --ion-color-secondary: #0064d2;
+    --ion-color-secondary: var(--secondary);
     --ion-color-secondary-rgb: 0,100,210;
     --ion-color-secondary-contrast: #ffffff;
     --ion-color-secondary-contrast-rgb: 255,255,255;
     --ion-color-secondary-shade: #0058b9;
     --ion-color-secondary-tint: #1a74d7;
 
-    --ion-color-tertiary: #007982;
+    --ion-color-tertiary: var(--tertiary);
     --ion-color-tertiary-rgb: 0,121,130;
     --ion-color-tertiary-contrast: #ffffff;
     --ion-color-tertiary-contrast-rgb: 255,255,255;
     --ion-color-tertiary-shade: #006a72;
     --ion-color-tertiary-tint: #1a868f;
 
-    --ion-color-success: #5e8100;
+    --ion-color-success: var(--success);
     --ion-color-success-rgb: 94,129,0;
     --ion-color-success-contrast: #ffffff;
     --ion-color-success-contrast-rgb: 255,255,255;
     --ion-color-success-shade: #537200;
     --ion-color-success-tint: #6e8e1a;
 
-    --ion-color-warning: #fbad1a;
+    --ion-color-warning: var(--warning);
     --ion-color-warning-rgb: 251,173,26;
     --ion-color-warning-contrast: #000000;
     --ion-color-warning-contrast-rgb: 0,0,0;
     --ion-color-warning-shade: #dd9817;
     --ion-color-warning-tint: #fbb531;
 
-    --ion-color-danger: #cb3d4d;
+    --ion-color-danger: var(--danger);
     --ion-color-danger-rgb: 203,61,77;
     --ion-color-danger-contrast: #ffffff;
     --ion-color-danger-contrast-rgb: 255,255,255;
     --ion-color-danger-shade: #b33644;
     --ion-color-danger-tint: #d0505f;
 
-    --ion-color-dark: #3a3a3a;
+    --ion-color-dark: var(--dark);
     --ion-color-dark-rgb: 58,58,58;
     --ion-color-dark-contrast: #ffffff;
     --ion-color-dark-contrast-rgb: 255,255,255;
     --ion-color-dark-shade: #333333;
     --ion-color-dark-tint: #4e4e4e;
 
-    --ion-color-medium: #9e9e9e;
+    --ion-color-medium: var(--medium);
     --ion-color-medium-rgb: 158,158,158;
     --ion-color-medium-contrast: #000000;
     --ion-color-medium-contrast-rgb: 0,0,0;
     --ion-color-medium-shade: #8b8b8b;
     --ion-color-medium-tint: #a8a8a8;
 
-    --ion-color-light: #f5f5f5;
+    --ion-color-light: var(--light);
     --ion-color-light-rgb: 245,245,245;
     --ion-color-light-contrast: #000000;
     --ion-color-light-contrast-rgb: 0,0,0;
     --ion-color-light-shade: #d8d8d8;
     --ion-color-light-tint: #f6f6f6;
 
-    --ion-text-color: #3a3a3a;
+    --ion-text-color: var($text-color);
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
 
     --text-hightlight-background-color: var(--custom-text-hightlight-background-color, #99c1ed);
 
     ion-content {
-        --background: var(--gray-light);
+        --background: #{$background-color};
         --background-lighter: var(--gray-lighter);
         --contrast-background: var(--white);
     }
@@ -223,88 +237,3 @@
     --core-menu-box-shadow-end: var(--custom-menu-box-shadow-end, -4px 0px 16px rgba(0, 0, 0, 0.18));
     --core-menu-box-shadow-start: var(--custom-menu-box-shadow-start, 4px 0px 16px rgba(0, 0, 0, 0.18));
 }
-
-/*
-* Dark Theme
-* -------------------------------------------
-*/
-:root body.dark {
-    --ion-background-color: #1e1e1e;
-    --ion-background-color-rgb: 18,18,18;
-
-    --ion-text-color: #ffffff;
-    --ion-text-color-rgb: 255,255,255;
-
-    --ion-border-color: #3f3f3f;
-
-    --ion-color-step-50: #1e1e1e;
-    --ion-color-step-100: #2a2a2a;
-    --ion-color-step-150: #363636;
-    --ion-color-step-200: #414141;
-    --ion-color-step-250: #4d4d4d;
-    --ion-color-step-300: #595959;
-    --ion-color-step-350: #656565;
-    --ion-color-step-400: #717171;
-    --ion-color-step-450: #7d7d7d;
-    --ion-color-step-500: #898989;
-    --ion-color-step-550: #949494;
-    --ion-color-step-600: #a0a0a0;
-    --ion-color-step-650: #acacac;
-    --ion-color-step-700: #b8b8b8;
-    --ion-color-step-750: #c4c4c4;
-    --ion-color-step-800: #d0d0d0;
-    --ion-color-step-850: #dbdbdb;
-    --ion-color-step-900: #e7e7e7;
-    --ion-color-step-950: #f3f3f3;
-
-    --ion-color-light: #3a3a3a;
-    --ion-color-light-rgb: 58,58,58;
-    --ion-color-light-contrast: #ffffff;
-    --ion-color-light-contrast-rgb: 255,255,255;
-    --ion-color-light-shade: #333333;
-    --ion-color-light-tint: #4e4e4e;
-
-    --ion-color-dark: #f5f5f5;
-    --ion-color-dark-rgb: 245,245,245;
-    --ion-color-dark-contrast: #000000;
-    --ion-color-dark-contrast-rgb: 0,0,0;
-    --ion-color-dark-shade: #d8d8d8;
-    --ion-color-dark-tint: #f6f6f6;
-
-    --ion-tab-bar-background: #1f1f1f;
-
-    --ion-item-background: #1e1e1e;
-
-    --ion-card-background: #1c1c1d;
-
-    ion-content {
-        --background: var(--ion-background-color);
-        --background-lighter: var(--gray-darker);
-        --contrast-background: var(--ion-background-color);
-    }
-
-    --core-tabs-background: var(--custom-tabs-background, #3a3a3a);
-    --core-tab-background: var(--custom-tab-background, #3a3a3a);
-    --core-tab-color: var(--custom-tab-color, var(--white));
-    --core-tab-border-color: var(--custom-tab-border-color, var(--gray-light));
-
-    core-progress-bar {
-        --text-color: var(--custom-progress-text-color, var(--gray-lighter));
-    }
-
-    ion-item-divider {
-        --background: var(--black);
-        --color: var(--white);
-        .item-detail-icon {
-            color: var(--white);
-        }
-    }
-
-    --core-button-select-background: var(--custom-button-select-background, #3a3a3a);
-
-
-    --core-login-background: var(--custom-login-background, #3a3a3a);
-    --core-login-text-color: var(--custom-login-text-color, white);
-}
-
-@import "app.scss";
