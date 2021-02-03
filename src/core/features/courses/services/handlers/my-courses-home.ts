@@ -17,6 +17,7 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { makeSingleton } from '@singletons';
+import { CoreCourses } from '../courses';
 import { CoreCoursesDashboard } from '../dashboard';
 
 /**
@@ -46,6 +47,12 @@ export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeH
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabledForSite(siteId?: string): Promise<boolean> {
+        const disabled = await CoreCourses.instance.isMyCoursesDisabled(siteId);
+
+        if (disabled) {
+            return false;
+        }
+
         const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
 
         return !CoreBlockDelegate.instance.hasSupportedBlock(blocks)&& !CoreSiteHome.instance.isAvailable(siteId);

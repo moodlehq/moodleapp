@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonBlockTimeline } from '@addons/block/timeline/services/timeline';
 import { Injectable } from '@angular/core';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
@@ -45,9 +46,35 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
+        const promises: Promise<void>[] = [];
+        let blocksEnabled = false;
+        let dashboardAvailable = false;
 
-        return CoreBlockDelegate.instance.hasSupportedBlock(blocks);
+        // Check if blocks and 3.6 dashboard is enabled.
+        promises.push(CoreBlockDelegate.instance.areBlocksDisabled(siteId).then((disabled) => {
+            blocksEnabled = !disabled;
+
+            return;
+        }));
+
+        promises.push(CoreCoursesDashboard.instance.isAvailable().then((available) => {
+            dashboardAvailable = available;
+
+            return;
+        }));
+
+        await Promise.all(promises);
+
+        if (dashboardAvailable && blocksEnabled) {
+            const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
+
+            return CoreBlockDelegate.instance.hasSupportedBlock(blocks);
+        }
+
+        // Check if my overview is enabled. If it's enabled we will fake enabled blocks.
+        const timelineEnabled = await AddonBlockTimeline.instance.isAvailable();
+
+        return timelineEnabled && blocksEnabled;
     }
 
     /**

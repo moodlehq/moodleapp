@@ -1168,8 +1168,6 @@ export class CoreCourses extends makeSingleton(CoreCoursesProvider) {}
 
 /**
  * Data sent to the EVENT_MY_COURSES_UPDATED.
- *
- * @todo course type.
  */
 export type CoreCoursesMyCoursesUpdatedEventData = {
     action: string; // Action performed.

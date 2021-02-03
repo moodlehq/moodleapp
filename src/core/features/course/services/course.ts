@@ -162,7 +162,7 @@ export class CoreCourseProvider {
      * @return Whether the current view is a certain course.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    currentViewIsCourse(navCtrl: any, courseId: number): boolean {
+    currentViewIsCourse(courseId: number): boolean {
         // @todo implement
         return false;
     }
