@@ -14,28 +14,33 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModLessonUserRetakePage } from './user-retake';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'index',
-        pathMatch: 'full',
-    },
-    {
-        path: 'index',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModLessonIndexPageModule),
-    },
-    {
-        path: 'player/:courseId/:lessonId',
-        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModLessonPlayerPageModule),
-    },
-    {
-        path: 'user-retake/:courseId/:lessonId',
-        loadChildren: () => import('./pages/user-retake/user-retake.module').then( m => m.AddonModLessonUserRetakePageModule),
+        component: AddonModLessonUserRetakePage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        FormsModule,
+        CoreSharedModule,
+    ],
+    declarations: [
+        AddonModLessonUserRetakePage,
+    ],
+    exports: [RouterModule],
 })
-export class AddonModLessonLazyModule {}
+export class AddonModLessonUserRetakePageModule {}

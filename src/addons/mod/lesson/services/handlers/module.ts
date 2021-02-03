@@ -30,7 +30,7 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'lesson';
+    static readonly PAGE_NAME = 'mod_lesson';
 
     name = 'AddonModLesson';
     modName = 'lesson';

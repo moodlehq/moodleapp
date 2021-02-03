@@ -424,10 +424,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             pageId = continueLast ? this.accessInfo.lastpageseen : this.accessInfo.firstpageid;
         }
 
-        CoreNavigator.instance.navigate('../player', {
+        await CoreNavigator.instance.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
             params: {
-                courseId: this.courseId,
-                lessonId: this.lesson.id,
                 pageId: pageId,
                 password: this.password,
             },
@@ -474,10 +472,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        CoreNavigator.instance.navigate('../player', {
+        CoreNavigator.instance.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
             params: {
-                courseId: this.courseId,
-                lessonId: this.lesson.id,
                 pageId: this.retakeToReview.pageid,
                 password: this.password,
                 review: true,
@@ -690,6 +686,20 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
             throw error;
         }
+    }
+
+    /**
+     * Open a certain user retake.
+     *
+     * @param userId User ID to view.
+     * @return Promise resolved when done.
+     */
+    async openRetake(userId: number): Promise<void> {
+        await CoreNavigator.instance.navigate(`../user-retake/${this.courseId}/${this.lesson!.id}`, {
+            params: {
+                userId,
+            },
+        });
     }
 
     /**

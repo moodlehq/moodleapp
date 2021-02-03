@@ -4070,12 +4070,17 @@ export type AddonModLessonUserAttemptAnswerPageWSData = {
     contents: string; // Page contents.
     qtype: string; // Identifies the page type of this page.
     grayout: number; // If is required to apply a grayout.
-    answerdata?: {
-        score: string; // The score (text version).
-        response: string; // The response text.
-        responseformat: number; // Response. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-        answers?: string[][]; // User answers.
-    }; // Answer data (empty in content pages created in Moodle 1.x).
+    answerdata?: AddonModLessonUserAttemptAnswerData; // Answer data (empty in content pages created in Moodle 1.x).
+};
+
+/**
+ * Answer data of a user attempt answer page.
+ */
+export type AddonModLessonUserAttemptAnswerData = {
+    score: string; // The score (text version).
+    response: string; // The response text.
+    responseformat: number; // Response. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    answers?: string[][]; // User answers.
 };
 
 /**

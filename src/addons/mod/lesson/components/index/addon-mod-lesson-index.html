@@ -300,7 +300,8 @@
                             <ion-card-subtitle>{{ 'addon.mod_lesson.overview' | translate }}</ion-card-subtitle>
                         </ion-card-header>
 
-                        <ion-item class="ion-text-wrap" *ngFor="let student of overview.students"> <!-- @todo navPush="AddonModLessonUserRetakePage" [navParams]="{courseId: courseId, lessonId: lesson.id, userId: student.id}" -->
+                        <ion-item class="ion-text-wrap" *ngFor="let student of overview.students" button
+                            (click)="openRetake(student.id)">
                             <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId">
                             </core-user-avatar>
                             <ion-label>
