@@ -43,6 +43,7 @@ import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
+import { CoreTimerComponent } from './timer/timer';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
@@ -74,6 +75,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreUserAvatarComponent,
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
+        CoreTimerComponent,
     ],
     imports: [
         CommonModule,
@@ -109,6 +111,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreUserAvatarComponent,
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
+        CoreTimerComponent,
     ],
 })
 export class CoreComponentsModule {}

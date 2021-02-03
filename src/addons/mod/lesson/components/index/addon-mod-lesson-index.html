@@ -64,7 +64,7 @@
                         </ion-item>
                         <ion-button expand="block" type="submit">
                             {{ 'addon.mod_lesson.continue' | translate }}
-                            <core-icon slot="end" name="fas-arrow-right"></core-icon>
+                            <core-icon slot="end" name="fas-chevron-right"></core-icon>
                         </ion-button>
                         <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
                         <input type="submit" class="core-submit-hidden-enter" />
@@ -73,13 +73,17 @@
 
                 <core-loading [hideUntil]="!showSpinner">
                     <ion-list *ngIf="(lesson && !preventReasons.length) || retakeToReview">
-                        <ion-item class="ion-text-wrap" *ngIf="retakeToReview">
+                        <ng-container *ngIf="retakeToReview">
                             <!-- A retake was finished in a synchronization, allow reviewing it. -->
-                            <ion-label class="ion-padding-bottom">
-                                {{ 'addon.mod_lesson.retakefinishedinsync' | translate }}
-                            </ion-label>
-                            <ion-button expand="block" (click)="review()">{{ 'addon.mod_lesson.review' | translate }}</ion-button>
-                        </ion-item>
+                            <ion-item class="ion-text-wrap" lines="none">
+                                <ion-label class="ion-padding-bottom">
+                                    {{ 'addon.mod_lesson.retakefinishedinsync' | translate }}
+                                </ion-label>
+                            </ion-item>
+                            <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="review()">
+                                {{ 'addon.mod_lesson.review' | translate }}
+                            </ion-button>
+                        </ng-container>
 
                         <ng-container *ngIf="lesson && !preventReasons.length">
                             <ion-item class="ion-text-wrap" *ngIf="leftDuringTimed && !lesson.timelimit && !finishedOffline">
@@ -103,15 +107,16 @@
                                 </ion-label>
                             </ion-item>
 
-                            <ion-item class="ion-text-wrap" *ngIf="leftDuringTimed && lesson.timelimit && lesson.retake &&
-                                !finishedOffline">
-                                <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
-                                <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate"></ion-label>
-                                <ion-button expand="block" (click)="start(false)">
+                            <ng-container *ngIf="leftDuringTimed && lesson.timelimit && lesson.retake && !finishedOffline">
+                                <ion-item class="ion-text-wrap">
+                                    <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
+                                    <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate"></ion-label>
+                                </ion-item>
+                                <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="start(false)">
                                     {{ 'addon.mod_lesson.continue' | translate }}
-                                    <ion-icon name="fas-arrow-right" slot="end"></ion-icon>
+                                    <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
                                 </ion-button>
-                            </ion-item>
+                            </ng-container>
 
                             <ion-item class="ion-text-wrap" *ngIf="leftDuringTimed && lesson.timelimit && !lesson.retake">
                                 <!-- User left during the session with time limit and retakes not allowed.
@@ -119,22 +124,24 @@
                                 <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimednoretake' | translate"></ion-label>
                             </ion-item>
 
-                            <ion-item class="ion-text-wrap" *ngIf="!leftDuringTimed && !finishedOffline">
+                            <ng-container *ngIf="!leftDuringTimed && !finishedOffline">
                                 <!-- User hasn't left during the session, show a start button. -->
-                                <ion-button expand="block" *ngIf="!canManage" (click)="start(false)">
+                                <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="!canManage"
+                                    (click)="start(false)">
                                     {{ 'core.start' | translate }}
-                                    <ion-icon name="fas-arrow-right" slot="end"></ion-icon>
+                                    <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
                                 </ion-button>
-                                <ion-button expand="block" *ngIf="canManage" (click)="start(false)">
+                                <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="canManage"
+                                    (click)="start(false)">
                                     {{ 'addon.mod_lesson.preview' | translate }}
                                     <ion-icon name="fas-search" slot="end"></ion-icon>
                                 </ion-button>
-                            </ion-item>
+                            </ng-container>
 
                             <ion-button class="ion-text-wrap" *ngIf="finishedOffline" expand="block" (click)="start(true)">
                                 <!-- There's an attempt finished in offline. Let the user continue, showing the end of lesson. -->
                                 {{ 'addon.mod_lesson.continue' | translate }}
-                                <ion-icon name="fas-arrow-right" slot="end"></ion-icon>
+                                <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
                             </ion-button>
                         </ng-container>
                     </ion-list>

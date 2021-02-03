@@ -13,37 +13,39 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { AddonModLessonIndexComponent } from './index/index';
-import { AddonModLessonMenuModalPage } from './menu-modal/menu-modal';
-import { AddonModLessonPasswordModalComponent } from './password-modal/password-modal';
+import { AddonModLessonPlayerPage } from './player';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CanLeaveGuard } from '@guards/can-leave';
+
+const routes: Routes = [
+    {
+        path: '',
+        component: AddonModLessonPlayerPage,
+        canDeactivate: [CanLeaveGuard],
+    },
+];
 
 @NgModule({
-    declarations: [
-        AddonModLessonIndexComponent,
-        AddonModLessonMenuModalPage,
-        AddonModLessonPasswordModalComponent,
-    ],
     imports: [
+        RouterModule.forChild(routes),
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         FormsModule,
+        ReactiveFormsModule,
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreEditorComponentsModule,
     ],
-    providers: [
+    declarations: [
+        AddonModLessonPlayerPage,
     ],
-    exports: [
-        AddonModLessonIndexComponent,
-        AddonModLessonMenuModalPage,
-        AddonModLessonPasswordModalComponent,
-    ],
+    exports: [RouterModule],
 })
-export class AddonModLessonComponentsModule {}
+export class AddonModLessonPlayerPageModule {}

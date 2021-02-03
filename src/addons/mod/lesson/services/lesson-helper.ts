@@ -42,7 +42,7 @@ export class AddonModLessonHelperProvider {
      * @param activityLink HTML of the activity link.
      * @return Formatted data.
      */
-    formatActivityLink(activityLink: string): {formatted: boolean; label: string; href: string} {
+    formatActivityLink(activityLink: string): AddonModLessonActivityLink {
         const element = CoreDomUtils.instance.convertToElement(activityLink);
         const anchor = element.querySelector('a');
 
@@ -264,7 +264,7 @@ export class AddonModLessonHelperProvider {
                 value: input.value,
                 checked: !!input.checked,
                 disabled: !!input.disabled,
-                text: parent?.innerHTML.trim() || '',
+                text: '',
             };
 
             if (option.checked || multiChoiceQuestion.multi) {
@@ -277,6 +277,7 @@ export class AddonModLessonHelperProvider {
 
             // Remove the input and use the rest of the parent contents as the label.
             input.remove();
+            option.text = parent?.innerHTML.trim() || '';
             multiChoiceQuestion.options!.push(option);
         });
 
@@ -601,7 +602,7 @@ export type AddonModLessonPageButton = {
 /**
  * Generic question data.
  */
-export type AddonModLessonQuestion = {
+export type AddonModLessonQuestionBasicData = {
     template: string; // Name of the template to use.
     submitLabel: string; // Text to display in submit.
 };
@@ -609,7 +610,7 @@ export type AddonModLessonQuestion = {
 /**
  * Multichoice question data.
  */
-export type AddonModLessonMultichoiceQuestion = AddonModLessonQuestion & {
+export type AddonModLessonMultichoiceQuestion = AddonModLessonQuestionBasicData & {
     multi: boolean; // Whether it allows multiple answers.
     options: AddonModLessonMultichoiceOption[]; // Options for multichoice question.
     controlName?: string; // Name of the form control, for single choice.
@@ -618,14 +619,14 @@ export type AddonModLessonMultichoiceQuestion = AddonModLessonQuestion & {
 /**
  * Short answer or numeric question data.
  */
-export type AddonModLessonInputQuestion = AddonModLessonQuestion & {
+export type AddonModLessonInputQuestion = AddonModLessonQuestionBasicData & {
     input?: AddonModLessonQuestionInput; // Text input for text/number questions.
 };
 
 /**
  * Essay question data.
  */
-export type AddonModLessonEssayQuestion = AddonModLessonQuestion & {
+export type AddonModLessonEssayQuestion = AddonModLessonQuestionBasicData & {
     useranswer?: string; // User answer, for reviewing.
     textarea?: AddonModLessonTextareaData; // Data for the textarea.
     control?: FormControl; // Form control.
@@ -634,7 +635,7 @@ export type AddonModLessonEssayQuestion = AddonModLessonQuestion & {
 /**
  * Matching question data.
  */
-export type AddonModLessonMatchingQuestion = AddonModLessonQuestion & {
+export type AddonModLessonMatchingQuestion = AddonModLessonQuestionBasicData & {
     rows: AddonModLessonMatchingRow[];
 };
 
@@ -721,3 +722,18 @@ export type AddonModLessonSelectAnswerData = {
  */
 export type AddonModLessonAnswerData =
     AddonModLessonCheckboxAnswerData | AddonModLessonTextAnswerData | AddonModLessonSelectAnswerData | string;
+
+/**
+ * Any possible question data.
+ */
+export type AddonModLessonQuestion = AddonModLessonQuestionBasicData & Partial<AddonModLessonMultichoiceQuestion> &
+Partial<AddonModLessonInputQuestion> & Partial<AddonModLessonEssayQuestion> & Partial<AddonModLessonMatchingQuestion>;
+
+/**
+ * Activity link data.
+ */
+export type AddonModLessonActivityLink = {
+    formatted: boolean;
+    label: string;
+    href: string;
+};

@@ -313,7 +313,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             this.showNextButton = false;
         }
 
-        const currentIndex = await this.slides!.getActiveIndex();
+        const currentIndex = await this.slides?.getActiveIndex();
         if (this.shouldSlideToInitial && currentIndex != this.selectedIndex) {
             // Current tab has changed, don't slide to initial anymore.
             this.shouldSlideToInitial = false;
@@ -331,6 +331,11 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         this.slideChanged();
 
         this.calculateTabBarHeight();
+
+        // @todo: This call to update() can trigger JS errors in the console if tabs are re-loaded and there's only 1 tab.
+        // For some reason, swiper.slides is undefined inside the Slides class, and the swiper is marked as destroyed.
+        // Changing *ngIf="hideUntil" to [hidden] doesn't solve the issue, and it causes another error to be raised.
+        // This can be tested in lesson as a student, play a lesson and go back to the entry page.
         await this.slides!.update();
 
         if (!this.hasSliddenToInitial && this.selectedIndex && this.selectedIndex >= this.slidesOpts.slidesPerView) {

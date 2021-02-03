@@ -2342,7 +2342,7 @@ export class AddonModLessonProvider {
 
             if (entry.reason == 'lessonopen' || entry.reason == 'lessonclosed') {
                 // Time restrictions are the most prioritary, return it.
-                return reason;
+                return entry;
             } else if (entry.reason == 'passwordprotectedlesson') {
                 if (!ignorePassword) {
                     // Treat password before all other reasons.

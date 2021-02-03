@@ -25,6 +25,10 @@ const routes: Routes = [
         path: 'index',
         loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModLessonIndexPageModule),
     },
+    {
+        path: 'player',
+        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModLessonPlayerPageModule),
+    },
 ];
 
 @NgModule({

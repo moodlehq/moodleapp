@@ -185,6 +185,7 @@
 
     ion-item-divider {
         --background: var(--gray-lighter);
+        --color: inherit;
     }
 
     --core-button-select-background: var(--custom-button-select-background, var(--ion-color-primary-contrast));

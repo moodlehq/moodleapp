@@ -22,6 +22,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
+import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -329,21 +330,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         super.ionViewDidLeave();
 
         this.tabsComponent?.ionViewDidLeave();
-
-        // @todo if (this.navCtrl.getActive().component.name != 'AddonModLessonPlayerPage') {
-        //     return;
-        // }
-
-        // Detect if anything was sent to server.
-        this.hasPlayed = true;
-        this.dataSentObserver?.off();
-
-        this.dataSentObserver = CoreEvents.on<AddonModLessonDataSentData>(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
-            // Ignore launch sending because it only affects timers.
-            if (data.lessonId === this.lesson?.id && data.type != 'launch') {
-                this.dataSent = true;
-            }
-        }, this.siteId);
     }
 
     /**
@@ -418,34 +404,45 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @param continueLast Whether to continue the last retake.
      * @return Promise resolved when done.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected async playLesson(continueLast?: boolean): Promise<void> {
         if (!this.lesson || !this.accessInfo) {
             return;
         }
 
-        // @todo
         // Calculate the pageId to load. If there is timelimit, lesson is always restarted from the start.
-        // let pageId: number | undefined;
+        let pageId: number | undefined;
 
-        // if (this.hasOffline) {
-        //     if (continueLast) {
-        //         pageId = await AddonModLesson.instance.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount, {
-        //             cmId: this.module!.id,
-        //         });
-        //     } else {
-        //         pageId = this.accessInfo.firstpageid;
-        //     }
-        // } else if (this.leftDuringTimed && !this.lesson.timelimit) {
-        //     pageId = continueLast ? this.accessInfo.lastpageseen : this.accessInfo.firstpageid;
-        // }
+        if (this.hasOffline) {
+            if (continueLast) {
+                pageId = await AddonModLesson.instance.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount, {
+                    cmId: this.module!.id,
+                });
+            } else {
+                pageId = this.accessInfo.firstpageid;
+            }
+        } else if (this.leftDuringTimed && !this.lesson.timelimit) {
+            pageId = continueLast ? this.accessInfo.lastpageseen : this.accessInfo.firstpageid;
+        }
 
-        // this.navCtrl.push('AddonModLessonPlayerPage', {
-        //     courseId: this.courseId,
-        //     lessonId: this.lesson.id,
-        //     pageId: pageId,
-        //     password: this.password,
-        // });
+        CoreNavigator.instance.navigate('../player', {
+            params: {
+                courseId: this.courseId,
+                lessonId: this.lesson.id,
+                pageId: pageId,
+                password: this.password,
+            },
+        });
+
+        // Detect if anything was sent to server.
+        this.hasPlayed = true;
+        this.dataSentObserver?.off();
+
+        this.dataSentObserver = CoreEvents.on<AddonModLessonDataSentData>(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
+            // Ignore launch sending because it only affects timers.
+            if (data.lessonId === this.lesson?.id && data.type != 'launch') {
+                this.dataSent = true;
+            }
+        }, this.siteId);
     }
 
     /**
@@ -472,19 +469,21 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Review the lesson.
      */
     review(): void {
-        if (!this.retakeToReview) {
+        if (!this.retakeToReview || !this.lesson) {
             // No retake to review, stop.
             return;
         }
 
-        // @todo this.navCtrl.push('AddonModLessonPlayerPage', {
-        //     courseId: this.courseId,
-        //     lessonId: this.lesson.id,
-        //     pageId: this.retakeToReview.pageid,
-        //     password: this.password,
-        //     review: true,
-        //     retake: this.retakeToReview.retake
-        // });
+        CoreNavigator.instance.navigate('../player', {
+            params: {
+                courseId: this.courseId,
+                lessonId: this.lesson.id,
+                pageId: this.retakeToReview.pageid,
+                password: this.password,
+                review: true,
+                retake: this.retakeToReview.retake,
+            },
+        });
     }
 
     /**

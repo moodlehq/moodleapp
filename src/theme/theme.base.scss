@@ -1,3 +1,5 @@
+@import "./globals.mixins.ionic.scss";
+
 // Common styles.
 .text-left           { text-align: left; }
 .text-right          { text-align: right; }
@@ -137,6 +139,25 @@ ion-toolbar {
 
 .core-modal-force-on-top {
     z-index: 100000 !important;
+}
+
+@media only screen and (min-height: 400px) and (min-width: 300px) {
+    .core-modal-lateral {
+        // @todo @include core-split-area-end();
+
+        .modal-wrapper {
+            position: absolute;
+            @include position(0 !important, 0 !important, 0 !important, auto);
+            display: block;
+            height: 100% !important;
+            width: auto;
+            min-width: 300px;
+            box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+        }
+        ion-backdrop {
+            visibility: visible;
+        }
+    }
 }
 
 // Hidden submit button.
