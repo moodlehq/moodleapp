@@ -12,83 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-
-import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { CoreSettingsConstants, CoreSettingsSection } from '@features/settings/constants';
+import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { ActivatedRouteSnapshot } from '@angular/router';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 @Component({
     selector: 'page-core-settings-index',
     templateUrl: 'index.html',
 })
-export class CoreSettingsIndexPage implements OnInit, OnDestroy {
+export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
 
-    sections = CoreSettingsConstants.SECTIONS;
-    activeSection?: string;
-    layoutSubscription?: Subscription;
+    sections: CoreSettingsSectionsManager = new CoreSettingsSectionsManager(CoreSettingsIndexPage);
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.layoutSubscription = CoreScreen.instance.layoutObservable.subscribe(() => this.updateActiveSection());
-    }
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     /**
      * @inheritdoc
      */
-    ionViewWillEnter(): void {
-        this.updateActiveSection();
+    ngAfterViewInit(): void {
+        this.sections.setItems(CoreSettingsConstants.SECTIONS);
+        this.sections.watchSplitViewOutlet(this.splitView);
+        this.sections.start();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.layoutSubscription?.unsubscribe();
+        this.sections.destroy();
+    }
+
+}
+
+/**
+ * Helper class to manage sections.
+ */
+class CoreSettingsSectionsManager extends CorePageItemsListManager<CoreSettingsSection> {
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(section: CoreSettingsSection): string {
+        return section.path;
     }
 
     /**
-     * Open a section page.
-     *
-     * @param section Section to open.
+     * @inheritdoc
      */
-    openSection(section: CoreSettingsSection): void {
-        const path = this.activeSection ? `../${section.path}` : section.path;
-
-        CoreNavigator.instance.navigate(path);
-
-        this.updateActiveSection(section.name);
-    }
-
-    /**
-     * Update active section.
-     *
-     * @param activeSection Active section.
-     */
-    private updateActiveSection(activeSection?: string): void {
-        if (CoreScreen.instance.isMobile) {
-            delete this.activeSection;
-
-            return;
-        }
-
-        this.activeSection = activeSection ?? this.guessActiveSection();
-    }
-
-    /**
-     * Guess active section looking at the current route.
-     *
-     * @return Active section.
-     */
-    private guessActiveSection(): string | undefined {
-        const activeSection = this.sections.find(
-            section => CoreNavigator.instance.isCurrent(`**/settings/${section.path}`),
-        );
-
-        return activeSection?.name;
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        return route.parent?.routeConfig?.path ?? null;
     }
 
 }

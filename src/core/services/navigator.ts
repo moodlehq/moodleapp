@@ -51,6 +51,14 @@ export type CoreNavigationOptions = {
 };
 
 /**
+ * Options for CoreNavigatorService#getCurrentRoute method.
+ */
+type GetCurrentRouteOptions = Partial<{
+    parentRoute: ActivatedRoute;
+    pageComponent: unknown;
+}>;
+
+/**
  * Service to provide some helper functions regarding navigation.
  */
 @Injectable({ providedIn: 'root' })
@@ -310,13 +318,26 @@ export class CoreNavigatorService {
     /**
      * Get current activated route.
      *
-     * @param route Parent route.
+     * @param options
+     *     - parent: Parent route, if this isn't provided the current active route will be used.
+     *     - pageComponent: Page component of the route to find, if this isn't provided the deepest route in the hierarchy
+     *                      will be returned.
      * @return Current activated route.
      */
-    protected getCurrentRoute(route?: ActivatedRoute): ActivatedRoute {
-        route = route ?? Router.instance.routerState.root;
+    getCurrentRoute(): ActivatedRoute;
+    getCurrentRoute(options: GetCurrentRouteOptions): ActivatedRoute | null;
+    getCurrentRoute({ parentRoute, pageComponent }: GetCurrentRouteOptions = {}): ActivatedRoute | null {
+        parentRoute = parentRoute ?? Router.instance.routerState.root;
 
-        return route.firstChild ? this.getCurrentRoute(route.firstChild) : route;
+        if (pageComponent && parentRoute.component === pageComponent) {
+            return parentRoute;
+        }
+
+        if (parentRoute.firstChild) {
+            return this.getCurrentRoute({ parentRoute: parentRoute.firstChild, pageComponent });
+        }
+
+        return pageComponent ? null : parentRoute;
     }
 
     /**
