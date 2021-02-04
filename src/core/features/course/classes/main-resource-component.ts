@@ -223,7 +223,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Go to blog posts.
      */
     async gotoBlog(): Promise<void> {
-        // @todo return this.linkHelper.goInSite(this.navCtrl, 'AddonBlogEntriesPage', { cmId: this.module.id });
+        // const params: Params = { cmId: this.module?.id };
+        // @todo return CoreNavigator.instance.navigateToSitePath('AddonBlogEntriesPage', { params });
     }
 
     /**

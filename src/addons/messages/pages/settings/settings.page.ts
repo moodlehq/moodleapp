@@ -34,7 +34,6 @@ import { IonRefresher } from '@ionic/angular';
 @Component({
     selector: 'page-addon-messages-settings',
     templateUrl: 'settings.html',
-    styleUrls: ['settings.scss'],
 })
 export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 

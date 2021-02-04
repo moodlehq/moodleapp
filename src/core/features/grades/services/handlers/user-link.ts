@@ -50,11 +50,11 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
         data = data || {};
 
         return [{
-            action: (siteId, navCtrl?): void => {
+            action: (siteId): void => {
                 const userId = params.userid && parseInt(params.userid, 10);
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
-                CoreGradesHelper.instance.goToGrades(courseId!, userId, moduleId, navCtrl, siteId);
+                CoreGradesHelper.instance.goToGrades(courseId!, userId, moduleId, siteId);
             },
         }];
     }

@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { NavController } from '@ionic/angular';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';
@@ -447,7 +446,7 @@ export class CoreLoginHelperProvider {
     /**
      * Go to the initial page of a site depending on 'userhomepage' setting.
      *
-     * @param navCtrl NavController to use. Defaults to app root NavController.
+     * @param navCtrlUnused Deprecated param.
      * @param page Name of the page to load after loading the main page.
      * @param params Params to pass to the page.
      * @param options Navigation options.
@@ -456,7 +455,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 3.9.5. Use CoreNavigator.navigateToSiteHome or CoreNavigator.navigateToSitePath instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async goToSiteInitialPage(navCtrl?: NavController, page?: string, params?: any, options?: any, url?: string): Promise<void> {
+    async goToSiteInitialPage(navCtrlUnused?: unknown, page?: string, params?: any, options?: any, url?: string): Promise<void> {
         await CoreNavigator.instance.navigateToSiteHome({
             ...options,
             params: {
