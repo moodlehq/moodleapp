@@ -20,13 +20,13 @@ import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../services/se
 import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreSplitViewComponent } from '@components/split-view/split-view';
 // import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
 import { CoreSiteInfo } from '@classes/site';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Page that displays the list of site settings pages.
@@ -36,8 +36,6 @@ import { CoreNavigator } from '@services/navigator';
     templateUrl: 'site.html',
 })
 export class CoreSitePreferencesPage implements OnInit, OnDestroy {
-
-    // @ViewChild(CoreSplitViewComponent) splitviewCtrl?: CoreSplitViewComponent;
 
     isIOS: boolean;
     selectedPage?: string;
@@ -80,13 +78,14 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
 
             if (this.selectedPage) {
                 this.openHandler(this.selectedPage);
-            } /* else if (this.splitviewCtrl.isOn()) {
+            } else if (CoreScreen.instance.isTablet) {
                 if (this.isIOS) {
-                    this.openHandler('CoreSharedFilesListPage', { manage: true, siteId: this.siteId, hideSitePicker: true });
+                    // @todo
+                    // this.openHandler('CoreSharedFilesListPage', { manage: true, siteId: this.siteId, hideSitePicker: true });
                 } else if (this.handlers.length > 0) {
                     this.openHandler(this.handlers[0].page, this.handlers[0].params);
                 }
-            }*/
+            }
         });
     }
 

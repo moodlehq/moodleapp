@@ -6,26 +6,28 @@
         <ion-title>{{ 'core.tag.tag' | translate }}: {{ tagName }}</ion-title>
     </ion-toolbar>
 </ion-header>
-<!--@todo <core-split-view>-->
+
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-    </ion-refresher>
-    <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="hasUnsupportedAreas || areas.length">
-            <ion-item *ngIf="hasUnsupportedAreas" class="core-warning-item">
-                <ion-icon slot="start" name="fas-exclamation-triangle" color="warning"></ion-icon>
-                <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngFor="let area of areas" [title]="area.nameKey | translate"
-                (click)="openArea(area)" [class.core-split-item-selected]="area!.id == selectedAreaId">
-                <ion-label>
-                    <h2>{{ area!.nameKey | translate }}</h2>
-                </ion-label>
-                <ion-badge slot="end" *ngIf="area!.badge">{{ area!.badge }}</ion-badge>
-            </ion-item>
-        </ion-list>
-        <core-empty-box icon="fa-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"
-            [message]="'core.tag.noresultsfor' | translate: { $a: tagName }"></core-empty-box>
-    </core-loading>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="loaded">
+            <ion-list *ngIf="hasUnsupportedAreas || areas.length">
+                <ion-item *ngIf="hasUnsupportedAreas" class="core-warning-item">
+                    <ion-icon slot="start" name="fas-exclamation-triangle" color="warning"></ion-icon>
+                    <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngFor="let area of areas" [title]="area.nameKey | translate"
+                    (click)="openArea(area)" [class.core-selected-item]="area!.id == selectedAreaId">
+                    <ion-label>
+                        <h2>{{ area!.nameKey | translate }}</h2>
+                    </ion-label>
+                    <ion-badge slot="end" *ngIf="area!.badge">{{ area!.badge }}</ion-badge>
+                </ion-item>
+            </ion-list>
+            <core-empty-box icon="fa-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"
+                [message]="'core.tag.noresultsfor' | translate: { $a: tagName }"></core-empty-box>
+        </core-loading>
+    </core-split-view>
 </ion-content>

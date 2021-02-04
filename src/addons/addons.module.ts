@@ -22,12 +22,14 @@ import { AddonBadgesModule } from './badges/badges.module';
 import { AddonCalendarModule } from './calendar/calendar.module';
 import { AddonNotificationsModule } from './notifications/notifications.module';
 import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
+import { AddonMessagesModule } from './messages/messages.module';
 
 @NgModule({
     imports: [
         AddonBlockModule,
         AddonBadgesModule,
         AddonCalendarModule,
+        AddonMessagesModule,
         AddonPrivateFilesModule,
         AddonFilterModule,
         AddonUserProfileFieldModule,

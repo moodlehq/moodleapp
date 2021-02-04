@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title><core-format-text [text]="course?.fullname" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text></ion-title>
+        <ion-title>
+            <core-format-text [text]="course?.fullname" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -17,10 +19,14 @@
             </div>
         </div>
         <div class="core-course-thumb-parallax-content" *ngIf="course">
-            <ion-item class="ion-text-wrap" (click)="openCourse()" [title]="course.fullname" [attr.details]="!avoidOpenCourse && canAccessCourse">
+            <ion-item class="ion-text-wrap" (click)="openCourse()" [title]="course.fullname"
+                [attr.details]="!avoidOpenCourse && canAccessCourse">
                 <ion-icon name="fas-graduation-cap" fixed-width slot="start"></ion-icon>
                 <ion-label>
-                    <h2><core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text></h2>
+                    <h2>
+                        <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
+                        </core-format-text>
+                    </h2>
                     <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"
                         contextLevel="coursecat" [contextInstanceId]="course.categoryid"></core-format-text></p>
                     <p *ngIf="course.startdate">

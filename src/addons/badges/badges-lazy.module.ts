@@ -13,7 +13,13 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Route, RouterModule, Routes } from '@angular/router';
+
+
+export const AddonBadgesIssueRoute: Route = {
+    path: 'issue',
+    loadChildren: () => import('./pages/issued-badge/issued-badge.module').then( m => m.AddonBadgesIssuedBadgePageModule),
+};
 
 const routes: Routes = [
     {
@@ -21,10 +27,7 @@ const routes: Routes = [
         redirectTo: 'user',
         pathMatch: 'full',
     },
-    {
-        path: 'issue',
-        loadChildren: () => import('./pages/issued-badge/issued-badge.module').then( m => m.AddonBadgesIssuedBadgePageModule),
-    },
+    AddonBadgesIssueRoute,
     {
         path: 'user',
         loadChildren: () => import('./pages/user-badges/user-badges.module').then( m => m.AddonBadgesUserBadgesPageModule),

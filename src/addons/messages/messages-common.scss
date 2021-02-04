@@ -1,0 +1,66 @@
+:host {
+    .addon-messages-conversation-item,
+    .addon-message-discussion {
+        h2 {
+            core-format-text {
+                font-weight: bold;
+            }
+
+            ion-icon {
+                margin-left: 2px;
+            }
+        }
+
+        .note {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin:  4px 8px;
+            font-size: 1.3rem;
+        }
+
+        .addon-message-last-message {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .addon-message-last-message-user {
+            white-space: nowrap;
+            color: var(--ion-text-color);
+            margin-right: 2px;
+        }
+
+        .addon-message-last-message-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 1;
+        }
+    }
+
+    .addon-message-discussion {
+        h2 {
+            margin-top: 10px;
+        }
+    }
+}
+
+:host-context([dir=rtl]) {
+    .addon-messages-conversation-item,
+    .addon-message-discussion {
+        h2  ion-icon {
+            margin-right: 2px;
+            margin-left: 0;
+        }
+
+        .note {
+            left: 0;
+            right: unset;
+        }
+
+        .addon-message-last-message-user {
+            margin-left: 2px;
+            margin-right: 0;
+        }
+    }
+}

@@ -1,30 +1,30 @@
-  // Common styles.
-  .text-left           { text-align: left; }
-  .text-right          { text-align: right; }
-  .text-center         { text-align: center; }
-  .text-justify        { text-align: justify; }
-  .clearfix {
+// Common styles.
+.text-left           { text-align: left; }
+.text-right          { text-align: right; }
+.text-center         { text-align: center; }
+.text-justify        { text-align: justify; }
+.clearfix {
     &:after {
-      content: "";
-      display: table;
-      clear: both;
+        content: "";
+        display: table;
+        clear: both;
     }
-  }
-  .img-responsive {
+}
+.img-responsive {
     display: block;
     max-width: 100%;
     &[height] {
-      height: auto;
+        height: auto;
     }
-  }
+}
 
-  .opacity-hide { opacity: 0; }
-  .core-big   { font-size: 115%; }
-  .invisible { visibility: hidden; }
+.opacity-hide { opacity: 0; }
+.core-big   { font-size: 115%; }
+.invisible { visibility: hidden; }
 
-  .button-no-uppercase {
+.button-no-uppercase {
     text-transform: none;
-  }
+}
 
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
@@ -67,6 +67,10 @@ ion-icon {
         text-align: center;
         width: 1.25em;
     }
+}
+
+[dir=rtl] ion-icon.icon-flip-rtl {
+    transform: scaleX(-1);
 }
 
 // Ionic alert.
@@ -291,6 +295,16 @@ ion-avatar ion-img, ion-avatar img {
     background-color: var(--gray-light);
 }
 
+// Wait to load before showing the image.
+img[core-external-content]:not([src]) {
+    visibility: hidden;
+}
+img[alt] {
+    text-indent: -999999px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 // Activity modules
 .core-module-icon {
     width: auto;
@@ -307,6 +321,15 @@ ion-item img.core-module-icon[slot="start"] {
 [dir=rtl] ion-item img.core-module-icon[slot="start"] {
     margin-right: unset;
     margin-left: 32px;
+}
+
+ion-toolbar ion-title img.core-bar-button-image,
+ion-toolbar ion-title .core-bar-button-image img {
+    padding: 0;
+    width: var(--core-toolbar-button-image-width);
+    height: var(--core-toolbar-button-image-width);
+    max-width: var(--core-toolbar-button-image-width);
+    border-radius: 50%;
 }
 
 // Action sheet.
@@ -406,6 +429,12 @@ ion-button.core-button-select {
     flex-direction: row;
 }
 
+// Text formats.
+// Highlight text.
+.matchtext {
+    background-color: var(--text-hightlight-background-color);
+}
+
 // Text for accessibility, hidden from the view.
 .accesshide {
     position: absolute;
@@ -413,5 +442,3 @@ ion-button.core-button-select {
     font-weight: normal;
     font-size: 1em;
 }
-
-@import "./format-text.scss";

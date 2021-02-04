@@ -33,7 +33,7 @@
             ],
             "styles": [
               {
-                "input": "src/theme/global.scss"
+                "input": "src/theme/theme.scss"
               }
             ],
             "scripts": [],

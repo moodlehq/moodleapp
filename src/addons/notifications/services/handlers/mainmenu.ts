@@ -22,6 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
+import { AddonMessagesReadChangedEventData } from '@addons/messages/services/messages';
 
 /**
  * Handler to inject an option into main menu.
@@ -48,7 +49,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
      * Initialize the handler.
      */
     initialize(): void {
-        CoreEvents.on(AddonNotificationsProvider.READ_CHANGED_EVENT, (data: CoreEventSiteData) => {
+        CoreEvents.on<AddonMessagesReadChangedEventData>(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);
         });
 

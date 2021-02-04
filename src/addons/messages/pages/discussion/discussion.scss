@@ -1,0 +1,300 @@
+:host {
+    ion-content {
+        background-color: var(--background-lighter);
+
+        &::part(scroll) {
+            padding-bottom: 0 !important;
+        }
+    }
+
+    .addon-messages-discussion-container {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 15px;
+        background: var(--background-lighter);
+    }
+
+    .addon-messages-date {
+        font-weight: normal;
+        font-size: 0.9rem;
+    }
+
+    .addon-messages-unreadfrom {
+        color: var(--core-color);
+        background-color: transparent;
+        margin-top: 6px;
+        ion-icon {
+            color: var(--core-color);
+            background-color: transparent;
+        }
+    }
+
+    // Message item.
+    ion-item.addon-message {
+        border: 0;
+        border-radius: 4px;
+        padding: 8px;
+        margin: 8px 8px 0 8px;
+        --background: var(--addon-messages-message-bg);
+        background: var(--background);
+        align-self: flex-start;
+        width: 90%;
+        max-width: 90%;
+        min-height: 0;
+        position: relative;
+        -webkit-transition: width 500ms ease-in-out;
+        transition: width 500ms ease-in-out;
+        // This is needed to display bubble tails.
+        overflow: visible;
+
+        &::part(native) {
+            --inner-border-width: 0;
+            --inner-padding-end: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        core-format-text > p:only-child {
+            display: inline;
+        }
+
+        .addon-message-user {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .5rem;
+            margin-top: 0;
+            color: var(--ion-text-color);
+
+            core-user-avatar {
+                display: block;
+                --core-avatar-size: var(--addon-messages-avatar-size);
+                margin: 0;
+            }
+
+            div {
+                font-weight: 500;
+                flex-grow: 1;
+                padding-right: .5rem;
+                padding-left: .5rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            ion-note {
+                text-align: end;;
+                color: var(--addon-messages-message-note-text);
+                font-size: var(--addon-messages-message-note-font-size);
+            }
+        }
+
+        &.addon-message-no-user .addon-message-user ion-note {
+            width: 100%;
+        }
+
+        &:active {
+            --background: var(--addon-messages-message-activated-bg);
+        }
+
+        ion-label {
+            margin: 0;
+            padding: 0;
+        }
+
+        .addon-message-text {
+            display: inline-flex;
+            * {
+                color: var(--ion-text-color);
+            }
+        }
+
+        .addon-messages-delete-button {
+            min-height: initial;
+            line-height: initial;
+            margin: 0 0 0 10px;
+            height: 1.6em !important;
+            -webkit-align-self: flex-end;
+            align-self: flex-end;
+            vertical-align: middle;
+            float: inline-end;
+
+            ion-icon {
+                font-size: 1.4em;
+                line-height: initial;
+                color: var(--ion-color-danger);
+            }
+        }
+
+        .tail {
+            content: '';
+            width: 0;
+            height: 0;
+            border: 0.5rem solid transparent;
+            position: absolute;
+            touch-action: none;
+        }
+
+        // Defines when an item-message is the user's.
+        &.addon-message-mine {
+            --background: var(--addon-messages-message-mine-bg);
+            align-self: flex-end;
+
+            &:active {
+                --background: var(--addon-messages-message-mine-activated-bg);
+            }
+
+            .spinner {
+                float: inline-end;
+                margin: 2px, -3px, -2px, 5px;
+
+                svg {
+                  width: 16px;
+                  height: 16px;
+                }
+            }
+
+            .tail {
+                right: -8px;
+                bottom: -8px;
+                margin-right: -0.5rem;
+                border-bottom-color: var(--addon-messages-message-mine-bg);
+            }
+
+            &:active .tail {
+                border-bottom-color: var(--addon-messages-message-mine-activated-bg);
+            }
+        }
+
+        &.addon-message-not-mine .tail {
+            border-bottom-color: var(--addon-messages-message-bg);
+            bottom: -8px;
+            left: -8px;
+            margin-left: -0.5rem;
+        }
+
+        &.addon-message-not-mine.activated .tail {
+            border-bottom-color: var(--addon-messages-message-activated-bg);
+        }
+    }
+
+    ion-item.addon-message.addon-message-mine + ion-item.addon-message.addon-message-no-user.addon-message-mine,
+    ion-item.addon-message.addon-message-not-mine + ion-item.addon-message.addon-message-no-user.addon-message-not-mine {
+        h2 {
+            margin-bottom: 0;
+        }
+        margin-top: -8px;
+        padding-top: 0;
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+    }
+
+    .has-fab .scroll-content {
+        padding-bottom: 0;
+    }
+
+    ion-fab ion-fab-button {
+        &::part(native) {
+            contain: unset;
+            overflow: visible;
+        }
+
+        .core-discussion-messages-badge {
+            position: absolute;
+            border-radius: 50%;
+            color: var(--addon-messages-discussion-badge-text);
+            background-color: var(--addon-messages-discussion-badge);
+            display: block;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            right: -6px;
+            top: -6px;
+
+        }
+    }
+
+    ion-header ion-toolbar .toolbar-title {
+        display: flex;
+        align-items: center;
+        padding: 0;
+
+        .core-bar-button-image {
+            margin-right: 6px;
+        }
+
+        core-format-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 1;
+        }
+
+        ion-icon {
+            margin-left: 6px;
+        }
+    }
+}
+
+:host-context([dir=rtl]) {
+    ion-header ion-toolbar .toolbar-title {
+        .core-bar-button-image {
+            margin-left: 6px;
+            margin-right: 0;
+        }
+
+        ion-icon {
+            margin-right: 6px;
+            margin-left: 0;
+        }
+    }
+
+    // Message item.
+    ion-item.addon-message {
+
+        .addon-messages-delete-button {
+            margin-right: 10px;
+            margin-left: 0;
+        }
+
+        &.addon-message-mine {
+            .spinner {
+                margin-right: 5px;
+                margin-left: -3px;
+            }
+
+            .tail {
+                right: unset;
+                left: -8px;
+                margin-right: unset;
+                margin-left: 0;
+            }
+        }
+
+        &.addon-message-not-mine .tail {
+            right: -8px;
+            margin-right: -0.5rem;
+            left: unset;
+            margin-left: 0;
+        }
+    }
+
+    ion-fab button {
+        .core-discussion-messages-badge {
+            left: -6px;
+            right: unset;
+        }
+    }
+}
+
+:host-context(.ios) {
+    ion-header ion-toolbar .toolbar-title {
+        justify-content: center;
+    }
+
+    ion-footer .toolbar:last-child {
+        padding-bottom: 4px;
+        min-height: 0;
+    }
+}

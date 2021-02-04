@@ -22,6 +22,7 @@ import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
+import { ActivatedRoute } from '@angular/router';
 
 /**
  * Page that displays the list of calendar events.
@@ -42,16 +43,24 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
     badgeLoaded = false;
     currentTime = 0;
 
+    constructor(
+        protected route: ActivatedRoute,
+    ) { }
+
     /**
      * View loaded.
      */
     ngOnInit(): void {
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
-        this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || CoreSites.instance.getCurrentSite()!.getUserId();
-        this.badgeHash = CoreNavigator.instance.getRouteParam('badgeHash') || '';
+        this.route.queryParams.subscribe(() => {
+            this.badgeLoaded = false;
 
-        this.fetchIssuedBadge().finally(() => {
-            this.badgeLoaded = true;
+            this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
+            this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || CoreSites.instance.getCurrentSite()!.getUserId();
+            this.badgeHash = CoreNavigator.instance.getRouteParam('badgeHash') || '';
+
+            this.fetchIssuedBadge().finally(() => {
+                this.badgeLoaded = true;
+            });
         });
     }
 

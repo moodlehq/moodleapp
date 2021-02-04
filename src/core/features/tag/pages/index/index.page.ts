@@ -15,9 +15,9 @@
 import { Component, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
+import { CoreScreen } from '@services/screen';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -28,8 +28,6 @@ import { CoreNavigator } from '@services/navigator';
     templateUrl: 'index.html',
 })
 export class CoreTagIndexPage implements OnInit {
-
-    // @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
 
     tagId = 0;
     tagName = '';
@@ -42,7 +40,7 @@ export class CoreTagIndexPage implements OnInit {
     selectedAreaId?: number;
     hasUnsupportedAreas = false;
 
-    areas: (CoreTagAreaDisplay | null)[] = [];
+    areas: CoreTagAreaDisplay[] = [];
 
     /**
      * View loaded.
@@ -58,10 +56,10 @@ export class CoreTagIndexPage implements OnInit {
 
         try {
             await this.fetchData();
-            /* if (this.splitviewCtrl.isOn() && this.areas && this.areas.length > 0) {
+            if (CoreScreen.instance.isTablet && this.areas && this.areas.length > 0) {
                 const area = this.areas.find((area) => area.id == this.areaId);
                 this.openArea(area || this.areas[0]);
-            }*/
+            }
         } finally {
             this.loaded = true;
         }
@@ -88,17 +86,19 @@ export class CoreTagIndexPage implements OnInit {
             this.areas = [];
             this.hasUnsupportedAreas = false;
 
-            const areasDisplay: (CoreTagAreaDisplay | null)[] = await Promise.all(areas.map(async (area) => {
+            const areasDisplay: CoreTagAreaDisplay[] = [];
+
+            await Promise.all(areas.map(async (area) => {
                 const items = await CoreTagAreaDelegate.instance.parseContent(area.component, area.itemtype, area.content);
 
                 if (!items || !items.length) {
                     // Tag area not supported, skip.
                     this.hasUnsupportedAreas = true;
 
-                    return null;
+                    return;
                 }
 
-                return {
+                areasDisplay.push({
                     id: area.ta,
                     componentName: area.component,
                     itemType: area.itemtype,
@@ -106,10 +106,10 @@ export class CoreTagIndexPage implements OnInit {
                     items,
                     canLoadMore: !!area.nextpageurl,
                     badge: items && items.length ? items.length + (area.nextpageurl ? '+' : '') : '',
-                };
+                });
             }));
 
-            this.areas = areasDisplay.filter((area) => area != null);
+            this.areas = areasDisplay;
 
         } catch (error) {
             CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading tag index');
@@ -160,8 +160,11 @@ export class CoreTagIndexPage implements OnInit {
             canLoadMore: area.canLoadMore,
             nextPage: 1,
         };
-        // this.splitviewCtrl.push('index-area', params);
-        CoreNavigator.instance.navigate('../index-area', { params });
+
+        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/tag/index/index-area');
+        const path = (splitViewLoaded ? '../' : '') + 'index-area';
+
+        CoreNavigator.instance.navigate(path, { params });
     }
 
 }

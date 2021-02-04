@@ -28,7 +28,7 @@
             <ion-item *ngIf="isIOS"
                 (click)="openHandler('CoreSharedFilesListPage', {manage: true, siteId: siteId, hideSitePicker: true})"
                 [title]="'core.sharedfiles.sharedfiles' | translate"
-                [class.core-split-item-selected]="'CoreSharedFilesListPage' == selectedPage" detail>
+                [class.core-selected-item]="'CoreSharedFilesListPage' == selectedPage" detail>
                 <ion-icon name="fas-folder" slot="start"></ion-icon>
                 <ion-label>
                     <h2>{{ 'core.sharedfiles.sharedfiles' | translate }}</h2>
@@ -38,7 +38,7 @@
 
             <ion-item *ngFor="let handler of handlers" [ngClass]="['core-settings-handler', handler.class]"
                 (click)="openHandler(handler.page, handler.params)" [title]="handler.title | translate" detail
-                [class.core-split-item-selected]="handler.page == selectedPage">
+                [class.core-selected-item]="handler.page == selectedPage">
                 <ion-icon [name]="handler.icon" slot="start" *ngIf="handler.icon">
                 </ion-icon>
                 <ion-label>

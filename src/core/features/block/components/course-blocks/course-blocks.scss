@@ -1,4 +1,6 @@
 :host {
+    --side-blocks-box-shadow: var(--core-menu-box-shadow-start);
+
     &.core-no-blocks .core-course-blocks-content {
         height: auto;
     }
@@ -20,7 +22,7 @@
             div.core-course-blocks-side {
                 max-width: var(--side-blocks-max-width);
                 min-width: var(--side-blocks-min-width);
-                box-shadow: -4px 0px 16px rgba(0, 0, 0, 0.18);
+                box-shadow: var(--side-blocks-box-shadow);
                 z-index: 2;
                 // @todo @include core-split-area-end();
             }
@@ -53,7 +55,7 @@
 :host-context([dir="rtl"]).core-has-blocks {
     @media (min-width: 768px) {
         div.core-course-blocks-side {
-            box-shadow: 4px 0px 16px rgba(0, 0, 0, 0.18);
+            box-shadow: var(--side-blocks-box-shadow);
         }
     }
 }

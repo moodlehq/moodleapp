@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Optional } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IonRefresher } from '@ionic/angular';
 import { CoreEvents } from '@singletons/events';
@@ -23,7 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData, CoreEnrolledCourseData } from '@features/courses/services/courses';
-// @todo import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor.ts';
 import {
     AddonCalendarProvider,
@@ -91,6 +91,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
 
     constructor(
         protected fb: FormBuilder,
+        @Optional() protected svComponent: CoreSplitViewComponent,
     ) {
 
         this.currentSite = CoreSites.instance.getCurrentSite()!;
@@ -569,14 +570,15 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             }
         }
 
-        /* if (this.svComponent && this.svComponent.isOn()) {
+        if (this.svComponent?.isOn()) {
             // Empty form.
             this.hasOffline = false;
             this.form.reset(this.originalData);
             this.originalData = CoreUtils.instance.clone(this.form.value);
-        } else {*/
-        this.originalData = undefined; // Avoid asking for confirmation.
-        CoreNavigator.instance.back();
+        } else {
+            this.originalData = undefined; // Avoid asking for confirmation.
+            CoreNavigator.instance.back();
+        }
     }
 
     /**

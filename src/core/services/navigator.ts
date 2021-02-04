@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Params, Router as RouterService } from '@angular/router';
 
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
@@ -27,6 +27,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
+import { CoreScreen } from './screen';
+import { filter } from 'rxjs/operators';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
 
@@ -55,6 +57,17 @@ export class CoreNavigatorService {
 
     protected storedParams: Record<number, unknown> = {};
     protected lastParamId = 0;
+    protected currentPath?: string;
+    protected previousPath?: string;
+
+    // @todo Param router is an optional param to let the mocking work.
+    constructor(router?: RouterService) {
+        router?.events.pipe(filter(event => event instanceof NavigationStart)).subscribe((routerEvent: NavigationStart) => {
+            // Using NavigationStart instead of NavigationEnd so it can be check on ngOnInit.
+            this.previousPath = this.currentPath;
+            this.currentPath = routerEvent.url;
+        });
+    }
 
     /**
      * Check whether the active route is using the given path.
@@ -76,6 +89,21 @@ export class CoreNavigatorService {
         const matches = /^\/main\/([^/]+).*$/.exec(currentPath);
 
         return matches?.[1] ?? null;
+    }
+
+    /**
+     * Returns if a section is loaded on the split view (tablet mode).
+     *
+     * @param path Path, can be a glob pattern.
+     * @return Whether the active route is using the given path.
+     */
+    isCurrentPathInTablet(path: string): boolean {
+        if (CoreScreen.instance.isMobile) {
+            // Split view is off.
+            return false;
+        }
+
+        return this.isCurrent(path);
     }
 
     /**
@@ -195,6 +223,17 @@ export class CoreNavigatorService {
     }
 
     /**
+     * Get the previous navigation route path.
+     *
+     * @return Previous path.
+     */
+    getPreviousPath(): string {
+        // @todo: Remove this method and the used attributes.
+        // This is a quick workarround to avoid loops. Ie, in messages we can navigate to user profile and there to messages.
+        return CoreUrlUtils.instance.removeUrlParams(this.previousPath || '');
+    }
+
+    /**
      * Get a parameter for the current route.
      * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
      * unless there's a new navigation to the page.
@@ -202,9 +241,19 @@ export class CoreNavigatorService {
      * @param name Name of the parameter.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteParam<T = unknown>(name: string): T | undefined {
-        const route = this.getCurrentRoute();
-        const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+    getRouteParam<T = unknown>(name: string, params?: Params): T | undefined {
+        let value: any;
+
+        if (!params) {
+            const route = this.getCurrentRoute();
+            if (!route.snapshot) {
+                return;
+            }
+
+            value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+        } else {
+            value = params[name];
+        }
 
         const storedParam = this.storedParams[value];
         // Remove the parameter from our map if it's in there.
@@ -220,8 +269,8 @@ export class CoreNavigatorService {
      * @param name Name of the parameter.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteNumberParam(name: string): number | undefined {
-        const value = this.getRouteParam<string>(name);
+    getRouteNumberParam(name: string, params?: Params): number | undefined {
+        const value = this.getRouteParam<string>(name, params);
 
         return value !== undefined ? Number(value) : value;
     }
@@ -233,8 +282,8 @@ export class CoreNavigatorService {
      * @param name Name of the parameter.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteBooleanParam(name: string): boolean | undefined {
-        const value = this.getRouteParam<string>(name);
+    getRouteBooleanParam(name: string, params?: Params): boolean | undefined {
+        const value = this.getRouteParam<string>(name, params);
 
         return value !== undefined ? Boolean(value) : value;
     }

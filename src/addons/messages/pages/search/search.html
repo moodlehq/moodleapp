@@ -1,0 +1,80 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'addon.messages.searchcombined' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <!-- Add an empty context menu so discussion page can add items in split view,
+                otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [disabled]="disableSearch" autocorrect="off"
+            [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1"  searchArea="AddonMessagesSearch"></core-search-box>
+
+        <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">
+            <ion-list *ngIf="displayResults">
+                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: contacts}"></ng-container>
+                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: nonContacts}"></ng-container>
+                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: messages}"></ng-container>
+                <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
+                <core-infinite-loading [enabled]="messages.canLoadMore" (action)="search(query, 'messages', $event)"
+                    [error]="messages.loadMoreError"></core-infinite-loading>
+            </ion-list>
+
+            <core-empty-box
+                *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
+                icon="fas-search" [message]="'core.noresults' | translate">
+            </core-empty-box>
+        </core-loading>
+    </core-split-view>
+</ion-content>
+
+<!-- Template to render a list of results -->
+<ng-template #resultsTemplate let-item="item">
+    <ng-container *ngIf="item.results.length > 0">
+        <ion-item-divider class="ion-text-wrap">
+            <ion-label>{{ item.titleString | translate }}</ion-label>
+        </ion-item-divider>
+
+        <!-- List of results -->
+        <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [title]="result.fullname"
+            (click)="openConversation(result)" [class.core-selected-item]="result == selectedResult" detail>
+            <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
+            <ion-label>
+                <h2>
+                    <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false"></core-format-text>
+                    <ion-icon name="fa-ban" *ngIf="result.isblocked" [title]="'addon.messages.contactblocked' | translate">
+                    </ion-icon>
+                </h2>
+                <ion-note *ngIf="result.lastmessagedate > 0">
+                    {{result.lastmessagedate | coreDateDayOrTime}}
+                </ion-note>
+                <p class="addon-message-last-message">
+                    <span *ngIf="result.sentfromcurrentuser" class="addon-message-last-message-user">
+                        {{ 'addon.messages.you' | translate }}
+                    </span>
+                    <core-format-text clean="true" singleLine="true" [text]="result.lastmessage"
+                        [highlight]="result.highlightMessage" contextLevel="system" [contextInstanceId]="0"
+                        class="addon-message-last-message-text"></core-format-text>
+                </p>
+            </ion-label>
+        </ion-item>
+
+        <!-- Load more button for contacts and non-contacts -->
+        <ng-container *ngIf="item.type != 'messages'">
+            <div class="ion-padding-horizontal" *ngIf="item.canLoadMore && !item.loadingMore">
+                <ion-button expand="block" color="light" (click)="search(query, item.type)">
+                    {{ 'core.loadmore' | translate }}
+                </ion-button>
+            </div>
+            <div *ngIf="item.loadingMore" class="ion-padding ion-text-center">
+                <ion-spinner></ion-spinner>
+            </div>
+        </ng-container>
+    </ng-container>
+</ng-template>

@@ -5,6 +5,33 @@
         border-radius: 50%;
         width: var(--core-avatar-size);
         height: var(--core-avatar-size);
+        max-width: var(--core-avatar-size);
+        max-height: var(--core-avatar-size);
+    }
+    img[core-external-content]:not([src]),
+    img[core-external-content][src=""] {
+        visibility: visible;
+        display: inline-block;
+        position: relative;
+        &:after {
+            border-radius: 50%;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/assets/img/user-avatar.png');
+            background-size: contain;
+            content: "";
+        }
+    }
+    &.core-bar-button-image img {
+        padding: 0;
+        width: var(--core-toolbar-button-image-width);
+        height: var(--core-toolbar-button-image-width);
+        max-width: var(--core-toolbar-button-image-width);
+        border-radius: 50%;
     }
 
     .contact-status {

@@ -13,9 +13,20 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+
+export const AddonCalendarEditRoute: Route = {
+    path: 'edit',
+    loadChildren: () =>
+        import('@/addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
+};
+
+export const AddonCalendarEventRoute: Route ={
+    path: 'event',
+    loadChildren: () => import('@/addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
+};
 
 function buildRoutes(injector: Injector): Routes {
     return [
@@ -37,16 +48,8 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () =>
                 import('@/addons/calendar/pages/day/day.module').then(m => m.AddonCalendarDayPageModule),
         },
-        {
-            path: 'event',
-            loadChildren: () =>
-                import('@/addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
-        },
-        {
-            path: 'edit',
-            loadChildren: () =>
-                import('@/addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
-        },
+        AddonCalendarEventRoute,
+        AddonCalendarEditRoute,
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
             pathMatch: 'full',

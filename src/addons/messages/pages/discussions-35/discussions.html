@@ -1,0 +1,82 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'addon.messages.messages' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <!-- Add an empty context menu so discussion page can add items in split view,
+                otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+
+        <core-search-box *ngIf="search.enabled" (onSubmit)="searchMessage($event)" (onClear)="clearSearch()"
+            [placeholder]=" 'addon.messages.message' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
+            [disabled]="!loaded" searchArea="AddonMessagesDiscussions"></core-search-box>
+
+        <core-loading [hideUntil]="loaded" [message]="loadingMessage">
+
+            <ion-list   class="ion-no-margin">
+
+                <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()"
+                    [attr.aria-label]="'addon.messages.contacts' | translate" detail>
+                    <ion-icon name="fas-address-book" slot="start"></ion-icon>
+                    <ion-label><h2>{{ 'addon.messages.contacts' | translate }}</h2></ion-label>
+                </ion-item>
+
+                <ng-container *ngIf="search.showResults">
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'core.searchresults' | translate }}</h2>
+                        </ion-label>
+                        <ion-note slot="end" class="ion-padding-end"><ion-badge>{{ search.results.length }}</ion-badge></ion-note>
+                    </ion-item-divider>
+                    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let result of search.results" [title]="result.fullname"
+                        (click)="gotoDiscussion(result.userid, result.messageid)"
+                        [class.core-selected-item]="result.userid == discussionUserId">
+                        <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
+                        <ion-label>
+                                <h2>{{ result.fullname }}</h2>
+                            <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage" contextLevel="system"
+                                [contextInstanceId]="0"></core-format-text></p>
+                        </ion-label>
+                    </ion-item>
+                </ng-container>
+                <ng-container *ngIf="!search.showResults">
+                    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions"
+                        [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
+                        [class.core-selected-item]="discussion.message!.user == discussionUserId">
+                        <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
+                        <ion-label>
+                            <h2>{{ discussion.fullname }}</h2>
+                            <ion-note *ngIf="discussion.message!.timecreated > 0 || discussion.unread">
+                                <span *ngIf="discussion.unread" class="core-primary-circle"></span>
+                                <span *ngIf="discussion.message!.timecreated > 0">
+                                    {{discussion.message!.timecreated / 1000 | coreDateDayOrTime}}
+                                </span>
+                            </ion-note>
+                            <p>
+                                <core-format-text clean="true" singleLine="true" [text]="discussion.message!.message"
+                                    contextLevel="system" [contextInstanceId]="0">
+                                </core-format-text>
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                </ng-container>
+            </ion-list>
+
+            <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="far-comments"
+                [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
+
+            <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="search"
+                [message]="'core.noresults' | translate"></core-empty-box>
+        </core-loading>
+    </core-split-view>
+</ion-content>
