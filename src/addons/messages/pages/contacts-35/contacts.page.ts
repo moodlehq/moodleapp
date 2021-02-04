@@ -17,7 +17,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import {
     AddonMessagesProvider,
-    AddonMessagesGetContactsResult,
+    AddonMessagesGetContactsWSResponse,
     AddonMessagesSearchContactsContact,
     AddonMessagesGetContactsContact,
     AddonMessages,
@@ -268,6 +268,6 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 /**
  * Contacts with some calculated data.
  */
-export type AddonMessagesGetContactsFormatted = AddonMessagesGetContactsResult & {
+export type AddonMessagesGetContactsFormatted = AddonMessagesGetContactsWSResponse & {
     search?: AddonMessagesSearchContactsContact[]; // Calculated in the app. Result of searching users.
 };

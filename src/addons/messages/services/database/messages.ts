@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
-import { AddonMessagesConversation } from '../messages';
 
 /**
  * Database variables for AddonMessagesOffline service.
@@ -87,11 +86,6 @@ export type AddonMessagesOfflineMessagesDBRecord = {
     deviceoffline: number; // If message was stored because device was offline.
 };
 
-export type AddonMessagesOfflineMessagesDBRecordFormatted = AddonMessagesOfflineMessagesDBRecord & {
-    pending?: boolean; // Will be likely true.
-    text?: string; // Copy of smallmessage.
-};
-
 export type  AddonMessagesOfflineConversationMessagesDBRecord = {
     conversationid: number;
     text: string;
@@ -99,13 +93,3 @@ export type  AddonMessagesOfflineConversationMessagesDBRecord = {
     deviceoffline: number; // If message was stored because device was offline.
     conversation: string; // Data about the conversation.
 };
-
-export type AddonMessagesOfflineConversationMessagesDBRecordFormatted =
-    Omit<AddonMessagesOfflineConversationMessagesDBRecord, 'conversation'> &
-    {
-        conversation?: AddonMessagesConversation; // Data about the conversation.
-        pending: boolean; // Will be always true.
-        useridfrom?: number; // User Id who send the message, will be likely us.
-    };
-
-

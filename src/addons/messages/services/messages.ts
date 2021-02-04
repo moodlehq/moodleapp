@@ -17,7 +17,12 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from '@services/sites';
 import { CoreApp } from '@services/app';
 import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
-import { AddonMessagesOffline } from './messages-offline';
+import {
+    AddonMessagesOffline,
+    AddonMessagesOfflineAnyMessagesFormatted,
+    AddonMessagesOfflineConversationMessagesDBRecordFormatted,
+    AddonMessagesOfflineMessagesDBRecordFormatted,
+} from './messages-offline';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreEvents } from '@singletons/events';
@@ -25,10 +30,6 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import {
-    AddonMessagesOfflineConversationMessagesDBRecordFormatted,
-    AddonMessagesOfflineMessagesDBRecordFormatted,
-} from './database/messages';
 import { AddonMessagesMainMenuHandlerService } from './handlers/mainmenu';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
@@ -554,7 +555,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the WS data.
      * @deprecatedonmoodle since Moodle 3.6
      */
-    async getAllContacts(siteId?: string): Promise<AddonMessagesGetContactsResult> {
+    async getAllContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         const contacts = await this.getContacts(siteId);
@@ -580,7 +581,7 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the WS data.
      */
-    async getBlockedContacts(siteId?: string): Promise<AddonMessagesGetBlockedUsersResult> {
+    async getBlockedContacts(siteId?: string): Promise<AddonMessagesGetBlockedUsersWSResponse> {
         const site = await CoreSites.instance.getSite(siteId);
 
         const userId = site.getUserId();
@@ -606,7 +607,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the WS data.
      * @deprecatedonmoodle since Moodle 3.6
      */
-    async getContacts(siteId?: string): Promise<AddonMessagesGetContactsResult> {
+    async getContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
         const site = await CoreSites.instance.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
@@ -614,10 +615,10 @@ export class AddonMessagesProvider {
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
         };
 
-        const contacts = await site.read<AddonMessagesGetContactsResult>('core_message_get_contacts', undefined, preSets);
+        const contacts = await site.read<AddonMessagesGetContactsWSResponse>('core_message_get_contacts', undefined, preSets);
 
         // Filter contacts with negative ID, they are notifications.
-        const validContacts: AddonMessagesGetContactsResult = {
+        const validContacts: AddonMessagesGetContactsWSResponse = {
             online: [],
             offline: [],
             strangers: [],
@@ -809,7 +810,11 @@ export class AddonMessagesProvider {
             newestmessagesfirst: newestFirst,
         };
 
-        const conversation = await site.read<AddonMessagesConversationFormatted>('core_message_get_conversation', params, preSets);
+        const conversation = await site.read<AddonMessagesGetConversationWSResponse>(
+            'core_message_get_conversation',
+            params,
+            preSets,
+        );
 
         return this.formatConversation(conversation, userId);
     }
@@ -2467,10 +2472,10 @@ export class AddonMessagesProvider {
         toUserId: number,
         message: string,
         siteId?: string,
-    ): Promise<{ sent: boolean; message: AddonMessagesSendInstantMessagesMessage }> {
+    ): Promise<AddonMessagesSendMessageResults> {
 
         // Convenience function to store a message to be synchronized later.
-        const storeOffline = async (): Promise<{ sent: boolean; message: AddonMessagesSendInstantMessagesMessage }> => {
+        const storeOffline = async (): Promise<AddonMessagesSendMessageResults> => {
             const entry = await AddonMessagesOffline.instance.saveMessage(toUserId, message, siteId);
 
             return {
@@ -2599,13 +2604,13 @@ export class AddonMessagesProvider {
         conversation: AddonMessagesConversation,
         message: string,
         siteId?: string,
-    ): Promise<{ sent: boolean; message: AddonMessagesSendMessagesToConversationMessage }> {
+    ): Promise<AddonMessagesSendMessageResults> {
 
         const site = await CoreSites.instance.getSite(siteId);
         siteId = site.getId();
 
         // Convenience function to store a message to be synchronized later.
-        const storeOffline = async(): Promise<{ sent: boolean; message: AddonMessagesSendMessagesToConversationMessage }> => {
+        const storeOffline = async(): Promise<AddonMessagesSendMessageResults> => {
             const entry = await AddonMessagesOffline.instance.saveConversationMessage(conversation, message, siteId);
 
             return {
@@ -2789,21 +2794,17 @@ export class AddonMessagesProvider {
      * @param messages Array of messages containing the key 'timecreated'.
      * @return Messages sorted with most recent last.
      */
-    sortMessages(
-        messages: AddonMessagesConversationMessageFormatted[],
-    ): AddonMessagesConversationMessageFormatted[];
+    sortMessages(messages: AddonMessagesConversationMessageFormatted[]): AddonMessagesConversationMessageFormatted[];
     sortMessages(
         messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[],
     ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[];
-    sortMessages(
-        messages: (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[],
-    ): (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[];
+    sortMessages(messages: AddonMessagesOfflineAnyMessagesFormatted[]): AddonMessagesOfflineAnyMessagesFormatted[];
     sortMessages(
         messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] |
-        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[] |
+        AddonMessagesOfflineAnyMessagesFormatted[] |
         AddonMessagesConversationMessageFormatted[],
     ): (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[] |
-        (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[] |
+        AddonMessagesOfflineAnyMessagesFormatted[] |
         AddonMessagesConversationMessageFormatted[] {
         return messages.sort((a, b) => {
             // Pending messages last.
@@ -2831,7 +2832,7 @@ export class AddonMessagesProvider {
      *
      * @param contactTypes List of contacts grouped in types.
      */
-    protected storeUsersFromAllContacts(contactTypes: AddonMessagesGetContactsResult): void {
+    protected storeUsersFromAllContacts(contactTypes: AddonMessagesGetContactsWSResponse): void {
         for (const x in contactTypes) {
             CoreUser.instance.storeUsers(contactTypes[x]);
         }
@@ -2946,6 +2947,11 @@ type AddonMessagesGetConversationWSParams = {
 };
 
 /**
+ * Data returned by core_message_get_conversation WS.
+ */
+type AddonMessagesGetConversationWSResponse = AddonMessagesConversation;
+
+/**
  * Params of core_message_get_self_conversation WS.
  */
 type AddonMessagesGetSelfConversationWSParams = {
@@ -2954,7 +2960,6 @@ type AddonMessagesGetSelfConversationWSParams = {
     messageoffset?: number; // Offset for messages list.
     newestmessagesfirst?: boolean; // Order messages by newest first.
 };
-
 
 /**
  * Conversation with some calculated data.
@@ -3172,7 +3177,7 @@ type AddonMessagesGetBlockedUsersWSParams = {
 /**
  * Result of WS core_message_get_blocked_users.
  */
-export type AddonMessagesGetBlockedUsersResult = {
+export type AddonMessagesGetBlockedUsersWSResponse = {
     users: AddonMessagesBlockedUser[]; // List of blocked users.
     warnings?: CoreWSExternalWarning[];
 };
@@ -3189,7 +3194,7 @@ export type AddonMessagesBlockedUser = {
 /**
  * Result of WS core_message_get_contacts.
  */
-export type AddonMessagesGetContactsResult = {
+export type AddonMessagesGetContactsWSResponse = {
     online: AddonMessagesGetContactsContact[]; // List of online contacts.
     offline: AddonMessagesGetContactsContact[]; // List of offline contacts.
     strangers: AddonMessagesGetContactsContact[]; // List of users that are not in the user's contact list but have sent a message.
@@ -3414,6 +3419,14 @@ export type AddonMessagesSendMessagesToConversationMessage = {
     useridfrom: number; // The id of the user who sent the message.
     text: string; // The text of the message.
     timecreated: number; // The timecreated timestamp for the message.
+};
+
+/**
+ * Result for Send Messages functions trying online or storing in offline.
+ */
+export type AddonMessagesSendMessageResults = {
+    sent: boolean;
+    message: AddonMessagesSendMessagesToConversationMessage | AddonMessagesSendInstantMessagesMessage;
 };
 
 /**

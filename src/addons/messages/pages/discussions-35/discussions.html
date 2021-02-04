@@ -51,8 +51,8 @@
                 </ng-container>
                 <ng-container *ngIf="!search.showResults">
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions"
-                    [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
-                    [class.core-selected-item]="discussion.message!.user == discussionUserId">
+                        [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
+                        [class.core-selected-item]="discussion.message!.user == discussionUserId">
                         <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
                         <ion-label>
                             <h2>{{ discussion.fullname }}</h2>
@@ -73,10 +73,10 @@
             </ion-list>
 
             <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="far-comments"
-            [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
+                [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
 
             <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="search"
-            [message]="'core.noresults' | translate"></core-empty-box>
+                [message]="'core.noresults' | translate"></core-empty-box>
         </core-loading>
     </core-split-view>
 </ion-content>

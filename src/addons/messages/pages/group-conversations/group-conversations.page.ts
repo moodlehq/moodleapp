@@ -28,7 +28,10 @@ import {
     AddonMessagesNewMessagedEventData,
     AddonMessagesOpenConversationEventData,
 } from '../../services/messages';
-import { AddonMessagesOffline } from '../../services/messages-offline';
+import {
+    AddonMessagesOffline,
+    AddonMessagesOfflineAnyMessagesFormatted,
+} from '../../services/messages-offline';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
@@ -38,10 +41,6 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { ActivatedRoute, Params } from '@angular/router';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
-import {
-    AddonMessagesOfflineConversationMessagesDBRecordFormatted,
-    AddonMessagesOfflineMessagesDBRecordFormatted,
-} from '@addons/messages/services/database/messages';
 import { AddonMessagesSettingsHandlerService } from '@addons/messages/services/handlers/settings';
 import { CoreScreen } from '@services/screen';
 
@@ -402,12 +401,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         const limitFrom = loadingMore ? option.conversations.length : 0;
         const promises: Promise<unknown>[] = [];
 
-        let data: { conversations: AddonMessagesConversationForList[]; canLoadMore: boolean } = {
-            conversations: [],
+        let data = {
+            conversations: <AddonMessagesConversationForList[]> [],
             canLoadMore: false,
         };
         let offlineMessages:
-        (AddonMessagesOfflineConversationMessagesDBRecordFormatted | AddonMessagesOfflineMessagesDBRecordFormatted)[] = [];
+        AddonMessagesOfflineAnyMessagesFormatted[] = [];
 
         // Get the conversations and, if needed, the offline messages. Always try to get the latest data.
         promises.push(AddonMessages.instance.invalidateConversations(this.siteId).then(async () => {
@@ -574,7 +573,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     protected async loadOfflineMessages(
         option: AddonMessagesGroupConversationOption,
-        messages: (AddonMessagesOfflineConversationMessagesDBRecordFormatted | AddonMessagesOfflineMessagesDBRecordFormatted)[],
+        messages: AddonMessagesOfflineAnyMessagesFormatted[],
     ): Promise<void> {
         const promises: Promise<void>[] = [];
 
@@ -605,7 +604,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                         userid: 0, // Faked data.
                         name: message.conversation?.name,
                         imageurl: message.conversation?.imageurl || '',
-                    }; message.conversation || {};
+                    };
 
                     if (this.getConversationOption(conversation) == option) {
                         // Message belongs to current option, add the conversation.
@@ -674,7 +673,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     protected addLastOfflineMessage(
         conversation: AddonMessagesConversationForList,
-        message: AddonMessagesOfflineConversationMessagesDBRecordFormatted | AddonMessagesOfflineMessagesDBRecordFormatted,
+        message: AddonMessagesOfflineAnyMessagesFormatted,
     ): void {
         conversation.lastmessage = message.text;
         conversation.lastmessagedate = message.timecreated / 1000;

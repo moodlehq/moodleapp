@@ -14,7 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { AddonMessagesOffline } from './messages-offline';
+import {
+    AddonMessagesOffline, AddonMessagesOfflineAnyMessagesFormatted,
+} from './messages-offline';
 import {
     AddonMessagesProvider,
     AddonMessages,
@@ -28,10 +30,6 @@ import { CoreApp } from '@services/app';
 import { CoreConstants } from '@/core/constants';
 import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
-import {
-    AddonMessagesOfflineConversationMessagesDBRecordFormatted,
-    AddonMessagesOfflineMessagesDBRecordFormatted,
-} from './database/messages';
 import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreSiteWSPreSets } from '@classes/site';
 
@@ -177,7 +175,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         };
 
         const groupMessagingEnabled = AddonMessages.instance.isGroupMessagingEnabled();
-        let messages: (AddonMessagesOfflineMessagesDBRecordFormatted | AddonMessagesOfflineConversationMessagesDBRecordFormatted)[];
+        let messages: AddonMessagesOfflineAnyMessagesFormatted[];
         const errors: (string | CoreError | CoreTextErrorObject)[] = [];
 
         if (conversationId) {

@@ -24,15 +24,14 @@ import {
     AddonMessagesGetMessagesMessage,
     AddonMessages,
     AddonMessagesMemberInfoChangedEventData,
-    AddonMessagesSendInstantMessagesMessage,
-    AddonMessagesSendMessagesToConversationMessage,
     AddonMessagesReadChangedEventData,
     AddonMessagesNewMessagedEventData,
     AddonMessagesUpdateConversationListEventData,
     AddonMessagesConversationMessageFormatted,
     AddonMessagesOpenConversationEventData,
+    AddonMessagesSendMessageResults,
 } from '../../services/messages';
-import { AddonMessagesOffline } from '../../services/messages-offline';
+import { AddonMessagesOffline, AddonMessagesOfflineMessagesDBRecordFormatted } from '../../services/messages-offline';
 import { AddonMessagesSync, AddonMessagesSyncEvents, AddonMessagesSyncProvider } from '../../services/messages-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -49,9 +48,6 @@ import { ModalController, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
-import {
-    AddonMessagesOfflineMessagesDBRecordFormatted,
-} from '@addons/messages/services/database/messages';
 import { AddonMessagesConversationInfoComponent } from '../../components/conversation-info/conversation-info';
 
 /**
@@ -1187,10 +1183,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         } finally {
 
             try {
-                let data: {
-                    sent: boolean;
-                    message: AddonMessagesSendMessagesToConversationMessage | AddonMessagesSendInstantMessagesMessage;
-                };
+                let data: AddonMessagesSendMessageResults;
                 if (this.conversationId) {
                     data = await AddonMessages.instance.sendMessageToConversation(this.conversation!, text);
                 } else {

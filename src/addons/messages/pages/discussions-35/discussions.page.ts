@@ -57,16 +57,10 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     discussions: AddonMessagesDiscussion[] = [];
     discussionUserId?: number;
 
-    search: {
-        enabled: boolean;
-        showResults: boolean;
-        results: AddonMessagesMessageAreaContact[];
-        loading: string;
-        text: string;
-    } = {
+    search = {
         enabled: false,
         showResults: false,
-        results: [],
+        results: <AddonMessagesMessageAreaContact[]> [],
         loading: '',
         text: '',
     };
