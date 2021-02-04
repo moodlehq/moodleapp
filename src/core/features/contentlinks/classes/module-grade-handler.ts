@@ -16,8 +16,7 @@ import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreCourseHelper } from '@features/course/services/helper';
-import { Params } from '@angular/router';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Handler to handle URLs pointing to the grade of a module.
@@ -64,21 +63,26 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
     getActions(
         siteIds: string[],
         url: string,
-        params: Params,
+        params: Record<string, string>,
         courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
-        courseId = courseId || params.courseid || params.cid;
+        courseId = Number(courseId || params.courseid || params.cid);
 
         return [{
             action: async (siteId): Promise<void> => {
                 // Check if userid is the site's current user.
                 const modal = await CoreDomUtils.instance.showModalLoading();
                 const site = await CoreSites.instance.getSite(siteId);
-                if (!params.userid || params.userid == site.getUserId()) {
+                if (!params.userid || Number(params.userid) == site.getUserId()) {
                     // No user specified or current user. Navigate to module.
-                    // @todo CoreCourseHelper.instance.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
-                    //        this.useModNameToGetModule ? this.modName : undefined, undefined, navCtrl);
+                    CoreCourseHelper.instance.navigateToModule(
+                        Number(params.id),
+                        siteId,
+                        courseId,
+                        undefined,
+                        this.useModNameToGetModule ? this.modName : undefined,
+                    );
                 } else if (this.canReview) {
                     // Use the goToReview function.
                     this.goToReview(url, params, courseId!, siteId);
@@ -103,7 +107,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
      */
     protected async goToReview(
         url: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        params: Params, // eslint-disable-line @typescript-eslint/no-unused-vars
+        params: Record<string, string>, // eslint-disable-line @typescript-eslint/no-unused-vars
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         siteId: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<void> {

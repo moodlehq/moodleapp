@@ -64,6 +64,9 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreSiteHome } from '@features/sitehome/services/sitehome';
+import { CoreNavigator } from '@services/navigator';
+import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
 
 /**
  * Prefetch info of a module.
@@ -1392,8 +1395,35 @@ export class CoreCourseHelperProvider {
      * @param modParams Params to pass to the module
      * @return Promise resolved when done.
      */
-    navigateToModuleByInstance(): void {
-        // @todo params and logic
+    async navigateToModuleByInstance(
+        instanceId: number,
+        modName: string,
+        siteId?: string,
+        courseId?: number,
+        sectionId?: number,
+        useModNameToGetModule: boolean = false,
+        modParams?: Params,
+    ): Promise<void> {
+
+        const modal = await CoreDomUtils.instance.showModalLoading();
+
+        try {
+            const module = await CoreCourse.instance.getModuleBasicInfoByInstance(instanceId, modName, siteId);
+
+            this.navigateToModule(
+                module.id,
+                siteId,
+                module.course,
+                sectionId,
+                useModNameToGetModule ? modName : undefined,
+                modParams,
+            );
+        } catch (error) {
+            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+        } finally {
+            // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
+            modal.dismiss();
+        }
     }
 
     /**
@@ -1408,8 +1438,82 @@ export class CoreCourseHelperProvider {
      * @param modParams Params to pass to the module
      * @return Promise resolved when done.
      */
-    navigateToModule(): void {
-        // @todo params and logic
+    async navigateToModule(
+        moduleId: number,
+        siteId?: string,
+        courseId?: number,
+        sectionId?: number,
+        modName?: string,
+        modParams?: Params,
+    ): Promise<void> {
+        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+
+        const modal = await CoreDomUtils.instance.showModalLoading();
+
+        try {
+            if (!courseId) {
+                // We don't have courseId.
+                const module = await CoreCourse.instance.getModuleBasicInfo(moduleId, siteId);
+
+                courseId = module.course;
+                sectionId = module.section;
+            } else if (!sectionId) {
+                // We don't have sectionId but we have courseId.
+                sectionId = await CoreCourse.instance.getModuleSectionId(moduleId, siteId);
+            }
+
+            // Get the site.
+            const site = await CoreSites.instance.getSite(siteId);
+
+            // Get the module.
+            const module = <CoreCourseModule>
+                await CoreCourse.instance.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
+
+            if (CoreSites.instance.getCurrentSiteId() == site.getId()) {
+                // Try to use the module's handler to navigate cleanly.
+                module.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
+                    module.modname,
+                    module,
+                    courseId,
+                    sectionId,
+                    false,
+                );
+
+                if (module.handlerData?.action) {
+                    modal.dismiss();
+
+                    return module.handlerData.action(new Event('click'), module, courseId, { params: modParams });
+                }
+            }
+
+            this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
+
+            const params = {
+                course: { id: courseId },
+                module: module,
+                sectionId: sectionId,
+                modParams: modParams,
+            };
+
+            if (courseId == site.getSiteHomeId()) {
+                // Check if site home is available.
+                const isAvailable = await CoreSiteHome.instance.isAvailable();
+
+                if (isAvailable) {
+                    await CoreNavigator.instance.navigateToSitePath(CoreSiteHomeHomeHandlerService.PAGE_NAME, { params, siteId });
+
+                    return;
+                }
+            }
+
+            modal.dismiss();
+
+            await this.getAndOpenCourse(courseId, params, siteId);
+        } catch (error) {
+            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+        } finally {
+            modal.dismiss();
+        }
     }
 
     /**
@@ -1744,9 +1848,7 @@ export class CoreCourseHelperProvider {
             params = params || {};
             Object.assign(params, { course: course });
 
-            // @todo implement open course.
-            // await CoreNavigator.instance.navigateToSitePath('/course/.../...', { siteId, queryParams: params });
-            // return CoreNavigator.instance.openInSiteMainMenu(CoreNavigatorService.OPEN_COURSE, params, siteId);
+            await CoreNavigator.instance.navigateToSitePath('course', { siteId, params });
         }
     }
 

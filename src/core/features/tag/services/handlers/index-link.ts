@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -42,7 +42,7 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
     getActions(
         siteIds: string[],
         url: string,
-        params: Params,
+        params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId): void => {
@@ -77,7 +77,7 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @return Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string): boolean | Promise<boolean> {
+    async isEnabled(siteId: string): Promise<boolean> {
         return CoreTag.instance.areTagsAvailable(siteId);
     }
 

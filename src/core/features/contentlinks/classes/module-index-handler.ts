@@ -15,6 +15,7 @@
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { Params } from '@angular/router';
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Handler to handle URLs pointing to the index of a module.
@@ -59,8 +60,8 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getPageParams(url: string, params: Params, courseId?: number): Params {
-        return [];
+    getPageParams(url: string, params: Record<string, string>, courseId?: number): Params {
+        return {};
     }
 
     /**
@@ -73,34 +74,45 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @return List of (or promise resolved with list of) actions.
      */
     getActions(
-        siteIds: string[], // eslint-disable-line @typescript-eslint/no-unused-vars
-        url: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        params: Params, // eslint-disable-line @typescript-eslint/no-unused-vars
-        courseId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+        courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        return [];
-        /*
-        courseId = courseId || params.courseid || params.cid;
+
+        courseId = Number(courseId || params.courseid || params.cid);
         const pageParams = this.getPageParams(url, params, courseId);
 
         if (this.instanceIdParam && typeof params[this.instanceIdParam] != 'undefined') {
             const instanceId = parseInt(params[this.instanceIdParam], 10);
 
             return [{
-                action: (siteId): void => {
-                    this.courseHelper.navigateToModuleByInstance(instanceId, this.modName, siteId, courseId, undefined,
-                        this.useModNameToGetModule, pageParams);
+                action: (siteId) => {
+                    CoreCourseHelper.instance.navigateToModuleByInstance(
+                        instanceId,
+                        this.modName,
+                        siteId,
+                        courseId,
+                        undefined,
+                        this.useModNameToGetModule,
+                        pageParams,
+                    );
                 },
             }];
         }
 
         return [{
-            action: (siteId): void => {
-                this.courseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId, undefined,
-                    this.useModNameToGetModule ? this.modName : undefined, pageParams);
+            action: (siteId) => {
+                CoreCourseHelper.instance.navigateToModule(
+                    parseInt(params.id, 10),
+                    siteId,
+                    courseId,
+                    undefined,
+                    this.useModNameToGetModule ? this.modName : undefined,
+                    pageParams,
+                );
             },
         }];
-        */
     }
 
 }

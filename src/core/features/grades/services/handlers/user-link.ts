@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreGrades } from '@features/grades/services/grades';
@@ -42,16 +42,16 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
     getActions(
         siteIds: string[],
         url: string,
-        params: Params,
+        params: Record<string, string>,
         courseId?: number,
         data?: { cmid?: string },
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        courseId = courseId || params.id;
+        courseId = courseId || Number(params.id);
         data = data || {};
 
         return [{
             action: (siteId): void => {
-                const userId = params.userid && parseInt(params.userid, 10);
+                const userId = params.userid ? parseInt(params.userid, 10) : undefined;
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
                 CoreGradesHelper.instance.goToGrades(courseId!, userId, moduleId, siteId);
@@ -69,12 +69,12 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @return Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string, url: string, params: Params, courseId?: number): boolean | Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
         if (!courseId && !params.id) {
             return false;
         }
 
-        return CoreGrades.instance.isPluginEnabledForCourse(courseId || params.id, siteId);
+        return CoreGrades.instance.isPluginEnabledForCourse(courseId || Number(params.id), siteId);
     }
 
 }

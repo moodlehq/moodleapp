@@ -14,16 +14,23 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModLessonComponentsModule } from './components/components.module';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/lesson';
+import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA, SYNC_SITE_SCHEMA } from './services/database/lesson';
+import { AddonModLessonGradeLinkHandler } from './services/handlers/grade-link';
+import { AddonModLessonIndexLinkHandler } from './services/handlers/index-link';
+import { AddonModLessonListLinkHandler } from './services/handlers/list-link';
 import { AddonModLessonModuleHandler, AddonModLessonModuleHandlerService } from './services/handlers/module';
 import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
+import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
+import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 
 const routes: Routes = [
@@ -41,7 +48,7 @@ const routes: Routes = [
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
+            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, SYNC_SITE_SCHEMA],
             multi: true,
         },
         {
@@ -52,6 +59,11 @@ const routes: Routes = [
                 CoreCourseModuleDelegate.instance.registerHandler(AddonModLessonModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModLessonPrefetchHandler.instance);
                 CoreCronDelegate.instance.register(AddonModLessonSyncCronHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonGradeLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonIndexLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonListLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonReportLinkHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModLessonPushClickHandler.instance);
             },
         },
     ],

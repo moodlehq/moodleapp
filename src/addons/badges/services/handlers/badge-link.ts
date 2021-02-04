@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -39,7 +39,7 @@ export class AddonBadgesBadgeLinkHandlerService extends CoreContentLinksHandlerB
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @return List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] {
+    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
 
         return [{
             action: (siteId: string): void => {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -39,7 +39,11 @@ export class CoreTagSearchLinkHandlerService extends CoreContentLinksHandlerBase
      * @param data Extra data to handle the URL.
      * @return List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+    getActions(
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId): void => {
                 const pageParams = {
@@ -59,7 +63,7 @@ export class CoreTagSearchLinkHandlerService extends CoreContentLinksHandlerBase
      * @param siteId The site ID.
      * @return Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string): boolean | Promise<boolean> {
+    async isEnabled(siteId: string): Promise<boolean> {
         return CoreTag.instance.areTagsAvailable(siteId);
     }
 
