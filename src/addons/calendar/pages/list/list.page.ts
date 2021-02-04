@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
-import { PopoverController, IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent, IonRefresher } from '@ionic/angular';
 import {
     AddonCalendarProvider,
     AddonCalendar,
@@ -36,7 +36,7 @@ import { CoreConstants } from '@/core/constants';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Network, NgZone } from '@singletons';
+import { Network, NgZone, PopoverController } from '@singletons';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
@@ -101,9 +101,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
         category: true,
     };
 
-    constructor(
-        private popoverCtrl: PopoverController,
-    ) {
+    constructor() {
 
         this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
         this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
@@ -624,7 +622,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await this.popoverCtrl.create({
+        const popover = await PopoverController.instance.create({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,

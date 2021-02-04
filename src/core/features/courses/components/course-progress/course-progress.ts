@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { PopoverController } from '@ionic/angular';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -21,7 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
-import { Translate } from '@singletons';
+import { PopoverController, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
@@ -61,10 +60,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
     protected siteUpdatedObserver?: CoreEventObserver;
-
-    constructor(
-        protected popoverCtrl: PopoverController,
-    ) { }
 
     /**
      * Component being initialized.
@@ -204,7 +199,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        const popover = await this.popoverCtrl.create({
+        const popover = await PopoverController.instance.create({
             component: CoreCoursesCourseOptionsMenuComponent,
             componentProps: {
                 course: this.course,

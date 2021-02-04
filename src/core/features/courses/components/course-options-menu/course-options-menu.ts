@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { PopoverController } from '@ionic/angular';
 import { CoreCourses } from '../../services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import { PopoverController } from '@singletons';
 
 /**
  * This component is meant to display a popover with the course options.
@@ -32,10 +32,6 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
 
     downloadCourseEnabled = false;
 
-    constructor(
-        protected popoverController: PopoverController,
-    ) { }
-
     /**
      * Component being initialized.
      */
@@ -49,7 +45,7 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
      * @param action Action name to take.
      */
     action(action: string): void {
-        this.popoverController.dismiss(action);
+        PopoverController.instance.dismiss(action);
     }
 
 }

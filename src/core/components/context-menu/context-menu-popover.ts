@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { NavParams, PopoverController } from '@ionic/angular';
+import { NavParams } from '@ionic/angular';
+import { PopoverController } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 
 /**
@@ -32,7 +33,6 @@ export class CoreContextMenuPopoverComponent {
 
     constructor(
         navParams: NavParams,
-        protected popoverCtrl: PopoverController,
     ) {
         this.title = navParams.get('title');
         this.items = navParams.get('items') || [];
@@ -43,7 +43,7 @@ export class CoreContextMenuPopoverComponent {
      * Close the popover.
      */
     closeMenu(item?: CoreContextMenuItemComponent): void {
-        this.popoverCtrl.dismiss(item);
+        PopoverController.instance.dismiss(item);
     }
 
     /**

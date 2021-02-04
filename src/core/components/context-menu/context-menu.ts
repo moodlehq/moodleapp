@@ -15,10 +15,9 @@
 import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
-import { PopoverController } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
+import { PopoverController, Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 
@@ -47,7 +46,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
 
     constructor(
-        protected popoverCtrl: PopoverController,
         elementRef: ElementRef,
     ) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
@@ -179,7 +177,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     async showContextMenu(event: MouseEvent): Promise<void> {
         if (!this.expanded) {
-            const popover = await this.popoverCtrl.create(
+            const popover = await PopoverController.instance.create(
                 {
                     event,
                     component: CoreContextMenuPopoverComponent,
