@@ -38,9 +38,9 @@ export class CoreGradesGradePage implements OnInit {
     gradeLoaded = false;
 
     constructor(route: ActivatedRoute) {
-        this.courseId = route.snapshot.params.courseId ?? route.snapshot.parent?.params.courseId;
-        this.gradeId = route.snapshot.params.gradeId;
-        this.userId = route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId();
+        this.courseId = parseInt(route.snapshot.params.courseId ?? route.snapshot.parent?.params.courseId);
+        this.gradeId = parseInt(route.snapshot.params.gradeId);
+        this.userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId());
     }
 
     /**
