@@ -21,16 +21,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginSiteHelpComponent } from './components/site-help/site-help';
 import { CoreLoginSiteOnboardingComponent } from './components/site-onboarding/site-onboarding';
+import { CoreLoginHasSitesGuard } from './guards/has-sites';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'init',
         pathMatch: 'full',
-    },
-    {
-        path: 'init',
-        loadChildren: () => import('./pages/init/init.module').then( m => m.CoreLoginInitPageModule),
+        redirectTo: 'sites',
     },
     {
         path: 'site',
@@ -43,6 +40,8 @@ const routes: Routes = [
     {
         path: 'sites',
         loadChildren: () => import('./pages/sites/sites.module').then( m => m.CoreLoginSitesPageModule),
+        canLoad: [CoreLoginHasSitesGuard],
+        canActivate: [CoreLoginHasSitesGuard],
     },
     {
         path: 'forgottenpassword',

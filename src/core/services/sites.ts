@@ -51,7 +51,7 @@ import {
 import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
 
-export const CORE_SITE_SCHEMAS = new InjectionToken('CORE_SITE_SCHEMAS');
+export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
 /*
  * Service to manage and interact with sites.
@@ -1576,7 +1576,7 @@ export class CoreSitesProvider {
         }
 
         // Set installed version.
-        await db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version: schema.version });
+        await db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name, version: schema.version });
     }
 
     /**

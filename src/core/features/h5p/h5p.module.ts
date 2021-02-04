@@ -17,13 +17,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreH5PComponentsModule } from './components/components.module';
-import {
-    CONTENT_TABLE_NAME,
-    LIBRARIES_TABLE_NAME,
-    LIBRARY_DEPENDENCIES_TABLE_NAME,
-    CONTENTS_LIBRARIES_TABLE_NAME,
-    LIBRARIES_CACHEDASSETS_TABLE_NAME,
-} from './services/database/h5p';
+import { SITE_SCHEMA } from './services/database/h5p';
 import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
 
 @NgModule({
@@ -33,13 +27,7 @@ import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [
-                CONTENT_TABLE_NAME,
-                LIBRARIES_TABLE_NAME,
-                LIBRARY_DEPENDENCIES_TABLE_NAME,
-                CONTENTS_LIBRARIES_TABLE_NAME,
-                LIBRARIES_CACHEDASSETS_TABLE_NAME,
-            ],
+            useValue: [SITE_SCHEMA],
             multi: true,
         },
         {

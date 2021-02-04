@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { IonRouterOutlet } from '@ionic/angular';
 
-import { CoreLangProvider } from '@services/lang';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLang } from '@services/lang';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 import {
     CoreEvents,
     CoreEventSessionExpiredData,
@@ -23,23 +24,20 @@ import {
     CoreEventSiteData,
     CoreEventSiteUpdatedData,
 } from '@singletons/events';
-import { Network, NgZone, Platform } from '@singletons';
+import { Network, NgZone, Platform, SplashScreen } from '@singletons';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSubscriptions } from '@singletons/subscriptions';
 
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
     styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
 
-    constructor(
-        protected langProvider: CoreLangProvider,
-        protected loginHelper: CoreLoginHelperProvider,
-    ) {
-    }
+    @ViewChild(IonRouterOutlet) outlet?: IonRouterOutlet;
 
     /**
      * Component being initialized.
@@ -58,7 +56,7 @@ export class AppComponent implements OnInit {
             CoreNavigator.instance.navigate('/login/sites', { reset: true });
 
             // Unload lang custom strings.
-            this.langProvider.clearCustomStrings();
+            CoreLang.instance.clearCustomStrings();
 
             // Remove version classes from body.
             this.removeVersionClass();
@@ -66,20 +64,20 @@ export class AppComponent implements OnInit {
 
         // Listen for session expired events.
         CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data: CoreEventSessionExpiredData) => {
-            this.loginHelper.sessionExpired(data);
+            CoreLoginHelper.instance.sessionExpired(data);
         });
 
         // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
         CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data: CoreEventSiteData) => {
-            this.loginHelper.passwordChangeForced(data.siteId!);
+            CoreLoginHelper.instance.passwordChangeForced(data.siteId!);
         });
         CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data: CoreEventSiteData) => {
-            this.loginHelper.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
+            CoreLoginHelper.instance.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
         });
 
         // Listen for sitepolicynotagreed event to accept the site policy.
         CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data: CoreEventSiteData) => {
-            this.loginHelper.sitePolicyNotAgreed(data.siteId);
+            CoreLoginHelper.instance.sitePolicyNotAgreed(data.siteId);
         });
 
         CoreEvents.on(CoreEvents.LOGIN, async (data: CoreEventSiteData) => {
@@ -120,6 +118,17 @@ export class AppComponent implements OnInit {
     }
 
     /**
+     * @inheritdoc
+     */
+    ngAfterViewInit(): void {
+        if (!this.outlet) {
+            return;
+        }
+
+        CoreSubscriptions.once(this.outlet.activateEvents, () => SplashScreen.instance.hide());
+    }
+
+    /**
      * Async init function on platform ready.
      */
     protected async onPlatformReady(): Promise<void> {
@@ -155,8 +164,9 @@ export class AppComponent implements OnInit {
      */
     protected loadCustomStrings(): void {
         const currentSite = CoreSites.instance.getCurrentSite();
+
         if (currentSite) {
-            this.langProvider.loadCustomStringsFromSite(currentSite);
+            CoreLang.instance.loadCustomStringsFromSite(currentSite);
         }
     }
 

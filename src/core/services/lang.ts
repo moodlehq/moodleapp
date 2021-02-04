@@ -18,6 +18,7 @@ import { CoreConstants } from '@/core/constants';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
+import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate, Platform } from '@singletons';
 
 import * as moment from 'moment';
@@ -128,44 +129,25 @@ export class CoreLangProvider {
 
         // Change the language, resolving the promise when we receive the first value.
         promises.push(new Promise((resolve, reject) => {
-            const subscription = Translate.instance.use(language).subscribe((data) => {
+            CoreSubscriptions.once(Translate.instance.use(language), data => {
                 // It's a language override, load the original one first.
                 const fallbackLang = Translate.instance.instant('core.parentlanguage');
 
                 if (fallbackLang != '' && fallbackLang != 'core.parentlanguage' && fallbackLang != language) {
-                    const fallbackSubs = Translate.instance.use(fallbackLang).subscribe((fallbackData) => {
-                        data = Object.assign(fallbackData, data);
-                        resolve(data);
+                    CoreSubscriptions.once(
+                        Translate.instance.use(fallbackLang),
+                        fallbackData => {
+                            data = Object.assign(fallbackData, data);
 
-                        // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
-                        setTimeout(() => {
-                            fallbackSubs.unsubscribe();
-                        });
-                    }, () => {
+                            resolve(data);
+                        },
                         // Resolve with the original language.
-                        resolve(data);
-
-                        // Error received, unsubscribe. Use a timeout because we can receive a value immediately.
-                        setTimeout(() => {
-                            fallbackSubs.unsubscribe();
-                        });
-                    });
+                        () => resolve(data),
+                    );
                 } else {
                     resolve(data);
                 }
-
-                // Data received, unsubscribe. Use a timeout because we can receive a value immediately.
-                setTimeout(() => {
-                    subscription.unsubscribe();
-                });
-            }, (error) => {
-                reject(error);
-
-                // Error received, unsubscribe. Use a timeout because we can receive a value immediately.
-                setTimeout(() => {
-                    subscription.unsubscribe();
-                });
-            });
+            }, reject);
         }));
 
         // Change the config.

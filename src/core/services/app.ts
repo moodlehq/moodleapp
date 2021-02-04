@@ -25,6 +25,7 @@ import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Object responsible of managing schema versions.
@@ -58,6 +59,7 @@ export class CoreAppProvider {
     protected keyboardClosing = false;
     protected backActions: {callback: () => boolean; priority: number}[] = [];
     protected forceOffline = false;
+    protected redirect?: CoreRedirectData;
 
     // Variables for DB.
     protected schemaVersionsManager: Promise<SchemaVersionsManager>;
@@ -517,31 +519,49 @@ export class CoreAppProvider {
     }
 
     /**
+     * Read redirect data from local storage and clear it if it existed.
+     */
+    consumeStorageRedirect(): void {
+        if (!localStorage?.getItem) {
+            return;
+        }
+
+        try {
+            // Read data from storage.
+            const jsonData = localStorage.getItem('CoreRedirect');
+
+            if (!jsonData) {
+                return;
+            }
+
+            // Clear storage.
+            localStorage.removeItem('CoreRedirect');
+
+            // Remember redirect data.
+            const data: CoreRedirectData = JSON.parse(jsonData);
+
+            if (!CoreObject.isEmpty(data)) {
+                this.redirect = data;
+            }
+        } catch (error) {
+            this.logger.error('Error loading redirect data:', error);
+        }
+    }
+
+    /**
+     * Forget redirect data.
+     */
+    forgetRedirect(): void {
+        delete this.redirect;
+    }
+
+    /**
      * Retrieve redirect data.
      *
      * @return Object with siteid, state, params and timemodified.
      */
-    getRedirect(): CoreRedirectData {
-        if (localStorage?.getItem) {
-            try {
-                const paramsJson = localStorage.getItem('CoreRedirectParams');
-                const data: CoreRedirectData = {
-                    siteId: localStorage.getItem('CoreRedirectSiteId') || undefined,
-                    page: localStorage.getItem('CoreRedirectState')  || undefined,
-                    timemodified: parseInt(localStorage.getItem('CoreRedirectTime') || '0', 10),
-                };
-
-                if (paramsJson) {
-                    data.params = JSON.parse(paramsJson);
-                }
-
-                return data;
-            } catch (ex) {
-                this.logger.error('Error loading redirect data:', ex);
-            }
-        }
-
-        return {};
+    getRedirect(): CoreRedirectData | null {
+        return this.redirect || null;
     }
 
     /**
@@ -552,15 +572,17 @@ export class CoreAppProvider {
      * @param params Page params.
      */
     storeRedirect(siteId: string, page: string, params: Params): void {
-        if (localStorage && localStorage.setItem) {
-            try {
-                localStorage.setItem('CoreRedirectSiteId', siteId);
-                localStorage.setItem('CoreRedirectState', page);
-                localStorage.setItem('CoreRedirectParams', JSON.stringify(params));
-                localStorage.setItem('CoreRedirectTime', String(Date.now()));
-            } catch (ex) {
-                // Ignore errors.
-            }
+        try {
+            const redirect: CoreRedirectData = {
+                siteId,
+                page,
+                params,
+                timemodified: Date.now(),
+            };
+
+            localStorage.setItem('CoreRedirect', JSON.stringify(redirect));
+        } catch (ex) {
+            // Ignore errors.
         }
     }
 

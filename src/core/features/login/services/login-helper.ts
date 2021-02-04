@@ -34,6 +34,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreNavigator } from '@services/navigator';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -408,22 +409,27 @@ export class CoreLoginHelperProvider {
      * @return Promise resolved when done.
      */
     async goToAddSite(setRoot?: boolean, showKeyboard?: boolean): Promise<void> {
-        let pageRoute: string;
-        let params: Params;
+        const [path, params] = this.getAddSiteRouteInfo(showKeyboard);
 
+        await CoreNavigator.instance.navigate(path, { params, reset: setRoot });
+    }
+
+    /**
+     * Get path and params to visit the route to add site.
+     *
+     * @param showKeyboard Whether to show keyboard in the new page. Only if no fixed URL set.
+     * @return Path and params.
+     */
+    getAddSiteRouteInfo(showKeyboard?: boolean): [string, Params] {
         if (this.isFixedUrlSet()) {
             // Fixed URL is set, go to credentials page.
             const fixedSites = this.getFixedSites();
             const url = typeof fixedSites == 'string' ? fixedSites : fixedSites[0].url;
 
-            pageRoute = '/login/credentials';
-            params = { siteUrl: url };
-        } else {
-            pageRoute = '/login/site';
-            params = { showKeyboard: showKeyboard };
+            return ['/login/credentials', { siteUrl: url }];
         }
 
-        await CoreNavigator.instance.navigate(pageRoute, { params, reset: setRoot });
+        return ['/login/site', CoreObject.withoutEmpty({ showKeyboard: showKeyboard })];
     }
 
     /**

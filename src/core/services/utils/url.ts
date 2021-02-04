@@ -424,7 +424,7 @@ export class CoreUrlUtilsProvider {
     isLocalFileUrl(url: string): boolean {
         const urlParts = CoreUrl.parse(url);
 
-        return this.isLocalFileUrlScheme(urlParts?.protocol || '');
+        return this.isLocalFileUrlScheme(urlParts?.protocol || '', urlParts?.domain || '');
     }
 
     /**
@@ -433,7 +433,7 @@ export class CoreUrlUtilsProvider {
      * @param scheme Scheme to check.
      * @return Whether the scheme belongs to a local file.
      */
-    isLocalFileUrlScheme(scheme: string): boolean {
+    isLocalFileUrlScheme(scheme: string, domain: string): boolean {
         if (!scheme) {
             return false;
         }
@@ -442,7 +442,8 @@ export class CoreUrlUtilsProvider {
         return scheme == 'cdvfile' ||
                 scheme == 'file' ||
                 scheme == 'filesystem' ||
-                scheme == CoreConstants.CONFIG.ioswebviewscheme;
+                scheme == CoreConstants.CONFIG.ioswebviewscheme ||
+                (scheme === 'http' && domain === 'localhost');
     }
 
     /**

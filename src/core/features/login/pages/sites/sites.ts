@@ -45,13 +45,7 @@ export class CoreLoginSitesPage implements OnInit {
      * @return Promise resolved when done.
      */
     async ngOnInit(): Promise<void> {
-        const sites = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSortedSites());
-
-        if (!sites || sites.length == 0) {
-            CoreLoginHelper.instance.goToAddSite(true);
-
-            return;
-        }
+        const sites = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         // Remove protocol from the url to show more url text.
         this.sites = sites.map((site) => {

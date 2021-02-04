@@ -38,6 +38,7 @@ import { CoreLinkDirective } from './link';
 import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
+import { CoreSubscriptions } from '@singletons/subscriptions';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -567,12 +568,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     return Promise.resolve();
                 }
 
-                return new Promise((resolve): void => {
-                    const subscription = externalImage.onLoad.subscribe(() => {
-                        subscription.unsubscribe();
-                        resolve();
-                    });
-                });
+                return new Promise(resolve => CoreSubscriptions.once(externalImage.onLoad, resolve));
             }));
 
             // Automatically reject the promise after 5 seconds to prevent blocking the user forever.

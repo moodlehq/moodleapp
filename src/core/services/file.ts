@@ -1233,7 +1233,7 @@ export class CoreFileProvider {
      * @return Converted src.
      */
     convertFileSrc(src: string): string {
-        return CoreApp.instance.isIOS() ? WebView.instance.convertFileSrc(src) : src;
+        return CoreApp.instance.isMobile() ? WebView.instance.convertFileSrc(src) : src;
     }
 
     /**
@@ -1243,11 +1243,13 @@ export class CoreFileProvider {
      * @return Unconverted src.
      */
     unconvertFileSrc(src: string): string {
-        if (!CoreApp.instance.isIOS()) {
+        if (!CoreApp.instance.isMobile()) {
             return src;
         }
 
-        return src.replace(CoreConstants.CONFIG.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+        const scheme = CoreApp.instance.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
+
+        return src.replace(scheme + '://localhost/_app_file_', 'file://');
     }
 
     /**
