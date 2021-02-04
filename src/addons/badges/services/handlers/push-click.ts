@@ -59,9 +59,8 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
 
         if (data.hash) {
             // We have the hash, open the badge directly.
-            await CoreNavigator.instance.navigateToSitePath('/badges/issue', {
+            await CoreNavigator.instance.navigateToSitePath(`/badges/${data.hash}`, {
                 siteId: notification.site,
-                params: { courseId: 0, badgeHash: data.hash },
             });
 
             return;
@@ -76,7 +75,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
             ),
         );
 
-        await CoreNavigator.instance.navigateToSitePath('/badges/user', { siteId: notification.site });
+        await CoreNavigator.instance.navigateToSitePath('/badges', { siteId: notification.site });
     }
 
 }

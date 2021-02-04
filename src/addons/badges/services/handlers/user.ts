@@ -18,6 +18,7 @@ import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
+import { CoreObject } from '@singletons/object';
 import { AddonBadges } from '../badges';
 
 /**
@@ -72,10 +73,9 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
             action: (event, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.instance.navigateToSitePath(
-                    '/badges/user',
-                    { params: { courseId: courseId || 0, userId: user.id } },
-                );
+                CoreNavigator.instance.navigateToSitePath('/badges', {
+                    params: CoreObject.withoutEmpty({ courseId, userId: user.id }),
+                });
             },
         };
     }

@@ -37,7 +37,7 @@ export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandl
     getActions(): CoreContentLinksAction[] {
         return [{
             action: (siteId: string): void => {
-                CoreNavigator.instance.navigateToSitePath('/badges/user', { siteId });
+                CoreNavigator.instance.navigateToSitePath('/badges', { siteId });
             },
         }];
     }
