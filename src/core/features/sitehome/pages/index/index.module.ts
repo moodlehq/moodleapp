@@ -20,6 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@/core/features/block/components/components.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { CoreSiteHomeIndexPage } from '.';
 
@@ -38,6 +39,7 @@ const routes: Routes = [
         TranslateModule.forChild(),
         CoreSharedModule,
         CoreBlockComponentsModule,
+        CoreCourseComponentsModule,
     ],
     declarations: [
         CoreSiteHomeIndexPage,

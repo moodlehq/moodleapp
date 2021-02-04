@@ -1,0 +1,13 @@
+{
+    "duedate": "Due date",
+    "next30days": "Next 30 days",
+    "next3months": "Next 3 months",
+    "next6months": "Next 6 months",
+    "next7days": "Next 7 days",
+    "nocoursesinprogress": "No in-progress courses",
+    "noevents": "No upcoming activities due",
+    "overdue": "Overdue",
+    "pluginname": "Timeline",
+    "sortbycourses": "Sort by courses",
+    "sortbydates": "Sort by dates"
+}

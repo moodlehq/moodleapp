@@ -18,27 +18,26 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 
-import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
-
+import { AddonBlockRecentlyAccessedItemsComponent } from './recentlyaccesseditems/recentlyaccesseditems';
 
 @NgModule({
     declarations: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockRecentlyAccessedItemsComponent,
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCoursesComponentsModule,
     ],
     exports: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockRecentlyAccessedItemsComponent,
     ],
     entryComponents: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockRecentlyAccessedItemsComponent,
     ],
 })
-export class AddonBlockSiteMainMenuComponentsModule {}
+export class AddonBlockRecentlyAccessedItemsComponentsModule {}

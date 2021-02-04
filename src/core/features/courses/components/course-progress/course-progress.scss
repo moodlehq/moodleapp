@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host {
     ion-card {
         display: flex;
@@ -107,21 +109,8 @@
     }
 }
 
-// @todo
 :host-context(.core-horizontal-scroll) {
-    flex: 0 0 80%;
-    min-width: 250px;
-    max-width: 300px;
-    align-self: stretch;
-    display: block;
-
-    [text-wrap] .label {
-        h2, p {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    }
+    @include horizontal_scroll_item(80%, 250px, 300px);
 
     ion-card {
         .core-course-thumb {

@@ -15,30 +15,29 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
-import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
-
+import { AddonBlockActivityModulesComponent } from './activitymodules/activitymodules';
 
 @NgModule({
     declarations: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockActivityModulesComponent,
     ],
     imports: [
         CommonModule,
         IonicModule,
+        FormsModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-        CoreCourseComponentsModule,
     ],
     exports: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockActivityModulesComponent,
     ],
     entryComponents: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockActivityModulesComponent,
     ],
 })
-export class AddonBlockSiteMainMenuComponentsModule {}
+export class AddonBlockActivityModulesComponentsModule {}

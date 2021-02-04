@@ -16,29 +16,36 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
-import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
-
+import { AddonBlockTimelineComponent } from './timeline/timeline';
+import { AddonBlockTimelineEventsComponent } from './events/events';
 
 @NgModule({
     declarations: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent,
     ],
     imports: [
         CommonModule,
         IonicModule,
+        FormsModule,
         TranslateModule.forChild(),
         CoreSharedModule,
+        CoreCoursesComponentsModule,
         CoreCourseComponentsModule,
     ],
     exports: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent,
     ],
     entryComponents: [
-        AddonBlockSiteMainMenuComponent,
+        AddonBlockTimelineComponent,
+        AddonBlockTimelineEventsComponent,
     ],
 })
-export class AddonBlockSiteMainMenuComponentsModule {}
+export class AddonBlockTimelineComponentsModule {}

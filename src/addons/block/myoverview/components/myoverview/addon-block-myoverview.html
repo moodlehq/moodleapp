@@ -20,15 +20,15 @@
             (onClosed)="switchFilterClosed()"></core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="900"
             content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.title' | translate)}}"
-            (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'far-check-circle' : 'far-circle'">
+            (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'far-dot-circle' : 'far-circle'">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && showSortFilter && showSortByShortName" [priority]="800"
             content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.shortname' | translate)}}"
-            (action)="switchSort('shortname')" [iconAction]="sort == 'shortname' ? 'far-check-circle' : 'far-circle'">
+            (action)="switchSort('shortname')" [iconAction]="sort == 'shortname' ? 'far-dot-circle' : 'far-circle'">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="700"
             content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.lastaccessed' | translate)}}"
-            (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'far-check-circle' : 'far-circle'">
+            (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'far-dot-circle' : 'far-circle'">
         </core-context-menu-item>
     </core-context-menu>
 </ion-item-divider>

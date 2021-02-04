@@ -12,33 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-
-import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
-
+import { CoreBlockDelegate } from '@features/block/services/block-delegate';
+import { AddonBlockActivityModulesHandler } from './services/block-handler';
+import { AddonBlockActivityModulesComponentsModule } from './components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonBlockSiteMainMenuComponent,
-    ],
     imports: [
-        CommonModule,
         IonicModule,
+        AddonBlockActivityModulesComponentsModule,
         TranslateModule.forChild(),
-        CoreSharedModule,
-        CoreCourseComponentsModule,
     ],
-    exports: [
-        AddonBlockSiteMainMenuComponent,
-    ],
-    entryComponents: [
-        AddonBlockSiteMainMenuComponent,
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            useValue: () => {
+                CoreBlockDelegate.instance.registerHandler(AddonBlockActivityModulesHandler.instance);
+            },
+        },
     ],
 })
-export class AddonBlockSiteMainMenuComponentsModule {}
+export class AddonBlockActivityModulesModule {}

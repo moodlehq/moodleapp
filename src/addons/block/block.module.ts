@@ -36,6 +36,9 @@ import { AddonBlockSelfCompletionModule } from './selfcompletion/selfcompletion.
 import { AddonBlockSiteMainMenuModule } from './sitemainmenu/sitemainmenu.module';
 import { AddonBlockStarredCoursesModule } from './starredcourses/starredcourses.module';
 import { AddonBlockTagsModule } from './tags/tags.module';
+import { AddonBlockActivityModulesModule } from './activitymodules/activitymodules.module';
+import { AddonBlockRecentlyAccessedItemsModule } from './recentlyaccesseditems/recentlyaccesseditems.module';
+import { AddonBlockTimelineModule } from './timeline/timeline.module';
 
 @NgModule({
     declarations: [],
@@ -62,6 +65,9 @@ import { AddonBlockTagsModule } from './tags/tags.module';
         AddonBlockSiteMainMenuModule,
         AddonBlockStarredCoursesModule,
         AddonBlockTagsModule,
+        AddonBlockActivityModulesModule,
+        AddonBlockRecentlyAccessedItemsModule,
+        AddonBlockTimelineModule,
     ],
     providers: [],
     exports: [],
