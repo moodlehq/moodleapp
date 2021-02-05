@@ -1,0 +1,142 @@
+@import "~theme/globals";
+
+$core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
+
+:host {
+    --core-question-correct-color: var(--green-dark);
+    --core-question-correct-color-bg: var(--green-light);
+    --core-question-incorrect-color: var(--red);
+    --core-question-incorrect-color-bg: var(--red-light);
+    --core-question-feedback-color: var(--yellow-dark);
+    --core-question-feedback-color-bg: var(--yellow-light);
+    --core-question-warning-color: var(--red);
+    --core-question-saved-color-bg: var(--gray-light);
+
+    --core-question-state-correct-color: var(--green-light);
+    --core-question-state-partial-color: var(--yellow-light);
+    --core-question-state-partial-text: var(--yellow);
+    --core-question-state-incorrect-color: var(--red-light);
+
+    --core-question-feedback-color: var(--yellow-dark);
+    --core-question-feedback-background-color: var(--yellow-light);
+
+    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
+
+    // .core-correct-icon {
+    //     padding: 0 ($content-padding / 2);
+    //     position: absolute;
+    //     @include position(null, 0, $content-padding / 2, null);
+    //     margin-top: 0;
+    //     margin-bottom: 0;
+    // }
+
+
+    // .core-question-answer-correct {
+    //     color: $core-question-correct-color;
+    // }
+
+    // .core-question-answer-incorrect {
+    //     color: $core-question-incorrect-color;
+    // }
+
+    // input, select {
+    //     &.core-question-answer-correct, &.core-question-answer-incorrect {
+    //         background-color: $gray-lighter;
+    //         color: $text-color;
+    //     }
+    // }
+
+    // .core-question-correct,
+    // .core-question-comment {
+    //     color: $core-question-correct-color;
+    //     background-color: $core-question-correct-color-bg;
+
+    //     .label, ion-label.label, .select-text, .select-icon .select-icon-inner {
+    //         color: $core-question-correct-color;
+    //     }
+    //     .radio-icon {
+    //         border-color: $core-question-correct-color;
+    //     }
+    //     .radio-inner {
+    //         background-color: $core-question-correct-color;
+    //     }
+    // }
+
+    // .core-question-incorrect {
+    //     color: $core-question-incorrect-color;
+    //     background-color: $core-question-incorrect-color-bg;
+
+    //     .label, ion-label.label, .select-text, .select-icon .select-icon-inner {
+    //         color: $core-question-incorrect-color;
+    //     }
+    //     .radio-icon {
+    //         border-color: $core-question-incorrect-color;
+    //     }
+    //     .radio-inner {
+    //         background-color: $core-question-incorrect-color;
+    //     }
+    // }
+
+    .core-question-feedback-container ::ng-deep {
+        --color: var(--core-question-feedback-color);
+        --background: var(--core-question-feedback-background-color);
+
+        .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+            margin: 0 0 .5em;
+        }
+
+        .correctness {
+            display: inline-block;
+            padding: 2px 4px;
+            font-weight: bold;
+            line-height: 14px;
+            color: var(--white);
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+            background-color: var(--gray-dark);
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+
+            &.incorrect {
+                background-color: var(--red);
+            }
+            &.correct {
+            background-color: var(--green);
+            }
+        }
+    }
+
+    .core-question-feedback-inline {
+        display: inline-block;
+    }
+
+    .core-question-feedback-padding {
+        @include padding-horizontal(14px, 35px);
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .core-question-correct {
+        background-color: var(--core-question-state-correct-color);
+    }
+    .core-question-partiallycorrect {
+        background-color: var(--core-question-state-partial-color);
+    }
+    .core-question-notanswered,
+    .core-question-incorrect {
+        background-color: var(--core-question-state-incorrect-color);
+    }
+    .core-question-answersaved,
+    .core-question-requiresgrading {
+        color: var(--ion-text-color);
+        background-color: var(--core-question-saved-color-bg);
+    }
+
+    .core-question-warning {
+        color: var(--core-question-warning-color);
+    }
+
+    .questioncorrectnessicon,
+    .fa.icon.questioncorrectnessicon {
+        font-size: 20px;
+    }
+}
