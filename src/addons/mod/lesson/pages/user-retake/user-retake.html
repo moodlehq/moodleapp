@@ -36,28 +36,32 @@
 
             <!-- Retake stats. -->
             <ion-list *ngIf="retake && retake.userstats && retake.userstats.gradeinfo" class="addon-mod_lesson-userstats">
-                <ion-grid class="ion-text-wrap">
-                    <ion-row>
-                        <ion-col>
-                            <p class="item-heading">{{ 'addon.mod_lesson.grade' | translate }}</p>
-                            <p>{{ 'core.percentagenumber' | translate:{$a: retake.userstats.grade} }}</p>
-                        </ion-col>
+                <ion-item>
+                    <ion-label class="ion-text-wrap">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                <ion-col>
+                                    <h3 class="item-heading">{{ 'addon.mod_lesson.grade' | translate }}</h3>
+                                    <p>{{ 'core.percentagenumber' | translate:{$a: retake.userstats.grade} }}</p>
+                                </ion-col>
 
-                        <ion-col>
-                            <p class="item-heading">{{ 'addon.mod_lesson.rawgrade' | translate }}</p>
-                            <p>{{ retake.userstats.gradeinfo.earned }} / {{ retake.userstats.gradeinfo.total }}</p>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
+                                <ion-col>
+                                    <h3 class="item-heading">{{ 'addon.mod_lesson.rawgrade' | translate }}</h3>
+                                    <p>{{ retake.userstats.gradeinfo.earned }} / {{ retake.userstats.gradeinfo.total }}</p>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-label>
+                </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_lesson.timetaken' | translate }}</p>
+                        <h3 class="item-heading">{{ 'addon.mod_lesson.timetaken' | translate }}</h3>
                         <p>{{ timeTakenReadable }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_lesson.completed' | translate }}</p>
+                        <h3 class="item-heading">{{ 'addon.mod_lesson.completed' | translate }}</h3>
                         <p>{{ retake.userstats.completed * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
@@ -74,11 +78,11 @@
                 <ion-card *ngFor="let page of retake.answerpages" class="addon-mod_lesson-answerpage"
                     [ngClass]="{'text-dimmed': page.grayout}">
                     <ion-card-header class="ion-text-wrap">
-                        <ion-card-subtitle>{{page.qtype}}: {{page.title}}</ion-card-subtitle>
+                        <ion-card-title>{{page.qtype}}: {{page.title}}</ion-card-title>
                     </ion-card-header>
                     <ion-item class="ion-text-wrap" lines="none">
                         <ion-label>
-                            <p class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</p>
+                            <h3 class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</h3>
                             <p>
                                 <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [maxHeight]="50"
                                     [text]="page.contents" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
@@ -89,7 +93,7 @@
                     </ion-item>
                     <ion-item class="ion-text-wrap" lines="none">
                         <ion-label>
-                            <p class="item-heading">{{ 'addon.mod_lesson.answer' | translate }}</p>
+                            <h3 class="item-heading">{{ 'addon.mod_lesson.answer' | translate }}</h3>
                         </ion-label>
                     </ion-item>
                     <ion-item class="ion-text-wrap" lines="none"
@@ -100,20 +104,24 @@
                     </ion-item>
                     <div *ngIf="page.answerdata && page.answerdata.answers && page.answerdata.answers.length"
                         class="addon-mod_lesson-answer">
-                        <div *ngFor="let answer of page.answerdata.answers">
-                            <ion-grid class="ion-text-wrap" *ngIf="page.isContent">
-                                <!-- Content page, display a button and the content. -->
-                                <ion-row>
-                                    <ion-col>
-                                        <ion-button expand="block" class="ion-text-wrap" color="light" [disabled]="true">{{ answer[0].buttonText }}</ion-button>
-                                    </ion-col>
-                                    <ion-col>
-                                        <p [innerHTML]="answer[0].content"></p>
-                                    </ion-col>
-                                </ion-row>
-                            </ion-grid>
+                        <ng-container *ngFor="let answer of page.answerdata.answers">
+                            <ion-item lines="none" *ngIf="page.isContent">
+                                <ion-label class="ion-text-wrap">
+                                    <ion-grid class="ion-no-padding">
+                                        <!-- Content page, display a button and the content. -->
+                                        <ion-row>
+                                            <ion-col>
+                                                <ion-button expand="block" class="ion-text-wrap" color="light" [disabled]="true">{{ answer[0].buttonText }}</ion-button>
+                                            </ion-col>
+                                            <ion-col>
+                                                <p [innerHTML]="answer[0].content"></p>
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-label>
+                            </ion-item>
 
-                            <div *ngIf="page.isQuestion">
+                            <ng-container *ngIf="page.isQuestion">
                                 <!-- Question page, show the right input for the answer. -->
 
                                 <!-- Truefalse or matching. -->
@@ -152,27 +160,31 @@
                                 </ion-item>
 
                                 <!-- Matching. -->
-                                <ion-grid class="ion-text-wrap" *ngIf="answer[0].isSelect">
-                                    <ion-row>
-                                        <ion-col>
-                                            <p>
-                                                <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
-                                                    [text]=" answer[0].content" contextLevel="module"
-                                                    [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                                                </core-format-text>
-                                            </p>
-                                        </ion-col>
-                                        <ion-col>
-                                            <p>{{answer[0].value}}</p>
-                                            <ion-badge *ngIf="answer[1]" color="dark">
-                                                <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
-                                                    [text]="answer[1]" contextLevel="module"
-                                                    [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                                                </core-format-text>
-                                            </ion-badge>
-                                        </ion-col>
-                                    </ion-row>
-                                </ion-grid>
+                                <ion-item lines="none" *ngIf="answer[0].isSelect">
+                                    <ion-label class="ion-text-wrap">
+                                        <ion-grid class="ion-no-padding">
+                                            <ion-row>
+                                                <ion-col>
+                                                    <p>
+                                                        <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
+                                                            [text]=" answer[0].content" contextLevel="module"
+                                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
+                                                        </core-format-text>
+                                                    </p>
+                                                </ion-col>
+                                                <ion-col>
+                                                    <p>{{answer[0].value}}</p>
+                                                    <ion-badge *ngIf="answer[1]" color="dark">
+                                                        <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
+                                                            [text]="answer[1]" contextLevel="module"
+                                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
+                                                        </core-format-text>
+                                                    </ion-badge>
+                                                </ion-col>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-label>
+                                </ion-item>
 
                                 <!-- Essay or couldn't determine. -->
                                 <ion-item class="ion-text-wrap" lines="none"
@@ -192,7 +204,7 @@
                                         </ion-badge>
                                     </ion-label>
                                 </ion-item>
-                            </div>
+                            </ng-container>
 
                             <ion-item class="ion-text-wrap" *ngIf="!page.isContent && !page.isQuestion" lines="none">
                                 <!-- Another page (end of branch, ...). -->
@@ -211,11 +223,11 @@
                                     </ion-badge>
                                 </ion-label>
                             </ion-item>
-                        </div>
+                        </ng-container>
 
                         <ion-item class="ion-text-wrap" *ngIf="page.answerdata.response" lines="none">
                             <ion-label>
-                                <p class="item-heading">{{ 'addon.mod_lesson.response' | translate }}</p>
+                                <h3 class="item-heading">{{ 'addon.mod_lesson.response' | translate }}</h3>
                                 <p>
                                     <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                         [text]="page.answerdata.response" contextLevel="module"

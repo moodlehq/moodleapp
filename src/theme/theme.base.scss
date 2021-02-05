@@ -33,6 +33,16 @@ ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
 
+// It fixes the click on links where ion-ripple-effect is present.
+.ion-activatable ion-label,
+.item-multiple-items ion-label {
+    z-index: 3;
+    pointer-events: none;
+    ion-anchor, ion-button, a, button {
+        pointer-events: visible;
+    }
+}
+
 
 // Ionic toolbar.
 ion-toolbar ion-back-button,
@@ -372,6 +382,10 @@ ion-toolbar ion-title .core-bar-button-image img {
 }
 
 // Select.
+ion-select::part(text) {
+    white-space: normal;
+}
+
 ion-select.core-button-select,
 .core-button-select {
     --background: var(--core-button-select-background);

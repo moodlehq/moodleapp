@@ -1,3 +1,11 @@
+:host {
+   --background-odd: var(--gray-lighter);
+}
+
+:host-context(body.dark) {
+   --background-odd: var(--gray-darker);
+}
+
 :host ::ng-deep {
     .addon-mod_lesson-slideshow {
         max-width: 100%;
@@ -5,15 +13,16 @@
         margin: 0 auto;
     }
 
+    .studentanswer {
+        padding-inline-start: 8px;
+    }
+
     table {
         width: 100%;
         margin-top: 1.5rem;
 
         tr:nth-child(odd) {
-            background-color: var(--gray-lighter);
-            // @include darkmode() {
-            //     background-color: $core-dark-item-divider-bg-color;
-            // }
+            background-color: var(--background-odd);
         }
 
         tr:last-child td {
@@ -26,21 +35,4 @@
             border-bottom: 1px solid var(--gray);
         }
     }
-
-    // @todo
-    // .item-ios table {
-    //     @extend .card-ios;
-    //     @include darkmode() {
-    //         color: $white;
-    //         background-color: $core-dark-item-bg-color;
-    //     }
-    // }
-
-    // .item-md table {
-    //     @extend .card-md;
-    //     @include darkmode() {
-    //         color: $white;
-    //         background-color: $core-dark-item-bg-color;
-    //     }
-    // }
 }
