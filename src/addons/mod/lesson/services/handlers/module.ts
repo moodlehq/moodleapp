@@ -79,9 +79,10 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
             action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
                 options = options || {};
                 options.params = options.params || {};
-                Object.assign(options.params, { module, courseId });
+                Object.assign(options.params, { module });
+                const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.instance.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME, options);
+                CoreNavigator.instance.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME + routeParams, options);
             },
         };
     }

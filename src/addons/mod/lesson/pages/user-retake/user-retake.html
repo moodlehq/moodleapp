@@ -111,7 +111,9 @@
                                         <!-- Content page, display a button and the content. -->
                                         <ion-row>
                                             <ion-col>
-                                                <ion-button expand="block" class="ion-text-wrap" color="light" [disabled]="true">{{ answer[0].buttonText }}</ion-button>
+                                                <ion-button expand="block" class="ion-text-wrap" color="light" [disabled]="true">
+                                                    {{ answer[0].buttonText }}
+                                                </ion-button>
                                             </ion-col>
                                             <ion-col>
                                                 <p [innerHTML]="answer[0].content"></p>

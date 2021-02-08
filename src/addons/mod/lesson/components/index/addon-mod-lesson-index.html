@@ -161,7 +161,9 @@
                         </ion-label>
                         <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-mod_lesson-groupslabel"
                             interface="action-sheet">
-                            <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-select-option>
+                            <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                                {{groupOpt.name}}
+                            </ion-select-option>
                         </ion-select>
                     </ion-item>
 
