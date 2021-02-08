@@ -45,6 +45,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonCalendarReminderDBRecord } from '../../services/database/calendar';
 import { ActivatedRoute } from '@angular/router';
 import { CoreScreen } from '@services/screen';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Page that displays a single calendar event.
@@ -84,7 +85,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     canDelete = false;
     hasOffline = false;
     isOnline = false;
-    syncIcon = 'spinner'; // Sync icon.
+    syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
     isSplitViewOn = false;
 
     constructor(
@@ -163,7 +164,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             }
 
             this.eventId = eventId;
-            this.syncIcon = 'spinner';
+            this.syncIcon = CoreConstants.ICON_LOADING;
 
             this.fetchEvent();
         });
@@ -338,7 +339,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
 
         this.eventLoaded = true;
-        this.syncIcon = 'fas-sync-alt';
+        this.syncIcon = CoreConstants.ICON_SYNC;
     }
 
     /**
@@ -417,7 +418,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async refreshEvent(sync = false, showErrors = false): Promise<void> {
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         const promises: Promise<void>[] = [];
 

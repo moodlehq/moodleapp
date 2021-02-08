@@ -25,6 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of activities.
@@ -70,7 +71,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         super.ngOnInit();
 
         this.hasOffline = false;
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
         this.moduleName = CoreCourse.instance.translateModuleName(this.moduleName || '');
 
         if (this.syncEventName) {
@@ -117,16 +118,16 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             return;
         }
 
-        this.refreshIcon = 'spinner';
-        this.syncIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         try {
             await CoreUtils.instance.ignoreErrors(this.invalidateContent());
 
             await this.loadContent(true, sync, showErrors);
         } finally  {
-            this.refreshIcon = 'fas-redo';
-            this.syncIcon = 'fas-sync';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
+            this.syncIcon = CoreConstants.ICON_SYNC;
         }
     }
 
@@ -138,16 +139,16 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Resolved when done.
      */
     protected async showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.refreshIcon = 'spinner';
-        this.syncIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreConstants.ICON_LOADING;
         this.loaded = false;
         this.content?.scrollToTop();
 
         try {
             await this.loadContent(false, sync, showErrors);
         } finally {
-            this.refreshIcon = 'fas-redo';
-            this.syncIcon = 'fas-sync';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
+            this.syncIcon = CoreConstants.ICON_REFRESH;
         }
     }
 
@@ -159,8 +160,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Resolved when done.
      */
     protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.refreshIcon = 'spinner';
-        this.syncIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreConstants.ICON_LOADING;
         this.loaded = false;
         this.content?.scrollToTop();
 
@@ -207,8 +208,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
             this.loaded = true;
-            this.refreshIcon = 'fas-redo';
-            this.syncIcon = 'fas-sync';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
+            this.syncIcon = CoreConstants.ICON_REFRESH;
         }
     }
 

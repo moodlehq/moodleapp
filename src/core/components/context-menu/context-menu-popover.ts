@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Component } from '@angular/core';
 import { NavParams } from '@ionic/angular';
 import { PopoverController } from '@singletons';
@@ -58,7 +59,7 @@ export class CoreContextMenuPopoverComponent {
             event.preventDefault();
             event.stopPropagation();
 
-            if (item.iconAction == 'spinner') {
+            if (item.iconAction == CoreConstants.ICON_LOADING) {
                 return false;
             }
 

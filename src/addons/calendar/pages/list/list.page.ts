@@ -89,7 +89,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
     canCreate = false;
     hasOffline = false;
     isOnline = false;
-    syncIcon = 'spinner';
+    syncIcon = CoreConstants.ICON_LOADING;
     filter: AddonCalendarFilter = {
         filtered: false,
         courseId: -1,
@@ -251,7 +251,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             this.gotoEvent(this.eventId);
         }
 
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         await this.fetchData(false, true, false);
 
@@ -361,7 +361,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
         }
 
         this.eventsLoaded = true;
-        this.syncIcon = 'fas-sync-alt';
+        this.syncIcon = CoreConstants.ICON_SYNC;
     }
 
     /**
@@ -567,7 +567,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async refreshEvents(sync?: boolean, showErrors?: boolean): Promise<void> {
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         const promises: Promise<void>[] = [];
 

@@ -359,7 +359,7 @@ export class CoreCourseHelperProvider {
         const siteId = CoreSites.instance.getCurrentSiteId();
 
         data.downloadSucceeded = false;
-        data.icon = 'spinner';
+        data.icon = CoreConstants.ICON_DOWNLOADING;
         data.statusTranslatable = 'core.downloading';
 
         // Get the sections first if needed.
@@ -563,7 +563,7 @@ export class CoreCourseHelperProvider {
         done?: () => void,
     ): Promise<void> {
         const initialIcon = instance.prefetchStatusIcon;
-        instance.prefetchStatusIcon = 'spinner'; // Show spinner since this operation might take a while.
+        instance.prefetchStatusIcon = CoreConstants.ICON_DOWNLOADING; // Show spinner since this operation might take a while.
 
         try {
             // We need to call getDownloadSize, the package might have been updated.
@@ -1122,7 +1122,7 @@ export class CoreCourseHelperProvider {
 
         if (prefetch.loading) {
             // It seems all courses are being downloaded, show a download button instead.
-            prefetch.icon = CoreConstants.NOT_DOWNLOADED_ICON;
+            prefetch.icon = CoreConstants.ICON_NOT_DOWNLOADED;
         }
 
         return prefetch;
@@ -1188,14 +1188,14 @@ export class CoreCourseHelperProvider {
         prefetch: CorePrefetchStatusInfo,
     ): Promise<void> {
         prefetch.loading = true;
-        prefetch.icon = CoreConstants.DOWNLOADING_ICON;
+        prefetch.icon = CoreConstants.ICON_DOWNLOADING;
         prefetch.badge = '';
 
         try {
             await this.confirmAndPrefetchCourses(courses, (progress) => {
                 prefetch.badge = progress.count + ' / ' + progress.total;
             });
-            prefetch.icon = CoreConstants.OUTDATED_ICON;
+            prefetch.icon = CoreConstants.ICON_OUTDATED;
         } finally {
             prefetch.loading = false;
             prefetch.badge = '';
@@ -1264,19 +1264,19 @@ export class CoreCourseHelperProvider {
      */
     getPrefetchStatusIcon(status: string, trustDownload: boolean = false): string {
         if (status == CoreConstants.NOT_DOWNLOADED) {
-            return CoreConstants.NOT_DOWNLOADED_ICON;
+            return CoreConstants.ICON_NOT_DOWNLOADED;
         }
         if (status == CoreConstants.OUTDATED || (status == CoreConstants.DOWNLOADED && !trustDownload)) {
-            return CoreConstants.OUTDATED_ICON;
+            return CoreConstants.ICON_OUTDATED;
         }
         if (status == CoreConstants.DOWNLOADED && trustDownload) {
-            return CoreConstants.DOWNLOADED_ICON;
+            return CoreConstants.ICON_DOWNLOADED;
         }
         if (status == CoreConstants.DOWNLOADING) {
-            return CoreConstants.DOWNLOADING_ICON;
+            return CoreConstants.ICON_DOWNLOADING;
         }
 
-        return CoreConstants.DOWNLOADING_ICON;
+        return CoreConstants.ICON_DOWNLOADING;
     }
 
     /**
@@ -1335,17 +1335,17 @@ export class CoreCourseHelperProvider {
         moduleInfo.status = results[1];
         switch (results[1]) {
             case CoreConstants.NOT_DOWNLOADED:
-                moduleInfo.statusIcon = 'fas-cloud-download-alt';
+                moduleInfo.statusIcon = CoreConstants.ICON_NOT_DOWNLOADED;
                 break;
             case CoreConstants.DOWNLOADING:
-                moduleInfo.statusIcon = 'spinner';
+                moduleInfo.statusIcon = CoreConstants.ICON_DOWNLOADING;
                 break;
             case CoreConstants.OUTDATED:
-                moduleInfo.statusIcon = 'fas-redo';
+                moduleInfo.statusIcon = CoreConstants.ICON_OUTDATED;
                 break;
             case CoreConstants.DOWNLOADED:
                 if (!CoreCourseModulePrefetchDelegate.instance.canCheckUpdates()) {
-                    moduleInfo.statusIcon = 'fas-redo';
+                    moduleInfo.statusIcon = CoreConstants.ICON_OUTDATED;
                 }
                 break;
             default:

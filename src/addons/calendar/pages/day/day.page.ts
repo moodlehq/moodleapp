@@ -40,6 +40,7 @@ import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -85,7 +86,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     loaded = false;
     hasOffline = false;
     isOnline = false;
-    syncIcon = 'spinner';
+    syncIcon = CoreConstants.ICON_LOADING;
     isCurrentDay = false;
     isPastDay = false;
     currentMoment!: moment.Moment;
@@ -260,7 +261,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     async fetchData(sync?: boolean): Promise<void> {
 
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
         this.isOnline = CoreApp.instance.isOnline();
 
         if (sync) {
@@ -320,7 +321,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         }
 
         this.loaded = true;
-        this.syncIcon = 'fas-sync-alt';
+        this.syncIcon = CoreConstants.ICON_SYNC;
     }
 
     /**
@@ -450,7 +451,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async refreshData(sync?: boolean, afterChange?: boolean): Promise<void> {
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         const promises: Promise<void>[] = [];
 

@@ -624,8 +624,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         this.loaded = false;
-        this.refreshIcon = 'spinner';
-        this.syncIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         try {
             await this.validatePassword(<string> password);
@@ -643,8 +643,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             CoreDomUtils.instance.showErrorModal(error);
         } finally {
             this.loaded = true;
-            this.refreshIcon = 'refresh';
-            this.syncIcon = 'sync';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
+            this.syncIcon = CoreConstants.ICON_SYNC;
 
             CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         }

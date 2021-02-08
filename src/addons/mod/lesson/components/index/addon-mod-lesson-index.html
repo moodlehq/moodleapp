@@ -20,7 +20,7 @@
             [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
-            iconDescription="fas-cube" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
         </core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>

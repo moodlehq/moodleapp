@@ -49,6 +49,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
 import { AddonMessagesConversationInfoComponent } from '../../components/conversation-info/conversation-info';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Page that displays a message discussion page.
@@ -1352,7 +1353,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return;
         }
 
-        this.favouriteIcon = 'spinner';
+        this.favouriteIcon = CoreConstants.ICON_LOADING;
 
         try {
             await AddonMessages.instance.setFavouriteConversation(this.conversation.id, !this.conversation.isfavourite);
@@ -1386,7 +1387,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return;
         }
 
-        this.muteIcon = 'spinner';
+        this.muteIcon = CoreConstants.ICON_LOADING;
 
         try {
             await AddonMessages.instance.muteConversation(this.conversation.id, !this.conversation.ismuted);
@@ -1461,7 +1462,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         try {
             await CoreDomUtils.instance.showConfirm(template, undefined, okText);
-            this.blockIcon = 'spinner';
+            this.blockIcon = CoreConstants.ICON_LOADING;
 
             const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
@@ -1497,7 +1498,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         try {
             await CoreDomUtils.instance.showDeleteConfirm(confirmMessage);
-            this.deleteIcon = 'spinner';
+            this.deleteIcon = CoreConstants.ICON_LOADING;
 
             try {
                 try {
@@ -1543,7 +1544,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         try {
             await CoreDomUtils.instance.showConfirm(template, undefined, okText);
 
-            this.blockIcon = 'spinner';
+            this.blockIcon = CoreConstants.ICON_LOADING;
 
             const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
@@ -1582,7 +1583,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         try {
             await CoreDomUtils.instance.showConfirm(template, undefined, okText);
 
-            this.addRemoveIcon = 'spinner';
+            this.addRemoveIcon = CoreConstants.ICON_LOADING;
 
             const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
@@ -1673,7 +1674,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         try {
             await CoreDomUtils.instance.showConfirm(template, undefined, okText);
 
-            this.addRemoveIcon = 'spinner';
+            this.addRemoveIcon = CoreConstants.ICON_LOADING;
 
             const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
