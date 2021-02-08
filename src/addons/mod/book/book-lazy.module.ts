@@ -13,17 +13,16 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
-import { AddonModBookModule } from './book/book.module';
-import { AddonModLessonModule } from './lesson/lesson.module';
+const routes: Routes = [
+    {
+        path: ':courseId/:cmdId',
+        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModBookIndexPageModule),
+    },
+];
 
 @NgModule({
-    declarations: [],
-    imports: [
-        AddonModBookModule,
-        AddonModLessonModule,
-    ],
-    providers: [],
-    exports: [],
+    imports: [RouterModule.forChild(routes)],
 })
-export class AddonModModule { }
+export class AddonModBookLazyModule {}

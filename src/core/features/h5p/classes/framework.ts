@@ -64,9 +64,9 @@ export class CoreH5PFramework {
         const db = await CoreSites.instance.getSiteDb(siteId);
 
         const whereAndParams = db.getInOrEqual(libraryIds);
-        whereAndParams[0] = 'mainlibraryid ' + whereAndParams[0];
+        whereAndParams.sql = 'mainlibraryid ' + whereAndParams.sql;
 
-        await db.updateRecordsWhere(CONTENT_TABLE_NAME, { filtered: null }, whereAndParams[0], whereAndParams[1]);
+        await db.updateRecordsWhere(CONTENT_TABLE_NAME, { filtered: null }, whereAndParams.sql, whereAndParams.params);
     }
 
     /**
@@ -919,4 +919,3 @@ type LibraryDependency = {
 type LibraryAddonDBData = Omit<CoreH5PLibraryAddonData, 'addTo'> & {
     addTo: string;
 };
-
