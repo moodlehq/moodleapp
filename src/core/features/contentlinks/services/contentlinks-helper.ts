@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
@@ -83,6 +82,7 @@ export class CoreContentLinksHelperProvider {
      * Goes to a certain page in a certain site. If the site is current site it will perform a regular navigation,
      * otherwise it will 'redirect' to the other site.
      *
+     * @param navCtrlUnused Deprecated param.
      * @param pageName Name of the page to go.
      * @param pageParams Params to send to the page.
      * @param siteId Site ID. If not defined, current site.
@@ -90,7 +90,7 @@ export class CoreContentLinksHelperProvider {
      * @return Promise resolved when done.
      * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
      */
-    async goInSite(navCtrl: NavController, pageName: string, pageParams: Params, siteId?: string): Promise<void> {
+    async goInSite(navCtrlUnused: unknown, pageName: string, pageParams: Params, siteId?: string): Promise<void> {
         await CoreNavigator.instance.navigateToSitePath(pageName, { params: pageParams, siteId });
     }
 

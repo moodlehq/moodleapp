@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
+import { CoreMainMenuHomeDelegate } from '../home-delegate';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
 
 /**
@@ -24,7 +25,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
 
     static readonly PAGE_NAME = 'home';
 
-    name = 'CoreMainMenuHome';
+    name = 'CoreHome';
     priority = 1100;
 
     /**
@@ -39,13 +40,10 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
     /**
      * Check if the handler is enabled on a certain site.
      *
-     * @param siteId Site ID. If not defined, current site.
      * @return Whether or not the handler is enabled on a site level.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async isEnabledForSite(siteId?: string): Promise<boolean> {
-        // @todo
-        return true;
+    async isEnabledForSite(): Promise<boolean> {
+        return CoreMainMenuHomeDelegate.instance.getHandlers().length > 0;
     }
 
     /**
@@ -55,7 +53,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'fa-home',
+            icon: 'fas-home',
             title: 'core.mainmenu.home',
             page: CoreMainMenuHomeHandlerService.PAGE_NAME,
             // @todo: subPage? The page can change due to core-tabs.

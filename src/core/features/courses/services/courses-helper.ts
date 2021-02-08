@@ -13,14 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-// import { PopoverController } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSites } from '@services/sites';
 import { CoreCourses, CoreCourseSearchedData, CoreCourseUserAdminOrNavOptionIndexed, CoreEnrolledCourseData } from './courses';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
-// import { CoreCoursePickerMenuPopoverComponent } from '@components/course-picker-menu/course-picker-menu-popover';
 
 /**
  * Helper to gather some common courses functions.
@@ -274,19 +272,6 @@ export class CoreCoursesHelperProvider {
 
             return course;
         }));
-    }
-
-    /**
-     * Show a context menu to select a course, and return the courseId and categoryId of the selected course (-1 for all courses).
-     * Returns an empty object if popover closed without picking a course.
-     *
-     * @param event Click event.
-     * @param courses List of courses, from CoreCoursesHelperProvider.getCoursesForPopover.
-     * @param courseId The course to select at start.
-     * @return Promise resolved with the course ID and category ID.
-     */
-    async selectCourse(): Promise<void> {
-        // @todo params and logic
     }
 
 }

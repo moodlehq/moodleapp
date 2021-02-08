@@ -41,7 +41,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @param notification The notification to check.
      * @return Whether the notification click is handled by this handler
      */
-    async handles(notification: NotificationData): Promise<boolean> {
+    async handles(notification: AddonNotificationsNotificationData): Promise<boolean> {
         if (!notification.moodlecomponent) {
             // The notification doesn't come from Moodle. Handle it.
             return true;
@@ -63,7 +63,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @param notification Notification to mark.
      * @return Promise resolved when done.
      */
-    protected async markAsRead(notification: NotificationData): Promise<void> {
+    protected async markAsRead(notification: AddonNotificationsNotificationData): Promise<void> {
         const notifId = notification.savedmessageid || notification.id;
 
         if (!notifId) {
@@ -81,7 +81,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @param notification The notification to check.
      * @return Promise resolved when done.
      */
-    async handleClick(notification: NotificationData): Promise<void> {
+    async handleClick(notification: AddonNotificationsNotificationData): Promise<void> {
 
         if (notification.customdata?.extendedtext) {
             // Display the text in a modal.
@@ -133,7 +133,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
 export class AddonNotificationsPushClickHandler extends makeSingleton(AddonNotificationsPushClickHandlerService) {}
 
-type NotificationData = CorePushNotificationsNotificationBasicData & {
+type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
     contexturl?: string; // URL related to the notification.
     savedmessageid?: number; // Notification ID (optional).
     id?: number; // Notification ID (optional).

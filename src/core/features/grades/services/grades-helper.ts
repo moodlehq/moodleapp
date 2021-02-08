@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { NavController } from '@ionic/angular';
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -440,7 +439,6 @@ export class CoreGradesHelperProvider {
      * @param courseId Course ID to view.
      * @param userId User to view. If not defined, current user.
      * @param moduleId Module to view. If not defined, view all course grades.
-     * @param navCtrl NavController to use.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
@@ -448,11 +446,10 @@ export class CoreGradesHelperProvider {
         courseId: number,
         userId?: number,
         moduleId?: number,
-        navCtrl?: NavController,
         siteId?: string,
     ): Promise<void> {
         const modal = await CoreDomUtils.instance.showModalLoading();
-        let currentUserId;
+        let currentUserId: number;
 
         try {
             const site = await CoreSites.instance.getSite(siteId);
@@ -504,7 +501,7 @@ export class CoreGradesHelperProvider {
                 }
 
                 // View own grades. Check if we already are in the course index page.
-                if (CoreCourse.instance.currentViewIsCourse(navCtrl, courseId)) {
+                if (CoreCourse.instance.currentViewIsCourse(courseId)) {
                     // Current view is this course, just select the grades tab.
                     CoreCourse.instance.selectCourseTab('CoreGrades');
 

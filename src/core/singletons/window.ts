@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { NavController } from '@ionic/angular';
 
 import { CoreFileHelper } from '@services/file-helper';
@@ -21,6 +22,8 @@ import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Options for the open function.
+ *
+ * @deprecated since 3.9.5
  */
 export type CoreWindowOpenOptions = {
     /**
@@ -46,10 +49,9 @@ export class CoreWindow {
      *
      * @param url URL to open.
      * @param name Name of the browsing context into which to load the URL.
-     * @param options Other options.
      * @return Promise resolved when done.
      */
-    static async open(url: string, name?: string, options?: CoreWindowOpenOptions): Promise<void> {
+    static async open(url: string, name?: string): Promise<void> {
         if (CoreUrlUtils.instance.isLocalFileUrl(url)) {
             const filename = url.substr(url.lastIndexOf('/') + 1);
 
@@ -64,13 +66,11 @@ export class CoreWindow {
             await CoreUtils.instance.openFile(url);
         } else {
             let treated = false;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            options = options || {};
 
             if (name != '_system') {
                 // Check if it can be opened in the app.
                 treated = false;
-                // @todo await CoreContentLinksHelper.instance.handleLink(url, undefined, options.navCtrl, true, true);
+                await CoreContentLinksHelper.instance.handleLink(url, undefined, true, true);
             }
 
             if (!treated) {

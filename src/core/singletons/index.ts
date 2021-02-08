@@ -25,6 +25,7 @@ import {
     GestureController as GestureControllerService,
     ActionSheetController as ActionSheetControllerService,
     NavController as NavControllerService,
+    PopoverController as PopoverControllerService,
 } from '@ionic/angular';
 
 import { Badge as BadgeService } from '@ionic-native/badge/ngx';
@@ -148,6 +149,7 @@ export class ActionSheetController extends makeSingleton(ActionSheetControllerSe
 export class AlertController extends makeSingleton(AlertControllerService) {}
 export class LoadingController extends makeSingleton(LoadingControllerService) {}
 export class ModalController extends makeSingleton(ModalControllerService) {}
+export class PopoverController extends makeSingleton(PopoverControllerService) {}
 export class ToastController extends makeSingleton(ToastControllerService) {}
 export class GestureController extends makeSingleton(GestureControllerService) {}
 export class ApplicationInit extends makeSingleton(ApplicationInitStatus) {}

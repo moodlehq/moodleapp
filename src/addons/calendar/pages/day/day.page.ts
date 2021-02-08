@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PopoverController, IonRefresher } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -35,7 +35,7 @@ import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
 import moment from 'moment';
-import { Network, NgZone } from '@singletons';
+import { Network, NgZone, PopoverController } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -100,9 +100,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         category: true,
     };
 
-    constructor(
-        private popoverCtrl: PopoverController,
-    ) {
+    constructor() {
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
 
         if (CoreLocalNotifications.instance.isAvailable()) {
@@ -537,7 +535,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await this.popoverCtrl.create({
+        const popover = await PopoverController.instance.create({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,

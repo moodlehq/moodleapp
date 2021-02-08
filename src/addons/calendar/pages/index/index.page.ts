@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { PopoverController, IonRefresher } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -23,7 +23,7 @@ import { AddonCalendar, AddonCalendarProvider, AddonCalendarUpdatedEventEvent } 
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
-import { Network, NgZone } from '@singletons';
+import { Network, NgZone, PopoverController } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -83,7 +83,6 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     };
 
     constructor(
-        protected popoverCtrl: PopoverController,
         protected route: ActivatedRoute,
     ) {
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
@@ -341,7 +340,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await this.popoverCtrl.create({
+        const popover = await PopoverController.instance.create({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,

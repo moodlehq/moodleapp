@@ -161,6 +161,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Open page to manage courses storage.
      */
     manageCoursesStorage(): void {
+        // AddonStorageManagerCoursesStoragePage
         // @todo this.navCtrl.navigateForward(['/main/home/courses/storage']);
     }
 

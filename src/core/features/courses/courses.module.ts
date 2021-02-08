@@ -14,12 +14,19 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { CoreCoursesCourseLinkHandler } from './services/handlers/course-link';
+import { CoreCoursesIndexLinkHandler } from './services/handlers/courses-index-link';
 
 import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './services/handlers/dashboard-home';
+import { CoreCoursesDashboardLinkHandler } from './services/handlers/dashboard-link';
+import { CoreCoursesEnrolPushClickHandler } from './services/handlers/enrol-push-click';
 import { CoreCoursesMyCoursesHomeHandler, CoreCoursesMyCoursesHomeHandlerService } from './services/handlers/my-courses-home';
+import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {
@@ -59,6 +66,11 @@ const mainMenuHomeSiblingRoutes: Routes = [
             useFactory: () => () => {
                 CoreMainMenuHomeDelegate.instance.registerHandler(CoreDashboardHomeHandler.instance);
                 CoreMainMenuHomeDelegate.instance.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(CoreCoursesCourseLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(CoreCoursesIndexLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(CoreCoursesDashboardLinkHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
             },
         },
     ],
