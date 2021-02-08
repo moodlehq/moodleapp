@@ -19,10 +19,12 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreTagFeedComponent } from './feed/feed';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreTagListComponent } from './list/list';
 
 @NgModule({
     declarations: [
         CoreTagFeedComponent,
+        CoreTagListComponent,
     ],
     imports: [
         CommonModule,
@@ -34,6 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     ],
     exports: [
         CoreTagFeedComponent,
+        CoreTagListComponent,
     ],
 })
 export class CoreTagComponentsModule {}

@@ -44,6 +44,7 @@ import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
 import { CoreTimerComponent } from './timer/timer';
+import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
@@ -76,6 +77,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
         CoreTimerComponent,
+        CoreNavigationBarComponent,
     ],
     imports: [
         CommonModule,
@@ -112,6 +114,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreDynamicComponent,
         CoreSendMessageFormComponent,
         CoreTimerComponent,
+        CoreNavigationBarComponent,
     ],
 })
 export class CoreComponentsModule {}
