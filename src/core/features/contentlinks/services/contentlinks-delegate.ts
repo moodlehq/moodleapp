@@ -17,7 +17,6 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -56,8 +55,13 @@ export interface CoreContentLinksHandler {
      * @param data Extra data to handle the URL.
      * @return List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: Params, courseId?: number, data?: unknown):
-    CoreContentLinksAction[] | Promise<CoreContentLinksAction[]>;
+    getActions(
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+        courseId?: number,
+        data?: unknown,
+    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]>;
 
     /**
      * Check if a URL is handled by this handler.
@@ -85,7 +89,7 @@ export interface CoreContentLinksHandler {
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @return Whether the handler is enabled for the URL and site.
      */
-    isEnabled?(siteId: string, url: string, params: Params, courseId?: number): boolean | Promise<boolean>;
+    isEnabled?(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean>;
 }
 
 /**
@@ -244,7 +248,7 @@ export class CoreContentLinksDelegateService {
     protected async isHandlerEnabled(
         handler: CoreContentLinksHandler,
         url: string,
-        params: Params,
+        params: Record<string, string>,
         courseId: number,
         siteId: string,
     ): Promise<boolean> {
@@ -264,7 +268,7 @@ export class CoreContentLinksDelegateService {
             return true;
         }
 
-        return handler.isEnabled(siteId, url, params, courseId);
+        return await handler.isEnabled(siteId, url, params, courseId);
     }
 
     /**

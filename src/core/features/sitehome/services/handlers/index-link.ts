@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+
 import { CoreSites } from '@services/sites';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
@@ -59,7 +59,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @return Whether the handler is enabled for the URL and site.
      */
-    async isEnabled(siteId: string, url: string, params: Params, courseId?: number): Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
         courseId = parseInt(params.id, 10);
         if (!courseId) {
             return false;

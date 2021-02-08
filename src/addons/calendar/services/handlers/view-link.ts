@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
+
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -39,7 +40,11 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @return List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+    getActions(
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId?: string): void => {
                 if (!params.view || params.view == 'month' || params.view == 'mini' || params.view == 'minithree') {
@@ -47,7 +52,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     const stateParams: Params = {
                         courseId: params.course,
                     };
-                    const timestamp = params.time ? params.time * 1000 : Date.now();
+                    const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
                     const date = new Date(timestamp);
                     stateParams.year = date.getFullYear();
@@ -61,7 +66,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     const stateParams: Params = {
                         courseId: params.course,
                     };
-                    const timestamp = params.time ? params.time * 1000 : Date.now();
+                    const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
                     const date = new Date(timestamp);
                     stateParams.year = date.getFullYear();
@@ -94,7 +99,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @return Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string, url: string, params: Params): boolean | Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         if (params.view && SUPPORTED_VIEWS.indexOf(params.view) == -1) {
             // This type of view isn't supported in the app.
             return false;

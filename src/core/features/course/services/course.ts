@@ -133,7 +133,7 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param completion Completion status of the module.
      */
-    checkModuleCompletion(courseId: number, completion: CoreCourseModuleCompletionData): void {
+    checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): void {
         if (completion && completion.tracking === 2 && completion.state === 0) {
             this.invalidateSections(courseId).finally(() => {
                 CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, { courseId: courseId });

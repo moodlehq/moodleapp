@@ -48,7 +48,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
      * @param siteId The site ID.
      * @return Whether the handler is enabled for the URL and site.
      */
-    isEnabled(siteId: string): boolean | Promise<boolean> {
+    async isEnabled(siteId: string): Promise<boolean> {
         return CoreGrades.instance.isCourseGradesEnabled(siteId);
     }
 

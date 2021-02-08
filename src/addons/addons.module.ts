@@ -23,6 +23,7 @@ import { AddonCalendarModule } from './calendar/calendar.module';
 import { AddonNotificationsModule } from './notifications/notifications.module';
 import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
 import { AddonMessagesModule } from './messages/messages.module';
+import { AddonModModule } from './mod/mod.module';
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import { AddonMessagesModule } from './messages/messages.module';
         AddonUserProfileFieldModule,
         AddonNotificationsModule,
         AddonMessageOutputModule,
+        AddonModModule,
     ],
 })
 export class AddonsModule {}

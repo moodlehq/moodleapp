@@ -1,0 +1,29 @@
+$core-timer-warn-color: #cb3d4d !default;
+$core-timer-iterations: 15 !default;
+
+:host {
+    .core-timer {
+        --background: transparent !important;
+
+        .core-timer-time-left, .core-timesup {
+            font-weight: bold;
+        }
+
+        span {
+            margin-right: 5px;
+        }
+
+        // Create the timer warning colors.
+        @for $i from 0 through $core-timer-iterations {
+            &.core-timer-timeleft-#{$i} {
+                background-color: rgba($core-timer-warn-color, 1 - ($i / $core-timer-iterations)) !important;
+
+                @if $i <= $core-timer-iterations / 2 {
+                    label, span, ion-icon {
+                        color: var(--white);
+                    }
+                }
+            }
+        }
+    }
+}

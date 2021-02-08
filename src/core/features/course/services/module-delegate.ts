@@ -14,18 +14,17 @@
 
 import { Injectable, Type } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSite } from '@classes/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSModule } from './course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from './course';
 import { CoreSites } from '@services/sites';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModule } from './course-helper';
+import { CoreNavigationOptions } from '@services/navigator';
 
 /**
  * Interface that all course module handlers must implement.
@@ -53,7 +52,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseWSModule | CoreCourseModuleBasicInfo,
+        module: CoreCourseAnyModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -158,9 +157,8 @@ export interface CoreCourseModuleHandlerData {
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
-     * @param params Params for the new page.
      */
-    action?(event: Event, module: CoreCourseModule, courseId: number, options?: NavigationOptions, params?: Params): void;
+    action?(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void;
 
     /**
      * Updates the status of the module.
@@ -272,7 +270,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     getModuleDataFor(
         modname: string,
-        module: CoreCourseWSModule | CoreCourseModuleBasicInfo,
+        module: CoreCourseAnyModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,

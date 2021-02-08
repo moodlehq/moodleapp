@@ -17,6 +17,8 @@
     --white:           #{$white};
 
     --blue:            #{$blue};
+    --blue-dark:       #{$blue-dark};
+    --blue-light:      #{$blue-light};
     --turquoise:       #{$turquoise};
     --green:           #{$green};
     --red:             #{$red};
@@ -156,7 +158,7 @@
     --core-tab-color-active: var(--custom-tab-color-active, var(--core-color));
     --core-tab-border-color-active: var(--custom-tab-border-color-active, var(--core-color));
 
-    core-tabs {
+    core-tabs, core-tabs-outlet {
         --background: var(--core-tabs-background);
         ion-slide {
             --background: var(--core-tab-background);
@@ -185,6 +187,7 @@
 
     ion-item-divider {
         --background: var(--gray-lighter);
+        --color: inherit;
     }
 
     --core-button-select-background: var(--custom-button-select-background, var(--ion-color-primary-contrast));

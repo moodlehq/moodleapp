@@ -69,4 +69,26 @@
             transform: translateY(0) !important;
         }
     }
+
+    ::ng-deep {
+        core-tab, .core-tab {
+            display: none;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+
+            &.selected {
+                display: block;
+            }
+
+            ion-header {
+                display: none;
+            }
+
+            .fixed-content, .scroll-content {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+        }
+    }
 }

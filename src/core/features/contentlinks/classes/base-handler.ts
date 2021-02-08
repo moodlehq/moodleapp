@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Params } from '@angular/router';
 import { CoreContentLinksHandler, CoreContentLinksAction } from '../services/contentlinks-delegate';
 
 /**
@@ -67,7 +66,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         url: string,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        params: Params,
+        params: Record<string, string>,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         courseId?: number,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -112,7 +111,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @return Whether the handler is enabled for the URL and site.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isEnabled(siteId: string, url: string, params: Params, courseId?: number): boolean | Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
         return true;
     }
 

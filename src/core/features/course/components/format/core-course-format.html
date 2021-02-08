@@ -95,7 +95,7 @@
 
             <ion-buttons class="ion-padding core-course-section-nav-buttons safe-padding-horizontal"
                 *ngIf="displaySectionSelector && sections?.length">
-                <ion-button *ngIf="previousSection" color="medium" (click)="sectionChanged(previousSection)"
+                <ion-button *ngIf="previousSection" color="light" (click)="sectionChanged(previousSection)"
                     title="{{ 'core.previous' | translate }}">
                     <ion-icon name="fas-chevron-left" slot="icon-only"></ion-icon>
                     <core-format-text class="accesshide" [text]="previousSection.name" contextLevel="course"

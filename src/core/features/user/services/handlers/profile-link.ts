@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
 
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
@@ -43,7 +42,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
     getActions(
         siteIds: string[],
         url: string,
-        params: Params,
+        params: Record<string, string>,
         courseId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         data?: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
@@ -70,7 +69,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
      * @return Whether the handler is enabled for the URL and site.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isEnabled(siteId: string, url: string, params: Params, courseId?: number): boolean | Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
         return url.indexOf('/grade/report/') == -1;
     }
 

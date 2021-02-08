@@ -1,0 +1,38 @@
+:host {
+   --background-odd: var(--gray-lighter);
+}
+
+:host-context(body.dark) {
+   --background-odd: var(--gray-darker);
+}
+
+:host ::ng-deep {
+    .addon-mod_lesson-slideshow {
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0 auto;
+    }
+
+    .studentanswer {
+        padding-inline-start: 8px;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 1.5rem;
+
+        tr:nth-child(odd) {
+            background-color: var(--background-odd);
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        td {
+            padding: 5px;
+            line-height: 1.5;
+            border-bottom: 1px solid var(--gray);
+        }
+    }
+}

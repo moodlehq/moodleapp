@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -39,7 +39,11 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @return List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+    getActions(
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId): void => {
                 const stateParams = {
@@ -59,7 +63,7 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @return Whether the handler is enabled for the URL and site.
      */
-    async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         const enabled = await AddonMessages.instance.isPluginEnabled(siteId);
         if (!enabled) {
             return false;

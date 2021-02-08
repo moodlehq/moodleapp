@@ -15,6 +15,8 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreCronDelegate } from '@services/cron';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { SITE_SCHEMA } from './services/database/pushnotifications';
 import { CorePushNotificationsRegisterCronHandler } from './services/handlers/register-cron';
 import { CorePushNotificationsUnregisterCronHandler } from './services/handlers/unregister-cron';
 import { CorePushNotifications } from './services/pushnotifications';
@@ -25,6 +27,11 @@ import { CorePushNotifications } from './services/pushnotifications';
     imports: [
     ],
     providers: [
+        {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [SITE_SCHEMA],
+            multi: true,
+        },
         {
             provide: APP_INITIALIZER,
             multi: true,

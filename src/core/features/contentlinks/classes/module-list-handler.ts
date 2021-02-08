@@ -14,7 +14,7 @@
 
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { Translate } from '@singletons';
-import { Params } from '@angular/router';
+
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 
@@ -53,7 +53,11 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @return List of (or promise resolved with list of) actions.
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+    getActions(
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         return [{
             action: (siteId): void => {
