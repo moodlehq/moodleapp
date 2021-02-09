@@ -18,19 +18,11 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
     {
         path: ':courseId/:cmdId',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModLessonIndexPageModule),
-    },
-    {
-        path: 'player/:courseId/:lessonId',
-        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModLessonPlayerPageModule),
-    },
-    {
-        path: 'user-retake/:courseId/:lessonId',
-        loadChildren: () => import('./pages/user-retake/user-retake.module').then( m => m.AddonModLessonUserRetakePageModule),
+        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModBookIndexPageModule),
     },
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
 })
-export class AddonModLessonLazyModule {}
+export class AddonModBookLazyModule {}

@@ -45,7 +45,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     filter = '';
     showFilter = false;
     coursesLoaded = false;
-    downloadAllCoursesIcon = CoreConstants.NOT_DOWNLOADED_ICON;
+    downloadAllCoursesIcon = CoreConstants.ICON_NOT_DOWNLOADED;
     downloadAllCoursesLoading = false;
     downloadAllCoursesBadge = '';
     downloadAllCoursesEnabled = false;

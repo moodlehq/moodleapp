@@ -14,29 +14,34 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreTagFeedComponent } from './feed/feed';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreTagListComponent } from './list/list';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+
+import { AddonModBookIndexComponent } from './index/index';
+import { AddonModBookTocComponent } from './toc/toc';
 
 @NgModule({
     declarations: [
-        CoreTagFeedComponent,
-        CoreTagListComponent,
+        AddonModBookIndexComponent,
+        AddonModBookTocComponent,
     ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
+        FormsModule,
         CoreSharedModule,
-    ],
-    providers: [
+        CoreCourseComponentsModule,
+        CoreTagComponentsModule,
     ],
     exports: [
-        CoreTagFeedComponent,
-        CoreTagListComponent,
+        AddonModBookIndexComponent,
+        AddonModBookTocComponent,
     ],
 })
-export class CoreTagComponentsModule {}
+export class AddonModBookComponentsModule {}

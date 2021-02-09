@@ -48,6 +48,7 @@ export type CoreNavigationOptions = {
     animated?: boolean;
     params?: Params;
     reset?: boolean;
+    preferCurrentTab?: boolean; // Default true.
 };
 
 /**
@@ -362,6 +363,10 @@ export class CoreNavigatorService {
             CoreMainMenu.instance.isMainMenuTab(pathRoot),
             false,
         );
+
+        if (options.preferCurrentTab === false && isMainMenuTab) {
+            return this.navigate(`/main/${path}`, options);
+        }
 
         // Open the path within the current main tab.
         if (currentMainMenuTab && (!isMainMenuTab || pathRoot !== currentMainMenuTab)) {

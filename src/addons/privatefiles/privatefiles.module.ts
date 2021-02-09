@@ -18,6 +18,7 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { AddonPrivateFilesMainMenuHandler, AddonPrivateFilesMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 const routes: Routes = [
     {
@@ -27,7 +28,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [CoreMainMenuRoutingModule.forChild({ children: routes })],
+    imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreMainMenuRoutingModule.forChild({ children: routes }),
+    ],
     exports: [CoreMainMenuRoutingModule],
     providers: [
         {

@@ -1,0 +1,8 @@
+{
+    "errorchapter": "Error reading chapter of book.",
+    "modulenameplural": "Books",
+    "navnexttitle": "Next: {{$a}}",
+    "navprevtitle": "Previous: {{$a}}",
+    "tagarea_book_chapters": "Book chapters",
+    "toc": "Table of contents"
+}

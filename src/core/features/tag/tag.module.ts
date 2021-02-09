@@ -21,6 +21,7 @@ import { CoreTagMainMenuHandler, CoreTagMainMenuHandlerService } from './service
 import { CoreTagIndexLinkHandler } from './services/handlers/index-link';
 import { CoreTagSearchLinkHandler } from './services/handlers/search-link';
 import { CoreTagComponentsModule } from './components/components.module';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 const routes: Routes = [
     {
@@ -31,6 +32,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
         CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreTagComponentsModule,
     ],

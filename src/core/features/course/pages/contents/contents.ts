@@ -45,6 +45,7 @@ import {
     CoreEventCompletionModuleViewedData,
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Page that displays the contents of a course.
@@ -71,7 +72,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     displayEnableDownload = false;
     displayRefresher = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
-        icon: 'spinner',
+        icon: CoreConstants.ICON_LOADING,
         statusTranslatable: 'core.course.downloadcourse',
         status: '',
         loading: true,
@@ -171,7 +172,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         // Determine the course prefetch status.
         await this.determineCoursePrefetchIcon();
 
-        if (this.prefetchCourseData.icon != 'spinner') {
+        if (this.prefetchCourseData.icon != CoreConstants.ICON_LOADING) {
             return;
         }
 

@@ -58,7 +58,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     // Data for context menu.
     externalUrl?: string; // External URL to open in browser.
     description?: string; // Module description.
-    refreshIcon = 'spinner'; // Refresh icon, normally spinner or refresh.
+    refreshIcon = CoreConstants.ICON_LOADING; // Refresh icon, normally spinner or refresh.
     prefetchStatusIcon?: string; // Used when calling fillContextMenu.
     prefetchStatus?: string; // Used when calling fillContextMenu.
     prefetchText?: string; // Used when calling fillContextMenu.
@@ -132,14 +132,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             return;
         }
 
-        this.refreshIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
 
         try {
             await CoreUtils.instance.ignoreErrors(this.invalidateContent());
 
             await this.loadContent(true);
         } finally  {
-            this.refreshIcon = 'fas-redo';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
         }
     }
 
@@ -181,7 +181,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
             this.loaded = true;
-            this.refreshIcon = 'fas-redo';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
         }
     }
 

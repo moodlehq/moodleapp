@@ -14,11 +14,13 @@
 
 import { NgModule } from '@angular/core';
 
+import { AddonModBookModule } from './book/book.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
 
 @NgModule({
     declarations: [],
     imports: [
+        AddonModBookModule,
         AddonModLessonModule,
     ],
     providers: [],

@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'addon.mod_book.toc' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <nav>
+        <ion-list>
+            <ion-item class="ion-text-wrap" *ngFor="let chapter of chapters" (click)="loadChapter(chapter.id)"
+                [class.core-nav-item-selected]="selected == chapter.id"
+                [class.item-dimmed]="chapter.hidden">
+                <ion-label>
+                    <p [class.ion-padding-left]="addPadding && chapter.level == 1 ? true : null">
+                        <span *ngIf="showNumbers" class="addon-mod-book-number">{{chapter.indexNumber}}</span>
+                        <span *ngIf="showBullets" class="addon-mod-book-bullet">&bull;</span>
+                        <core-format-text [text]="chapter.title" contextLevel="module" [contextInstanceId]="moduleId"
+                            [courseId]="courseId">
+                        </core-format-text>
+                    </p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </nav>
+</ion-content>

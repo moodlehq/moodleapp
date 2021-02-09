@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
+
 /**
  * Settings section.
  */
@@ -40,7 +42,7 @@ export class CoreSettingsConstants {
         {
             name: 'synchronization',
             path: 'sync',
-            icon: 'fas-sync-alt',
+            icon: CoreConstants.ICON_SYNC,
         },
         // @TODO sharedfiles
         {

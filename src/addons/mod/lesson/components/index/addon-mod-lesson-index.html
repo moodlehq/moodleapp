@@ -20,7 +20,7 @@
             [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
-            iconDescription="fas-cube" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
         </core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
@@ -161,7 +161,9 @@
                         </ion-label>
                         <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-mod_lesson-groupslabel"
                             interface="action-sheet">
-                            <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">{{groupOpt.name}}</ion-select-option>
+                            <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                                {{groupOpt.name}}
+                            </ion-select-option>
                         </ion-select>
                     </ion-item>
 

@@ -28,6 +28,7 @@ import { CALENDAR_SITE_SCHEMA } from './services/database/calendar';
 import { CALENDAR_OFFLINE_SITE_SCHEMA } from './services/database/calendar-offline';
 import { AddonCalendarComponentsModule } from './components/components.module';
 import { AddonCalendar } from './services/calendar';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 const mainMenuChildrenRoutes: Routes = [
     {
@@ -38,6 +39,7 @@ const mainMenuChildrenRoutes: Routes = [
 
 @NgModule({
     imports: [
+        CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
         AddonCalendarComponentsModule,
     ],

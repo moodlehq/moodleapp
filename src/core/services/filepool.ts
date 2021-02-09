@@ -2196,15 +2196,16 @@ export class CoreFilepoolProvider {
         }
 
         const fileIds = items.map((item) => item.fileId);
+
         const whereAndParams = db.getInOrEqual(fileIds);
 
-        whereAndParams[0] = 'fileId ' + whereAndParams[0];
+        whereAndParams.sql = 'fileId ' + whereAndParams.sql;
 
         if (onlyUnknown) {
-            whereAndParams[0] += ' AND (' + CoreFilepoolProvider.FILE_UPDATE_UNKNOWN_WHERE_CLAUSE + ')';
+            whereAndParams.sql += ' AND (' + CoreFilepoolProvider.FILE_UPDATE_UNKNOWN_WHERE_CLAUSE + ')';
         }
 
-        await db.updateRecordsWhere(FILES_TABLE_NAME, { stale: 1 }, whereAndParams[0], whereAndParams[1]);
+        await db.updateRecordsWhere(FILES_TABLE_NAME, { stale: 1 }, whereAndParams.sql, whereAndParams.params);
     }
 
     /**

@@ -32,6 +32,7 @@ import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
 import { CoreNavigator } from '@services/navigator';
 import { CoreLocalNotifications } from '@services/local-notifications';
+import { CoreConstants } from '@/core/constants';
 
 
 /**
@@ -68,7 +69,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     loaded = false;
     hasOffline = false;
     isOnline = false;
-    syncIcon = 'spinner';
+    syncIcon = CoreConstants.ICON_LOADING;
     showCalendar = true;
     loadUpcoming = false;
     filter: AddonCalendarFilter = {
@@ -194,7 +195,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      */
     async fetchData(sync?: boolean, showErrors?: boolean): Promise<void> {
 
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
         this.isOnline = CoreApp.instance.isOnline();
 
         if (sync) {
@@ -254,7 +255,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }
 
         this.loaded = true;
-        this.syncIcon = 'fas-sync-alt';
+        this.syncIcon = CoreConstants.ICON_SYNC;
     }
 
     /**
@@ -285,7 +286,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async refreshData(sync = false, showErrors = false): Promise<void> {
-        this.syncIcon = 'spinner';
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         const promises: Promise<void>[] = [];
 
