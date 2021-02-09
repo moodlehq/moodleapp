@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
+import { makeSingleton } from '@singletons';
 
-import { AddonModAssignModule } from './assign/assign.module';
-import { AddonModBookModule } from './book/book.module';
-import { AddonModLessonModule } from './lesson/lesson.module';
-import { AddonModPageModule } from './page/page.module';
+/**
+ * Handler to treat links to assign list page.
+ */
+@Injectable({ providedIn: 'root' })
+export class AddonModAssignListLinkHandlerService extends CoreContentLinksModuleListHandler {
 
-@NgModule({
-    declarations: [],
-    imports: [
-        AddonModAssignModule,
-        AddonModBookModule,
-        AddonModLessonModule,
-        AddonModPageModule,
-    ],
-    providers: [],
-    exports: [],
-})
-export class AddonModModule { }
+    name = 'AddonModAssignListLinkHandler';
+
+    constructor() {
+        super('AddonModAssign', 'assign');
+    }
+
+}
+export const AddonModAssignListLinkHandler = makeSingleton(AddonModAssignListLinkHandlerService);

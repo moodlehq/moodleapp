@@ -380,6 +380,11 @@ export class CoreNavigatorService {
         // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
         // @todo this.location.replaceState('');
 
+        options = {
+            preferCurrentTab: true,
+            ...options,
+        };
+
         path = path.replace(/^(\.|\/main)?\//, '');
 
         const pathRoot = /^[^/]+/.exec(path)?.[0] ?? '';
@@ -389,7 +394,7 @@ export class CoreNavigatorService {
             false,
         );
 
-        if (options.preferCurrentTab === false && isMainMenuTab) {
+        if (!options.preferCurrentTab && isMainMenuTab) {
             return this.navigate(`/main/${path}`, options);
         }
 
