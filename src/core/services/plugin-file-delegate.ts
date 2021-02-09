@@ -310,7 +310,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
      * @return RegExp to match the revision on pluginfile URLs.
      */
-    getComponentRevisionRegExp?(args: string[]): RegExp;
+    getComponentRevisionRegExp?(args: string[]): RegExp | undefined;
 
     /**
      * Should return the string to remove the revision on pluginfile url.
