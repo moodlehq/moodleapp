@@ -27,9 +27,10 @@ import {
 } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSplitViewComponent, CoreSplitViewMode } from '@components/split-view/split-view';
 import { CoreObject } from '@singletons/object';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays a course grades.
@@ -42,14 +43,18 @@ import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     grades: CoreGradesCourseManager;
+    splitViewMode?: CoreSplitViewMode;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor(route: ActivatedRoute) {
-        const courseId = parseInt(route.snapshot.params.courseId);
+        const courseId = parseInt(route.snapshot.params.courseId ?? route.snapshot.queryParams.courseId);
         const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId());
+        const useSplitView = route.snapshot.data.useSplitView ?? true;
+        const outsideGradesTab = route.snapshot.data.outsideGradesTab ?? false;
 
-        this.grades = new CoreGradesCourseManager(CoreGradesCoursePage, courseId, userId);
+        this.splitViewMode = useSplitView ? undefined : CoreSplitViewMode.MenuOnly;
+        this.grades = new CoreGradesCourseManager(CoreGradesCoursePage, courseId, userId, outsideGradesTab);
     }
 
     /**
@@ -118,11 +123,14 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
     columns?: CoreGradesFormattedTableColumn[];
     rows?: CoreGradesFormattedTableRow[];
 
-    constructor(pageComponent: unknown, courseId: number, userId: number) {
+    private outsideGradesTab: boolean;
+
+    constructor(pageComponent: unknown, courseId: number, userId: number, outsideGradesTab: boolean) {
         super(pageComponent);
 
         this.courseId = courseId;
         this.userId = userId;
+        this.outsideGradesTab = outsideGradesTab;
     }
 
     /**
@@ -135,6 +143,19 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
         this.rows = table.rows;
 
         this.setItems(table.rows.filter(this.isFilledRow));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async select(row: CoreGradesFormattedTableRowFilled): Promise<void> {
+        if (this.outsideGradesTab) {
+            await CoreNavigator.instance.navigateToSitePath(`/grades/${this.courseId}/${row.id}`);
+
+            return;
+        }
+
+        return super.select(row);
     }
 
     /**

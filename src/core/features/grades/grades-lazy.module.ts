@@ -18,13 +18,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
+import { CoreSharedModule } from '@/core/shared.module';
 
-import { CoreGradesCoursePage } from './pages/course/course';
+import { CoreGradesCoursePage } from './pages/course/course.page';
+import { CoreGradesCoursePageModule } from './pages/course/course.module';
 import { CoreGradesCoursesPage } from './pages/courses/courses';
 import { CoreGradesGradePage } from './pages/grade/grade';
-import { conditionalRoutes } from '@/app/app-routing.module';
 
 const mobileRoutes: Routes = [
     {
@@ -76,10 +77,10 @@ const routes: Routes = [
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
+        CoreGradesCoursePageModule,
     ],
     declarations: [
         CoreGradesCoursesPage,
-        CoreGradesCoursePage,
         CoreGradesGradePage,
     ],
 })

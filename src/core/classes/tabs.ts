@@ -520,12 +520,12 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * @return Promise resolved when done.
      */
     async selectByIndex(index: number, e?: Event): Promise<void> {
+        e?.preventDefault();
+        e?.stopPropagation();
+
         if (index < 0 || index >= this.tabs.length) {
             if (this.selected) {
                 // Invalid index do not change tab.
-                e?.preventDefault();
-                e?.stopPropagation();
-
                 return;
             }
 
@@ -536,9 +536,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         const tabToSelect = this.tabs[index];
         if (!tabToSelect || !tabToSelect.enabled || tabToSelect.id == this.selected) {
             // Already selected or not enabled.
-            e?.preventDefault();
-            e?.stopPropagation();
-
             return;
         }
 

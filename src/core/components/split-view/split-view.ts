@@ -18,7 +18,7 @@ import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
-enum CoreSplitViewMode {
+export enum CoreSplitViewMode {
     MenuOnly = 'menu-only', // Hides content.
     ContentOnly = 'content-only', // Hides menu.
     MenuAndContent = 'menu-and-content', // Shows both menu and content.
@@ -34,6 +34,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     @ViewChild(IonRouterOutlet) outlet!: IonRouterOutlet;
     @HostBinding('class') classes = '';
     @Input() placeholderText = 'core.emptysplit';
+    @Input() mode?: CoreSplitViewMode;
     isNested = false;
 
     private outletRouteSubject: BehaviorSubject<ActivatedRouteSnapshot | null> = new BehaviorSubject(null);
@@ -100,6 +101,10 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * @return Split view mode.
      */
     private getCurrentMode(): CoreSplitViewMode {
+        if (this.mode) {
+            return this.mode;
+        }
+
         if (this.isNested) {
             return CoreSplitViewMode.MenuOnly;
         }

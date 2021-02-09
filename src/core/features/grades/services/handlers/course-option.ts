@@ -83,19 +83,14 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data or promise resolved with the data.
+     * @inheritdoc
      */
     getDisplayData(): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
-        throw new Error('CoreGradesCourseOptionHandler.getDisplayData is not implemented');
-
-        // @todo
-        // return {
-        //     title: 'core.grades.grades',
-        //     class: 'core-grades-course-handler',
-        //     component: CoreGradesCourseComponent,
-        // };
+        return {
+            title: 'core.grades.grades',
+            class: 'core-grades-course-handler',
+            page: 'grades',
+        };
     }
 
     /**

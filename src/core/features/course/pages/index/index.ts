@@ -115,7 +115,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Load the course handlers.
         const handlers = await CoreCourseOptionsDelegate.instance.getHandlersToDisplay(this.course!, false, false);
 
-        this.tabs.concat(handlers.map(handler => handler.data));
+        this.tabs = [...this.tabs, ...handlers.map(handler => handler.data)];
 
         let tabToLoad: number | undefined;
 

@@ -7,7 +7,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-split-view>
+    <core-split-view [mode]="splitViewMode">
         <ion-refresher slot="fixed" [disabled]="!grades.loaded" (ionRefresh)="refreshGrades($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
