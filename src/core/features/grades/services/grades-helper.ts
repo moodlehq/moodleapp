@@ -144,9 +144,9 @@ export class CoreGradesHelperProvider {
      */
     formatGradesTable(table: CoreGradesTable): CoreGradesFormattedTable {
         const maxDepth = table.maxdepth;
-        const formatted: CoreGradesFormattedTable = {
-            columns: [],
-            rows: [],
+        const formatted = {
+            columns: [] as any[],
+            rows: [] as any[],
         };
 
         // Columns, in order.
@@ -673,9 +673,21 @@ export class CoreGradesHelper extends makeSingleton(CoreGradesHelperProvider) {}
 export type CoreGradesFormattedRow = any;
 export type CoreGradesFormattedRowForTable = any;
 export type CoreGradesFormattedItem = any;
+export type CoreGradesFormattedTableColumn = any;
+export type CoreGradesFormattedTableRow = CoreGradesFormattedTableRowFilled | CoreGradesFormattedTableRowEmpty;
 export type CoreGradesFormattedTable = {
-    columns: any[];
-    rows: any[];
+    columns: CoreGradesFormattedTableColumn[];
+    rows: CoreGradesFormattedTableRow[];
+};
+export type CoreGradesFormattedTableRowFilled = {
+    // @todo complete types.
+    id: number;
+    itemtype: 'category' | 'leader';
+    grade: unknown;
+    percentage: unknown;
+};
+type CoreGradesFormattedTableRowEmpty ={
+    //
 };
 
 /**

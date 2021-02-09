@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute } from '@angular/router';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { Subscription } from 'rxjs';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreGradesFormattedTable, CoreGradesHelper } from '@features/grades/services/grades-helper';
-import { CoreNavigator } from '@services/navigator';
+import {
+    CoreGradesFormattedTable,
+    CoreGradesFormattedTableColumn,
+    CoreGradesFormattedTableRow,
+    CoreGradesFormattedTableRowFilled,
+    CoreGradesHelper,
+} from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreScreen } from '@services/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreObject } from '@singletons/object';
+import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 
 /**
  * Page that displays a course grades.
@@ -35,116 +39,147 @@ import { CoreObject } from '@singletons/object';
     templateUrl: 'course.html',
     styleUrls: ['course.scss'],
 })
-export class CoreGradesCoursePage implements OnInit, OnDestroy {
+export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
-    courseId: number;
-    userId: number;
-    gradesTable?: CoreGradesFormattedTable;
-    gradesTableLoaded = false;
-    activeGradeId?: number;
-    layoutSubscription?: Subscription;
+    grades: CoreGradesCourseManager;
 
-    @ViewChild(CoreSplitViewComponent) splitView?: CoreSplitViewComponent;
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    constructor(private route: ActivatedRoute) {
-        this.courseId = route.snapshot.params.courseId;
-        this.userId = route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId();
+    constructor(route: ActivatedRoute) {
+        const courseId = parseInt(route.snapshot.params.courseId);
+        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId());
+
+        this.grades = new CoreGradesCourseManager(CoreGradesCoursePage, courseId, userId);
     }
 
     /**
      * @inheritdoc
      */
-    async ngOnInit(): Promise<void> {
-        this.layoutSubscription = CoreScreen.instance.layoutObservable.subscribe(() => this.updateActiveGrade());
+    async ngAfterViewInit(): Promise<void> {
+        await this.fetchInitialGrades();
 
-        await this.fetchGradesTable();
-
-        // Add log in Moodle.
-        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.logCourseGradesView(this.courseId, this.userId));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ionViewWillEnter(): void {
-        this.updateActiveGrade();
+        this.grades.watchSplitViewOutlet(this.splitView);
+        this.grades.start();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.layoutSubscription?.unsubscribe();
+        this.grades.destroy();
     }
 
     /**
-     * Fetch all the data required for the view.
-     */
-    async fetchGradesTable(): Promise<void> {
-        try {
-            const table = await CoreGrades.instance.getCourseGradesTable(this.courseId, this.userId);
-
-            this.gradesTable = CoreGradesHelper.instance.formatGradesTable(table);
-        } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading grades');
-
-            this.gradesTable = { rows: [], columns: [] };
-        } finally {
-            this.gradesTableLoaded = true;
-        }
-    }
-
-    /**
-     * Refresh data.
+     * Refresh grades.
      *
      * @param refresher Refresher.
      */
-    async refreshGradesTable(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.invalidateCourseGradesData(this.courseId, this.userId));
-        await CoreUtils.instance.ignoreErrors(this.fetchGradesTable());
+    async refreshGrades(refresher: IonRefresher): Promise<void> {
+        const { courseId, userId } = this.grades;
 
-        refresher.complete();
+        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.invalidateCourseGradesData(courseId, userId));
+        await CoreUtils.instance.ignoreErrors(this.fetchGrades());
+
+        refresher?.complete();
     }
 
     /**
-     * Navigate to the grade of the selected item.
-     *
-     * @param gradeId Grade item ID where to navigate.
+     * Obtain the initial table of grades.
      */
-    async gotoGrade(gradeId: number): Promise<void> {
-        const path = this.activeGradeId ? `../${gradeId}` : gradeId.toString();
+    private async fetchInitialGrades(): Promise<void> {
+        try {
+            await this.fetchGrades();
+        } catch (error) {
+            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading course');
 
-        await CoreNavigator.instance.navigate(path, {
-            params: CoreObject.withoutEmpty({ userId: this.userId }),
-        });
-
-        this.updateActiveGrade(gradeId);
-    }
-
-    /**
-     * Update active grade.
-     *
-     * @param activeGradeId Active grade id.
-     */
-    private updateActiveGrade(activeGradeId?: number): void {
-        if (CoreScreen.instance.isMobile || this.splitView?.isNested) {
-            delete this.activeGradeId;
-
-            return;
+            this.grades.setTable({ columns: [], rows: [] });
         }
-
-        this.activeGradeId = activeGradeId ?? this.guessActiveGrade();
     }
 
     /**
-     * Guess active grade looking at the current route.
-     *
-     * @return Active grade id.
+     * Update the table of grades.
      */
-    private guessActiveGrade(): number | undefined {
-        const gradeId = parseInt(this.route.snapshot?.firstChild?.params.gradeId);
+    private async fetchGrades(): Promise<void> {
+        const table = await CoreGrades.instance.getCourseGradesTable(this.grades.courseId!, this.grades.userId);
+        const formattedTable = await CoreGradesHelper.instance.formatGradesTable(table);
 
-        return isNaN(gradeId) ? undefined : gradeId;
+        this.grades.setTable(formattedTable);
+    }
+
+}
+
+/**
+ * Helper to manage the table of grades.
+ */
+class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormattedTableRowFilled> {
+
+    courseId: number;
+    userId: number;
+    columns?: CoreGradesFormattedTableColumn[];
+    rows?: CoreGradesFormattedTableRow[];
+
+    constructor(pageComponent: unknown, courseId: number, userId: number) {
+        super(pageComponent);
+
+        this.courseId = courseId;
+        this.userId = userId;
+    }
+
+    /**
+     * Set grades table.
+     *
+     * @param table Grades table.
+     */
+    setTable(table: CoreGradesFormattedTable): void {
+        this.columns = table.columns;
+        this.rows = table.rows;
+
+        this.setItems(table.rows.filter(this.isFilledRow));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getDefaultItem(): CoreGradesFormattedTableRowFilled | null {
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(row: CoreGradesFormattedTableRowFilled): string {
+        return row.id.toString();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemQueryParams(): Params {
+        return CoreObject.withoutEmpty({ userId: this.userId });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        return route.params.gradeId ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await CoreGrades.instance.logCourseGradesView(this.courseId!, this.userId!);
+    }
+
+    /**
+     * Check whether the given row is filled or not.
+     *
+     * @param row Grades table row.
+     * @return Whether the given row is filled or not.
+     */
+    private isFilledRow(row: CoreGradesFormattedTableRow): row is CoreGradesFormattedTableRowFilled {
+        return 'id' in row;
     }
 
 }

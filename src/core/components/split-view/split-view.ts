@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 enum CoreSplitViewMode {
     MenuOnly = 'menu-only', // Hides content.
@@ -35,9 +36,18 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     @Input() placeholderText = 'core.emptysplit';
     isNested = false;
 
+    private outletRouteSubject: BehaviorSubject<ActivatedRouteSnapshot | null> = new BehaviorSubject(null);
     private subscriptions?: Subscription[];
 
     constructor(private element: ElementRef<HTMLElement>) {}
+
+    get outletRoute(): ActivatedRouteSnapshot | null {
+        return this.outletRouteSubject.value;
+    }
+
+    get outletRouteObservable(): Observable<ActivatedRouteSnapshot | null> {
+        return this.outletRouteSubject.asObservable();
+    }
 
     /**
      * @inheritdoc
@@ -45,8 +55,14 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.isNested = !!this.element.nativeElement.parentElement?.closest('core-split-view');
         this.subscriptions = [
-            this.outlet.activateEvents.subscribe(() => this.updateClasses()),
-            this.outlet.deactivateEvents.subscribe(() => this.updateClasses()),
+            this.outlet.activateEvents.subscribe(() => {
+                this.updateClasses();
+                this.outletRouteSubject.next(this.outlet.activatedRoute.snapshot);
+            }),
+            this.outlet.deactivateEvents.subscribe(() => {
+                this.updateClasses();
+                this.outletRouteSubject.next(null);
+            }),
             CoreScreen.instance.layoutObservable.subscribe(() => this.updateClasses()),
         ];
 

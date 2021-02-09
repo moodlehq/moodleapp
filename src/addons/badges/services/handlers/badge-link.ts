@@ -43,13 +43,7 @@ export class AddonBadgesBadgeLinkHandlerService extends CoreContentLinksHandlerB
 
         return [{
             action: (siteId: string): void => {
-                CoreNavigator.instance.navigateToSitePath(
-                    '/badges/issue',
-                    {
-                        siteId,
-                        params: { courseId: 0, badgeHash: params.hash },
-                    },
-                );
+                CoreNavigator.instance.navigateToSitePath(`/badges/${params.hash}`, { siteId });
             },
         }];
     }

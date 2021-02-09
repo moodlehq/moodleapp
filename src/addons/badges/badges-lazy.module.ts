@@ -12,29 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
-import { Route, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
+import { CoreSharedModule } from '@/core/shared.module';
 
-export const AddonBadgesIssueRoute: Route = {
-    path: 'issue',
-    loadChildren: () => import('./pages/issued-badge/issued-badge.module').then( m => m.AddonBadgesIssuedBadgePageModule),
-};
+import { AddonBadgesIssuedBadgePage } from './pages/issued-badge/issued-badge';
+import { AddonBadgesUserBadgesPage } from './pages/user-badges/user-badges';
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'user',
         pathMatch: 'full',
+        component: AddonBadgesUserBadgesPage,
     },
-    AddonBadgesIssueRoute,
     {
-        path: 'user',
-        loadChildren: () => import('./pages/user-badges/user-badges.module').then( m => m.AddonBadgesUserBadgesPageModule),
+        path: ':badgeHash',
+        component: AddonBadgesIssuedBadgePage,
     },
 ];
 
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        component: AddonBadgesUserBadgesPage,
+        children: [
+            {
+                path: ':badgeHash',
+                component: AddonBadgesIssuedBadgePage,
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
+];
+
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        IonicModule,
+        TranslateModule.forChild(),
+        CoreSharedModule,
+    ],
+    declarations: [
+        AddonBadgesUserBadgesPage,
+        AddonBadgesIssuedBadgePage,
+    ],
 })
 export class AddonBadgesLazyModule {}

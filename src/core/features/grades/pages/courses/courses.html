@@ -8,34 +8,34 @@
 </ion-header>
 <ion-content>
     <core-split-view>
-        <ion-refresher slot="fixed" [disabled]="!gradesLoaded" (ionRefresh)="refreshGrades($event.target)">
+        <ion-refresher slot="fixed" [disabled]="!courses.loaded" (ionRefresh)="refreshCourses($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
-        <core-loading [hideUntil]="gradesLoaded">
+        <core-loading [hideUntil]="courses.loaded">
             <core-empty-box
-                *ngIf="grades && grades.length == 0"
+                *ngIf="courses.empty"
                 icon="stats"
                 [message]="'core.grades.nogradesreturned' | translate"
             ></core-empty-box>
 
-            <ion-list *ngIf="grades && grades.length > 0">
+            <ion-list *ngIf="!courses.empty">
                 <ion-item
-                    *ngFor="let grade of grades"
-                    [title]="grade.courseFullName"
-                    [class.core-selected-item]="grade.courseid === this.activeCourseId"
+                    *ngFor="let course of courses.items"
+                    [title]="course.courseFullName"
+                    [class.core-selected-item]="courses.isSelected(course)"
                     class="ion-text-wrap"
                     button
                     detail
-                    (click)="openCourse(grade.courseid)"
+                    (click)="courses.select(course)"
                 >
                     <ion-label>
                         <core-format-text
-                            [text]="grade.courseFullName"
-                            [contextInstanceId]="grade.courseid"
+                            [text]="course.courseFullName"
+                            [contextInstanceId]="course.courseid"
                             contextLevel="course"
                         ></core-format-text>
                     </ion-label>
-                    <ion-badge slot="end" color="light">{{grade.grade}}</ion-badge>
+                    <ion-badge slot="end" color="light">{{course.grade}}</ion-badge>
                 </ion-item>
             </ion-list>
         </core-loading>

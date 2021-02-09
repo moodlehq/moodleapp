@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
-import { Subscription } from 'rxjs';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRouteSnapshot } from '@angular/router';
+import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreGradesHelper, CoreGradesGradeOverviewWithCourseData } from '@features/grades/services/grades-helper';
-import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CoreGradesGradeOverviewWithCourseData, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { IonRefresher } from '@ionic/angular';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { ActivatedRoute } from '@angular/router';
 
 /**
  * Page that displays courses grades (main menu option).
@@ -31,113 +30,92 @@ import { ActivatedRoute } from '@angular/router';
     selector: 'page-core-grades-courses',
     templateUrl: 'courses.html',
 })
-export class CoreGradesCoursesPage implements OnInit, OnDestroy {
+export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
-    grades?: CoreGradesGradeOverviewWithCourseData[];
-    gradesLoaded = false;
-    activeCourseId?: number;
-    layoutSubscription?: Subscription;
+    courses: CoreGradesCoursesManager = new CoreGradesCoursesManager(CoreGradesCoursesPage);
 
-    constructor(private route: ActivatedRoute) {}
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     /**
      * @inheritdoc
      */
-    async ngOnInit(): Promise<void> {
-        this.layoutSubscription = CoreScreen.instance.layoutObservable.subscribe(() => this.updateActiveCourse());
-        this.updateActiveCourse();
+    async ngAfterViewInit(): Promise<void> {
+        await this.fetchInitialCourses();
 
-        await this.fetchGrades();
-
-        if (!CoreScreen.instance.isMobile && !this.activeCourseId && this.grades && this.grades.length > 0) {
-            this.openCourse(this.grades[0].courseid);
-        }
-
-        // Add log in Moodle.
-        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.logCoursesGradesView());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ionViewWillEnter(): void {
-        this.updateActiveCourse();
+        this.courses.watchSplitViewOutlet(this.splitView);
+        this.courses.start();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.layoutSubscription?.unsubscribe();
+        this.courses.destroy();
     }
 
     /**
-     * Fetch all the data required for the view.
-     */
-    async fetchGrades(): Promise<void> {
-        try {
-            const grades = await CoreGrades.instance.getCoursesGrades();
-            const gradesWithCourseData = await CoreGradesHelper.instance.getGradesCourseData(grades);
-
-            this.grades = gradesWithCourseData;
-        } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading grades');
-
-            this.grades = [];
-        } finally {
-            this.gradesLoaded = true;
-        }
-    }
-
-    /**
-     * Refresh data.
+     * Refresh courses.
      *
      * @param refresher Refresher.
      */
-    async refreshGrades(refresher: IonRefresher): Promise<void> {
+    async refreshCourses(refresher: IonRefresher): Promise<void> {
         await CoreUtils.instance.ignoreErrors(CoreGrades.instance.invalidateCoursesGradesData());
-        await CoreUtils.instance.ignoreErrors(this.fetchGrades());
+        await CoreUtils.instance.ignoreErrors(this.fetchCourses());
 
-        refresher.complete();
+        refresher?.complete();
     }
 
     /**
-     * Navigate to the grades of the selected course.
-     *
-     * @param courseId Course Id where to navigate.
+     * Obtain the initial list of courses.
      */
-    async openCourse(courseId: number): Promise<void> {
-        const path = this.activeCourseId ? `../${courseId}` : courseId.toString();
+    private async fetchInitialCourses(): Promise<void> {
+        try {
+            await this.fetchCourses();
+        } catch (error) {
+            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading courses');
 
-        await CoreNavigator.instance.navigate(path);
-
-        this.updateActiveCourse(courseId);
-    }
-
-    /**
-     * Update active course.
-     *
-     * @param activeCourseId Active course id.
-     */
-    private updateActiveCourse(activeCourseId?: number): void {
-        if (CoreScreen.instance.isMobile) {
-            delete this.activeCourseId;
-
-            return;
+            this.courses.setItems([]);
         }
-
-        this.activeCourseId = activeCourseId ?? this.guessActiveCourse();
     }
 
     /**
-     * Guess active course looking at the current route.
-     *
-     * @return Active course id.
+     * Update the list of courses.
      */
-    private guessActiveCourse(): number | undefined {
-        const courseId = parseInt(this.route.snapshot?.firstChild?.params.courseId);
+    private async fetchCourses(): Promise<void> {
+        const grades = await CoreGrades.instance.getCoursesGrades();
+        const courses = await CoreGradesHelper.instance.getGradesCourseData(grades);
 
-        return isNaN(courseId) ? undefined : courseId;
+        this.courses.setItems(courses);
+    }
+
+}
+
+/**
+ * Helper class to manage courses.
+ */
+class CoreGradesCoursesManager extends CorePageItemsListManager<CoreGradesGradeOverviewWithCourseData> {
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(courseGrade: CoreGradesGradeOverviewWithCourseData): string {
+        return courseGrade.courseid.toString();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        const courseId = parseInt(route?.params.courseId);
+
+        return isNaN(courseId) ? null : courseId.toString();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void>  {
+        await CoreGrades.instance.logCoursesGradesView();
     }
 
 }
