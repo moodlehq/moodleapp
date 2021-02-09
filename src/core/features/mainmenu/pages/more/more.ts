@@ -22,6 +22,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu-delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the main menu of the app.
@@ -131,10 +132,12 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Open a handler.
      *
      * @param handler Handler to open.
+     * @todo: use subPage?
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     openHandler(handler: CoreMainMenuHandlerData): void {
-        // @todo
+        const params = handler.pageParams;
+
+        CoreNavigator.instance.navigateToSitePath(handler.page, { params });
     }
 
     /**
@@ -142,9 +145,11 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      *
      * @param item Item to open.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     openItem(item: CoreMainMenuCustomItem): void {
-        // @todo
+        // @todo CoreNavigator.instance.navigateToSitePath('CoreViewerIframePage', {title: item.label, url: item.url});
+
+        // eslint-disable-next-line no-console
+        console.error('openItem not implemented', item);
     }
 
     /**
@@ -153,6 +158,9 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     async scanQR(): Promise<void> {
         // Scan for a QR code.
         // @todo
+        // eslint-disable-next-line no-console
+        console.error('scanQR not implemented');
+
     }
 
     /**
