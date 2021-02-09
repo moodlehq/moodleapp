@@ -443,7 +443,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param siteId Site ID. If not defined, current site.
      * @return If async, promise resolved when done.
      */
-    async prepareSyncData?(
+    async prepareSyncData(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
         component: string,

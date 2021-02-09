@@ -50,17 +50,17 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllCourses(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this, siteId, force), siteId);
+        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this, !!force), siteId);
     }
 
     /**
      * Sync all courses on a site.
      *
-     * @param siteId Site ID to sync.
      * @param force Wether the execution is forced (manual sync).
+     * @param siteId Site ID to sync.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected async syncAllCoursesFunc(siteId: string, force: boolean): Promise<void> {
+    protected async syncAllCoursesFunc(force: boolean, siteId: string): Promise<void> {
         await Promise.all([
             CoreCourseLogHelper.instance.syncSite(siteId),
             this.syncCoursesCompletion(siteId, force),
@@ -149,7 +149,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
         if (!completions || !completions.length) {
             // Nothing to sync, set sync time.
-            await this.setSyncTime(String(courseId), siteId);
+            await this.setSyncTime(courseId, siteId);
 
             // All done, return the data.
             return result;
@@ -233,7 +233,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         }
 
         // Sync finished, set sync time.
-        await this.setSyncTime(String(courseId), siteId);
+        await this.setSyncTime(courseId, siteId);
 
         // All done, return the data.
         return result;

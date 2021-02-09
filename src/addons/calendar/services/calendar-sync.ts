@@ -53,7 +53,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     async syncAllEvents(siteId?: string, force = false): Promise<void> {
-        await this.syncOnSites('all calendar events', this.syncAllEventsFunc.bind(this, [force]), siteId);
+        await this.syncOnSites('all calendar events', this.syncAllEventsFunc.bind(this, force), siteId);
     }
 
     /**

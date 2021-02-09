@@ -253,7 +253,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.instance.ignoreErrors(this.setSyncTime(String(lessonId), siteId));
+        await CoreUtils.instance.ignoreErrors(this.setSyncTime(lessonId, siteId));
 
         // All done, return the result.
         return result;
