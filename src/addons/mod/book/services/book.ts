@@ -376,13 +376,13 @@ export class AddonModBookProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the WS call is successful.
      */
-    logView(id: number, chapterId?: number, name?: string, siteId?: string): Promise<void> {
+    async logView(id: number, chapterId?: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModBookViewBookWSParams = {
             bookid: id,
             chapterid: chapterId,
         };
 
-        return CoreCourseLogHelper.instance.logSingle(
+        await CoreCourseLogHelper.instance.logSingle(
             'mod_book_view_book',
             params,
             AddonModBookProvider.COMPONENT,
