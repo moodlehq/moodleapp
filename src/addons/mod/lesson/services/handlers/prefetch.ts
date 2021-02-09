@@ -60,13 +60,13 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
 
         await modal.present();
 
-        const password = <string | undefined> await modal.onWillDismiss();
+        const result = await modal.onWillDismiss();
 
-        if (typeof password != 'string') {
+        if (typeof result.data != 'string') {
             throw new CoreCanceledError();
         }
 
-        return password;
+        return result.data;
     }
 
     /**
