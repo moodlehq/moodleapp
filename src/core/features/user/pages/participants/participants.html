@@ -1,0 +1,25 @@
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!participants.loaded" (ionRefresh)="refreshParticipants($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+
+        <core-loading [hideUntil]="participants.loaded">
+            <core-empty-box *ngIf="participants.empty" icon="person" [message]="'core.user.noparticipants' | translate">
+            </core-empty-box>
+            <ion-list *ngIf="!participants.empty">
+                <ion-item *ngFor="let participant of participants.items" class="ion-text-wrap" [class.core-selected-item]="participants.isSelected(participant)" [title]="participant.fullname" (click)="participants.select(participant)">
+                    <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start">
+                    </core-user-avatar>
+                    <ion-label>
+                        <h2>
+                            <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false"></core-format-text>
+                        </h2>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+            <core-infinite-loading [enabled]="participants.loaded && !participants.completed" (action)="fetchMoreParticipants($event)" [error]="fetchMoreParticipantsFailed">
+            </core-infinite-loading>
+        </core-loading>
+    </core-split-view>
+</ion-content>

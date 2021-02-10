@@ -27,6 +27,7 @@ export abstract class CorePageItemsListManager<Item> {
 
     protected itemsList: Item[] | null = null;
     protected itemsMap: Record<string, Item> | null = null;
+    protected hasMoreItems = true;
     protected selectedItem: Item | null = null;
     protected pageComponent: unknown;
     protected splitView?: CoreSplitViewComponent;
@@ -42,6 +43,10 @@ export abstract class CorePageItemsListManager<Item> {
 
     get loaded(): boolean {
         return this.itemsMap !== null;
+    }
+
+    get completed(): boolean {
+        return !this.hasMoreItems;
     }
 
     get empty(): boolean {
@@ -133,8 +138,10 @@ export abstract class CorePageItemsListManager<Item> {
      * Set the list of items.
      *
      * @param items Items.
+     * @param hasMoreItems Whether the list has more items that haven't been loaded.
      */
-    setItems(items: Item[]): void {
+    setItems(items: Item[], hasMoreItems: boolean = false): void {
+        this.hasMoreItems = hasMoreItems;
         this.itemsList = items.slice(0);
         this.itemsMap = items.reduce((map, item) => {
             map[this.getItemPath(item)] = item;
