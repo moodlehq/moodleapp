@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
+import { CoreSyncBaseProvider, CoreSyncBlockedError } from '@classes/base-sync';
 import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -27,9 +27,9 @@ import {
 import { AddonCalendarOffline } from './calendar-offline';
 import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreError } from '@classes/errors/error';
 import { CoreSync } from '@services/sync';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
  * Service to sync calendar.
@@ -52,21 +52,23 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @param force Wether to force sync not depending on last execution.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    async syncAllEvents(siteId?: string, force?: boolean): Promise<void> {
+    async syncAllEvents(siteId?: string, force = false): Promise<void> {
         await this.syncOnSites('all calendar events', this.syncAllEventsFunc.bind(this, [force]), siteId);
     }
 
     /**
      * Sync all events on a site.
      *
-     * @param siteId Site ID to sync.
      * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID to sync.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected async syncAllEventsFunc(siteId: string, force?: boolean): Promise<void> {
-        const result = await (force ? this.syncEvents(siteId) : this.syncEventsIfNeeded(siteId));
+    protected async syncAllEventsFunc(force = false, siteId?: string): Promise<void> {
+        const result = force
+            ? await this.syncEvents(siteId)
+            : await this.syncEventsIfNeeded(siteId);
 
-        if (result && result.updated) {
+        if (result?.updated) {
             // Sync successful, send event.
             CoreEvents.trigger<AddonCalendarSyncEvents>(AddonCalendarSyncProvider.AUTO_SYNCED, result, siteId);
         }
@@ -78,13 +80,13 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the events are synced or if it doesn't need to be synced.
      */
-    async syncEventsIfNeeded(siteId?: string): Promise<void> {
+    async syncEventsIfNeeded(siteId?: string): Promise<AddonCalendarSyncEvents | undefined> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
         const needed = await this.isSyncNeeded(AddonCalendarSyncProvider.SYNC_ID, siteId);
 
         if (needed) {
-            await this.syncEvents(siteId);
+            return this.syncEvents(siteId);
         }
     }
 
@@ -125,17 +127,12 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             updated: false,
         };
 
-        let eventIds: number[] = [];
-        try {
-            eventIds = await AddonCalendarOffline.instance.getAllEventsIds(siteId);
-        } catch {
-            // No offline data found.
-        }
+        const eventIds: number[] = await CoreUtils.instance.ignoreErrors(AddonCalendarOffline.instance.getAllEventsIds(siteId), []);
 
         if (eventIds.length > 0) {
             if (!CoreApp.instance.isOnline()) {
                 // Cannot sync in offline.
-                throw new CoreError('Cannot sync while offline');
+                throw new CoreNetworkError();
             }
 
             const promises = eventIds.map((eventId) => this.syncOfflineEvent(eventId, result, siteId));
@@ -175,10 +172,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         if (CoreSync.instance.isBlocked(AddonCalendarProvider.COMPONENT, eventId, siteId)) {
             this.logger.debug('Cannot sync event ' + eventId + ' because it is blocked.');
 
-            throw Translate.instance.instant(
+            throw new CoreSyncBlockedError(Translate.instance.instant(
                 'core.errorsyncblocked',
                 { $a: Translate.instance.instant('addon.calendar.calendarevent') },
-            );
+            ));
         }
 
         // First of all, check if the event has been deleted.

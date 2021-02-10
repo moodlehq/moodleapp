@@ -8,7 +8,7 @@
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            [iconAction]="'far-newspaper'" (action)="gotoBlog()">
+            iconAction="far-newspaper" (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">

@@ -17,7 +17,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmdId',
+        path: ':courseId/:cmId',
         loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModBookIndexPageModule),
     },
 ];

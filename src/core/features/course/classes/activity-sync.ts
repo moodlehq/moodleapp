@@ -20,7 +20,7 @@ import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
 /**
  * Base class to create activity sync providers. It provides some common functions.
  */
-export class CoreCourseActivitySyncBaseProvider<T> extends CoreSyncBaseProvider<T> {
+export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBaseProvider<T> {
 
     /**
      * Conveniece function to prefetch data after an update.
