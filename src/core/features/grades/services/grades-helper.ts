@@ -31,6 +31,7 @@ import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Service that provides some features regarding grades information.
@@ -51,16 +52,18 @@ export class CoreGradesHelperProvider {
      * @return Formatted row object.
      */
     protected formatGradeRow(tableRow: CoreGradesTableRow): CoreGradesFormattedRow {
-        const row = {};
+        const row: CoreGradesFormattedRow = {
+            rowclass: '',
+        };
         for (const name in tableRow) {
             if (typeof tableRow[name].content != 'undefined' && tableRow[name].content !== null) {
                 let content = String(tableRow[name].content);
 
                 if (name == 'itemname') {
                     this.setRowIcon(row, content);
-                    row['link'] = this.getModuleLink(content);
-                    row['rowclass'] += tableRow[name]!.class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                    row['rowclass'] += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+                    row.link = this.getModuleLink(content);
+                    row.rowclass += tableRow[name]!.class.indexOf('hidden') >= 0 ? ' hidden' : '';
+                    row.rowclass += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
                     content = content.replace(/<\/span>/gi, '\n');
                     content = CoreTextUtils.instance.cleanTags(content);
@@ -86,20 +89,20 @@ export class CoreGradesHelperProvider {
      * @return Formatted row object.
      */
     protected formatGradeRowForTable(tableRow: CoreGradesTableRow): CoreGradesFormattedRowForTable {
-        const row = {};
+        const row: CoreGradesFormattedRowForTable = {};
         for (let name in tableRow) {
             if (typeof tableRow[name].content != 'undefined' && tableRow[name].content !== null) {
                 let content = String(tableRow[name].content);
 
                 if (name == 'itemname') {
-                    row['id'] = parseInt(tableRow[name]!.id.split('_')[1], 10);
-                    row['colspan'] = tableRow[name]!.colspan;
-                    row['rowspan'] = (tableRow['leader'] && tableRow['leader'].rowspan) || 1;
+                    row.id = parseInt(tableRow[name]!.id.split('_')[1], 10);
+                    row.colspan = tableRow[name]!.colspan;
+                    row.rowspan = (tableRow.leader && tableRow.leader.rowspan) || 1;
 
                     this.setRowIcon(row, content);
-                    row['rowclass'] = tableRow[name]!.class.indexOf('leveleven') < 0 ? 'odd' : 'even';
-                    row['rowclass'] += tableRow[name]!.class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                    row['rowclass'] += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+                    row.rowclass = tableRow[name]!.class.indexOf('leveleven') < 0 ? 'odd' : 'even';
+                    row.rowclass += tableRow[name]!.class.indexOf('hidden') >= 0 ? ' hidden' : '';
+                    row.rowclass += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
                     content = content.replace(/<\/span>/gi, '\n');
                     content = CoreTextUtils.instance.cleanTags(content);
@@ -202,14 +205,14 @@ export class CoreGradesHelperProvider {
      */
     async getGradesCourseData(grades: CoreGradesGradeOverview[]): Promise<CoreGradesGradeOverviewWithCourseData[]> {
         // Obtain courses from cache to prevent network requests.
-        let coursesWereMissing;
+        let coursesWereMissing = false;
 
         try {
             const courses = await CoreCourses.instance.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.OnlyCache);
             const coursesMap = CoreUtils.instance.arrayToObject(courses, 'id');
 
             coursesWereMissing = this.addCourseData(grades, coursesMap);
-        } catch (error) {
+        } catch {
             coursesWereMissing = true;
         }
 
@@ -278,7 +281,7 @@ export class CoreGradesHelperProvider {
         const grades = await CoreGrades.instance.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
 
         if (!grades) {
-            throw new Error('Couldn\'t get grade item');
+            throw new CoreError('Couldn\'t get grade item');
         }
 
         return this.getGradesTableRow(grades, gradeId);
@@ -325,15 +328,15 @@ export class CoreGradesHelperProvider {
         groupId?: number,
         siteId?: string,
         ignoreCache: boolean = false,
-    ): Promise<CoreGradesFormattedItem> {
+    ): Promise<CoreGradesFormattedItem[] | CoreGradesFormattedRow[]> {
         const grades = await CoreGrades.instance.getGradeItems(courseId, userId, groupId, siteId, ignoreCache);
 
         if (!grades) {
-            throw new Error('Couldn\'t get grade module items');
+            throw new CoreError('Couldn\'t get grade module items');
         }
 
         if ('tabledata' in grades) {
-            // Table format.
+            // 3.1 Table format.
             return this.getModuleGradesTableRows(grades, moduleId);
         }
 
@@ -347,18 +350,16 @@ export class CoreGradesHelperProvider {
      * @param selectedGrade Selected grade label.
      * @return Selected grade value.
      */
-    getGradeValueFromLabel(grades: CoreMenuItem[], selectedGrade: string): number {
+    getGradeValueFromLabel(grades: CoreMenuItem[], selectedGrade?: string): number {
         if (!grades || !selectedGrade) {
             return 0;
         }
 
-        for (const x in grades) {
-            if (grades[x].label == selectedGrade) {
-                return grades[x].value < 0 ? 0 : grades[x].value;
-            }
-        }
+        const grade = grades.find((grade) => grade.label == selectedGrade);
 
-        return 0;
+        return !grade || grade.value < 0
+            ? 0
+            : grade.value;
     }
 
     /**
@@ -457,15 +458,15 @@ export class CoreGradesHelperProvider {
             siteId = site.id;
             currentUserId = site.getUserId();
 
-            if (moduleId) {
-                // Try to open the module grade directly. Check if it's possible.
-                const grades = await CoreGrades.instance.isGradeItemsAvalaible(siteId);
+            if (!moduleId) {
+                throw new CoreError('Invalid moduleId');
+            }
 
-                if (!grades) {
-                    throw new Error();
-                }
-            } else {
-                throw new Error();
+            // Try to open the module grade directly. Check if it's possible.
+            const grades = await CoreGrades.instance.isGradeItemsAvalaible(siteId);
+
+            if (!grades) {
+                throw new CoreError('No grades found.');
             }
 
             try {
@@ -476,7 +477,7 @@ export class CoreGradesHelperProvider {
                 const item = Array.isArray(items) && items.find((item) => moduleId == item.cmid);
 
                 if (!item) {
-                    throw new Error();
+                    throw new CoreError('Grade item not found.');
                 }
 
                 // Open the item directly.
@@ -560,46 +561,49 @@ export class CoreGradesHelperProvider {
      * @param text HTML where the image will be rendered.
      * @return Row object with the image.
      */
-    protected setRowIcon(row: CoreGradesFormattedRowForTable, text: string): CoreGradesFormattedRowForTable {
+    protected setRowIcon(
+        row: CoreGradesFormattedRowForTable | CoreGradesFormattedRow,
+        text: string,
+    ): CoreGradesFormattedRowForTable {
         text = text.replace('%2F', '/').replace('%2f', '/');
 
         if (text.indexOf('/agg_mean') > -1) {
-            row['itemtype'] = 'agg_mean';
-            row['image'] = 'assets/img/grades/agg_mean.png';
+            row.itemtype = 'agg_mean';
+            row.image = 'assets/img/grades/agg_mean.png';
         } else if (text.indexOf('/agg_sum') > -1) {
-            row['itemtype'] = 'agg_sum';
-            row['image'] = 'assets/img/grades/agg_sum.png';
+            row.itemtype = 'agg_sum';
+            row.image = 'assets/img/grades/agg_sum.png';
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks')  > -1) {
-            row['itemtype'] = 'outcome';
-            row['icon'] = 'fa-tasks';
+            row.itemtype = 'outcome';
+            row.icon = 'fas-chart-pie';
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder')  > -1) {
-            row['itemtype'] = 'category';
-            row['icon'] = 'fa-folder';
+            row.itemtype = 'category';
+            row.icon = 'fas-cubes';
         } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o')  > -1) {
-            row['itemtype'] = 'manual';
-            row['icon'] = 'fa-square-o';
+            row.itemtype = 'manual';
+            row.icon = 'far-square';
         } else if (text.indexOf('/mod/') > -1) {
             const module = text.match(/mod\/([^/]*)\//);
             if (typeof module?.[1] != 'undefined') {
-                row['itemtype'] = 'mod';
-                row['itemmodule'] = module[1];
-                row['image'] = CoreCourse.instance.getModuleIconSrc(
+                row.itemtype = 'mod';
+                row.itemmodule = module[1];
+                row.image = CoreCourse.instance.getModuleIconSrc(
                     module[1],
                     CoreDomUtils.instance.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined,
                 );
             }
         } else {
-            if (row['rowspan'] && row['rowspan'] > 1) {
-                row['itemtype'] = 'category';
-                row['icon'] = 'fa-folder';
+            if (row.rowspan && row.rowspan > 1) {
+                row.itemtype = 'category';
+                row.icon = 'fas-cubes';
             } else if (text.indexOf('src=') > -1) {
-                row['itemtype'] = 'unknown';
+                row.itemtype = 'unknown';
                 const src = text.match(/src="([^"]*)"/);
-                row['image'] = src?.[1];
+                row.image = src?.[1];
             } else if (text.indexOf('<i ') > -1) {
-                row['itemtype'] = 'unknown';
+                row.itemtype = 'unknown';
                 const src = text.match(/<i class="(?:[^"]*?\s)?(fa-[a-z0-9-]+)/);
-                row['icon'] = src ? src[1] : '';
+                row.icon = src ? src[1] : '';
             }
         }
 
@@ -665,15 +669,53 @@ export class CoreGradesHelperProvider {
         return Promise.resolve([]);
     }
 
+    /**
+     * Type guard to check if the param is a CoreGradesGradeItem.
+     *
+     * @param item Param to check.
+     * @return Whether the param is a CoreGradesGradeItem.
+     */
+    isGradeItem(item: CoreGradesGradeItem | CoreGradesFormattedRow): item is CoreGradesGradeItem {
+        return 'outcomeid' in item;
+    }
+
 }
 
 export class CoreGradesHelper extends makeSingleton(CoreGradesHelperProvider) {}
 
 // @todo formatted data types.
-export type CoreGradesFormattedRow = any;
 export type CoreGradesFormattedRowForTable = any;
-export type CoreGradesFormattedItem = any;
 export type CoreGradesFormattedTableColumn = any;
+
+export type CoreGradesFormattedItem = CoreGradesGradeItem & {
+    weight?: string; // Weight.
+    grade?: string; // The grade formatted.
+    range?: string; // Range formatted.
+    percentage?: string; // Percentage.
+    lettergrade?: string; // Letter grade.
+    average?: string; // Grade average.
+};
+
+export type CoreGradesFormattedRow = {
+    icon?: string;
+    link?: string | false;
+    rowclass?: string;
+    itemtype?: string;
+    image?: string;
+    itemmodule?: string;
+    rowspan?: number;
+    itemname?: string; // The item returned data.
+    weight?: string; // Weight column.
+    grade?: string; // Grade column.
+    range?: string;// Range column.
+    percentage?: string; // Percentage column.
+    lettergrade?: string; // Lettergrade column.
+    rank?: string; // Rank column.
+    average?: string; // Average column.
+    feedback?: string; // Feedback column.
+    contributiontocoursetotal?: string; // Contributiontocoursetotal column.
+};
+
 export type CoreGradesFormattedTableRow = CoreGradesFormattedTableRowFilled | CoreGradesFormattedTableRowEmpty;
 export type CoreGradesFormattedTable = {
     columns: CoreGradesFormattedTableColumn[];

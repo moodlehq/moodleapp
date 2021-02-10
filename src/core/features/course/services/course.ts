@@ -522,7 +522,14 @@ export class CoreCourseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the module's grade info.
      */
-    async getModuleBasicGradeInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleGradeInfo | false> {
+    async getModuleBasicGradeInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleGradeInfo | undefined> {
+        const site = await CoreSites.instance.getSite(siteId);
+
+        if (!site || !site.isVersionGreaterEqualThan('3.2')) {
+            // On 3.1 won't get grading info and will return undefined. See check bellow.
+            return;
+        }
+
         const info = await this.getModuleBasicInfo(moduleId, siteId);
 
         const grade: CoreCourseModuleGradeInfo = {
@@ -539,10 +546,11 @@ export class CoreCourseProvider {
             typeof grade.advancedgrading != 'undefined' ||
             typeof grade.outcomes != 'undefined'
         ) {
+            // On 3.1 won't get grading info and will return undefined.
             return grade;
         }
 
-        return false;
+
     }
 
     /**
@@ -1461,22 +1469,32 @@ export type CoreCourseModuleContentFile = {
 };
 
 /**
- * Course module basic info type.
+ * Course module basic info type. 3.2 onwards.
  */
 export type CoreCourseModuleGradeInfo = {
     grade?: number; // Grade (max value or scale id).
     scale?: string; // Scale items (if used).
     gradepass?: string; // Grade to pass (float).
     gradecat?: number; // Grade category.
-    advancedgrading?: { // Advanced grading settings.
-        area: string; // Gradable area name.
-        method: string; // Grading method.
-    }[];
-    outcomes?: { // Outcomes information.
-        id: string; // Outcome id.
-        name: string; // Outcome full name.
-        scale: string; // Scale items.
-    }[];
+    advancedgrading?: CoreCourseModuleAdvancedGradingSetting[]; // Advanced grading settings.
+    outcomes?: CoreCourseModuleGradeOutcome[];
+};
+
+/**
+ * Advanced grading settings.
+ */
+export type CoreCourseModuleAdvancedGradingSetting = {
+    area: string; // Gradable area name.
+    method: string; // Grading method.
+};
+
+/**
+ * Grade outcome information.
+ */
+export type CoreCourseModuleGradeOutcome = {
+    id: string; // Outcome id.
+    name: string; // Outcome full name.
+    scale: string; // Scale items.
 };
 
 /**
