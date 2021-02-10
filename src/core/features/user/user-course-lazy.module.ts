@@ -19,6 +19,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 import { CoreUserParticipantsPage } from './pages/participants/participants';
 
@@ -42,6 +43,7 @@ const routes: Routes = [
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
+        CoreSearchComponentsModule,
     ],
     declarations: [
         CoreUserParticipantsPage,

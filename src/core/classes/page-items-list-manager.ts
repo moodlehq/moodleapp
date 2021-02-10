@@ -95,6 +95,16 @@ export abstract class CorePageItemsListManager<Item> {
         this.updateSelectedItem(splitView.outletRoute);
     }
 
+    /**
+     * Reset items data.
+     */
+    resetItems(): void {
+        this.itemsList = null;
+        this.itemsMap = null;
+        this.hasMoreItems = true;
+        this.selectedItem = null;
+    }
+
     // @todo Implement watchResize.
 
     /**

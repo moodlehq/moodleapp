@@ -13,15 +13,16 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
+import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreScreen } from '@services/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreUser, CoreUserParticipant } from '@features/user/services/user';
+import { CoreUser, CoreUserProvider, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
 import { CoreUtils } from '@services/utils/utils';
 
 /**
@@ -31,9 +32,13 @@ import { CoreUtils } from '@services/utils/utils';
     selector: 'page-core-user-participants',
     templateUrl: 'participants.html',
 })
-export class CoreUserParticipantsPage implements AfterViewInit, OnDestroy {
+export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 
     participants: CoreUserParticipantsManager;
+    searchQuery: string | null = null;
+    searchInProgress = false;
+    searchEnabled = false;
+    showSearchBox = false;
     fetchMoreParticipantsFailed = false;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
@@ -42,6 +47,13 @@ export class CoreUserParticipantsPage implements AfterViewInit, OnDestroy {
         const courseId = parseInt(route.snapshot.queryParams.courseId);
 
         this.participants = new CoreUserParticipantsManager(CoreUserParticipantsPage, courseId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ngOnInit(): Promise<void> {
+        this.searchEnabled = await CoreUser.instance.canSearchParticipantsInSite();
     }
 
     /**
@@ -59,6 +71,53 @@ export class CoreUserParticipantsPage implements AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.participants.destroy();
+    }
+
+    /**
+     * Show or hide search box.
+     */
+    toggleSearch(): void {
+        this.showSearchBox = !this.showSearchBox;
+
+        if (this.showSearchBox) {
+            // Make search bar visible.
+            this.splitView.menuContent.scrollToTop();
+        } else {
+            this.clearSearch();
+        }
+    }
+
+    /**
+     * Clear search.
+     */
+    async clearSearch(): Promise<void> {
+        if (this.searchQuery === null) {
+            // Nothing to clear.
+            return;
+        }
+
+        this.searchQuery = null;
+        this.searchInProgress = false;
+        this.participants.resetItems();
+
+        await this.fetchInitialParticipants();
+    }
+
+    /**
+     * Start a new search.
+     *
+     * @param query Text to search for.
+     */
+    async search(query: string): Promise<void> {
+        CoreApp.instance.closeKeyboard();
+
+        this.searchInProgress = true;
+        this.searchQuery = query;
+        this.participants.resetItems();
+
+        await this.fetchInitialParticipants();
+
+        this.searchInProgress = false;
     }
 
     /**
@@ -108,13 +167,26 @@ export class CoreUserParticipantsPage implements AfterViewInit, OnDestroy {
      *
      * @param loadedParticipants Participants list to continue loading from.
      */
-    private async fetchParticipants(loadedParticipants: CoreUserParticipant[] = []): Promise<void> {
-        const { participants, canLoadMore } = await CoreUser.instance.getParticipants(
-            this.participants.courseId,
-            loadedParticipants.length,
-        );
+    private async fetchParticipants(loadedParticipants: CoreUserParticipant[] | CoreUserData[] = []): Promise<void> {
+        if (this.searchQuery) {
+            const { participants, canLoadMore } = await CoreUser.instance.searchParticipants(
+                this.participants.courseId,
+                this.searchQuery,
+                true,
+                Math.ceil(loadedParticipants.length / CoreUserProvider.PARTICIPANTS_LIST_LIMIT),
+                CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+            );
 
-        this.participants.setItems(loadedParticipants.concat(participants), canLoadMore);
+            this.participants.setItems((loadedParticipants as CoreUserData[]).concat(participants), canLoadMore);
+        } else {
+            const { participants, canLoadMore } = await CoreUser.instance.getParticipants(
+                this.participants.courseId,
+                loadedParticipants.length,
+            );
+
+            this.participants.setItems((loadedParticipants as CoreUserParticipant[]).concat(participants), canLoadMore);
+        }
+
         this.fetchMoreParticipantsFailed = false;
     }
 
@@ -123,7 +195,7 @@ export class CoreUserParticipantsPage implements AfterViewInit, OnDestroy {
 /**
  * Helper to manage the list of participants.
  */
-class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParticipant> {
+class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParticipant | CoreUserData> {
 
     courseId: number;
 
@@ -136,7 +208,7 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
     /**
      * @inheritdoc
      */
-    async select(participant: CoreUserParticipant): Promise<void> {
+    async select(participant: CoreUserParticipant | CoreUserData): Promise<void> {
         if (CoreScreen.instance.isMobile) {
             await CoreNavigator.instance.navigateToSitePath('/user/profile', { params: { userId: participant.id } });
 
@@ -149,7 +221,7 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
     /**
      * @inheritdoc
      */
-    protected getItemPath(participant: CoreUserParticipant): string {
+    protected getItemPath(participant: CoreUserParticipant | CoreUserData): string {
         return participant.id.toString();
     }
 
