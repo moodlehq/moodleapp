@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreWSExternalFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { AddonModAssignPlugin } from '../assign';
 import { AddonModAssignSubmissionHandler } from '../submission-delegate';
@@ -73,22 +74,12 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
     }
 
     /**
-     * Return the Component to use to display the plugin data, either in read or in edit mode.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
-     */
-    getComponent(): void {
-        // Nothing to do.
-    }
-
-    /**
      * Get files used by this plugin.
      * The files returned by this function will be prefetched when the user prefetches the assign.
      *
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(): any[] {
+    getPluginFiles(): CoreWSExternalFile[] {
         return [];
     }
 
@@ -176,7 +167,7 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
      *
      * @return Promise resolved when done.
      */
-    async prefetch(): Promise<any> {
+    async prefetch(): Promise<void> {
         return;
     }
 

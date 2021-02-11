@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreWSExternalFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { AddonModAssignPlugin } from '../assign';
 import { AddonModAssignFeedbackHandler } from '../feedback-delegate';
@@ -36,16 +37,6 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     }
 
     /**
-     * Return the Component to use to display the plugin data.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
-     */
-    getComponent(): void {
-        // Nothing to do.
-    }
-
-    /**
      * Return the draft saved data of the feedback plugin.
      *
      * @return Data (or promise resolved with the data).
@@ -60,7 +51,7 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
      *
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(): any[] {
+    getPluginFiles(): CoreWSExternalFile[] {
         return [];
     }
 
@@ -121,7 +112,7 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
      *
      * @return Promise resolved when done.
      */
-    async prefetch(): Promise<any> {
+    async prefetch(): Promise<void> {
         return;
     }
 

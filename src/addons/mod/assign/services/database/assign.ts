@@ -139,7 +139,7 @@ export type AddonModAssignSubmissionsGradingDBRecord = {
     assignid: number; // Primary key.
     userid: number; // Primary key.
     courseid: number;
-    grade?: number; // Real.
+    grade: number; // Real.
     attemptnumber: number;
     addattempt: number;
     workflowstate: string;

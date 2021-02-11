@@ -24,6 +24,8 @@ import {
     AddonModAssignParticipant,
     AddonModAssignSubmissionFeedback,
     AddonModAssign,
+    AddonModAssignPlugin,
+    AddonModAssignSavePluginData,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreUtils } from '@services/utils/utils';
@@ -98,7 +100,7 @@ export class AddonModAssignHelperProvider {
      * @return Promise resolved when done.
      */
     async copyPreviousAttempt(assign: AddonModAssignAssign, previousSubmission: AddonModAssignSubmission): Promise<void> {
-        const pluginData: any = {};
+        const pluginData: AddonModAssignSavePluginData = {};
         const promises = previousSubmission.plugins
             ? previousSubmission.plugins.map((plugin) =>
                 AddonModAssignSubmissionDelegate.instance.copyPluginSubmissionData(assign, plugin, pluginData))
@@ -121,8 +123,8 @@ export class AddonModAssignHelperProvider {
     createEmptyFeedback(): AddonModAssignSubmissionFeedback {
         return {
             grade: undefined,
-            gradefordisplay: undefined,
-            gradeddate: undefined,
+            gradefordisplay: '',
+            gradeddate: 0,
         };
     }
 
@@ -133,13 +135,13 @@ export class AddonModAssignHelperProvider {
      */
     createEmptySubmission(): AddonModAssignSubmissionFormatted {
         return {
-            id: undefined,
-            userid: undefined,
-            attemptnumber: undefined,
-            timecreated: undefined,
-            timemodified: undefined,
-            status: undefined,
-            groupid: undefined,
+            id: 0,
+            userid: 0,
+            attemptnumber: 0,
+            timecreated: 0,
+            timemodified: 0,
+            status: '',
+            groupid: 0,
         };
     }
 
@@ -283,14 +285,15 @@ export class AddonModAssignHelperProvider {
      * @param subtype Subtype name (assignsubmission or assignfeedback)
      * @return List of enabled plugins for the assign.
      */
-    getPluginsEnabled(assign: AddonModAssignAssign, subtype: string): AddonModAssignPluginsEnabled {
-        const enabled: AddonModAssignPluginsEnabled = [];
+    getPluginsEnabled(assign: AddonModAssignAssign, subtype: string): AddonModAssignPlugin[] {
+        const enabled: AddonModAssignPlugin[] = [];
 
         assign.configs.forEach((config) => {
             if (config.subtype == subtype && config.name == 'enabled' && parseInt(config.value, 10) === 1) {
                 // Format the plugin objects.
                 enabled.push({
                     type: config.plugin,
+                    name: config.plugin,
                 });
             }
         });
@@ -564,7 +567,7 @@ export class AddonModAssignHelperProvider {
         userId: number,
         feedback: AddonModAssignSubmissionFeedback,
         siteId?: string,
-    ): Promise<any> {
+    ): Promise<AddonModAssignSavePluginData> {
 
         const pluginData = {};
         const promises = feedback.plugins
@@ -673,20 +676,22 @@ export class AddonModAssignHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    uploadOrStoreFiles(
+    async uploadOrStoreFiles(
         assignId: number,
         folderName: string,
         files: (CoreWSExternalFile | FileEntry)[],
         offline = false,
         userId?: number,
         siteId?: string,
-    ): Promise<any> {
+    ): Promise<void> {
 
         if (offline) {
-            return this.storeSubmissionFiles(assignId, folderName, files, userId, siteId);
+            await this.storeSubmissionFiles(assignId, folderName, files, userId, siteId);
+
+            return;
         }
 
-        return this.uploadFiles(assignId, files, siteId);
+        await this.uploadFiles(assignId, files, siteId);
     }
 
 }
@@ -697,14 +702,8 @@ export const AddonModAssignHelper = makeSingleton(AddonModAssignHelperProvider);
  * Assign submission with some calculated data.
  */
 export type AddonModAssignSubmissionFormatted =
-    Omit<AddonModAssignSubmission, 'id' | 'userid' | 'attemptnumber' | 'timecreated' | 'timemodified' | 'status' | 'groupid'> & {
-        id?: number; // Submission id.
+    Omit<AddonModAssignSubmission, 'userid'> & {
         userid?: number; // Student id.
-        attemptnumber?: number; // Attempt number.
-        timecreated?: number; // Submission creation time.
-        timemodified?: number; // Submission last modified time.
-        status?: string; // Submission status.
-        groupid?: number; // Group id.
         blindid?: number; // Calculated in the app. Blindid of the user that did the submission.
         submitid?: number; // Calculated in the app. Userid or blindid of the user that did the submission.
         userfullname?: string; // Calculated in the app. Full name of the user that did the submission.
@@ -715,13 +714,6 @@ export type AddonModAssignSubmissionFormatted =
     };
 
 /**
- * Assingment subplugins type enabled.
- */
-export type AddonModAssignPluginsEnabled = {
-    type: string; // Plugin type.
-}[];
-
-/**
- * Assingment plugin config.
+ * Assignment plugin config.
  */
 export type AddonModAssignPluginConfig = {[name: string]: string};

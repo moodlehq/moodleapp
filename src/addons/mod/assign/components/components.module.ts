@@ -21,13 +21,16 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { AddonModAssignIndexComponent } from './index/index';
+import { AddonModAssignSubmissionComponent } from './submission/submission';
+import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/submission-plugin';
+import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedback-plugin';
 
 @NgModule({
     declarations: [
         AddonModAssignIndexComponent,
-        /* AddonModAssignSubmissionComponent,
+        AddonModAssignSubmissionComponent,
         AddonModAssignSubmissionPluginComponent,
-        AddonModAssignFeedbackPluginComponent*/
+        AddonModAssignFeedbackPluginComponent,
     ],
     imports: [
         CommonModule,
@@ -39,9 +42,9 @@ import { AddonModAssignIndexComponent } from './index/index';
     ],
     exports: [
         AddonModAssignIndexComponent,
-        /* AddonModAssignSubmissionComponent,
+        AddonModAssignSubmissionComponent,
         AddonModAssignSubmissionPluginComponent,
-        AddonModAssignFeedbackPluginComponent */
+        AddonModAssignFeedbackPluginComponent,
     ],
 })
 export class AddonModAssignComponentsModule {}

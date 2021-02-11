@@ -1326,7 +1326,7 @@ export class AddonModAssignProvider {
     async submitGradingFormOnline(
         assignId: number,
         userId: number,
-        grade: number | undefined,
+        grade: number,
         attemptNumber: number,
         addAttempt: boolean,
         workflowState: string,
@@ -1553,7 +1553,7 @@ export type AddonModAssignSubmissionPreviousAttempt = {
  * Feedback of an assign submission.
  */
 export type AddonModAssignSubmissionFeedback = {
-    grade: AddonModAssignGrade; // Grade information.
+    grade?: AddonModAssignGrade; // Grade information.
     gradefordisplay: string; // Grade rendered into a format suitable for display.
     gradeddate: number; // The date the user was graded.
     plugins?: AddonModAssignPlugin[]; // Plugins info.
@@ -1853,3 +1853,12 @@ type AddonModAssignSaveGradeWSParams = {
  * Assignment grade outcomes.
  */
 export type AddonModAssignOutcomes = { [itemNumber: number]: number };
+
+/**
+ * Data sent by SUBMITTED_FOR_GRADING_EVENT event.
+ */
+export type AddonModAssignSubmittedForGradingEventData = {
+    assignmentId: number;
+    submissionId: number;
+    userId: number;
+};

@@ -34,6 +34,7 @@ import {
     AddonModAssignGradedEventData,
     AddonModAssignProvider,
     AddonModAssignSubmissionGradingSummary,
+    AddonModAssignSubmittedForGradingEventData,
 } from '../../services/assign';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import {
@@ -42,6 +43,7 @@ import {
     AddonModAssignSyncProvider,
     AddonModAssignSyncResult,
 } from '../../services/assign-sync';
+import { AddonModAssignSubmissionComponent } from '../submission/submission';
 
 /**
  * Component that displays an assignment.
@@ -52,8 +54,7 @@ import {
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    // @todo @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
-    submissionComponent?: any;
+   @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
     component = AddonModAssignProvider.COMPONENT;
     moduleName = 'assign';
@@ -112,15 +113,19 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }, this.siteId);
 
-        this.submittedObserver = CoreEvents.on<any>(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, (data) => {
-            if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
+        this.submittedObserver = CoreEvents.on<AddonModAssignSubmittedForGradingEventData>(
+            AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
+            (data) => {
+                if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                 // Assignment submitted, check completion.
-                CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                    CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
 
-                // Reload data since it can have offline data now.
-                this.showLoadingAndRefresh(true, false);
-            }
-        }, this.siteId);
+                    // Reload data since it can have offline data now.
+                    this.showLoadingAndRefresh(true, false);
+                }
+            },
+            this.siteId,
+        );
 
         this.gradedObserver = CoreEvents.on<AddonModAssignGradedEventData>(AddonModAssignProvider.GRADED_EVENT, (data) => {
             if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {

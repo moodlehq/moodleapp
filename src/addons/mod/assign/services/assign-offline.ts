@@ -114,7 +114,7 @@ export class AddonModAssignOfflineProvider {
      * @return Promise resolved with submissions.
      */
     async getAssignSubmissions(assignId: number, siteId?: string): Promise<AddonModAssignSubmissionsDBRecordFormatted[]> {
-        return this.getAssignSubmissionsFormatted({ assingid: assignId }, siteId);
+        return this.getAssignSubmissionsFormatted({ assignid: assignId }, siteId);
     }
 
     /**
@@ -167,7 +167,7 @@ export class AddonModAssignOfflineProvider {
         assignId: number,
         siteId?: string,
     ): Promise<AddonModAssignSubmissionsGradingDBRecordFormatted[]> {
-        return this.getAssignSubmissionsGradeFormatted({ assingid: assignId }, siteId);
+        return this.getAssignSubmissionsGradeFormatted({ assignid: assignId }, siteId);
     }
 
     /**

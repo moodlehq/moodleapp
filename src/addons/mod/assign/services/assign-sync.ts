@@ -453,7 +453,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         const status = await AddonModAssign.instance.getSubmissionStatus(assign.id, options);
 
-        const timemodified = (status.feedback && (status.feedback.gradeddate || status.feedback.grade.timemodified)) || 0;
+        const timemodified = (status.feedback && (status.feedback.gradeddate || status.feedback.grade?.timemodified)) || 0;
 
         if (timemodified > offlineData.timemodified) {
             // The submission grade was modified in Moodle, discard it.
@@ -480,7 +480,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
                     if (gradeInfo && gradeInfo.scale) {
                         offlineData.grade = this.getSelectedScaleId(gradeInfo.scale, grade.grade || '');
                     } else {
-                        offlineData.grade = parseFloat(grade.grade || '') || undefined;
+                        offlineData.grade = parseFloat(grade.grade || '');
                     }
                 } else if (gradeInfo && grade.outcomeid && AddonModAssign.instance.isOutcomesEditEnabled() && gradeInfo.outcomes) {
                     gradeInfo.outcomes.forEach((outcome, index) => {

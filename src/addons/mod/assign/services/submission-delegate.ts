@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultSubmissionHandler } from './handlers/default-submission';
-import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from './assign';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 
@@ -86,7 +86,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
     copySubmissionData?(
         assign: AddonModAssignAssign,
         plugin: AddonModAssignPlugin,
-        pluginData: any,
+        pluginData: AddonModAssignSavePluginData,
         userId?: number,
         siteId?: string,
     ): void | Promise<void>;
@@ -120,7 +120,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
     getComponent?(
         plugin: AddonModAssignPlugin,
         edit?: boolean,
-    ): any | Promise<any>;
+    ): Type<unknown> | undefined | Promise<Type<unknown> | undefined>;
 
     /**
      * Get files used by this plugin.
@@ -233,7 +233,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
         inputData: any,
-        pluginData: any,
+        pluginData: AddonModAssignSavePluginData,
         offline?: boolean,
         userId?: number,
         siteId?: string,
@@ -321,7 +321,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     async copyPluginSubmissionData(
         assign: AddonModAssignAssign,
         plugin: AddonModAssignPlugin,
-        pluginData: any,
+        pluginData: AddonModAssignSavePluginData,
         userId?: number,
         siteId?: string,
     ): Promise<void | undefined> {
@@ -363,7 +363,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param edit Whether the user is editing.
      * @return Promise resolved with the component to use, undefined if not found.
      */
-    async getComponentForPlugin(plugin: AddonModAssignPlugin, edit?: boolean): Promise<any | undefined> {
+    async getComponentForPlugin(plugin: AddonModAssignPlugin, edit?: boolean): Promise<Type<unknown> | undefined> {
         return await this.executeFunctionOnEnabled(plugin.type, 'getComponent', [plugin, edit]);
     }
 

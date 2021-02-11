@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './handlers/default-feedback';
-import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from './assign';
+import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 
@@ -37,7 +37,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    discardDraft?(assignId: number, userId: number, siteId?: string): void | Promise<any>;
+    discardDraft?(assignId: number, userId: number, siteId?: string): void | Promise<void>;
 
     /**
      * Return the Component to use to display the plugin data.
@@ -46,7 +46,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param plugin The plugin object.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent?(plugin: AddonModAssignPlugin): any | Promise<any>;
+    getComponent?(plugin: AddonModAssignPlugin): Type<unknown> | undefined | Promise<Type<unknown> | undefined>;
+
 
     /**
      * Return the draft saved data of the feedback plugin.
@@ -126,7 +127,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
         siteId?: string,
-    ): Promise<any>;
+    ): Promise<void>;
 
     /**
      * Prepare and add to pluginData the data to send to the server based on the draft data saved.
@@ -142,9 +143,9 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         assignId: number,
         userId: number,
         plugin: AddonModAssignPlugin,
-        pluginData: any,
+        pluginData: AddonModAssignSavePluginData,
         siteId?: string,
-    ): void | Promise<any>;
+    ): void | Promise<void>;
 
     /**
      * Save draft data of the feedback plugin.
@@ -197,7 +198,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param plugin The plugin object.
      * @return Promise resolved with the component to use, undefined if not found.
      */
-    async getComponentForPlugin(plugin: AddonModAssignPlugin): Promise<any | undefined> {
+    async getComponentForPlugin(plugin: AddonModAssignPlugin): Promise<Type<unknown> | undefined> {
         return await this.executeFunctionOnEnabled(plugin.type, 'getComponent', [plugin]);
     }
 
@@ -317,7 +318,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
         siteId?: string,
-    ): Promise<any> {
+    ): Promise<void> {
         return await this.executeFunctionOnEnabled(plugin.type, 'prefetch', [assign, submission, plugin, siteId]);
     }
 
@@ -335,9 +336,9 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         assignId: number,
         userId: number,
         plugin: AddonModAssignPlugin,
-        pluginData: any,
+        pluginData: AddonModAssignSavePluginData,
         siteId?: string,
-    ): Promise<any> {
+    ): Promise<void> {
 
         return await this.executeFunctionOnEnabled(
             plugin.type,
