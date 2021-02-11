@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, Optional, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
+
+const THRESHOLD = .15; // % of the scroll element height that must be close to the edge to consider loading more items necessary.
 
 /**
  * Component to show a infinite loading trigger and spinner while more data is being loaded.
@@ -41,12 +44,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
 
     loadingMore = false;   // Hide button and avoid loading more.
 
-    protected threshold = parseFloat('15%') / 100;
-
-    constructor(
-        protected element: ElementRef,
-        @Optional() protected content: IonContent,
-    ) {
+    constructor(protected element: ElementRef) {
         this.action = new EventEmitter();
     }
 
@@ -70,25 +68,30 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * like the Ionic component does.
      */
     protected async checkScrollDistance(): Promise<void> {
-        if (this.enabled) {
-            const scrollElement = await this.content.getScrollElement();
+        if (!this.enabled) {
+            return;
+        }
 
-            const infiniteHeight = this.element.nativeElement.getBoundingClientRect().height;
+        // Wait until next tick to allow items to render and scroll content to grow.
+        await CoreUtils.instance.nextTick();
 
-            const scrollTop = scrollElement.scrollTop;
-            const height = scrollElement.offsetHeight;
-            const threshold = height * this.threshold;
+        // Calculate distance from edge.
+        const content = this.element.nativeElement.closest('ion-content') as IonContent;
+        const scrollElement = await content.getScrollElement();
 
-            const distanceFromInfinite = (this.position === 'bottom')
-                ? scrollElement.scrollHeight - infiniteHeight - scrollTop - threshold - height
-                : scrollTop - infiniteHeight - threshold;
+        const infiniteHeight = this.element.nativeElement.getBoundingClientRect().height;
+        const scrollTop = scrollElement.scrollTop;
+        const height = scrollElement.offsetHeight;
+        const threshold = height * THRESHOLD;
+        const distanceFromInfinite = (this.position === 'bottom')
+            ? scrollElement.scrollHeight - infiniteHeight - scrollTop - threshold - height
+            : scrollTop - infiniteHeight - threshold;
 
-            if (distanceFromInfinite < 0 && !this.loadingMore && this.enabled) {
-                this.loadMore();
-            }
+        // If it's close enough the edge, trigger the action to load more items.
+        if (distanceFromInfinite < 0 && !this.loadingMore && this.enabled) {
+            this.loadMore();
         }
     }
-
 
     /**
      * Load More items calling the action provided.

@@ -1623,6 +1623,13 @@ export class CoreUtilsProvider {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
 
+    /**
+     * Wait until the next tick.
+     */
+    nextTick(): Promise<void> {
+        return this.wait(0);
+    }
+
 }
 
 export class CoreUtils extends makeSingleton(CoreUtilsProvider) {}

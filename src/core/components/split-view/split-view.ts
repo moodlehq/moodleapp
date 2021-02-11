@@ -14,11 +14,11 @@
 
 import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { IonRouterOutlet } from '@ionic/angular';
+import { IonContent, IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
-enum CoreSplitViewMode {
+export enum CoreSplitViewMode {
     MenuOnly = 'menu-only', // Hides content.
     ContentOnly = 'content-only', // Hides menu.
     MenuAndContent = 'menu-and-content', // Shows both menu and content.
@@ -31,9 +31,11 @@ enum CoreSplitViewMode {
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
-    @ViewChild(IonRouterOutlet) outlet!: IonRouterOutlet;
+    @ViewChild(IonContent) menuContent!: IonContent;
+    @ViewChild(IonRouterOutlet) contentOutlet!: IonRouterOutlet;
     @HostBinding('class') classes = '';
     @Input() placeholderText = 'core.emptysplit';
+    @Input() mode?: CoreSplitViewMode;
     isNested = false;
 
     private outletRouteSubject: BehaviorSubject<ActivatedRouteSnapshot | null> = new BehaviorSubject(null);
@@ -55,11 +57,11 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.isNested = !!this.element.nativeElement.parentElement?.closest('core-split-view');
         this.subscriptions = [
-            this.outlet.activateEvents.subscribe(() => {
+            this.contentOutlet.activateEvents.subscribe(() => {
                 this.updateClasses();
-                this.outletRouteSubject.next(this.outlet.activatedRoute.snapshot);
+                this.outletRouteSubject.next(this.contentOutlet.activatedRoute.snapshot);
             }),
-            this.outlet.deactivateEvents.subscribe(() => {
+            this.contentOutlet.deactivateEvents.subscribe(() => {
                 this.updateClasses();
                 this.outletRouteSubject.next(null);
             }),
@@ -82,7 +84,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     private updateClasses(): void {
         const classes: string[] = [this.getCurrentMode()];
 
-        if (this.outlet.isActivated) {
+        if (this.contentOutlet.isActivated) {
             classes.push('outlet-activated');
         }
 
@@ -100,12 +102,16 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * @return Split view mode.
      */
     private getCurrentMode(): CoreSplitViewMode {
+        if (this.mode) {
+            return this.mode;
+        }
+
         if (this.isNested) {
             return CoreSplitViewMode.MenuOnly;
         }
 
         if (CoreScreen.instance.isMobile) {
-            return this.outlet.isActivated
+            return this.contentOutlet.isActivated
                 ? CoreSplitViewMode.ContentOnly
                 : CoreSplitViewMode.MenuOnly;
         }
@@ -119,7 +125,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * @return If split view is enabled.
      */
     isOn(): boolean {
-        return this.outlet.isActivated;
+        return this.contentOutlet.isActivated;
     }
 
 }

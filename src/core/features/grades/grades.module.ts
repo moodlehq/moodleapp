@@ -15,6 +15,7 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -33,10 +34,18 @@ const routes: Routes = [
     },
 ];
 
+const courseIndexRoutes: Routes = [
+    {
+        path: 'grades',
+        loadChildren: () => import('@features/grades/grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+    },
+];
+
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreMainMenuRoutingModule.forChild({ children: routes }),
+        CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     providers: [
         {

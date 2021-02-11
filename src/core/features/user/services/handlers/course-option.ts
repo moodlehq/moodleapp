@@ -19,19 +19,19 @@ import {
     CoreCourseOptionsHandler,
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
-import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
+import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { makeSingleton } from '@singletons';
-import { CoreGrades } from '../grades';
+import { CoreUser } from '../user';
 
 /**
  * Course nav handler.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHandler {
+export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'CoreGrades';
-    priority = 400;
+    name = 'CoreUserParticipants';
+    priority = 600;
 
     /**
      * Should invalidate the data to determine if the handler is enabled for a certain course.
@@ -41,12 +41,12 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      * @return Promise resolved when done.
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
-        if (navOptions && typeof navOptions.grades != 'undefined') {
+        if (navOptions && typeof navOptions.participants != 'undefined') {
             // No need to invalidate anything.
             return Promise.resolve();
         }
 
-        return CoreCourses.instance.invalidateUserCourses();
+        return CoreUser.instance.invalidateParticipantsList(courseId);
     }
 
     /**
@@ -75,11 +75,11 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.grades != 'undefined') {
-            return navOptions.grades;
+        if (navOptions && typeof navOptions.participants != 'undefined') {
+            return navOptions.participants;
         }
 
-        return CoreGrades.instance.isPluginEnabledForCourse(courseId);
+        return CoreUser.instance.isPluginEnabledForCourse(courseId);
     }
 
     /**
@@ -87,9 +87,9 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      */
     getDisplayData(): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
-            title: 'core.grades.grades',
-            class: 'core-grades-course-handler',
-            page: 'grades',
+            title: 'core.user.participants',
+            class: 'core-user-participants-handler',
+            page: 'participants',
         };
     }
 
@@ -100,9 +100,17 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      * @return Promise resolved when done.
      */
     async prefetch(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void> {
-        await CoreGrades.instance.getCourseGradesTable(course.id, undefined, undefined, true);
+        let offset = 0;
+        let canLoadMore = true;
+
+        do {
+            const result = await CoreUser.instance.getParticipants(course.id, offset, undefined, undefined, true);
+
+            offset += result.participants.length;
+            canLoadMore = result.canLoadMore;
+        } while (canLoadMore);
     }
 
 }
 
-export class CoreGradesCourseOptionHandler extends makeSingleton(CoreGradesCourseOptionHandlerService) {}
+export class CoreUserCourseOptionHandler extends makeSingleton(CoreUserCourseOptionHandlerService) {}

@@ -27,6 +27,9 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreUserSyncCronHandler } from './services/handlers/sync-cron';
 import { CoreUserTagAreaHandler } from './services/handlers/tag-area';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
+import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
 
 const routes: Routes = [
     {
@@ -35,9 +38,17 @@ const routes: Routes = [
     },
 ];
 
+const courseIndexRoutes: Routes = [
+    {
+        path: 'participants',
+        loadChildren: () => import('@features/user/user-course-lazy.module').then(m => m.CoreUserCourseLazyModule),
+    },
+];
+
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
         CoreUserComponentsModule,
     ],
     providers: [
@@ -58,6 +69,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.instance.registerHandler(CoreUserProfileLinkHandler.instance);
                 CoreCronDelegate.instance.register(CoreUserSyncCronHandler.instance);
                 CoreTagAreaDelegate.instance.registerHandler(CoreUserTagAreaHandler.instance);
+                CoreCourseOptionsDelegate.instance.registerHandler(CoreUserCourseOptionHandler.instance);
             },
         },
     ],

@@ -29,6 +29,7 @@ import { CoreUserModule } from './user/user.module';
 import { CorePushNotificationsModule } from './pushnotifications/pushnotifications.module';
 import { CoreXAPIModule } from './xapi/xapi.module';
 import { CoreViewerModule } from './viewer/viewer.module';
+import { CoreSearchModule } from './search/search.module';
 
 @NgModule({
     imports: [
@@ -44,6 +45,7 @@ import { CoreViewerModule } from './viewer/viewer.module';
         CoreTagModule,
         CoreUserModule,
         CorePushNotificationsModule,
+        CoreSearchModule,
         CoreXAPIModule,
         CoreH5PModule,
         CoreViewerModule,
