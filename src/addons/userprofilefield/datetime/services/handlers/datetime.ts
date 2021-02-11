@@ -69,7 +69,6 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
      * Return the Component to use to display the user profile field.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param injector Injector.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>> {

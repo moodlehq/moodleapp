@@ -109,7 +109,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @return Whether the refresher should be displayed.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    displayRefresher?(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
+    displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
         return true;
     }
 
