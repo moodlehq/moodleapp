@@ -19,6 +19,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { AddonModQuizAccessRulesModule } from './accessrules/accessrules.module';
 import { AddonModQuizComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/quiz';
 import { AddonModQuizModuleHandler, AddonModQuizModuleHandlerService } from './services/handlers/module';
@@ -35,6 +36,7 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         AddonModQuizComponentsModule,
+        AddonModQuizAccessRulesModule,
     ],
     providers: [
         {
