@@ -48,6 +48,9 @@ import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
 
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
+import { CoreAttachmentsComponent } from './attachments/attachments';
+import { CoreFilesComponent } from './files/files';
+import { CoreLocalFileComponent } from './local-file/local-file';
 
 @NgModule({
     declarations: [
@@ -78,6 +81,9 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreSendMessageFormComponent,
         CoreTimerComponent,
         CoreNavigationBarComponent,
+        CoreAttachmentsComponent,
+        CoreFilesComponent,
+        CoreLocalFileComponent,
     ],
     imports: [
         CommonModule,
@@ -115,6 +121,9 @@ import { CorePipesModule } from '@pipes/pipes.module';
         CoreSendMessageFormComponent,
         CoreTimerComponent,
         CoreNavigationBarComponent,
+        CoreAttachmentsComponent,
+        CoreFilesComponent,
+        CoreLocalFileComponent,
     ],
 })
 export class CoreComponentsModule {}
