@@ -392,7 +392,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         try {
             return AddonModAssignHelper.instance.hasFeedbackDataChanged(
                 this.assign!,
-                this.userSubmission,
+                this.userSubmission!, // @todo
                 this.feedback,
                 this.submitId,
             );

@@ -18,6 +18,7 @@ import { AddonModAssignDefaultSubmissionHandler } from './handlers/default-submi
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
+import { AddonModAssignSubmissionsDBRecordFormatted } from './assign-offline';
 
 /**
  * Interface that all submission handlers must implement.
@@ -69,7 +70,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): void;
 
     /**
@@ -105,9 +106,9 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        offlineData: any,
+        offlineData: AddonModAssignSubmissionsDBRecordFormatted,
         siteId?: string,
-    ): void | Promise<any>;
+    ): void | Promise<void>;
 
     /**
      * Return the Component to use to display the plugin data, either in read or in edit mode.
@@ -172,7 +173,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): number | Promise<number>;
 
     /**
@@ -188,7 +189,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): boolean | Promise<boolean>;
 
     /**
@@ -232,12 +233,12 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
         pluginData: AddonModAssignSavePluginData,
         offline?: boolean,
         userId?: number,
         siteId?: string,
-    ): void | Promise<any>;
+    ): void | Promise<void>;
 
     /**
      * Prepare and add to pluginData the data to send to the server based on the offline data stored.
@@ -255,10 +256,10 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        offlineData: any,
-        pluginData: any,
+        offlineData: AddonModAssignSubmissionsDBRecordFormatted,
+        pluginData: AddonModAssignSavePluginData,
         siteId?: string,
-    ): void | Promise<any>;
+    ): void | Promise<void>;
 }
 
 /**
@@ -303,7 +304,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): void {
         return this.executeFunctionOnEnabled(plugin.type, 'clearTmpData', [assign, submission, plugin, inputData]);
     }
@@ -346,9 +347,9 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        offlineData: any,
+        offlineData: AddonModAssignSubmissionsDBRecordFormatted,
         siteId?: string,
-    ): Promise<any | undefined> {
+    ): Promise<void> {
         return await this.executeFunctionOnEnabled(
             plugin.type,
             'deleteOfflineData',
@@ -423,7 +424,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): Promise<number | undefined> {
         return await this.executeFunctionOnEnabled(
             plugin.type,
@@ -445,7 +446,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): Promise<boolean | undefined> {
         return await this.executeFunctionOnEnabled(
             plugin.type,
@@ -520,12 +521,12 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
-        pluginData: any,
+        inputData: Record<string, unknown>,
+        pluginData: AddonModAssignSavePluginData,
         offline?: boolean,
         userId?: number,
         siteId?: string,
-    ): Promise<any | undefined> {
+    ): Promise<void | undefined> {
 
         return await this.executeFunctionOnEnabled(
             plugin.type,
@@ -549,10 +550,10 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        offlineData: any,
-        pluginData: any,
+        offlineData: AddonModAssignSubmissionsDBRecordFormatted,
+        pluginData: AddonModAssignSavePluginData,
         siteId?: string,
-    ): Promise<any | undefined> {
+    ): Promise<void> {
 
         return this.executeFunctionOnEnabled(
             plugin.type,
@@ -562,4 +563,4 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     }
 
 }
-export class AddonModAssignSubmissionDelegate extends makeSingleton(AddonModAssignSubmissionDelegateService) {}
+export const AddonModAssignSubmissionDelegate = makeSingleton(AddonModAssignSubmissionDelegateService);

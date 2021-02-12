@@ -18,6 +18,7 @@ import { AddonModAssignDefaultFeedbackHandler } from './handlers/default-feedbac
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
+import { AddonModAssignSubmissionFormatted } from './assign-helper';
 
 /**
  * Interface that all feedback handlers must implement.
@@ -264,7 +265,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      */
     async hasPluginDataChanged(
         assign: AddonModAssignAssign,
-        submission: AddonModAssignSubmission,
+        submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted,
         plugin: AddonModAssignPlugin,
         inputData: any,
         userId: number,

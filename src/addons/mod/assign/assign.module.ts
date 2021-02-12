@@ -29,6 +29,7 @@ import { AddonModAssignModuleHandler, AddonModAssignModuleHandlerService } from 
 import { AddonModAssignPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModAssignPushClickHandler } from './services/handlers/push-click';
 import { AddonModAssignSyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModAssignSubmissionModule } from './submission/submission.module';
 
 const routes: Routes = [
     {
@@ -41,6 +42,7 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         AddonModAssignComponentsModule,
+        AddonModAssignSubmissionModule,
     ],
     providers: [
         {

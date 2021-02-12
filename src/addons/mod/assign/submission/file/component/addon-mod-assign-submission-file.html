@@ -1,0 +1,19 @@
+<!-- Read only. -->
+<ion-item class="ion-text-wrap" *ngIf="files && files.length && !edit">
+    <ion-label>
+        <h2>{{ plugin.name }}</h2>
+        <div lines="none">
+            <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-files>
+        </div>
+    </ion-label>
+</ion-item>
+
+<!-- Edit -->
+<div *ngIf="edit">
+    <ion-item-divider class="ion-text-wrap" sticky="true">
+        <ion-label><h2>{{ plugin.name }}</h2></ion-label>
+    </ion-item-divider>
+    <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions"
+        [component]="component" [componentId]="assign.cmid" [acceptedTypes]="acceptedTypes" [allowOffline]="allowOffline">
+    </core-attachments>
+</div>

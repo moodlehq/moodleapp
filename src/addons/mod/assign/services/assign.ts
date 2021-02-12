@@ -29,6 +29,7 @@ import { CoreApp } from '@services/app';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
+import { CoreComments } from '@features/comments/services/comments';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -754,7 +755,7 @@ export class AddonModAssignProvider {
         promises.push(this.invalidateAssignmentUserMappingsData(assign.id, siteId));
         promises.push(this.invalidateAssignmentGradesData(assign.id, siteId));
         promises.push(this.invalidateListParticipantsData(assign.id, siteId));
-        // @todo promises.push(CoreComments.instance.invalidateCommentsByInstance('module', assign.id, siteId));
+        promises.push(CoreComments.instance.invalidateCommentsByInstance('module', assign.id, siteId));
         promises.push(this.invalidateAssignmentData(courseId, siteId));
         promises.push(CoreGrades.instance.invalidateAllCourseGradesData(courseId));
 

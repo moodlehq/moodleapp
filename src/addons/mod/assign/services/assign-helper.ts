@@ -492,7 +492,7 @@ export class AddonModAssignHelperProvider {
      */
     async hasFeedbackDataChanged(
         assign: AddonModAssignAssign,
-        submission: AddonModAssignSubmission,
+        submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted,
         feedback: AddonModAssignSubmissionFeedback,
         userId: number,
     ): Promise<boolean> {
@@ -683,15 +683,13 @@ export class AddonModAssignHelperProvider {
         offline = false,
         userId?: number,
         siteId?: string,
-    ): Promise<void> {
+    ): Promise<number | CoreFileUploaderStoreFilesResult> {
 
         if (offline) {
-            await this.storeSubmissionFiles(assignId, folderName, files, userId, siteId);
-
-            return;
+            return await this.storeSubmissionFiles(assignId, folderName, files, userId, siteId);
         }
 
-        await this.uploadFiles(assignId, files, siteId);
+        return await this.uploadFiles(assignId, files, siteId);
     }
 
 }

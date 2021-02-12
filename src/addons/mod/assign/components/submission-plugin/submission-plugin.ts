@@ -24,6 +24,7 @@ import {
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
+import { FileEntry } from '@ionic-native/file/ngx';
 
 /**
  * Component that displays an assignment submission plugin.
@@ -48,7 +49,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
     // Data to render the plugin if it isn't supported.
     component = AddonModAssignProvider.COMPONENT;
     text = '';
-    files: CoreWSExternalFile[] = [];
+    files: (FileEntry | CoreWSExternalFile)[] = [];
     notSupported = false;
     pluginLoaded = false;
 
