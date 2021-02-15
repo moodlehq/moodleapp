@@ -25,6 +25,7 @@ import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
 import { AddonMessagesModule } from './messages/messages.module';
 import { AddonModModule } from './mod/mod.module';
 import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
+import { AddonQtypeModule } from './qtype/qtype.module';
 
 @NgModule({
     imports: [
@@ -39,6 +40,7 @@ import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
         AddonMessageOutputModule,
         AddonModModule,
         AddonQbehaviourModule,
+        AddonQtypeModule,
     ],
 })
 export class AddonsModule {}

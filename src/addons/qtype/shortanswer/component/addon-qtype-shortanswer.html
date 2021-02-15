@@ -1,0 +1,20 @@
+<ion-list *ngIf="textQuestion && (textQuestion.text || textQuestion.text === '')">
+    <ion-item class="ion-text-wrap addon-qtype-shortanswer-text">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="textQuestion.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+    <ion-item *ngIf="textQuestion.input && !textQuestion.input.isInline"
+        class="ion-text-wrap addon-qtype-shortanswer-input core-{{textQuestion.input.correctIconColor}}-item">
+        <ion-label position="stacked">{{ 'addon.mod_quiz.answercolon' | translate }}</ion-label>
+        <ion-input type="text" [placeholder]="textQuestion.input.readOnly ? '' : 'core.question.answer' | translate"
+            [attr.name]="textQuestion.input.name" [value]="textQuestion.input.value" autocorrect="off"
+            [disabled]="textQuestion.input.readOnly">
+        </ion-input>
+        <ion-icon *ngIf="textQuestion.input.correctIcon" class="core-correct-icon" slot="end"
+            [name]="textQuestion.input.correctIcon" [color]="[textQuestion.input.correctIconColor]">
+        </ion-icon>
+    </ion-item>
+</ion-list>

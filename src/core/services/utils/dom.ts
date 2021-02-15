@@ -600,6 +600,8 @@ export class CoreDomUtilsProvider {
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
      */
+    getElementXY(container: HTMLElement, selector: undefined, positionParentClass?: string): number[];
+    getElementXY(container: HTMLElement, selector: string, positionParentClass?: string): number[] | null;
     getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] | null {
         let element: HTMLElement | null = <HTMLElement> (selector ? container.querySelector(selector) : container);
         let positionTop = 0;
