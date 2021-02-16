@@ -13,10 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule } from '@angular/forms';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
@@ -32,10 +28,6 @@ import { CoreCoursesSelfEnrolPasswordComponent } from './self-enrol-password/sel
         CoreCoursesSelfEnrolPasswordComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        FormsModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     exports: [

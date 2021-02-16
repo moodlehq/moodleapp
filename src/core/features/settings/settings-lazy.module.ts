@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -85,9 +82,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CommonModule,
-        IonicModule,
-        TranslateModule,
         CoreSharedModule,
     ],
     declarations: [

@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { CoreBlockComponent } from './block/block';
 import { CoreBlockOnlyTitleComponent } from './only-title-block/only-title-block';
 import { CoreBlockPreRenderedComponent } from './pre-rendered-block/pre-rendered-block';
@@ -30,9 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreBlockCourseBlocksComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     exports: [

@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { AddonMessagesDiscussionRoute } from '@addons/messages/messages-lazy.module';
 import { CoreScreen } from '@services/screen';
@@ -52,9 +49,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     declarations: [

@@ -14,16 +14,10 @@
 
 
 import { NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
 
 import { AddonCalendarSettingsPage } from './settings';
+import { CoreSharedModule } from '@/core/shared.module';
 
 const routes: Routes = [
     {
@@ -35,12 +29,7 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CommonModule,
-        IonicModule,
-        FormsModule,
-        TranslateModule.forChild(),
-        CoreDirectivesModule,
-        CorePipesModule,
+        CoreSharedModule,
     ],
     declarations: [
         AddonCalendarSettingsPage,

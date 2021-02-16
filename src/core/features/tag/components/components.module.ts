@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreTagFeedComponent } from './feed/feed';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -27,9 +24,6 @@ import { CoreTagListComponent } from './list/list';
         CoreTagListComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     providers: [

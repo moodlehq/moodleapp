@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CommonModule } from '@angular/common';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { resolveModuleRoutes } from '@/app/app-routing.module';
@@ -56,9 +53,6 @@ function buildRoutes(injector: Injector): Routes {
 
 @NgModule({
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule,
         CoreSharedModule,
     ],
     declarations: [

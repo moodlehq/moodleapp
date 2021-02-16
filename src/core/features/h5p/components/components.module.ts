@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreH5PPlayerComponent } from './h5p-player/h5p-player';
@@ -27,10 +24,7 @@ import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
         CoreH5PIframeComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
         CoreSharedModule,
-        TranslateModule.forChild(),
     ],
     providers: [
     ],

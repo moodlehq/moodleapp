@@ -13,10 +13,6 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { AddonUserProfileFieldTextHandler } from './services/handlers/text';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
@@ -28,11 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonUserProfileFieldTextComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule.forRoot(),
-        TranslateModule.forChild(),
-        FormsModule,
-        ReactiveFormsModule,
         CoreSharedModule,
     ],
     providers: [

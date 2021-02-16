@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -23,9 +20,6 @@ import { CoreGradesCoursePage } from './course.page';
 
 @NgModule({
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     declarations: [

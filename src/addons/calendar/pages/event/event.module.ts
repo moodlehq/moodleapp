@@ -13,11 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonCalendarComponentsModule } from '../../components/components.module';
@@ -34,10 +30,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CommonModule,
-        IonicModule,
-        FormsModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
         AddonCalendarComponentsModule,
     ],
