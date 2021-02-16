@@ -87,7 +87,7 @@ import { CoreLocalFileComponent } from './local-file/local-file';
     ],
     imports: [
         CommonModule,
-        IonicModule.forRoot(),
+        IonicModule,
         FormsModule,
         TranslateModule.forChild(),
         CoreDirectivesModule,

@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
@@ -27,9 +24,6 @@ import { AddonBlockRecentlyAccessedItemsComponent } from './recentlyaccesseditem
         AddonBlockRecentlyAccessedItemsComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
         CoreCoursesComponentsModule,
     ],

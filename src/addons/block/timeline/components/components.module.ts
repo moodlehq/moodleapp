@@ -13,10 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule } from '@angular/forms';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
@@ -31,10 +27,6 @@ import { AddonBlockTimelineEventsComponent } from './events/events';
         AddonBlockTimelineEventsComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        FormsModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
         CoreCoursesComponentsModule,
         CoreCourseComponentsModule,

@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CommonModule } from '@angular/common';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreTagIndexAreaPage } from './index-area.page';
@@ -34,9 +31,6 @@ const routes: Routes = [
     ],
     imports: [
         RouterModule.forChild(routes),
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     exports: [RouterModule],

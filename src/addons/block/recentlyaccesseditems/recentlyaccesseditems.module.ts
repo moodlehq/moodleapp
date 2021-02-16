@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { AddonBlockRecentlyAccessedItemsComponentsModule } from './components/components.module';
@@ -22,10 +20,8 @@ import { AddonBlockRecentlyAccessedItemsHandler } from './services/block-handler
 
 @NgModule({
     imports: [
-        IonicModule,
         CoreSharedModule,
         AddonBlockRecentlyAccessedItemsComponentsModule,
-        TranslateModule.forChild(),
     ],
     providers: [
         {

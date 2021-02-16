@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
@@ -27,9 +24,6 @@ import { CoreUserTagAreaComponent } from './tag-area/tag-area';
         CoreUserTagAreaComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     providers: [

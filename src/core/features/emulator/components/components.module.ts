@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEmulatorCaptureMediaComponent } from './capture-media/capture-media';
@@ -25,9 +22,6 @@ import { CoreEmulatorCaptureMediaComponent } from './capture-media/capture-media
         CoreEmulatorCaptureMediaComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule.forRoot(),
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     exports: [

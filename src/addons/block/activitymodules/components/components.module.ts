@@ -13,10 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -27,10 +23,6 @@ import { AddonBlockActivityModulesComponent } from './activitymodules/activitymo
         AddonBlockActivityModulesComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        FormsModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     exports: [

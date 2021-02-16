@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule, ROUTES } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuMorePage } from './more';
@@ -24,9 +21,6 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
 
 @NgModule({
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
         CoreSharedModule,
     ],
     providers: [
