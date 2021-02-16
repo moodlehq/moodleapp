@@ -1286,7 +1286,7 @@ export class CoreDomUtilsProvider {
      */
     showDeleteConfirm(
         translateMessage: string = 'core.areyousure',
-        translateArgs: Record<string, string> = {},
+        translateArgs: Record<string, unknown> = {},
         options?: AlertOptions,
     ): Promise<void> {
         return this.showConfirm(

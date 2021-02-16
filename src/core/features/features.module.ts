@@ -30,6 +30,7 @@ import { CorePushNotificationsModule } from './pushnotifications/pushnotificatio
 import { CoreXAPIModule } from './xapi/xapi.module';
 import { CoreViewerModule } from './viewer/viewer.module';
 import { CoreSearchModule } from './search/search.module';
+import { CoreCommentsModule } from './comments/comments.module';
 
 @NgModule({
     imports: [
@@ -49,6 +50,7 @@ import { CoreSearchModule } from './search/search.module';
         CoreXAPIModule,
         CoreH5PModule,
         CoreViewerModule,
+        CoreCommentsModule,
     ],
 })
 export class CoreFeaturesModule {}
