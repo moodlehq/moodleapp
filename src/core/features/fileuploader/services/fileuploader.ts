@@ -779,3 +779,5 @@ export type CoreFileUploaderTypeListInfoEntry = {
     name?: string;
     extlist: string;
 };
+
+export type CoreFileEntry = CoreWSExternalFile | FileEntry;

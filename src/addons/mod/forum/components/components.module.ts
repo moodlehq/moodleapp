@@ -14,24 +14,23 @@
 
 import { NgModule } from '@angular/core';
 
-import { AddonModAssignModule } from './assign/assign.module';
-import { AddonModBookModule } from './book/book.module';
-import { AddonModForumModule } from './forum/forum.module';
-import { AddonModLessonModule } from './lesson/lesson.module';
-import { AddonModPageModule } from './page/page.module';
-import { AddonModQuizModule } from './quiz/quiz.module';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+
+import { AddonModForumIndexComponent } from './index/index';
 
 @NgModule({
-    declarations: [],
-    imports: [
-        AddonModAssignModule,
-        AddonModBookModule,
-        AddonModForumModule,
-        AddonModLessonModule,
-        AddonModPageModule,
-        AddonModQuizModule,
+    declarations: [
+        AddonModForumIndexComponent,
     ],
-    providers: [],
-    exports: [],
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreTagComponentsModule,
+    ],
+    exports: [
+        AddonModForumIndexComponent,
+    ],
 })
-export class AddonModModule { }
+export class AddonModForumComponentsModule {}

@@ -13,25 +13,28 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
-import { AddonModAssignModule } from './assign/assign.module';
-import { AddonModBookModule } from './book/book.module';
-import { AddonModForumModule } from './forum/forum.module';
-import { AddonModLessonModule } from './lesson/lesson.module';
-import { AddonModPageModule } from './page/page.module';
-import { AddonModQuizModule } from './quiz/quiz.module';
+import { CoreSharedModule } from '@/core/shared.module';
+
+import { AddonModForumComponentsModule } from './components/components.module';
+import { AddonModForumIndexPage } from './pages/index';
+
+const routes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        component: AddonModForumIndexPage,
+    },
+];
 
 @NgModule({
-    declarations: [],
     imports: [
-        AddonModAssignModule,
-        AddonModBookModule,
-        AddonModForumModule,
-        AddonModLessonModule,
-        AddonModPageModule,
-        AddonModQuizModule,
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+        AddonModForumComponentsModule,
     ],
-    providers: [],
-    exports: [],
+    declarations: [
+        AddonModForumIndexPage,
+    ],
 })
-export class AddonModModule { }
+export class AddonModForumLazyModule {}

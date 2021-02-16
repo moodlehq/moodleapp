@@ -1,0 +1,18 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+            </core-format-text>
+        </ion-title>
+        <ion-buttons slot="end">
+            <!-- The buttons defined by the component will be added in here. -->
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <addon-mod-forum-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)"></addon-mod-forum-index>
+</ion-content>

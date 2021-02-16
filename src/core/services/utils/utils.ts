@@ -219,7 +219,7 @@ export class CoreUtilsProvider {
         try {
             const response = await this.timeoutPromise(window.fetch(url, initOptions), CoreWS.instance.getRequestTimeout());
 
-            return response.redirected;
+            return !!response && response.redirected;
         } catch (error) {
             if (error.timeout && controller) {
                 // Timeout, abort the request.
@@ -1072,13 +1072,16 @@ export class CoreUtilsProvider {
      * @param sortByValue True to sort values alphabetically, false otherwise.
      * @return Array of objects with the name & value of each property.
      */
-    objectToArrayOfObjects<T = Record<string, unknown>>(
-        obj: Record<string, unknown>,
+    objectToArrayOfObjects<
+        A extends Record<string,unknown> = Record<string, unknown>,
+        O extends Record<string, unknown> = Record<string, unknown>
+    >(
+        obj: O,
         keyName: string,
         valueName: string,
         sortByKey?: boolean,
         sortByValue?: boolean,
-    ): T[] {
+    ): A[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey: string, value: unknown): Record<string, unknown>[] | unknown => {
             if (typeof value == 'undefined' || value == null) {
@@ -1114,7 +1117,7 @@ export class CoreUtilsProvider {
         }
 
         // "obj" will always be an object, so "entries" will always be an array.
-        const entries = getEntries('', obj) as T[];
+        const entries = getEntries('', obj) as A[];
         if (sortByKey || sortByValue) {
             return entries.sort((a, b) => {
                 if (sortByKey) {
@@ -1223,7 +1226,7 @@ export class CoreUtilsProvider {
     promiseDefer<T>(): PromiseDefer<T> {
         const deferred: Partial<PromiseDefer<T>> = {};
         deferred.promise = new Promise((resolve, reject): void => {
-            deferred.resolve = resolve;
+            deferred.resolve = resolve as (value?: T | undefined) => void;
             deferred.reject = reject;
         });
 
@@ -1371,7 +1374,7 @@ export class CoreUtilsProvider {
      * @param time Number of milliseconds of the timeout.
      * @return Promise with the timeout.
      */
-    timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T> {
+    timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T | void> {
         return new Promise((resolve, reject): void => {
             let timedOut = false;
             const resolveBeforeTimeout = () => {

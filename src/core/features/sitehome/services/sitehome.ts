@@ -19,7 +19,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
 import { CoreCourse } from '../../course/services/course';
 import { CoreCourses } from '../../courses/services/courses';
-import { AddonModForum, AddonModForumData } from '@/addons/mod/forum/services/forum';
+import { AddonModForum, AddonModForumData } from '@addons/mod/forum/services/forum.service';
 
 /**
  * Items with index 1 and 3 were removed on 2.5 and not being supported in the app.

@@ -29,7 +29,7 @@
                             <ion-item class="ion-text-wrap addon-messages-conversation-item"
                                 *ngFor="let contact of confirmedContacts" [title]="contact.fullname" detail
                                 (click)="selectUser(contact.id)" [class.core-selected-item]="contact.id == selectedUserId">
-                                <core-user-avatar slot="start" core-user-avatar [user]="contact"
+                                <core-user-avatar slot="start" [user]="contact"
                                     [checkOnline]="contact.showonlinestatus" [linkProfile]="false">
                                 </core-user-avatar>
                                 <ion-label>
