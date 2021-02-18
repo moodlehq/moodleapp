@@ -24,6 +24,7 @@ import { AddonModAssignIndexComponent } from './index/index';
 import { AddonModAssignSubmissionComponent } from './submission/submission';
 import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/submission-plugin';
 import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedback-plugin';
+import { AddonModAssignEditFeedbackModalComponent } from './edit-feedback-modal/edit-feedback-modal';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedbac
         AddonModAssignSubmissionComponent,
         AddonModAssignSubmissionPluginComponent,
         AddonModAssignFeedbackPluginComponent,
+        AddonModAssignEditFeedbackModalComponent,
     ],
     imports: [
         CommonModule,
@@ -45,6 +47,7 @@ import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedbac
         AddonModAssignSubmissionComponent,
         AddonModAssignSubmissionPluginComponent,
         AddonModAssignFeedbackPluginComponent,
+        AddonModAssignEditFeedbackModalComponent,
     ],
 })
 export class AddonModAssignComponentsModule {}
