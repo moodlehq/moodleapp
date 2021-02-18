@@ -34,6 +34,7 @@ import { CoreFileUploaderDelegate } from './fileuploader-delegate';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreWSUploadFileResult } from '@services/ws';
+import { CoreSites } from '@services/sites';
 
 /**
  * Helper service to upload files.
@@ -738,6 +739,14 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
+        if (maxSize === 0) {
+            const siteInfo = CoreSites.instance.getCurrentSite()?.getInfo();
+
+            if (siteInfo && siteInfo.usermaxuploadfilesize) {
+                maxSize = siteInfo.usermaxuploadfilesize;
+            }
+        }
+
         if (maxSize !== undefined && maxSize != -1 && file.size > maxSize) {
             throw this.createMaxBytesError(maxSize, file.name);
         }

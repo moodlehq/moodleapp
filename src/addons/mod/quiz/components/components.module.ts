@@ -18,11 +18,15 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { AddonModQuizConnectionErrorComponent } from './connection-error/connection-error';
 import { AddonModQuizIndexComponent } from './index/index';
+import { AddonModQuizNavigationModalComponent } from './navigation-modal/navigation-modal';
+import { AddonModQuizPreflightModalComponent } from './preflight-modal/preflight-modal';
 
 @NgModule({
     declarations: [
         AddonModQuizIndexComponent,
         AddonModQuizConnectionErrorComponent,
+        AddonModQuizNavigationModalComponent,
+        AddonModQuizPreflightModalComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -33,6 +37,8 @@ import { AddonModQuizIndexComponent } from './index/index';
     exports: [
         AddonModQuizIndexComponent,
         AddonModQuizConnectionErrorComponent,
+        AddonModQuizNavigationModalComponent,
+        AddonModQuizPreflightModalComponent,
     ],
 })
 export class AddonModQuizComponentsModule {}

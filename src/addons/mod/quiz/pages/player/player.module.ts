@@ -12,21 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
+import { CanLeaveGuard } from '@guards/can-leave';
+import { AddonModQuizPlayerPage } from './player';
+
 const routes: Routes = [
     {
-        path: ':courseId/:cmdId',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModQuizIndexPageModule),
-    },
-    {
-        path: 'player/:courseId/:quizId',
-        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModQuizPlayerPageModule),
+        path: '',
+        component: AddonModQuizPlayerPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+        CoreQuestionComponentsModule,
+    ],
+    declarations: [
+        AddonModQuizPlayerPage,
+    ],
+    exports: [RouterModule],
 })
-export class AddonModQuizLazyModule {}
+export class AddonModQuizPlayerPageModule {}

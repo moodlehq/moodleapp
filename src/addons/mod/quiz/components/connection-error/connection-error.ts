@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Component } from '@angular/core';
 
-const routes: Routes = [
-    {
-        path: ':courseId/:cmdId',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModQuizIndexPageModule),
-    },
-    {
-        path: 'player/:courseId/:quizId',
-        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModQuizPlayerPageModule),
-    },
-];
-
-@NgModule({
-    imports: [RouterModule.forChild(routes)],
+/**
+ * Component that displays a quiz entry page.
+ */
+@Component({
+    selector: 'addon-mod-quiz-connection-error',
+    templateUrl: 'connection-error.html',
+    styleUrls: ['connection-error.scss'],
 })
-export class AddonModQuizLazyModule {}
+export class AddonModQuizConnectionErrorComponent {
+
+}

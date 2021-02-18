@@ -143,6 +143,7 @@
     "loadmore": "Load more",
     "location": "Location",
     "lostconnection": "Your authentication token is invalid or has expired. You will have to reconnect to the site.",
+    "maxfilesize": "Maximum size for new files: {{$a}}",
     "maxsizeandattachments": "Maximum file size: {{$a.size}}, maximum number of files: {{$a.attachments}}",
     "min": "min",
     "mins": "mins",

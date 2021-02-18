@@ -21,6 +21,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { IonContent } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -464,7 +465,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.content?.scrollToTop();
 
         await promise;
-        await CoreUtils.instance.ignoreErrors(this.refreshContent());
+        await CoreUtils.instance.ignoreErrors(this.refreshContent(true));
 
         this.loaded = true;
         this.refreshIcon = CoreConstants.ICON_REFRESH;
@@ -533,7 +534,11 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected openQuiz(): void {
         this.hasPlayed = true;
 
-        // @todo this.navCtrl.push('player', {courseId: this.courseId, quizId: this.quiz.id, moduleUrl: this.module.url});
+        CoreNavigator.instance.navigate(`../../player/${this.courseId}/${this.quiz!.id}`, {
+            params: {
+                moduleUrl: this.module?.url,
+            },
+        });
     }
 
     /**

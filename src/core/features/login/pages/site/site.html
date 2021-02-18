@@ -53,7 +53,7 @@
                         <ion-icon name="fas-pen"></ion-icon>
                     </ion-thumbnail>
                     <ion-label>
-                        <h2 text-wrap>{{ 'core.login.yourenteredsite' | translate }}</h2>
+                        <h2 class="ion-text-wrap">{{ 'core.login.yourenteredsite' | translate }}</h2>
                         <p>{{enteredSiteUrl.noProtocolUrl}}</p>
                     </ion-label>
                 </ion-item>
@@ -75,7 +75,7 @@
 
         <ion-item *ngIf="siteSelector == 'url'" lines="none">
             <ion-label>
-                <ion-button expand="block" [disabled]="!siteForm.valid" text-wrap>
+                <ion-button expand="block" [disabled]="!siteForm.valid" class="ion-text-wrap">
                     {{ 'core.login.connect' | translate }}
                 </ion-button>
             </ion-label>
@@ -123,7 +123,7 @@
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
         </ion-thumbnail>
         <ion-label>
-            <h2 *ngIf="site.title" text-wrap>{{site.title}}</h2>
+            <h2 *ngIf="site.title" class="ion-text-wrap">{{site.title}}</h2>
             <p *ngIf="site.noProtocolUrl">{{site.noProtocolUrl}}</p>
             <p *ngIf="site.location">{{site.location}}</p>
         </ion-label>

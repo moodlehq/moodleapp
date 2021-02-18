@@ -32,7 +32,7 @@ import { Translate } from '@singletons';
  *
  * Example usage:
  *
- * <ion-item text-wrap>
+ * <ion-item class="ion-text-wrap">
  *     <ion-label stacked core-mark-required="true">{{ 'core.login.username' | translate }}</ion-label>
  *     <ion-input type="text" name="username" formControlName="username"></ion-input>
  *     <core-input-errors item-content [control]="myForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>

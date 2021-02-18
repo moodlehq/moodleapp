@@ -7,7 +7,7 @@
 </ion-item>
 
 <!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname && form" text-wrap [formGroup]="form">
+<ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
     <ion-label position="stacked">
         <span [core-mark-required]="required">{{ field.name }}</span>
     </ion-label>
