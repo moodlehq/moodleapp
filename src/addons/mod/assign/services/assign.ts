@@ -328,7 +328,7 @@ export class AddonModAssignProvider {
      * @param status Grading status name
      * @return The color name.
      */
-    getSubmissionGradingStatusColor(status: string): string {
+    getSubmissionGradingStatusColor(status?: string): string {
         if (!status) {
             return '';
         }
@@ -1859,6 +1859,15 @@ export type AddonModAssignOutcomes = { [itemNumber: number]: number };
  * Data sent by SUBMITTED_FOR_GRADING_EVENT event.
  */
 export type AddonModAssignSubmittedForGradingEventData = {
+    assignmentId: number;
+    submissionId: number;
+    userId: number;
+};
+
+/**
+ * Data sent by GRADED_EVENT event.
+ */
+export type AddonModAssignGradedEventData = {
     assignmentId: number;
     submissionId: number;
     userId: number;

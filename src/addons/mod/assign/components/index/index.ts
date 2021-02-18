@@ -317,7 +317,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (typeof status != 'undefined') {
             params.status = status;
         }
-        CoreNavigator.instance.navigate('submission-list', {
+        CoreNavigator.instance.navigate('submission', {
             params,
         });
     }

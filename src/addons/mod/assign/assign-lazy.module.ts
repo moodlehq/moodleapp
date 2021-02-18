@@ -17,6 +17,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddonModAssignComponentsModule } from './components/components.module';
 import { AddonModAssignIndexPage } from './pages/index/index.page';
+import { AddonModAssignSubmissionListPage } from './pages/submission-list/submission-list.page';
 
 const routes: Routes = [
     {
@@ -37,6 +38,7 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModAssignIndexPage,
+        AddonModAssignSubmissionListPage,
     ],
 })
 export class AddonModAssignLazyModule {}

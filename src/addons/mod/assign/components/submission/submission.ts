@@ -26,6 +26,7 @@ import {
     AddonModAssignGetSubmissionStatusWSResponse,
     AddonModAssignSubmittedForGradingEventData,
     AddonModAssignSavePluginData,
+    AddonModAssignGradedEventData,
 } from '../../services/assign';
 import {
     AddonModAssignAutoSyncData,
@@ -913,7 +914,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 // Invalidate and refresh data.
                 this.invalidateAndRefresh(true);
 
-                CoreEvents.trigger(AddonModAssignProvider.GRADED_EVENT, {
+                CoreEvents.trigger<AddonModAssignGradedEventData>(AddonModAssignProvider.GRADED_EVENT, {
                     assignmentId: this.assign!.id,
                     submissionId: this.submitId,
                     userId: this.currentUserId,
