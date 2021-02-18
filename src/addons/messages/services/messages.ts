@@ -897,10 +897,7 @@ export class AddonMessagesProvider {
     ): Promise<{members: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.instance.getSite(siteId);
         userId = userId || site.getUserId();
-
-        if (typeof limitTo == 'undefined' || limitTo === null) {
-            limitTo = AddonMessagesProvider.LIMIT_MESSAGES;
-        }
+        limitTo = limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId),
@@ -948,11 +945,9 @@ export class AddonMessagesProvider {
 
         options.userId = options.userId || site.getUserId();
         options.limitFrom = options.limitFrom || 0;
-        options.limitTo = options.limitTo === undefined || options.limitTo === null
-            ? AddonMessagesProvider.LIMIT_MESSAGES
-            : options.limitTo;
+        options.limitTo = options.limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
         options.timeFrom = options.timeFrom || 0;
-        options.newestFirst = options.newestFirst === undefined || options.newestFirst === null ? true : options.newestFirst;
+        options.newestFirst = options.newestFirst ?? true;
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForConversationMessages(options.userId, conversationId),

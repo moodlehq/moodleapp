@@ -531,7 +531,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         if (formattedData.lessonscored) {
-            if (formattedData.numofattempts) {
+            if (formattedData.numofattempts && formattedData.avescore != null) {
                 formattedData.avescore = CoreTextUtils.instance.roundToDecimals(formattedData.avescore, 2);
             }
             if (formattedData.highscore != null) {

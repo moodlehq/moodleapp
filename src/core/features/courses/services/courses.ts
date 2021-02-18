@@ -1227,7 +1227,7 @@ export type CoreEnrolledCourseData = CoreEnrolledCourseBasicData & {
     enrolledusercount?: number; // Number of enrolled users in this course.
     completionhascriteria?: boolean; // If completion criteria is set.
     completionusertracked?: boolean; // If the user is completion tracked.
-    progress?: number; // Progress percentage.
+    progress?: number | null; // Progress percentage.
     completed?: boolean; // Whether the course is completed.
     marker?: number; // Course section marker.
     lastaccess?: number; // Last access to the course (timestamp).

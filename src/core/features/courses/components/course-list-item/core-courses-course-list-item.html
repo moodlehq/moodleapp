@@ -23,7 +23,7 @@
             <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id">
             </core-format-text>
         </h2>
-        <p *ngIf="isEnrolled && course.progress != null && course.progress! >= 0 && course.completionusertracked !== false">
+        <p *ngIf="isEnrolled && course.progress! >= 0 && course.completionusertracked !== false">
             <core-progress-bar [progress]="course.progress"></core-progress-bar>
         </p>
     </ion-label>

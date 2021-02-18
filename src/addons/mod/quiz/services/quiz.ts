@@ -85,8 +85,8 @@ export class AddonModQuizProvider {
      * @param decimals Decimals to use.
      * @return Grade to display.
      */
-    formatGrade(grade?: number, decimals?: number): string {
-        if (typeof grade == 'undefined' || grade == -1 || grade === null || isNaN(grade)) {
+    formatGrade(grade?: number | null, decimals?: number): string {
+        if (grade === undefined || grade == -1 || grade === null || isNaN(grade)) {
             return Translate.instance.instant('addon.mod_quiz.notyetgraded');
         }
 
@@ -1796,14 +1796,14 @@ export class AddonModQuizProvider {
      * @return Grade to display.
      */
     rescaleGrade(
-        rawGrade: string | number | undefined,
+        rawGrade: string | number | undefined | null,
         quiz: AddonModQuizQuizWSData,
         format: boolean | string = true,
     ): string | undefined {
         let grade: number | undefined;
 
         const rawGradeNum = typeof rawGrade == 'string' ? parseFloat(rawGrade) : rawGrade;
-        if (rawGradeNum !== undefined && !isNaN(rawGradeNum)) {
+        if (rawGradeNum !== undefined && rawGradeNum !== null && !isNaN(rawGradeNum)) {
             if (quiz.sumgrades! >= 0.000005) {
                 grade = rawGradeNum * quiz.grade! / quiz.sumgrades!;
             } else {
@@ -2055,7 +2055,7 @@ export type AddonModQuizAttemptWSData = {
     timemodified?: number; // Last modified time.
     timemodifiedoffline?: number; // Last modified time via webservices.
     timecheckstate?: number; // Next time quiz cron should check attempt for state changes.  NULL means never check.
-    sumgrades?: number; // Total marks for this attempt.
+    sumgrades?: number | null; // Total marks for this attempt.
 };
 
 /**
@@ -2215,7 +2215,7 @@ export type AddonModQuizQuizWSData = {
     questionsperpage?: number; // How often to insert a page break when editing the quiz, or when shuffling the question order.
     navmethod?: string; // Any constraints on how the user is allowed to navigate around the quiz.
     shuffleanswers?: number; // Whether the parts of the question should be shuffled, in those question types that support it.
-    sumgrades?: number; // The total of all the question instance maxmarks.
+    sumgrades?: number | null; // The total of all the question instance maxmarks.
     grade?: number; // The total that the quiz overall grade is scaled to be out of.
     timecreated?: number; // The time when the quiz was added to the course.
     timemodified?: number; // Last modified time.

@@ -34,7 +34,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
 
     @Input() course!: CoreCourseSearchedData & CoreCourseWithImageAndColor & {
         completionusertracked?: boolean; // If the user is completion tracked.
-        progress?: number; // Progress percentage.
+        progress?: number | null; // Progress percentage.
     }; // The course to render.
 
     icons: CoreCoursesEnrolmentIcons[] = [];
