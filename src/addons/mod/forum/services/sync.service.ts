@@ -23,10 +23,15 @@ import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreEvents } from '@singletons/events';
-import { AddonModForum, AddonModForumProvider } from './forum.service';
+import {
+    AddonModForum,
+    AddonModForumAddDiscussionPostWSOptionsObject,
+    AddonModForumAddDiscussionWSOptionsObject,
+    AddonModForumProvider,
+} from './forum.service';
 import { AddonModForumHelper } from './helper.service';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './offline.service';
 
@@ -72,7 +77,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllForumsFunc(force: boolean, siteId: string): Promise<void> {
-        const sitePromises: Promise<void>[] = [];
+        const sitePromises: Promise<unknown>[] = [];
 
         // Sync all new discussions.
         const syncDiscussions = async (discussions: AddonModForumOfflineDiscussion[]) => {
@@ -239,13 +244,13 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                         // Now try to add the discussion.
                         const options = CoreUtils.instance.clone(discussion.options || {});
-                        options.attachmentsid = itemId;
+                        options.attachmentsid = itemId!;
 
                         await AddonModForum.instance.addNewDiscussionOnline(
                             forumId,
                             discussion.subject,
                             discussion.message,
-                            options,
+                            options as unknown as AddonModForumAddDiscussionWSOptionsObject,
                             groupId,
                             siteId,
                         );
@@ -309,8 +314,13 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      * @return Promise resolved if sync is successful, rejected otherwise.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async syncRatings(cmId?: number, discussionId?: number, force?: boolean, siteId?: string): Promise<void> {
+    async syncRatings(cmId?: number, discussionId?: number, force?: boolean, siteId?: string): Promise<{
+        updated: boolean;
+        warnings: string[];
+    }> {
         // @todo
+
+        return { updated: true, warnings: [] };
     }
 
     /**
@@ -437,7 +447,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                             reply.postid,
                             reply.subject,
                             reply.message,
-                            reply.options,
+                            reply.options as unknown as AddonModForumAddDiscussionPostWSOptionsObject,
                             siteId,
                         );
                     });
@@ -526,18 +536,18 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      *
      * @param forumId Forum ID the post belongs to.
      * @param post Offline post or discussion.
-     * @param isDisc True if it's a new discussion, false if it's a reply.
+     * @param isDiscussion True if it's a new discussion, false if it's a reply.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the reply belongs to. If not defined, current user in site.
      * @return Promise resolved with draftid if uploaded, resolved with undefined if nothing to upload.
      */
     protected async uploadAttachments(
         forumId: number,
-        post: any,
-        isDisc: boolean,
+        post: AddonModForumOfflineDiscussion | AddonModForumOfflineReply,
+        isDiscussion: boolean,
         siteId?: string,
         userId?: number,
-    ): Promise<void> {
+    ): Promise<number | undefined> {
         const attachments = post && post.options && post.options.attachmentsid;
 
         if (!attachments) {
@@ -545,22 +555,31 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
         }
 
         // Has some attachments to sync.
-        let files = attachments.online || [];
+        let files = typeof attachments === 'object' && attachments.online ? attachments.online : [];
 
-        if (attachments.offline) {
+        if (typeof attachments === 'object' && attachments.offline) {
             // Has offline files.
             try {
-                const atts = isDisc
-                    ? await AddonModForumHelper.instance.getNewDiscussionStoredFiles(forumId, post.timecreated, siteId)
-                    : await AddonModForumHelper.instance.getReplyStoredFiles(forumId, post.postid, siteId, userId);
+                const postAttachments = isDiscussion
+                    ? await AddonModForumHelper.instance.getNewDiscussionStoredFiles(
+                        forumId,
+                        (post as AddonModForumOfflineDiscussion).timecreated,
+                        siteId,
+                    )
+                    : await AddonModForumHelper.instance.getReplyStoredFiles(
+                        forumId,
+                        (post as AddonModForumOfflineReply).postid,
+                        siteId,
+                        userId,
+                    );
 
-                files = files.concat(atts);
+                files = files.concat(postAttachments as unknown as []);
             } catch (error) {
                 // Folder not found, no files to add.
             }
         }
 
-        await CoreFileUploader.instance.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+        return CoreFileUploader.instance.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
     }
 
     /**
@@ -590,6 +609,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
     }
 
 }
+
+export class AddonModForumSync extends makeSingleton(AddonModForumSyncProvider) {}
 
 /**
  * Result of forum sync.

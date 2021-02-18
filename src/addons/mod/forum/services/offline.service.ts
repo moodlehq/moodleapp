@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
@@ -401,8 +402,14 @@ export class AddonModForumOfflineProvider {
 
 export class AddonModForumOffline extends makeSingleton(AddonModForumOfflineProvider) {}
 
-export type AddonModForumDiscussionOptions = Record<string, unknown>;
-export type AddonModForumReplyOptions = Record<string, unknown>;
+export type AddonModForumDiscussionOptions = {
+    attachmentsid: number | CoreFileUploaderStoreFilesResult;
+};
+
+export type AddonModForumReplyOptions = {
+    private?: boolean;
+    attachmentsid?: number | CoreFileUploaderStoreFilesResult;
+};
 
 export type AddonModForumOfflineDiscussion = {
     forumid: number;
@@ -412,6 +419,7 @@ export type AddonModForumOfflineDiscussion = {
     message: string;
     options: AddonModForumDiscussionOptions;
     groupid: number;
+    groupname?: string;
     userid: number;
     timecreated: number;
 };

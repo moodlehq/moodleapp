@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
+import { CoreFileEntry } from '@features/fileuploader/services/fileuploader';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
@@ -25,7 +26,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModForumOffline, AddonModForumReplyOptions } from './offline.service';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumReplyOptions } from './offline.service';
 
 const ROOT_CACHE_KEY = 'mmaModForum:';
 
@@ -275,13 +276,13 @@ export class AddonModForumProvider {
      * @return Promise resolved when done.
      * @since 3.8
      */
-    async deletePost(postId: number, siteId?: string): Promise<void> {
+    async deletePost(postId: number, siteId?: string): Promise<AddonModForumDeletePostWSResponse> {
         const site = await CoreSites.instance.getSite(siteId);
         const params: AddonModForumDeletePostWSParams = {
             postid: postId,
         };
 
-        await site.write<AddonModForumDeletePostWSResponse>('mod_forum_delete_post', params);
+        return site.write<AddonModForumDeletePostWSResponse>('mod_forum_delete_post', params);
     }
 
     /**
@@ -355,7 +356,12 @@ export class AddonModForumProvider {
      * @param discussions List of discussions to format.
      * @return Promise resolved with the formatted discussions.
      */
-    formatDiscussionsGroups(cmId: number, discussions: any[]): Promise<any[]> {
+    formatDiscussionsGroups(cmId: number, discussions: AddonModForumDiscussion[]): Promise<AddonModForumDiscussion[]>;
+    formatDiscussionsGroups(cmId: number, discussions: AddonModForumOfflineDiscussion[]): Promise<AddonModForumOfflineDiscussion[]>;
+    formatDiscussionsGroups(
+        cmId: number,
+        discussions: AddonModForumDiscussion[] | AddonModForumOfflineDiscussion[],
+    ): Promise<AddonModForumDiscussion[] | AddonModForumOfflineDiscussion[]> {
         discussions = CoreUtils.instance.clone(discussions);
 
         return CoreGroups.instance.getActivityAllowedGroups(cmId).then((result) => {
@@ -447,7 +453,7 @@ export class AddonModForumProvider {
             throw new Error('Post not found');
         }
 
-        return response.post;
+        return this.translateWSPost(response.post);
     }
 
     /**
@@ -539,9 +545,9 @@ export class AddonModForumProvider {
         ratinginfo?: AddonModForumRatingInfo;
     }> {
         // Convenience function to translate legacy data to new format.
-        const translateLegacyPostsFormat = (posts: any[]): any[] => posts.map((post) => {
-            const newPost = {
-                id: post.id ,
+        const translateLegacyPostsFormat = (posts: AddonModForumLegacyPost[]): AddonModForumPost[] => posts.map((post) => {
+            const newPost: AddonModForumPost = {
+                id: post.id,
                 discussionid: post.discussion,
                 parentid: post.parent,
                 hasparent: !!post.parent,
@@ -563,8 +569,8 @@ export class AddonModForumProvider {
                 tags: post.tags,
             };
 
-            if (post.groupname) {
-                newPost.author['groups'] = [{ name: post.groupname }];
+            if ('groupname' in post && typeof post['groupname'] === 'string') {
+                newPost.author['groups'] = [{ name: post['groupname'] }];
             }
 
             return newPost;
@@ -572,26 +578,10 @@ export class AddonModForumProvider {
 
         // For some reason, the new WS doesn't use the tags exporter so it returns a different format than other WebServices.
         // Convert the new format to the exporter one so it's the same as in other WebServices.
-        const translateTagsFormatToLegacy = (posts: any[]): any[] => {
-            posts.forEach((post) => {
-                post.tags = post.tags.map((tag) => {
-                    const viewUrl = (tag.urls && tag.urls.view) || '';
-                    const params = CoreUrlUtils.instance.extractUrlParams(viewUrl);
+        const translateTagsFormatToLegacy = (posts: AddonModForumWSPost[]): AddonModForumPost[] => {
+            posts.forEach(post => this.translateWSPost(post));
 
-                    return {
-                        id: tag.tagid,
-                        taginstanceid: tag.id,
-                        flag: tag.flag ? 1 : 0,
-                        isstandard: tag.isstandard,
-                        rawname: tag.displayname,
-                        name: tag.displayname,
-                        tagcollid: params.tc ? Number(params.tc) : undefined,
-                        taginstancecontextid: params.from ? Number(params.from) : undefined,
-                    };
-                });
-            });
-
-            return posts;
+            return posts as unknown as AddonModForumPost[];
         };
 
         const params: AddonModForumGetDiscussionPostsWSParams | AddonModForumGetForumDiscussionPostsWSParams = {
@@ -619,15 +609,16 @@ export class AddonModForumProvider {
             throw new Error('Could not get forum posts');
         }
 
-        if (isGetDiscussionPostsAvailable) {
-            response.posts = translateTagsFormatToLegacy((response as AddonModForumGetDiscussionPostsWSResponse).posts);
-        } else {
-            response.posts = translateLegacyPostsFormat((response as AddonModForumGetForumDiscussionPostsWSResponse).posts);
-        }
+        const posts = isGetDiscussionPostsAvailable
+            ? translateTagsFormatToLegacy((response as AddonModForumGetDiscussionPostsWSResponse).posts)
+            : translateLegacyPostsFormat((response as AddonModForumGetForumDiscussionPostsWSResponse).posts);
 
-        this.storeUserData(response.posts);
+        this.storeUserData(posts);
 
-        return response as AddonModForumGetDiscussionPostsWSResponse;
+        return {
+            ...response,
+            posts,
+        };
     }
 
     /**
@@ -790,7 +781,7 @@ export class AddonModForumProvider {
             throw new Error('Could not get discussions');
         }
 
-        await this.storeUserData(response.discussions);
+        this.storeUserData(response.discussions);
 
         return {
             discussions: response.discussions,
@@ -1093,7 +1084,13 @@ export class AddonModForumProvider {
         // If there's already a reply to be sent to the server, discard it first.
         try {
             await AddonModForumOffline.instance.deleteReply(postId, siteId);
-            await this.replyPostOnline(postId, subject, message, options, siteId);
+            await this.replyPostOnline(
+                postId,
+                subject,
+                message,
+                options as unknown as AddonModForumAddDiscussionPostWSOptionsObject,
+                siteId,
+            );
 
             return true;
         } catch (error) {
@@ -1157,7 +1154,12 @@ export class AddonModForumProvider {
      * @return Promise resolved when done.
      * @since 3.7
      */
-    async setLockState(forumId: number, discussionId: number, locked: boolean, siteId?: string): Promise<void> {
+    async setLockState(
+        forumId: number,
+        discussionId: number,
+        locked: boolean,
+        siteId?: string,
+    ): Promise<AddonModForumSetLockStateWSResponse> {
         const site = await CoreSites.instance.getSite(siteId);
         const params: AddonModForumSetLockStateWSParams = {
             forumid: forumId,
@@ -1165,7 +1167,7 @@ export class AddonModForumProvider {
             targetstate: locked ? 0 : 1,
         };
 
-        await site.write<AddonModForumSetLockStateWSResponse>('mod_forum_set_lock_state', params);
+        return site.write<AddonModForumSetLockStateWSResponse>('mod_forum_set_lock_state', params);
     }
 
     /**
@@ -1211,7 +1213,7 @@ export class AddonModForumProvider {
         const site = await CoreSites.instance.getSite(siteId);
         const params: AddonModForumToggleFavouriteStateWSParams = {
             discussionid: discussionId,
-            targetstate: starred ? 1 : 0 as any,
+            targetstate: starred,
         };
 
         await site.write<AddonModForumToggleFavouriteStateWSResponse>('mod_forum_toggle_favourite_state', params);
@@ -1222,30 +1224,30 @@ export class AddonModForumProvider {
      *
      * @param list Array of posts or discussions.
      */
-    protected storeUserData(list: any[]): void {
+    protected storeUserData(list: AddonModForumPost[] | AddonModForumDiscussion[]): void {
         const users = {};
 
-        list.forEach((entry) => {
-            if (entry.author) {
+        list.forEach((entry: AddonModForumPost | AddonModForumDiscussion) => {
+            if ('author' in entry) {
                 const authorId = Number(entry.author.id);
                 if (!isNaN(authorId) && !users[authorId]) {
                     users[authorId] = {
                         id: entry.author.id,
                         fullname: entry.author.fullname,
-                        profileimageurl: entry.author.urls.profileimage,
+                        profileimageurl: entry.author.urls?.profileimage,
                     };
                 }
             }
-            const userId = parseInt(entry.userid);
-            if (!isNaN(userId) && !users[userId]) {
+            const userId = parseInt(entry['userid']);
+            if ('userid' in entry && !isNaN(userId) && !users[userId]) {
                 users[userId] = {
                     id: userId,
                     fullname: entry.userfullname,
                     profileimageurl: entry.userpictureurl,
                 };
             }
-            const userModified = parseInt(entry.usermodified);
-            if (!isNaN(userModified) && !users[userModified]) {
+            const userModified = parseInt(entry['usermodified']);
+            if ('usermodified' in entry && !isNaN(userModified) && !users[userModified]) {
                 users[userModified] = {
                     id: userModified,
                     fullname: entry.usermodifiedfullname,
@@ -1291,6 +1293,33 @@ export class AddonModForumProvider {
         const response = await site.write<AddonModForumUpdateDiscussionPostWSResponse>('mod_forum_update_discussion_post', params);
 
         return response && response.status;
+    }
+
+    /**
+     * For some reason, the new WS doesn't use the tags exporter so it returns a different format than other WebServices.
+     * Convert the new format to the exporter one so it's the same as in other WebServices.
+     *
+     * @param post Post returned by the new WS.
+     * @return Post using the same format as other WebServices.
+     */
+    protected translateWSPost(post: AddonModForumWSPost): AddonModForumPost {
+        (post as unknown as AddonModForumPost).tags = (post.tags || []).map((tag) => {
+            const viewUrl = (tag.urls && tag.urls.view) || '';
+            const params = CoreUrlUtils.instance.extractUrlParams(viewUrl);
+
+            return {
+                id: tag.tagid,
+                taginstanceid: tag.id,
+                flag: tag.flag ? 1 : 0,
+                isstandard: tag.isstandard,
+                rawname: tag.displayname,
+                name: tag.displayname,
+                tagcollid: params.tc ? Number(params.tc) : undefined,
+                taginstancecontextid: params.from ? Number(params.from) : undefined,
+            };
+        });
+
+        return post as unknown as AddonModForumPost;
     }
 
 }
@@ -1353,6 +1382,7 @@ export type AddonModForumDiscussion = {
     id: number; // Post id.
     name: string; // Discussion name.
     groupid: number; // Group id.
+    groupname?: string; // Group name (not returned by WS).
     timemodified: number; // Time modified.
     usermodified: number; // The id of the user who last modified.
     timestart: number; // Time discussion can start.
@@ -1384,6 +1414,49 @@ export type AddonModForumDiscussion = {
     canreply: boolean; // Can the user reply to the discussion.
     canlock: boolean; // Can the user lock the discussion.
     canfavourite?: boolean; // Can the user star the discussion.
+};
+
+/**
+ * Forum post data returned by web services.
+ */
+export type AddonModForumPost = {
+    id: number; // Id.
+    subject: string; // Subject.
+    replysubject?: string; // Replysubject.
+    message: string; // Message.
+    author: {
+        id?: number; // Id.
+        fullname?: string; // Fullname.
+        urls?: {
+            profileimage?: string; // The URL for the use profile image.
+        };
+        groups?: { // Groups.
+            name: string; // Name.
+        }[];
+    };
+    discussionid: number; // Discussionid.
+    hasparent: boolean; // Hasparent.
+    parentid?: number; // Parentid.
+    timecreated: number | false; // Timecreated.
+    unread?: boolean; // Unread.
+    isprivatereply: boolean; // Isprivatereply.
+    capabilities: {
+        reply: boolean; // Whether the user can reply to the post.
+    };
+    attachment?: 0 | 1;
+    attachments?: (CoreFileEntry | AddonModForumWSPostAttachment)[];
+    tags?: { // Tags.
+        id: number; // Tag id.
+        name: string; // Tag name.
+        rawname: string; // The raw, unnormalised name for the tag as entered by users.
+        // isstandard: boolean; // Whether this tag is standard.
+        tagcollid?: number; // Tag collection id.
+        taginstanceid: number; // Tag instance id.
+        taginstancecontextid?: number; // Context the tag instance belongs to.
+        // itemid: number; // Id of the record tagged.
+        // ordering: number; // Tag ordering.
+        flag: number; // Whether the tag is flagged as inappropriate.
+    }[];
 };
 
 /**
@@ -1425,112 +1498,6 @@ export type AddonModForumLegacyPost = {
         ordering: number; // Tag ordering.
         flag: number; // Whether the tag is flagged as inappropriate.
     }[];
-};
-
-/**
- * Forum post data.
- */
-export type AddonModForumPost = {
-    id: number; // Id.
-    subject: string; // Subject.
-    replysubject: string; // Replysubject.
-    message: string; // Message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    author: {
-        id?: number; // Id.
-        fullname?: string; // Fullname.
-        isdeleted?: boolean; // Isdeleted.
-        groups?: { // Groups.
-            id: number; // Id.
-            name: string; // Name.
-            urls: {
-                image?: string; // Image.
-            };
-        }[];
-        urls: {
-            profile?: string; // The URL for the use profile page.
-            profileimage?: string; // The URL for the use profile image.
-        };
-    };
-    discussionid: number; // Discussionid.
-    hasparent: boolean; // Hasparent.
-    parentid?: number; // Parentid.
-    timecreated: number; // Timecreated.
-    unread?: boolean; // Unread.
-    isdeleted: boolean; // Isdeleted.
-    isprivatereply: boolean; // Isprivatereply.
-    haswordcount: boolean; // Haswordcount.
-    wordcount?: number; // Wordcount.
-    charcount?: number; // Charcount.
-    capabilities: {
-        view: boolean; // Whether the user can view the post.
-        edit: boolean; // Whether the user can edit the post.
-        delete: boolean; // Whether the user can delete the post.
-        split: boolean; // Whether the user can split the post.
-        reply: boolean; // Whether the user can reply to the post.
-        selfenrol: boolean; // Whether the user can self enrol into the course.
-        export: boolean; // Whether the user can export the post.
-        controlreadstatus: boolean; // Whether the user can control the read status of the post.
-        canreplyprivately: boolean; // Whether the user can post a private reply.
-    };
-    urls?: {
-        view?: string; // The URL used to view the post.
-        viewisolated?: string; // The URL used to view the post in isolation.
-        viewparent?: string; // The URL used to view the parent of the post.
-        edit?: string; // The URL used to edit the post.
-        delete?: string; // The URL used to delete the post.
-
-        // The URL used to split the discussion with the selected post being the first post in the new discussion.
-        split?: string;
-
-        reply?: string; // The URL used to reply to the post.
-        export?: string; // The URL used to export the post.
-        markasread?: string; // The URL used to mark the post as read.
-        markasunread?: string; // The URL used to mark the post as unread.
-        discuss?: string; // Discuss.
-    };
-    attachments: { // Attachments.
-        contextid: number; // Contextid.
-        component: string; // Component.
-        filearea: string; // Filearea.
-        itemid: number; // Itemid.
-        filepath: string; // Filepath.
-        filename: string; // Filename.
-        isdir: boolean; // Isdir.
-        isimage: boolean; // Isimage.
-        timemodified: number; // Timemodified.
-        timecreated: number; // Timecreated.
-        filesize: number; // Filesize.
-        author: string; // Author.
-        license: string; // License.
-        filenameshort: string; // Filenameshort.
-        filesizeformatted: string; // Filesizeformatted.
-        icon: string; // Icon.
-        timecreatedformatted: string; // Timecreatedformatted.
-        timemodifiedformatted: string; // Timemodifiedformatted.
-        url: string; // Url.
-        urls: {
-            export?: string; // The URL used to export the attachment.
-        };
-        html: {
-            plagiarism?: string; // The HTML source for the Plagiarism Response.
-        };
-    }[];
-    tags?: { // Tags.
-        id: number; // The ID of the Tag.
-        tagid: number; // The tagid.
-        isstandard: boolean; // Whether this is a standard tag.
-        displayname: string; // The display name of the tag.
-        flag: boolean; // Wehther this tag is flagged.
-        urls: {
-            view: string; // The URL to view the tag.
-        };
-    }[];
-    html?: {
-        rating?: string; // The HTML source to rate the post.
-        taglist?: string; // The HTML source to view the list of tags.
-        authorsubheading?: string; // The HTML source to view the author details.
-    };
 };
 
 /**
@@ -1638,6 +1605,117 @@ export type AddonModForumCanAddDiscussion = {
 export type AddonModForumSortOrder = {
     label: string;
     value: number;
+};
+
+/**
+ * Forum post attachement data returned by web services.
+ */
+export type AddonModForumWSPostAttachment = {
+    contextid: number; // Contextid.
+    component: string; // Component.
+    filearea: string; // Filearea.
+    itemid: number; // Itemid.
+    filepath: string; // Filepath.
+    filename: string; // Filename.
+    isdir: boolean; // Isdir.
+    isimage: boolean; // Isimage.
+    timemodified: number; // Timemodified.
+    timecreated: number; // Timecreated.
+    filesize: number; // Filesize.
+    author: string; // Author.
+    license: string; // License.
+    filenameshort: string; // Filenameshort.
+    filesizeformatted: string; // Filesizeformatted.
+    icon: string; // Icon.
+    timecreatedformatted: string; // Timecreatedformatted.
+    timemodifiedformatted: string; // Timemodifiedformatted.
+    url: string; // Url.
+    urls: {
+        export?: string; // The URL used to export the attachment.
+    };
+    html: {
+        plagiarism?: string; // The HTML source for the Plagiarism Response.
+    };
+};
+
+/**
+ * Forum post data returned by web services.
+ */
+export type AddonModForumWSPost = {
+    id: number; // Id.
+    subject: string; // Subject.
+    replysubject: string; // Replysubject.
+    message: string; // Message.
+    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    author: {
+        id?: number; // Id.
+        fullname?: string; // Fullname.
+        isdeleted?: boolean; // Isdeleted.
+        groups?: { // Groups.
+            id: number; // Id.
+            name: string; // Name.
+            urls: {
+                image?: string; // Image.
+            };
+        }[];
+        urls: {
+            profile?: string; // The URL for the use profile page.
+            profileimage?: string; // The URL for the use profile image.
+        };
+    };
+    discussionid: number; // Discussionid.
+    hasparent: boolean; // Hasparent.
+    parentid?: number; // Parentid.
+    timecreated: number; // Timecreated.
+    unread?: boolean; // Unread.
+    isdeleted: boolean; // Isdeleted.
+    isprivatereply: boolean; // Isprivatereply.
+    haswordcount: boolean; // Haswordcount.
+    wordcount?: number; // Wordcount.
+    charcount?: number; // Charcount.
+    capabilities: {
+        view: boolean; // Whether the user can view the post.
+        edit: boolean; // Whether the user can edit the post.
+        delete: boolean; // Whether the user can delete the post.
+        split: boolean; // Whether the user can split the post.
+        reply: boolean; // Whether the user can reply to the post.
+        selfenrol: boolean; // Whether the user can self enrol into the course.
+        export: boolean; // Whether the user can export the post.
+        controlreadstatus: boolean; // Whether the user can control the read status of the post.
+        canreplyprivately: boolean; // Whether the user can post a private reply.
+    };
+    urls?: {
+        view?: string; // The URL used to view the post.
+        viewisolated?: string; // The URL used to view the post in isolation.
+        viewparent?: string; // The URL used to view the parent of the post.
+        edit?: string; // The URL used to edit the post.
+        delete?: string; // The URL used to delete the post.
+
+        // The URL used to split the discussion with the selected post being the first post in the new discussion.
+        split?: string;
+
+        reply?: string; // The URL used to reply to the post.
+        export?: string; // The URL used to export the post.
+        markasread?: string; // The URL used to mark the post as read.
+        markasunread?: string; // The URL used to mark the post as unread.
+        discuss?: string; // Discuss.
+    };
+    attachments: AddonModForumWSPostAttachment[]; // Attachments.
+    tags?: { // Tags.
+        id: number; // The ID of the Tag.
+        tagid: number; // The tagid.
+        isstandard: boolean; // Whether this is a standard tag.
+        displayname: string; // The display name of the tag.
+        flag: boolean; // Wehther this tag is flagged.
+        urls: {
+            view: string; // The URL to view the tag.
+        };
+    }[];
+    html?: {
+        rating?: string; // The HTML source to rate the post.
+        taglist?: string; // The HTML source to view the list of tags.
+        authorsubheading?: string; // The HTML source to view the author details.
+    };
 };
 
 /**
@@ -1799,7 +1877,7 @@ export type AddonModForumAddDiscussionPostWSParams = {
 export type AddonModForumAddDiscussionPostWSResponse = {
     postid: number; // New post id.
     warnings?: CoreWSExternalWarning[];
-    post: AddonModForumPost;
+    post: AddonModForumWSPost;
     messages?: { // List of warnings.
         type: string; // The classification to be used in the client side.
         message: string; // Untranslated english message to explain the warning.
@@ -1859,7 +1937,7 @@ export type AddonModForumGetDiscussionPostWSParams = {
  * Data returned by mod_forum_get_discussion_post WS.
  */
 export type AddonModForumGetDiscussionPostWSResponse = {
-    post: AddonModForumPost;
+    post: AddonModForumWSPost;
     warnings?: CoreWSExternalWarning[];
 };
 
@@ -1877,7 +1955,7 @@ export type AddonModForumGetDiscussionPostsWSParams = {
  * Data returned by mod_forum_get_discussion_posts WS.
  */
 export type AddonModForumGetDiscussionPostsWSResponse = {
-    posts: AddonModForumPost[];
+    posts: AddonModForumWSPost[];
     forumid: number; // The forum id.
     courseid: number; // The forum course id.
     ratinginfo?: AddonModForumRatingInfo; // Rating information.

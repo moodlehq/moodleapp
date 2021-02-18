@@ -14,23 +14,28 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 
 import { AddonModForumIndexComponent } from './index/index';
+import { AddonModForumPostComponent } from './post/post';
 
 @NgModule({
     declarations: [
         AddonModForumIndexComponent,
+        AddonModForumPostComponent,
     ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreTagComponentsModule,
+        CoreEditorComponentsModule,
     ],
     exports: [
         AddonModForumIndexComponent,
+        AddonModForumPostComponent,
     ],
 })
 export class AddonModForumComponentsModule {}

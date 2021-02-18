@@ -21,8 +21,15 @@ import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModForum, AddonModForumData, AddonModForumProvider } from './forum.service';
-import { AddonModForumOffline } from './offline.service';
+import {
+    AddonModForum,
+    AddonModForumAddDiscussionWSOptionsObject,
+    AddonModForumData,
+    AddonModForumDiscussion,
+    AddonModForumPost,
+    AddonModForumProvider,
+} from './forum.service';
+import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './offline.service';
 
 /**
  * Service that provides some features for forums.
@@ -51,8 +58,8 @@ export class AddonModForumHelperProvider {
         courseId: number,
         subject: string,
         message: string,
-        attachments?: any[],
-        options?: any,
+        attachments?: CoreFileEntry[],
+        options?: AddonModForumDiscussionOptions,
         groupIds?: number[],
         timeCreated?: number,
         siteId?: string,
@@ -62,14 +69,14 @@ export class AddonModForumHelperProvider {
 
         let saveOffline = false;
         const attachmentsIds: number[] = [];
-        let offlineAttachments: any;
+        let offlineAttachments: CoreFileUploaderStoreFilesResult;
 
         // Convenience function to store a message to be synchronized later.
         const storeOffline = async (): Promise<void> => {
             // Multiple groups, the discussion is being posted to all groups.
             const groupId = groupIds!.length > 1 ? AddonModForumProvider.ALL_GROUPS : groupIds![0];
 
-            if (offlineAttachments) {
+            if (offlineAttachments && options) {
                 options.attachmentsid = offlineAttachments;
             }
 
@@ -122,7 +129,7 @@ export class AddonModForumHelperProvider {
         const promises = groupIds.map(async (groupId, index) => {
             const groupOptions = CoreUtils.instance.clone(options);
 
-            if (attachmentsIds[index]) {
+            if (groupOptions && attachmentsIds[index]) {
                 groupOptions.attachmentsid = attachmentsIds[index];
             }
 
@@ -131,7 +138,7 @@ export class AddonModForumHelperProvider {
                     forumId,
                     subject,
                     message,
-                    groupOptions,
+                    groupOptions as unknown as AddonModForumAddDiscussionWSOptionsObject,
                     groupId,
                     siteId,
                 );
@@ -169,8 +176,8 @@ export class AddonModForumHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the object converted to Online.
      */
-    convertOfflineReplyToOnline(offlineReply: any, siteId?: string): Promise<any> {
-        const reply: any = {
+    convertOfflineReplyToOnline(offlineReply: AddonModForumOfflineReply, siteId?: string): Promise<AddonModForumPost> {
+        const reply: AddonModForumPost = {
             id: -offlineReply.timecreated,
             discussionid: offlineReply.discussionid,
             parentid: offlineReply.postid,
@@ -186,20 +193,25 @@ export class AddonModForumHelperProvider {
                 reply: false,
             },
             unread: false,
-            isprivatereply: offlineReply.options && offlineReply.options.private,
-            tags: null,
+            isprivatereply: !!offlineReply.options?.private,
         };
         const promises: Promise<void>[] = [];
 
         // Treat attachments if any.
         if (offlineReply.options && offlineReply.options.attachmentsid) {
-            reply.attachments = offlineReply.options.attachmentsid.online || [];
+            const attachments = offlineReply.options.attachmentsid;
 
-            if (offlineReply.options.attachmentsid.offline) {
+            reply.attachments = typeof attachments === 'object' && 'online' in attachments ? attachments.online : [];
+
+            if (typeof attachments === 'object' && attachments.offline) {
                 promises.push(
                     this
-                        .getReplyStoredFiles(offlineReply.forumid, reply.parentid, siteId, offlineReply.userid)
-                        .then(files => reply.attachments = reply.attachments.concat(files)),
+                        .getReplyStoredFiles(offlineReply.forumid, reply.parentid!, siteId, offlineReply.userid)
+                        .then(files => {
+                            reply.attachments = reply.attachments!.concat(files as unknown as []);
+
+                            return;
+                        }),
                 );
             }
         }
@@ -219,7 +231,7 @@ export class AddonModForumHelperProvider {
         );
 
         return Promise.all(promises).then(() => {
-            reply.attachment = reply.attachments.length > 0 ? 1 : 0;
+            reply.attachment = reply.attachments!.length > 0 ? 1 : 0;
 
             return reply;
         });
@@ -293,10 +305,10 @@ export class AddonModForumHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the discussion data.
      */
-    getDiscussionById(forumId: number, cmId: number, discussionId: number, siteId?: string): Promise<any> {
+    getDiscussionById(forumId: number, cmId: number, discussionId: number, siteId?: string): Promise<AddonModForumDiscussion> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
 
-        const findDiscussion = async (page: number): Promise<any> => {
+        const findDiscussion = async (page: number): Promise<AddonModForumDiscussion> => {
             const response = await AddonModForum.instance.getDiscussions(forumId, {
                 cmId,
                 page,
@@ -330,7 +342,7 @@ export class AddonModForumHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the files.
      */
-    async getNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<any[]> {
+    async getNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<FileEntry[]> {
         const folderPath = await AddonModForumOffline.instance.getNewDiscussionFolder(forumId, timecreated, siteId);
 
         return CoreFileUploader.instance.getStoredFiles(folderPath);
@@ -345,7 +357,7 @@ export class AddonModForumHelperProvider {
      * @param userId User the reply belongs to. If not defined, current user in site.
      * @return Promise resolved with the files.
      */
-    async getReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<any[]> {
+    async getReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<FileEntry[]> {
         const folderPath = await AddonModForumOffline.instance.getReplyFolder(forumId, postId, siteId, userId);
 
         return CoreFileUploader.instance.getStoredFiles(folderPath);
@@ -380,10 +392,10 @@ export class AddonModForumHelperProvider {
      *
      * @param forum Forum instance.
      */
-    isCutoffDateReached(forum: any): boolean {
+    isCutoffDateReached(forum: AddonModForumData): boolean {
         const now = Date.now() / 1000;
 
-        return forum.cutoffdate > 0 && forum.cutoffdate < now;
+        return !!forum.cutoffdate && forum.cutoffdate > 0 && forum.cutoffdate < now;
     }
 
     /**

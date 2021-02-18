@@ -19,12 +19,37 @@ import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumIndexPage } from './pages/index';
+import { AddonModForumDiscussionPage } from './pages/discussion/discussion';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModForumIndexPage,
     },
+    {
+        path: ':courseId/:cmId/:discussionId',
+        component: AddonModForumDiscussionPage,
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        component: AddonModForumIndexPage,
+        children: [
+            {
+                path: ':discussionId',
+                component: AddonModForumDiscussionPage,
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
 ];
 
 @NgModule({
@@ -35,6 +60,7 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModForumIndexPage,
+        AddonModForumDiscussionPage,
     ],
 })
 export class AddonModForumLazyModule {}
