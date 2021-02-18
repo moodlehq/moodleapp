@@ -81,7 +81,7 @@
             <!-- List of attempts. -->
             <ion-item class="ion-text-wrap" *ngFor="let attempt of attempts" button detail="true"
                 [ngClass]='{"addon-mod_quiz-highlighted": attempt.highlightGrade}'
-                [attr.aria-label]="'core.seemoredetail' | translate"> <!-- @todo navPush="AddonModQuizAttemptPage" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}" -->
+                [attr.aria-label]="'core.seemoredetail' | translate" (click)="viewAttempt(attempt.id)">
                 <ion-label>
                     <ion-row class="ion-align-items-center">
                         <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && attempt.preview">

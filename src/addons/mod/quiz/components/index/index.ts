@@ -652,6 +652,15 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
+     * Go to page to view the attempt details.
+     *
+     * @return Promise resolved when done.
+     */
+    async viewAttempt(attemptId: number): Promise<void> {
+        CoreNavigator.instance.navigate(`../../attempt/${this.courseId}/${this.quiz!.id}/${attemptId}`);
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
