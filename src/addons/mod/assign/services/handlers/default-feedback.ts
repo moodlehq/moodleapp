@@ -41,8 +41,9 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
      *
      * @return Data (or promise resolved with the data).
      */
-    getDraft(): void {
+    getDraft(): undefined {
         // Nothing to do.
+        return;
     }
 
     /**

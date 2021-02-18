@@ -58,7 +58,11 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Data (or promise resolved with the data).
      */
-    getDraft?(assignId: number, userId: number, siteId?: string): any | Promise<any>;
+    getDraft?(
+        assignId: number,
+        userId: number,
+        siteId?: string,
+    ): Record<string, unknown> | Promise<Record<string, unknown> | undefined> | undefined;
 
     /**
      * Get files used by this plugin.
@@ -99,7 +103,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
         userId: number,
     ): boolean | Promise<boolean>;
 
@@ -158,7 +162,13 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return If the function is async, it should return a Promise resolved when done.
      */
-    saveDraft?(assignId: number, userId: number, plugin: AddonModAssignPlugin, data: any, siteId?: string): void | Promise<any>;
+    saveDraft?(
+        assignId: number,
+        userId: number,
+        plugin: AddonModAssignPlugin,
+        data: Record<string, unknown>,
+        siteId?: string,
+    ): void | Promise<void>;
 }
 
 /**
@@ -189,7 +199,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         userId: number,
         plugin: AddonModAssignPlugin,
         siteId?: string,
-    ): Promise<any | undefined> {
+    ): Promise<void> {
         return await this.executeFunctionOnEnabled(plugin.type, 'discardDraft', [assignId, userId, siteId]);
     }
 
@@ -212,12 +222,12 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the draft data.
      */
-    async getPluginDraftData(
+    async getPluginDraftData<T>(
         assignId: number,
         userId: number,
         plugin: AddonModAssignPlugin,
         siteId?: string,
-    ): Promise<any | undefined> {
+    ): Promise<T | undefined> {
         return await this.executeFunctionOnEnabled(plugin.type, 'getDraft', [assignId, userId, siteId]);
     }
 
@@ -267,7 +277,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
         userId: number,
     ): Promise<boolean | undefined> {
         return await this.executeFunctionOnEnabled(
@@ -362,9 +372,9 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         assignId: number,
         userId: number,
         plugin: AddonModAssignPlugin,
-        inputData: any,
+        inputData: Record<string, unknown>,
         siteId?: string,
-    ): Promise<any> {
+    ): Promise<void> {
         return await this.executeFunctionOnEnabled(
             plugin.type,
             'saveDraft',

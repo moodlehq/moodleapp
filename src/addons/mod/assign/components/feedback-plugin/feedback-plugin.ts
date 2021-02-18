@@ -13,8 +13,11 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, ViewChild, Type } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSExternalFile } from '@services/ws';
+import { ModalController } from '@singletons';
+import { AddonModAssignFeedbackCommentsPluginData } from '../../feedback/comments/services/handler';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -24,6 +27,7 @@ import {
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
+import { AddonModAssignEditFeedbackModalComponent } from '../edit-feedback-modal/edit-feedback-modal';
 
 /**
  * Component that displays an assignment feedback plugin.
@@ -92,6 +96,47 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
             this.files = AddonModAssign.instance.getSubmissionPluginAttachments(this.plugin);
             this.notSupported = AddonModAssignFeedbackDelegate.instance.isPluginSupported(this.plugin.type);
             this.pluginLoaded = true;
+        }
+    }
+
+    /**
+     * Open a modal to edit the feedback plugin.
+     *
+     * @return Promise resolved with the input data, rejected if cancelled.
+     */
+    editFeedback(): Promise<AddonModAssignFeedbackCommentsPluginData> {
+        if (!this.canEdit) {
+            throw new CoreError('Cannot edit feedback');
+        }
+
+        return new Promise((resolve, reject): void => {
+            this.showEditFeedbackModal(resolve, reject);
+        });
+    }
+
+    protected async showEditFeedbackModal(
+        resolve: (value: AddonModAssignFeedbackCommentsPluginData | PromiseLike<AddonModAssignFeedbackCommentsPluginData>) => void,
+        reject: () => void,
+    ): Promise < void> {
+        // Create the navigation modal.
+        const modal = await ModalController.instance.create({
+            component: AddonModAssignEditFeedbackModalComponent,
+            componentProps: {
+                assign: this.assign,
+                submission: this.submission,
+                plugin: this.plugin,
+                userId: this.userId,
+            },
+        });
+
+        await modal.present();
+
+        const result = await modal.onDidDismiss();
+
+        if (typeof result.data == 'undefined') {
+            reject();
+        } else {
+            resolve(result.data);
         }
     }
 
