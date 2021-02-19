@@ -34,6 +34,7 @@ import {
     AddonModAssignGradedEventData,
     AddonModAssignProvider,
     AddonModAssignSubmissionGradingSummary,
+    AddonModAssignSubmissionSavedEventData,
     AddonModAssignSubmittedForGradingEventData,
 } from '../../services/assign';
 import { AddonModAssignOffline } from '../../services/assign-offline';
@@ -106,12 +107,16 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         this.currentSite = CoreSites.instance.getCurrentSite();
 
         // Listen to events.
-        this.savedObserver = CoreEvents.on<any>(AddonModAssignProvider.SUBMISSION_SAVED_EVENT, (data) => {
-            if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
+        this.savedObserver = CoreEvents.on<AddonModAssignSubmissionSavedEventData>(
+            AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
+            (data) => {
+                if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                 // Assignment submission saved, refresh data.
-                this.showLoadingAndRefresh(true, false);
-            }
-        }, this.siteId);
+                    this.showLoadingAndRefresh(true, false);
+                }
+            },
+            this.siteId,
+        );
 
         this.submittedObserver = CoreEvents.on<AddonModAssignSubmittedForGradingEventData>(
             AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
@@ -262,7 +267,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @param groupId Group ID.
      * @return Resolved when done.
      */
-    async setGroup(groupId: number): Promise<void> {
+    async setGroup(groupId = 0): Promise<void> {
         this.group = groupId;
 
         const submissionStatus = await AddonModAssign.instance.getSubmissionStatus(this.assign!.id, {
@@ -303,10 +308,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * Go to view a list of submissions.
      *
      * @param status Status to see.
-     * @param count Number of submissions with the status.
+     * @param hasSubmissions If the status has any submission.
      */
-    goToSubmissionList(status: string, count: number): void {
-        if (typeof status != 'undefined' && !count && this.showNumbers) {
+    goToSubmissionList(status?: string, hasSubmissions = false): void {
+        if (typeof status != 'undefined' && !hasSubmissions && this.showNumbers) {
             return;
         }
 

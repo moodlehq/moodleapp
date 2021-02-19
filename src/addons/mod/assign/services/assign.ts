@@ -30,6 +30,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
+import { AddonModAssignSubmissionFormatted } from './assign-helper';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -1011,7 +1012,7 @@ export class AddonModAssignProvider {
      * @param assignId Assignment ID.
      * @return Promise resolved with boolean: whether it needs to be graded or not.
      */
-    async needsSubmissionToBeGraded(submission: any, assignId: number): Promise<boolean> {
+    async needsSubmissionToBeGraded(submission: AddonModAssignSubmissionFormatted, assignId: number): Promise<boolean> {
         if (!submission.gradingstatus) {
             // This should not happen, but it's better to show rather than not showing any of the submissions.
             return true;
@@ -1865,10 +1866,11 @@ export type AddonModAssignSubmittedForGradingEventData = {
 };
 
 /**
+ * Data sent by SUBMISSION_SAVED_EVENT event.
+ */
+export type AddonModAssignSubmissionSavedEventData = AddonModAssignSubmittedForGradingEventData;
+
+/**
  * Data sent by GRADED_EVENT event.
  */
-export type AddonModAssignGradedEventData = {
-    assignmentId: number;
-    submissionId: number;
-    userId: number;
-};
+export type AddonModAssignGradedEventData = AddonModAssignSubmittedForGradingEventData;

@@ -41,7 +41,7 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
     /**
      * Component being initialized.
      */
-    async nOnInit(): Promise<void> {
+    async ngOnInit(): Promise<void> {
         // Get the offline data.
         const filesData = await CoreUtils.instance.ignoreErrors(
             AddonModAssignOffline.instance.getSubmission(this.assign.id),

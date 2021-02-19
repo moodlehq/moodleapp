@@ -12,22 +12,61 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CanLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
 import { AddonModAssignComponentsModule } from './components/components.module';
+import { AddonModAssignEditPage } from './pages/edit/edit';
 import { AddonModAssignIndexPage } from './pages/index/index.page';
 import { AddonModAssignSubmissionListPage } from './pages/submission-list/submission-list.page';
+import { AddonModAssignSubmissionReviewPage } from './pages/submission-review/submission-review';
 
-const routes: Routes = [
+const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModAssignIndexPage,
     },
     {
-        path: ':courseId/:cmId/submission-list',
+        path: ':courseId/:cmId/edit',
+        component: AddonModAssignEditPage,
+        canDeactivate: [CanLeaveGuard],
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/submission',
         component: AddonModAssignSubmissionListPage,
     },
+    {
+        path: ':courseId/:cmId/submission/:submitId',
+        component: AddonModAssignSubmissionReviewPage,
+        canDeactivate: [CanLeaveGuard],
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/submission',
+        component: AddonModAssignSubmissionListPage,
+        children: [
+            {
+                path: ':submitId',
+                component: AddonModAssignSubmissionReviewPage,
+                canDeactivate: [CanLeaveGuard],
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
 ];
 
 @NgModule({
@@ -39,6 +78,8 @@ const routes: Routes = [
     declarations: [
         AddonModAssignIndexPage,
         AddonModAssignSubmissionListPage,
+        AddonModAssignSubmissionReviewPage,
+        AddonModAssignEditPage,
     ],
 })
 export class AddonModAssignLazyModule {}

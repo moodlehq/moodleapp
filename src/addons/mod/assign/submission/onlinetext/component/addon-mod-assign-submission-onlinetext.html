@@ -24,12 +24,11 @@
         </ion-label>
     </ion-item>
     <ion-item class="ion-text-wrap">
-        <ion-label>
-            <core-rich-text-editor [control]="control" [placeholder]="plugin.name"
-                name="onlinetext_editor_text" (contentChanged)="onChange($event)" [component]="component"
-                [componentId]="assign.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="assign.cmid"
-                elementId="onlinetext_editor" [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}">
-            </core-rich-text-editor>
-        </ion-label>
+        <ion-label></ion-label>
+        <core-rich-text-editor [control]="control" [placeholder]="plugin.name"
+            name="onlinetext_editor_text" (contentChanged)="onChange($event)" [component]="component"
+            [componentId]="assign.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="assign.cmid"
+            elementId="onlinetext_editor" [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}">
+        </core-rich-text-editor>
     </ion-item>
 </div>

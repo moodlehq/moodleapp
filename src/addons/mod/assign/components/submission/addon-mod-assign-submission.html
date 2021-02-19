@@ -1,10 +1,10 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <!-- User and status of the submission. -->
-    <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId" [title]="user.fullname">
+    <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId" [title]="user!.fullname">
         <core-user-avatar [user]="user" slot="start"></core-user-avatar>
         <ion-label>
-            <h2>{{ user.fullname }}</h2>
+            <h2>{{ user!.fullname }}</h2>
             <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
         </ion-label>
         <ng-container *ngTemplateOutlet="submissionStatusBadges"></ng-container>
@@ -39,10 +39,10 @@
 
                 <!-- Render some data about the submission. -->
                 <ion-item class="ion-text-wrap"
-                    *ngIf="userSubmission && userSubmission.status != statusNew && userSubmission.timemodified">
+                    *ngIf="userSubmission && userSubmission!.status != statusNew && userSubmission!.timemodified">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.timemodified' | translate }}</h2>
-                        <p>{{ userSubmission.timemodified * 1000 | coreFormatDate }}</p>
+                        <p>{{ userSubmission!.timemodified * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
@@ -55,49 +55,49 @@
 
                 <ion-item class="ion-text-wrap" *ngIf="fromDate && !isSubmittedForGrading">
                     <ion-label>
-                        <p *ngIf="assign.intro"
+                        <p *ngIf="assign!.intro"
                             [innerHTML]="'addon.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate}">
                         </p>
-                        <p *ngIf="!assign.intro"
+                        <p *ngIf="!assign!.intro"
                             [innerHTML]="'addon.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate:
                                 {'$a': fromDate}">
                         </p>
                     </ion-label>
                 </ion-item>
 
-                <ion-item class="ion-text-wrap" *ngIf="assign.duedate && !isSubmittedForGrading">
+                <ion-item class="ion-text-wrap" *ngIf="assign!.duedate && !isSubmittedForGrading">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.duedate' | translate }}</h2>
-                        <p *ngIf="assign.duedate" >{{ assign.duedate * 1000 | coreFormatDate }}</p>
-                        <p *ngIf="!assign.duedate" >{{ 'addon.mod_assign.duedateno' | translate }}</p>
+                        <p *ngIf="assign!.duedate" >{{ assign!.duedate * 1000 | coreFormatDate }}</p>
+                        <p *ngIf="!assign!.duedate" >{{ 'addon.mod_assign.duedateno' | translate }}</p>
                     </ion-label>
                 </ion-item>
 
-                <ion-item class="ion-text-wrap" *ngIf="assign.duedate && assign.cutoffdate && isSubmittedForGrading">
+                <ion-item class="ion-text-wrap" *ngIf="assign!.duedate && assign!.cutoffdate && isSubmittedForGrading">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.cutoffdate' | translate }}</h2>
-                        <p>{{ assign.cutoffdate * 1000 | coreFormatDate }}</p>
+                        <p>{{ assign!.cutoffdate * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
                 <ion-item class="ion-text-wrap"
-                    *ngIf="assign.duedate && lastAttempt && lastAttempt.extensionduedate && !isSubmittedForGrading">
+                    *ngIf="assign!.duedate && lastAttempt?.extensionduedate && !isSubmittedForGrading">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.extensionduedate' | translate }}</h2>
-                        <p>{{ lastAttempt.extensionduedate * 1000 | coreFormatDate }}</p>
+                        <p>{{ lastAttempt!.extensionduedate * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
                 <ion-item class="ion-text-wrap" *ngIf="currentAttempt && !isGrading">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.attemptnumber' | translate }}</h2>
-                        <p *ngIf="assign.maxattempts == unlimitedAttempts">
+                        <p *ngIf="assign!.maxattempts == unlimitedAttempts">
                             {{ 'addon.mod_assign.outof' | translate :
                                 {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}
                         </p>
-                        <p *ngIf="assign.maxattempts != unlimitedAttempts">
+                        <p *ngIf="assign!.maxattempts != unlimitedAttempts">
                             {{ 'addon.mod_assign.outof' | translate :
-                                {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}
+                                {'$a': {'current': currentAttempt, 'total': assign!.maxattempts} } }}
                         </p>
                     </ion-label>
                 </ion-item>
@@ -114,12 +114,12 @@
                             <!-- If no submission or is new, show add submission. -->
                             <ion-button expand="block" class="ion-text-wrap" color="primary"
                                 *ngIf="!hasOffline &&
-                                    (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)"
+                                    (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)"
                                 (click)="goToEdit()">
                                 {{ 'addon.mod_assign.addsubmission' | translate }}
                             </ion-button>
                             <!-- If reopened, show addfromprevious and addnewattempt. -->
-                            <ng-container *ngIf="!hasOffline && userSubmission && userSubmission.status == statusReopened">
+                            <ng-container *ngIf="!hasOffline && userSubmission?.status == statusReopened">
                                 <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap" color="primary"
                                     (click)="copyPrevious()">
                                     {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
@@ -130,9 +130,9 @@
                             </ng-container>
                             <!-- Else show editsubmission. -->
                             <ion-button expand="block" class="ion-text-wrap" color="primary"
-                                *ngIf="!hasOffline && userSubmission && userSubmission.status &&
-                                    userSubmission.status != statusNew &&
-                                    userSubmission.status != statusReopened" (click)="goToEdit()">
+                                *ngIf="!hasOffline && userSubmission && userSubmission!.status &&
+                                    userSubmission!.status != statusNew &&
+                                    userSubmission!.status != statusReopened" (click)="goToEdit()">
                                 {{ 'addon.mod_assign.editsubmission' | translate }}
                             </ion-button>
                         </div>
@@ -176,25 +176,25 @@
                 </ng-container>
 
                 <!-- Team members that need to submit it too. -->
-                <ion-item class="ion-text-wrap" *ngIf="membersToSubmit && membersToSubmit.length > 0">
+                <ion-item-divider class="ion-text-wrap" *ngIf="membersToSubmit && membersToSubmit.length > 0">
                     <ion-label><h2>{{ 'addon.mod_assign.userswhoneedtosubmit' | translate: {$a: ''} }}</h2></ion-label>
-                    <ng-container *ngIf="!blindMarking">
-                        <ng-container *ngFor="let user of membersToSubmit">
-                            <ion-item class="ion-text-wrap" core-user-link [userId]="user.id"
-                                [courseId]="courseId" [title]="user.fullname">
-                                <core-user-avatar [user]="user" slot="start"></core-user-avatar>
-                                <ion-label><h2>{{ user.fullname }}</h2></ion-label>
-                            </ion-item>
-                        </ng-container>
+                </ion-item-divider>
+                <ng-container *ngIf="membersToSubmit && membersToSubmit.length > 0 && !blindMarking">
+                    <ng-container *ngFor="let user of membersToSubmit">
+                        <ion-item class="ion-text-wrap" core-user-link [userId]="user.id"
+                            [courseId]="courseId" [title]="user.fullname">
+                            <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                            <ion-label><h2>{{ user.fullname }}</h2></ion-label>
+                        </ion-item>
                     </ng-container>
-                    <ng-container *ngIf="blindMarking">
-                        <ng-container *ngFor="let blindId of membersToSubmitBlind">
-                            <ion-item class="ion-text-wrap">
-                                <ion-label>{{ 'addon.mod_assign.hiddenuser' | translate }} {{ blindId }}</ion-label>
-                            </ion-item>
-                        </ng-container>
+                </ng-container>
+                <ng-container *ngIf="membersToSubmit && membersToSubmit.length > 0 && blindMarking">
+                    <ng-container *ngFor="let blindId of membersToSubmitBlind">
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>{{ 'addon.mod_assign.hiddenuser' | translate }} {{ blindId }}</ion-label>
+                        </ion-item>
                     </ng-container>
-                </ion-item>
+                </ng-container>
 
                 <!-- Submission is locked. -->
                 <ion-item class="ion-text-wrap" *ngIf="lastAttempt?.locked">
@@ -219,12 +219,12 @@
             <ng-template>
                 <!-- Current grade if method is advanced. -->
                 <ion-item class="ion-text-wrap core-grading-summary"
-                    *ngIf="feedback.gradefordisplay && (!isGrading || grade.method != 'simple')">
+                    *ngIf="feedback?.gradefordisplay && (!isGrading || grade.method != 'simple')">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
-                        <p><core-format-text [text]="feedback.gradefordisplay" [filter]="false"></core-format-text></p>
+                        <p><core-format-text [text]="feedback!.gradefordisplay" [filter]="false"></core-format-text></p>
                     </ion-label>
-                    <ion-button slot="end" *ngIf="feedback.advancedgrade" (click)="showAdvancedGrade()">
+                    <ion-button slot="end" *ngIf="feedback!.advancedgrade" (click)="showAdvancedGrade()">
                         <ion-icon name="fas-search" slot="icon-only"></ion-icon>
                     </ion-button>
                 </ion-item>
@@ -236,7 +236,7 @@
                         <ion-label position="stacked">
                             <h2>{{ 'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo!.grade} }}</h2>
                         </ion-label>
-                        <ion-input *ngIf="!grade.disabled" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade"
+                        <ion-input *ngIf="!grade.disabled" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo!.grade"
                             [lang]="grade.lang">
                         </ion-input>
                         <p item-content *ngIf="grade.disabled">{{ 'addon.mod_assign.gradelocked' | translate }}</p>
@@ -256,7 +256,7 @@
                     <ion-item class="ion-text-wrap" *ngFor="let outcome of gradeInfo!.outcomes">
                         <ion-label><h2>{{ outcome.name }}</h2></ion-label>
                         <ion-select *ngIf="canSaveGrades && outcome.itemNumber" [(ngModel)]="outcome.selectedId"
-                            interface="action-sheet" [disabled]="gradeInfo.disabled">
+                            interface="action-sheet" [disabled]="gradeInfo!.disabled">
                             <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">
                                 {{grade.label}}
                             </ion-select-option>
@@ -268,18 +268,18 @@
                     <ion-item class="ion-text-wrap" *ngIf="grade.method == 'simple'">
                         <ion-label>
                             <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
-                            <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null && !grade.scale">
+                            <p *ngIf="grade.gradebookGrade && !grade.scale">
                                 {{ grade.gradebookGrade }}
                             </p>
-                            <p *ngIf="grade.gradebookGrade !== false && grade.gradebookGrade !== null && grade.scale">
+                            <p *ngIf="grade.gradebookGrade && grade.scale">
                                 {{ grade.scale[grade.gradebookGrade].label }}
                             </p>
-                            <p *ngIf="grade.gradebookGrade === false || grade.gradebookGrade === null">-</p>
+                            <p *ngIf="!grade.gradebookGrade">-</p>
                         </ion-label>
                     </ion-item>
                 </ng-container>
 
-                <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
+                <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback!.plugins" [assign]="assign"
                     [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="canSaveGrades">
                 </addon-mod-assign-feedback-plugin>
 
@@ -292,28 +292,30 @@
                 </ion-item>
 
                 <!--- Apply grade to all team members. -->
-                <ion-item class="ion-text-wrap" *ngIf="assign.teamsubmission && canSaveGrades">
-                    <h2>{{ 'addon.mod_assign.groupsubmissionsettings' | translate }}</h2>
-                    <ion-label>{{ 'addon.mod_assign.applytoteam' | translate }}</ion-label>
+                <ion-item class="ion-text-wrap" *ngIf="assign!.teamsubmission && canSaveGrades">
+                    <ion-label>
+                        <h2>{{ 'addon.mod_assign.groupsubmissionsettings' | translate }}</h2>
+                        <p>{{ 'addon.mod_assign.applytoteam' | translate }}</p>
+                    </ion-label>
                     <ion-toggle [(ngModel)]="grade.applyToAll"></ion-toggle>
                 </ion-item>
 
                 <!-- Attempt status. -->
-                <ng-container *ngIf="isGrading && assign.attemptreopenmethod != attemptReopenMethodNone">
+                <ng-container *ngIf="isGrading && assign!.attemptreopenmethod != attemptReopenMethodNone">
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <h2>{{ 'addon.mod_assign.attemptsettings' | translate }}</h2>
-                            <p *ngIf="assign.maxattempts == unlimitedAttempts">
+                            <p *ngIf="assign!.maxattempts == unlimitedAttempts">
                                 {{ 'addon.mod_assign.outof' | translate :
                                     {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}
                             </p>
-                            <p *ngIf="assign.maxattempts != unlimitedAttempts">
+                            <p *ngIf="assign!.maxattempts != unlimitedAttempts">
                                 {{ 'addon.mod_assign.outof' | translate :
-                                    {'$a': {'current': currentAttempt, 'total': assign.maxattempts} } }}
+                                    {'$a': {'current': currentAttempt, 'total': assign!.maxattempts} } }}
                             </p>
                             <p>
                                 {{ 'addon.mod_assign.attemptreopenmethod' | translate }}:
-                                {{ 'addon.mod_assign.attemptreopenmethod_' + assign.attemptreopenmethod | translate }}
+                                {{ 'addon.mod_assign.attemptreopenmethod_' + assign!.attemptreopenmethod | translate }}
                             </p>
                         </ion-label>
                     </ion-item>
@@ -324,33 +326,37 @@
                 </ng-container>
 
                 <!-- Data about the grader (teacher who graded). -->
-                <ion-item class="ion-text-wrap" *ngIf="grader" core-user-link [userId]="grader.id" [courseId]="courseId"
-                    [title]="grader.fullname" detail="true">
+                <ion-item class="ion-text-wrap" *ngIf="grader" core-user-link [userId]="grader!.id" [courseId]="courseId"
+                    [title]="grader!.fullname" detail="true">
                     <core-user-avatar [user]="grader" slot="start"></core-user-avatar>
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
-                        <h2>{{ grader.fullname }}</h2>
-                        <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
+                        <h2>{{ grader!.fullname }}</h2>
+                        <p *ngIf="feedback!.gradeddate">{{ feedback!.gradeddate * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
                 <!-- Grader is hidden, display only the grade date. -->
-                <ion-item class="ion-text-wrap" *ngIf="!grader && feedback.gradeddate">
+                <ion-item class="ion-text-wrap" *ngIf="!grader && feedback!.gradeddate">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.gradedon' | translate }}</h2>
-                        <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
+                        <p>{{ feedback!.gradeddate * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
                 <!-- Warning message if cannot save grades. -->
-                <div *ngIf="isGrading && !canSaveGrades" class="core-warning-card">
-                    <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
-                    <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
-                    <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link >
-                        {{ 'core.openinbrowser' | translate }}
-                        <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
-                    </ion-button>
-                </div>
+                <ion-card *ngIf="isGrading && !canSaveGrades" class="core-warning-card">
+                    <ion-item>
+                        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                        <ion-label>
+                            <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
+                            <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link >
+                                {{ 'core.openinbrowser' | translate }}
+                                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                            </ion-button>
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
             </ng-template>
         </core-tab>
     </core-tabs>
@@ -360,20 +366,20 @@
 <ng-template #submissionStatus>
     <ng-container *ngIf="assign && assign!.teamsubmission && lastAttempt">
         <p *ngIf="lastAttempt!.submissiongroup && lastAttempt!.submissiongroupname">{{lastAttempt!.submissiongroupname}}</p>
-        <ng-container *ngIf="assign.preventsubmissionnotingroup &&
+        <ng-container *ngIf="assign!.preventsubmissionnotingroup &&
             !lastAttempt!.submissiongroup &&
             (!lastAttempt!.usergroups || lastAttempt!.usergroups.length <= 0)">
             <p class="text-danger"><strong>{{ 'addon.mod_assign.noteam' | translate }}</strong></p>
             <p class="text-danger">{{ 'addon.mod_assign.noteam_desc' | translate }}</p>
         </ng-container>
-        <ng-container *ngIf="assign.preventsubmissionnotingroup &&
+        <ng-container *ngIf="assign!.preventsubmissionnotingroup &&
             !lastAttempt!.submissiongroup &&
             lastAttempt!.usergroups &&
             lastAttempt!.usergroups.length > 1">
             <p class="text-danger"><strong>{{ 'addon.mod_assign.multipleteams' | translate }}</strong></p>
             <p class="text-danger">{{ 'addon.mod_assign.multipleteams_desc' | translate }}</p>
         </ng-container>
-        <p *ngIf="!assign.preventsubmissionnotingroup && !lastAttempt!.submissiongroup">
+        <p *ngIf="!assign!.preventsubmissionnotingroup && !lastAttempt!.submissiongroup">
             {{ 'addon.mod_assign.defaultteam' | translate }}
         </p>
     </ng-container>

@@ -17,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
+import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -37,6 +38,7 @@ import {
     AddonModAssignManualSyncData,
     AddonModAssignAutoSyncData,
 } from '../../services/assign-sync';
+import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Page that displays a list of submissions of an assignment.
@@ -137,10 +139,10 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
                 this.title = Translate.instance.instant('addon.mod_assign.numberofparticipants');
             }
             this.fetchAssignment(true).finally(() => {
-                /* if (!this.selectedSubmissionId && this.splitviewCtrl.isOn() && this.submissions.length > 0) {
+                if (!this.selectedSubmissionId && CoreScreen.instance.isTablet && this.submissions.length > 0) {
                     // Take first and load it.
                     this.loadSubmission(this.submissions[0]);
-                }*/
+                }
 
                 this.loaded = true;
             });
@@ -153,7 +155,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      * @param sync Whether to try to synchronize data.
      * @return Promise resolved when done.
      */
-    protected async fetchAssignment(sync?: boolean): Promise<void> {
+    protected async fetchAssignment(sync = false): Promise<void> {
         try {
             // Get assignment data.
             this.assign = await AddonModAssign.instance.getAssignment(this.courseId, this.moduleId);
@@ -310,19 +312,21 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
      * @param submission The submission to load.
      */
     loadSubmission(submission: AddonModAssignSubmissionForList): void {
-        /* if (this.selectedSubmissionId === submission.submitid && this.splitviewCtrl.isOn()) {
+        if (this.selectedSubmissionId === submission.submitid) {
             // Already selected.
             return;
-        }*/
+        }
 
         this.selectedSubmissionId = submission.submitid;
 
-        /* this.splitviewCtrl.push('AddonModAssignSubmissionReviewPage', {
-            courseId: this.courseId,
-            moduleId: this.moduleId,
-            submitId: submission.submitid,
-            blindId: submission.blindid,
-        });*/
+        CoreNavigator.instance.navigateToSitePath(
+            AddonModAssignModuleHandlerService.PAGE_NAME+'/'+this.courseId+'/'+this.moduleId+'/submission/'+submission.submitid,
+            {
+                params: {
+                    blindId: submission.blindid,
+                },
+            },
+        );
     }
 
     /**

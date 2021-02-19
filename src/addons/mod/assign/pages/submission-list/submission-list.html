@@ -61,15 +61,15 @@
                                     {{ 'addon.mod_assign.defaultteam' | translate }}
                                 </span>
                             </p>
+                            <ion-badge class="ion-text-center ion-text-wrap" [color]="submission.statusColor"
+                                *ngIf="submission.statusTranslated">
+                                {{ submission.statusTranslated }}
+                            </ion-badge>
+                            <ion-badge class="ion-text-center ion-text-wrap" [color]="submission.gradingColor"
+                                *ngIf="submission.gradingStatusTranslationId">
+                                {{ submission.gradingStatusTranslationId | translate }}
+                            </ion-badge>
                         </ion-label>
-                        <ion-badge class="ion-text-center ion-text-wrap" [color]="submission.statusColor"
-                            *ngIf="submission.statusTranslated">
-                            {{ submission.statusTranslated }}
-                        </ion-badge>
-                        <ion-badge class="ion-text-center ion-text-wrap" [color]="submission.gradingColor"
-                            *ngIf="submission.gradingStatusTranslationId">
-                            {{ submission.gradingStatusTranslationId | translate }}
-                        </ion-badge>
                     </ion-item>
                 </ng-container>
 

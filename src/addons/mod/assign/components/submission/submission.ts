@@ -55,6 +55,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreGroups } from '@services/groups';
 import { CoreSync } from '@services/sync';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
+import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Component that displays an assignment submission.
@@ -73,7 +74,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     @Input() moduleId!: number; // Module ID the submission belongs to.
     @Input() submitId!: number; // User that did the submission.
     @Input() blindId?: number; // Blinded user ID (if it's blinded).
-    @Input() showGrade = false; // Whether to display the grade tab at start.
 
     loaded = false; // Whether data has been loaded.
     selectedTab = 'submission'; // Tab selected on start.
@@ -121,6 +121,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     canSaveGrades = false; // Whether the user can save the grades.
     allowAddAttempt = false; // Allow adding a new attempt when grading.
     gradeUrl?: string; // URL to grade in browser.
+    isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
 
     // Some constants.
     statusNew = AddonModAssignProvider.SUBMISSION_STATUS_NEW;
@@ -131,7 +132,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected siteId: string; // Current site ID.
     protected currentUserId: number; // Current user ID.
     protected previousAttempt?: AddonModAssignSubmissionPreviousAttempt; // The previous attempt.
-    protected isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
     protected submissionStatusAvailable = false; // Whether we were able to retrieve the submission status.
     protected originalGrades: AddonModAssignSubmissionOriginalGrades = {
         addAttempt: false,
@@ -180,7 +180,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.selectedTab = this.showGrade ? 'grade' : 'submission';
         this.isSubmittedForGrading = !!this.submitId;
 
         this.loadData(true);
@@ -343,13 +342,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      * Go to the page to add or edit submission.
      */
     goToEdit(): void {
-        CoreNavigator.instance.navigate('AddonModAssignEditPage', {
-            params: {
-                moduleId: this.moduleId,
-                courseId: this.courseId,
-                userId: this.submitId,
-                blindId: this.blindId,
-            } });
+        CoreNavigator.instance.navigateToSitePath(
+            AddonModAssignModuleHandlerService.PAGE_NAME + '/' + this.courseId + '/' + this.moduleId + '/edit',
+            {
+                params: {
+                    blindId: this.blindId,
+                },
+            },
+        );
     }
 
     /**
@@ -393,7 +393,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         try {
             return AddonModAssignHelper.instance.hasFeedbackDataChanged(
                 this.assign!,
-                this.userSubmission!, // @todo
+                this.userSubmission,
                 this.feedback,
                 this.submitId,
             );

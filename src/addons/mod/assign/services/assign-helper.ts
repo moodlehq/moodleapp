@@ -49,7 +49,7 @@ export class AddonModAssignHelperProvider {
      * @param submission Submission.
      * @return Whether it can be edited offline.
      */
-    async canEditSubmissionOffline(assign: AddonModAssignAssign, submission: AddonModAssignSubmission): Promise<boolean> {
+    async canEditSubmissionOffline(assign: AddonModAssignAssign, submission?: AddonModAssignSubmission): Promise<boolean> {
         if (!submission) {
             return false;
         }
@@ -85,7 +85,15 @@ export class AddonModAssignHelperProvider {
      * @param submission Submission to clear the data for.
      * @param inputData Data entered in the submission form.
      */
-    clearSubmissionPluginTmpData(assign: AddonModAssignAssign, submission: AddonModAssignSubmission, inputData: any): void {
+    clearSubmissionPluginTmpData(
+        assign: AddonModAssignAssign,
+        submission: AddonModAssignSubmission | undefined,
+        inputData: Record<string, unknown>,
+    ): void {
+        if (!submission) {
+            return;
+        }
+
         submission.plugins?.forEach((plugin) => {
             AddonModAssignSubmissionDelegate.instance.clearTmpData(assign, submission, plugin, inputData);
         });
@@ -356,7 +364,7 @@ export class AddonModAssignHelperProvider {
     async getSubmissionSizeForEdit(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
-        inputData: any,
+        inputData: Record<string, unknown>,
     ): Promise<number> {
 
         let totalSize = 0;
@@ -492,27 +500,28 @@ export class AddonModAssignHelperProvider {
      */
     async hasFeedbackDataChanged(
         assign: AddonModAssignAssign,
-        submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted,
+        submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted | undefined,
         feedback: AddonModAssignSubmissionFeedback,
         userId: number,
     ): Promise<boolean> {
+        if (!submission || !feedback.plugins) {
+            return false;
+        }
 
         let hasChanged = false;
 
-        const promises = feedback.plugins
-            ? feedback.plugins.map((plugin) =>
-                this.prepareFeedbackPluginData(assign.id, userId, feedback).then(async (inputData) => {
-                    const changed = await CoreUtils.instance.ignoreErrors(
-                        AddonModAssignFeedbackDelegate.instance.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
-                        false,
-                    );
-                    if (changed) {
-                        hasChanged = true;
-                    }
+        const promises = feedback.plugins.map((plugin) =>
+            this.prepareFeedbackPluginData(assign.id, userId, feedback).then(async (inputData) => {
+                const changed = await CoreUtils.instance.ignoreErrors(
+                    AddonModAssignFeedbackDelegate.instance.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
+                    false,
+                );
+                if (changed) {
+                    hasChanged = true;
+                }
 
-                    return;
-                }))
-            : [];
+                return;
+            }));
 
         await CoreUtils.instance.allPromises(promises);
 
@@ -529,9 +538,13 @@ export class AddonModAssignHelperProvider {
      */
     async hasSubmissionDataChanged(
         assign: AddonModAssignAssign,
-        submission: AddonModAssignSubmission,
-        inputData: any,
+        submission: AddonModAssignSubmission | undefined,
+        inputData: Record<string, unknown>,
     ): Promise<boolean> {
+        if (!submission) {
+            return false;
+        }
+
         let hasChanged = false;
 
         const promises = submission.plugins
@@ -544,7 +557,7 @@ export class AddonModAssignHelperProvider {
 
                         return;
                     }).catch(() => {
-                    // Ignore errors.
+                        // Ignore errors.
                     }))
             : [];
 
@@ -591,23 +604,25 @@ export class AddonModAssignHelperProvider {
      */
     async prepareSubmissionPluginData(
         assign: AddonModAssignAssign,
-        submission: AddonModAssignSubmission,
-        inputData: any,
+        submission: AddonModAssignSubmission | undefined,
+        inputData: Record<string, unknown>,
         offline = false,
-    ): Promise<any> {
+    ): Promise<AddonModAssignSavePluginData> {
 
-        const pluginData = {};
-        const promises = submission.plugins
-            ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.instance.preparePluginSubmissionData(
-                    assign,
-                    submission,
-                    plugin,
-                    inputData,
-                    pluginData,
-                    offline,
-                ))
-            : [];
+        if (!submission || !submission.plugins) {
+            return {};
+        }
+
+        const pluginData: AddonModAssignSavePluginData = {};
+        const promises = submission.plugins.map((plugin) =>
+            AddonModAssignSubmissionDelegate.instance.preparePluginSubmissionData(
+                assign,
+                submission,
+                plugin,
+                inputData,
+                pluginData,
+                offline,
+            ));
 
         await Promise.all(promises);
 

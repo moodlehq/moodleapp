@@ -56,7 +56,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     /**
      * Component being initialized.
      */
-    async nOnInit(): Promise<void> {
+    async ngOnInit(): Promise<void> {
         // Get the text. Check if we have anything offline.
         const offlineData = await CoreUtils.instance.ignoreErrors(
             AddonModAssignOffline.instance.getSubmission(this.assign.id),

@@ -267,7 +267,7 @@ export class CoreCronDelegateService {
      * @return True if handler uses network or not defined, false otherwise.
      */
     protected handlerUsesNetwork(name: string): boolean {
-        if (!this.handlers[name] || this.handlers[name].usesNetwork) {
+        if (!this.handlers[name] || !this.handlers[name].usesNetwork) {
             // Invalid, return default.
             return true;
         }

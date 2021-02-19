@@ -35,7 +35,7 @@
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" (click)="expandDescription($event)">
+                    contextLevel="module" [contextInstanceId]="module!.id" [courseId]="courseId" (click)="expandDescription($event)">
                 </core-format-text>
             </ion-label>
         </ion-item>
@@ -97,7 +97,7 @@
             <!-- Summary of submissions with draft status. -->
             <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
                 [detail]="!showNumbers || summary.submissiondraftscount"
-                (click)="goToSubmissionList(submissionStatusDraft, summary.submissiondraftscount)">
+                (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2></ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
                     {{ summary.submissiondraftscount }}
@@ -107,7 +107,7 @@
             <!-- Summary of submissions with submitted status. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
                 [detail]="!showNumbers || summary.submissionssubmittedcount"
-                (click)="goToSubmissionList(submissionStatusSubmitted, summary.submissionssubmittedcount)">
+                (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2></ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
                     {{ summary.submissionssubmittedcount }}
@@ -136,7 +136,7 @@
 
     <!-- If it's a student, display his submission. -->
     <addon-mod-assign-submission *ngIf="loaded && !canViewAllSubmissions && canViewOwnSubmission" [courseId]="courseId"
-        [moduleId]="module.id">
+        [moduleId]="module!.id">
     </addon-mod-assign-submission>
 
 </core-loading>
