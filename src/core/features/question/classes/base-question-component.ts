@@ -423,15 +423,15 @@ export class CoreQuestionBaseComponent {
         // Check if question is marked as correct.
         if (input.classList.contains('incorrect')) {
             question.input.correctClass = 'core-question-incorrect';
-            question.input.correctIcon = 'fa-remove';
+            question.input.correctIcon = 'fas-times';
             question.input.correctIconColor = 'danger';
         } else if (input.classList.contains('correct')) {
             question.input.correctClass = 'core-question-correct';
-            question.input.correctIcon = 'fa-check';
+            question.input.correctIcon = 'fas-check';
             question.input.correctIconColor = 'success';
         } else if (input.classList.contains('partiallycorrect')) {
             question.input.correctClass = 'core-question-partiallycorrect';
-            question.input.correctIcon = 'fa-check-square';
+            question.input.correctIcon = 'fas-check-square';
             question.input.correctIconColor = 'warning';
         } else {
             question.input.correctClass = '';

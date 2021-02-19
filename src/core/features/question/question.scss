@@ -2,7 +2,7 @@
 
 $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
 
-:host {
+:host ::ng-deep {
     --core-question-correct-color: var(--green-dark);
     --core-question-correct-color-bg: var(--green-light);
     --core-question-incorrect-color: var(--red);
@@ -22,64 +22,19 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
 
-    // .core-correct-icon {
-    //     padding: 0 ($content-padding / 2);
-    //     position: absolute;
-    //     @include position(null, 0, $content-padding / 2, null);
-    //     margin-top: 0;
-    //     margin-bottom: 0;
-    // }
+    .core-question-answer-correct {
+        color: var(--core-question-correct-color);
+    }
 
-
-    // .core-question-answer-correct {
-    //     color: $core-question-correct-color;
-    // }
-
-    // .core-question-answer-incorrect {
-    //     color: $core-question-incorrect-color;
-    // }
-
-    // input, select {
-    //     &.core-question-answer-correct, &.core-question-answer-incorrect {
-    //         background-color: $gray-lighter;
-    //         color: $text-color;
-    //     }
-    // }
-
-    // .core-question-correct,
-    // .core-question-comment {
-    //     color: $core-question-correct-color;
-    //     background-color: $core-question-correct-color-bg;
-
-    //     .label, ion-label.label, .select-text, .select-icon .select-icon-inner {
-    //         color: $core-question-correct-color;
-    //     }
-    //     .radio-icon {
-    //         border-color: $core-question-correct-color;
-    //     }
-    //     .radio-inner {
-    //         background-color: $core-question-correct-color;
-    //     }
-    // }
-
-    // .core-question-incorrect {
-    //     color: $core-question-incorrect-color;
-    //     background-color: $core-question-incorrect-color-bg;
-
-    //     .label, ion-label.label, .select-text, .select-icon .select-icon-inner {
-    //         color: $core-question-incorrect-color;
-    //     }
-    //     .radio-icon {
-    //         border-color: $core-question-incorrect-color;
-    //     }
-    //     .radio-inner {
-    //         background-color: $core-question-incorrect-color;
-    //     }
-    // }
+    .core-question-answer-incorrect {
+        color: var(--core-question-incorrect-color);
+    }
 
     .core-question-feedback-container ::ng-deep {
         --color: var(--core-question-feedback-color);
         --background: var(--core-question-feedback-background-color);
+        color: var(--core-question-feedback-color);
+        background-color: var(--core-question-feedback-background-color);
 
         .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
             margin: 0 0 .5em;
@@ -100,7 +55,7 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
                 background-color: var(--red);
             }
             &.correct {
-            background-color: var(--green);
+                background-color: var(--green);
             }
         }
     }
@@ -115,8 +70,11 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
         padding-bottom: 8px;
     }
 
-    .core-question-correct {
-        background-color: var(--core-question-state-correct-color);
+    .core-question-correct,
+    .core-question-comment {
+        --background: var(--core-question-correct-color-bg);
+        background-color: var(--core-question-correct-color-bg);
+        color: var(--core-question-correct-color);
     }
     .core-question-partiallycorrect {
         background-color: var(--core-question-state-partial-color);
@@ -138,5 +96,11 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
     .questioncorrectnessicon,
     .fa.icon.questioncorrectnessicon {
         font-size: 20px;
+    }
+
+    .item.item-interactive.item-interactive-disabled ::ng-deep {
+        ion-label, ion-select, ion-checkbox {
+            opacity: 0.7;
+        }
     }
 }

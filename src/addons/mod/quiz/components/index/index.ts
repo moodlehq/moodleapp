@@ -413,7 +413,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             try {
                 await AddonModQuiz.instance.getAttemptReview(attemptId, { page: -1, cmId: this.module!.id });
 
-                // @todo this.navCtrl.push('AddonModQuizReviewPage', { courseId: this.courseId, quizId: quiz!.id, attemptId });
+                CoreNavigator.instance.navigate(`../../review/${this.courseId}/${this.quiz!.id}/${attemptId}`);
             } catch {
                 // Ignore errors.
             }

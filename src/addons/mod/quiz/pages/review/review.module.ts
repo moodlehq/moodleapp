@@ -15,26 +15,26 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
+import { AddonModQuizReviewPage } from './review';
+
 const routes: Routes = [
     {
-        path: ':courseId/:cmdId',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModQuizIndexPageModule),
-    },
-    {
-        path: 'player/:courseId/:quizId',
-        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModQuizPlayerPageModule),
-    },
-    {
-        path: 'attempt/:courseId/:quizId/:attemptId',
-        loadChildren: () => import('./pages/attempt/attempt.module').then( m => m.AddonModQuizAttemptPageModule),
-    },
-    {
-        path: 'review/:courseId/:quizId/:attemptId',
-        loadChildren: () => import('./pages/review/review.module').then( m => m.AddonModQuizReviewPageModule),
+        path: '',
+        component: AddonModQuizReviewPage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+        CoreQuestionComponentsModule,
+    ],
+    declarations: [
+        AddonModQuizReviewPage,
+    ],
+    exports: [RouterModule],
 })
-export class AddonModQuizLazyModule {}
+export class AddonModQuizReviewPageModule {}

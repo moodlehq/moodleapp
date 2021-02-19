@@ -191,7 +191,7 @@ export class AddonModQuizAttemptPage implements OnInit {
      * @return Promise resolved when done.
      */
     async reviewAttempt(): Promise<void> {
-        // @todo navPush="AddonModQuizReviewPage" [navParams]="{courseId: courseId, quizId: quiz.id, attemptId: attempt.id}"
+        CoreNavigator.instance.navigate(`../../../../review/${this.courseId}/${this.quiz!.id}/${this.attempt!.id}`);
     }
 
 }
