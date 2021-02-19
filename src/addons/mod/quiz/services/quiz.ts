@@ -1497,16 +1497,6 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the quiz WS are available.
-     *
-     * @return Whether the plugin is enabled.
-     */
-    isPluginEnabled(): boolean {
-        // Quiz WebServices were introduced in 3.1, it will always be enabled.
-        return true;
-    }
-
-    /**
      * Check if a question is blocked.
      *
      * @param question Question.

@@ -254,7 +254,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return AddonModQuiz.instance.isPluginEnabled();
+        return true;
     }
 
     /**

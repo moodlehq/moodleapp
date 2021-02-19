@@ -237,14 +237,12 @@ export class AddonModQuizHelperProvider {
             }
 
             // Go to the review page.
-            const pageParams = {
-                quizId,
-                attemptId,
-                courseId,
-                page: page == undefined || isNaN(page) ? -1 : page,
-            };
-
-            await CoreNavigator.instance.navigateToSitePath('@todo AddonModQuizReviewPage', { params: pageParams, siteId });
+            await CoreNavigator.instance.navigateToSitePath(`mod_quiz/review/${courseId}/${quizId}/${attemptId}`, {
+                params: {
+                    page: page == undefined || isNaN(page) ? -1 : page,
+                },
+                siteId,
+            });
         } catch (error) {
             CoreDomUtils.instance.showErrorModalDefault(error, 'An error occurred while loading the required data.');
         } finally {

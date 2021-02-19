@@ -14,16 +14,25 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModQuizAccessRulesModule } from './accessrules/accessrules.module';
 import { AddonModQuizComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/quiz';
+import { AddonModQuizGradeLinkHandler } from './services/handlers/grade-link';
+import { AddonModQuizIndexLinkHandler } from './services/handlers/index-link';
+import { AddonModQuizListLinkHandler } from './services/handlers/list-link';
 import { AddonModQuizModuleHandler, AddonModQuizModuleHandlerService } from './services/handlers/module';
 import { AddonModQuizPrefetchHandler } from './services/handlers/prefetch';
+import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
+import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
+import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
 
 const routes: Routes = [
     {
@@ -51,6 +60,12 @@ const routes: Routes = [
             useFactory: () => () => {
                 CoreCourseModuleDelegate.instance.registerHandler(AddonModQuizModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModQuizPrefetchHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizGradeLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizIndexLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizListLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizReviewLinkHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModQuizPushClickHandler.instance);
+                CoreCronDelegate.instance.register(AddonModQuizSyncCronHandler.instance);
             },
         },
     ],
