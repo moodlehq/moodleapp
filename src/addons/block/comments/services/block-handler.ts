@@ -37,19 +37,13 @@ export class AddonBlockCommentsHandlerService extends CoreBlockBaseHandler {
      * @return Data or promise resolved with the data.
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
-        // @todo
-
         return {
             title: 'addon.block_comments.pluginname',
             class: 'addon-block-comments',
             component: CoreBlockOnlyTitleComponent,
-            link: 'CoreCommentsViewerPage',
+            link: 'comments/' + contextLevel + '/' + instanceId + '/block_comments/0',
             linkParams: {
-                contextLevel: contextLevel,
-                instanceId: instanceId,
-                componentName: 'block_comments',
                 area: 'page_comments',
-                itemId: 0,
             },
         };
     }
