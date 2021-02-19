@@ -244,11 +244,33 @@ export class CoreNavigatorService {
     }
 
     /**
+     * Iterately get the params checking parent routes.
+     *
+     * @param route Current route.
+     * @param name Name of the parameter.
+     * @return Value of the parameter, undefined if not found.
+     */
+    protected getRouteSnapshotParam<T = unknown>(name: string, route?: ActivatedRoute): T | undefined {
+        if (!route?.snapshot) {
+            return;
+        }
+
+        const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+
+        if (typeof value != 'undefined') {
+            return value;
+        }
+
+        return this.getRouteSnapshotParam(name, route.parent || undefined);
+    }
+
+    /**
      * Get a parameter for the current route.
      * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
      * unless there's a new navigation to the page.
      *
      * @param name Name of the parameter.
+     * @param params Optional params to get the value from. If missing, it will autodetect.
      * @return Value of the parameter, undefined if not found.
      */
     getRouteParam<T = unknown>(name: string, params?: Params): T | undefined {
@@ -256,13 +278,14 @@ export class CoreNavigatorService {
 
         if (!params) {
             const route = this.getCurrentRoute();
-            if (!route.snapshot) {
-                return;
-            }
 
-            value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+            value = this.getRouteSnapshotParam(name, route);
         } else {
             value = params[name];
+        }
+
+        if (typeof value == 'undefined') {
+            return;
         }
 
         let storedParam = this.storedParams[value];
@@ -286,6 +309,7 @@ export class CoreNavigatorService {
      * Angular router automatically converts numbers to string, this function automatically converts it back to number.
      *
      * @param name Name of the parameter.
+     * @param params Optional params to get the value from. If missing, it will autodetect.
      * @return Value of the parameter, undefined if not found.
      */
     getRouteNumberParam(name: string, params?: Params): number | undefined {
@@ -299,6 +323,7 @@ export class CoreNavigatorService {
      * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
      *
      * @param name Name of the parameter.
+     * @param params Optional params to get the value from. If missing, it will autodetect.
      * @return Value of the parameter, undefined if not found.
      */
     getRouteBooleanParam(name: string, params?: Params): boolean | undefined {
