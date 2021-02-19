@@ -681,9 +681,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @param slot Slot of the question to scroll to.
      */
     protected scrollToQuestion(slot: number): void {
-        if (this.content) {
-            CoreDomUtils.instance.scrollToElementBySelector(this.content, '#addon-mod_quiz-question-' + slot);
-        }
+        CoreDomUtils.instance.scrollToElementBySelector(
+            this.elementRef.nativeElement,
+            this.content,
+            '#addon-mod_quiz-question-' + slot,
+        );
     }
 
     /**

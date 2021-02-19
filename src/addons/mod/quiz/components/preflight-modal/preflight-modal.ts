@@ -47,6 +47,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
 
     constructor(
         formBuilder: FormBuilder,
+        protected elementRef: ElementRef,
     ) {
         // Create an empty form group. The controls will be added by the access rules components.
         this.preflightForm = formBuilder.group({});
@@ -115,7 +116,12 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
 
         if (!this.preflightForm.valid) {
             // Form not valid. Scroll to the first element with errors.
-            if (!CoreDomUtils.instance.scrollToInputError(this.content)) {
+            const hasScrolled = CoreDomUtils.instance.scrollToInputError(
+                this.elementRef.nativeElement,
+                this.content,
+            );
+
+            if (!hasScrolled) {
                 // Input not found, show an error modal.
                 CoreDomUtils.instance.showErrorModal('core.errorinvalidform', true);
             }
