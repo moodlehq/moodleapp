@@ -18,7 +18,6 @@ import { AddonModAssignFeedbackCommentsComponent } from './component/comments';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
-import { AddonModAssignSubmissionFileHandler } from '../../submission/file/services/handler';
 
 @NgModule({
     declarations: [
@@ -35,7 +34,7 @@ import { AddonModAssignSubmissionFileHandler } from '../../submission/file/servi
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModAssignFeedbackDelegate.instance.registerHandler(AddonModAssignSubmissionFileHandler.instance);
+                AddonModAssignFeedbackDelegate.instance.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
             },
         },
     ],

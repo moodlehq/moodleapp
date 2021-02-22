@@ -22,6 +22,7 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModAssignComponentsModule } from './components/components.module';
+import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/assign';
 import { AddonModAssignIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModAssignListLinkHandler } from './services/handlers/list-link';
@@ -43,6 +44,7 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
         AddonModAssignComponentsModule,
         AddonModAssignSubmissionModule,
+        AddonModAssignFeedbackModule,
     ],
     providers: [
         {

@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController } from '@singletons';
-import { AddonModAssignFeedbackCommentsPluginData } from '../../feedback/comments/services/handler';
+import { AddonModAssignFeedbackCommentsTextData } from '../../feedback/comments/services/handler';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -104,7 +104,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
      *
      * @return Promise resolved with the input data, rejected if cancelled.
      */
-    editFeedback(): Promise<AddonModAssignFeedbackCommentsPluginData> {
+    editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
         if (!this.canEdit) {
             throw new CoreError('Cannot edit feedback');
         }
@@ -115,7 +115,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     }
 
     protected async showEditFeedbackModal(
-        resolve: (value: AddonModAssignFeedbackCommentsPluginData | PromiseLike<AddonModAssignFeedbackCommentsPluginData>) => void,
+        resolve: (value: AddonModAssignFeedbackCommentsTextData | PromiseLike<AddonModAssignFeedbackCommentsTextData>) => void,
         reject: () => void,
     ): Promise < void> {
         // Create the navigation modal.

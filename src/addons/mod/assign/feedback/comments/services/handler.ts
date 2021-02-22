@@ -49,14 +49,11 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param inputData Data entered in the feedback edit form.
      * @return Text to submit.
      */
-    getTextFromInputData(plugin: AddonModAssignPlugin, inputData: AddonModAssignFeedbackCommentsPluginData): string {
+    getTextFromInputData(plugin: AddonModAssignPlugin, inputData: AddonModAssignFeedbackCommentsTextData): string {
         const files = plugin.fileareas && plugin.fileareas[0] ? plugin.fileareas[0].files : [];
-        let text = '';
 
         // The input data can have a string or an object with text and format. Get the text.
-        if (inputData.assignfeedbackcomments_editor && inputData.assignfeedbackcomments_editor.text) {
-            text = inputData.assignfeedbackcomments_editor.text;
-        }
+        const text = inputData.assignfeedbackcomments_editor || '';
 
         return CoreTextUtils.instance.restorePluginfileUrls(text, files || []);
     }
@@ -147,7 +144,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: AddonModAssignFeedbackCommentsPluginData,
+        inputData: AddonModAssignFeedbackCommentsTextData,
         userId: number,
     ): Promise<boolean> {
         // Get it from plugin or offline.
@@ -253,6 +250,11 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
 }
 export const AddonModAssignFeedbackCommentsHandler = makeSingleton(AddonModAssignFeedbackCommentsHandlerService);
+
+export type AddonModAssignFeedbackCommentsTextData = {
+    // The text for this submission.
+    assignfeedbackcomments_editor: string; // eslint-disable-line @typescript-eslint/naming-convention
+};
 
 export type AddonModAssignFeedbackCommentsDraftData = {
     text: string; // The text for this feedback.
