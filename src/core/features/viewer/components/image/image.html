@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>{{ title }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<!-- @todo: zoom="true" maxZoom="2" class="core-zoom-pane". Now we need to use ionSlider? -->
+<ion-content [scrollX]="true" [scrollY]="true">
+    <img [src]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
+</ion-content>

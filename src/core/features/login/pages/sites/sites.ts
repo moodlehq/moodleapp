@@ -20,6 +20,8 @@ import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreLogger } from '@singletons/logger';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreFilter } from '@features/filter/services/filter';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -48,13 +50,12 @@ export class CoreLoginSitesPage implements OnInit {
         const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         // Remove protocol from the url to show more url text.
-        this.sites = sites.map((site) => {
+        this.sites = await Promise.all(sites.map(async (site) => {
             site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '');
-            site.badge = 0;
-            // @todo: getSiteCounter.
+            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
             return site;
-        });
+        }));
 
         this.showDelete = false;
     }
@@ -76,9 +77,9 @@ export class CoreLoginSitesPage implements OnInit {
     async deleteSite(e: Event, site: CoreSiteBasicInfo): Promise<void> {
         e.stopPropagation();
 
-        const siteName = site.siteName || '';
+        let siteName = site.siteName || '';
 
-        // @todo: Format text: siteName.
+        siteName = await CoreFilter.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], site.id);
 
         try {
             await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });

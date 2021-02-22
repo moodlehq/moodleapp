@@ -1,0 +1,6 @@
+<ion-item class="ion-text-wrap">
+    <ion-label>
+        <p *ngIf="html" [innerHTML]="content"></p>
+        <p *ngIf="!html">{{content}}</p>
+    </ion-label>
+</ion-item>

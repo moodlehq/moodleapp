@@ -819,7 +819,6 @@ export class CoreQuestionHelperProvider {
             if (span.innerHTML) {
                 // There's a hidden feedback. Mark the icon as tappable.
                 // The click listener is only added if treatCorrectnessIconsClicks is called.
-                // @todo: Check if another attribute needs to be used now instead of tappable.
                 icon.setAttribute('tappable', '');
             }
         });
@@ -843,9 +842,7 @@ export class CoreQuestionHelperProvider {
         contextInstanceId?: number,
         courseId?: number,
     ): void {
-
-        // @todo: Check if another attribute needs to be used now instead of tappable.
-        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]'));
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon[tappable]'));
         const title = Translate.instant('core.question.feedback');
 
         icons.forEach((icon) => {

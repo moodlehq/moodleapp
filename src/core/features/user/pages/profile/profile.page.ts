@@ -35,6 +35,7 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCourses } from '@features/courses/services/courses';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -239,8 +240,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     async refreshUser(event?: CustomEvent<IonRefresher>): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             CoreUser.invalidateUserCache(this.userId),
-            // @todo this.coursesProvider.invalidateUserNavigationOptions(),
-            // this.coursesProvider.invalidateUserAdministrationOptions()
+            CoreCourses.invalidateUserNavigationOptions(),
+            CoreCourses.invalidateUserAdministrationOptions(),
         ]));
 
         await this.fetchUser();

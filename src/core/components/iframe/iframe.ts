@@ -27,6 +27,7 @@ import { CoreLogger } from '@singletons/logger';
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
+    styleUrls: ['iframe.scss'],
 })
 export class CoreIframeComponent implements OnChanges {
 

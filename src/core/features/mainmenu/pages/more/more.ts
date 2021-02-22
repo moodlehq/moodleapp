@@ -146,10 +146,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * @param item Item to open.
      */
     openItem(item: CoreMainMenuCustomItem): void {
-        // @todo CoreNavigator.navigateToSitePath('CoreViewerIframePage', {title: item.label, url: item.url});
-
-        // eslint-disable-next-line no-console
-        console.error('openItem not implemented', item);
+        CoreNavigator.navigateToSitePath('viewer/iframe', { params: { title: item.label, url: item.url } });
     }
 
     /**

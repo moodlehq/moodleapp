@@ -12,23 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
+import { Component, Input } from '@angular/core';
 
-import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreViewerComponentsModule } from './components/components.module';
-
-const routes: Routes = [
-    {
-        path: 'viewer',
-        loadChildren: () => import('./viewer-lazy.module').then(m => m.CoreViewerLazyModule),
-    },
-];
-
-@NgModule({
-    imports: [
-        CoreMainMenuTabRoutingModule.forChild(routes),
-        CoreViewerComponentsModule,
-    ],
+/**
+ * Component to display a Bootstrap Tooltip in a popover.
+ */
+@Component({
+    selector: 'core-bs-tooltip',
+    templateUrl: 'core-bs-tooltip.html',
 })
-export class CoreViewerModule {}
+export class CoreBSTooltipComponent {
+
+    @Input() content = '';
+    @Input() html?: boolean;
+
+}

@@ -13,22 +13,26 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreViewerComponentsModule } from './components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreViewerIframePage } from './iframe';
 
 const routes: Routes = [
     {
-        path: 'viewer',
-        loadChildren: () => import('./viewer-lazy.module').then(m => m.CoreViewerLazyModule),
+        path: '',
+        component: CoreViewerIframePage,
     },
 ];
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild(routes),
-        CoreViewerComponentsModule,
+        RouterModule.forChild(routes),
+        CoreSharedModule,
     ],
+    declarations: [
+        CoreViewerIframePage,
+    ],
+    exports: [RouterModule],
 })
-export class CoreViewerModule {}
+export class CoreViewerIframePageModule {}

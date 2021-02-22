@@ -31,11 +31,20 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
 import { CoreSilentError } from '@classes/errors/silenterror';
-
-import { makeSingleton, Translate, AlertController, LoadingController, ToastController } from '@singletons';
+import {
+    makeSingleton,
+    Translate,
+    AlertController,
+    LoadingController,
+    ToastController,
+    PopoverController,
+    ModalController,
+} from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
+import { CoreViewerImageComponent } from '@features/viewer/components/image/image';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -810,8 +819,18 @@ export class CoreDomUtilsProvider {
             el.setAttribute('data-original-title', content);
             el.setAttribute('title', '');
 
-            el.addEventListener('click', () => {
-                // @todo
+            el.addEventListener('click', async (ev: Event) => {
+                const html = el.getAttribute('data-html');
+
+                const popover = await PopoverController.create({
+                    component: CoreBSTooltipComponent,
+                    componentProps: {
+                        content,
+                        html: html === 'true',
+                    },
+                    event: ev,
+                });
+                await popover.present();
             });
         });
     }
@@ -1554,12 +1573,32 @@ export class CoreDomUtilsProvider {
      * @param message Modal message.
      * @param buttons Buttons to pass to the modal.
      * @param placeholder Placeholder of the input element if any.
-     * @return Promise resolved when modal presented.
+     * @return Promise resolved with the entered text if any.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    showTextareaPrompt(title: string, message: string, buttons: (string | unknown)[], placeholder?: string): Promise<unknown> {
-        // @todo
-        return Promise.resolve();
+    async showTextareaPrompt(
+        title: string,
+        message: string,
+        buttons: AlertButton[],
+        placeholder?: string,
+    ): Promise<string | undefined> {
+        const alert = await AlertController.create({
+            header: title,
+            message,
+            inputs: [
+                {
+                    name: 'textarea-prompt',
+                    type: 'textarea',
+                    placeholder: placeholder,
+                },
+            ],
+            buttons,
+        });
+
+        await alert.present();
+
+        const result = await alert.onWillDismiss();
+
+        return result.data?.values?.['textarea-prompt'];
     }
 
     /**
@@ -1671,9 +1710,30 @@ export class CoreDomUtilsProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param fullScreen Whether the modal should be full screen.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    viewImage(image: string, title?: string | null, component?: string, componentId?: string | number, fullScreen?: boolean): void {
-        // @todo
+    async viewImage(
+        image: string,
+        title?: string | null,
+        component?: string,
+        componentId?: string | number,
+        fullScreen?: boolean,
+    ): Promise<void> {
+        if (!image) {
+            return;
+        }
+
+        const modal = await ModalController.create({
+            component: CoreViewerImageComponent,
+            componentProps: {
+                title,
+                image,
+                component,
+                componentId,
+            },
+            cssClass: fullScreen ? 'core-modal-fullscreen' : '',
+        });
+
+
+        await modal.present();
     }
 
     /**

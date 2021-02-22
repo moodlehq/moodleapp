@@ -15,16 +15,19 @@
 import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreViewerImageComponent } from './image/image';
 import { CoreViewerTextComponent } from './text/text';
 
 @NgModule({
     declarations: [
+        CoreViewerImageComponent,
         CoreViewerTextComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
+        CoreViewerImageComponent,
         CoreViewerTextComponent,
     ],
 })
