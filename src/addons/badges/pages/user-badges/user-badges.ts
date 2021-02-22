@@ -51,8 +51,7 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialBadges();
 
-        this.badges.watchSplitViewOutlet(this.splitView);
-        this.badges.start();
+        this.badges.start(this.splitView);
     }
 
     /**

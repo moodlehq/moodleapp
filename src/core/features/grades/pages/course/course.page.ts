@@ -63,8 +63,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialGrades();
 
-        this.grades.watchSplitViewOutlet(this.splitView);
-        this.grades.start();
+        this.grades.start(this.splitView);
     }
 
     /**

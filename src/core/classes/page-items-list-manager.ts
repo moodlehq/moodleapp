@@ -55,8 +55,12 @@ export abstract class CorePageItemsListManager<Item> {
 
     /**
      * Process page started operations.
+     *
+     * @param splitView Split view component.
      */
-    async start(): Promise<void> {
+    async start(splitView: CoreSplitViewComponent): Promise<void> {
+        this.watchSplitViewOutlet(splitView);
+
         // Calculate current selected item.
         const route = CoreNavigator.instance.getCurrentRoute({ pageComponent: this.pageComponent });
         if (route !== null && route.firstChild) {
