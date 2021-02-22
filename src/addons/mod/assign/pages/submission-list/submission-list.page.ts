@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreObject } from '@singletons/object';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -38,7 +40,6 @@ import {
     AddonModAssignManualSyncData,
     AddonModAssignAutoSyncData,
 } from '../../services/assign-sync';
-import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Page that displays a list of submissions of an assignment.
@@ -47,16 +48,15 @@ import { AddonModAssignModuleHandlerService } from '../../services/handlers/modu
     selector: 'page-addon-mod-assign-submission-list',
     templateUrl: 'submission-list.html',
 })
-export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
+export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
 
-    // @ViewChild(CoreSplitViewComponent) splitviewCtrl: CoreSplitViewComponent;
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     title = ''; // Title to display.
     assign?: AddonModAssignAssign; // Assignment.
-    submissions: AddonModAssignSubmissionForList[] = []; // List of submissions
+    submissions: AddonModAssignSubmissionListManager; // List of submissions
     loaded = false; // Whether data has been loaded.
     haveAllParticipants  = true; // Whether all participants have been loaded.
-    selectedSubmissionId?: number; // Selected submission ID.
     groupId = 0; // Group ID to show.
     courseId!: number; // Course ID the assignment belongs to.
     moduleId!: number; // Module ID the submission belongs to.
@@ -78,6 +78,8 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
+        this.submissions = new AddonModAssignSubmissionListManager(AddonModAssignSubmissionListPage);
+
         // Update data if some grade changes.
         this.gradedObserver = CoreEvents.on<AddonModAssignGradedEventData>(
             AddonModAssignProvider.GRADED_EVENT,
@@ -121,31 +123,24 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     /**
      * Component being initialized.
      */
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.moduleId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
         this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
+        this.groupId = CoreNavigator.instance.getRouteNumberParam('groupId') || 0;
+        this.selectedStatus = CoreNavigator.instance.getRouteParam('status');
 
-        this.route.queryParams.subscribe((params) => {
-            this.groupId = CoreNavigator.instance.getRouteNumberParam('groupId', params) || 0;
-            this.selectedStatus = CoreNavigator.instance.getRouteParam('status', params);
-
-            if (this.selectedStatus) {
-                if (this.selectedStatus == AddonModAssignProvider.NEED_GRADING) {
-                    this.title = Translate.instance.instant('addon.mod_assign.numberofsubmissionsneedgrading');
-                } else {
-                    this.title = Translate.instance.instant('addon.mod_assign.submissionstatus_' + this.selectedStatus);
-                }
+        if (this.selectedStatus) {
+            if (this.selectedStatus == AddonModAssignProvider.NEED_GRADING) {
+                this.title = Translate.instance.instant('addon.mod_assign.numberofsubmissionsneedgrading');
             } else {
-                this.title = Translate.instance.instant('addon.mod_assign.numberofparticipants');
+                this.title = Translate.instance.instant('addon.mod_assign.submissionstatus_' + this.selectedStatus);
             }
-            this.fetchAssignment(true).finally(() => {
-                if (!this.selectedSubmissionId && CoreScreen.instance.isTablet && this.submissions.length > 0) {
-                    // Take first and load it.
-                    this.loadSubmission(this.submissions[0]);
-                }
-
-                this.loaded = true;
-            });
+        } else {
+            this.title = Translate.instance.instant('addon.mod_assign.numberofparticipants');
+        }
+        this.fetchAssignment(true).finally(() => {
+            this.loaded = true;
+            this.submissions.start(this.splitView);
         });
     }
 
@@ -215,7 +210,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
         if (!CoreSites.instance.getCurrentSite()?.wsAvailable('mod_assign_list_participants')) {
             // Submissions are not displayed in Moodle 3.1 without the local plugin, see MOBILE-2968.
             this.haveAllParticipants = false;
-            this.submissions = [];
+            this.submissions.resetItems();
 
             return;
         }
@@ -303,30 +298,7 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
 
         await Promise.all(promises);
 
-        this.submissions = showSubmissions;
-    }
-
-    /**
-     * Load a certain submission.
-     *
-     * @param submission The submission to load.
-     */
-    loadSubmission(submission: AddonModAssignSubmissionForList): void {
-        if (this.selectedSubmissionId === submission.submitid) {
-            // Already selected.
-            return;
-        }
-
-        this.selectedSubmissionId = submission.submitid;
-
-        CoreNavigator.instance.navigateToSitePath(
-            AddonModAssignModuleHandlerService.PAGE_NAME+'/'+this.courseId+'/'+this.moduleId+'/submission/'+submission.submitid,
-            {
-                params: {
-                    blindId: submission.blindid,
-                },
-            },
-        );
+        this.submissions.setItems(showSubmissions);
     }
 
     /**
@@ -370,6 +342,42 @@ export class AddonModAssignSubmissionListPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.gradedObserver?.off();
         this.syncObserver?.off();
+        this.submissions.destroy();
+    }
+
+}
+
+
+/**
+ * Helper class to manage submissions.
+ */
+class AddonModAssignSubmissionListManager extends CorePageItemsListManager<AddonModAssignSubmissionForList> {
+
+    constructor(pageComponent: unknown) {
+        super(pageComponent);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(submission: AddonModAssignSubmissionForList): string {
+        return String(submission.submitid);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
+        return CoreObject.withoutEmpty({
+            blindId: submission.blindid,
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        return route.params.submitId ?? null;
     }
 
 }
