@@ -63,6 +63,7 @@ import { AddonModAssignModuleHandlerService } from '../../services/handlers/modu
 @Component({
     selector: 'addon-mod-assign-submission',
     templateUrl: 'addon-mod-assign-submission.html',
+    styleUrls: ['submission.scss'],
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
