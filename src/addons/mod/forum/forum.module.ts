@@ -15,24 +15,47 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { CoreCourseContentsRoutingModule } from '@features/course/pages/contents/contents-routing.module';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreScreen } from '@services/screen';
 
 import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumModuleHandler, AddonModForumModuleHandlerService } from './services/handlers/module';
 import { SITE_SCHEMA } from './services/offline-db';
 
-const routes: Routes = [
+const mainMenuRoutes: Routes = [
     {
         path: AddonModForumModuleHandlerService.PAGE_NAME,
         loadChildren: () => import('./forum-lazy.module').then(m => m.AddonModForumLazyModule),
     },
+    ...conditionalRoutes(
+        [
+            {
+                path: 'course/index/contents/mod_forum/:discussionId',
+                loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+            },
+        ],
+        () => CoreScreen.instance.isMobile,
+    ),
 ];
+
+const courseContentsRoutes: Routes = conditionalRoutes(
+    [
+        {
+            path: 'mod_forum/:discussionId',
+            loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+        },
+    ],
+    () => CoreScreen.instance.isTablet,
+);
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
+        CoreCourseContentsRoutingModule.forChild({ children: courseContentsRoutes }),
         AddonModForumComponentsModule,
     ],
     providers: [

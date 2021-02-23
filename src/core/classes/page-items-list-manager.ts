@@ -142,10 +142,10 @@ export abstract class CorePageItemsListManager<Item> {
         }
 
         // Navigate to item.
-        const path = route.firstChild ? `../${itemPath}` : itemPath;
         const params = this.getItemQueryParams(item);
+        const pathPrefix = route.firstChild ? itemPath.split('/').fill('../').join('') : '';
 
-        await CoreNavigator.instance.navigate(path, { params });
+        await CoreNavigator.instance.navigate(pathPrefix + itemPath, { params });
     }
 
     /**

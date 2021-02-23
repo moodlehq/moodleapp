@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy } from '@angular/core';
+import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
@@ -34,6 +35,8 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
+import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Component that displays a forum entry page.
@@ -43,32 +46,32 @@ import { CoreCourse } from '@features/course/services/course';
     templateUrl: 'index.html',
     styleUrls: ['index.scss'],
 })
-export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
+export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     component = AddonModForumProvider.COMPONENT;
     moduleName = 'forum';
-
     descriptionNote?: string;
     forum?: AddonModForumData;
     canLoadMore = false;
     loadMoreError = false;
-    discussions: AddonModForumDiscussion[] = [];
+    discussions: AddonModForumDiscussionsManager;
     offlineDiscussions: AddonModForumOfflineDiscussion[] = [];
     selectedDiscussion = 0; // Disucssion ID or negative timecreated if it's an offline discussion.
     canAddDiscussion = false;
     addDiscussionText!: string;
     availabilityMessage: string | null = null;
-
     sortingAvailable!: boolean;
     sortOrders: AddonModForumSortOrder[] = [];
     selectedSortOrder: AddonModForumSortOrder | null = null;
     sortOrderSelectorExpanded = false;
+    canPin = false;
 
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected page = 0;
-    protected trackPosts = false;
+    trackPosts = false;
     protected usesGroups = false;
-    protected canPin = false;
     protected syncManualObserver: any; // It will observe the sync manual event.
     protected replyObserver: any;
     protected newDiscObserver: any;
@@ -80,10 +83,17 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected ratingSyncObserver: any;
 
     constructor(
+        route: ActivatedRoute,
         @Optional() protected content?: IonContent,
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModForumIndexComponent', content, courseContentsPage);
+
+        this.discussions = new AddonModForumDiscussionsManager(
+            route.component,
+            this,
+            courseContentsPage ? 'mod_forum/' : '',
+        );
     }
 
     /**
@@ -95,6 +105,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.sortOrders = AddonModForum.instance.getAvailableSortOrders();
 
         await super.ngOnInit();
+    }
+
+    async ngAfterViewInit(): Promise<void> {
         await this.loadContent(false, true);
 
         if (!this.forum) {
@@ -110,6 +123,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     return;
                 }),
         );
+
+        this.discussions.start(this.splitView);
     }
 
     /**
@@ -389,10 +404,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             }
         }
 
-        this.discussions = this.page === 0
-            ? discussions
-            : this.discussions.concat(discussions);
-
+        this.discussions.setItems(this.page === 0 ? discussions : this.discussions.items.concat(discussions));
         this.canLoadMore = response.canLoadMore;
         this.page++;
 
@@ -486,24 +498,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         return result.updated;
     }
 
-    /**
-     * Opens a discussion.
-     *
-     * @param discussion Discussion object.
-     */
-    openDiscussion(discussion: AddonModForumDiscussion): void {
-        alert(`Open discussion ${discussion.id}: Not implemented!`);
-
-        // @todo
-        // const params = {
-        //     courseId: this.courseId,
-        //     cmId: this.module.id,
-        //     forumId: this.forum.id,
-        //     discussion: discussion,
-        //     trackPosts: this.trackPosts,
-        // };
-        // this.splitviewCtrl.push('AddonModForumDiscussionPage', params);
-    }
 
     /**
      * Opens the new discussion form.
@@ -558,6 +552,82 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         // modal.present({ ev: event });
         // this.sortOrderSelectorExpanded = true;
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param e Click Event.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    showOptionsMenu(e: Event, discussion: any): void {
+        alert('Show options menu not implemented');
+
+        // @todo
+        // e.preventDefault();
+        // e.stopPropagation();
+
+        // const popover = this.popoverCtrl.create(AddonForumDiscussionOptionsMenuComponent, {
+        //     discussion: discussion,
+        //     forumId: this.forum.id,
+        //     cmId: this.module.id,
+        // });
+        // popover.onDidDismiss((data) => {
+        //     if (data && data.action) {
+        //         switch (data.action) {
+        //             case 'lock':
+        //                 discussion.locked = data.value;
+        //                 break;
+        //             case 'pin':
+        //                 discussion.pinned = data.value;
+        //                 break;
+        //             case 'star':
+        //                 discussion.starred = data.value;
+        //                 break;
+        //             default:
+        //                 break;
+        //         }
+        //     }
+        // });
+        // popover.present({
+        //     ev: e,
+        // });
+    }
+
+}
+
+class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModForumDiscussion> {
+
+    private discussionsPathPrefix: string;
+    private component: AddonModForumIndexComponent;
+
+    constructor(pageComponent: unknown, component: AddonModForumIndexComponent, discussionsPathPrefix: string) {
+        super(pageComponent);
+
+        this.component = component;
+        this.discussionsPathPrefix = discussionsPathPrefix;
+    }
+
+    getItemQueryParams(discussion: AddonModForumDiscussion): Params {
+        return {
+            discussion,
+            courseId: this.component.courseId,
+            cmId: this.component.module!.id,
+            forumId: this.component.forum!.id,
+            trackPosts: this.component.trackPosts,
+        };
+    }
+
+    protected getItemPath(discussion: AddonModForumDiscussion): string {
+        const discussionId = discussion.id;
+
+        return this.discussionsPathPrefix + discussionId;
+    }
+
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        const discussionId = route.params.discussionId;
+
+        return discussionId ? this.discussionsPathPrefix + discussionId : null;
     }
 
 }

@@ -19,7 +19,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumIndexPage } from './pages/index';
-import { AddonModForumDiscussionPage } from './pages/discussion/discussion';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 
@@ -30,7 +29,8 @@ const mobileRoutes: Routes = [
     },
     {
         path: ':courseId/:cmId/:discussionId',
-        component: AddonModForumDiscussionPage,
+        loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+
     },
 ];
 
@@ -41,7 +41,8 @@ const tabletRoutes: Routes = [
         children: [
             {
                 path: ':discussionId',
-                component: AddonModForumDiscussionPage,
+                loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+
             },
         ],
     },
@@ -60,7 +61,6 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModForumIndexPage,
-        AddonModForumDiscussionPage,
     ],
 })
 export class AddonModForumLazyModule {}
