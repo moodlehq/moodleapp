@@ -28,6 +28,11 @@
     text-transform: none;
 }
 
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;

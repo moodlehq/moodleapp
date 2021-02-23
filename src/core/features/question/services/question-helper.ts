@@ -769,22 +769,36 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     treatCorrectnessIcons(element: HTMLElement): void {
-        const icons = <HTMLImageElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon'));
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon, i.icon'));
         icons.forEach((icon) => {
-            // Replace the icon with the font version.
-            if (!icon.src) {
-                return;
+            let correct = false;
+
+            if ('src' in icon) {
+                if ((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
+                    correct = true;
+                } else if ((icon as HTMLImageElement).src.indexOf('incorrect') < 0 ) {
+                    return;
+                }
+            } else {
+                const classList = icon.classList.toString();
+                if (classList.indexOf('fa-check') >= 0) {
+                    correct = true;
+                } else if (classList.indexOf('fa-remove') < 0) {
+                    return;
+                }
             }
 
-            // @todo: Check the right classes to use.
-            const newIcon: HTMLElement = document.createElement('i');
+            // Replace the icon with the font version.
+            const newIcon: HTMLElement = document.createElement('ion-icon');
 
-            if (icon.src.indexOf('incorrect') > -1) {
-                newIcon.className = 'icon fa fa-remove text-danger fa-fw questioncorrectnessicon';
-            } else if (icon.src.indexOf('correct') > -1) {
-                newIcon.className = 'icon fa fa-check text-success fa-fw questioncorrectnessicon';
+            if (correct) {
+                newIcon.setAttribute('name', 'fas-check');
+                newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/check.svg');
+                newIcon.className = 'core-correct-icon ion-color ion-color-success questioncorrectnessicon';
             } else {
-                return;
+                newIcon.setAttribute('name', 'fas-times');
+                newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/times.svg');
+                newIcon.className = 'core-correct-icon ion-color ion-color-danger questioncorrectnessicon';
             }
 
             newIcon.title = icon.title;
