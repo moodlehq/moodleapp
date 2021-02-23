@@ -26,7 +26,7 @@ export const CONTENTS_LIBRARIES_TABLE_NAME = 'h5p_contents_libraries'; // Which 
 export const LIBRARIES_CACHEDASSETS_TABLE_NAME = 'h5p_libraries_cachedassets'; // H5P cached library assets.
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreH5PProvider',
-    version: 1,
+    version: 2,
     canBeCleared: [
         CONTENT_TABLE_NAME,
         LIBRARIES_TABLE_NAME,
