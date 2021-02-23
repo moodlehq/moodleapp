@@ -16,11 +16,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumIndexPage } from './pages/index';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
+import { AddonModForumNewDiscussionPage } from './pages/new-discussion/new-discussion';
 
 const mobileRoutes: Routes = [
     {
@@ -28,9 +30,12 @@ const mobileRoutes: Routes = [
         component: AddonModForumIndexPage,
     },
     {
+        path: ':courseId/:cmId/new',
+        component: AddonModForumNewDiscussionPage,
+    },
+    {
         path: ':courseId/:cmId/:discussionId',
         loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
-
     },
 ];
 
@@ -39,6 +44,10 @@ const tabletRoutes: Routes = [
         path: ':courseId/:cmId',
         component: AddonModForumIndexPage,
         children: [
+            {
+                path: 'new',
+                component: AddonModForumNewDiscussionPage,
+            },
             {
                 path: ':discussionId',
                 loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
@@ -58,9 +67,11 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModForumComponentsModule,
+        CoreEditorComponentsModule,
     ],
     declarations: [
         AddonModForumIndexPage,
+        AddonModForumNewDiscussionPage,
     ],
 })
 export class AddonModForumLazyModule {}

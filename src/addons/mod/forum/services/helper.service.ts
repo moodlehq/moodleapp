@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFileEntry, CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';

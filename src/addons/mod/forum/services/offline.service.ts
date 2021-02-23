@@ -403,7 +403,9 @@ export class AddonModForumOfflineProvider {
 export class AddonModForumOffline extends makeSingleton(AddonModForumOfflineProvider) {}
 
 export type AddonModForumDiscussionOptions = {
-    attachmentsid: number | CoreFileUploaderStoreFilesResult;
+    attachmentsid?: number | CoreFileUploaderStoreFilesResult;
+    discussionsubscribe?: boolean;
+    discussionpinned?: boolean;
 };
 
 export type AddonModForumReplyOptions = {

@@ -41,6 +41,14 @@ import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-optio
 import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/sort-order-selector';
 
 /**
+ * Type to use for selecting new discussion form in the discussions manager.
+ */
+type NewDiscussionForm = {
+    newDiscussion: true;
+    timeCreated: number;
+};
+
+/**
  * Component that displays a forum entry page.
  */
 @Component({
@@ -193,16 +201,15 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 .getForum(this.courseId, this.module.id)
                 .then(async (forum) => {
                     this.forum = forum;
-
                     this.description = forum.intro || this.description;
+                    this.availabilityMessage = AddonModForumHelper.instance.getAvailabilityMessage(forum);
                     this.descriptionNote = Translate.instant('addon.mod_forum.numdiscussions', {
                         numdiscussions: forum.numdiscussions,
                     });
+
                     if (typeof forum.istracked != 'undefined') {
                         this.trackPosts = forum.istracked;
                     }
-
-                    this.availabilityMessage = AddonModForumHelper.instance.getAvailabilityMessage(forum);
 
                     this.dataRetrieved.emit(forum);
 
@@ -218,23 +225,19 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                             this.addDiscussionText = Translate.instant('addon.mod_forum.addanewdiscussion');
                     }
 
-                    if (!sync) {
-                        return;
+                    if (sync) {
+                        // Try to synchronize the forum.
+                        const updated = await this.syncActivity(showErrors);
+
+                        if (updated) {
+                            // Sync successful, send event.
+                            CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
+                                forumId: forum.id,
+                                userId: CoreSites.instance.getCurrentSiteUserId(),
+                                source: 'index',
+                            }, CoreSites.instance.getCurrentSiteId());
+                        }
                     }
-
-                    // Try to synchronize the forum.
-                    const updated = await this.syncActivity(showErrors);
-
-                    if (!updated) {
-                        return;
-                    }
-
-                    // Sync successful, send event.
-                    CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
-                        forumId: forum.id,
-                        userId: CoreSites.instance.getCurrentSiteUserId(),
-                        source: 'index',
-                    }, CoreSites.instance.getCurrentSiteId());
 
                     const promises: Promise<void>[] = [];
 
@@ -507,18 +510,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param timeCreated Creation time of the offline discussion.
      */
     openNewDiscussion(timeCreated: number = 0): void {
-        alert(`Open new discussion at ${timeCreated} not implemented!`);
-
-        // @todo
-        // const params = {
-        //     courseId: this.courseId,
-        //     cmId: this.module.id,
-        //     forumId: this.forum.id,
-        //     timeCreated: timeCreated,
-        // };
-        // this.splitviewCtrl.push('AddonModForumNewDiscussionPage', params);
-
-        this.selectedDiscussion = 0;
+        this.discussions.select({
+            newDiscussion: true,
+            timeCreated,
+        });
     }
 
     /**
@@ -598,7 +593,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
 }
 
-class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModForumDiscussion> {
+class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModForumDiscussion | NewDiscussionForm> {
 
     private discussionsPathPrefix: string;
     private component: AddonModForumIndexComponent;
@@ -610,18 +605,21 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModF
         this.discussionsPathPrefix = discussionsPathPrefix;
     }
 
-    getItemQueryParams(discussion: AddonModForumDiscussion): Params {
+    getItemQueryParams(discussion: AddonModForumDiscussion | NewDiscussionForm): Params {
         return {
-            discussion,
             courseId: this.component.courseId,
             cmId: this.component.module!.id,
             forumId: this.component.forum!.id,
-            trackPosts: this.component.trackPosts,
+            ...(
+                this.isNewDiscussionForm(discussion)
+                    ? { timeCreated: discussion.timeCreated }
+                    : { discussion, trackPosts: this.component.trackPosts }
+            ),
         };
     }
 
-    protected getItemPath(discussion: AddonModForumDiscussion): string {
-        const discussionId = discussion.id;
+    protected getItemPath(discussion: AddonModForumDiscussion | NewDiscussionForm): string {
+        const discussionId = this.isNewDiscussionForm(discussion) ? 'new' : discussion.id;
 
         return this.discussionsPathPrefix + discussionId;
     }
@@ -630,6 +628,10 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModF
         const discussionId = route.params.discussionId;
 
         return discussionId ? this.discussionsPathPrefix + discussionId : null;
+    }
+
+    private isNewDiscussionForm(discussion: AddonModForumDiscussion | NewDiscussionForm): discussion is NewDiscussionForm {
+        return 'newDiscussion' in discussion;
     }
 
 }
