@@ -471,8 +471,6 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected async treatHTMLElements(div: HTMLElement, site?: CoreSite): Promise<void> {
         const canTreatVimeo = site?.isVersionGreaterEqualThan(['3.3.4', '3.4']) || false;
-        // @todo this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        // @todo: Pass navCtrl to all treateFrame calls?
 
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));

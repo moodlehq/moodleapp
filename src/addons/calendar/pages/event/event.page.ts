@@ -434,8 +434,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * Open the page to edit the event.
      */
     openEdit(): void {
-        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
-        // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         CoreNavigator.navigateToSitePath('/calendar/edit', { params: { eventId: this.eventId } });
     }
 

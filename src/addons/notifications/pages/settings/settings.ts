@@ -38,7 +38,6 @@ import {
     AddonNotificationsPreferencesProcessorFormatted,
 } from '@addons/notifications/services/notifications-helper';
 import { CoreNavigator } from '@services/navigator';
-// import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays notifications settings.
@@ -61,7 +60,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 
     protected updateTimeout?: number;
 
-    constructor() { // @todo @Optional() protected svComponent: CoreSplitViewComponent,
+    constructor() {
         this.notifPrefsEnabled = AddonNotifications.isNotificationPreferencesEnabled();
         this.canChangeSound = CoreLocalNotifications.canDisableSound();
     }
@@ -196,8 +195,6 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @param handlerData
      */
     openExtraPreferences(handlerData: AddonMessageOutputHandlerData): void {
-        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
-        // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         CoreNavigator.navigateToSitePath(handlerData.page, { params: handlerData.pageParams });
     }
 

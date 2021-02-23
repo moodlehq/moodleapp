@@ -261,8 +261,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * Open the page with the user details.
      */
     openUserDetails(): void {
-        // @todo: Navigate out of split view if this page is in the right pane.
-        CoreNavigator.navigate('../about', {
+        CoreNavigator.navigateToSitePath('user/about', {
             params: {
                 courseId: this.courseId,
                 userId: this.userId,
@@ -277,7 +276,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param handler Handler that was clicked.
      */
     handlerClicked(event: Event, handler: CoreUserProfileHandlerData): void {
-        // @todo: Pass the right navCtrl if this page is in the right pane of split view.
         handler.action(event, this.user!, this.courseId);
     }
 

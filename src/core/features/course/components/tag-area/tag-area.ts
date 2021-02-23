@@ -34,8 +34,6 @@ export class CoreCourseTagAreaComponent {
      * @param courseId The course to open.
      */
     openCourse(courseId: number): void {
-        // @todo If this component is inside a split view, use the master nav to open it.
-        // const navCtrl = this.splitviewCtrl ? this.splitviewCtrl.getMasterNav() : this.navCtrl;
         CoreCourseHelper.getAndOpenCourse(courseId);
     }
 

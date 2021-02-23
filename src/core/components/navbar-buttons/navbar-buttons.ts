@@ -124,7 +124,6 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * If both button containers have a context menu, merge them into a single one.
      *
      * @param buttonsContainer The container where the buttons will be moved.
-     * @todo
      */
     protected mergeContextMenus(buttonsContainer: HTMLElement): void {
         // Check if both button containers have a context menu.

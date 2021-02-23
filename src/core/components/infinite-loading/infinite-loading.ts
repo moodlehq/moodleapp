@@ -132,9 +132,9 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * Get the height of the element.
      *
      * @return Height.
-     * @todo erase is not needed: I'm depreacating it because if not needed or getBoundingClientRect has the same result, it should
+     * @todo erase if not needed: I'm depreacating it because if not needed or getBoundingClientRect has the same result, it should
      * be erased, also with getElementHeight
-     * @deprecated
+     * @deprecated since 3.9.5
      */
     getHeight(): number {
         // return this.element.nativeElement.getBoundingClientRect().height;
