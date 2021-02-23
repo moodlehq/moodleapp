@@ -7,35 +7,10 @@
         align-self: stretch;
         height: calc(100% - 20px);
 
-        &[course-color="0"] .core-course-thumb {
-            background: var(--core-course-color-0);
-        }
-        &[course-color="1"] .core-course-thumb {
-            background: var(--core-course-color-1);
-        }
-        &[course-color="2"] .core-course-thumb {
-            background: var(--core-course-color-2);
-        }
-        &[course-color="3"] .core-course-thumb {
-            background: var(--core-course-color-3);
-        }
-        &[course-color="4"] .core-course-thumb {
-            background: var(--core-course-color-4);
-        }
-        &[course-color="5"] .core-course-thumb {
-            background: var(--core-course-color-5);
-        }
-        &[course-color="6"] .core-course-thumb {
-            background: var(--core-course-color-6);
-        }
-        &[course-color="7"] .core-course-thumb {
-            background: var(--core-course-color-7);
-        }
-        &[course-color="8"] .core-course-thumb {
-            background: var(--core-course-color-8);
-        }
-        &[course-color="9"] .core-course-thumb {
-            background: var(--core-course-color-9);
+        @for $i from 0 to length($core-course-image-background) {
+            &[course-color="#{$i}"] .core-course-thumb {
+                background: nth($core-course-image-background, $i + 1);
+            }
         }
 
         .core-course-thumb {

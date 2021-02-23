@@ -51,6 +51,96 @@ $subdued-text-color:  $gray-darker !default;
 
 $core-online-color: #5cb85c !default;
 
+$primary:    $core-color !default;
+$secondary:  $blue !default;
+$tertiary:   $turquoise !default;
+$danger:     $red !default;
+$warning:    $yellow !default;
+$success:    $green !default;
+$info:       $blue !default;
+$light:      $gray-lighter !default;
+$medium:     $gray-light !default;
+$dark:       $black !default;
+
+$colors:  (
+    primary: (
+        base:             $primary,
+        contrast:         #fff,
+        shade:            get-color-shade($primary),
+        tint:             get-color-tint($primary)
+    ),
+    secondary: (
+        base:             $secondary,
+        contrast:         #fff,
+        shade:            get-color-shade($secondary),
+        tint:             get-color-tint($secondary)
+    ),
+    tertiary: (
+        base:             $tertiary,
+        contrast:         #fff,
+        shade:            get-color-shade($tertiary),
+        tint:             get-color-tint($tertiary)
+    ),
+    success: (
+        base:             $success,
+        contrast:         #fff,
+        shade:            get-color-shade($success),
+        tint:             get-color-tint($success)
+    ),
+    warning: (
+        base:             $warning,
+        contrast:         #000,
+        shade:            get-color-shade($warning),
+        tint:             get-color-tint($warning)
+    ),
+    danger: (
+        base:             $danger,
+        contrast:         #fff,
+        shade:            get-color-shade($danger),
+        tint:             get-color-tint($danger)
+    ),
+    info: (
+        base:             $info,
+        contrast:         #fff,
+        shade:            get-color-shade($info),
+        tint:             get-color-tint($info)
+    ),
+    light: (
+        base:             $light,
+        contrast:         #000,
+        shade:            get-color-shade($light),
+        tint:             get-color-tint($light)
+    ),
+    medium: (
+        base:             $medium,
+        contrast:         #fff,
+        shade:            get-color-shade($medium),
+        tint:             get-color-tint($medium)
+    ),
+    dark: (
+        base:             $dark,
+        contrast:         #fff,
+        shade:            get-color-shade($dark),
+        tint:             get-color-tint($dark)
+    )
+) !default;
+
+// Just swipe light and dark.
+$colors-dark:  (
+    primary: map-get($colors, primary),
+    secondary: map-get($colors, secondary),
+    tertiary: map-get($colors, tertiary),
+    success: map-get($colors, success),
+    warning: map-get($colors, warning),
+    danger: map-get($colors, danger),
+    info: map-get($colors, info),
+    light: map-get($colors, dark),
+    medium: map-get($colors, medium),
+    dark: map-get($colors, light),
+) !default;
+
+$core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7 !default;
+
 /*
  * Layout Breakpoints
  *

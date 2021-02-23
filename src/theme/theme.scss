@@ -17,7 +17,9 @@
 @import "./theme.dark.scss";
 @import "./theme.custom.scss";
 @import "./theme.base.scss";
-@import "./format-text.scss";
+
+/* Components */
+@import "./components/format-text.scss";
 
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";

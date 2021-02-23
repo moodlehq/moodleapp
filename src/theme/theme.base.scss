@@ -204,34 +204,6 @@ ion-toolbar {
     }
 }
 
-.item.core-primary-item,
-.item.core-info-item,
-.item.core-secondary-item,
-.item.core-tertiary-item,
-.item.core-success-item,
-.item.core-warning-item,
-.item.core-danger-item {
-    --inner-border-width: 0 0 3px 0;
-}
-.item.core-primary-item {
-    --border-color: var(--ion-color-primary);
-}
-.item.core-info-item,
-.item.core-secondary-item {
-    --border-color: var(--ion-color-secondary);
-}
-.item.core-tertiary-item {
-    --border-color: var(--ion-color-tertiary);
-}
-.item.core-success-item {
-    --border-color: var(--ion-color-success);
-}
-.item.core-warning-item {
-    --border-color: var(--ion-color-warning);
-}
-.item.core-danger-item {
-    --border-color: var(--ion-color-danger);
-}
 .item-dimmed {
     opacity: 0.7;
     --background: var(--gray-lighter);
@@ -243,58 +215,36 @@ ion-toolbar {
 }
 
 // Card styles
+@each $color-name, $value in $colors {
+    $value: map-get($colors, $color-name);
 
-// Message cards.
-ion-card.core-primary-card,
-ion-card.core-info-card,
-ion-card.core-secondary-card,
-ion-card.core-tertiary-card,
-ion-card.core-success-card,
-ion-card.core-warning-card,
-ion-card.core-danger-card {
-    border-bottom: 3px solid transparent;
-    ion-item::part(native) {
-        --inner-border-width: 0;
+    $base: map-get($value, base);
+    $contrast: map-get($value, contrast);
+    $shade: map-get($value, shade);
+    $tint: map-get($value, tint);
+
+    // Message cards.
+    ion-card.core-#{$color-name}-card {
+        border-bottom: 3px solid $base;
+
+        ion-item::part(native) {
+            --inner-border-width: 0;
+        }
+        ion-label {
+            white-space: normal !important;
+        }
+        ion-icon {
+            color: $base;
+        }
     }
-    ion-label {
-        white-space: normal !important;
-    }
-}
-ion-card.core-primary-card {
-    border-bottom-color: var(--ion-color-primary);
-    ion-icon {
-        color: var(--ion-color-primary);
-    }
-}
-ion-card.core-info-card,
-ion-card.core-secondary-card {
-    border-bottom-color: var(--ion-color-secondary);
-    ion-icon {
-        color: var(--ion-color-secondary);
-    }
-}
-ion-card.core-tertiary-card {
-    border-bottom-color: var(--ion-color-tertiary);
-    ion-icon {
-        color: var(--ion-color-tertiary);
-    }
-}
-ion-card.core-success-card {
-    border-bottom-color: var(--ion-color-success);
-    ion-icon {
-        color: var(--ion-color-success);
-    }
-}
-ion-card.core-warning-card {
-    border-bottom-color: var(--ion-color-warning);
-    ion-icon {
-        color: var(--ion-color-warning);
-    }
-}
-ion-card.core-danger-card {
-    border-bottom-color: var(--ion-color-danger);
-    ion-icon {
-        color: var(--ion-color-danger);
+
+    .item.core-#{$color-name}-item {
+        --inner-border-width: 0 0 3px 0;
+        --border-width: 0;
+        border-bottom: 3px solid $base !important;
+        ion-icon {
+            color: $base;
+        }
     }
 }
 
@@ -338,9 +288,10 @@ img[alt] {
 
 // Activity modules
 .core-module-icon {
+    --size: 24px;
     width: auto;
-    max-width: 24px;
-    max-height: 24px;
+    max-width: var(--size);
+    max-height: var(--size);
 }
 
 ion-item img.core-module-icon[slot="start"] {
