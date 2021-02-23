@@ -12,26 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injector, NgModule } from '@angular/core';
+import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePreferencesPage } from './site';
+import { conditionalRoutes, resolveModuleRoutes } from '@/app/app-routing.module';
+import { SITE_PREFERENCES_ROUTES } from './site-routing';
+import { CoreScreen } from '@services/screen';
 
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreSitePreferencesPage,
-    },
-];
+function buildRoutes(injector: Injector): Routes {
+    const routes = resolveModuleRoutes(injector, SITE_PREFERENCES_ROUTES);
+
+    const mobileRoutes: Routes = [
+        {
+            path: '',
+            component: CoreSitePreferencesPage,
+        },
+        ...routes.siblings,
+
+    ];
+
+    const tabletRoutes: Routes = [
+        {
+            path: '',
+            component: CoreSitePreferencesPage,
+            children: routes.siblings,
+        },
+    ];
+
+    return [
+        ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
+        ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
+    ];
+}
 
 @NgModule({
+    providers: [
+        { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
+    ],
     declarations: [
         CoreSitePreferencesPage,
     ],
     imports: [
-        RouterModule.forChild(routes),
         CoreSharedModule,
     ],
+    exports: [RouterModule],
 })
 export class CoreSitePreferencesPageModule {}

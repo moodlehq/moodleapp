@@ -24,7 +24,8 @@ import { CoreSettingsDelegate } from '@features/settings/services/settings-deleg
 import { AddonNotificationsMainMenuHandler, AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
 import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
-import { AddonNotificationsSettingsHandler } from './services/handlers/settings';
+import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
 
 const routes: Routes = [
     {
@@ -32,11 +33,18 @@ const routes: Routes = [
         loadChildren: () => import('@/addons/notifications/notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
     },
 ];
+const preferencesRoutes: Routes = [
+    {
+        path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
+        loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonNotificationsSettingsPageModule),
+    },
+];
 
 @NgModule({
     imports: [
         CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreSitePreferencesRoutingModule.forChild(preferencesRoutes),
     ],
     exports: [CoreMainMenuRoutingModule],
     providers: [

@@ -16,7 +16,6 @@ import { Injector, NgModule } from '@angular/core';
 import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonMessagesSettingsHandlerService } from './services/handlers/settings';
 
 export const AddonMessagesDiscussionRoute: Route = {
     path: 'discussion',
@@ -45,11 +44,6 @@ function buildRoutes(injector: Injector): Routes {
             path: 'search',
             loadChildren: () => import('./pages/search/search.module')
                 .then(m => m.AddonMessagesSearchPageModule),
-        },
-        {
-            path: AddonMessagesSettingsHandlerService.PAGE_NAME,
-            loadChildren: () => import('./pages/settings/settings.module')
-                .then(m => m.AddonMessagesSettingsPageModule),
         },
         {
             path: 'contacts', // 3.6 or greater.

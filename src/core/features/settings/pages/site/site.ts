@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Params } from '@angular/router';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRouteSnapshot, Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
-import { CoreSettingsDelegate, CoreSettingsHandlerData } from '../../services/settings-delegate';
+import { CoreSettingsDelegate, CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -26,7 +26,8 @@ import { CoreApp } from '@services/app';
 import { CoreSiteInfo } from '@classes/site';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays the list of site settings pages.
@@ -35,12 +36,13 @@ import { CoreScreen } from '@services/screen';
     selector: 'page-core-site-preferences',
     templateUrl: 'site.html',
 })
-export class CoreSitePreferencesPage implements OnInit, OnDestroy {
+export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
+
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+
+    handlers: CoreSettingsSitePreferencesManager;
 
     isIOS: boolean;
-    selectedPage?: string;
-
-    handlers: CoreSettingsHandlerData[] = [];
     siteId: string;
     siteInfo?: CoreSiteInfo;
     siteName?: string;
@@ -50,7 +52,6 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
         spaceUsage: 0,
     };
 
-    loaded = false;
     iosSharedFiles = 0;
     protected sitesObserver: CoreEventObserver;
     protected isDestroyed = false;
@@ -59,6 +60,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
 
         this.isIOS = CoreApp.isIOS();
         this.siteId = CoreSites.getCurrentSiteId();
+        this.handlers = new CoreSettingsSitePreferencesManager(CoreSitePreferencesPage);
 
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, (data: CoreEventSiteUpdatedData) => {
             if (data.siteId == this.siteId) {
@@ -70,30 +72,29 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     /**
      * View loaded.
      */
-    ngOnInit(): void {
-        // @todo this.selectedPage = route.snapshot.paramMap.get('page') || undefined;
+    async ngAfterViewInit(): Promise<void> {
+        const pageToOpen = CoreNavigator.getRouteParam('page');
 
-        this.fetchData().finally(() => {
-            this.loaded = true;
+        try {
+            await this.fetchData();
+        } finally {
 
-            if (this.selectedPage) {
-                this.openHandler(this.selectedPage);
-            } else if (CoreScreen.isTablet) {
-                if (this.isIOS) {
-                    // @todo
-                    // this.openHandler('CoreSharedFilesListPage', { manage: true, siteId: this.siteId, hideSitePicker: true });
-                } else if (this.handlers.length > 0) {
-                    this.openHandler(this.handlers[0].page, this.handlers[0].params);
-                }
+            const handler = pageToOpen ? this.handlers.items.find(handler => handler.page == pageToOpen) : undefined;
+
+            if (handler) {
+                this.handlers.select(handler);
+                this.handlers.watchSplitViewOutlet(this.splitView);
+            } else {
+                this.handlers.start(this.splitView);
             }
-        });
+        }
     }
 
     /**
      * Fetch Data.
      */
     protected async fetchData(): Promise<void> {
-        this.handlers = CoreSettingsDelegate.getHandlers();
+        this.handlers.setItems(CoreSettingsDelegate.getHandlers());
 
         const currentSite = CoreSites.getCurrentSite();
         this.siteInfo = currentSite!.getInfo();
@@ -171,18 +172,6 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Open a handler.
-     *
-     * @param page Page to open.
-     * @param params Params of the page to open.
-     */
-    openHandler(page: string, params?: Params): void {
-        this.selectedPage = page;
-        // this.splitviewCtrl.push(page, params);
-        CoreNavigator.navigateToSitePath(page, { params });
-    }
-
-    /**
      * Show information about space usage actions.
      */
     showSpaceInfo(): void {
@@ -208,6 +197,36 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.sitesObserver?.off();
+    }
+
+}
+
+/**
+ * Helper class to manage sections.
+ */
+class CoreSettingsSitePreferencesManager extends CorePageItemsListManager<CoreSettingsHandlerToDisplay> {
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(handler: CoreSettingsHandlerToDisplay): string {
+        return handler.page;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemQueryParams(handler: CoreSettingsHandlerToDisplay): Params {
+        return handler.params || {};
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        // @todo: routeConfig doesn't have a path after refreshing the app.
+        // route.component is null too, and route.parent.url is empty.
+        return route.parent?.routeConfig?.path ?? null;
     }
 
 }
