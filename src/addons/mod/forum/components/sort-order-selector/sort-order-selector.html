@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'core.sort' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list id="addon-mod-forum-sort-selector" role="menu" aria-labelledby="addon-mod-forum-sort-order-button">
+        <ng-container *ngFor="let sortOrder of sortOrders">
+            <ion-item class="ion-text-wrap" detail="false" role="menuitem"
+                [class.core-primary-selected-item]="selected == sortOrder.value" [attr.aria-label]="sortOrder.label | translate"
+                (click)="selectSortOrder(sortOrder)">
+                <ion-label>
+                    <h2>{{ sortOrder.label | translate }}</h2>
+                </ion-label>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

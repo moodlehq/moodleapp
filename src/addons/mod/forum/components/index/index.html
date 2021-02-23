@@ -35,7 +35,7 @@
                     class="core-button-select button-no-uppercase"
                     aria-haspopup="true" aria-controls="addon-mod-forum-sort-order-selector"
                     [attr.aria-label]="('core.sort' | translate)" [attr.aria-expanded]="sortOrderSelectorExpanded"
-                    (click)="showSortOrderSelector($event)">
+                    (click)="showSortOrderSelector()">
                     <span class="core-button-select-text">{{ selectedSortOrder.label | translate }}</span>
                     <div class="select-icon" slot="end"><div class="select-icon-inner"></div></div>
                 </ion-button>

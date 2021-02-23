@@ -24,7 +24,7 @@ import {
     AddonModForumDiscussion,
 } from '@addons/mod/forum/services/forum.service';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/offline.service';
-import { PopoverController, Translate } from '@singletons';
+import { ModalController, PopoverController, Translate } from '@singletons';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
@@ -38,6 +38,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
+import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/sort-order-selector';
 
 /**
  * Component that displays a forum entry page.
@@ -522,37 +523,39 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     /**
      * Display the sort order selector modal.
-     *
-     * @param event Event.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    showSortOrderSelector(event: MouseEvent): void {
+    async showSortOrderSelector(): Promise<void> {
         if (!this.sortingAvailable) {
             return;
         }
 
-        alert('Show sort order selector not implemented');
+        const modal = await ModalController.instance.create({
+            component: AddonModForumSortOrderSelectorComponent,
+            componentProps: {
+                sortOrders: this.sortOrders,
+                selected: this.selectedSortOrder!.value,
+            },
+        });
 
-        // @todo
-        // const params = { sortOrders: this.sortOrders, selected: this.selectedSortOrder.value };
-        // const modal = this.modalCtrl.create('AddonModForumSortOrderSelectorPage', params);
-        // modal.onDidDismiss((sortOrder) => {
-        //     this.sortOrderSelectorExpanded = false;
+        modal.present();
 
-        //     if (sortOrder && sortOrder.value != this.selectedSortOrder.value) {
-        //         this.selectedSortOrder = sortOrder;
-        //         this.page = 0;
-        //         this.userProvider.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, sortOrder.value.toFixed(0))
-        //             .then(() => {
-        //                 this.showLoadingAndFetch();
-        //             }).catch((error) => {
-        //                 this.domUtils.showErrorModalDefault(error, 'Error updating preference.');
-        //             });
-        //     }
-        // });
+        this.sortOrderSelectorExpanded = true;
 
-        // modal.present({ ev: event });
-        // this.sortOrderSelectorExpanded = true;
+        const result = await modal.onDidDismiss<AddonModForumSortOrder>();
+
+        this.sortOrderSelectorExpanded = false;
+
+        if (result.data && result.data.value != this.selectedSortOrder?.value) {
+            this.selectedSortOrder = result.data;
+            this.page = 0;
+
+            try {
+                await CoreUser.instance.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, result.data.value.toFixed(0));
+                await this.showLoadingAndFetch();
+            } catch (error) {
+                CoreDomUtils.instance.showErrorModalDefault(error, 'Error updating preference.');
+            }
+        }
     }
 
     /**
