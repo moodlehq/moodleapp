@@ -36,10 +36,13 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumProvider,
+    AddonModForumReply,
+    AddonModForumUpdateDiscussionPostWSOptionsObject,
+    AddonModForumWSPostAttachment,
 } from '../../services/forum.service';
 import { CoreTag } from '@features/tag/services/tag';
-import { PopoverController, Translate } from '@singletons';
-import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { ModalController, PopoverController, Translate } from '@singletons';
+import { CoreFileEntry, CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { IonContent } from '@ionic/angular';
 import { AddonModForumSync } from '../../services/sync.service';
 import { CoreSync } from '@services/sync';
@@ -48,6 +51,7 @@ import { AddonModForumHelper } from '../../services/helper.service';
 import { AddonModForumOffline, AddonModForumReplyOptions } from '../../services/offline.service';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
+import { AddonModForumEditPostComponent } from '../edit-post/edit-post';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -174,7 +178,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         isEditing?: boolean,
         subject?: string,
         message?: string,
-        files?: any[],
+        files?: (CoreFileEntry | AddonModForumWSPostAttachment)[],
         isPrivate?: boolean,
     ): void {
         // Delete the local files from the tmp folder if any.
@@ -241,10 +245,64 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     /**
      * Shows a form modal to edit an online post.
      */
-    editPost(): void {
-        alert('Edit post not implemented');
+    async editPost(): Promise<void> {
+        const modal = await ModalController.instance.create({
+            component: AddonModForumEditPostComponent,
+            componentProps: {
+                post: this.post,
+                component: this.component,
+                componentId:  this.componentId,
+                forum: this.forum,
+            },
+            backdropDismiss: false,
+        });
 
-        // @todo
+        modal.present();
+
+        const result = await modal.onDidDismiss<AddonModForumReply>();
+        const data = result.data;
+
+        if (!data) {
+            return;
+        }
+
+        // Add some HTML to the message if needed.
+        const message = CoreTextUtils.instance.formatHtmlLines(data.message);
+        const files = data.files;
+        const options: AddonModForumUpdateDiscussionPostWSOptionsObject = {};
+
+        const sendingModal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+
+        try {
+            // Upload attachments first if any.
+            if (files.length) {
+                const attachment = await AddonModForumHelper.instance.uploadOrStoreReplyFiles(
+                    this.forum.id,
+                    this.post.id,
+                    files,
+                    false,
+                );
+
+                options.attachmentsid = attachment;
+            }
+
+            // Try to send it to server.
+            const sent = await AddonModForum.instance.updatePost(this.post.id, data.subject, message, options);
+
+            if (sent && this.forum.id) {
+                // Data sent to server, delete stored files (if any).
+                AddonModForumHelper.instance.deleteReplyStoredFiles(this.forum.id, this.post.id);
+
+                this.onPostChange.emit();
+                this.post.subject = data.subject;
+                this.post.message = message;
+                this.post.attachments = data.files;
+            }
+        } catch (error) {
+            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_forum.couldnotupdate', true);
+        } finally {
+            sendingModal.dismiss();
+        }
     }
 
     /**

@@ -1601,6 +1601,16 @@ export type AddonModForumAccessInformation = {
 };
 
 /**
+ * Reply info.
+ */
+export type AddonModForumReply = {
+    id: number;
+    subject: string;
+    message: string;
+    files: (CoreFileEntry | AddonModForumWSPostAttachment)[];
+};
+
+/**
  * Can add discussion info.
  */
 export type AddonModForumCanAddDiscussion = {

@@ -1,0 +1,43 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'addon.mod_forum.yourreply' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <form ion-list #editFormEl>
+        <ion-item>
+            <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
+            <core-rich-text-editor item-content [control]="messageControl" (contentChanged)="onMessageChange($event)" [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + replyData.id" [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="forum.cmid" elementId="message" [draftExtraParams]="{edit: replyData.id}"></core-rich-text-editor>
+        </ion-item>
+        <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()">
+            <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start"></ion-icon>
+            <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start"></ion-icon>
+            <ion-label>{{ 'addon.mod_forum.advanced' | translate }}</ion-label>
+        </ion-item-divider>
+        <ng-container *ngIf="advanced">
+            <core-attachments *ngIf="forum.id && forum.maxattachments > 0" [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid" [allowOffline]="true"></core-attachments>
+        </ng-container>
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <ion-button expand="block" (click)="reply($event)" [disabled]="replyData.subject == '' || replyData.message == null">{{ 'core.savechanges' | translate }}</ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button expand="block" color="light" (click)="closeModal()">{{ 'core.cancel' | translate }}</ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </form>
+</ion-content>
