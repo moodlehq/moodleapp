@@ -38,7 +38,7 @@ import {
     AddonModForumProvider,
 } from '../../services/forum.service';
 import { CoreTag } from '@features/tag/services/tag';
-import { Translate } from '@singletons';
+import { PopoverController, Translate } from '@singletons';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { IonContent } from '@ionic/angular';
 import { AddonModForumSync } from '../../services/sync.service';
@@ -47,6 +47,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { AddonModForumHelper } from '../../services/helper.service';
 import { AddonModForumOffline, AddonModForumReplyOptions } from '../../services/offline.service';
 import { CoreUtils } from '@services/utils/utils';
+import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -202,13 +203,39 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     /**
      * Show the context menu.
      *
-     * @param e Click Event.
+     * @param event Click Event.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    showOptionsMenu(e: Event): void {
-        alert('Options menu not implemented');
+    async showOptionsMenu(event: Event): Promise<void> {
+        const popover = await PopoverController.instance.create({
+            component: AddonModForumPostOptionsMenuComponent,
+            componentProps: {
+                post: this.post,
+                forumId: this.forum.id,
+                cmId: this.forum.cmid,
+            },
+            event,
+        });
 
-        // @todo
+        popover.present();
+
+        const result = await popover.onDidDismiss<{ action?: string }>();
+
+        if (result.data && result.data.action) {
+            switch (result.data.action) {
+                case 'edit':
+                    this.editPost();
+                    break;
+                case 'editoffline':
+                    this.editOfflineReply();
+                    break;
+                case 'delete':
+                    this.deletePost();
+                    break;
+                case 'deleteoffline':
+                    this.discardOfflineReply();
+                    break;
+            }
+        }
     }
 
     /**

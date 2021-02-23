@@ -1442,9 +1442,19 @@ export type AddonModForumPost = {
     isprivatereply: boolean; // Isprivatereply.
     capabilities: {
         reply: boolean; // Whether the user can reply to the post.
+        view?: boolean; // Whether the user can view the post.
+        edit?: boolean; // Whether the user can edit the post.
+        delete?: boolean; // Whether the user can delete the post.
+        split?: boolean; // Whether the user can split the post.
+        selfenrol?: boolean; // Whether the user can self enrol into the course.
+        export?: boolean; // Whether the user can export the post.
+        controlreadstatus?: boolean; // Whether the user can control the read status of the post.
+        canreplyprivately?: boolean; // Whether the user can post a private reply.
     };
     attachment?: 0 | 1;
     attachments?: (CoreFileEntry | AddonModForumWSPostAttachment)[];
+    haswordcount?: boolean; // Haswordcount.
+    wordcount?: number; // Wordcount.
     tags?: { // Tags.
         id: number; // Tag id.
         name: string; // Tag name.

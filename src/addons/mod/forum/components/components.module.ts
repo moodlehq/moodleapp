@@ -21,11 +21,15 @@ import { CoreTagComponentsModule } from '@features/tag/components/components.mod
 
 import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
+import { AddonModForumPostOptionsMenuComponent } from './post-options-menu/post-options-menu';
+import { AddonModForumDiscussionOptionsMenuComponent } from './discussion-options-menu/discussion-options-menu';
 
 @NgModule({
     declarations: [
         AddonModForumIndexComponent,
         AddonModForumPostComponent,
+        AddonModForumPostOptionsMenuComponent,
+        AddonModForumDiscussionOptionsMenuComponent,
     ],
     imports: [
         CoreSharedModule,

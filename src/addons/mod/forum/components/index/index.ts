@@ -24,7 +24,7 @@ import {
     AddonModForumDiscussion,
 } from '@addons/mod/forum/services/forum.service';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/offline.service';
-import { Translate } from '@singletons';
+import { PopoverController, Translate } from '@singletons';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
@@ -37,6 +37,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 
 /**
  * Component that displays a forum entry page.
@@ -557,41 +558,39 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Show the context menu.
      *
-     * @param e Click Event.
+     * @param event Click Event.
+     * @param discussion Discussion.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    showOptionsMenu(e: Event, discussion: any): void {
-        alert('Show options menu not implemented');
+    async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion): Promise<void> {
+        const popover = await PopoverController.instance.create({
+            component: AddonModForumDiscussionOptionsMenuComponent,
+            componentProps: {
+                discussion,
+                forumId: this.forum!.id,
+                cmId: this.module!.id,
+            },
+            event,
+        });
 
-        // @todo
-        // e.preventDefault();
-        // e.stopPropagation();
+        popover.present();
 
-        // const popover = this.popoverCtrl.create(AddonForumDiscussionOptionsMenuComponent, {
-        //     discussion: discussion,
-        //     forumId: this.forum.id,
-        //     cmId: this.module.id,
-        // });
-        // popover.onDidDismiss((data) => {
-        //     if (data && data.action) {
-        //         switch (data.action) {
-        //             case 'lock':
-        //                 discussion.locked = data.value;
-        //                 break;
-        //             case 'pin':
-        //                 discussion.pinned = data.value;
-        //                 break;
-        //             case 'star':
-        //                 discussion.starred = data.value;
-        //                 break;
-        //             default:
-        //                 break;
-        //         }
-        //     }
-        // });
-        // popover.present({
-        //     ev: e,
-        // });
+        const result = await popover.onDidDismiss<{ action?: string; value: boolean }>();
+
+        if (result.data && result.data.action) {
+            switch (result.data.action) {
+                case 'lock':
+                    discussion.locked = result.data.value;
+                    break;
+                case 'pin':
+                    discussion.pinned = result.data.value;
+                    break;
+                case 'star':
+                    discussion.starred = result.data.value;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 }
