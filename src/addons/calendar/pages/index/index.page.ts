@@ -74,7 +74,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     loadUpcoming = false;
     filter: AddonCalendarFilter = {
         filtered: false,
-        courseId: -1,
+        courseId: undefined,
         categoryId: undefined,
         course: true,
         group: true,
@@ -149,7 +149,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 this.filter = filterData;
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
-                this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter['courseId']);
+                this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter.courseId);
             },
         );
 
@@ -170,12 +170,12 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         this.route.queryParams.subscribe(() => {
             this.eventId = CoreNavigator.getRouteNumberParam('eventId');
-            this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId') || -1;
+            this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
             this.year = CoreNavigator.getRouteNumberParam('year');
             this.month = CoreNavigator.getRouteNumberParam('month');
             this.loadUpcoming = !!CoreNavigator.getRouteBooleanParam('upcoming');
             this.showCalendar = !this.loadUpcoming;
-            this.filter.filtered = this.filter.courseId > 0;
+            this.filter.filtered = !!this.filter.courseId;
 
             if (this.eventId) {
                 // There is an event to load, open the event in a new state.

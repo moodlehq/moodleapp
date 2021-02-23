@@ -46,6 +46,7 @@ import { AddonCalendarReminderDBRecord } from '../../services/database/calendar'
 import { ActivatedRoute } from '@angular/router';
 import { CoreScreen } from '@services/screen';
 import { CoreConstants } from '@/core/constants';
+import { CoreLang } from '@services/lang';
 
 /**
  * Page that displays a single calendar event.
@@ -87,6 +88,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     isOnline = false;
     syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
     isSplitViewOn = false;
+    monthNames?: string[];
 
     constructor(
         @Optional() protected svComponent: CoreSplitViewComponent,
@@ -137,6 +139,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
     protected async asyncConstructor(): Promise<void> {
         if (this.notificationsEnabled) {
+            this.monthNames = CoreLang.getMonthNames();
+
             this.reminders = await AddonCalendar.getEventReminders(this.eventId);
             this.defaultTime = await AddonCalendar.getDefaultNotificationTime() * 60;
 
