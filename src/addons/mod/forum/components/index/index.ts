@@ -28,7 +28,7 @@ import { ModalController, PopoverController, Translate } from '@singletons';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { AddonModForumSyncProvider } from '@addons/mod/forum/services/sync.service';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
@@ -40,24 +40,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/sort-order-selector';
 import { CoreScreen } from '@services/screen';
-
-/**
- * Type to use for selecting new discussion form in the discussions manager.
- */
-type NewDiscussionForm = {
-    newDiscussion: true;
-    timeCreated: number;
-};
-
-/**
- * Type guard to infer NewDiscussionForm objects.
- *
- * @param discussion Object to check.
- * @return Whether the object is a new discussion form.
- */
-function isNewDiscussionForm(discussion: Record<string, unknown>): discussion is NewDiscussionForm {
-    return 'newDiscussion' in discussion;
-}
+import { CoreArray } from '@singletons/array';
 
 /**
  * Component that displays a forum entry page.
@@ -78,8 +61,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     canLoadMore = false;
     loadMoreError = false;
     discussions: AddonModForumDiscussionsManager;
-    offlineDiscussions: AddonModForumOfflineDiscussion[] = [];
-    selectedDiscussion = 0; // Disucssion ID or negative timecreated if it's an offline discussion.
     canAddDiscussion = false;
     addDiscussionText!: string;
     availabilityMessage: string | null = null;
@@ -93,11 +74,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected page = 0;
     trackPosts = false;
     protected usesGroups = false;
-    protected syncManualObserver: any; // It will observe the sync manual event.
-    protected replyObserver: any;
-    protected newDiscObserver: any;
-    protected viewDiscObserver: any;
-    protected changeDiscObserver: any;
+    protected syncManualObserver?: CoreEventObserver; // It will observe the sync manual event.
+    protected replyObserver?: CoreEventObserver;
+    protected newDiscObserver?: CoreEventObserver;
+    protected viewDiscObserver?: CoreEventObserver;
+    protected changeDiscObserver?: CoreEventObserver;
 
     hasOfflineRatings?: boolean;
     protected ratingOfflineObserver: any;
@@ -141,6 +122,41 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             AddonModForumProvider.REPLY_DISCUSSION_EVENT,
             this.eventReceived.bind(this, false),
         );
+        this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data: any) => {
+            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module!.id) {
+                AddonModForum.instance.invalidateDiscussionsList(this.forum!.id).finally(() => {
+                    if (data.discussionId) {
+                        // Discussion changed, search it in the list of discussions.
+                        const discussion = this.discussions.items.find(
+                            (disc) => this.discussions.isOnlineDiscussion(disc) && data.discussionId == disc.discussion,
+                        ) as AddonModForumDiscussion;
+
+                        if (discussion) {
+                            if (typeof data.locked != 'undefined') {
+                                discussion.locked = data.locked;
+                            }
+                            if (typeof data.pinned != 'undefined') {
+                                discussion.pinned = data.pinned;
+                            }
+                            if (typeof data.starred != 'undefined') {
+                                discussion.starred = data.starred;
+                            }
+
+                            this.showLoadingAndRefresh(false);
+                        }
+                    }
+
+                    if (typeof data.deleted != 'undefined' && data.deleted) {
+                        if (data.post.parentid == 0 && CoreScreen.instance.isTablet && !this.discussions.empty) {
+                            // Discussion deleted, clear details page.
+                            this.discussions.select(this.discussions[0]);
+                        }
+
+                        this.showLoadingAndRefresh(false);
+                    }
+                });
+            }
+        });
     }
 
     async ngAfterViewInit(): Promise<void> {
@@ -356,7 +372,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.hasOffline = !!offlineDiscussions.length;
 
         if (!this.hasOffline) {
-            this.offlineDiscussions = [];
+            this.discussions.setOfflineDiscussions([]);
 
             return;
         }
@@ -387,7 +403,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         // Sort discussion by time (newer first).
         offlineDiscussions.sort((a, b) => b.timecreated - a.timecreated);
 
-        this.offlineDiscussions = offlineDiscussions;
+        this.discussions.setOfflineDiscussions(offlineDiscussions);
     }
 
     /**
@@ -435,7 +451,12 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             }
         }
 
-        this.discussions.setItems(this.page === 0 ? discussions : this.discussions.items.concat(discussions));
+        if (this.page === 0) {
+            this.discussions.setOnlineDiscussions(discussions);
+        } else {
+            this.discussions.setItems(this.discussions.items.concat(discussions));
+        }
+
         this.canLoadMore = response.canLoadMore;
         this.page++;
 
@@ -540,18 +561,20 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.showLoadingAndRefresh(false).finally(() => {
                 // If it's a new discussion in tablet mode, try to open it.
                 if (isNewDiscussion && CoreScreen.instance.isTablet) {
-                    if (data.discussionIds) {
-                        // Discussion sent to server, search it in the list of discussions.
-                        const discussion = this.discussions.items.find(
-                            (disc) =>
-                                !isNewDiscussionForm(disc) &&
-                                data.discussionIds.indexOf(disc.discussion) >= 0,
-                        );
+                    const discussion = this.discussions.items.find(disc => {
+                        if (this.discussions.isOfflineDiscussion(disc)) {
+                            return disc.timecreated === data.discTimecreated;
+                        }
 
+                        if (this.discussions.isOnlineDiscussion(disc)) {
+                            return CoreArray.contains(data.discussionIds, disc.discussion);
+                        }
+
+                        return false;
+                    });
+
+                    if (discussion || !this.discussions.empty) {
                         this.discussions.select(discussion ?? this.discussions.items[0]);
-                    } else if (data.discTimecreated) {
-                        // It's an offline discussion, open it.
-                        this.openNewDiscussion(data.discTimecreated);
                     }
                 }
             });
@@ -566,11 +589,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      *
      * @param timeCreated Creation time of the offline discussion.
      */
-    openNewDiscussion(timeCreated: number = 0): void {
-        this.discussions.select({
-            newDiscussion: true,
-            timeCreated,
-        });
+    openNewDiscussion(): void {
+        this.discussions.select({ newDiscussion: true });
     }
 
     /**
@@ -650,7 +670,20 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
 }
 
-class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModForumDiscussion | NewDiscussionForm> {
+/**
+ * Type to select the new discussion form.
+ */
+type NewDiscussionForm = { newDiscussion: true };
+
+/**
+ * Type of items that can be held by the discussions manager.
+ */
+type DiscussionItem = AddonModForumDiscussion | AddonModForumOfflineDiscussion | NewDiscussionForm;
+
+/**
+ * Discussions manager.
+ */
+class AddonModForumDiscussionsManager extends CorePageItemsListManager<DiscussionItem> {
 
     private discussionsPathPrefix: string;
     private component: AddonModForumIndexComponent;
@@ -662,29 +695,107 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModF
         this.discussionsPathPrefix = discussionsPathPrefix;
     }
 
-    getItemQueryParams(discussion: AddonModForumDiscussion | NewDiscussionForm): Params {
+    get onlineDiscussions(): AddonModForumDiscussion[] {
+        return this.items.filter(discussion => this.isOnlineDiscussion(discussion)) as AddonModForumDiscussion[];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemQueryParams(discussion: DiscussionItem): Params {
         return {
             courseId: this.component.courseId,
             cmId: this.component.module!.id,
             forumId: this.component.forum!.id,
-            ...(
-                isNewDiscussionForm(discussion)
-                    ? { timeCreated: discussion.timeCreated }
-                    : { discussion, trackPosts: this.component.trackPosts }
-            ),
+            ...(this.isOnlineDiscussion(discussion) ? { discussion, trackPosts: this.component.trackPosts } : {}),
         };
     }
 
-    protected getItemPath(discussion: AddonModForumDiscussion | NewDiscussionForm): string {
-        const discussionId = isNewDiscussionForm(discussion) ? 'new' : discussion.id;
-
-        return this.discussionsPathPrefix + discussionId;
+    /**
+     * Type guard to infer NewDiscussionForm objects.
+     *
+     * @param discussion Item to check.
+     * @return Whether the item is a new discussion form.
+     */
+    isNewDiscussionForm(discussion: DiscussionItem): discussion is NewDiscussionForm {
+        return 'newDiscussion' in discussion;
     }
 
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        const discussionId = route.params.discussionId;
+    /**
+     * Type guard to infer AddonModForumDiscussion objects.
+     *
+     * @param discussion Item to check.
+     * @return Whether the item is an online discussion.
+     */
+    isOfflineDiscussion(discussion: DiscussionItem): discussion is AddonModForumOfflineDiscussion {
+        return !this.isNewDiscussionForm(discussion)
+            && !this.isOnlineDiscussion(discussion);
+    }
 
-        return discussionId ? this.discussionsPathPrefix + discussionId : null;
+    /**
+     * Type guard to infer AddonModForumDiscussion objects.
+     *
+     * @param discussion Item to check.
+     * @return Whether the item is an online discussion.
+     */
+    isOnlineDiscussion(discussion: DiscussionItem): discussion is AddonModForumDiscussion {
+        return 'id' in discussion;
+    }
+
+    /**
+     * Update online discussion items.
+     *
+     * @param onlineDiscussions Online discussions
+     */
+    setOnlineDiscussions(onlineDiscussions: AddonModForumDiscussion[]): void {
+        const otherDiscussions = this.items.filter(discussion => !this.isOnlineDiscussion(discussion));
+
+        this.setItems(otherDiscussions.concat(onlineDiscussions));
+    }
+
+    /**
+     * Update offline discussion items.
+     *
+     * @param offlineDiscussions Offline discussions
+     */
+    setOfflineDiscussions(offlineDiscussions: AddonModForumOfflineDiscussion[]): void {
+        const otherDiscussions = this.items.filter(discussion => !this.isOfflineDiscussion(discussion));
+
+        this.setItems((offlineDiscussions as DiscussionItem[]).concat(otherDiscussions));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(discussion: DiscussionItem): string {
+        const getRelativePath = () => {
+            if (this.isOnlineDiscussion(discussion)) {
+                return discussion.id;
+            }
+
+            if (this.isOfflineDiscussion(discussion)) {
+                return `new/${discussion.timecreated}`;
+            }
+
+            return 'new/0';
+        };
+
+        return this.discussionsPathPrefix + getRelativePath();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
+        if (route.params.discussionId) {
+            return this.discussionsPathPrefix + route.params.discussionId;
+        }
+
+        if (route.params.timeCreated) {
+            return this.discussionsPathPrefix + `new/${route.params.timeCreated}`;
+        }
+
+        return null;
     }
 
 }

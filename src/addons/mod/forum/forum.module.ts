@@ -34,7 +34,7 @@ const mainMenuRoutes: Routes = [
     ...conditionalRoutes(
         [
             {
-                path: 'course/index/contents/mod_forum/new',
+                path: 'course/index/contents/mod_forum/new/:timeCreated',
                 loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                     .then(m => m.AddonForumNewDiscussionPageModule),
             },
@@ -50,7 +50,7 @@ const mainMenuRoutes: Routes = [
 const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
-            path: 'mod_forum/new',
+            path: 'mod_forum/new/:timeCreated',
             loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                 .then(m => m.AddonForumNewDiscussionPageModule),
         },

@@ -28,7 +28,7 @@ const mobileRoutes: Routes = [
         component: AddonModForumIndexPage,
     },
     {
-        path: ':courseId/:cmId/new',
+        path: ':courseId/:cmId/new/:timeCreated',
         loadChildren: () => import('./pages/new-discussion/new-discussion.module').then(m => m.AddonForumNewDiscussionPageModule),
     },
     {
@@ -43,7 +43,7 @@ const tabletRoutes: Routes = [
         component: AddonModForumIndexPage,
         children: [
             {
-                path: 'new',
+                path: 'new/:timeCreated',
                 loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                     .then(m => m.AddonForumNewDiscussionPageModule),
             },
