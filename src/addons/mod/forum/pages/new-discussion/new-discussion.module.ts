@@ -17,13 +17,14 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AddonModForumComponentsModule } from '@addons/mod/forum/components/components.module';
 import { CanLeaveGuard } from '@guards/can-leave';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 
-import { AddonModForumDiscussionPage } from './discussion.page';
+import { AddonModForumNewDiscussionPage } from './new-discussion.page';
 
 const routes: Routes = [{
     path: '',
-    component: AddonModForumDiscussionPage,
+    component: AddonModForumNewDiscussionPage,
     canDeactivate: [CanLeaveGuard],
 }];
 
@@ -32,9 +33,10 @@ const routes: Routes = [{
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModForumComponentsModule,
+        CoreEditorComponentsModule,
     ],
     declarations: [
-        AddonModForumDiscussionPage,
+        AddonModForumNewDiscussionPage,
     ],
 })
-export class AddonForumDiscussionPageModule {}
+export class AddonForumNewDiscussionPageModule {}

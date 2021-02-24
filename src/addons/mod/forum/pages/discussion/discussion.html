@@ -15,7 +15,7 @@
 <core-navbar-buttons slot="end">
     <core-context-menu>
         <core-context-menu-item [priority]="650" *ngIf="discussionLoaded && !postHasOffline && isOnline" [content]="'addon.mod_forum.refreshposts' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item [priority]="550" *ngIf="discussionLoaded && !isSplitViewOn && postHasOffline && isOnline" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item [priority]="550" *ngIf="discussionLoaded && isMobile && postHasOffline && isOnline" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-oldest'" [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" (action)="changeSort('flat-oldest')" iconAction="arrow-round-down"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-newest'" [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" (action)="changeSort('flat-newest')" iconAction="arrow-round-up"></core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate" (action)="changeSort('nested')" iconAction="swap"></core-context-menu-item>

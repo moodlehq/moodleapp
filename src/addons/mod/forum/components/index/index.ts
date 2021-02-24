@@ -39,6 +39,7 @@ import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/sort-order-selector';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Type to use for selecting new discussion form in the discussions manager.
@@ -47,6 +48,16 @@ type NewDiscussionForm = {
     newDiscussion: true;
     timeCreated: number;
 };
+
+/**
+ * Type guard to infer NewDiscussionForm objects.
+ *
+ * @param discussion Object to check.
+ * @return Whether the object is a new discussion form.
+ */
+function isNewDiscussionForm(discussion: Record<string, unknown>): discussion is NewDiscussionForm {
+    return 'newDiscussion' in discussion;
+}
 
 /**
  * Component that displays a forum entry page.
@@ -115,6 +126,21 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.sortOrders = AddonModForum.instance.getAvailableSortOrders();
 
         await super.ngOnInit();
+
+        // Refresh data if this forum discussion is synchronized from discussions list.
+        this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, (data) => {
+            this.autoSyncEventReceived(data);
+        }, this.siteId);
+
+        // Listen for discussions added. When a discussion is added, we reload the data.
+        this.newDiscObserver = CoreEvents.on(
+            AddonModForumProvider.NEW_DISCUSSION_EVENT,
+            this.eventReceived.bind(this, true),
+        );
+        this.replyObserver = CoreEvents.on(
+            AddonModForumProvider.REPLY_DISCUSSION_EVENT,
+            this.eventReceived.bind(this, false),
+        );
     }
 
     async ngAfterViewInit(): Promise<void> {
@@ -503,6 +529,37 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         return result.updated;
     }
 
+    /**
+     * Function called when we receive an event of new discussion or reply to discussion.
+     *
+     * @param isNewDiscussion Whether it's a new discussion event.
+     * @param data Event data.
+     */
+    protected eventReceived(isNewDiscussion: boolean, data: any): void {
+        if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module?.id) {
+            this.showLoadingAndRefresh(false).finally(() => {
+                // If it's a new discussion in tablet mode, try to open it.
+                if (isNewDiscussion && CoreScreen.instance.isTablet) {
+                    if (data.discussionIds) {
+                        // Discussion sent to server, search it in the list of discussions.
+                        const discussion = this.discussions.items.find(
+                            (disc) =>
+                                !isNewDiscussionForm(disc) &&
+                                data.discussionIds.indexOf(disc.discussion) >= 0,
+                        );
+
+                        this.discussions.select(discussion ?? this.discussions.items[0]);
+                    } else if (data.discTimecreated) {
+                        // It's an offline discussion, open it.
+                        this.openNewDiscussion(data.discTimecreated);
+                    }
+                }
+            });
+
+            // Check completion since it could be configured to complete once the user adds a new discussion or replies.
+            CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+        }
+    }
 
     /**
      * Opens the new discussion form.
@@ -611,7 +668,7 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModF
             cmId: this.component.module!.id,
             forumId: this.component.forum!.id,
             ...(
-                this.isNewDiscussionForm(discussion)
+                isNewDiscussionForm(discussion)
                     ? { timeCreated: discussion.timeCreated }
                     : { discussion, trackPosts: this.component.trackPosts }
             ),
@@ -619,7 +676,7 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModF
     }
 
     protected getItemPath(discussion: AddonModForumDiscussion | NewDiscussionForm): string {
-        const discussionId = this.isNewDiscussionForm(discussion) ? 'new' : discussion.id;
+        const discussionId = isNewDiscussionForm(discussion) ? 'new' : discussion.id;
 
         return this.discussionsPathPrefix + discussionId;
     }
@@ -628,10 +685,6 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<AddonModF
         const discussionId = route.params.discussionId;
 
         return discussionId ? this.discussionsPathPrefix + discussionId : null;
-    }
-
-    private isNewDiscussionForm(discussion: AddonModForumDiscussion | NewDiscussionForm): discussion is NewDiscussionForm {
-        return 'newDiscussion' in discussion;
     }
 
 }

@@ -13,10 +13,13 @@
 // limitations under the License.
 
 import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef } from '@angular/core';
+import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreUser } from '@features/user/services/user';
+import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
+import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -48,7 +51,7 @@ type Post = AddonModForumPost & { children?: Post[] };
     templateUrl: 'discussion.html',
     styleUrls: ['discussion.scss'],
 })
-export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy {
+export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content!: IonContent;
 
@@ -105,6 +108,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
     constructor(protected elementRef: ElementRef) {}
 
+    get isMobile(): boolean {
+        return CoreScreen.instance.isMobile;
+    }
+
     ngOnInit(): void {
         this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
         this.cmId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
@@ -154,40 +161,6 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     }
 
     /**
-     * Get sort type configured by the current user.
-     *
-     * @return Promise resolved with the sort type.
-     */
-    protected async getUserSort(): Promise<SortType> {
-        try {
-            const value = await CoreSites.instance.getCurrentSite()!.getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
-
-            return value;
-        } catch (error) {
-            try {
-                const value = await CoreUser.instance.getUserPreference('forum_displaymode');
-
-                switch (Number(value)) {
-                    case 1:
-                        return 'flat-oldest';
-                    case -1:
-                        return 'flat-newest';
-                    case 3:
-                        return 'nested';
-                    case 2: // Threaded not implemented.
-                    default:
-                        // Not set, use default sort.
-                        // @TODO add fallback to $CFG->forum_displaymode.
-                }
-            } catch (error) {
-                // Ignore errors.
-            }
-        }
-
-        return 'flat-oldest';
-    }
-
-    /**
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
@@ -216,11 +189,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             }
         }, CoreSites.instance.getCurrentSiteId());
 
-        // Trigger view event, to highlight the current opened discussion in the split view.
-        CoreEvents.trigger(AddonModForumProvider.VIEW_DISCUSSION_EVENT, {
-            forumId: this.forumId,
-            discussion: this.discussionId,
-        }, CoreSites.instance.getCurrentSiteId());
+        // Invalidate discussion list if it was not read.
+        if (this.discussion.numunread > 0) {
+            AddonModForum.instance.invalidateDiscussionsList(this.forumId);
+        }
 
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data: any) => {
             if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
@@ -253,24 +225,77 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         });
     }
 
-    // @todo
-    // /**
-    //  * Check if we can leave the page or not.
-    //  *
-    //  * @return Resolved if we can leave it, rejected if not.
-    //  */
-    // async ionViewCanLeave(): Promise<void> {
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @return Resolved if we can leave it, rejected if not.
+     */
+    async canLeave(): Promise<boolean> {
+        if (AddonModForumHelper.instance.hasPostDataChanged(this.replyData, this.originalData)) {
+            // Show confirmation if some data has been modified.
+            await CoreDomUtils.instance.showConfirm(Translate.instant('core.confirmcanceledit'));
+        }
 
-    //     if (AddonModForumHelper.instance.hasPostDataChanged(this.replyData, this.originalData)) {
-    //         // Show confirmation if some data has been modified.
-    //         await CoreDomUtils.instance.showConfirm(this.translate.instant('core.confirmcanceledit'));
-    //     }
+        // Delete the local files from the tmp folder.
+        CoreFileUploader.instance.clearTmpFiles(this.replyData.files);
 
-    //     // Delete the local files from the tmp folder.
-    //     this.uploaderProvider.clearTmpFiles(this.replyData.files);
+        this.leavingPage = true;
 
-    //     this.leavingPage = true;
-    // }
+        return true;
+    }
+
+    /**
+     * Runs when the page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        this.syncObserver && this.syncObserver.off();
+        this.syncManualObserver && this.syncManualObserver.off();
+        this.ratingOfflineObserver && this.ratingOfflineObserver.off();
+        this.ratingSyncObserver && this.ratingSyncObserver.off();
+        this.changeDiscObserver && this.changeDiscObserver.off();
+        delete this.syncObserver;
+    }
+
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        this.onlineObserver && this.onlineObserver.unsubscribe();
+    }
+
+    /**
+     * Get sort type configured by the current user.
+     *
+     * @return Promise resolved with the sort type.
+     */
+    protected async getUserSort(): Promise<SortType> {
+        try {
+            const value = await CoreSites.instance.getCurrentSite()!.getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
+
+            return value;
+        } catch (error) {
+            try {
+                const value = await CoreUser.instance.getUserPreference('forum_displaymode');
+
+                switch (Number(value)) {
+                    case 1:
+                        return 'flat-oldest';
+                    case -1:
+                        return 'flat-newest';
+                    case 3:
+                        return 'nested';
+                    case 2: // Threaded not implemented.
+                    default:
+                        // Not set, use default sort.
+                        // @TODO add fallback to $CFG->forum_displaymode.
+                }
+            } catch (error) {
+                // Ignore errors.
+            }
+        }
+
+        return 'flat-oldest';
+    }
 
     /**
      * Convenience function to get the forum.
@@ -708,25 +733,6 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         this.refreshPosts().finally(() => {
             this.discussionLoaded = true;
         });
-    }
-
-    /**
-     * Runs when the page is about to leave and no longer be the active page.
-     */
-    ionViewWillLeave(): void {
-        this.syncObserver && this.syncObserver.off();
-        this.syncManualObserver && this.syncManualObserver.off();
-        this.ratingOfflineObserver && this.ratingOfflineObserver.off();
-        this.ratingSyncObserver && this.ratingSyncObserver.off();
-        this.changeDiscObserver && this.changeDiscObserver.off();
-        delete this.syncObserver;
-    }
-
-    /**
-     * Page destroyed.
-     */
-    ngOnDestroy(): void {
-        this.onlineObserver && this.onlineObserver.unsubscribe();
     }
 
     /**

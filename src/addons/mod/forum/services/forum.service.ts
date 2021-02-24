@@ -42,7 +42,6 @@ export class AddonModForumProvider {
     static readonly DISCUSSIONS_PER_PAGE = 10; // Max of discussions per page.
     static readonly NEW_DISCUSSION_EVENT = 'addon_mod_forum_new_discussion';
     static readonly REPLY_DISCUSSION_EVENT = 'addon_mod_forum_reply_discussion';
-    static readonly VIEW_DISCUSSION_EVENT = 'addon_mod_forum_view_discussion';
     static readonly CHANGE_DISCUSSION_EVENT = 'addon_mod_forum_change_discussion_status';
     static readonly MARK_READ_EVENT = 'addon_mod_forum_mark_read';
     static readonly LEAVING_POSTS_PAGE = 'addon_mod_forum_leaving_posts_page';

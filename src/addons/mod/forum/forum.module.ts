@@ -34,6 +34,11 @@ const mainMenuRoutes: Routes = [
     ...conditionalRoutes(
         [
             {
+                path: 'course/index/contents/mod_forum/new',
+                loadChildren: () => import('./pages/new-discussion/new-discussion.module')
+                    .then(m => m.AddonForumNewDiscussionPageModule),
+            },
+            {
                 path: 'course/index/contents/mod_forum/:discussionId',
                 loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
             },
@@ -44,6 +49,11 @@ const mainMenuRoutes: Routes = [
 
 const courseContentsRoutes: Routes = conditionalRoutes(
     [
+        {
+            path: 'mod_forum/new',
+            loadChildren: () => import('./pages/new-discussion/new-discussion.module')
+                .then(m => m.AddonForumNewDiscussionPageModule),
+        },
         {
             path: 'mod_forum/:discussionId',
             loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),

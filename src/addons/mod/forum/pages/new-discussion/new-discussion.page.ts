@@ -37,6 +37,8 @@ import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
 import { IonRefresher } from '@ionic/angular';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTextUtils } from '@services/utils/text';
+import { CanLeave } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
 
 type NewDiscussionData = {
     subject: string;
@@ -55,7 +57,7 @@ type NewDiscussionData = {
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
 })
-export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy {
+export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('newDiscFormEl') formElement!: ElementRef;
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
@@ -123,12 +125,6 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy {
                 CoreDomUtils.instance.showAlertTranslated('core.notice', 'core.contenteditingsynced');
                 this.returnToDiscussions();
             }
-        }, CoreSites.instance.getCurrentSiteId());
-
-        // Trigger view event, to highlight the current opened discussion in the split view.
-        CoreEvents.trigger(AddonModForumProvider.VIEW_DISCUSSION_EVENT, {
-            forumId: this.forumId,
-            discussion: -this.timeCreated,
         }, CoreSites.instance.getCurrentSiteId());
     }
 
@@ -421,16 +417,34 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy {
      * @param discTimecreated The time created of the discussion (if offline).
      */
     protected returnToDiscussions(discussionIds?: number[] | null, discTimecreated?: number): void {
-        const data: any = {
-            forumId: this.forumId,
-            cmId: this.cmId,
-            discussionIds: discussionIds,
-            discTimecreated: discTimecreated,
-        };
-        CoreEvents.trigger(AddonModForumProvider.NEW_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
+        this.forceLeave = true;
 
         // Delete the local files from the tmp folder.
         CoreFileUploader.instance.clearTmpFiles(this.newDiscussion.files);
+
+        CoreEvents.trigger(
+            AddonModForumProvider.NEW_DISCUSSION_EVENT,
+            {
+                forumId: this.forumId,
+                cmId: this.cmId,
+                discussionIds: discussionIds,
+                discTimecreated: discTimecreated,
+            },
+            CoreSites.instance.getCurrentSiteId(),
+        );
+
+        if (CoreScreen.instance.isMobile) {
+            CoreNavigator.instance.back();
+        } else {
+            // Empty form.
+            this.hasOffline = false;
+            this.newDiscussion.subject = '';
+            this.newDiscussion.message = null;
+            this.newDiscussion.files = [];
+            this.newDiscussion.postToAllGroups = false;
+            this.messageEditor.clearText();
+            this.originalData = CoreUtils.instance.clone(this.newDiscussion);
+        }
     }
 
     /**
@@ -555,9 +569,9 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    async ionViewCanLeave(): Promise<void> {
+    async canLeave(): Promise<boolean> {
         if (this.forceLeave) {
-            return;
+            return true;
         }
 
         if (AddonModForumHelper.instance.hasPostDataChanged(this.newDiscussion, this.originalData)) {
@@ -571,6 +585,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy {
         if (this.formElement) {
             CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
         }
+
+        return true;
     }
 
     /**
