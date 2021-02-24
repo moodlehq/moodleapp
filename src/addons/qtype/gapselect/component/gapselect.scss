@@ -14,10 +14,5 @@
         -moz-border-radius: 4px;
         border-radius: 4px;
         margin-bottom: 10px;
-        background: var(--gray-lighter);
-
-        // @include darkmode() {
-        //     background: $gray-dark;
-        // }
     }
 }

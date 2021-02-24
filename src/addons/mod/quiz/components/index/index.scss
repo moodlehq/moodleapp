@@ -11,10 +11,7 @@
         }
 
         .item:nth-child(even) {
-            --background: var(--gray-lighter);
-            // @include darkmode() {
-            //     background-color: $core-dark-item-divider-bg-color;
-            // }
+            --background: var(--light);
         }
 
         .addon-mod_quiz-highlighted,
@@ -24,21 +21,17 @@
             --background: var(--blue-light);
             color: var(--blue-dark);
         }
+    }
+}
 
-    //     @include darkmode() {
-    //         .addon-mod_quiz-highlighted,
-    //         .item.addon-mod_quiz-highlighted,
-    //         .addon-mod_quiz-highlighted p,
-    //         .item.addon-mod_quiz-highlighted p {
-    //             background-color: $blue-dark;
-    //             color: $blue-light;
-    //         }
-
-    //         .item.addon-mod_quiz-highlighted.activated,
-    //         .item.addon-mod_quiz-highlighted.activated p {
-    //             background-color: $blue;
-    //             color: $blue-light;
-    //         }
-    //     }
+:host-context(body.dark) {
+    .addon-mod_quiz-table {
+        .addon-mod_quiz-highlighted,
+        .item.addon-mod_quiz-highlighted,
+        .addon-mod_quiz-highlighted p,
+        .item.addon-mod_quiz-highlighted p {
+            --background: var(--blue-dark);
+            color: var(--blue-light);
+        }
     }
 }

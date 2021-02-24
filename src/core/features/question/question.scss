@@ -1,27 +1,6 @@
 @import "~theme/globals";
 
-$core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
-
 :host ::ng-deep {
-    --core-question-correct-color: var(--green-dark);
-    --core-question-correct-color-bg: var(--green-light);
-    --core-question-incorrect-color: var(--red);
-    --core-question-incorrect-color-bg: var(--red-light);
-    --core-question-feedback-color: var(--yellow-dark);
-    --core-question-feedback-color-bg: var(--yellow-light);
-    --core-question-warning-color: var(--red);
-    --core-question-saved-color-bg: var(--gray-light);
-
-    --core-question-state-correct-color: var(--green-light);
-    --core-question-state-partial-color: var(--yellow-light);
-    --core-question-state-partial-text: var(--yellow);
-    --core-question-state-incorrect-color: var(--red-light);
-
-    --core-question-feedback-color: var(--yellow-dark);
-    --core-question-feedback-background-color: var(--yellow-light);
-
-    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
-
     .core-question-answer-correct {
         color: var(--core-question-correct-color);
     }

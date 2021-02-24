@@ -76,16 +76,10 @@
         }
 
         span.incorrect {
-            background-color: var(--red-light);
-            // @include darkmode() {
-            //     background-color: $red-dark;
-            // }
+            background-color: var(--core-question-incorrect-color-bg);
         }
         span.correct {
-            background-color: var(--green-light);
-            // @include darkmode() {
-            //     background-color: $green-dark;
-            // }
+            background-color: var(--core-question-correct-color-bg);
         }
 
         @for $i from 0 to length($core-dd-question-colors) {
