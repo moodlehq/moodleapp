@@ -80,8 +80,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
     readableTimeLimit?: string; // Time limit in a readable format.
     dueDateWarning?: string; // Warning about due date.
     courseId!: number; // The course ID the quiz belongs to.
+    cmId!: number; // Course module ID.
 
-    protected quizId!: number; // Quiz ID to attempt.
     protected preflightData: Record<string, string> = {}; // Preflight data to attempt the quiz.
     protected quizAccessInfo?: AddonModQuizGetQuizAccessInformationWSResponse; // Quiz access information.
     protected attemptAccessInfo?: AddonModQuizGetAttemptAccessInformationWSResponse; // Attempt access info.
@@ -104,12 +104,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.quizId = CoreNavigator.instance.getRouteNumberParam('quizId')!;
+        this.cmId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
         this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
         this.moduleUrl = CoreNavigator.instance.getRouteParam('moduleUrl');
-
-        // Block the quiz so it cannot be synced.
-        CoreSync.instance.blockOperation(AddonModQuizProvider.COMPONENT, this.quizId);
 
         // Create the auto save instance.
         this.autoSave = new AddonModQuizAutoSave(
@@ -136,8 +133,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         this.autoSave.stopCheckChangesProcess();
         this.autoSaveErrorSubscription?.unsubscribe();
 
-        // Unblock the quiz so it can be synced.
-        CoreSync.instance.unblockOperation(AddonModQuizProvider.COMPONENT, this.quizId);
+        if (this.quiz) {
+            // Unblock the quiz so it can be synced.
+            CoreSync.instance.unblockOperation(AddonModQuizProvider.COMPONENT, this.quiz.id);
+        }
     }
 
     /**
@@ -320,11 +319,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      */
     protected async fetchData(): Promise<void> {
         try {
-            // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
-            await AddonModQuizSync.instance.waitForSync(this.quizId);
+            this.quiz = await AddonModQuiz.instance.getQuiz(this.courseId, this.cmId);
 
-            // Sync finished, now get the quiz.
-            this.quiz = await AddonModQuiz.instance.getQuizById(this.courseId, this.quizId);
+            // Block the quiz so it cannot be synced.
+            CoreSync.instance.blockOperation(AddonModQuizProvider.COMPONENT, this.quiz.id);
+
+            // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
+            await AddonModQuizSync.instance.waitForSync(this.quiz.id);
 
             this.isSequential = AddonModQuiz.instance.isNavigationSequential(this.quiz);
 
@@ -397,7 +398,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
             // Trigger an event to notify the attempt was finished.
             CoreEvents.trigger<AddonModQuizAttemptFinishedData>(AddonModQuizProvider.ATTEMPT_FINISHED_EVENT, {
-                quizId: this.quizId,
+                quizId: this.quiz!.id,
                 attemptId: this.attempt!.id,
                 synced: !this.offline,
             }, CoreSites.instance.getCurrentSiteId());
@@ -537,7 +538,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
 
         // Log summary as viewed.
         CoreUtils.instance.ignoreErrors(
-            AddonModQuiz.instance.logViewAttemptSummary(this.attempt!.id, this.preflightData, this.quizId, this.quiz!.name),
+            AddonModQuiz.instance.logViewAttemptSummary(this.attempt!.id, this.preflightData, this.quiz!.id, this.quiz!.name),
         );
     }
 

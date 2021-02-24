@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -232,12 +232,13 @@ export class AddonModQuizHelperProvider {
             if (!quizId) {
                 quizId = await this.getQuizIdByAttemptId(attemptId, { siteId });
             }
-            if (!courseId) {
-                courseId = await CoreCourseHelper.instance.getModuleCourseIdByInstance(quizId, 'quiz', siteId);
-            }
+
+            const module = await CoreCourse.instance.getModuleBasicInfoByInstance(quizId, 'quiz', siteId);
+
+            courseId = courseId || module.course;
 
             // Go to the review page.
-            await CoreNavigator.instance.navigateToSitePath(`mod_quiz/review/${courseId}/${quizId}/${attemptId}`, {
+            await CoreNavigator.instance.navigateToSitePath(`mod_quiz/${courseId}/${module.id}/review/${attemptId}`, {
                 params: {
                     page: page == undefined || isNaN(page) ? -1 : page,
                 },

@@ -524,7 +524,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         try {
             const gradebookData = await AddonModQuiz.instance.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId);
 
-            if (typeof gradebookData.graderaw != 'undefined') {
+            if (gradebookData && 'graderaw' in gradebookData && gradebookData.graderaw !== undefined) {
                 await AddonModQuiz.instance.getFeedbackForGrade(quiz.id, gradebookData.graderaw, modOptions);
             }
         } catch {

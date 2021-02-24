@@ -17,19 +17,19 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmdId',
+        path: ':courseId/:cmId',
         loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModQuizIndexPageModule),
     },
     {
-        path: 'player/:courseId/:quizId',
+        path: ':courseId/:cmId/player',
         loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModQuizPlayerPageModule),
     },
     {
-        path: 'attempt/:courseId/:quizId/:attemptId',
+        path: ':courseId/:cmId/attempt/:attemptId',
         loadChildren: () => import('./pages/attempt/attempt.module').then( m => m.AddonModQuizAttemptPageModule),
     },
     {
-        path: 'review/:courseId/:quizId/:attemptId',
+        path: ':courseId/:cmId/review/:attemptId',
         loadChildren: () => import('./pages/review/review.module').then( m => m.AddonModQuizReviewPageModule),
     },
 ];

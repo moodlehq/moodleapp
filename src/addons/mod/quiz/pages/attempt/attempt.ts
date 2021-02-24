@@ -44,15 +44,15 @@ export class AddonModQuizAttemptPage implements OnInit {
     loaded = false; // Whether data has been loaded.
     feedback?: string; // Attempt feedback.
     showReviewColumn = false;
+    cmId!: number; // Course module id the attempt belongs to.
 
     protected attemptId!: number; // Attempt to view.
-    protected quizId!: number; // ID of the quiz the attempt belongs to.
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.quizId = CoreNavigator.instance.getRouteNumberParam('quizId')!;
+        this.cmId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
         this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
         this.attemptId = CoreNavigator.instance.getRouteNumberParam('attemptId')!;
 
@@ -79,7 +79,7 @@ export class AddonModQuizAttemptPage implements OnInit {
      */
     protected async fetchQuizData(): Promise<void> {
         try {
-            this.quiz = await AddonModQuiz.instance.getQuizById(this.courseId, this.quizId);
+            this.quiz = await AddonModQuiz.instance.getQuiz(this.courseId, this.cmId);
 
             this.componentId = this.quiz.coursemodule;
 
@@ -123,7 +123,7 @@ export class AddonModQuizAttemptPage implements OnInit {
      */
     protected async fetchAttempt(): Promise<AddonModQuizAttemptWSData> {
         // Get all the attempts and search the one we want.
-        const attempts = await AddonModQuiz.instance.getUserAttempts(this.quizId, { cmId: this.quiz!.coursemodule });
+        const attempts = await AddonModQuiz.instance.getUserAttempts(this.quiz!.id, { cmId: this.cmId });
 
         const attempt = attempts.find(attempt => attempt.id == this.attemptId);
 
@@ -143,7 +143,7 @@ export class AddonModQuizAttemptPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchAccessInfo(): Promise<AddonModQuizGetQuizAccessInformationWSResponse> {
-        const accessInfo = await AddonModQuiz.instance.getQuizAccessInformation(this.quizId, { cmId: this.quiz!.coursemodule });
+        const accessInfo = await AddonModQuiz.instance.getQuizAccessInformation(this.quiz!.id, { cmId: this.cmId });
 
         if (!accessInfo.canreviewmyattempts) {
             return accessInfo;
@@ -171,13 +171,16 @@ export class AddonModQuizAttemptPage implements OnInit {
         const promises: Promise<void>[] = [];
 
         promises.push(AddonModQuiz.instance.invalidateQuizData(this.courseId));
-        promises.push(AddonModQuiz.instance.invalidateUserAttemptsForUser(this.quizId));
-        promises.push(AddonModQuiz.instance.invalidateQuizAccessInformation(this.quizId));
-        promises.push(AddonModQuiz.instance.invalidateCombinedReviewOptionsForUser(this.quizId));
         promises.push(AddonModQuiz.instance.invalidateAttemptReview(this.attemptId));
 
-        if (this.attempt && typeof this.feedback != 'undefined') {
-            promises.push(AddonModQuiz.instance.invalidateFeedback(this.quizId));
+        if (this.quiz) {
+            promises.push(AddonModQuiz.instance.invalidateUserAttemptsForUser(this.quiz.id));
+            promises.push(AddonModQuiz.instance.invalidateQuizAccessInformation(this.quiz.id));
+            promises.push(AddonModQuiz.instance.invalidateCombinedReviewOptionsForUser(this.quiz.id));
+
+            if (this.attempt && typeof this.feedback != 'undefined') {
+                promises.push(AddonModQuiz.instance.invalidateFeedback(this.quiz.id));
+            }
         }
 
         await CoreUtils.instance.ignoreErrors(Promise.all(promises));
@@ -191,7 +194,7 @@ export class AddonModQuizAttemptPage implements OnInit {
      * @return Promise resolved when done.
      */
     async reviewAttempt(): Promise<void> {
-        CoreNavigator.instance.navigate(`../../../../review/${this.courseId}/${this.quiz!.id}/${this.attempt!.id}`);
+        CoreNavigator.instance.navigate(`../../review/${this.attempt!.id}`);
     }
 
 }

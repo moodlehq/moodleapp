@@ -51,7 +51,6 @@ export class AddonModQuizReviewPage implements OnInit {
 
     attempt?: AddonModQuizAttemptWSData; // The attempt being reviewed.
     component = AddonModQuizProvider.COMPONENT; // Component to link the files to.
-    componentId?: number; // ID to use in conjunction with the component.
     showAll = false; // Whether to view all questions in the same page.
     numPages?: number; // Number of pages.
     showCompleted = false; // Whether to show completed time.
@@ -68,8 +67,8 @@ export class AddonModQuizReviewPage implements OnInit {
     overTime?: string;
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
     courseId!: number; // The course ID the quiz belongs to.
+    cmId!: number; // Course module id the attempt belongs to.
 
-    protected quizId!: number; // Quiz ID the attempt belongs to.
     protected attemptId!: number; // The attempt being reviewed.
     protected currentPage!: number; // The current page being reviewed.
     protected options?: AddonModQuizCombinedReviewOptions; // Review options.
@@ -83,7 +82,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.quizId = CoreNavigator.instance.getRouteNumberParam('quizId')!;
+        this.cmId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
         this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
         this.attemptId = CoreNavigator.instance.getRouteNumberParam('attemptId')!;
         this.currentPage = CoreNavigator.instance.getRouteNumberParam('page') || -1;
@@ -93,7 +92,7 @@ export class AddonModQuizReviewPage implements OnInit {
             await this.fetchData();
 
             CoreUtils.instance.ignoreErrors(
-                AddonModQuiz.instance.logViewAttemptReview(this.attemptId, this.quizId, this.quiz!.name),
+                AddonModQuiz.instance.logViewAttemptReview(this.attemptId, this.quiz!.id, this.quiz!.name),
             );
         } finally {
             this.loaded = true;
@@ -144,11 +143,9 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     protected async fetchData(): Promise<void> {
         try {
-            this.quiz = await AddonModQuiz.instance.getQuizById(this.courseId, this.quizId);
+            this.quiz = await AddonModQuiz.instance.getQuiz(this.courseId, this.cmId);
 
-            this.componentId = this.quiz.coursemodule;
-
-            this.options = await AddonModQuiz.instance.getCombinedReviewOptions(this.quizId, { cmId: this.quiz.coursemodule });
+            this.options = await AddonModQuiz.instance.getCombinedReviewOptions(this.quiz.id, { cmId: this.cmId });
 
             // Load the navigation data.
             await this.loadNavigation();
@@ -214,11 +211,15 @@ export class AddonModQuizReviewPage implements OnInit {
      * @param refresher Refresher
      */
     async refreshData(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(Promise.all([
-            AddonModQuiz.instance.invalidateQuizData(this.courseId),
-            AddonModQuiz.instance.invalidateCombinedReviewOptionsForUser(this.quizId),
-            AddonModQuiz.instance.invalidateAttemptReview(this.attemptId),
-        ]));
+        const promises: Promise<void>[] = [];
+
+        promises.push(AddonModQuiz.instance.invalidateQuizData(this.courseId));
+        promises.push(AddonModQuiz.instance.invalidateAttemptReview(this.attemptId));
+        if (this.quiz) {
+            promises.push(AddonModQuiz.instance.invalidateCombinedReviewOptionsForUser(this.quiz.id));
+        }
+
+        await CoreUtils.instance.ignoreErrors(Promise.all(promises));
 
         try {
             await this.fetchData();

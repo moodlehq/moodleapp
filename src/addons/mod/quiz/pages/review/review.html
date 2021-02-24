@@ -73,8 +73,8 @@
                 <ion-item class="ion-text-wrap" *ngFor="let data of additionalData">
                     <ion-label>
                         <h2>{{ data.title }}</h2>
-                        <core-format-text [component]="component" [componentId]="componentId" [text]="data.content"
-                            contextLevel="module" [contextInstanceId]="quiz?.coursemodule" [courseId]="courseId">
+                        <core-format-text [component]="component" [componentId]="cmId" [text]="data.content"
+                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>
                     </ion-label>
                 </ion-item>
@@ -103,9 +103,9 @@
                     </ion-item-divider>
 
                     <!-- Body of the question. -->
-                    <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="componentId"
+                    <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
                         [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
-                        [contextInstanceId]="quiz?.coursemodule" [courseId]="courseId" [review]="true"
+                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true"
                         [preferredBehaviour]="quiz?.preferredbehaviour">
                     </core-question>
                 </ion-card>

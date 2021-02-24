@@ -78,8 +78,8 @@
 
                     <!-- Body of the question. -->
                     <core-question class="ion-text-wrap" [question]="question" [component]="component"
-                        [componentId]="quiz!.coursemodule" [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid"
-                        [offlineEnabled]="offline" contextLevel="module" [contextInstanceId]="quiz!.coursemodule"
+                        [componentId]="cmId" [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid"
+                        [offlineEnabled]="offline" contextLevel="module" [contextInstanceId]="cmId"
                         [courseId]="courseId" [preferredBehaviour]="quiz!.preferredbehaviour" [review]="false"
                         (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)">
                     </core-question>

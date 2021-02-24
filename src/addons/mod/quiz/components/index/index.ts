@@ -413,7 +413,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             try {
                 await AddonModQuiz.instance.getAttemptReview(attemptId, { page: -1, cmId: this.module!.id });
 
-                CoreNavigator.instance.navigate(`../../review/${this.courseId}/${this.quiz!.id}/${attemptId}`);
+                await CoreNavigator.instance.navigate(`review/${attemptId}`);
             } catch {
                 // Ignore errors.
             }
@@ -534,7 +534,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected openQuiz(): void {
         this.hasPlayed = true;
 
-        CoreNavigator.instance.navigate(`../../player/${this.courseId}/${this.quiz!.id}`, {
+        CoreNavigator.instance.navigate('player', {
             params: {
                 moduleUrl: this.module?.url,
             },
@@ -639,10 +639,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             // Get gradebook grade.
             const data = await AddonModQuiz.instance.getGradeFromGradebook(this.courseId!, this.module!.id);
 
-            this.gradebookData = {
-                grade: data.graderaw,
-                feedback: data.feedback,
-            };
+            if (data) {
+                this.gradebookData = {
+                    grade: 'graderaw' in data ? data.graderaw : Number(data.grade),
+                    feedback: data.feedback,
+                };
+            }
         } catch {
             // Fallback to quiz best grade if failure or not found.
             this.gradebookData = {
@@ -657,7 +659,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @return Promise resolved when done.
      */
     async viewAttempt(attemptId: number): Promise<void> {
-        CoreNavigator.instance.navigate(`../../attempt/${this.courseId}/${this.quiz!.id}/${attemptId}`);
+        CoreNavigator.instance.navigate(`attempt/${attemptId}`);
     }
 
     /**
