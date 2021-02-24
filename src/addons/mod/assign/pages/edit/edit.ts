@@ -15,7 +15,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
-import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -208,26 +207,15 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      *
      * @return Promise resolved with boolean: whether data has changed.
      */
-    protected hasDataChanged(): Promise<boolean> {
+    protected async hasDataChanged(): Promise<boolean> {
         // Usually the hasSubmissionDataChanged call will be resolved inmediately, causing the modal to be shown just an instant.
         // We'll wait a bit before showing it to prevent this "blink".
-        let modal: CoreIonLoadingElement;
-        let showModal = true;
-
-        setTimeout(async () => {
-            if (showModal) {
-                modal = await CoreDomUtils.instance.showModalLoading();
-            }
-        }, 100);
+        const modal = await CoreDomUtils.instance.showModalLoading();
 
         const data = this.getInputData();
 
         return AddonModAssignHelper.instance.hasSubmissionDataChanged(this.assign!, this.userSubmission, data).finally(() => {
-            if (modal) {
-                modal.dismiss();
-            } else {
-                showModal = false;
-            }
+            modal.dismiss();
         });
     }
 

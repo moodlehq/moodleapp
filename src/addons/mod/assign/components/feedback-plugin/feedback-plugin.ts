@@ -104,20 +104,11 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
      *
      * @return Promise resolved with the input data, rejected if cancelled.
      */
-    editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
+    async editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
         if (!this.canEdit) {
             throw new CoreError('Cannot edit feedback');
         }
 
-        return new Promise((resolve, reject): void => {
-            this.showEditFeedbackModal(resolve, reject);
-        });
-    }
-
-    protected async showEditFeedbackModal(
-        resolve: (value: AddonModAssignFeedbackCommentsTextData | PromiseLike<AddonModAssignFeedbackCommentsTextData>) => void,
-        reject: () => void,
-    ): Promise < void> {
         // Create the navigation modal.
         const modal = await ModalController.instance.create({
             component: AddonModAssignEditFeedbackModalComponent,
@@ -134,9 +125,9 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
         const result = await modal.onDidDismiss();
 
         if (typeof result.data == 'undefined') {
-            reject();
+            throw null; // User cancelled.
         } else {
-            resolve(result.data);
+            return result.data;
         }
     }
 

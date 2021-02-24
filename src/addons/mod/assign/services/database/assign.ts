@@ -16,7 +16,8 @@ import { CoreSiteSchema } from '@services/sites';
 
 /**
  * Database variables for AddonModAssignOfflineProvider.
- */export const SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
+ */
+export const SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
 export const SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
 export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'AddonModAssignOfflineProvider',

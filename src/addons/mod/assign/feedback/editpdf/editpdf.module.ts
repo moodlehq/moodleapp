@@ -26,7 +26,6 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
         CoreSharedModule,
     ],
     providers: [
-        AddonModAssignFeedbackEditPdfHandler,
         {
             provide: APP_INITIALIZER,
             multi: true,

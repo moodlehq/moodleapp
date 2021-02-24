@@ -28,7 +28,6 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
         CoreEditorComponentsModule,
     ],
     providers: [
-        AddonModAssignSubmissionOnlineTextHandler,
         {
             provide: APP_INITIALIZER,
             multi: true,

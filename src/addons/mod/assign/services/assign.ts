@@ -31,6 +31,7 @@ import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
+import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -1119,7 +1120,7 @@ export class AddonModAssignProvider {
 
         if (warnings.length) {
             // The WebService returned warnings, reject.
-            throw warnings[0];
+            throw new CoreWSError(warnings[0]);
         }
     }
 
@@ -1202,7 +1203,7 @@ export class AddonModAssignProvider {
 
         if (warnings.length) {
             // The WebService returned warnings, reject.
-            throw warnings[0];
+            throw new CoreWSError(warnings[0]);
         }
     }
 
@@ -1371,7 +1372,7 @@ export class AddonModAssignProvider {
 
             if (warnings.length) {
                 // The WebService returned warnings, reject.
-                throw warnings[0];
+                throw new CoreWSError(warnings[0]);
             }
         }
 

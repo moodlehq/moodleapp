@@ -28,7 +28,6 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
         CoreCommentsComponentsModule,
     ],
     providers: [
-        AddonModAssignSubmissionCommentsHandler,
         {
             provide: APP_INITIALIZER,
             multi: true,

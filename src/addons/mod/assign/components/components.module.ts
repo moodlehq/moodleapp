@@ -13,10 +13,6 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
@@ -35,10 +31,6 @@ import { AddonModAssignEditFeedbackModalComponent } from './edit-feedback-modal/
         AddonModAssignEditFeedbackModalComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
-        FormsModule,
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],

@@ -1,7 +1,8 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <!-- User and status of the submission. -->
-    <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId" [title]="user!.fullname">
+    <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId"
+        [title]="user!.fullname">
         <core-user-avatar [user]="user" slot="start"></core-user-avatar>
         <ion-label>
             <h2>{{ user!.fullname }}</h2>

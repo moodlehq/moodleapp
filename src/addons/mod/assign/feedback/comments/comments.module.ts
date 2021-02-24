@@ -28,7 +28,6 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
         CoreEditorComponentsModule,
     ],
     providers: [
-        AddonModAssignFeedbackCommentsHandler,
         {
             provide: APP_INITIALIZER,
             multi: true,

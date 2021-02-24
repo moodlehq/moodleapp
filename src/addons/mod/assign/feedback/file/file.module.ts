@@ -26,7 +26,6 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
         CoreSharedModule,
     ],
     providers: [
-        AddonModAssignFeedbackFileHandler,
         {
             provide: APP_INITIALIZER,
             multi: true,

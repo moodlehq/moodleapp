@@ -26,7 +26,6 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
         CoreSharedModule,
     ],
     providers: [
-        AddonModAssignSubmissionFileHandler,
         {
             provide: APP_INITIALIZER,
             multi: true,
