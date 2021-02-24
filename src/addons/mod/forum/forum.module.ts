@@ -25,6 +25,10 @@ import { CoreScreen } from '@services/screen';
 import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumModuleHandler, AddonModForumModuleHandlerService } from './services/handlers/module';
 import { SITE_SCHEMA } from './services/offline-db';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { AddonModForumPrefetchHandler } from './services/handlers/prefetch';
+import { CoreCronDelegate } from '@services/cron';
+import { AddonModForumSyncCronHandler } from './services/handlers/sync-cron';
 
 const mainMenuRoutes: Routes = [
     {
@@ -77,7 +81,11 @@ const courseContentsRoutes: Routes = conditionalRoutes(
         {
             provide: APP_INITIALIZER,
             multi: true,
-            useValue: () => CoreCourseModuleDelegate.instance.registerHandler(AddonModForumModuleHandler.instance),
+            useValue: () => {
+                CoreCourseModuleDelegate.instance.registerHandler(AddonModForumModuleHandler.instance);
+                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModForumPrefetchHandler.instance);
+                CoreCronDelegate.instance.register(AddonModForumSyncCronHandler.instance);
+            },
         },
     ],
 })

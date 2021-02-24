@@ -1401,7 +1401,7 @@ export type AddonModForumDiscussion = {
     attachments?: CoreWSExternalFile[];
     totalscore: number; // The post message total score.
     mailnow: number; // Mail now?.
-    userfullname: string; // Post author full name.
+    userfullname: string | boolean; // Post author full name.
     usermodifiedfullname: string; // Post modifier full name.
     userpictureurl: string; // Post author picture.
     usermodifiedpictureurl: string; // Post modifier picture.
@@ -1452,6 +1452,7 @@ export type AddonModForumPost = {
     };
     attachment?: 0 | 1;
     attachments?: (CoreFileEntry | AddonModForumWSPostAttachment)[];
+    messageinlinefiles?: CoreWSExternalFile[];
     haswordcount?: boolean; // Haswordcount.
     wordcount?: number; // Wordcount.
     tags?: { // Tags.

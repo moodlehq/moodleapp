@@ -25,7 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import {
     AddonModForum,
     AddonModForumAddDiscussionPostWSOptionsObject,
@@ -95,7 +95,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                 if (result && result.updated) {
                     // Sync successful, send event.
-                    CoreEvents.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger<AddonModForumAutoSyncData>(AddonModForumSyncProvider.AUTO_SYNCED, {
                         forumId: discussion.forumid,
                         userId: discussion.userid,
                         warnings: result.warnings,
@@ -127,7 +127,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                 if (result && result.updated) {
                     // Sync successful, send event.
-                    CoreEvents.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger<AddonModForumAutoSyncData>(AddonModForumSyncProvider.AUTO_SYNCED, {
                         forumId: reply.forumid,
                         discussionId: reply.discussionid,
                         userId: reply.userid,
@@ -618,4 +618,24 @@ export class AddonModForumSync extends makeSingleton(AddonModForumSyncProvider) 
 export type AddonModForumSyncResult = {
     updated: boolean;
     warnings: string[];
+};
+
+/**
+ * Data passed to AUTO_SYNCED event.
+ */
+export type AddonModForumAutoSyncData = CoreEventSiteData & {
+    forumId: number;
+    userId: number;
+    warnings: string[];
+    discussionId?: number;
+};
+
+/**
+ * Data passed to MANUAL_SYNCED event.
+ */
+export type AddonModForumManualSyncData = CoreEventSiteData & {
+    forumId: number;
+    userId: number;
+    source: string;
+    discussionId?: number;
 };

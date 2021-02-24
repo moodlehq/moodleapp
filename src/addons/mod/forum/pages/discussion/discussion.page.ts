@@ -37,7 +37,7 @@ import {
 } from '../../services/forum.service';
 import { AddonModForumHelper } from '../../services/helper.service';
 import { AddonModForumOffline } from '../../services/offline.service';
-import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync.service';
+import { AddonModForumManualSyncData, AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync.service';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -180,7 +180,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }, CoreSites.instance.getCurrentSiteId());
 
         // Refresh data if this forum discussion is synchronized from discussions list.
-        this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, (data: any) => {
+        this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, (data: AddonModForumManualSyncData) => {
             if (data.source != 'discussion' && data.forumId == this.forumId &&
                     data.userId == CoreSites.instance.getCurrentSiteUserId()) {
                 // Refresh the data.
@@ -541,7 +541,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
                     if (result && result.updated) {
                         // Sync successful, send event.
-                        CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
+                        CoreEvents.trigger<AddonModForumManualSyncData>(AddonModForumSyncProvider.MANUAL_SYNCED, {
                             forumId: this.forumId,
                             userId: CoreSites.instance.getCurrentSiteUserId(),
                             source: 'discussion',

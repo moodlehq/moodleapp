@@ -147,7 +147,10 @@ export abstract class CorePageItemsListManager<Item> {
         const params = this.getItemQueryParams(item);
         const pathPrefix = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
 
-        await CoreNavigator.instance.navigate(pathPrefix + itemPath, { params, reset: true });
+        await CoreNavigator.instance.navigate(pathPrefix + itemPath, {
+            params,
+            reset: CoreScreen.instance.isTablet,
+        });
     }
 
     /**
