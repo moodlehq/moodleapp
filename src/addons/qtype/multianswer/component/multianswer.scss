@@ -1,0 +1,38 @@
+// Style multianswer content a bit. Most of these styles are copied from Moodle.
+:host ::ng-deep {
+    p {
+        margin: 0 0 .5em;
+    }
+
+    .answer div.r0, .answer div.r1, .answer td.r0, .answer td.r1 {
+        padding: 0.3em;
+    }
+
+    table {
+        width: 100%;
+        display: table;
+    }
+
+    tr {
+        display: table-row;
+    }
+
+    td {
+        display: table-cell;
+    }
+
+    input, select {
+        border-radius: 4px;
+        display: inline-block;
+        border: 1px solid var(--gray-dark);
+        padding: 6px 8px;
+        margin-left: 2px;
+        margin-right: 2px;
+        margin-bottom: 10px;
+    }
+
+    select {
+        height: 30px;
+        line-height: 30px;
+    }
+}

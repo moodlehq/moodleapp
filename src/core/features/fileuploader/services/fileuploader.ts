@@ -31,6 +31,7 @@ import { makeSingleton, Translate, MediaCapture, ModalController, Camera } from 
 import { CoreLogger } from '@singletons/logger';
 import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components/capture-media/capture-media';
 import { CoreError } from '@classes/errors/error';
+import { CoreSite } from '@classes/site';
 
 /**
  * File upload options.
@@ -95,6 +96,36 @@ export class CoreFileUploaderProvider {
         }
 
         return false;
+    }
+
+    /**
+     * Check if a certain site allows deleting draft files.
+     *
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved with true if can delete.
+     * @since 3.10
+     */
+    async canDeleteDraftFiles(siteId?: string): Promise<boolean> {
+        try {
+            const site = await CoreSites.instance.getSite(siteId);
+
+            return this.canDeleteDraftFilesInSite(site);
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if a certain site allows deleting draft files.
+     *
+     * @param site Site. If not defined, use current site.
+     * @return Whether draft files can be deleted.
+     * @since 3.10
+     */
+    canDeleteDraftFilesInSite(site?: CoreSite): boolean {
+        site = site || CoreSites.instance.getCurrentSite();
+
+        return !!(site?.wsAvailable('core_files_delete_draft_files'));
     }
 
     /**
@@ -176,6 +207,25 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Delete draft files.
+     *
+     * @param draftId Draft ID.
+     * @param files Files to delete.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async deleteDraftFiles(draftId: number, files: { filepath: string; filename: string }[], siteId?: string): Promise<void> {
+        const site = await CoreSites.instance.getSite(siteId);
+
+        const params = {
+            draftitemid: draftId,
+            files: files,
+        };
+
+        return site.write('core_files_delete_draft_files', params);
+    }
+
+    /**
      * Get the upload options for a file taken with the Camera Cordova plugin.
      *
      * @param uri File URI.
@@ -215,6 +265,35 @@ export class CoreFileUploaderProvider {
         }
 
         return options;
+    }
+
+    /**
+     * Given a list of original files and a list of current files, return the list of files to delete.
+     *
+     * @param originalFiles Original files.
+     * @param currentFiles Current files.
+     * @return List of files to delete.
+     */
+    getFilesToDelete(
+        originalFiles: CoreWSExternalFile[],
+        currentFiles: (CoreWSExternalFile | FileEntry)[],
+    ): { filepath: string; filename: string }[] {
+
+        const filesToDelete: { filepath: string; filename: string }[] = [];
+        currentFiles = currentFiles || [];
+
+        originalFiles.forEach((file) => {
+            const stillInList = currentFiles.some((currentFile) => (<CoreWSExternalFile> currentFile).fileurl == file.fileurl);
+
+            if (!stillInList) {
+                filesToDelete.push({
+                    filepath: file.filepath!,
+                    filename: file.filename!,
+                });
+            }
+        });
+
+        return filesToDelete;
     }
 
     /**
@@ -539,6 +618,46 @@ export class CoreFileUploaderProvider {
         }
 
         return result;
+    }
+
+    /**
+     * Given a list of files (either online files or local files), upload the local files to the draft area.
+     * Local files are not deleted from the device after upload.
+     *
+     * @param itemId Draft ID.
+     * @param files List of files.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the itemId.
+     */
+    async uploadFiles(itemId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<void> {
+        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+
+        if (!files || !files.length) {
+            return;
+        }
+
+        // Index the online files by name.
+        const usedNames: {[name: string]: (CoreWSExternalFile | FileEntry)} = {};
+        const filesToUpload: FileEntry[] = [];
+        files.forEach((file) => {
+            if (CoreUtils.instance.isFileEntry(file)) {
+                filesToUpload.push(<FileEntry> file);
+            } else {
+                // It's an online file.
+                usedNames[file.filename!.toLowerCase()] = file;
+            }
+        });
+
+        await Promise.all(filesToUpload.map(async (file) => {
+            // Make sure the file name is unique in the area.
+            const name = CoreFile.instance.calculateUniqueName(usedNames, file.name);
+            usedNames[name] = file;
+
+            // Now upload the file.
+            const options = this.getFileUploadOptions(file.toURL(), name, undefined, false, 'draft', itemId);
+
+            await this.uploadFile(file.toURL(), options, undefined, siteId);
+        }));
     }
 
     /**

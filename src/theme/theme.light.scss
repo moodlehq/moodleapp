@@ -38,7 +38,6 @@
     --yellow:          #{$yellow};
     --yellow-light:    #{$yellow-light};
     --yellow-dark:     #{$yellow-dark};
-
     --purple:          #{$purple};
 
     --core-color:      #{$core-color};
@@ -188,4 +187,23 @@
 
     --core-menu-box-shadow-end: var(--custom-menu-box-shadow-end, -4px 0px 16px rgba(0, 0, 0, 0.18));
     --core-menu-box-shadow-start: var(--custom-menu-box-shadow-start, 4px 0px 16px rgba(0, 0, 0, 0.18));
+
+    --core-question-correct-color: var(--green-dark);
+    --core-question-correct-color-bg: var(--green-light);
+    --core-question-incorrect-color: var(--red);
+    --core-question-incorrect-color-bg: var(--red-light);
+    --core-question-feedback-color: var(--yellow-dark);
+    --core-question-feedback-color-bg: var(--yellow-light);
+    --core-question-warning-color: var(--red);
+    --core-question-saved-color-bg: var(--gray-light);
+
+    --core-question-state-correct-color: var(--green-light);
+    --core-question-state-partial-color: var(--yellow-light);
+    --core-question-state-partial-text: var(--yellow);
+    --core-question-state-incorrect-color: var(--red-light);
+
+    --core-question-feedback-color: var(--yellow-dark);
+    --core-question-feedback-background-color: var(--yellow-light);
+
+    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
 }

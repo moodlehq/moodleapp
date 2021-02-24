@@ -96,7 +96,6 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
     /**
      * Get the component to use to display an user field.
      *
-     * @param injector Injector.
      * @param field User field to get the directive for.
      * @param signup True if user is in signup page.
      * @return Promise resolved with component to use, undefined if not found.

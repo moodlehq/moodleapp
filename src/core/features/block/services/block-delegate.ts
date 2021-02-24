@@ -138,7 +138,6 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
     /**
      * Get the display data for a certain block.
      *
-     * @param injector Injector.
      * @param block The block to render.
      * @param contextLevel The context where the block will be used.
      * @param instanceId The instance ID associated with the context level.
@@ -200,4 +199,3 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 }
 
 export class CoreBlockDelegate extends makeSingleton(CoreBlockDelegateService) {}
-

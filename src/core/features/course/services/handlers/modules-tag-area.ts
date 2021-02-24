@@ -50,7 +50,6 @@ export class CoreCourseModulesTagAreaHandlerService implements CoreTagAreaHandle
     /**
      * Get the component to use to display items.
      *
-     * @param injector Injector.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>> {

@@ -74,4 +74,23 @@
 
     --core-login-background: var(--custom-login-background, #3a3a3a);
     --core-login-text-color: var(--custom-login-text-color, white);
+
+    --core-question-correct-color: var(--green-light);
+    --core-question-correct-color-bg: var(--green-dark);
+    --core-question-incorrect-color: var(--red);
+    --core-question-incorrect-color-bg: var(--red-dark);
+    --core-question-feedback-color: var(--yellow-light);
+    --core-question-feedback-color-bg: var(--yellow-dark);
+    --core-question-warning-color: var(--red);
+    --core-question-saved-color-bg: var(--gray-dark);
+
+    --core-question-state-correct-color: var(--green-dark);
+    --core-question-state-partial-color: var(--yellow-dark);
+    --core-question-state-partial-text: var(--yellow);
+    --core-question-state-incorrect-color: var(--red-dark);
+
+    --core-question-feedback-color: var(--yellow-light);
+    --core-question-feedback-background-color: var(--yellow-dark);
+
+    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-light);
 }

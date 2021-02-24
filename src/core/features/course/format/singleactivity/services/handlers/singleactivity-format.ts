@@ -127,7 +127,6 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      * If you want to customize the default format there are several methods to customize parts of it.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param injector Injector.
      * @param course The course to render.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */

@@ -30,7 +30,6 @@ export class AddonBlockRecentlyAccessedItemsHandlerService extends CoreBlockBase
     /**
      * Returns the data needed to render the block.
      *
-     * @param injector Injector.
      * @param block The block to render.
      * @param contextLevel The context where the block will be used.
      * @param instanceId The instance ID associated with the context level.

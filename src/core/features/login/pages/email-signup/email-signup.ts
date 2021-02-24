@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { IonContent, IonRefresher } from '@ionic/angular';
 
@@ -81,6 +81,8 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
     constructor(
         protected fb: FormBuilder,
+        protected elementRef: ElementRef,
+        protected changeDetector: ChangeDetectorRef,
     ) {
         // Create the ageVerificationForm.
         this.ageVerificationForm = this.fb.group({
@@ -272,8 +274,17 @@ export class CoreLoginEmailSignupPage implements OnInit {
         e.stopPropagation();
 
         if (!this.signupForm.valid || (this.settings?.recaptchapublickey && !this.captcha.recaptcharesponse)) {
-            // Form not valid. Scroll to the first element with errors.
-            const errorFound = await CoreDomUtils.instance.scrollToInputError(this.content);
+            // Form not valid. Mark all controls as dirty to display errors.
+            for (const name in this.signupForm.controls) {
+                this.signupForm.controls[name].markAsDirty();
+            }
+            this.changeDetector.detectChanges();
+
+            // Scroll to the first element with errors.
+            const errorFound = CoreDomUtils.instance.scrollToInputError(
+                this.elementRef.nativeElement,
+                this.content,
+            );
 
             if (!errorFound) {
                 // Input not found, show an error modal.

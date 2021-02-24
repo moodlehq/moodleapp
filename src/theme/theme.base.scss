@@ -28,6 +28,11 @@
     text-transform: none;
 }
 
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
@@ -431,4 +436,9 @@ ion-button.core-button-select {
     left: -10000px;
     font-weight: normal;
     font-size: 1em;
+}
+
+// Monospaced font.
+.core-monospaced {
+    font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
 }

@@ -99,7 +99,7 @@
                         <ng-container *ngSwitchCase="'multichoice'">
                             <!-- Single choice. -->
                             <ion-radio-group *ngIf="!question.multi" [formControlName]="question.controlName">
-                                <ion-item class="ion-text-wrap" *ngFor="let option of question.options" lines="none">
+                                <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
                                     <ion-label>
                                         <core-format-text [component]="component" [componentId]="lesson.coursemodule"
                                             [text]="option.text" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
@@ -113,7 +113,7 @@
 
                             <!-- Multiple choice. -->
                             <ng-container *ngIf="question.multi">
-                                <ion-item class="ion-text-wrap" *ngFor="let option of question.options" lines="none">
+                                <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
                                     <ion-label>
                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                             [text]="option.text" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"

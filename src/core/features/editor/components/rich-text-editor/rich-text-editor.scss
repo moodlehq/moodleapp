@@ -1,3 +1,20 @@
+@import "~theme/globals";
+:host {
+    --placeholder-color: var(--gray-light);
+    --toobar-background: var(--white);
+    --button-color: var(--ion-text-color);
+    --button-active-color: var(--gray);
+}
+
+:host-context(body.dark) {
+    --background: var(--gray-darker);
+    --color: var(--white);
+    --button-color: var(--gray-light);
+    --button-active-color: var(--gray-dark);
+    --placeholder-color: var(--gray);
+    --toobar-background: var(--black);
+}
+
 :host {
     height: 40vh;
     overflow: hidden;
@@ -6,9 +23,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    // @include darkmode() {
-    //     background-color: $gray-darker;
-    // }
+    background: var(--background);
 
     .core-rte-editor-container {
         max-height: calc(100% - 46px);
@@ -22,7 +37,7 @@
         .core-rte-info-message {
             padding: 5px;
             border-top: 1px solid var(--ion-color-secondary);
-            background: white;
+            background: var(--background);
             flex-shrink: 1;
             font-size: 1.4rem;
 
@@ -37,36 +52,30 @@
         margin: 2px;
         width: 100%;
         resize: none;
-        background-color: white;
+        background-color: var(--background);
+        color: var(--color);
         flex-grow: 1;
-        // @include darkmode() {
-        //     background-color: var(--gray-darker);
-        //     color: var(--white);
-        // }
     }
 
     .core-rte-editor {
         flex-grow: 1;
         flex-shrink: 1;
         -webkit-user-select: auto !important;
+        user-select: auto !important;
         word-wrap: break-word;
         overflow-x: hidden;
         overflow-y: auto;
         cursor: text;
         img {
-            // @include padding(null, null, null, 2px);
+            @include padding(null, null, null, 2px);
             max-width: 95%;
             width: auto;
         }
         &:empty:before {
             content: attr(data-placeholder-text);
             display: block;
-            color: var(--gray-light);
+            color: var(--placeholder-color);
             font-weight: bold;
-
-            // @include darkmode() {
-            //     color: $gray;
-            // }
         }
 
         // Make empty elements selectable (to move the cursor).
@@ -80,19 +89,15 @@
         flex-shrink: 1;
         position: relative;
 
-        textarea {
+        ::ng-deep textarea {
             margin: 0 !important;
             padding: 0;
-            height: 100% !important;
-            width: 100% !important;
             resize: none;
             overflow-x: hidden;
             overflow-y: auto;
             position: absolute;
             top: 0;
             bottom: 0;
-            left: 0;
-            right: 0;
         }
     }
 
@@ -102,12 +107,8 @@
         z-index: 1;
         flex-grow: 0;
         flex-shrink: 0;
-        background-color: var(--white);
-
-        // @include darkmode() {
-        //     background-color: $black;
-        // }
-        // @include padding(5px, null);
+        background-color: var(--toobar-background);
+        padding-top: 5px;
         border-top: 1px solid var(--gray);
 
         ion-slides {
@@ -126,26 +127,18 @@
             padding-left: 6px;
             margin: 0 auto;
             font-size: 18px;
-            background-color: var(--white);
+            background-color: var(--toobar-background);
             border-radius: 4px;
-            // @include core-transition(background-color, 200ms);
-            color: var(--ion-text-color);
+            @include core-transition(background-color, 200ms);
+            color: var(--button-color);
             cursor: pointer;
-
-            // @include darkmode() {
-            //     background-color: $black;
-            //     color: $core-dark-text-color;
-            // }
 
             &.toolbar-button-enable {
                 width: 100%;
             }
 
             &:active, &[aria-pressed="true"] {
-                background-color: var(--gray);
-                // @include darkmode() {
-                //     background-color: $gray-dark;
-                // }
+                background-color: var(--button-active-color);
             }
 
             &.toolbar-arrow {
@@ -153,13 +146,10 @@
                 flex-grow: 0;
                 flex-shrink: 0;
                 opacity: 1;
-                // @include core-transition(opacity, 200ms);
+                @include core-transition(opacity, 200ms);
 
                 &:active {
-                    background-color: var(--white);
-                    // @include darkmode() {
-                    //     background-color: $black;
-                    // }
+                    background-color: var(--toobar-background);
                 }
 
                 &.toolbar-arrow-hidden {

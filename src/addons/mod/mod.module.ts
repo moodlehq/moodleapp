@@ -18,6 +18,7 @@ import { AddonModAssignModule } from './assign/assign.module';
 import { AddonModBookModule } from './book/book.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
 import { AddonModPageModule } from './page/page.module';
+import { AddonModQuizModule } from './quiz/quiz.module';
 
 @NgModule({
     declarations: [],
@@ -26,6 +27,7 @@ import { AddonModPageModule } from './page/page.module';
         AddonModBookModule,
         AddonModLessonModule,
         AddonModPageModule,
+        AddonModQuizModule,
     ],
     providers: [],
     exports: [],

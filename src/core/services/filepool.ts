@@ -2838,16 +2838,15 @@ export class CoreFilepoolProvider {
         let previousStatus: string | undefined;
         // Search current status to set it as previous status.
         try {
-            const entry = <CoreFilepoolPackageEntry> site.getDb().getRecord(PACKAGES_TABLE_NAME, { id: packageId });
-            if (typeof extra == 'undefined' || extra === null) {
-                extra = entry.extra;
-            }
+            const entry = await site.getDb().getRecord<CoreFilepoolPackageEntry>(PACKAGES_TABLE_NAME, { id: packageId });
+
+            extra = extra ?? entry.extra;
             if (typeof downloadTime == 'undefined') {
-            // Keep previous download time.
+                // Keep previous download time.
                 downloadTime = entry.downloadTime;
                 previousDownloadTime = entry.previousDownloadTime;
             } else {
-            // The downloadTime will be updated, store current time as previous.
+                // The downloadTime will be updated, store current time as previous.
                 previousDownloadTime = entry.downloadTime;
             }
 

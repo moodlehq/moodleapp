@@ -104,7 +104,11 @@ export class CoreLinkDirective implements OnInit {
         if (href.charAt(0) == '#') {
             // Look for id or name.
             href = href.substr(1);
-            CoreDomUtils.instance.scrollToElementBySelector(this.content, '#' + href + ', [name=\'' + href + '\']');
+            CoreDomUtils.instance.scrollToElementBySelector(
+                this.element.closest('ion-content'),
+                this.content,
+                `#${href}, [name='${href}']`,
+            );
 
             return;
         }

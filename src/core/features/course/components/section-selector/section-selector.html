@@ -14,7 +14,7 @@
             <ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" class="ion-text-wrap"
                 (click)="selectSection(section)" [class.core-selected-item]="selected?.id == section.id"
                 [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail="false" role="menuitem"
-                [attr.aria-hidden]="section.uservisible === false">
+                [attr.aria-hidden]="section.uservisible === false" button>
 
                 <ion-icon name="fas-folder" slot="start"></ion-icon>
                 <ion-label>

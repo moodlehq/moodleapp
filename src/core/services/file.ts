@@ -1095,7 +1095,6 @@ export class CoreFileProvider {
             const entries = await this.getDirectoryContents(dirPath);
 
             const files = {};
-            let num = 1;
             let fileNameWithoutExtension = CoreMimetypeUtils.instance.removeExtension(fileName);
             let extension = CoreMimetypeUtils.instance.getFileExtension(fileName) || defaultExt;
 
@@ -1116,24 +1115,38 @@ export class CoreFileProvider {
                 extension = '';
             }
 
-            let newName = fileNameWithoutExtension + extension;
-            if (typeof files[newName.toLowerCase()] == 'undefined') {
-                // No file with the same name.
-                return newName;
-            } else {
-                // Repeated name. Add a number until we find a free name.
-                do {
-                    newName = fileNameWithoutExtension + '(' + num + ')' + extension;
-                    num++;
-                } while (typeof files[newName.toLowerCase()] != 'undefined');
-
-                // Ask the user what he wants to do.
-                return newName;
-            }
+            return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
         } catch (error) {
             // Folder doesn't exist, name is unique. Clean it and return it.
             return CoreTextUtils.instance.removeSpecialCharactersForFiles(CoreTextUtils.instance.decodeURIComponent(fileName));
         }
+    }
+
+    /**
+     * Given a file name and a set of already used names, calculate a unique name.
+     *
+     * @param usedNames Object with names already used as keys.
+     * @param name Name to check.
+     * @return Unique name.
+     */
+    calculateUniqueName(usedNames: Record<string, unknown>, name: string): string {
+        if (typeof usedNames[name.toLowerCase()] == 'undefined') {
+            // No file with the same name.
+            return name;
+        }
+
+        // Repeated name. Add a number until we find a free name.
+        const nameWithoutExtension = CoreMimetypeUtils.instance.removeExtension(name);
+        let extension = CoreMimetypeUtils.instance.getFileExtension(name);
+        let num = 1;
+        extension = extension ? '.' + extension : '';
+
+        do {
+            name = nameWithoutExtension + '(' + num + ')' + extension;
+            num++;
+        } while (typeof usedNames[name.toLowerCase()] != 'undefined');
+
+        return name;
     }
 
     /**

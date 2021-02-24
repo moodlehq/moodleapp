@@ -1072,13 +1072,13 @@ export class CoreUtilsProvider {
      * @param sortByValue True to sort values alphabetically, false otherwise.
      * @return Array of objects with the name & value of each property.
      */
-    objectToArrayOfObjects(
+    objectToArrayOfObjects<T = Record<string, unknown>>(
         obj: Record<string, unknown>,
         keyName: string,
         valueName: string,
         sortByKey?: boolean,
         sortByValue?: boolean,
-    ): Record<string, unknown>[] {
+    ): T[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey: string, value: unknown): Record<string, unknown>[] | unknown => {
             if (typeof value == 'undefined' || value == null) {
@@ -1114,7 +1114,7 @@ export class CoreUtilsProvider {
         }
 
         // "obj" will always be an object, so "entries" will always be an array.
-        const entries = getEntries('', obj) as Record<string, unknown>[];
+        const entries = getEntries('', obj) as T[];
         if (sortByKey || sortByValue) {
             return entries.sort((a, b) => {
                 if (sortByKey) {

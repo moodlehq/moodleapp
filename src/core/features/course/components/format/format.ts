@@ -25,6 +25,7 @@ import {
     QueryList,
     Type,
     ViewChild,
+    ElementRef,
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
@@ -111,6 +112,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     constructor(
         protected content: IonContent,
+        protected elementRef: ElementRef,
     ) {
         // Pass this instance to all components so they can use its methods and properties.
         this.data.coreCourseFormatComponent = this;
@@ -160,9 +162,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             let section: CoreCourseSection | undefined;
 
-            if (typeof data.sectionId != 'undefined' && data.sectionId != null && this.sections) {
+            if (typeof data.sectionId != 'undefined' && this.sections) {
                 section = this.sections.find((section) => section.id == data.sectionId);
-            } else if (typeof data.sectionNumber != 'undefined' && data.sectionNumber != null && this.sections) {
+            } else if (typeof data.sectionNumber != 'undefined' && this.sections) {
                 section = this.sections.find((section) => section.section == data.sectionNumber);
             }
 
@@ -184,8 +186,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             this.displaySectionSelector = CoreCourseFormatDelegate.instance.displaySectionSelector(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.instance.displayBlocks(this.course);
-            this.progress = 'progress' in this.course && this.course.progress !== undefined && this.course.progress >= 0 &&
-                this.course.completionusertracked !== false ? this.course.progress : undefined;
+            this.progress = 'progress' in this.course && typeof this.course.progress == 'number' &&
+                this.course.progress >= 0 && this.course.completionusertracked !== false ? this.course.progress : undefined;
             if ('overviewfiles' in this.course) {
                 this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;
             }
@@ -402,7 +404,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.moduleId && typeof previousValue == 'undefined') {
             setTimeout(() => {
-                CoreDomUtils.instance.scrollToElementBySelector(this.content, '#core-course-module-' + this.moduleId);
+                CoreDomUtils.instance.scrollToElementBySelector(
+                    this.elementRef.nativeElement,
+                    this.content,
+                    '#core-course-module-' + this.moduleId,
+                );
             }, 200);
         } else {
             this.content.scrollToTop(0);
@@ -600,7 +606,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.completionChanged.emit(completionData);
 
         if (completionData.valueused !== false || !this.course || !('progress' in this.course) ||
-            typeof this.course.progress == 'undefined') {
+                typeof this.course.progress != 'number') {
             return;
         }
 

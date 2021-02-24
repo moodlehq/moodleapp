@@ -2231,14 +2231,14 @@ export class AddonModLessonProvider {
      * @param data Data containing the user answer.
      * @return User response.
      */
-    protected getUserResponseMultichoice(data: Record<string, unknown>): number[] | null {
+    protected getUserResponseMultichoice(data: Record<string, unknown>): number[] | undefined {
         if (data.answer) {
             // The data is already stored as expected. If it's valid, parse the values to int.
             if (Array.isArray(data.answer)) {
                 return data.answer.map((value) => parseInt(value, 10));
             }
 
-            return null;
+            return undefined;
         }
 
         // Data is stored in properties like 'answer[379]'. Recreate the answer array.
@@ -3979,12 +3979,12 @@ export type AddonModLessonGetAttemptsOverviewWSResponse = {
 export type AddonModLessonAttemptsOverviewWSData = {
     lessonscored: boolean; // True if the lesson was scored.
     numofattempts: number; // Number of attempts.
-    avescore: number; // Average score.
-    highscore: number; // High score.
-    lowscore: number; // Low score.
-    avetime: number; // Average time (spent in taking the lesson).
-    hightime: number; // High time.
-    lowtime: number; // Low time.
+    avescore: number | null; // Average score.
+    highscore: number | null; // High score.
+    lowscore: number | null; // Low score.
+    avetime: number | null; // Average time (spent in taking the lesson).
+    hightime: number | null; // High time.
+    lowtime: number | null; // Low time.
     students?: AddonModLessonAttemptsOverviewsStudentWSData[]; // Students data, including attempts.
 };
 
@@ -4003,7 +4003,7 @@ export type AddonModLessonAttemptsOverviewsStudentWSData = {
  */
 export type AddonModLessonAttemptsOverviewsAttemptWSData = {
     try: number; // Attempt number.
-    grade: number; // Attempt grade.
+    grade: number | null; // Attempt grade.
     timestart: number; // Attempt time started.
     timeend: number; // Attempt last time continued.
     end: number; // Attempt time ended.

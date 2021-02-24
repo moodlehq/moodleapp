@@ -600,6 +600,8 @@ export class CoreDomUtilsProvider {
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
      */
+    getElementXY(container: HTMLElement, selector: undefined, positionParentClass?: string): number[];
+    getElementXY(container: HTMLElement, selector: string, positionParentClass?: string): number[] | null;
     getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] | null {
         let element: HTMLElement | null = <HTMLElement> (selector ? container.querySelector(selector) : container);
         let positionTop = 0;
@@ -1117,24 +1119,26 @@ export class CoreDomUtilsProvider {
     /**
      * Scroll to a certain element using a selector to find it.
      *
+     * @param container The element that contains the element that must be scrolled.
      * @param content The content that must be scrolled.
      * @param selector Selector to find the element to scroll to.
      * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
      * @param duration Duration of the scroll animation in milliseconds.
      * @return True if the element is found, false otherwise.
      */
-    async scrollToElementBySelector(
-        content: IonContent,
+    scrollToElementBySelector(
+        container: HTMLElement | null,
+        content: IonContent | undefined,
         selector: string,
         scrollParentClass?: string,
         duration?: number,
-    ): Promise<boolean> {
-        // @todo: This function is broken. Scroll element cannot be used because it uses shadow DOM so querySelector returns null.
-        // Also, traversing using parentElement doesn't work either, offsetParent isn't part of the parentElement tree.
-        try {
-            const scrollElement = await content.getScrollElement();
+    ): boolean {
+        if (!container || !content) {
+            return false;
+        }
 
-            const position = this.getElementXY(scrollElement, selector, scrollParentClass);
+        try {
+            const position = this.getElementXY(container, selector, scrollParentClass);
             if (!position) {
                 return false;
             }
@@ -1150,16 +1154,13 @@ export class CoreDomUtilsProvider {
     /**
      * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
+     * @param container The element that contains the element that must be scrolled.
      * @param content The content that must be scrolled.
      * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
      * @return True if the element is found, false otherwise.
      */
-    async scrollToInputError(content?: IonContent, scrollParentClass?: string): Promise<boolean> {
-        if (!content) {
-            return false;
-        }
-
-        return this.scrollToElementBySelector(content, '.core-input-error', scrollParentClass);
+    scrollToInputError(container: HTMLElement | null, content?: IonContent, scrollParentClass?: string): boolean {
+        return this.scrollToElementBySelector(container, content, '.core-input-error', scrollParentClass);
     }
 
     /**
