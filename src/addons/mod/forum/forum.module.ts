@@ -29,6 +29,11 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { AddonModForumPrefetchHandler } from './services/handlers/prefetch';
 import { CoreCronDelegate } from '@services/cron';
 import { AddonModForumSyncCronHandler } from './services/handlers/sync-cron';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { AddonModForumDiscussionLinkHandler } from './services/handlers/discussion-link';
+import { AddonModForumIndexLinkHandler } from './services/handlers/index-link';
+import { AddonModForumListLinkHandler } from './services/handlers/list-link';
+import { AddonModForumPostLinkHandler } from './services/handlers/post-link';
 
 const mainMenuRoutes: Routes = [
     {
@@ -85,6 +90,10 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreCourseModuleDelegate.instance.registerHandler(AddonModForumModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModForumPrefetchHandler.instance);
                 CoreCronDelegate.instance.register(AddonModForumSyncCronHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModForumDiscussionLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModForumIndexLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModForumListLinkHandler.instance);
+                CoreContentLinksDelegate.instance.registerHandler(AddonModForumPostLinkHandler.instance);
             },
         },
     ],
