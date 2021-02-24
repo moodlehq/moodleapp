@@ -231,7 +231,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param time Time to set. If not defined, current time.
      * @return Promise resolved when the time is set.
      */
-    async setSyncTime(id: string, siteId?: string, time?: number): Promise<void> {
+    async setSyncTime(id: string | number, siteId?: string, time?: number): Promise<void> {
         time = typeof time != 'undefined' ? time : Date.now();
 
         await CoreSync.instance.insertOrUpdateSyncRecord(this.component, id, { time: time }, siteId);
@@ -245,7 +245,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async setSyncWarnings(id: string, warnings: string[], siteId?: string): Promise<void> {
+    async setSyncWarnings(id: string | number, warnings: string[], siteId?: string): Promise<void> {
         const warningsText = JSON.stringify(warnings || []);
 
         await CoreSync.instance.insertOrUpdateSyncRecord(this.component, id, { warnings: warningsText }, siteId);

@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host {
     .course-icon {
         color: white;
@@ -10,35 +12,10 @@
         transition: all 50ms ease-in-out;
     }
 
-    ion-icon[course-color="0"] {
-        color: var(--core-course-color-0);
-    }
-    ion-icon[course-color="1"] {
-        color: var(--core-course-color-1);
-    }
-    ion-icon[course-color="2"] {
-        color: var(--core-course-color-2);
-    }
-    ion-icon[course-color="3"] {
-        color: var(--core-course-color-3);
-    }
-    ion-icon[course-color="4"] {
-        color: var(--core-course-color-4);
-    }
-    ion-icon[course-color="5"] {
-        color: var(--core-course-color-5);
-    }
-    ion-icon[course-color="6"] {
-        color: var(--core-course-color-6);
-    }
-    ion-icon[course-color="7"] {
-        color: var(--core-course-color-7);
-    }
-    ion-icon[course-color="8"] {
-        color: var(--core-course-color-8);
-    }
-    ion-icon[course-color="9"] {
-        color: var(--core-course-color-9);
+    @for $i from 0 to length($core-course-image-background) {
+        ion-icon[course-color="#{$i}"] {
+            color: nth($core-course-image-background, $i + 1);
+        }
     }
 
     ion-avatar {

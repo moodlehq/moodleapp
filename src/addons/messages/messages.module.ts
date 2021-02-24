@@ -34,6 +34,7 @@ import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-send-message';
 import { Network, NgZone } from '@singletons';
 import { AddonMessagesSync } from './services/messages-sync';
+import { AddonMessagesSyncCronHandler } from './services/handlers/sync-cron';
 
 const mainMenuChildrenRoutes: Routes = [
     {
@@ -61,7 +62,7 @@ const mainMenuChildrenRoutes: Routes = [
                 // Register handlers.
                 CoreMainMenuDelegate.instance.registerHandler(AddonMessagesMainMenuHandler.instance);
                 CoreCronDelegate.instance.register(AddonMessagesMainMenuHandler.instance);
-                CoreCronDelegate.instance.register(AddonMessagesPushClickHandler.instance);
+                CoreCronDelegate.instance.register(AddonMessagesSyncCronHandler.instance);
                 CoreSettingsDelegate.instance.registerHandler(AddonMessagesSettingsHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(AddonMessagesIndexLinkHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(AddonMessagesDiscussionLinkHandler.instance);

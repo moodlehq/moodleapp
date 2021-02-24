@@ -1,0 +1,4 @@
+{
+    "pluginname": "Online text submissions",
+    "wordlimitexceeded": "The word limit for this assignment is {{$a.limit}} words and you are attempting to submit {{$a.count}} words. Please review your submission and try again."
+}

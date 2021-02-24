@@ -71,6 +71,7 @@ export class CoreFaIconDirective implements OnChanges {
         if (library != 'ionic') {
             const src = `assets/fonts/font-awesome/${library}/${iconName}.svg`;
             this.element.setAttribute('src', src);
+            this.element.classList.add('faicon');
 
             if (CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting) {
                 try {

@@ -257,7 +257,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      */
     protected async prefetchLesson(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean): Promise<void> {
         const siteId = CoreSites.instance.getCurrentSiteId();
-        courseId = courseId || module.course || 1;
+        courseId = courseId || module.course || CoreSites.instance.getCurrentSiteHomeId();
 
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,

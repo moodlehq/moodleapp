@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 
+import { AddonModAssignModule } from './assign/assign.module';
 import { AddonModBookModule } from './book/book.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
 import { AddonModPageModule } from './page/page.module';
@@ -21,6 +22,7 @@ import { AddonModPageModule } from './page/page.module';
 @NgModule({
     declarations: [],
     imports: [
+        AddonModAssignModule,
         AddonModBookModule,
         AddonModLessonModule,
         AddonModPageModule,

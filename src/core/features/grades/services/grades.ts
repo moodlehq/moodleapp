@@ -339,8 +339,10 @@ export class CoreGradesProvider {
      * @return True if ws is avalaible, false otherwise.
      * @since  Moodle 3.2
      */
-    isGradeItemsAvalaible(siteId?: string): Promise<boolean> {
-        return CoreSites.instance.getSite(siteId).then((site) => site.wsAvailable('gradereport_user_get_grade_items'));
+    async isGradeItemsAvalaible(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.instance.getSite(siteId);
+
+        return site.wsAvailable('gradereport_user_get_grade_items');
     }
 
     /**

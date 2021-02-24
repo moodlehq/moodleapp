@@ -19,11 +19,13 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 import { AddonCalendarEditEventPage } from './edit-event.page';
+import { CanLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
     {
         path: '',
         component: AddonCalendarEditEventPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 

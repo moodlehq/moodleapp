@@ -62,8 +62,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialParticipants();
 
-        this.participants.watchSplitViewOutlet(this.splitView);
-        this.participants.start();
+        this.participants.start(this.splitView);
     }
 
     /**

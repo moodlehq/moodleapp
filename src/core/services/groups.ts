@@ -412,7 +412,7 @@ export class CoreGroupsProvider {
      * @param groupInfo Group info.
      * @return Group ID to use.
      */
-    validateGroupId(groupId: number, groupInfo: CoreGroupInfo): number {
+    validateGroupId(groupId = 0, groupInfo: CoreGroupInfo): number {
         if (groupId > 0 && groupInfo && groupInfo.groups && groupInfo.groups.length > 0) {
             // Check if the group is in the list of groups.
             if (groupInfo.groups.some((group) => groupId == group.id)) {

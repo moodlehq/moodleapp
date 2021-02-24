@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreError } from '@classes/errors/error';
+import { CoreSyncBlockedError } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
 import { CoreCourse } from '@features/course/services/course';
@@ -122,7 +122,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param force Wether to force sync not depending on last execution.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllLessons(siteId?: string, force?: boolean): Promise<void> {
+    syncAllLessons(siteId?: string, force = false): Promise<void> {
         return this.syncOnSites('all lessons', this.syncAllLessonsFunc.bind(this, !!force), siteId);
     }
 
@@ -163,7 +163,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     async syncLessonIfNeeded(
         lessonId: number,
-        askPassword?: boolean,
+        askPassword = false,
         siteId?: string,
     ): Promise<AddonModLessonSyncResult | undefined> {
         const needed = await this.isSyncNeeded(lessonId, siteId);
@@ -184,8 +184,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     async syncLesson(
         lessonId: number,
-        askPassword?: boolean,
-        ignoreBlock?: boolean,
+        askPassword = false,
+        ignoreBlock = false,
         siteId?: string,
     ): Promise<AddonModLessonSyncResult> {
         siteId = siteId || CoreSites.instance.getCurrentSiteId();
@@ -201,7 +201,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (!ignoreBlock && CoreSync.instance.isBlocked(AddonModLessonProvider.COMPONENT, lessonId, siteId)) {
             this.logger.debug('Cannot sync lesson ' + lessonId + ' because it is blocked.');
 
-            throw new CoreError(Translate.instance.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
+            throw new CoreSyncBlockedError(Translate.instance.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
         this.logger.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
@@ -222,8 +222,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     protected async performSyncLesson(
         lessonId: number,
-        askPassword?: boolean,
-        ignoreBlock?: boolean,
+        askPassword = false,
+        ignoreBlock = false,
         siteId?: string,
     ): Promise<AddonModLessonSyncResult> {
         // Sync offline logs.
@@ -270,7 +270,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     protected async syncAttempts(
         lessonId: number,
         result: AddonModLessonSyncResult,
-        askPassword?: boolean,
+        askPassword = false,
         siteId?: string,
     ): Promise<AddonModLessonGetPasswordResult | undefined> {
         let attempts = await AddonModLessonOffline.instance.getLessonAttempts(lessonId, siteId);
@@ -408,8 +408,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         lessonId: number,
         result: AddonModLessonSyncResult,
         passwordData?: AddonModLessonGetPasswordResult,
-        askPassword?: boolean,
-        ignoreBlock?: boolean,
+        askPassword = false,
+        ignoreBlock = false,
         siteId?: string,
     ): Promise<void> {
         // Attempts sent or there was none. If there is a finished retake, send it.

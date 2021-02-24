@@ -298,3 +298,10 @@ export type CoreEventSectionStatusChangedData = CoreEventSiteData & {
     courseId: number;
     sectionId?: number;
 };
+
+/**
+ * Data passed to ACTIVITY_DATA_SENT event.
+ */
+export type CoreEventActivityDataSentData = CoreEventSiteData & {
+    module: string;
+};

@@ -37,19 +37,9 @@
     --light: var(--black);
     --dark: var(--gray-lighter);
 
-    --ion-color-light: var(--light);
-    --ion-color-light-rgb: 58,58,58;
-    --ion-color-light-contrast: #ffffff;
-    --ion-color-light-contrast-rgb: 255,255,255;
-    --ion-color-light-shade: #333333;
-    --ion-color-light-tint: #4e4e4e;
-
-    --ion-color-dark: var(--dark);
-    --ion-color-dark-rgb: 245,245,245;
-    --ion-color-dark-contrast: #000000;
-    --ion-color-dark-contrast-rgb: 0,0,0;
-    --ion-color-dark-shade: #d8d8d8;
-    --ion-color-dark-tint: #f6f6f6;
+    @each $color-name, $value in $colors-dark {
+        @include generate-color($color-name);
+    }
 
     --ion-tab-bar-background: #1f1f1f;
 

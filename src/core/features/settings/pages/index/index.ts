@@ -33,8 +33,7 @@ export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
      */
     ngAfterViewInit(): void {
         this.sections.setItems(CoreSettingsConstants.SECTIONS);
-        this.sections.watchSplitViewOutlet(this.splitView);
-        this.sections.start();
+        this.sections.start(this.splitView);
     }
 
     /**

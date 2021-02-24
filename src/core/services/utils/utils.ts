@@ -1607,7 +1607,7 @@ export class CoreUtilsProvider {
             const result = await promise;
 
             return result;
-        } catch (error) {
+        } catch {
             // Ignore errors.
             return fallback;
         }
