@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { Connection } from '@ionic-native/network/ngx';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
@@ -341,8 +340,9 @@ export class CoreAppProvider {
             return false;
         }
 
-        let online = Network.instance.type !== null && Number(Network.instance.type) != Connection.NONE &&
-            Number(Network.instance.type) != Connection.UNKNOWN;
+        let online = Network.instance.type !== null && Network.instance.type != Network.instance.Connection.NONE &&
+            Network.instance.type != Network.instance.Connection.UNKNOWN;
+
         // Double check we are not online because we cannot rely 100% in Cordova APIs. Also, check it in browser.
         if (!online && navigator.onLine) {
             online = true;
@@ -363,9 +363,14 @@ export class CoreAppProvider {
             return false;
         }
 
-        const limited = [Connection.CELL_2G, Connection.CELL_3G, Connection.CELL_4G, Connection.CELL];
+        const limited = [
+            Network.instance.Connection.CELL_2G,
+            Network.instance.Connection.CELL_3G,
+            Network.instance.Connection.CELL_4G,
+            Network.instance.Connection.CELL,
+        ];
 
-        return limited.indexOf(Number(type)) > -1;
+        return limited.indexOf(type) > -1;
     }
 
     /**
