@@ -25,7 +25,7 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 define('MOODLE_INTERNAL', 1);
 define('LANGPACKSFOLDER', '../../moodle-langpacks');
 define('ASSETSPATH', '../src/assets/lang/');
-define('CONFIG', '../config/config.json');
+define('CONFIG', '../moodle.config.json');
 define('OVERRIDE_LANG_SUFIX', false);
 
 global $strings;
