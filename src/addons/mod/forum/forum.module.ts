@@ -36,6 +36,8 @@ import { AddonModForumListLinkHandler } from './services/handlers/list-link';
 import { AddonModForumPostLinkHandler } from './services/handlers/post-link';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 
 const mainMenuRoutes: Routes = [
     {
@@ -97,6 +99,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreContentLinksDelegate.instance.registerHandler(AddonModForumListLinkHandler.instance);
                 CoreContentLinksDelegate.instance.registerHandler(AddonModForumPostLinkHandler.instance);
                 CoreTagAreaDelegate.instance.registerHandler(AddonModForumTagAreaHandler.instance);
+                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModForumPushClickHandler.instance);
             },
         },
     ],
