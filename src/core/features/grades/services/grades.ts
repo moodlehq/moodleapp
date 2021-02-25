@@ -515,63 +515,52 @@ export type CoreGradesTable = {
  * Grade table data item.
  */
 export type CoreGradesTableRow = {
-    itemname?: {
-        class: string; // Class.
-        colspan: number; // Col span.
-        content: string; // Cell content.
-        celltype: string; // Cell type.
-        id: string; // Id.
-    }; // The item returned data.
-    leader?: {
-        class: string; // Class.
-        rowspan: number; // Row span.
-    }; // The item returned data.
-    weight?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Weight column.
-    grade?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Grade column.
-    range?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Range column.
-    percentage?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Percentage column.
-    lettergrade?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Lettergrade column.
-    rank?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Rank column.
-    average?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Average column.
-    feedback?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Feedback column.
-    contributiontocoursetotal?: {
-        class: string; // Class.
-        content: string; // Cell content.
-        headers: string; // Headers.
-    }; // Contributiontocoursetotal column.
+    itemname?: CoreGradesTableItemNameColumn; // The item returned data.
+    leader?: CoreGradesTableLeaderColumn; // The item returned data.
+    weight?: CoreGradesTableCommonColumn; // Weight column.
+    grade?: CoreGradesTableCommonColumn; // Grade column.
+    range?: CoreGradesTableCommonColumn; // Range column.
+    percentage?: CoreGradesTableCommonColumn; // Percentage column.
+    lettergrade?: CoreGradesTableCommonColumn; // Lettergrade column.
+    rank?: CoreGradesTableCommonColumn; // Rank column.
+    average?: CoreGradesTableCommonColumn; // Average column.
+    feedback?: CoreGradesTableCommonColumn; // Feedback column.
+    contributiontocoursetotal?: CoreGradesTableCommonColumn; // Contributiontocoursetotal column.
 };
+
+/**
+ * Grade table common column data.
+ */
+export type CoreGradesTableCommonColumn = {
+    class: string; // Class.
+    content: string; // Cell content.
+    headers: string; // Headers.
+};
+
+/**
+ * Grade table item name column.
+ */
+export type CoreGradesTableItemNameColumn = {
+    class: string; // Class.
+    colspan: number; // Col span.
+    content: string; // Cell content.
+    celltype: string; // Cell type.
+    id: string; // Id.
+};
+
+/**
+ * Grade table leader column.
+ */
+export type CoreGradesTableLeaderColumn = {
+    class: string; // Class.
+    rowspan: number; // Row span.
+    content: undefined; // The WS doesn't return this data, but we declare it to make it coherent with the other columns.
+};
+
+/**
+ * Grade table column.
+ */
+export type CoreGradesTableColumn = CoreGradesTableCommonColumn | CoreGradesTableItemNameColumn | CoreGradesTableLeaderColumn;
 
 /**
  * Grade overview data.

@@ -22,7 +22,6 @@ import {
     CoreGradesFormattedTable,
     CoreGradesFormattedTableColumn,
     CoreGradesFormattedTableRow,
-    CoreGradesFormattedTableRowFilled,
     CoreGradesHelper,
 } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
@@ -203,3 +202,7 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
     }
 
 }
+
+export type CoreGradesFormattedTableRowFilled = Omit<CoreGradesFormattedTableRow, 'id'> & {
+    id: number;
+};

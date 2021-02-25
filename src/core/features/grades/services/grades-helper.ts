@@ -23,6 +23,8 @@ import {
     CoreGradesGradeItem,
     CoreGradesGradeOverview,
     CoreGradesTable,
+    CoreGradesTableColumn,
+    CoreGradesTableItemNameColumn,
     CoreGradesTableRow,
 } from '@features/grades/services/grades';
 import { CoreTextUtils } from '@services/utils/text';
@@ -56,27 +58,31 @@ export class CoreGradesHelperProvider {
             rowclass: '',
         };
         for (const name in tableRow) {
-            if (typeof tableRow[name].content != 'undefined' && tableRow[name].content !== null) {
-                let content = String(tableRow[name].content);
+            const column: CoreGradesTableColumn = tableRow[name];
 
-                if (name == 'itemname') {
-                    this.setRowIcon(row, content);
-                    row.link = this.getModuleLink(content);
-                    row.rowclass += tableRow[name]!.class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                    row.rowclass += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
-
-                    content = content.replace(/<\/span>/gi, '\n');
-                    content = CoreTextUtils.cleanTags(content);
-                } else {
-                    content = CoreTextUtils.replaceNewLines(content, '<br>');
-                }
-
-                if (content == '&nbsp;') {
-                    content = '';
-                }
-
-                row[name] = content.trim();
+            if (column.content === undefined || column.content === null) {
+                continue;
             }
+
+            let content = String(column.content);
+
+            if (name == 'itemname') {
+                this.setRowIcon(row, content);
+                row.link = this.getModuleLink(content);
+                row.rowclass += column.class.indexOf('hidden') >= 0 ? ' hidden' : '';
+                row.rowclass += column.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+
+                content = content.replace(/<\/span>/gi, '\n');
+                content = CoreTextUtils.cleanTags(content);
+            } else {
+                content = CoreTextUtils.replaceNewLines(content, '<br>');
+            }
+
+            if (content == '&nbsp;') {
+                content = '';
+            }
+
+            row[name] = content.trim();
         }
 
         return row;
@@ -88,35 +94,41 @@ export class CoreGradesHelperProvider {
      * @param tableRow JSON object representing row of grades table data.
      * @return Formatted row object.
      */
-    protected formatGradeRowForTable(tableRow: CoreGradesTableRow): CoreGradesFormattedRowForTable {
-        const row: CoreGradesFormattedRowForTable = {};
+    protected formatGradeRowForTable(tableRow: CoreGradesTableRow): CoreGradesFormattedTableRow {
+        const row: CoreGradesFormattedTableRow = {};
         for (let name in tableRow) {
-            if (typeof tableRow[name].content != 'undefined' && tableRow[name].content !== null) {
-                let content = String(tableRow[name].content);
+            const column: CoreGradesTableColumn = tableRow[name];
 
-                if (name == 'itemname') {
-                    row.id = parseInt(tableRow[name]!.id.split('_')[1], 10);
-                    row.colspan = tableRow[name]!.colspan;
-                    row.rowspan = (tableRow.leader && tableRow.leader.rowspan) || 1;
-
-                    this.setRowIcon(row, content);
-                    row.rowclass = tableRow[name]!.class.indexOf('leveleven') < 0 ? 'odd' : 'even';
-                    row.rowclass += tableRow[name]!.class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                    row.rowclass += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
-
-                    content = content.replace(/<\/span>/gi, '\n');
-                    content = CoreTextUtils.cleanTags(content);
-                    name = 'gradeitem';
-                } else {
-                    content = CoreTextUtils.replaceNewLines(content, '<br>');
-                }
-
-                if (content == '&nbsp;') {
-                    content = '';
-                }
-
-                row[name] = content.trim();
+            if (column.content === undefined || column.content === null) {
+                continue;
             }
+
+            let content = String(column.content);
+
+            if (name == 'itemname') {
+                const itemNameColumn = <CoreGradesTableItemNameColumn> column;
+
+                row.id = parseInt(itemNameColumn.id.split('_')[1], 10);
+                row.colspan = itemNameColumn.colspan;
+                row.rowspan = tableRow.leader?.rowspan || 1;
+
+                this.setRowIcon(row, content);
+                row.rowclass = itemNameColumn.class.indexOf('leveleven') < 0 ? 'odd' : 'even';
+                row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
+                row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+
+                content = content.replace(/<\/span>/gi, '\n');
+                content = CoreTextUtils.cleanTags(content);
+                name = 'gradeitem';
+            } else {
+                content = CoreTextUtils.replaceNewLines(content, '<br>');
+            }
+
+            if (content == '&nbsp;') {
+                content = '';
+            }
+
+            row[name] = content.trim();
         }
 
         return row;
@@ -147,9 +159,9 @@ export class CoreGradesHelperProvider {
      */
     formatGradesTable(table: CoreGradesTable): CoreGradesFormattedTable {
         const maxDepth = table.maxdepth;
-        const formatted = {
-            columns: [] as any[],
-            rows: [] as any[],
+        const formatted: CoreGradesFormattedTable = {
+            columns: [],
+            rows: [],
         };
 
         // Columns, in order.
@@ -185,7 +197,7 @@ export class CoreGradesHelperProvider {
         }
 
         for (const colName in columns) {
-            if (typeof normalRow[colName] != 'undefined') {
+            if (normalRow && typeof normalRow[colName] != 'undefined') {
                 formatted.columns.push({
                     name: colName,
                     colspan: colName == 'gradeitem' ? maxDepth : 1,
@@ -561,10 +573,7 @@ export class CoreGradesHelperProvider {
      * @param text HTML where the image will be rendered.
      * @return Row object with the image.
      */
-    protected setRowIcon(
-        row: CoreGradesFormattedRowForTable | CoreGradesFormattedRow,
-        text: string,
-    ): CoreGradesFormattedRowForTable {
+    protected setRowIcon<T extends CoreGradesFormattedRowCommonData>(row: T, text: string): T {
         text = text.replace('%2F', '/').replace('%2f', '/');
 
         if (text.indexOf('/agg_mean') > -1) {
@@ -683,10 +692,6 @@ export class CoreGradesHelperProvider {
 
 export const CoreGradesHelper = makeSingleton(CoreGradesHelperProvider);
 
-// @todo formatted data types.
-export type CoreGradesFormattedRowForTable = any;
-export type CoreGradesFormattedTableColumn = any;
-
 export type CoreGradesFormattedItem = CoreGradesGradeItem & {
     weight?: string; // Weight.
     grade?: string; // The grade formatted.
@@ -696,15 +701,13 @@ export type CoreGradesFormattedItem = CoreGradesGradeItem & {
     average?: string; // Grade average.
 };
 
-export type CoreGradesFormattedRow = {
+export type CoreGradesFormattedRowCommonData = {
     icon?: string;
-    link?: string | false;
     rowclass?: string;
     itemtype?: string;
     image?: string;
     itemmodule?: string;
     rowspan?: number;
-    itemname?: string; // The item returned data.
     weight?: string; // Weight column.
     grade?: string; // Grade column.
     range?: string;// Range column.
@@ -716,20 +719,26 @@ export type CoreGradesFormattedRow = {
     contributiontocoursetotal?: string; // Contributiontocoursetotal column.
 };
 
-export type CoreGradesFormattedTableRow = CoreGradesFormattedTableRowFilled | CoreGradesFormattedTableRowEmpty;
+export type CoreGradesFormattedRow = CoreGradesFormattedRowCommonData & {
+    link?: string | false;
+    itemname?: string; // The item returned data.
+};
+
 export type CoreGradesFormattedTable = {
     columns: CoreGradesFormattedTableColumn[];
     rows: CoreGradesFormattedTableRow[];
 };
-export type CoreGradesFormattedTableRowFilled = {
-    // @todo complete types.
-    id: number;
-    itemtype: 'category' | 'leader';
-    grade: unknown;
-    percentage: unknown;
+
+export type CoreGradesFormattedTableRow = CoreGradesFormattedRowCommonData & {
+    id?: number;
+    colspan?: number;
+    gradeitem?: string; // The item returned data.
 };
-type CoreGradesFormattedTableRowEmpty ={
-    //
+
+export type CoreGradesFormattedTableColumn = {
+    name: string;
+    colspan: number;
+    hiddenPhone: boolean;
 };
 
 /**
