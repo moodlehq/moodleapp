@@ -22,6 +22,7 @@ import { ModalController, Translate } from '@singletons';
 @Component({
     selector: 'core-viewer-image',
     templateUrl: 'image.html',
+    styleUrls: ['image.scss'],
 })
 export class CoreViewerImageComponent implements OnInit {
 

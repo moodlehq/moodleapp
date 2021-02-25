@@ -8,7 +8,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<!-- @todo: zoom="true" maxZoom="2" class="core-zoom-pane". Now we need to use ionSlider? -->
-<ion-content [scrollX]="true" [scrollY]="true">
+<!-- @todo: zoom="true" maxZoom="2" . Now we need to use ionSlider? -->
+<ion-content [scrollX]="true" [scrollY]="true" class="core-zoom-pane">
     <img [src]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
 </ion-content>
