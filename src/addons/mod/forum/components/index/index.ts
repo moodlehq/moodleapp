@@ -162,6 +162,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 });
             }
         });
+
+        // @todo Listen for offline ratings saved and synced.
     }
 
     async ngAfterViewInit(): Promise<void> {
@@ -219,6 +221,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             await Promise.all([
                 this.fetchOfflineDiscussions(),
                 this.fetchDiscussions(refresh),
+                // @todo fetch hasOfflineRatings.
             ]);
         } catch (error) {
             if (refresh) {

@@ -194,6 +194,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             AddonModForum.instance.invalidateDiscussionsList(this.forumId);
         }
 
+        // @todo Listen for offline ratings saved and synced.
+
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data: any) => {
             if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
                 AddonModForum.instance.invalidateDiscussionsList(this.forumId).finally(() => {
@@ -476,6 +478,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             } else {
                 this.canPin = false;
             }
+
+            // @todo fetch hasOfflineRatings.
         } catch (error) {
             CoreDomUtils.instance.showErrorModal(error);
         } finally {
