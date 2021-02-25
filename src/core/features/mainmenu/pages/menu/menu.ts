@@ -15,6 +15,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonTabs } from '@ionic/angular';
+import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
@@ -50,6 +51,11 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     protected pendingRedirect?: CoreRedirectPayload;
     protected urlToOpen?: string;
     protected keyboardObserver?: CoreEventObserver;
+    protected resizeFunction: () => void;
+    protected backButtonFunction: (event: BackButtonEvent) => void;
+    protected selectHistory: string[] = [];
+    protected selectedTab?: string;
+    protected firstSelectedTab?: string;
 
     @ViewChild('mainTabs') mainTabs?: IonTabs;
 
@@ -57,7 +63,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         protected route: ActivatedRoute,
         protected changeDetector: ChangeDetectorRef,
         protected router: Router,
-    ) {}
+    ) {
+        this.resizeFunction = this.initHandlers.bind(this);
+        this.backButtonFunction = this.backButtonClicked.bind(this);
+    }
 
     /**
      * Initialize the component.
@@ -100,7 +109,8 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             }
         });
 
-        window.addEventListener('resize', this.initHandlers.bind(this));
+        window.addEventListener('resize', this.resizeFunction);
+        document.addEventListener('ionBackButton', this.backButtonFunction);
 
         if (CoreApp.isIOS()) {
             // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
@@ -209,7 +219,8 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscription?.unsubscribe();
         this.redirectObs?.off();
-        window.removeEventListener('resize', this.initHandlers.bind(this));
+        window.removeEventListener('resize', this.resizeFunction);
+        document.removeEventListener('ionBackButton', this.backButtonFunction);
         this.keyboardObserver?.off();
     }
 
@@ -260,6 +271,48 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         } catch {
             // User canceled.
         }
+    }
+
+    /**
+     * Selected tab has changed.
+     *
+     * @param event Event.
+     */
+    tabChanged(event: {tab: string}): void {
+        this.selectedTab = event.tab;
+        this.firstSelectedTab = this.firstSelectedTab ?? event.tab;
+        this.selectHistory.push(event.tab);
+    }
+
+    /**
+     * Back button clicked.
+     *
+     * @param event Event.
+     */
+    protected backButtonClicked(event: BackButtonEvent): void {
+        event.detail.register(20, (processNextHandler: () => void) => {
+            if (this.selectHistory.length > 1) {
+                // The previous page in history is not the last one, we need the previous one.
+                const previousTab = this.selectHistory[this.selectHistory.length - 2];
+
+                // Remove curent and previous tabs from history.
+                this.selectHistory = this.selectHistory.filter((tab) => this.selectedTab != tab && previousTab != tab);
+
+                this.mainTabs?.select(previousTab);
+
+                return;
+            }
+
+            if (this.firstSelectedTab && this.selectedTab != this.firstSelectedTab) {
+                // All history is gone but we are not in the first selected tab.
+                this.selectHistory = [];
+                this.mainTabs?.select(this.firstSelectedTab);
+
+                return;
+            }
+
+            processNextHandler();
+        });
     }
 
 }

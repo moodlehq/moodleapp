@@ -56,7 +56,6 @@ export class CoreAppProvider {
     protected isKeyboardShown = false;
     protected keyboardOpening = false;
     protected keyboardClosing = false;
-    protected backActions: {callback: () => boolean; priority: number}[] = [];
     protected forceOffline = false;
     protected redirect?: CoreRedirectData;
 
@@ -68,11 +67,6 @@ export class CoreAppProvider {
         this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
         this.db = CoreDB.getDB(DBNAME);
         this.logger = CoreLogger.getInstance('CoreAppProvider');
-
-        // @todo
-        // this.platform.registerBackButtonAction(() => {
-        //     this.backButtonAction();
-        // }, 100);
     }
 
     /**
@@ -592,37 +586,18 @@ export class CoreAppProvider {
     }
 
     /**
-     * The back button event is triggered when the user presses the native
-     * platform's back button, also referred to as the "hardware" back button.
-     * This event is only used within Cordova apps running on Android and
-     * Windows platforms. This event is not fired on iOS since iOS doesn't come
-     * with a hardware back button in the same sense an Android or Windows device
-     * does.
+     * Register a back button action.
+     * This function is deprecated and no longer works. You should now use Ionic events directly, please see:
+     * https://ionicframework.com/docs/developing/hardware-back-button
      *
-     * Registering a hardware back button action and setting a priority allows
-     * apps to control which action should be called when the hardware back
-     * button is pressed. This method decides which of the registered back button
-     * actions has the highest priority and should be called.
-     *
-     * @param callback Called when the back button is pressed, if this registered action has the highest priority.
-     * @param priority Set the priority for this action. All actions sorted by priority will be executed since one of
-     *                 them returns true.
-     *                 - Priorities higher or equal than 1000 will go before closing modals
-     *                 - Priorities lower than 500 will only be executed if you are in the first state of the app (before exit).
+     * @param callback Called when the back button is pressed.
+     * @param priority Priority.
      * @return A function that, when called, will unregister the back button action.
+     * @deprecated since 3.9.5
      */
-    registerBackButtonAction(callback: () => boolean, priority: number = 0): () => boolean {
-        const action = { callback, priority };
-
-        this.backActions.push(action);
-
-        this.backActions.sort((a, b) => b.priority - a.priority);
-
-        return (): boolean => {
-            const index = this.backActions.indexOf(action);
-
-            return index >= 0 && !!this.backActions.splice(index, 1);
-        };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    registerBackButtonAction(callback: () => boolean, priority = 0): () => boolean {
+        return () => false;
     }
 
     /**
