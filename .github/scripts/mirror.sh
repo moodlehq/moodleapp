@@ -1,5 +1,5 @@
 #!/bin/bash
-source "/.github/scripts/functions.sh"
+source "./.github/scripts/functions.sh"
 BRANCH=${GITHUB_REF##*/}
 
 if [ -z $GIT_TOKEN ] || [ -z $BRANCH ] || [ $GITHUB_REPOSITORY != 'moodlehq/moodleapp' ]; then
