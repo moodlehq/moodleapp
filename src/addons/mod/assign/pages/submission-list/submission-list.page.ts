@@ -24,7 +24,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreObject } from '@singletons/object';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -368,9 +367,9 @@ class AddonModAssignSubmissionListManager extends CorePageItemsListManager<Addon
      * @inheritdoc
      */
     protected getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
-        return CoreObject.withoutEmpty({
+        return {
             blindId: submission.blindid,
-        });
+        };
     }
 
     /**

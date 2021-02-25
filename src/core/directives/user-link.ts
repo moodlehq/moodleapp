@@ -15,8 +15,6 @@
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 
-import { CoreObject } from '@singletons/object';
-
 /**
  * Directive to go to user profile on click.
  */
@@ -50,10 +48,10 @@ export class CoreUserLinkDirective implements OnInit {
             event.stopPropagation();
 
             CoreNavigator.navigateToSitePath('user', {
-                params: CoreObject.withoutEmpty({
+                params: {
                     userId: this.userId,
                     courseId: this.courseId,
-                }),
+                },
             });
         });
     }

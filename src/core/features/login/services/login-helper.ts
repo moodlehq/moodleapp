@@ -33,7 +33,6 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreNavigator } from '@services/navigator';
-import { CoreObject } from '@singletons/object';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -428,7 +427,7 @@ export class CoreLoginHelperProvider {
             return ['/login/credentials', { siteUrl: url }];
         }
 
-        return ['/login/site', CoreObject.withoutEmpty({ showKeyboard: showKeyboard })];
+        return ['/login/site', { showKeyboard }];
     }
 
     /**

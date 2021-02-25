@@ -17,7 +17,6 @@ import { CanActivate, CanLoad, UrlTree } from '@angular/router';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
-import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '../constants';
 
 @Injectable({ providedIn: 'root' })
@@ -62,10 +61,10 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
                 );
                 const route = Router.parseUrl('/main');
 
-                route.queryParams = CoreObject.withoutEmpty({
+                route.queryParams = {
                     redirectPath: redirect.page,
                     redirectParams: redirect.params,
-                });
+                };
 
                 return loggedIn ? route : true;
             }
@@ -78,10 +77,10 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
             // Redirect to non-site path.
             const route = Router.parseUrl(redirect.page);
 
-            route.queryParams = CoreObject.withoutEmpty({
+            route.queryParams = {
                 redirectPath: redirect.page,
                 redirectParams: redirect.params,
-            });
+            };
 
             return route;
         } finally {

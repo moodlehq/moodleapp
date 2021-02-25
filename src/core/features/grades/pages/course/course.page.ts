@@ -27,7 +27,6 @@ import {
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSplitViewComponent, CoreSplitViewMode } from '@components/split-view/split-view';
-import { CoreObject } from '@singletons/object';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreNavigator } from '@services/navigator';
 
@@ -174,7 +173,7 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
      * @inheritdoc
      */
     protected getItemQueryParams(): Params {
-        return CoreObject.withoutEmpty({ userId: this.userId });
+        return { userId: this.userId };
     }
 
     /**

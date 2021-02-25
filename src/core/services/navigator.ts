@@ -127,7 +127,7 @@ export class CoreNavigatorService {
         const url: string[] = [/^[./]/.test(path) ? path : `./${path}`];
         const navigationOptions: NavigationOptions = CoreObject.withoutEmpty({
             animated: options.animated,
-            queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : options.params,
+            queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params),
             relativeTo: path.startsWith('/') ? null : this.getCurrentRoute(),
         });
 
