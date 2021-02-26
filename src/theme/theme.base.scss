@@ -95,7 +95,8 @@ ion-button.button-small ion-icon.faicon[slot] {
 }
 
 // Ionic alert.
-ion-alert.core-alert-network-error .alert-head {
+ion-alert.core-alert-network-error .alert-head,
+div.core-iframe-network-error {
     position: relative;
     content: " ";
     background: url("/assets/fonts/font-awesome/solid/wifi.svg") no-repeat 50% 50%;
@@ -113,7 +114,8 @@ ion-alert.core-alert-network-error .alert-head {
         mask: url("/assets/fonts/font-awesome/solid/exclamation-triangle.svg") no-repeat 50% 50%;
     }
 }
-[dir=rtl] ion-alert.core-alert-network-error .alert-head::after {
+[dir=rtl] ion-alert.core-alert-network-error .alert-head::after,
+[dir=rtl] div.core-iframe-network-error::after {
     right: unset;
     left: -15%;
 }
@@ -441,4 +443,8 @@ ion-button.core-button-select {
 // Monospaced font.
 .core-monospaced {
     font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+}
+
+.core-iframe-offline-disabled {
+    display: none !important;
 }

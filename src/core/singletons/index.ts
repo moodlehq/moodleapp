@@ -252,4 +252,4 @@ export const NavController = makeSingleton(NavControllerService);
 export const Router = makeSingleton(RouterService, ['routerState', 'url']);
 
 // Convert external libraries injectables.
-export const Translate = makeSingleton(TranslateService, ['onLangChange']);
+export const Translate = makeSingleton(TranslateService, ['onLangChange', 'translations']);

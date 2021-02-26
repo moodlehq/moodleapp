@@ -25,10 +25,11 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 
-import { makeSingleton, Network, Platform, NgZone } from '@singletons';
+import { makeSingleton, Network, Platform, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Possible types of frame elements.
@@ -74,21 +75,7 @@ export class CoreIframeUtilsProvider {
             }
 
             // The frame has an online URL but the app is offline. Show a warning, or a link if the URL can be opened in the app.
-            const div = document.createElement('div');
-
-            div.setAttribute('text-center', '');
-            div.setAttribute('padding', '');
-            div.classList.add('core-iframe-offline-warning');
-
-            // @todo Handle link
-
-            // Add a class to specify that the iframe is hidden.
-            element.classList.add('core-iframe-offline-disabled');
-
-            if (isSubframe) {
-                // We cannot apply CSS styles in subframes, just hide the iframe.
-                element.style.display = 'none';
-            }
+            this.addOfflineWarning(element, src, isSubframe);
 
             // If the network changes, check it again.
             const subscription = Network.onConnect().subscribe(() => {
@@ -122,6 +109,77 @@ export class CoreIframeUtilsProvider {
         }
 
         return false;
+    }
+
+    /**
+     * Add an offline warning message.
+     *
+     * @param element The frame to check (iframe, embed, ...).
+     * @param src Frame src.
+     * @param isSubframe Whether it's a frame inside another frame.
+     * @return Promise resolved when done.
+     */
+    protected async addOfflineWarning(element: HTMLElement, src: string, isSubframe?: boolean): Promise<void> {
+        const site = CoreSites.getCurrentSite();
+        const username = site ? site.getInfo()?.username : undefined;
+
+        const div = document.createElement('div');
+        div.classList.add('core-iframe-offline-warning', 'ion-padding', 'ion-text-center');
+
+        // Add a class to specify that the iframe is hidden.
+        element.classList.add('core-iframe-offline-disabled');
+        if (isSubframe) {
+            // We cannot apply CSS styles in subframes, just hide the iframe.
+            element.style.display = 'none';
+        }
+
+        const canHandleLink = await CoreContentLinksHelper.canHandleLink(src, undefined, username);
+
+        if (!canHandleLink) {
+            // @todo: The not connected icon isn't seen due to the div's height. Also, it's quite big.
+            div.innerHTML = (isSubframe ? '' : '<div class="core-iframe-network-error"></div>') +
+                '<p>' + Translate.instant('core.networkerroriframemsg') + '</p>';
+
+            element.parentElement?.insertBefore(div, element);
+
+            return;
+        }
+
+        let link: HTMLElement | undefined;
+
+        if (isSubframe) {
+            // Ionic styles are not available in subframes, adding some minimal inline styles.
+            link = document.createElement('a');
+            link.style.display = 'block';
+            link.style.padding = '1em';
+            link.style.fontWeight = '500';
+            link.style.textAlign = 'center';
+            link.style.textTransform = 'uppercase';
+            link.style.cursor = 'pointer';
+        } else {
+            link = document.createElement('ion-button');
+            link.setAttribute('expand', 'block');
+            link.setAttribute('size', 'default');
+            link.classList.add(
+                'button',
+                'button-block',
+                'button-default',
+                'button-solid',
+                'ion-activatable',
+                'ion-focusable',
+            );
+        }
+
+        link.innerHTML = Translate.instant('core.viewembeddedcontent');
+
+        link.onclick = (event: Event): void => {
+            CoreContentLinksHelper.handleLink(src, username);
+            event.preventDefault();
+        };
+
+        div.appendChild(link);
+
+        element.parentElement?.insertBefore(div, element);
     }
 
     /**
