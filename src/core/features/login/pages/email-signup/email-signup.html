@@ -35,7 +35,7 @@
         </ion-list>
 
         <!-- Age verification. -->
-        <form ion-list *ngIf="allRequiredSupported && settingsLoaded && settings && ageDigitalConsentVerification"
+        <form *ngIf="allRequiredSupported && settingsLoaded && settings && ageDigitalConsentVerification"
             [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
 
             <ion-item-divider class="ion-text-wrap">
@@ -74,7 +74,7 @@
         </form>
 
         <!-- Signup form. -->
-        <form ion-list *ngIf="allRequiredSupported && settingsLoaded && settings && !ageDigitalConsentVerification"
+        <form *ngIf="allRequiredSupported && settingsLoaded && settings && !ageDigitalConsentVerification"
             [formGroup]="signupForm" (ngSubmit)="create($event)"  #signupFormEl>
 
             <ion-item class="ion-text-wrap ion-text-center">

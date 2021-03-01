@@ -15,10 +15,13 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="groupsLoaded">
-        <form ion-list *ngIf="showForm" #newDiscFormEl>
+        <form *ngIf="showForm" #newDiscFormEl>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-                <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="newDiscussion.subject" name="subject"></ion-input>
+                <ion-input
+                    [(ngModel)]="newDiscussion.subject"
+                    type="text" [placeholder]="'addon.mod_forum.subject' | translate" name="subject">
+                </ion-input>
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
@@ -64,7 +67,9 @@
                 <ion-label>
                     <ion-row>
                         <ion-col>
-                            <ion-button expand="block" (click)="add()" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null">
+                            <ion-button
+                                expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
+                                (click)="add()">
                                 {{ 'addon.mod_forum.posttoforum' | translate }}
                             </ion-button>
                         </ion-col>

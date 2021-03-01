@@ -9,7 +9,9 @@
                         <ion-icon name="fa-star" class="addon-forum-star"
                             *ngIf="discussion && !post.parentid && !discussion.pinned && discussion.starred">
                         </ion-icon>
-                        <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId">
+                        <core-format-text
+                            [text]="post.subject"
+                            contextLevel="module" [contextInstanceId]="forum && forum.cmid" [courseId]="courseId">
                         </core-format-text>
                     </h2>
                     <ion-note *ngIf="trackPosts && post.unread"
@@ -18,7 +20,8 @@
                         </ion-icon>
                     </ion-note>
                     <ion-button *ngIf="optionsMenuEnabled"
-                        fill="clear" color="dark" (click)="showOptionsMenu($event)" [attr.aria-label]="('core.displayoptions' | translate)">
+                        fill="clear" color="dark" [attr.aria-label]="('core.displayoptions' | translate)"
+                        (click)="showOptionsMenu($event)">
                         <ion-icon name="ellipsis-vertical" slot="icon-only">
                         </ion-icon>
                     </ion-button>
@@ -43,7 +46,8 @@
                             </ion-icon>
                         </ion-note>
                         <ion-button *ngIf="optionsMenuEnabled"
-                            fill="clear" color="dark" (click)="showOptionsMenu($event)" [attr.aria-label]="('core.displayoptions' | translate)">
+                            fill="clear" color="dark" [attr.aria-label]="('core.displayoptions' | translate)"
+                            (click)="showOptionsMenu($event)">
                             <ion-icon name="ellipsis-vertical" slot="icon-only">
                             </ion-icon>
                         </ion-button>
@@ -85,8 +89,10 @@
         <ion-item *ngIf="post.id > 0 && post.capabilities.reply && !post.isprivatereply"
             class="ion-no-padding ion-text-end addon-forum-reply-button">
             <ion-label>
-                <ion-button fill="clear" size="small" (click)="showReplyForm()"
-                    [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId" [attr.aria-expanded]="replyData.replyingTo === post.id">
+                <ion-button fill="clear" size="small"
+                    [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
+                    [attr.aria-expanded]="replyData.replyingTo === post.id"
+                    (click)="showReplyForm()">
                     <ion-icon name="fa-reply" slot="start">
                     </ion-icon> {{ 'addon.mod_forum.reply' | translate }}
                 </ion-button>
@@ -94,11 +100,12 @@
         </ion-item>
     </div>
 
-    <form *ngIf="(post.id > 0 && !replyData.isEditing && replyData.replyingTo == post.id) || (post.id <=0 && replyData.isEditing && replyData.replyingTo == post.parentid)"
-        ion-list [id]="'addon-forum-reply-edit-form-' + uniqueId" #replyFormEl>
+    <form *ngIf="showForm"
+        [id]="'addon-forum-reply-edit-form-' + uniqueId" #replyFormEl>
         <ion-item>
             <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject"></ion-input>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject">
+            </ion-input>
         </ion-item>
         <ion-item>
             <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>

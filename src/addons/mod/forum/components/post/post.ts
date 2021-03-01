@@ -98,6 +98,12 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         @Optional() protected content?: IonContent,
     ) {}
 
+    get showForm(): boolean {
+        return this.post.id > 0
+            ? !this.replyData.isEditing && this.replyData.replyingTo === this.post.id
+            : this.replyData.isEditing && this.replyData.replyingTo === this.post.parentid;
+    }
+
     /**
      * Component being initialized.
      */
