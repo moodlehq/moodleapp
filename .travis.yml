@@ -1,7 +1,48 @@
-language: node_js
+os: linux
+dist: trusty
+language: android
 node_js: 12
-cache: npm
+
+if: env(DEPLOY) = 1
+
+git:
+  depth: 3
+
+android:
+    components:
+    - tools
+    - platform-tools
+    - build-tools-29.0.3
+    - android-28
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+
+before_cache:
+  - rm -rf $HOME/.cache/electron-builder/wine
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  npm: true
+  directories:
+    - $HOME/.npm
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+
+before_install:
+  - nvm install 12
+  - node --version
+  - npm --version
+  - nvm --version
+  - npm ci
+  - npm install npm@^6 gulp -g
+
+before_script:
+  - gulp
+
 script:
-  - npm run lint
-  - npm run test:ci
-  - npm run build:prod
+  - scripts/build.sh
