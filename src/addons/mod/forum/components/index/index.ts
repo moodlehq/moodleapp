@@ -22,6 +22,8 @@ import {
     AddonModForumProvider,
     AddonModForumSortOrder,
     AddonModForumDiscussion,
+    AddonModForumNewDiscussionData,
+    AddonModForumReplyDiscussionData,
 } from '@addons/mod/forum/services/forum.service';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/offline.service';
 import { ModalController, PopoverController, Translate } from '@singletons';
@@ -127,7 +129,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             AddonModForumProvider.REPLY_DISCUSSION_EVENT,
             this.eventReceived.bind(this, false),
         );
-        this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data: any) => {
+        this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
             if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module!.id) {
                 AddonModForum.instance.invalidateDiscussionsList(this.forum!.id).finally(() => {
                     if (data.discussionId) {
@@ -152,7 +154,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     }
 
                     if (typeof data.deleted != 'undefined' && data.deleted) {
-                        if (data.post.parentid == 0 && CoreScreen.instance.isTablet && !this.discussions.empty) {
+                        if (data.post?.parentid == 0 && CoreScreen.instance.isTablet && !this.discussions.empty) {
                             // Discussion deleted, clear details page.
                             this.discussions.select(this.discussions[0]);
                         }
@@ -275,7 +277,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
             if (updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger<AddonModForumManualSyncData>(AddonModForumSyncProvider.MANUAL_SYNCED, {
+                CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
                     forumId: forum.id,
                     userId: CoreSites.instance.getCurrentSiteUserId(),
                     source: 'index',
@@ -553,18 +555,22 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param isNewDiscussion Whether it's a new discussion event.
      * @param data Event data.
      */
-    protected eventReceived(isNewDiscussion: boolean, data: any): void {
+    protected eventReceived(
+        isNewDiscussion: boolean,
+        data: AddonModForumNewDiscussionData | AddonModForumReplyDiscussionData,
+    ): void {
         if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module?.id) {
             this.showLoadingAndRefresh(false).finally(() => {
                 // If it's a new discussion in tablet mode, try to open it.
                 if (isNewDiscussion && CoreScreen.instance.isTablet) {
+                    const newDiscussionData = data as AddonModForumNewDiscussionData;
                     const discussion = this.discussions.items.find(disc => {
                         if (this.discussions.isOfflineDiscussion(disc)) {
-                            return disc.timecreated === data.discTimecreated;
+                            return disc.timecreated === newDiscussionData.discTimecreated;
                         }
 
                         if (this.discussions.isOnlineDiscussion(disc)) {
-                            return CoreArray.contains(data.discussionIds, disc.discussion);
+                            return CoreArray.contains(newDiscussionData.discussionIds ?? [], disc.discussion);
                         }
 
                         return false;

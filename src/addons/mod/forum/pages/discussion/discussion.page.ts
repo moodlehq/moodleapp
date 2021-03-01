@@ -37,7 +37,7 @@ import {
 } from '../../services/forum.service';
 import { AddonModForumHelper } from '../../services/helper.service';
 import { AddonModForumOffline } from '../../services/offline.service';
-import { AddonModForumManualSyncData, AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync.service';
+import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync.service';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -170,7 +170,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }
 
         // Refresh data if this discussion is synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonModForumSyncProvider.AUTO_SYNCED, (data: any) => {
+        this.syncObserver = CoreEvents.on(AddonModForumSyncProvider.AUTO_SYNCED, data => {
             if (data.forumId == this.forumId && this.discussionId == data.discussionId
                     && data.userId == CoreSites.instance.getCurrentSiteUserId()) {
                 // Refresh the data.
@@ -180,7 +180,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }, CoreSites.instance.getCurrentSiteId());
 
         // Refresh data if this forum discussion is synchronized from discussions list.
-        this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, (data: AddonModForumManualSyncData) => {
+        this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, data => {
             if (data.source != 'discussion' && data.forumId == this.forumId &&
                     data.userId == CoreSites.instance.getCurrentSiteUserId()) {
                 // Refresh the data.
@@ -196,7 +196,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
         // @todo Listen for offline ratings saved and synced.
 
-        this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, (data: any) => {
+        this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
             if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
                 AddonModForum.instance.invalidateDiscussionsList(this.forumId).finally(() => {
                     if (typeof data.locked != 'undefined') {
@@ -210,7 +210,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                     }
 
                     if (typeof data.deleted != 'undefined' && data.deleted) {
-                        if (!data.post.parentid) {
+                        if (!data.post?.parentid) {
                             // @todo
                             // if (this.svComponent && this.svComponent.isOn()) {
                             //     this.svComponent.emptyDetails();
@@ -545,7 +545,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
                     if (result && result.updated) {
                         // Sync successful, send event.
-                        CoreEvents.trigger<AddonModForumManualSyncData>(AddonModForumSyncProvider.MANUAL_SYNCED, {
+                        CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
                             forumId: this.forumId,
                             userId: CoreSites.instance.getCurrentSiteUserId(),
                             source: 'discussion',

@@ -120,7 +120,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
         }
 
         // Refresh data if this discussion is synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonModForumSyncProvider.AUTO_SYNCED, (data: any) => {
+        this.syncObserver = CoreEvents.on(AddonModForumSyncProvider.AUTO_SYNCED, data => {
             if (data.forumId == this.forumId && data.userId == CoreSites.instance.getCurrentSiteUserId()) {
                 CoreDomUtils.instance.showAlertTranslated('core.notice', 'core.contenteditingsynced');
                 this.returnToDiscussions();

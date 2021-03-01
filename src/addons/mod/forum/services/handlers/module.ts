@@ -95,7 +95,7 @@ export class AddonModForumModuleHandlerService implements CoreCourseModuleHandle
 
         const event = CoreEvents.on(
             AddonModForumProvider.MARK_READ_EVENT,
-            (eventData: { courseId?: number; moduleId?: number; siteId?: string }) => {
+            eventData => {
                 if (eventData.courseId !== courseId || eventData.moduleId !== module.id) {
                     return;
                 }

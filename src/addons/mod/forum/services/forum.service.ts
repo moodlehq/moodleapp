@@ -30,6 +30,22 @@ import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumRepl
 
 const ROOT_CACHE_KEY = 'mmaModForum:';
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonModForumProvider.NEW_DISCUSSION_EVENT]: AddonModForumNewDiscussionData;
+        [AddonModForumProvider.REPLY_DISCUSSION_EVENT]: AddonModForumReplyDiscussionData;
+        [AddonModForumProvider.CHANGE_DISCUSSION_EVENT]: AddonModForumChangeDiscussionData;
+        [AddonModForumProvider.MARK_READ_EVENT]: AddonModForumMarkReadData;
+    }
+
+}
+
 /**
  * Service that provides some features for forums.
  *
@@ -2151,3 +2167,44 @@ export type AddonModForumUpdateDiscussionPostWSParams = {
  * Data returned by mod_forum_update_discussion_post WS.
  */
 export type AddonModForumUpdateDiscussionPostWSResponse = CoreStatusWithWarningsWSResponse;
+
+/**
+ * Data passed to NEW_DISCUSSION_EVENT event.
+ */
+export type AddonModForumNewDiscussionData = {
+    forumId: number;
+    cmId: number;
+    discussionIds?: number[] | null;
+    discTimecreated?: number;
+};
+
+/**
+ * Data passed to REPLY_DISCUSSION_EVENT event.
+ */
+export type AddonModForumReplyDiscussionData = {
+    forumId: number;
+    discussionId: number;
+    cmId: number;
+};
+
+/**
+ * Data passed to CHANGE_DISCUSSION_EVENT event.
+ */
+export type AddonModForumChangeDiscussionData = {
+    forumId: number;
+    discussionId: number;
+    cmId: number;
+    deleted?: boolean;
+    post?: AddonModForumPost;
+    locked?: boolean;
+    pinned?: boolean;
+    starred?: boolean;
+};
+
+/**
+ * Data passed to MARK_READ_EVENT event.
+ */
+export type AddonModForumMarkReadData = {
+    courseId: number;
+    moduleId: number;
+};

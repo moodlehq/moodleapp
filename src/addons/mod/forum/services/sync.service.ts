@@ -35,6 +35,20 @@ import {
 import { AddonModForumHelper } from './helper.service';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './offline.service';
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonModForumSyncProvider.AUTO_SYNCED]: AddonModForumAutoSyncData;
+        [AddonModForumSyncProvider.MANUAL_SYNCED]: AddonModForumManualSyncData;
+    }
+
+}
+
 /**
  * Service to sync forums.
  */
@@ -95,7 +109,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                 if (result && result.updated) {
                     // Sync successful, send event.
-                    CoreEvents.trigger<AddonModForumAutoSyncData>(AddonModForumSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
                         forumId: discussion.forumid,
                         userId: discussion.userid,
                         warnings: result.warnings,
@@ -127,7 +141,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                 if (result && result.updated) {
                     // Sync successful, send event.
-                    CoreEvents.trigger<AddonModForumAutoSyncData>(AddonModForumSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
                         forumId: reply.forumid,
                         discussionId: reply.discussionid,
                         userId: reply.userid,
