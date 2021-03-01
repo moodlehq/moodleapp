@@ -163,10 +163,15 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * User entered the page that contains the component.
      */
-    ionViewDidEnter(): void {
+    async ionViewDidEnter(): Promise<void> {
         if (this.syncObserver) {
             // Already setup.
             return;
+        }
+
+        // The discussion object was not passed as parameter.
+        if (!this.discussion) {
+            await this.loadDiscussion(this.forumId, this.cmId, this.discussionId);
         }
 
         // Refresh data if this discussion is synchronized automatically.
@@ -432,7 +437,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                         }),
                 );
 
-                // The discussion object was not passed as parameter and there is no starting post. Should not happen.
+                // The discussion object was not passed as parameter and there is no starting post.
                 if (!this.discussion) {
                     promises.push(this.loadDiscussion(this.forumId, this.cmId, this.discussionId));
                 }

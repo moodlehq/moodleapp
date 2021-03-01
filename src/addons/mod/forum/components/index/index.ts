@@ -49,6 +49,7 @@ import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/
 import { CoreScreen } from '@services/screen';
 import { CoreArray } from '@singletons/array';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
+import { AddonModForumModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Component that displays a forum entry page.
@@ -101,7 +102,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.discussions = new AddonModForumDiscussionsManager(
             route.component,
             this,
-            courseContentsPage ? 'mod_forum/' : '',
+            courseContentsPage ? `${AddonModForumModuleHandlerService.PAGE_NAME}/` : '',
         );
     }
 
@@ -784,7 +785,7 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<Discussio
     protected getItemPath(discussion: DiscussionItem): string {
         const getRelativePath = () => {
             if (this.isOnlineDiscussion(discussion)) {
-                return discussion.id;
+                return discussion.discussion;
             }
 
             if (this.isOfflineDiscussion(discussion)) {

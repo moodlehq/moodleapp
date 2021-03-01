@@ -41,18 +41,22 @@ import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 
 const mainMenuRoutes: Routes = [
     {
+        path: `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/:discussionId`,
+        loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+    },
+    {
         path: AddonModForumModuleHandlerService.PAGE_NAME,
         loadChildren: () => import('./forum-lazy.module').then(m => m.AddonModForumLazyModule),
     },
     ...conditionalRoutes(
         [
             {
-                path: 'course/index/contents/mod_forum/new/:timeCreated',
+                path: `course/index/contents/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
                 loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                     .then(m => m.AddonForumNewDiscussionPageModule),
             },
             {
-                path: 'course/index/contents/mod_forum/:discussionId',
+                path: `course/index/contents/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
                 loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
             },
         ],
@@ -63,12 +67,12 @@ const mainMenuRoutes: Routes = [
 const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
-            path: 'mod_forum/new/:timeCreated',
+            path: `${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
             loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                 .then(m => m.AddonForumNewDiscussionPageModule),
         },
         {
-            path: 'mod_forum/:discussionId',
+            path: `${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
             loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
         },
     ],
