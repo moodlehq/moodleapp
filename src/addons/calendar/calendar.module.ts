@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 
@@ -27,8 +27,18 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CALENDAR_SITE_SCHEMA } from './services/database/calendar';
 import { CALENDAR_OFFLINE_SITE_SCHEMA } from './services/database/calendar-offline';
 import { AddonCalendarComponentsModule } from './components/components.module';
-import { AddonCalendar } from './services/calendar';
+import { AddonCalendar, AddonCalendarProvider } from './services/calendar';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonCalendarOfflineProvider } from './services/calendar-offline';
+import { AddonCalendarHelperProvider } from './services/calendar-helper';
+import { AddonCalendarSyncProvider } from './services/calendar-sync';
+
+export const ADDON_CALENDAR_SERVICES: Type<unknown>[] = [
+    AddonCalendarProvider,
+    AddonCalendarOfflineProvider,
+    AddonCalendarHelperProvider,
+    AddonCalendarSyncProvider,
+];
 
 const mainMenuChildrenRoutes: Routes = [
     {

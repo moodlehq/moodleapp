@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
@@ -20,6 +20,11 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreSiteHomeHomeHandler, CoreSiteHomeHomeHandlerService } from './services/handlers/sitehome-home';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
+import { CoreSiteHomeProvider } from './services/sitehome';
+
+export const CORE_SITEHOME_SERVICES: Type<unknown>[] = [
+    CoreSiteHomeProvider,
+];
 
 const mainMenuHomeRoutes: Routes = [
     {

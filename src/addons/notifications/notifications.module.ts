@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreCronDelegate } from '@services/cron';
@@ -26,6 +26,13 @@ import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
 import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { AddonNotificationsProvider } from './services/notifications';
+import { AddonNotificationsHelperProvider } from './services/notifications-helper';
+
+export const ADDON_NOTIFICATIONS_SERVICES: Type<unknown>[] = [
+    AddonNotificationsProvider,
+    AddonNotificationsHelperProvider,
+];
 
 const routes: Routes = [
     {

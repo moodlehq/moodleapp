@@ -13,16 +13,22 @@
 // limitations under the License.
 
 import { NgModule, Type } from '@angular/core';
+import { CoreQuestionBehaviourDelegateService } from './services/behaviour-delegate';
+import { CoreQuestionProvider } from './services/question';
+import { CoreQuestionDelegateService } from './services/question-delegate';
+import { CoreQuestionHelperProvider } from './services/question-helper';
 
-import { CoreBlockDelegateService } from './services/block-delegate';
-import { CoreBlockHelperProvider } from './services/block-helper';
-
-export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
-    CoreBlockDelegateService,
-    CoreBlockHelperProvider,
+export const CORE_QUESTION_SERVICES: Type<unknown>[] = [
+    CoreQuestionProvider,
+    CoreQuestionDelegateService,
+    CoreQuestionBehaviourDelegateService,
+    CoreQuestionHelperProvider,
 ];
 
 @NgModule({
+    declarations: [],
+    imports: [],
     providers: [],
+    exports: [],
 })
-export class CoreBlockModule {}
+export class CoreQuestionModule {}

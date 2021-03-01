@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -20,11 +20,18 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { AddonModFolderComponentsModule } from './components/components.module';
+import { AddonModFolderProvider } from './services/folder';
+import { AddonModFolderHelperProvider } from './services/folder-helper';
 import { AddonModFolderIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModFolderListLinkHandler } from './services/handlers/list-link';
 import { AddonModFolderModuleHandler, AddonModFolderModuleHandlerService } from './services/handlers/module';
 import { AddonModFolderPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModFolderPrefetchHandler } from './services/handlers/prefetch';
+
+export const ADDON_MOD_FOLDER_SERVICES: Type<unknown>[] = [
+    AddonModFolderProvider,
+    AddonModFolderHelperProvider,
+];
 
 const routes: Routes = [
     {

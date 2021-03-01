@@ -14,15 +14,18 @@
 
 import { NgModule, Type } from '@angular/core';
 
-import { CoreBlockDelegateService } from './services/block-delegate';
-import { CoreBlockHelperProvider } from './services/block-helper';
+import { CoreContentLinksDelegateService } from './services/contentlinks-delegate';
+import { CoreContentLinksHelperProvider } from './services/contentlinks-helper';
 
-export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
-    CoreBlockDelegateService,
-    CoreBlockHelperProvider,
+export const CORE_CONTENTLINKS_SERVICES: Type<unknown>[] = [
+    CoreContentLinksDelegateService,
+    CoreContentLinksHelperProvider,
 ];
 
 @NgModule({
+    declarations: [],
+    imports: [],
     providers: [],
+    exports: [],
 })
-export class CoreBlockModule {}
+export class CoreContentLinksModule {}

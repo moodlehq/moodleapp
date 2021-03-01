@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -23,14 +23,29 @@ import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModAssignComponentsModule } from './components/components.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
+import { AddonModAssignProvider } from './services/assign';
+import { AddonModAssignHelperProvider } from './services/assign-helper';
+import { AddonModAssignOfflineProvider } from './services/assign-offline';
+import { AddonModAssignSyncProvider } from './services/assign-sync';
 import { OFFLINE_SITE_SCHEMA } from './services/database/assign';
+import { AddonModAssignFeedbackDelegateService } from './services/feedback-delegate';
 import { AddonModAssignIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModAssignListLinkHandler } from './services/handlers/list-link';
 import { AddonModAssignModuleHandler, AddonModAssignModuleHandlerService } from './services/handlers/module';
 import { AddonModAssignPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModAssignPushClickHandler } from './services/handlers/push-click';
 import { AddonModAssignSyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModAssignSubmissionDelegateService } from './services/submission-delegate';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
+
+export const ADDON_MOD_ASSIGN_SERVICES: Type<unknown>[] = [
+    AddonModAssignProvider,
+    AddonModAssignOfflineProvider,
+    AddonModAssignSyncProvider,
+    AddonModAssignHelperProvider,
+    AddonModAssignFeedbackDelegateService,
+    AddonModAssignSubmissionDelegateService,
+];
 
 const routes: Routes = [
     {

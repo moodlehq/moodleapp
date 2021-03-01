@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AddonBadgesMyBadgesLinkHandler } from './services/handlers/mybadges-link';
@@ -23,6 +23,11 @@ import { AddonBadgesUserHandler } from './services/handlers/user';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
+import { AddonBadgesProvider } from './services/badges';
+
+export const ADDON_BADGES_SERVICES: Type<unknown>[] = [
+    AddonBadgesProvider,
+];
 
 const mainMenuRoutes: Routes = [
     {

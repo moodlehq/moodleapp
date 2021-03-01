@@ -18,8 +18,16 @@ import { CoreMainMenuAuthGuard } from '@features/mainmenu/guards/auth';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 
-import { CoreMainMenuDelegate } from './services/mainmenu-delegate';
+import { CoreMainMenuDelegate, CoreMainMenuDelegateService } from './services/mainmenu-delegate';
 import { CoreMainMenuHomeHandler } from './services/handlers/mainmenu';
+import { CoreMainMenuProvider } from './services/mainmenu';
+import { CoreMainMenuHomeDelegateService } from './services/home-delegate';
+
+export const CORE_MAINMENU_SERVICES = [
+    CoreMainMenuHomeDelegateService,
+    CoreMainMenuDelegateService,
+    CoreMainMenuProvider,
+];
 
 const appRoutes: Routes = [
     {

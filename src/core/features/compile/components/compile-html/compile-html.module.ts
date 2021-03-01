@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, Type } from '@angular/core';
-
-import { CoreBlockDelegateService } from './services/block-delegate';
-import { CoreBlockHelperProvider } from './services/block-helper';
-
-export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
-    CoreBlockDelegateService,
-    CoreBlockHelperProvider,
-];
+import { NgModule } from '@angular/core';
+import { CoreCompileHtmlComponent } from './compile-html';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    providers: [],
+    declarations: [
+        CoreCompileHtmlComponent,
+    ],
+    imports: [
+        CoreSharedModule,
+    ],
+    exports: [
+        CoreCompileHtmlComponent,
+    ],
 })
-export class CoreBlockModule {}
+export class CoreCompileHtmlComponentModule {}

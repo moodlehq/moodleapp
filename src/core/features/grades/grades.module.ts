@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
@@ -21,11 +21,18 @@ import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.m
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { CoreGradesProvider } from './services/grades';
+import { CoreGradesHelperProvider } from './services/grades-helper';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesMainMenuHandler, CoreGradesMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
 import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
+
+export const CORE_GRADES_SERVICES: Type<unknown>[] = [
+    CoreGradesProvider,
+    CoreGradesHelperProvider,
+];
 
 const routes: Routes = [
     {

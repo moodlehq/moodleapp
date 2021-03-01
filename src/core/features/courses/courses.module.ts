@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { CoreCoursesProvider } from './services/courses';
+import { CoreCoursesHelperProvider } from './services/courses-helper';
+import { CoreCoursesDashboardProvider } from './services/dashboard';
 import { CoreCoursesCourseLinkHandler } from './services/handlers/course-link';
 import { CoreCoursesIndexLinkHandler } from './services/handlers/courses-index-link';
 
@@ -27,6 +30,12 @@ import { CoreCoursesDashboardLinkHandler } from './services/handlers/dashboard-l
 import { CoreCoursesEnrolPushClickHandler } from './services/handlers/enrol-push-click';
 import { CoreCoursesMyCoursesHomeHandler, CoreCoursesMyCoursesHomeHandlerService } from './services/handlers/my-courses-home';
 import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
+
+export const CORE_COURSES_SERVICES: Type<unknown>[] = [
+    CoreCoursesProvider,
+    CoreCoursesDashboardProvider,
+    CoreCoursesHelperProvider,
+];
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {

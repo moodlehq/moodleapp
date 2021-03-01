@@ -13,16 +13,19 @@
 // limitations under the License.
 
 import { NgModule, Type } from '@angular/core';
+import { CoreFilterProvider } from './services/filter';
+import { CoreFilterDelegateService } from './services/filter-delegate';
+import { CoreFilterHelperProvider } from './services/filter-helper';
 
-import { CoreBlockDelegateService } from './services/block-delegate';
-import { CoreBlockHelperProvider } from './services/block-helper';
-
-export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
-    CoreBlockDelegateService,
-    CoreBlockHelperProvider,
+export const CORE_FILTER_SERVICES: Type<unknown>[] = [
+    CoreFilterProvider,
+    CoreFilterDelegateService,
+    CoreFilterHelperProvider,
 ];
 
 @NgModule({
+    declarations: [],
+    imports: [],
     providers: [],
 })
-export class CoreBlockModule {}
+export class CoreFilterModule { }

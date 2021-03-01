@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 
@@ -24,6 +24,7 @@ import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModQuizAccessRulesModule } from './accessrules/accessrules.module';
 import { AddonModQuizComponentsModule } from './components/components.module';
+import { AddonModQuizAccessRuleDelegateService } from './services/access-rules-delegate';
 import { SITE_SCHEMA } from './services/database/quiz';
 import { AddonModQuizGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModQuizIndexLinkHandler } from './services/handlers/index-link';
@@ -33,6 +34,18 @@ import { AddonModQuizPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModQuizProvider } from './services/quiz';
+import { AddonModQuizHelperProvider } from './services/quiz-helper';
+import { AddonModQuizOfflineProvider } from './services/quiz-offline';
+import { AddonModQuizSyncProvider } from './services/quiz-sync';
+
+export const ADDON_MOD_QUIZ_SERVICES: Type<unknown>[] = [
+    AddonModQuizAccessRuleDelegateService,
+    AddonModQuizProvider,
+    AddonModQuizOfflineProvider,
+    AddonModQuizHelperProvider,
+    AddonModQuizSyncProvider,
+];
 
 const routes: Routes = [
     {

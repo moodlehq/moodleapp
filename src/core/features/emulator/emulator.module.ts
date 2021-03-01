@@ -45,6 +45,33 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 
+export const IONIC_NATIVE_SERVICES = [
+    Badge,
+    Camera,
+    Chooser,
+    Clipboard,
+    Device,
+    Diagnostic,
+    File,
+    FileOpener,
+    FileTransfer,
+    Geolocation,
+    HTTP,
+    InAppBrowser,
+    Keyboard,
+    LocalNotifications,
+    Media,
+    MediaCapture,
+    Network,
+    Push,
+    QRScanner,
+    SplashScreen,
+    StatusBar,
+    SQLite,
+    WebIntent,
+    WebView,
+    Zip,
+];
 // Mock services.
 import { CameraMock } from './services/camera';
 import { ClipboardMock } from './services/clipboard';

@@ -12,15 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 
-import { CoreFileUploaderDelegate } from './services/fileuploader-delegate';
+import { CoreFileUploaderProvider } from './services/fileuploader';
+import { CoreFileUploaderDelegate, CoreFileUploaderDelegateService } from './services/fileuploader-delegate';
+import { CoreFileUploaderHelperProvider } from './services/fileuploader-helper';
 import { CoreFileUploaderAlbumHandler } from './services/handlers/album';
 import { CoreFileUploaderAudioHandler } from './services/handlers/audio';
 import { CoreFileUploaderCameraHandler } from './services/handlers/camera';
 import { CoreFileUploaderFileHandler } from './services/handlers/file';
 import { CoreFileUploaderVideoHandler } from './services/handlers/video';
 
+export const CORE_FILEUPLOADER_SERVICES: Type<unknown>[] = [
+    CoreFileUploaderProvider,
+    CoreFileUploaderHelperProvider,
+    CoreFileUploaderDelegateService,
+];
 
 @NgModule({
     imports: [],

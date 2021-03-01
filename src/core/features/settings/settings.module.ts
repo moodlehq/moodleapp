@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-
 import { CoreSettingsHelperProvider } from './services/settings-helper';
+import { CoreSettingsDelegateService } from './services/settings-delegate';
+
+export const CORE_SETTINGS_SERVICES: Type<unknown>[] = [
+    CoreSettingsDelegateService,
+    CoreSettingsHelperProvider,
+];
 
 const appRoutes: Routes = [
     {
