@@ -29,8 +29,8 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumProvider,
-} from './forum.service';
-import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './offline.service';
+} from './forum';
+import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './offline';
 
 /**
  * Service that provides some features for forums.

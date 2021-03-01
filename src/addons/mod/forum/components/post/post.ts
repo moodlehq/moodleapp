@@ -39,16 +39,16 @@ import {
     AddonModForumReply,
     AddonModForumUpdateDiscussionPostWSOptionsObject,
     AddonModForumWSPostAttachment,
-} from '../../services/forum.service';
+} from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
 import { ModalController, PopoverController, Translate } from '@singletons';
 import { CoreFileEntry, CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { IonContent } from '@ionic/angular';
-import { AddonModForumSync } from '../../services/sync.service';
+import { AddonModForumSync } from '../../services/sync';
 import { CoreSync } from '@services/sync';
 import { CoreTextUtils } from '@services/utils/text';
-import { AddonModForumHelper } from '../../services/helper.service';
-import { AddonModForumOffline, AddonModForumReplyOptions } from '../../services/offline.service';
+import { AddonModForumHelper } from '../../services/helper';
+import { AddonModForumOffline, AddonModForumReplyOptions } from '../../services/offline';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 import { AddonModForumEditPostComponent } from '../edit-post/edit-post';

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input } from '@angular/core';
-import { AddonModForumSortOrder } from '@addons/mod/forum/services/forum.service';
+import { AddonModForumSortOrder } from '@addons/mod/forum/services/forum';
 import { ModalController } from '@singletons';
 
 /**

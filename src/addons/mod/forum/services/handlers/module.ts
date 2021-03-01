@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { AddonModForum, AddonModForumProvider } from '../forum.service';
+import { AddonModForum, AddonModForumProvider } from '../forum';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -73,7 +73,7 @@ export class AddonModForumModuleHandlerService implements CoreCourseModuleHandle
             title: module.name,
             class: 'addon-mod_forum-handler',
             showDownloadButton: true,
-            action(_: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
+            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
                 options = options || {};
                 options.params = options.params || {};
                 Object.assign(options.params, { module });

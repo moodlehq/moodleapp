@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
+import { AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from '../offline';
 
 /**
  * Database variables for AddonModForum service.
@@ -112,4 +113,12 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             primaryKeys: ['postid', 'userid'],
         },
     ],
+};
+
+export type AddonModForumOfflineDiscussionDBRecord = Omit<AddonModForumOfflineDiscussion, 'options'> & {
+    options: string;
+};
+
+export type AddonModForumOfflineReplyDBRecord = Omit<AddonModForumOfflineReply, 'options'> & {
+    options: string;
 };

@@ -15,7 +15,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreApp } from '@services/app';
-import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum.service';
+import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum';
 import { Network, NgZone, PopoverController } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreDomUtils } from '@services/utils/dom';

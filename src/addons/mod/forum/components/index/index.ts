@@ -24,11 +24,11 @@ import {
     AddonModForumDiscussion,
     AddonModForumNewDiscussionData,
     AddonModForumReplyDiscussionData,
-} from '@addons/mod/forum/services/forum.service';
-import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/offline.service';
+} from '@addons/mod/forum/services/forum';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/offline';
 import { ModalController, PopoverController, Translate } from '@singletons';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
+import { AddonModForumHelper } from '@addons/mod/forum/services/helper';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import {
@@ -36,7 +36,7 @@ import {
     AddonModForumManualSyncData,
     AddonModForumSyncProvider,
     AddonModForumSyncResult,
-} from '@addons/mod/forum/services/sync.service';
+} from '@addons/mod/forum/services/sync';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';

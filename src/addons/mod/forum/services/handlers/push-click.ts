@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 
-import { AddonModForum } from '@addons/mod/forum/services/forum.service';
+import { AddonModForum } from '@addons/mod/forum/services/forum';
 import { CoreNavigator } from '@services/navigator';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';

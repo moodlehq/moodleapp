@@ -34,10 +34,10 @@ import {
     AddonModForumPost,
     AddonModForumProvider,
     AddonModForumRatingInfo,
-} from '../../services/forum.service';
-import { AddonModForumHelper } from '../../services/helper.service';
-import { AddonModForumOffline } from '../../services/offline.service';
-import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync.service';
+} from '../../services/forum';
+import { AddonModForumHelper } from '../../services/helper';
+import { AddonModForumOffline } from '../../services/offline';
+import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 

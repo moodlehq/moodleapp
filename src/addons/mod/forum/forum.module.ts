@@ -24,7 +24,7 @@ import { CoreScreen } from '@services/screen';
 
 import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumModuleHandler, AddonModForumModuleHandlerService } from './services/handlers/module';
-import { SITE_SCHEMA } from './services/offline-db';
+import { SITE_SCHEMA } from './services/database/offline';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { AddonModForumPrefetchHandler } from './services/handlers/prefetch';
 import { CoreCronDelegate } from '@services/cron';

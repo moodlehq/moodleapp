@@ -24,16 +24,16 @@ import {
     AddonModForumCanAddDiscussion,
     AddonModForumData,
     AddonModForumProvider,
-} from '@addons/mod/forum/services/forum.service';
+} from '@addons/mod/forum/services/forum';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
-import { AddonModForumSync, AddonModForumSyncProvider } from '@addons/mod/forum/services/sync.service';
+import { AddonModForumSync, AddonModForumSyncProvider } from '@addons/mod/forum/services/sync';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
-import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/offline.service';
+import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/offline';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
+import { AddonModForumHelper } from '@addons/mod/forum/services/helper';
 import { IonRefresher } from '@ionic/angular';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTextUtils } from '@services/utils/text';

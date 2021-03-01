@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { AddonModForum, AddonModForumData, AddonModForumPost, AddonModForumProvider } from '../forum.service';
+import { AddonModForum, AddonModForumData, AddonModForumPost, AddonModForumProvider } from '../forum';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreWSExternalFile } from '@services/ws';
@@ -22,7 +22,7 @@ import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } fro
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumSync } from '../sync.service';
+import { AddonModForumSync } from '../sync';
 import { makeSingleton } from '@singletons';
 
 /**

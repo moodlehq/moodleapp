@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { AddonModForumData } from '@addons/mod/forum/services/forum.service';
+import { AddonModForumData } from '@addons/mod/forum/services/forum';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 

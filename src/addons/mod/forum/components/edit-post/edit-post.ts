@@ -18,8 +18,8 @@ import { CoreFileEntry, CoreFileUploader } from '@features/fileuploader/services
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
-import { AddonModForumData, AddonModForumPost, AddonModForumReply } from '@addons/mod/forum/services/forum.service';
-import { AddonModForumHelper } from '@addons/mod/forum/services/helper.service';
+import { AddonModForumData, AddonModForumPost, AddonModForumReply } from '@addons/mod/forum/services/forum';
+import { AddonModForumHelper } from '@addons/mod/forum/services/helper';
 
 /**
  * Page that displays a form to edit discussion post.

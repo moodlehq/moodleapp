@@ -18,8 +18,13 @@ import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton } from '@singletons';
-import { AddonModForumProvider } from './forum.service';
-import { DISCUSSIONS_TABLE, REPLIES_TABLE } from './offline-db';
+import { AddonModForumProvider } from './forum';
+import {
+    AddonModForumOfflineDiscussionDBRecord,
+    AddonModForumOfflineReplyDBRecord,
+    DISCUSSIONS_TABLE,
+    REPLIES_TABLE,
+} from './database/offline';
 
 /**
  * Service to handle offline forum.
@@ -69,7 +74,7 @@ export class AddonModForumOfflineProvider {
             timecreated: timeCreated,
         };
 
-        const record = await site.getDb().getRecord<AddonModForumOfflineDiscussionRecord>(DISCUSSIONS_TABLE, conditions);
+        const record = await site.getDb().getRecord<AddonModForumOfflineDiscussionDBRecord>(DISCUSSIONS_TABLE, conditions);
 
         return this.parseRecordOptions(record);
     }
@@ -82,7 +87,7 @@ export class AddonModForumOfflineProvider {
      */
     async getAllNewDiscussions(siteId?: string): Promise<AddonModForumOfflineDiscussion[]> {
         const site = await CoreSites.instance.getSite(siteId);
-        const records = await site.getDb().getRecords<AddonModForumOfflineDiscussionRecord>(DISCUSSIONS_TABLE);
+        const records = await site.getDb().getRecords<AddonModForumOfflineDiscussionDBRecord>(DISCUSSIONS_TABLE);
 
         return this.parseRecordsOptions(records);
     }
@@ -122,7 +127,7 @@ export class AddonModForumOfflineProvider {
             userid: userId || site.getUserId(),
         };
 
-        const records = await site.getDb().getRecords<AddonModForumOfflineDiscussionRecord>(DISCUSSIONS_TABLE, conditions);
+        const records = await site.getDb().getRecords<AddonModForumOfflineDiscussionDBRecord>(DISCUSSIONS_TABLE, conditions);
 
         return this.parseRecordsOptions(records);
     }
@@ -155,7 +160,7 @@ export class AddonModForumOfflineProvider {
         userId?: number,
     ): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
-        const data: AddonModForumOfflineDiscussionRecord = {
+        const data: AddonModForumOfflineDiscussionDBRecord = {
             forumid: forumId,
             name: name,
             courseid: courseId,
@@ -196,7 +201,7 @@ export class AddonModForumOfflineProvider {
      */
     async getAllReplies(siteId?: string): Promise<AddonModForumOfflineReply[]> {
         const site = await CoreSites.instance.getSite(siteId);
-        const records = await site.getDb().getRecords<AddonModForumOfflineReplyRecord>(REPLIES_TABLE);
+        const records = await site.getDb().getRecords<AddonModForumOfflineReplyDBRecord>(REPLIES_TABLE);
 
         return this.parseRecordsOptions(records);
     }
@@ -236,7 +241,7 @@ export class AddonModForumOfflineProvider {
             userid: userId || site.getUserId(),
         };
 
-        const records = await site.getDb().getRecords<AddonModForumOfflineReplyRecord>(REPLIES_TABLE, conditions);
+        const records = await site.getDb().getRecords<AddonModForumOfflineReplyDBRecord>(REPLIES_TABLE, conditions);
 
         return this.parseRecordsOptions(records);
     }
@@ -276,7 +281,7 @@ export class AddonModForumOfflineProvider {
             userid: userId || site.getUserId(),
         };
 
-        const records = await site.getDb().getRecords<AddonModForumOfflineReplyRecord>(REPLIES_TABLE, conditions);
+        const records = await site.getDb().getRecords<AddonModForumOfflineReplyDBRecord>(REPLIES_TABLE, conditions);
 
         return this.parseRecordsOptions(records);
     }
@@ -309,7 +314,7 @@ export class AddonModForumOfflineProvider {
         userId?: number,
     ): Promise<void> {
         const site = await CoreSites.instance.getSite(siteId);
-        const data: AddonModForumOfflineReplyRecord = {
+        const data: AddonModForumOfflineReplyDBRecord = {
             postid: postId,
             discussionid: discussionId,
             forumid: forumId,
@@ -436,11 +441,4 @@ export type AddonModForumOfflineReply = {
     options: AddonModForumReplyOptions;
     userid: number;
     timecreated: number;
-};
-
-export type AddonModForumOfflineDiscussionRecord = Omit<AddonModForumOfflineDiscussion, 'options'> & {
-    options: string;
-};
-export type AddonModForumOfflineReplyRecord = Omit<AddonModForumOfflineReply, 'options'> & {
-    options: string;
 };

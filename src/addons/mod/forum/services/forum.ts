@@ -26,7 +26,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumReplyOptions } from './offline.service';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumReplyOptions } from './offline';
 
 const ROOT_CACHE_KEY = 'mmaModForum:';
 
@@ -216,11 +216,7 @@ export class AddonModForumProvider {
         const response = await site.write<AddonModForumAddDiscussionWSResponse>('mod_forum_add_discussion', params);
 
         // Other errors ocurring.
-        if (!response || !response.discussionid) {
-            return Promise.reject(CoreUtils.instance.createFakeWSError(''));
-        } else {
-            return response.discussionid;
-        }
+        return response.discussionid;
     }
 
     /**
@@ -832,7 +828,7 @@ export class AddonModForumProvider {
         let numPages = typeof options.numPages == 'undefined' ? -1 : options.numPages;
 
         if (!numPages) {
-            return Promise.resolve(result);
+            return result;
         }
 
         const getPage = (page: number): Promise<{ discussions: AddonModForumDiscussion[]; error: boolean }> =>
@@ -1114,7 +1110,7 @@ export class AddonModForumProvider {
                 return storeOffline();
             } else {
                 // The WebService has thrown an error or offline not supported, reject.
-                return Promise.reject(error);
+                throw error;
             }
         }
     }
@@ -1142,8 +1138,10 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            // eslint-disable-next-line max-len
-            options: CoreUtils.instance.objectToArrayOfObjects<AddonModForumAddDiscussionPostWSOptionsArray[0], AddonModForumAddDiscussionPostWSOptionsObject>(
+            options: CoreUtils.instance.objectToArrayOfObjects<
+            AddonModForumAddDiscussionPostWSOptionsArray[0],
+            AddonModForumAddDiscussionPostWSOptionsObject
+            >(
                 options || {},
                 'name',
                 'value',
@@ -1297,8 +1295,10 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            // eslint-disable-next-line max-len
-            options: CoreUtils.instance.objectToArrayOfObjects<AddonModForumUpdateDiscussionPostWSOptionsArray[0], AddonModForumUpdateDiscussionPostWSOptionsObject>(
+            options: CoreUtils.instance.objectToArrayOfObjects<
+            AddonModForumUpdateDiscussionPostWSOptionsArray[0],
+            AddonModForumUpdateDiscussionPostWSOptionsObject
+            >(
                 options || {},
                 'name',
                 'value',
