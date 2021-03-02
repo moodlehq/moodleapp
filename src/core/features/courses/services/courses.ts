@@ -18,7 +18,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
@@ -853,7 +853,7 @@ export class CoreCoursesProvider {
 
             if (added.length || removed.length) {
                 // At least 1 course was added or removed, trigger the event.
-                CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
+                CoreEvents.trigger<CoreCoursesMyCoursesChangedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
                     added: added,
                     removed: removed,
                 }, site.getId());
@@ -1169,12 +1169,20 @@ export const CoreCourses = makeSingleton(CoreCoursesProvider);
 /**
  * Data sent to the EVENT_MY_COURSES_UPDATED.
  */
-export type CoreCoursesMyCoursesUpdatedEventData = {
+export type CoreCoursesMyCoursesUpdatedEventData = CoreEventSiteData & {
     action: string; // Action performed.
     courseId?: number; // Course ID affected (if any).
     course?: CoreCourseAnyCourseData; // Course affected (if any).
     state?: string; // Only for ACTION_STATE_CHANGED. The state that changed (hidden, favourite).
     value?: boolean; // The new value for the state changed.
+};
+
+/**
+ * Data sent to the EVENT_MY_COURSES_CHANGED.
+ */
+export type CoreCoursesMyCoursesChangedEventData = CoreEventSiteData & {
+    added: number[];
+    removed: number[];
 };
 
 /**
