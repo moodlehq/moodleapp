@@ -53,7 +53,7 @@
 
                 <!-- Question page. -->
                 <!-- We need to set ngIf loaded to make formGroup directive restart every time a page changes, see MOBILE-2540. -->
-                <form *ngIf="question && loaded" ion-list [formGroup]="questionForm" #questionFormEl
+                <form *ngIf="question && loaded" [formGroup]="questionForm" #questionFormEl
                     (ngSubmit)="submitQuestion($event)">
 
                     <ion-item-divider class="ion-text-wrap" *ngIf="pageContent">

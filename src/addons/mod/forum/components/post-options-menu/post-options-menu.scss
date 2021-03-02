@@ -1,0 +1,11 @@
+:host {
+    core-loading:not(.core-loading-loaded) > .core-loading-container {
+        position: relative !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        overflow: hidden;
+    }
+    core-loading > .core-loading-container .core-loading-message {
+        display: none;
+    }
+}

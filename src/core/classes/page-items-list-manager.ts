@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -135,17 +135,22 @@ export abstract class CorePageItemsListManager<Item> {
         }
 
         // If this item is already selected, do nothing.
+        const itemRoute = this.getItemRoute(route);
         const itemPath = this.getItemPath(item);
+        const selectedItemPath = itemRoute ? this.getSelectedItemPath(itemRoute.snapshot) : null;
 
-        if (route.firstChild?.routeConfig?.path === itemPath) {
+        if (selectedItemPath === itemPath) {
             return;
         }
 
         // Navigate to item.
-        const path = route.firstChild ? `../${itemPath}` : itemPath;
         const params = this.getItemQueryParams(item);
+        const pathPrefix = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
 
-        await CoreNavigator.instance.navigate(path, { params });
+        await CoreNavigator.instance.navigate(pathPrefix + itemPath, {
+            params,
+            reset: CoreScreen.instance.isTablet,
+        });
     }
 
     /**
@@ -219,5 +224,21 @@ export abstract class CorePageItemsListManager<Item> {
      * @return Path of the selected item in the given route.
      */
     protected abstract getSelectedItemPath(route: ActivatedRouteSnapshot): string | null;
+
+    /**
+     * Get the active item route, if any.
+     *
+     * @param pageRoute Page route.
+     * @return Item route.
+     */
+    private getItemRoute(pageRoute: ActivatedRoute): ActivatedRoute | null {
+        let itemRoute = pageRoute.firstChild;
+
+        while (itemRoute && !itemRoute.component) {
+            itemRoute = itemRoute.firstChild;
+        }
+
+        return itemRoute;
+    }
 
 }

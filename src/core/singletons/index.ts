@@ -158,4 +158,10 @@ export class NavController extends makeSingleton(NavControllerService) {}
 export class Router extends makeSingleton(RouterService) {}
 
 // Convert external libraries injectables.
-export class Translate extends makeSingleton(TranslateService) {}
+export class Translate extends makeSingleton(TranslateService) {
+
+    static instant(key: string | Array<string>, interpolateParams?: Record<string, unknown>): string | any {
+        return this.instance.instant(key, interpolateParams);
+    }
+
+}

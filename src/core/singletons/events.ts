@@ -28,6 +28,25 @@ export interface CoreEventObserver {
     off: () => void;
 }
 
+/**
+ * Event payloads.
+ */
+export interface CoreEventsData {
+    [CoreEvents.SITE_UPDATED]: CoreEventSiteUpdatedData;
+    [CoreEvents.SITE_ADDED]: CoreEventSiteAddedData;
+    [CoreEvents.SESSION_EXPIRED]: CoreEventSessionExpiredData;
+    [CoreEvents.CORE_LOADING_CHANGED]: CoreEventLoadingChangedData;
+    [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
+    [CoreEvents.PACKAGE_STATUS_CHANGED]: CoreEventPackageStatusChanged;
+    [CoreEvents.USER_DELETED]: CoreEventUserDeletedData;
+    [CoreEvents.FORM_ACTION]: CoreEventFormActionData;
+    [CoreEvents.NOTIFICATION_SOUND_CHANGED]: CoreEventNotificationSoundChangedData;
+    [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
+    [CoreEvents.COMPLETION_MODULE_VIEWED]: CoreEventCompletionModuleViewedData;
+    [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
+    [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
+};
+
 /*
  * Service to send and listen to events.
  */
@@ -84,15 +103,15 @@ export class CoreEvents {
      * @param siteId Site where to trigger the event. Undefined won't check the site.
      * @return Observer to stop listening.
      */
-    static on<T = unknown>(
-        eventName: string,
-        callBack: (value: T & { siteId?: string }) => void,
+    static on<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        callBack: (value: CoreEventData<Event, Fallback> & { siteId?: string }) => void,
         siteId?: string,
     ): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
-            callBack(<T> this.uniqueEvents[eventName].data);
+            callBack(this.uniqueEvents[eventName].data as CoreEventData<Event, Fallback> & { siteId?: string });
 
             // Return a fake observer to prevent errors.
             return {
@@ -106,14 +125,16 @@ export class CoreEvents {
 
         if (typeof this.observables[eventName] == 'undefined') {
             // No observable for this event, create a new one.
-            this.observables[eventName] = new Subject<T>();
+            this.observables[eventName] = new Subject();
         }
 
-        const subscription = this.observables[eventName].subscribe((value: T & {siteId?: string}) => {
-            if (!siteId || value.siteId == siteId) {
-                callBack(value);
-            }
-        });
+        const subscription = this.observables[eventName].subscribe(
+            (value: CoreEventData<Event, Fallback> & { siteId?: string }) => {
+                if (!siteId || value.siteId == siteId) {
+                    callBack(value);
+                }
+            },
+        );
 
         // Create and return a CoreEventObserver.
         return {
@@ -155,7 +176,11 @@ export class CoreEvents {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    static trigger<T = unknown>(eventName: string, data?: T, siteId?: string): void {
+    static trigger<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        data?: CoreEventData<Event, Fallback>,
+        siteId?: string,
+    ): void {
         this.logger.debug(`Event '${eventName}' triggered.`);
         if (this.observables[eventName]) {
             if (siteId) {
@@ -172,7 +197,11 @@ export class CoreEvents {
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
-    static triggerUnique<T = unknown>(eventName: string, data: T, siteId?: string): void {
+    static triggerUnique<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        data: CoreEventData<Event, Fallback>,
+        siteId?: string,
+    ): void {
         if (this.uniqueEvents[eventName]) {
             this.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
         } else {
@@ -195,6 +224,11 @@ export class CoreEvents {
     }
 
 }
+
+/**
+ * Resolve payload type for a given event.
+ */
+export type CoreEventData<Event, Fallback> = Event extends keyof CoreEventsData ? CoreEventsData[Event] : Fallback;
 
 /**
  * Some events contains siteId added by the trigger function. This type is intended to be combined with others.

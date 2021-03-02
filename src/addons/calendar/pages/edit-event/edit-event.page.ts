@@ -570,7 +570,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
             }
         }
 
-        if (this.svComponent?.isOn()) {
+        if (this.svComponent?.outletActivated) {
             // Empty form.
             this.hasOffline = false;
             this.form.reset(this.originalData);

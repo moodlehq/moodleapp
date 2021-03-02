@@ -93,4 +93,7 @@
     --core-question-feedback-background-color: var(--yellow-dark);
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-light);
+
+    --addon-forum-border-color: var(--custom-forum-border-color, var(--gray-darker));
+    --addon-forum-highlight-color: var(--custom-forum-highlight-color, var(--gray-dark));
 }

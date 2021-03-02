@@ -743,7 +743,7 @@ export class CoreDomUtilsProvider {
      * @param error Error to check.
      * @return Whether it's a canceled error.
      */
-    isCanceledError(error: CoreError | CoreTextErrorObject | string): boolean {
+    isCanceledError(error: CoreError | CoreTextErrorObject | string | null): boolean {
         return error instanceof CoreCanceledError;
     }
 
@@ -1393,7 +1393,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     async showErrorModalDefault(
-        error: CoreError | CoreTextErrorObject | string,
+        error: CoreError | CoreTextErrorObject | string | null,
         defaultError: string,
         needsTranslate?: boolean,
         autocloseTime?: number,
@@ -1409,7 +1409,7 @@ export class CoreDomUtilsProvider {
             errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error);
         }
 
-        return this.showErrorModal(typeof errorMessage == 'string' ? error : defaultError, needsTranslate, autocloseTime);
+        return this.showErrorModal(typeof errorMessage == 'string' ? error! : defaultError, needsTranslate, autocloseTime);
     }
 
     /**

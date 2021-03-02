@@ -183,6 +183,10 @@
     --addon-messages-discussion-badge: var(--custom-messages-discussion-badge, var(--core-color));
     --addon-messages-discussion-badge-text: var(--custom-messages-discussion-badge-text, var(--white));
 
+    --addon-forum-avatar-size: var(--custom-forum-avatar-size, 28px);
+    --addon-forum-border-color: var(--custom-forum-border-color, var(--gray));
+    --addon-forum-highlight-color: var(--custom-forum-highlight-color, var(--gray-lighter));
+
     --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
 
     --core-menu-box-shadow-end: var(--custom-menu-box-shadow-end, -4px 0px 16px rgba(0, 0, 0, 0.18));

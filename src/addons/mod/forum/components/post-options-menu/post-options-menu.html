@@ -1,0 +1,26 @@
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <ion-item class="ion-text-wrap" (click)="editPost()" *ngIf="offlinePost || (canEdit && isOnline)">
+        <ion-icon name="create" slot="start"></ion-icon>
+        <ion-label>
+            <h2>{{ 'addon.mod_forum.edit' | translate }}</h2>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" (click)="deletePost()" *ngIf="offlinePost || (canDelete && isOnline)">
+        <ion-icon name="trash" slot="start"></ion-icon>
+        <ion-label>
+            <h2 *ngIf="!offlinePost">{{ 'addon.mod_forum.delete' | translate }}</h2>
+            <h2 *ngIf="offlinePost">{{ 'core.discard' | translate }}</h2>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" (click)="dismiss()" *ngIf="wordCount">
+        <ion-label>
+            <h2>{{ 'core.numwords' | translate: {'$a': wordCount} }}</h2>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" [href]="url" *ngIf="url" core-link capture="false">
+        <ion-icon name="open" slot="start"></ion-icon>
+        <ion-label>
+            <h2>{{ 'core.openinbrowser' | translate }}</h2>
+        </ion-label>
+    </ion-item>
+</core-loading>

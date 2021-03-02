@@ -12,23 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injector, NgModule } from '@angular/core';
+import { RouterModule, ROUTES, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseContentsPage } from './contents';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
+import { resolveModuleRoutes } from '@/app/app-routing.module';
 
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreCourseContentsPage,
-    },
-];
+import { CoreCourseContentsPage } from './contents';
+import { COURSE_CONTENTS_ROUTES } from './contents-routing.module';
+
+function buildRoutes(injector: Injector): Routes {
+    const routes = resolveModuleRoutes(injector, COURSE_CONTENTS_ROUTES);
+
+    return [
+        {
+            path: '',
+            component: CoreCourseContentsPage,
+            children: routes.children,
+        },
+        ...routes.siblings,
+    ];
+}
 
 @NgModule({
+    providers: [
+        { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
+    ],
     imports: [
-        RouterModule.forChild(routes),
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],

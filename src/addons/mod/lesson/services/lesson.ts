@@ -3110,7 +3110,7 @@ export class AddonModLessonProvider {
         const params: AddonModLessonProcessPageWSParams = {
             lessonid: lessonId,
             pageid: pageId,
-            data: <ProcessPageData[]> CoreUtils.instance.objectToArrayOfObjects(data, 'name', 'value', true),
+            data: CoreUtils.instance.objectToArrayOfObjects<ProcessPageData>(data, 'name', 'value', true),
             review: !!options.review,
         };
 

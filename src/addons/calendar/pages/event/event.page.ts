@@ -96,7 +96,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
         this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.instance.getCurrentSiteId();
-        this.isSplitViewOn = this.svComponent?.isOn();
+        this.isSplitViewOn = this.svComponent?.outletActivated;
 
         // Check if site supports editing and deleting. No need to check allowed types, event.canedit already does it.
         this.canEdit = AddonCalendar.instance.canEditEventsInSite();

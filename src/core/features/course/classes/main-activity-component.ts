@@ -68,7 +68,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        super.ngOnInit();
+        await super.ngOnInit();
 
         this.hasOffline = false;
         this.syncIcon = CoreConstants.ICON_LOADING;
